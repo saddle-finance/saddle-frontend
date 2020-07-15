@@ -1,8 +1,25 @@
-import React from 'react'
+import React, { useState } from 'react'
+import classNames from 'classnames'
 import { Twemoji } from 'react-emoji-render'
 
 import './App.scss'
-import TokenSelector from './components/TokenSelector'
+import SwapForm from './components/SwapForm'
+import EarnForm from './components/EarnForm'
+
+function SwapOrEarn() {
+  const [activeArea, setActiveArea] = useState('swap')
+
+  return <div className="swapArea">
+    <nav>
+      <a className={classNames({active: activeArea=='swap'})}
+         onClick={() => setActiveArea('swap')}>Swap</a>
+      <a className={classNames({active: activeArea=='earn'})}
+         onClick={() => setActiveArea('earn')}>Earn</a>
+    </nav>
+    <hr />
+    { activeArea == 'swap' ? <SwapForm /> : <EarnForm /> }
+  </div>
+}
 
 function App() {
   return (
@@ -17,18 +34,8 @@ function App() {
         </span>
       </header>
       <main>
-        <div className="swapArea">
-          <nav>
-            <a className="active">Swap</a>
-            <a>Earn</a>
-          </nav>
-          <hr />
-          <form>
-            <TokenSelector label="From" tokens={['tbtc', 'wbtc']} />
-            <TokenSelector label="To" tokens={['wbtc', 'tbtc']} />
-            <button>Swap!</button>
-          </form>
-        </div>
+        <SwapOrEarn />
+
       </main>
     </>
   )
