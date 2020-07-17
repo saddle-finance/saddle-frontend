@@ -1,11 +1,11 @@
 import React from 'react'
 
-import TokenSelector from './TokenSelector'
+import TokenAmountSelector from './TokenAmountSelector'
 
 function EarnForm() {
   return <form className="earn">
-    <TokenSelector label="From" tokens={['tbtc', 'wbtc']} />
-    <TokenSelector label="To" tokens={['wbtc', 'tbtc']} />
+    <TokenAmountSelector label="From" tokens={['tbtc', 'wbtc']} />
+    <TokenAmountSelector label="To" tokens={['wbtc', 'tbtc']} />
     <button type="button">Earn!</button>
   </form>
 }
