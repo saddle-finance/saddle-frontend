@@ -4,8 +4,8 @@ import TokenSelector from './TokenSelector'
 
 function SwapForm() {
   return <form className="swap">
-    <TokenSelector label="From" tokens={['tbtc', 'wbtc']} />
-    <TokenSelector label="To" tokens={['wbtc', 'tbtc']} />
+    <TokenSelector label="From" tokens={['usdc', 'dai', 'usdt']} />
+    <TokenSelector label="To" tokens={['usdc', 'dai', 'usdt']} />
     <button type="button">Swap!</button>
   </form>
 }

@@ -1,9 +1,12 @@
+* {
+    border-color: #AAA !important;
+}
+
 button, input, select {
-    border-radius: 5px;
+    border-radius: 10px;
     height: fit-content;
     min-height: 2em;
     border-width: thin;
-    border-color: #999;
     background-color: #FFF;
 }
 
@@ -42,7 +45,7 @@ header.top {
     padding-left: 1.5em;
     padding-right: 1.5em;
 
-    .logo {
+    h1 > .logo {
         transition: transform 0.4s;
         display: inline-block;
         margin-right: .4em;
@@ -52,8 +55,18 @@ header.top {
         }
     }
 
-    .walletInfo {
-
+    .walletStatus {
+        .connection {
+            // padding: 8px;
+            // border: 1px solid;
+            // border-radius: 10px;
+            &.success .indicator {
+                filter: invert(1);
+            }
+        }
+        img.logo {
+            height: 1.5em;
+        }
     }
 }
 
