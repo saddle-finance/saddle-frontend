@@ -120,3 +120,16 @@ main {
         }
     }
 }
+
+form.earn {
+    &>span {
+        text-align: center;
+        margin-bottom: 0.3em;
+
+        &.apy {
+            font-size: 3em;
+            display: block;
+            margin-bottom: 0.3em;
+        }
+    }
+}

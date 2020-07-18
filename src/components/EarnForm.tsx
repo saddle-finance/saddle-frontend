@@ -1,11 +1,30 @@
-import React from 'react'
+import React, { useState } from 'react'
+import numbro from 'numbro'
 
-import TokenAmountSelector from './TokenAmountSelector'
+import TokenSelector from './TokenSelector'
 
-function EarnForm() {
+interface Props {
+  tokenBaskets: string[],
+  basketYields: {[key: string]: number}
+}
+
+function formatAPY(apyOutOf100: number) : string {
+  return numbro(apyOutOf100).divide(100).format({
+    output: 'percent', mantissa: 1, trimMantissa: true
+  })
+}
+
+function EarnForm({ tokenBaskets, basketYields } : Props) {
+  const [token, setToken] = useState(tokenBaskets[0] || 'USD')
+
   return <form className="earn">
-    <TokenAmountSelector label="From" tokens={['tbtc', 'wbtc']} />
-    <TokenAmountSelector label="To" tokens={['wbtc', 'tbtc']} />
+    <span className="apy">
+      ~{formatAPY(basketYields[token] || 0)} APY
+    </span>
+    <span className="">
+      on your <TokenSelector tokens={tokenBaskets}
+                             onChange={(e) => setToken(e.target.value)} />
+    </span>
     <button type="button">Earn!</button>
   </form>
 }

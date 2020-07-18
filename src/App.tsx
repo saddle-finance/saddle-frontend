@@ -34,7 +34,10 @@ function SwapOrEarn() {
          onClick={() => setActiveArea('earn')}>Earn</a>
     </nav>
     <hr />
-    { activeArea === 'swap' ? <SwapForm /> : <EarnForm /> }
+    { activeArea === 'swap' ?
+      <SwapForm /> :
+      <EarnForm tokenBaskets={['USD', 'BTC', 'ETH']}
+                basketYields={{USD: 1.92, BTC: 9.8, ETH:5}} /> }
   </div>
 }
 

@@ -2,7 +2,12 @@ import React from 'react'
 
 import TokenSelector from './TokenSelector'
 
-function TokenAmountSelector({ label, tokens } : { label: string, tokens: string[]}) {
+interface Props {
+  label: string,
+  tokens: string[]
+}
+
+function TokenAmountSelector({ label, tokens } : Props) {
   return <div className="token-selector">
     <div className="group">
       <label>
