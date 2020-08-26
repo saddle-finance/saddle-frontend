@@ -1,21 +1,19 @@
-import { call, delay, put, select, takeEvery } from 'redux-saga/effects'
+import { call, delay, put, select, takeEvery } from "redux-saga/effects"
 
-import { ethers } from 'ethers'
+import { ethers } from "ethers"
 
 import {
   setAccount,
   setProvider,
   setSigner,
   CONNECT_METAMASK,
-} from '../actions'
-import { State } from '../reducers'
+} from "../actions"
+import { State } from "../reducers"
 
 declare global {
-  interface Window { ethereum: any }
-}
-
-export function* watchConnectProvider() {
-  yield takeEvery(CONNECT_METAMASK, enableAccount)
+  interface Window {
+    ethereum: any
+  }
 }
 
 export function* checkAccountEnabled() {
@@ -25,7 +23,7 @@ export function* checkAccountEnabled() {
     yield delay(500)
     if (window.ethereum.selectedAddress) {
       yield put(setAccount(window.ethereum.selectedAddress))
-      let provider = yield select((s : State) => s.wallet.provider)
+      const provider = yield select((s: State) => s.wallet.provider)
       yield put(setSigner(provider.getSigner()))
     }
   }
@@ -34,10 +32,14 @@ export function* checkAccountEnabled() {
 function* enableAccount() {
   yield* checkAccountEnabled()
 
-  let { provider, account } = yield select((s : State) => s.wallet)
+  const { provider, account } = yield select((s: State) => s.wallet)
   if (window.ethereum !== undefined && !account) {
-    const accounts : string[] = yield call(window.ethereum.enable)
+    const accounts: string[] = yield call(window.ethereum.enable)
     yield put(setAccount(accounts[0]))
     yield put(setSigner(provider.getSigner()))
   }
+}
+
+export function* watchConnectProvider() {
+  yield takeEvery(CONNECT_METAMASK, enableAccount)
 }

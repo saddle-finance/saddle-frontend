@@ -1,9 +1,6 @@
-import { combineReducers } from 'redux'
+import { combineReducers } from "redux"
 
-import {
-  walletReducer,
-  WalletState,
-} from './wallet'
+import { walletReducer, WalletState } from "./wallet"
 
 export interface State {
   wallet: WalletState
