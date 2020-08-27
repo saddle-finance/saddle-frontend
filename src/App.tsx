@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
-import classNames from 'classnames'
-import { Twemoji } from 'react-emoji-render'
+import React, { useState } from "react"
+import classNames from "classnames"
+import { Twemoji } from "react-emoji-render"
 
-import './App.scss'
-import SwapForm from './components/SwapForm'
-import EarnForm from './components/EarnForm'
-import WalletStatus from './components/ConnectWallet'
+import "./App.scss"
+import SwapForm from "./components/SwapForm"
+import EarnForm from "./components/EarnForm"
+import WalletStatus from "./components/ConnectWallet"
 
 // TODO state model
 // provider object - Ethers.js provider, MetaMask first, falls back to Infura
@@ -24,21 +24,35 @@ import WalletStatus from './components/ConnectWallet'
 // => sets the account this user "is"? or instead do we use a read-only signer?
 
 function SwapOrEarn() {
-  const [activeArea, setActiveArea] = useState('swap')
+  const [activeArea, setActiveArea] = useState("swap")
 
-  return <div className="swapArea">
-    <nav>
-      <a className={classNames({active: activeArea === 'swap'})}
-         onClick={() => setActiveArea('swap')}>Swap</a>
-      <a className={classNames({active: activeArea === 'earn'})}
-         onClick={() => setActiveArea('earn')}>Earn</a>
-    </nav>
-    <hr />
-    { activeArea === 'swap' ?
-      <SwapForm /> :
-      <EarnForm tokenBaskets={['USD', 'BTC', 'ETH']}
-                basketYields={{USD: 1.92, BTC: 9.8, ETH:5}} /> }
-  </div>
+  return (
+    <div className="swapArea">
+      <nav>
+        <a
+          className={classNames({ active: activeArea === "swap" })}
+          onClick={() => setActiveArea("swap")}
+        >
+          Swap
+        </a>
+        <a
+          className={classNames({ active: activeArea === "earn" })}
+          onClick={() => setActiveArea("earn")}
+        >
+          Earn
+        </a>
+      </nav>
+      <hr />
+      {activeArea === "swap" ? (
+        <SwapForm />
+      ) : (
+        <EarnForm
+          tokenBaskets={["USD", "BTC", "ETH"]}
+          basketYields={{ USD: 1.92, BTC: 9.8, ETH: 5 }}
+        />
+      )}
+    </div>
+  )
 }
 
 function App() {
