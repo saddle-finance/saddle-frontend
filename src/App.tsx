@@ -30,12 +30,14 @@ function SwapOrEarn() {
     <div className="swapArea">
       <nav>
         <a
+          href="/#"
           className={classNames({ active: activeArea === "swap" })}
           onClick={() => setActiveArea("swap")}
         >
           Swap
         </a>
         <a
+          href="/#"
           className={classNames({ active: activeArea === "earn" })}
           onClick={() => setActiveArea("earn")}
         >
