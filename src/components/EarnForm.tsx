@@ -1,12 +1,9 @@
 import React, { useState } from "react"
+import { connect, ConnectedProps } from "react-redux"
 import numbro from "numbro"
 
 import TokenSelector from "./TokenSelector"
-
-interface Props {
-  tokenBaskets: string[]
-  basketYields: { [key: string]: number }
-}
+import { Swap } from "../types"
 
 function formatAPY(apyOutOf100: number): string {
   return numbro(apyOutOf100).divide(100).format({
@@ -16,17 +13,29 @@ function formatAPY(apyOutOf100: number): string {
   })
 }
 
-function EarnForm({ tokenBaskets, basketYields }: Props) {
-  const [token, setToken] = useState(tokenBaskets[0] || "USD")
+const mapStateToProps = (state: { swaps: { all: Swap[] } }) => {
+  return { swaps: state.swaps.all }
+}
+
+const connector = connect(mapStateToProps)
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
+  swapYields: { [key: string]: number }
+}
+
+function EarnForm({ swaps, swapYields }: Props) {
+  const [swapName, setSwap] = useState(swaps.length > 0 ? swaps[0].name : "USD")
 
   return (
     <form className="earn">
-      <span className="apy">~{formatAPY(basketYields[token] || 0)} APY</span>
+      <span className="apy">~{formatAPY(swapYields[swapName] || 0)} APY</span>
       <span className="">
         on your{" "}
         <TokenSelector
-          tokens={tokenBaskets}
-          onChange={(e) => setToken(e.target.value)}
+          tokens={swaps.map((s) => s.name)}
+          onChange={(e) => setSwap(e.target.value)}
         />
       </span>
       <button type="button">Earn!</button>
@@ -34,4 +43,4 @@ function EarnForm({ tokenBaskets, basketYields }: Props) {
   )
 }
 
-export default EarnForm
+export default connector(EarnForm)
