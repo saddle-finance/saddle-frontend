@@ -20,7 +20,7 @@
     "eslint-config-keep": "git+https://github.com/keep-network/eslint-config-keep.git#0.3.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
-    "ethers": "^5.0.9",
+    "ethers": "^5.0.11",
     "node-sass": "^4.14.1",
     "numbro": "^2.3.1",
     "prettier": "^2.1.1",
