@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import classNames from "classnames"
 import { Twemoji } from "react-emoji-render"
+import { Link } from "react-router-dom"
 
 import "./App.scss"
 import SwapForm from "./components/SwapForm"
@@ -65,6 +66,14 @@ function App() {
           <Twemoji className="logo" svg text=":horse_face:" />
           <span className="title">Saddle</span>
         </h1>
+        <ul className="nav">
+          <li>
+            <Link to="/home">Swap</Link>
+          </li>
+          <li>
+            <Link to="/pool">Pool</Link>
+          </li>
+        </ul>
         <WalletStatus />
       </header>
       <main>
