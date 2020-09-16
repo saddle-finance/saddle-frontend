@@ -38,24 +38,63 @@ button:hover {
 }
 
 header.top {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
+  background-color: #ffffff;
+  box-shadow: 0px 2px 14px 2px rgba(0, 0, 0, 0.1);
+	height: 88px;
+	padding-left: 56px;
+	padding-right: 56px;
+	display: flex;
+  justify-content: center;
+  align-items: center;
 
-    padding-left: 1.5em;
-    padding-right: 1.5em;
+	h1 {
+		margin: 0;
+		margin-right: auto;
 
-    h1 > .logo {
-        transition: transform 0.4s;
-        display: inline-block;
-        margin-right: .4em;
+		.title {
+			color: #EA860B;
+			font-weight: bold;
+			font-size: 36px;
+			line-height: 42px;
+		}
 
-        &:hover {
-            transform: rotate(-10deg) translate(0, 8px);
-        }
+		& > .logo {
+			transition: transform 0.4s;
+			display: inline-block;
+			margin-right: .4em;
+			&:hover {
+					transform: rotate(-10deg) translate(0, 8px);
+			}
+		}
+	}
+  
+  ul.nav {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    & > li {
+      display: inline;
+      margin-right: 40px;
+      &:last-child {
+          margin-right: 0;
+      }
+      a {
+				color: #1F2023;
+				text-decoration: none;
+				font-style: normal;
+				font-weight: normal;
+				font-size: 20px;
+
+				&.active {
+					color: #121010;
+					font-weight: 700;
+				}
+      }
     }
-
+  }
     .walletStatus {
+			margin-left: auto;
+
         .connection {
             // padding: 8px;
             // border: 1px solid;

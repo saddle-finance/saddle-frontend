@@ -68,7 +68,9 @@ function App() {
         </h1>
         <ul className="nav">
           <li>
-            <Link to="/home">Swap</Link>
+            <Link to="/home" className="active">
+              Swap
+            </Link>
           </li>
           <li>
             <Link to="/pool">Pool</Link>
