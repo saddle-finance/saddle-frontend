@@ -1,3 +1,5 @@
+@import "./styles/theme";
+
 * {
     border-color: #AAA !important;
 }
@@ -40,7 +42,7 @@ button:hover {
 header.top {
   background-color: #ffffff;
   box-shadow: 0px 2px 14px 2px rgba(0, 0, 0, 0.1);
-	height: 88px;
+  height: 88px;
 	padding-left: 56px;
 	padding-right: 56px;
 	display: flex;
@@ -69,6 +71,7 @@ header.top {
 	}
   
   ul.nav {
+		font-family: $font-family;
     list-style-type: none;
     padding: 0;
     margin: 0;
@@ -79,15 +82,21 @@ header.top {
           margin-right: 0;
       }
       a {
-				color: #1F2023;
+				color: $text;
+				opacity: 0.6;
 				text-decoration: none;
 				font-style: normal;
-				font-weight: normal;
+				font-weight: $normal;
 				font-size: 20px;
 
+				&:hover {
+					opacity: 1;
+				}
+
 				&.active {
-					color: #121010;
-					font-weight: 700;
+					opacity: 1;
+					color: $text-darker;
+					font-weight: $bold;
 				}
       }
     }
