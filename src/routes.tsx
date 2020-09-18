@@ -10,6 +10,8 @@ export const Routes = () => (
     <Switch>
       <Route exact path="/" component={App} />
       <Route path="/home" component={Home} />
+      <Route path="/swap/btc" component={App} />
+      <Route path="/swap/usd" component={App} />
       <Route path="/pool" component={Pool} />
     </Switch>
   </Router>
