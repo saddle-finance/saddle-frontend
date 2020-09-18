@@ -1,12 +1,10 @@
 import React, { useState } from "react"
 import classNames from "classnames"
-import { Twemoji } from "react-emoji-render"
-import { Link } from "react-router-dom"
 
 import "./App.scss"
+import TopMenu from "./components/TopMenu"
 import SwapForm from "./components/SwapForm"
 import EarnForm from "./components/EarnForm"
-import WalletStatus from "./components/ConnectWallet"
 
 // TODO state model
 // provider object - Ethers.js provider, MetaMask first, falls back to Infura
@@ -61,23 +59,7 @@ function SwapOrEarn() {
 function App() {
   return (
     <>
-      <header className="top">
-        <h1>
-          <Twemoji className="logo" svg text=":horse_face:" />
-          <span className="title">Saddle</span>
-        </h1>
-        <ul className="nav">
-          <li>
-            <Link to="/home" className="active">
-              Swap
-            </Link>
-          </li>
-          <li>
-            <Link to="/pool">Pool</Link>
-          </li>
-        </ul>
-        <WalletStatus />
-      </header>
+      <TopMenu activeTab="" />
       <main>
         <SwapOrEarn />
       </main>

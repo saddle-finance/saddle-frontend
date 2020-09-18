@@ -1,0 +1,35 @@
+@import "../styles/theme";
+
+button.asset {
+  background: $background-white;
+  box-shadow: 0px 2px 8px rgba(39, 14, 1, 0.18);
+  border-radius: 4px;
+  border: none;
+  width: 256px;
+  height: 256px;
+  padding: 0;
+  font-family: $font-family; 
+
+  img {
+    display: block;
+    width: 104px;
+    height: 104px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 16px;
+    margin-bottom: 24px;
+  }
+
+  &>span {
+    font-size: 28px;
+    font-weight: $bold;
+    letter-spacing: 0.06em;
+    color: $text;
+  }
+
+  &:hover {
+    cursor: pointer;
+    background: $background-darker;
+    box-shadow: 2px 2px 12px rgba(39, 14, 1, 0.32);
+  }
+}
