@@ -1,0 +1,81 @@
+@import "../styles/theme";
+
+header.top {
+  background-color: #ffffff;
+  box-shadow: 0px 2px 14px 2px rgba(0, 0, 0, 0.1);
+  height: 88px;
+  padding-left: 56px;
+	padding-right: 56px;
+	display: flex;
+  justify-content: center;
+  align-items: center;
+
+	h1 {
+		margin: 0;
+		margin-right: auto;
+
+		.title {
+			color: #EA860B;
+			font-weight: bold;
+			font-size: 36px;
+      line-height: 42px;
+      font-family: 'Roboto';
+		}
+
+		& > .logo {
+			transition: transform 0.4s;
+			display: inline-block;
+			margin-right: .4em;
+			&:hover {
+					transform: rotate(-10deg) translate(0, 8px);
+			}
+		}
+	}
+  
+  ul.nav {
+		font-family: $font-family;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    & > li {
+      display: inline;
+      margin-right: 40px;
+      &:last-child {
+          margin-right: 0;
+      }
+      a {
+				color: $text;
+				opacity: 0.6;
+				text-decoration: none;
+				font-style: normal;
+				font-weight: $normal;
+				font-size: 20px;
+
+				&:hover {
+					opacity: 1;
+				}
+
+				&.active {
+					opacity: 1;
+					color: $text-darker;
+					font-weight: $bold;
+				}
+      }
+    }
+  }
+  .walletStatus {
+		margin-left: auto;
+
+    .connection {
+      // padding: 8px;
+      // border: 1px solid;
+      // border-radius: 10px;
+      &.success .indicator {
+          filter: invert(1);
+      }
+    }
+    img.logo {
+      height: 1.5em;
+    }
+  }
+}
