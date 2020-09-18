@@ -8,7 +8,7 @@ button.asset {
   width: 256px;
   height: 256px;
   padding: 0;
-  font-family: $font-family; 
+  font-family: $font-family;
 
   img {
     display: block;
@@ -20,7 +20,7 @@ button.asset {
     margin-bottom: 24px;
   }
 
-  &>span {
+  & > span {
     font-size: 28px;
     font-weight: $bold;
     letter-spacing: 0.06em;
