@@ -1,15 +1,17 @@
 @import "./styles/theme";
 
 * {
-  border-color: #AAA !important;
+  border-color: #aaa !important;
 }
 
-button, input, select {
+button,
+input,
+select {
   border-radius: 10px;
   height: fit-content;
   min-height: 2em;
   border-width: thin;
-  background-color: #FFF;
+  background-color: #fff;
 }
 
 .token-selector {
@@ -17,11 +19,12 @@ button, input, select {
   justify-content: space-around;
   align-items: flex-end;
 
-  border: 1px solid #AAA;
+  border: 1px solid #aaa;
   border-radius: 10px;
   padding: 5px;
 
-  input, select {
+  input,
+  select {
     border: none;
     font-size: 16pt;
   }
@@ -30,7 +33,7 @@ button, input, select {
     display: block;
     min-height: 2em;
     margin-top: 0.5em;
-		opacity: 80%;
+    opacity: 80%;
   }
 }
 
@@ -43,36 +46,36 @@ header.top {
   background-color: #ffffff;
   box-shadow: 0px 2px 14px 2px rgba(0, 0, 0, 0.1);
   height: 88px;
-	padding-left: 56px;
-	padding-right: 56px;
-	display: flex;
+  padding-left: 56px;
+  padding-right: 56px;
+  display: flex;
   justify-content: center;
   align-items: center;
 
-	h1 {
-		margin: 0;
-		margin-right: auto;
+  h1 {
+    margin: 0;
+    margin-right: auto;
 
-		.title {
-			color: #EA860B;
-			font-weight: bold;
-			font-size: 36px;
+    .title {
+      color: #ea860b;
+      font-weight: bold;
+      font-size: 36px;
       line-height: 42px;
-      font-family: 'Roboto';
-		}
+      font-family: "Roboto";
+    }
 
-		& > .logo {
-			transition: transform 0.4s;
-			display: inline-block;
-			margin-right: .4em;
-			&:hover {
-					transform: rotate(-10deg) translate(0, 8px);
-			}
-		}
-	}
+    & > .logo {
+      transition: transform 0.4s;
+      display: inline-block;
+      margin-right: 0.4em;
+      &:hover {
+        transform: rotate(-10deg) translate(0, 8px);
+      }
+    }
+  }
 
   ul.nav {
-		font-family: $font-family;
+    font-family: $font-family;
     list-style-type: none;
     padding: 0;
     margin: 0;
@@ -80,37 +83,37 @@ header.top {
       display: inline;
       margin-right: 40px;
       &:last-child {
-          margin-right: 0;
+        margin-right: 0;
       }
       a {
-				color: $text;
-				opacity: 0.6;
-				text-decoration: none;
-				font-style: normal;
-				font-weight: $normal;
-				font-size: 20px;
+        color: $text;
+        opacity: 0.6;
+        text-decoration: none;
+        font-style: normal;
+        font-weight: $normal;
+        font-size: 20px;
 
-				&:hover {
-					opacity: 1;
-				}
+        &:hover {
+          opacity: 1;
+        }
 
-				&.active {
-					opacity: 1;
-					color: $text-darker;
-					font-weight: $bold;
-				}
+        &.active {
+          opacity: 1;
+          color: $text-darker;
+          font-weight: $bold;
+        }
       }
     }
   }
   .walletStatus {
-		margin-left: auto;
+    margin-left: auto;
 
     .connection {
       // padding: 8px;
       // border: 1px solid;
       // border-radius: 10px;
       &.success .indicator {
-          filter: invert(1);
+        filter: invert(1);
       }
     }
     img.logo {
@@ -146,7 +149,7 @@ main {
       opacity: 50%;
 
       &.active {
-          opacity: 100%;
+        opacity: 100%;
       }
     }
   }
@@ -171,14 +174,14 @@ main {
 }
 
 form.earn {
-  &>span {
+  & > span {
     text-align: center;
     margin-bottom: 0.3em;
 
     &.apy {
-        font-size: 3em;
-        display: block;
-        margin-bottom: 0.3em;
+      font-size: 3em;
+      display: block;
+      margin-bottom: 0.3em;
     }
   }
 }
