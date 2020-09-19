@@ -1,0 +1,181 @@
+@import "../styles/theme";
+
+div.swapPage {
+  min-height: 100vh;
+  background-color: $background;
+  color: $text;
+  font-size: 16px;
+
+  button:hover {
+    cursor: pointer;
+  }
+
+  img {
+    margin-left: 32px;
+    margin-right: 32px;
+  }
+
+  .content {
+    width: 896px;
+    margin: 0 auto;
+    padding-top: 40px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .priceTable {
+    width: 100%;
+    margin: 24px auto;
+    text-align: right;
+    color: $text;
+
+    button.exchange {
+      border: none;
+      background: $background-darker;
+      height: 24px;
+      margin-left: 4px;
+      padding: 0;
+      border-radius: 4px;
+
+      &:hover {
+        transform: none;
+      }
+    }
+
+    & > .pair {
+      margin-left: 16px;
+    }
+    & > .value {
+      margin-left: 32px;
+      color: $text-primary;
+    }
+  }
+
+  .error {
+    width: 100%;
+    color: $error;
+    font-weight: $medium;
+    text-align: center;
+    margin-bottom: 8px;
+    display: none;
+  }
+
+  button.swap {
+    width: 240px;
+    height: 48px;
+    border: none;
+    background: $primary;
+    color: $white;
+    font-weight: $bold;
+    font-size: 20px;
+    letter-spacing: 0.04em;
+
+    margin: 0 auto;
+  }
+  button.disabled {
+    cursor: not-allowed;
+    background: $disabled;
+
+    &:hover {
+      transform: none;
+    }
+  }
+
+  .info {
+    width: 100%;
+    text-align: center;
+    margin-top: 8px;
+    display: none;
+  }
+  .showInfo,
+  .showError {
+    display: block;
+  }
+}
+
+.advancedOptions {
+  width: 100%;
+  margin-bottom: 56px;
+
+  .title {
+    margin-bottom: 8px;
+    text-align: right;
+    svg {
+      margin-left: 10px;
+      transform: norotate(0deg);
+    }
+    svg.upsideDown {
+      transform: rotate(-180deg);
+    }
+  }
+
+  .divider {
+    display: none;
+    width: 100%;
+    height: 2px;
+    background: $background-darker;
+  }
+
+  .tableContainer {
+    display: none;
+  }
+
+  .show {
+    display: block;
+  }
+
+  .table {
+    display: none;
+    width: 100%;
+    margin-top: 8px;
+
+    display: flex;
+    flex-direction: row-reverse;
+
+    input {
+      width: 40px;
+      border: none;
+      border-radius: 0;
+    }
+
+    input:focus {
+      outline: none;
+      border: 1px solid $outline;
+    }
+
+    .tableOption {
+      margin-left: 48px;
+
+      &:last-child {
+        margin-left: 0;
+      }
+
+      .options {
+        margin-top: 8px;
+      }
+    }
+  }
+
+  .options > button {
+    border: none;
+    background: $background;
+    font-size: 16px;
+    font-weight: $normal;
+    color: $text;
+    padding: 0 16px 0 0;
+
+    &:hover {
+      transform: none;
+    }
+
+    &:focus {
+      outline: none;
+      border: none;
+    }
+
+    &.selected {
+      color: $text-primary;
+      font-weight: $medium;
+      text-decoration: underline;
+    }
+  }
+}
