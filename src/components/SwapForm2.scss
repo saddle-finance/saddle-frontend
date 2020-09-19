@@ -1,0 +1,95 @@
+@import "../styles/theme";
+
+.swapForm {
+  width: 384px;
+  background: $background;
+  border: 2px solid $background-darker;
+  border-radius: 4px;
+  padding-top: 32px;
+
+  .head {
+    padding: 0 32px;
+
+    h4.title {
+      font-weight: $normal;
+      font-size: 18px;
+      margin-top: 0;
+      margin-bottom: 24px;
+    }
+
+    & > input {
+      width: 240px;
+      height: 32px;
+      background: $background-white;
+      border: 1px solid $background-darker;
+      border-radius: 0;
+      box-sizing: border-box;
+      margin-right: 24px;
+    }
+
+    input:focus {
+      outline: none;
+      background: $white;
+      border: 2px solid $outline;
+    }
+
+    & > button.max {
+      height: 32px;
+      width: 56px;
+      background: $background-button;
+      border: none;
+      color: $text-primary;
+      font-weight: $medium;
+      font-size: 16px;
+    }
+  }
+
+  ul.tokenList {
+    padding: 0;
+    margin-bottom: 0;
+    margin-top: 24px;
+  }
+}
+
+.tokenListItem {
+  height: 56px;
+  background: $background;
+  border-bottom: 1px solid $background-darker;
+  padding: 0 32px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &.active {
+    background: $background-darker;
+  }
+
+  &:last-child {
+    border: none;
+  }
+
+  & > img.tokenIcon {
+    margin: auto 0;
+    width: 20px;
+  }
+
+  & > .tokenName {
+    margin-left: 16px;
+  }
+
+  & > .tokenValue {
+    margin-left: auto;
+  }
+
+  .tokenName,
+  .tokenValue {
+    font-size: 16px;
+    font-weight: $normal;
+    color: $text;
+  }
+}

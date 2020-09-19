@@ -1,0 +1,38 @@
+import React from "react"
+import "./SwapForm2.scss"
+import classNames from "classnames"
+
+interface Props {
+  title: string
+  tokens: Array<{ name: string; value: number; icon: string }>
+  selected: string
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void
+}
+
+function SwapForm2({ title, tokens, selected }: Props) {
+  return (
+    <div className="swapForm">
+      <div className="head">
+        <h4 className="title">{title}</h4>
+        <input></input>
+        {title === "From" ? <button className="max">MAX</button> : ""}
+      </div>
+      <ul className="tokenList">
+        {tokens.map((token, i) => (
+          <div
+            className={
+              "tokenListItem " + classNames({ active: selected === token.name })
+            }
+            key={i}
+          >
+            <img className="tokenIcon" src={token.icon} alt="" />
+            <span className="tokenName">{token.name}</span>
+            <span className="tokenValue">{token.value}</span>
+          </div>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+export default SwapForm2
