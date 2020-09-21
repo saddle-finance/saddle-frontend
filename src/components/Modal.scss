@@ -1,0 +1,40 @@
+@import "../styles/theme";
+
+div.modal {
+  display: block; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0,0,0,0.2); /* Black w/ opacity */
+  padding-top: 8%; /* Location of the box */
+}
+
+div.modalContent {
+  width: 370px;
+  min-height: 332px;
+  background-color: $background-white;
+  margin: auto;
+  padding: 24px;
+  box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 32px;
+    font-weight: bold;
+    line-height: 24px;
+    margin-top: -8px;
+
+    &:hover,
+    &:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  }
+}
