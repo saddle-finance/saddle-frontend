@@ -241,6 +241,7 @@ class SwapPage extends React.Component<Props, State> {
           <button
             className={"swap " + classNames({ disabled: error.isError })}
             onClick={this.openModal}
+            disabled={error.isError}
           >
             Swap
           </button>
