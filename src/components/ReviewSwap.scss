@@ -2,4 +2,82 @@
 
 div.reviewSwap {
   margin-top: 0;
+
+  h3 {
+    font-size: 20px;
+    font-weight: $normal;
+    color: $text-darker;
+    margin-top: 16px;
+  }
+
+  .swapTable {
+    margin: 32px 0 0 0;
+
+    .floatRight {
+      float: right;
+    }
+
+    img {
+      margin: 8px 0;
+    }
+
+    img.tokenIcon {
+      margin: 0 auto;
+    }
+
+    span.tokenValue {
+      margin-left: 4px;
+    }
+  }
+
+  .bottom {
+    background: $background;
+    margin: 0 -24px -24px -24px;
+    padding: 24px;
+    border-radius: 0px 0px 4px 4px;
+
+    p {
+      margin: 0 0 32px 0;
+    }
+
+    & > button {
+      width: 176px;
+      height: 44px;
+      border-radius: 4px;
+
+      &:hover,
+      &:active {
+        outline: none;
+      }
+    }
+
+    button.confirm {
+      border: none;
+      background: $primary;
+      color: $white;
+      font-weight: $bold;
+      font-size: 16px;
+      letter-spacing: 0.02em;
+      margin-right: 18px;
+
+      &:hover,
+      &:focus {
+        opacity: 0.8;
+      }
+    }
+
+    button.cancel {
+      background: $background-white;
+      border: 1px solid #fae09e;
+      color: $text-primary;
+      font-weight: $normal;
+      font-size: 16px;
+      letter-spacing: 0.02em;
+
+      &:hover,
+      &:focus {
+        border: 2px solid $outline;
+      }
+    }
+  }
 }
