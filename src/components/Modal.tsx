@@ -1,15 +1,14 @@
-import React from "react"
+import React, { ReactNode } from "react"
 import "./Modal.scss"
-
-import ConfirmTransaction from "./ConfirmTransaction"
 
 interface Props {
   isOpen: boolean
   onClose: () => void
+  children: ReactNode
   height?: string
 }
 
-function Modal({ isOpen, onClose, height }: Props) {
+function Modal({ isOpen, onClose, children, height }: Props) {
   if (!isOpen) return null
   else
     return (
@@ -20,7 +19,7 @@ function Modal({ isOpen, onClose, height }: Props) {
           <span className="close" onClick={onClose}>
             &times;
           </span>
-          <ConfirmTransaction />
+          {children}
         </div>
       </div>
     )
