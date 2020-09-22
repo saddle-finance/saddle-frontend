@@ -1,0 +1,13 @@
+@import "../styles/theme";
+
+div.poolOverview {
+  margin-top: 40px;
+
+  h4 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    font-size: 18px;
+    font-weight: $medium;
+    color: $text-darker;
+  }
+}

@@ -17,8 +17,8 @@ export const Routes = () => (
       <Route path="/swap/btc" component={SwapBTC} />
       <Route path="/swap/usd" component={SwapUSD} />
       <Route exact path="/pool" component={Pool} />
-      <Route path="/pool/btc" component={PoolBTC} />
-      <Route path="/pool/usd" component={PoolUSD} />
+      <Route exact path="/pool/btc" component={PoolBTC} />
+      <Route exact path="/pool/usd" component={PoolUSD} />
     </Switch>
   </Router>
 )

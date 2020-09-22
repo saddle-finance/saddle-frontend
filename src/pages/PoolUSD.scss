@@ -1,0 +1,15 @@
+@import "../styles/theme";
+
+div.poolUsd {
+  min-height: 100vh;
+  background-color: $background;
+
+  .content {
+    margin: 0 auto;
+    h3 {
+      font-weight: $medium;
+      font-size: 24px;
+      color: $text-darker;
+    }
+  }
+}

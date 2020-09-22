@@ -1,8 +1,11 @@
-import * as React from "react"
+import React from "react"
+
+import TopMenu from "../components/TopMenu"
 
 function PoolBTC() {
   return (
-    <div>
+    <div className="poolBtc">
+      <TopMenu activeTab={"pool"} />
       <h1>Pool BTC page</h1>
     </div>
   )
