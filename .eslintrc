@@ -6,18 +6,22 @@
     "plugin:prettier/recommended",
     "plugin:react/recommended",
   ],
-  settings: {
-    react: {
-      version: "detect" // Tells eslint-plugin-react to automatically detect the version of React to use
+  "settings": {
+    "react": {
+      "version": "detect" // Tells eslint-plugin-react to automatically detect the version of React to use
     }
   },
   "parser":  "@typescript-eslint/parser",
   "parserOptions": {
-    ecmaVersion:  2018,
+    "ecmaVersion":  2018,
     "sourceType": "module"
   },
   "env": {
     "es6": true,
     "mocha": true
+  },
+  "rules": {
+    "@typescript-eslint/no-var-requires": 0,
+    "no-invalid-this": 0
   }
 }

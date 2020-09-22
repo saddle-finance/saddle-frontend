@@ -1,0 +1,17 @@
+@import "../styles/theme";
+
+div.confirmTransaction {
+  margin-top: 48px;
+  text-align: center;
+
+  h3 {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 24px;
+  }
+
+  img {
+    margin-top: 48px;
+  }
+}
