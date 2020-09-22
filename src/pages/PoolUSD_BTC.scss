@@ -1,15 +1,12 @@
 @import "../styles/theme";
 
-div.poolUsd {
+div.poolUsd,
+div.poolBtc {
   min-height: 100vh;
   background-color: $background;
 
   .content {
     margin: 0 auto;
-    h3 {
-      font-weight: $medium;
-      font-size: 24px;
-      color: $text-darker;
-    }
+    width: 888px;
   }
 }

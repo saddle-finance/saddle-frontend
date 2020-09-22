@@ -1,5 +1,5 @@
 import React from "react"
-import "./PoolUSD.scss"
+import "./PoolUSD_BTC.scss"
 
 import TopMenu from "../components/TopMenu"
 import PoolOverview from "../components/PoolOverview"
@@ -43,6 +43,7 @@ function PoolUSD() {
       <TopMenu activeTab={"pool"} />
       <div className="content">
         <PoolOverview data={poolData} />
+        <div style={{ height: "40px" }}></div> {/* space divider */}
         <MyShare data={shareData} />
       </div>
     </div>
