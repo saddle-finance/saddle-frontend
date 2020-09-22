@@ -1,0 +1,37 @@
+@import "../styles/theme";
+
+h4 {
+  margin-top: 0;
+  margin-bottom: 24px;
+  font-size: 18px;
+  font-weight: $medium;
+  color: $text-darker;
+}
+
+div.myShare {
+  .table {
+    width: 408px;
+    min-height: 160px;
+    border: 1px solid $outline;
+    border-radius: 4px;
+    padding: 16px;
+  }
+
+  button.withdraw {
+    width: 170px;
+    height: 40px;
+    border-radius: 4px;
+    background: $primary;
+    color: $white;
+    font-weight: $bold;
+    font-size: 16px;
+    letter-spacing: 0.02em;
+    border: none;
+
+    &:hover,
+    &:focus {
+      outline: none;
+      opacity: 0.8;
+    }
+  }
+}
