@@ -2,6 +2,7 @@
 
 div.poolOverview {
   margin-top: 40px;
+  width: 888px;
 
   h4 {
     margin-top: 0;
@@ -9,5 +10,61 @@ div.poolOverview {
     font-size: 18px;
     font-weight: $medium;
     color: $text-darker;
+  }
+
+  & > .table {
+    background: $background-white;
+    box-shadow: 0px 2px 8px rgba(39, 14, 1, 0.18);
+    border-radius: 6px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    height: 56px;
+  }
+
+  .left,
+  .right {
+    display: flex;
+    align-items: center;
+  }
+
+  .title {
+    margin-right: 16px;
+  }
+
+  div.token {
+    margin-right: 16px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    & > img {
+      margin-right: 4px;
+    }
+  }
+
+  div.right {
+    & > div {
+      margin-right: 40px;
+
+      &.volume {
+        margin-right: 0;
+      }
+
+      span.label {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .plus {
+        font-weight: $medium;
+        color: $text-green;
+      }
+      .minus {
+        font-weight: $medium;
+        color: $error;
+      }
+    }
   }
 }
