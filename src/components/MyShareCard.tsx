@@ -18,16 +18,20 @@ function MyShareCard({ data }: Props) {
     return (
       <div className="myShareCard">
         <p>My Share: {data.share}% of pool</p>
-        <span>Total value: {data.value}</span>
-        <span>Balance: {data.USDbalance}USD</span>
-        <span>Averaged balance: {data.aveBalance}</span>
+        <div className="info">
+          <span>Total value: {data.value}</span>
+          <span>Balance: {data.USDbalance}USD</span>
+          <span>Averaged balance: {data.aveBalance}</span>
+        </div>
         <div className="divider"></div> {/* divider */}
-        {data.token.map((coin, index) => (
-          <div className="token" key={index}>
-            <span>{coin.name}</span>
-            <span>{coin.value}</span>
-          </div>
-        ))}
+        <div className="tokenList">
+          {data.token.map((coin, index) => (
+            <div className="token" key={index}>
+              <span className="tokenName">{coin.name}</span>
+              <span>{coin.value}</span>
+            </div>
+          ))}
+        </div>
       </div>
     )
 }

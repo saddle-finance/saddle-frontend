@@ -5,16 +5,37 @@ div.myShareCard {
   border: 1px solid $outline;
   width: 368px;
   padding: 16px;
+  color: $text;
+  font-size: 16px;
 
   p {
     margin-top: 0;
     margin-bottom: 24px;
   }
+  div.info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+  }
 
-  div.divider{
+  div.divider {
     height: 1px;
     width: 100%;
     background: $background-darker;
-    margin: 8px 0;
+    margin: 10px 0;
+  }
+
+  div.tokenList {
+    display: flex;
+    justify-content: space-between;
+
+    .token:last-child {
+      margin-right: 56px;
+    }
+
+    span.tokenName {
+      display: block;
+    }
   }
 }
