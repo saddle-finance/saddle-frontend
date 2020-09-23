@@ -1,0 +1,20 @@
+@import "../styles/theme";
+
+div.myShareCard {
+  background: $background;
+  border: 1px solid $outline;
+  width: 368px;
+  padding: 16px;
+
+  p {
+    margin-top: 0;
+    margin-bottom: 24px;
+  }
+
+  div.divider{
+    height: 1px;
+    width: 100%;
+    background: $background-darker;
+    margin: 8px 0;
+  }
+}

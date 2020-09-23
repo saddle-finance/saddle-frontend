@@ -1,5 +1,6 @@
 import React from "react"
 import "./MyShare.scss"
+
 interface Props {
   data?: {
     name: string
