@@ -6,6 +6,8 @@ import Home from "./pages/Home"
 import Pool from "./pages/Pool"
 import SwapUSD from "./pages/SwapUSD"
 import SwapBTC from "./pages/SwapBTC"
+import PoolUSD from "./pages/PoolUSD"
+import PoolBTC from "./pages/PoolBTC"
 
 export const Routes = () => (
   <Router>
@@ -14,7 +16,9 @@ export const Routes = () => (
       <Route path="/home" component={Home} />
       <Route path="/swap/btc" component={SwapBTC} />
       <Route path="/swap/usd" component={SwapUSD} />
-      <Route path="/pool" component={Pool} />
+      <Route exact path="/pool" component={Pool} />
+      <Route exact path="/pool/btc" component={PoolBTC} />
+      <Route exact path="/pool/usd" component={PoolUSD} />
     </Switch>
   </Router>
 )
