@@ -7,7 +7,7 @@ interface Props {
 
 function TokenInput({ token }: Props) {
   return (
-    <div>
+    <div className="tokenInput">
       <img alt="" src={token.icon} />
       <span>{token.name}</span>
       <span className="max">MAX: {token.max}</span>

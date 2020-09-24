@@ -68,6 +68,7 @@ div.swapPage {
     font-weight: $bold;
     font-size: 20px;
     letter-spacing: 0.04em;
+    box-shadow: $shadow;
 
     margin: 0 auto;
 
@@ -75,6 +76,7 @@ div.swapPage {
     &:focus {
       outline: none;
       opacity: 0.8;
+      box-shadow: $shadow-hover;
     }
   }
   button.disabled {
@@ -96,92 +98,92 @@ div.swapPage {
   .showError {
     display: block;
   }
-}
 
-.advancedOptions {
-  width: 100%;
-  margin-bottom: 56px;
-
-  .title {
-    margin-bottom: 8px;
-    text-align: right;
-    svg {
-      margin-left: 10px;
-      transform: norotate(0deg);
-    }
-    svg.upsideDown {
-      transform: rotate(-180deg);
-    }
-  }
-
-  .divider {
-    display: none;
+  .advancedOptions {
     width: 100%;
-    height: 2px;
-    background: $background-darker;
-  }
+    margin-bottom: 56px;
 
-  .tableContainer {
-    display: none;
-  }
-
-  .show {
-    display: block;
-  }
-
-  .table {
-    display: none;
-    width: 100%;
-    margin-top: 8px;
-
-    display: flex;
-    flex-direction: row-reverse;
-
-    input {
-      width: 40px;
-      border: none;
-      border-radius: 0;
-    }
-
-    input:focus {
-      outline: none;
-      border: 1px solid $outline;
-    }
-
-    .tableOption {
-      margin-left: 48px;
-
-      &:last-child {
-        margin-left: 0;
+    .title {
+      text-align: right;
+      svg {
+        margin-left: 10px;
+        transform: norotate(0deg);
       }
-
-      .options {
-        margin-top: 8px;
+      svg.upsideDown {
+        transform: rotate(-180deg);
       }
     }
-  }
 
-  .options > button {
-    border: none;
-    background: $background;
-    font-size: 16px;
-    font-weight: $normal;
-    color: $text;
-    padding: 0 16px 0 0;
-
-    &:hover {
-      transform: none;
+    .divider {
+      display: none;
+      width: 100%;
+      height: 2px;
+      margin: 8px 0;
+      background: $background-darker;
     }
 
-    &:focus {
-      outline: none;
+    .tableContainer {
+      display: none;
+    }
+
+    .show {
+      display: block;
+    }
+
+    .table {
+      display: none;
+      width: 100%;
+      margin-top: 8px;
+
+      display: flex;
+      flex-direction: row-reverse;
+
+      input {
+        width: 40px;
+        border: none;
+        border-radius: 0;
+      }
+
+      input:focus {
+        outline: none;
+        border: 1px solid $outline;
+      }
+
+      .tableOption {
+        margin-left: 48px;
+
+        &:last-child {
+          margin-left: 0;
+        }
+
+        .options {
+          margin-top: 8px;
+        }
+      }
+    }
+
+    .options > button {
       border: none;
-    }
+      background: $background;
+      font-size: 16px;
+      font-weight: $normal;
+      color: $text;
+      padding: 0 16px 0 0;
 
-    &.selected {
-      color: $text-primary;
-      font-weight: $medium;
-      text-decoration: underline;
+      &:hover {
+        transform: none;
+      }
+
+      &:focus {
+        outline: none;
+        border: none;
+      }
+
+      &.selected {
+        color: $text-primary;
+        font-weight: $medium;
+        text-decoration: underline;
+      }
     }
   }
 }
