@@ -1,6 +1,5 @@
 @import "../styles/theme";
 
-
 div.poolInfoCard {
   width: 368px;
   padding: 16px;
@@ -9,9 +8,66 @@ div.poolInfoCard {
   color: $text;
   font-size: 16px;
 
-  .tokenList {
-    span.tokenValue{
+  p {
+    margin: 0;
+  }
+
+  span {
+    font-weight: $normal;
+  }
+
+  div.info {
+    display: flex;
+    flex-wrap: wrap;
+
+    & > .infoItem {
+      min-width: 30%;
+      margin-top: 32px;
+    }
+
+    span {
+      font-weight: $medium;
+    }
+    span.label {
       display: block;
+      font-weight: $normal;
+    }
+  }
+
+  div.bottom {
+    margin: 16px -16px -16px -16px;
+    padding: 16px 32px 24px 16px;
+    background: $background-darker;
+  }
+
+  .tokenList {
+    display: flex;
+    flex-wrap: wrap;
+
+    span {
+      vertical-align: top;
+    }
+
+    .token {
+      margin-top: 24px;
+
+      &:nth-child(odd) {
+        width: 56%;
+      }
+    }
+
+    img {
+      margin-right: 8px;
+    }
+
+    span.tokenPercent {
+      margin-left: 16px;
+      font-weight: $medium;
+    }
+
+    span.tokenValue {
+      display: block;
+      margin-top: 8px;
     }
   }
 }

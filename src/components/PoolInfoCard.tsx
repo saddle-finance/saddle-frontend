@@ -10,7 +10,12 @@ interface Props {
     utilization: number
     volume: number
     reserve: number
-    tokens: Array<{ name: string; percent: number; value: number }>
+    tokens: Array<{
+      name: string
+      icon: string
+      percent: number
+      value: number
+    }>
   }
 }
 
@@ -32,12 +37,12 @@ function PoolInfoCard({ data }: Props) {
           <span>{data.virtualPrice}</span>
         </div>
         <div className="infoItem">
-          <span className="label">Liquidity utilization</span>
-          <span>{data.utilization}%</span>
-        </div>
-        <div className="infoItem">
           <span className="label">Daily volume</span>
           <span>{data.volume}</span>
+        </div>
+        <div className="infoItem">
+          <span className="label">Liquidity utilization</span>
+          <span>{data.utilization}%</span>
         </div>
       </div>
       <div className="bottom">
@@ -45,8 +50,9 @@ function PoolInfoCard({ data }: Props) {
         <div className="tokenList">
           {data.tokens.map((token, index) => (
             <div className="token" key={index}>
+              <img alt="" src={token.icon} />
               <span>{token.name}</span>
-              <span>{token.percent}</span>
+              <span className="tokenPercent">{token.percent}%</span>
               <span className="tokenValue">{token.value}</span>
             </div>
           ))}

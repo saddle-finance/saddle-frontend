@@ -42,21 +42,25 @@ const testUsdPoolData = {
   tokens: [
     {
       name: "DAI",
+      icon: require("../assets/icons/dai.svg"),
       percent: 12.34,
       value: 17633722.4,
     },
     {
       name: "USDC",
+      icon: require("../assets/icons/usdc.svg"),
       percent: 33.98,
       value: 48424123.64,
     },
     {
       name: "USDT",
+      icon: require("../assets/icons/usdt.svg"),
       percent: 38.96,
       value: 55675199.22,
     },
     {
       name: "sUSD",
+      icon: require("../assets/icons/susd.svg"),
       percent: 14.8,
       value: 21157478.96,
     },
