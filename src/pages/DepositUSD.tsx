@@ -98,6 +98,12 @@ const selected = {
   gas: "standard",
   infiniteApproval: false,
 }
+
+const testTransInfoData = {
+  minimumReceive: 0.836,
+  lpTokenValue: "1.034 USD",
+  benefit: -2.836,
+}
 // Dumb data end here
 
 interface State {
@@ -201,6 +207,33 @@ class DepositUSD extends React.Component<any, State> {
               </div>
             </div>
             <button className="actionBtn">Deposit</button>
+            <div className="transactionInfo">
+              <div className="transactionInfoItem">
+                <span>Minimum Receive</span>
+                <span className="value">
+                  {testTransInfoData.minimumReceive}
+                </span>
+              </div>
+              <div className="transactionInfoItem">
+                <span>Saddle LP token value</span>
+                <span className="value">{testTransInfoData.lpTokenValue}</span>
+              </div>
+              <div className="transactionInfoItem">
+                {testTransInfoData.benefit > 0 ? (
+                  <span className="bonus">Bonus</span>
+                ) : (
+                  <span className="slippage">Slippage</span>
+                )}
+                <span
+                  className={
+                    "value " +
+                    (testTransInfoData.benefit > 0 ? "bonus" : "slippage")
+                  }
+                >
+                  {testTransInfoData.benefit}
+                </span>
+              </div>
+            </div>
           </div>
           <div className="infoPanels">
             <MyShareCard data={testMyShareData} />

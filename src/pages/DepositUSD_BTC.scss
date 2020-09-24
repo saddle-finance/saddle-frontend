@@ -33,6 +33,7 @@ div.deposit {
       margin-top: 40px;
       margin-left: auto;
       margin-right: auto;
+      margin-bottom: 24px;
       display: block;
       width: 170px;
       height: 40px;
@@ -50,6 +51,7 @@ div.deposit {
       }
     }
   }
+
   .advancedOptions {
     svg {
       margin-left: 10px;
@@ -115,6 +117,25 @@ div.deposit {
 
     .show {
       display: block;
+    }
+  }
+
+  div.transactionInfo {
+    display: flex;
+    gap: 32px;
+
+    span.value {
+      display: block;
+      color: $text-darker;
+      font-weight: $medium;
+    }
+
+    span.bonus {
+      color: $text-green;
+    }
+
+    span.slippage {
+      color: $error;
     }
   }
 }
