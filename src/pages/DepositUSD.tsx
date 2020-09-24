@@ -2,7 +2,9 @@ import React from "react"
 
 import TopMenu from "../components/TopMenu"
 import MyShareCard from "../components/MyShareCard"
+import PoolInfoCard from "../components/PoolInfoCard"
 
+// Dumb data start here
 const testMyShareData = {
   name: "USD Pool",
   share: 0.001,
@@ -29,12 +31,47 @@ const testMyShareData = {
   ],
 }
 
+const testUsdPoolData = {
+  name: "USD Pool",
+  fee: 0.04,
+  adminFee: 0,
+  virtualPrice: 1.0224,
+  utilization: 45.88,
+  volume: 46555333.11,
+  reserve: 142890495.38,
+  tokens: [
+    {
+      name: "DAI",
+      percent: 12.34,
+      value: 17633722.4,
+    },
+    {
+      name: "USDC",
+      percent: 33.98,
+      value: 48424123.64,
+    },
+    {
+      name: "USDT",
+      percent: 38.96,
+      value: 55675199.22,
+    },
+    {
+      name: "sUSD",
+      percent: 14.8,
+      value: 21157478.96,
+    },
+  ],
+}
+// Dumb data end here
+
 function DepositUSD() {
   return (
     <div>
       <TopMenu activeTab={"pool"} />
       <h1>This is USD deposit page</h1>
       <MyShareCard data={testMyShareData} />
+      <div style={{ height: "24px" }}></div> {/* space divider */}
+      <PoolInfoCard data={testUsdPoolData} />
     </div>
   )
 }
