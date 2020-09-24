@@ -10,8 +10,8 @@ function TokenInput({ token }: Props) {
     <div>
       <img alt="" src={token.icon} />
       <span>{token.name}</span>
-      <span>{token.max}</span>
-      <input />
+      <span className="max">MAX: {token.max}</span>
+      <input type="number" placeholder={token.max} />
     </div>
   )
 }
