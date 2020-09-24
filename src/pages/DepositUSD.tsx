@@ -1,8 +1,10 @@
 import React from "react"
+import "./DepositUSD_BTC.scss"
 
 import TopMenu from "../components/TopMenu"
 import MyShareCard from "../components/MyShareCard"
 import PoolInfoCard from "../components/PoolInfoCard"
+import TokenInput from "../components/TokenInput"
 
 // Dumb data start here
 const testMyShareData = {
@@ -66,16 +68,51 @@ const testUsdPoolData = {
     },
   ],
 }
+
+const testTokensData = [
+  {
+    name: "DAI",
+    icon: require("../assets/icons/dai.svg"),
+    max: 7.02,
+  },
+  {
+    name: "USDC",
+    icon: require("../assets/icons/usdc.svg"),
+    max: 1.01,
+  },
+  {
+    name: "USDT",
+    icon: require("../assets/icons/usdt.svg"),
+    max: 0,
+  },
+  {
+    name: "sUSD",
+    icon: require("../assets/icons/susd.svg"),
+    max: 0,
+  },
+]
 // Dumb data end here
 
 function DepositUSD() {
   return (
-    <div>
+    <div className="deposit">
       <TopMenu activeTab={"pool"} />
-      <h1>This is USD deposit page</h1>
-      <MyShareCard data={testMyShareData} />
-      <div style={{ height: "24px" }}></div> {/* space divider */}
-      <PoolInfoCard data={testUsdPoolData} />
+      <div className="content">
+        <div className="form">
+          <h3>Add Liqudity in USD Pool</h3>
+          {testTokensData.map((token, index) => (
+            <>
+              <TokenInput token={token} key={index} />
+              <div style={{ height: "24px" }}></div> {/* space divider */}
+            </>
+          ))}
+        </div>
+        <div className="infoPanels">
+          <MyShareCard data={testMyShareData} />
+          <div style={{ height: "24px" }}></div> {/* space divider */}
+          <PoolInfoCard data={testUsdPoolData} />
+        </div>
+      </div>
     </div>
   )
 }

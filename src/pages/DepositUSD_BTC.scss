@@ -1,0 +1,28 @@
+@import "../styles/theme.scss";
+
+div.deposit {
+  min-height: 100vh;
+  background: $background;
+
+  .content {
+    width: 864px;
+    margin: 0 auto;
+
+    .form {
+      float: left;
+    }
+
+    .infoPanels {
+      float: right;
+      margin-top: 104px;
+    }
+
+    h3 {
+      font-size: 20px;
+      font-weight: $normal;
+      line-height: 24px;
+      color: $text-darker;
+      margin: 40px auto;
+    }
+  }
+}
