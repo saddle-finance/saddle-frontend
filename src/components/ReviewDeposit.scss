@@ -1,0 +1,21 @@
+@import "../styles/theme";
+
+div.reviewDeposit {
+  h3 {
+    margin: 8px auto 40px auto;
+    color: $text-darker;
+    font-weight: $medium;
+  }
+
+  .table {
+    span {
+      vertical-align: top;
+    }
+
+    .eachToken {
+      margin-bottom: 24px;
+    }
+  }
+
+  
+}

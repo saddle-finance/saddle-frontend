@@ -5,11 +5,6 @@ const iconDown = require("../assets/icons/icon_down.svg")
 const USDC = require("../assets/icons/usdc.svg")
 const USDT = require("../assets/icons/usdt.svg")
 
-interface Props {
-  onClose: () => void
-  onConfirm: () => void
-  data?: any
-}
 const data = {
   from: {
     token: "USDC",
@@ -28,6 +23,12 @@ const data = {
     token: "USDT",
     value: 98.9199,
   },
+}
+
+interface Props {
+  onClose: () => void
+  onConfirm: () => void
+  data?: any
 }
 
 function ReviewSwap({ onClose, onConfirm }: Props) {

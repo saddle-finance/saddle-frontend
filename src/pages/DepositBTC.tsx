@@ -6,6 +6,8 @@ import TopMenu from "../components/TopMenu"
 import MyShareCard from "../components/MyShareCard"
 import PoolInfoCard from "../components/PoolInfoCard"
 import TokenInput from "../components/TokenInput"
+import Modal from "../components/Modal"
+import ReviewDeposit from "../components/ReviewDeposit"
 
 // Dumb data start here
 
@@ -87,6 +89,7 @@ interface State {
     isInfo: boolean
     content: { [key: string]: any }
   }
+  modalOpen: boolean
 }
 
 class DepositBTC extends React.Component<any, State> {
@@ -100,9 +103,23 @@ class DepositBTC extends React.Component<any, State> {
         benefit: 0,
       },
     },
+    modalOpen: true,
   }
+
+  openModal = () => {
+    this.setState({
+      modalOpen: true,
+    })
+  }
+
+  closeModal = () => {
+    this.setState({
+      modalOpen: false,
+    })
+  }
+
   render() {
-    const { advanced, info } = this.state
+    const { advanced, info, modalOpen } = this.state
 
     return (
       <div className="deposit">
@@ -232,6 +249,9 @@ class DepositBTC extends React.Component<any, State> {
             <MyShareCard />
             <PoolInfoCard data={testUsdPoolData} />
           </div>
+          <Modal isOpen={modalOpen} onClose={this.closeModal}>
+            <ReviewDeposit />
+          </Modal>
         </div>
       </div>
     )
