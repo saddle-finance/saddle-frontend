@@ -53,6 +53,10 @@ div.deposit {
   .advancedOptions {
     svg {
       margin-left: 10px;
+      transform: norotate(0deg);
+    }
+    svg.upsideDown {
+      transform: rotate(-180deg);
     }
 
     .divider {

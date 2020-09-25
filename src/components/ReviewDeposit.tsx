@@ -29,8 +29,8 @@ const data = {
 }
 
 interface Props {
-  onClose?: () => void
-  onConfirm?: () => void
+  onClose: () => void
+  onConfirm: () => void
   data?: any
 }
 
