@@ -75,6 +75,33 @@ const testTransInfoData = {
     benefit: 1.836,
   },
 }
+
+const testDepositData = {
+  deposit: [
+    {
+      name: "tBTC",
+      value: 2.20,
+      icon: require("../assets/icons/tbtc.svg"),
+    },
+    {
+      name: "wBTC",
+      value: 8.65,
+      icon: require("../assets/icons/wbtc.svg"),
+    },
+  ],
+  rates: [
+    {
+      name: "tBTC",
+      rate: 10902.32,
+    },
+    {
+      name: "wBTC",
+      rate: 10910.11,
+    },
+  ],
+  share: 0.003500,
+  sadd: 80.6942,
+}
 // Dumb data end here
 
 function DepositBTC() {
@@ -84,6 +111,7 @@ function DepositBTC() {
       selected={selected}
       poolData={testBTCPoolData}
       transactionInfoData={testTransInfoData}
+      depositDataFromParent={testDepositData}
     />
   )
 }

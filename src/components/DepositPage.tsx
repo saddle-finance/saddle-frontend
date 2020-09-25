@@ -46,6 +46,12 @@ interface Props {
     isInfo: boolean
     content: { [key: string]: any }
   }
+  depositDataFromParent: {
+    deposit:Array<{[key: string]: any}>,
+    rates:Array<{[key: string]: any}>,
+    share: number,
+    sadd: number
+  }
 }
 
 class DepositPage extends React.Component<Props, State> {
@@ -106,6 +112,7 @@ class DepositPage extends React.Component<Props, State> {
       poolData,
       transactionInfoData,
       myShareData,
+      depositDataFromParent
     } = this.props
 
     return (
@@ -251,6 +258,7 @@ class DepositPage extends React.Component<Props, State> {
           <Modal isOpen={modalOpen} onClose={this.closeModal}>
             {popUp === "review" ? (
               <ReviewDeposit
+                data={depositDataFromParent}
                 onConfirm={this.openConfirm}
                 onClose={this.closeModal}
               />

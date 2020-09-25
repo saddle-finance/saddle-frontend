@@ -101,15 +101,34 @@ const testTransInfoData = {
     benefit: 1.836,
   },
 }
-// Dumb data end here
 
-// interface State {
-//   advanced: boolean
-//   info: {
-//     isInfo: boolean
-//     content: { [key: string]: any }
-//   }
-// }
+const testDepositData = {
+  deposit: [
+    {
+      name: "DAI",
+      value: 6.21,
+      icon: require("../assets/icons/dai.svg"),
+    },
+    {
+      name: "USDC",
+      value: 8.65,
+      icon: require("../assets/icons/usdc.svg"),
+    },
+  ],
+  rates: [
+    {
+      name: "DAI",
+      rate: 1.02,
+    },
+    {
+      name: "USDC",
+      rate: 0.99,
+    },
+  ],
+  share: 0.000024,
+  sadd: 0.325496,
+}
+// Dumb data end here
 
 function DepositUSD() {
   return (
@@ -119,6 +138,7 @@ function DepositUSD() {
       poolData={testUsdPoolData}
       transactionInfoData={testTransInfoData}
       myShareData={testMyShareData}
+      depositDataFromParent={testDepositData}
     />
   )
 }

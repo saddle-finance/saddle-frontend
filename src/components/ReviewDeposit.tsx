@@ -1,40 +1,18 @@
 import React from "react"
 import "./ReviewDeposit.scss"
 
-const data = {
-  deposit: [
-    {
-      name: "DAI",
-      value: 6.21,
-      icon: require("../assets/icons/dai.svg"),
-    },
-    {
-      name: "USDC",
-      value: 8.65,
-      icon: require("../assets/icons/usdc.svg"),
-    },
-  ],
-  rates: [
-    {
-      name: "DAI",
-      rate: 1.02,
-    },
-    {
-      name: "USDC",
-      rate: 0.99,
-    },
-  ],
-  share: 0.000024,
-  sadd: 0.325496,
-}
-
 interface Props {
   onClose: () => void
   onConfirm: () => void
-  data?: any
+  data: {
+    deposit:Array<{[key: string]: any}>,
+    rates:Array<{[key: string]: any}>,
+    share: number,
+    sadd: number
+  }
 }
 
-function ReviewDeposit({ onClose, onConfirm }: Props) {
+function ReviewDeposit({ onClose, onConfirm, data }: Props) {
   return (
     <div className="reviewDeposit">
       <h3>Review Deposit</h3>
