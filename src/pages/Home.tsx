@@ -1,6 +1,6 @@
-import * as React from "react"
-
+import React from "react"
 import "./Home.scss"
+
 import TopMenu from "../components/TopMenu"
 import AssetButton from "../components/AssetButton"
 

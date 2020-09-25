@@ -32,4 +32,8 @@ button.asset {
     background: $background-darker;
     box-shadow: 2px 2px 12px rgba(39, 14, 1, 0.32);
   }
+
+  &:focus {
+    outline: none;
+  }
 }
