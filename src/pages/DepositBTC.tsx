@@ -9,6 +9,7 @@ import TokenInput from "../components/TokenInput"
 import Modal from "../components/Modal"
 import ReviewDeposit from "../components/ReviewDeposit"
 
+
 // Dumb data start here
 
 const testUsdPoolData = {
@@ -90,6 +91,7 @@ interface State {
     content: { [key: string]: any }
   }
   modalOpen: boolean
+
 }
 
 class DepositBTC extends React.Component<any, State> {
@@ -120,6 +122,7 @@ class DepositBTC extends React.Component<any, State> {
 
   render() {
     const { advanced, info, modalOpen } = this.state
+
 
     return (
       <div className="deposit">
