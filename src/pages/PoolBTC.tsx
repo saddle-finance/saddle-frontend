@@ -37,7 +37,7 @@ function PoolBTC() {
     <div className="poolBtc">
       <TopMenu activeTab={"pool"} />
       <div className="content">
-        <PoolOverview data={poolData} />
+        <PoolOverview data={poolData} to="/pool/btc/deposit" />
         <MyShare />
       </div>
     </div>

@@ -1,14 +1,14 @@
 @import "../styles/theme";
 
-h4 {
-  margin-top: 0;
-  margin-bottom: 24px;
-  font-size: 18px;
-  font-weight: $medium;
-  color: $text-darker;
-}
-
 div.myShare {
+  h4 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    font-size: 18px;
+    font-weight: $medium;
+    color: $text-darker;
+  }
+
   .table {
     width: 408px;
     min-height: 140px;

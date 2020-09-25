@@ -42,7 +42,7 @@ function PoolUSD() {
     <div className="poolUsd">
       <TopMenu activeTab={"pool"} />
       <div className="content">
-        <PoolOverview data={poolData} />
+        <PoolOverview data={poolData} to="/pool/usd/deposit" />
         <div style={{ height: "40px" }}></div> {/* space divider */}
         <MyShare data={shareData} />
       </div>

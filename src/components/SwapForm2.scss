@@ -49,47 +49,47 @@
     margin-bottom: 0;
     margin-top: 24px;
   }
-}
 
-.tokenListItem {
-  height: 56px;
-  background: $background;
-  border-bottom: 1px solid $background-darker;
-  padding: 0 32px;
+  .tokenListItem {
+    height: 56px;
+    background: $background;
+    border-bottom: 1px solid $background-darker;
+    padding: 0 32px;
 
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 
-  &:hover {
-    cursor: pointer;
-  }
+    &:hover {
+      cursor: pointer;
+    }
 
-  &.active {
-    background: $background-darker;
-  }
+    &.active {
+      background: $background-darker;
+    }
 
-  &:last-child {
-    border: none;
-  }
+    &:last-child {
+      border: none;
+    }
 
-  & > img.tokenIcon {
-    margin: auto 0;
-    width: 20px;
-  }
+    & > img.tokenIcon {
+      margin: auto 0;
+      width: 20px;
+    }
 
-  & > .tokenName {
-    margin-left: 16px;
-  }
+    & > .tokenName {
+      margin-left: 16px;
+    }
 
-  & > .tokenValue {
-    margin-left: auto;
-  }
+    & > .tokenValue {
+      margin-left: auto;
+    }
 
-  .tokenName,
-  .tokenValue {
-    font-size: 16px;
-    font-weight: $normal;
-    color: $text;
+    .tokenName,
+    .tokenValue {
+      font-size: 16px;
+      font-weight: $normal;
+      color: $text;
+    }
   }
 }

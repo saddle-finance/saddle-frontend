@@ -1,5 +1,10 @@
 @import "../styles/theme";
 
+a {
+  text-decoration: none;
+  color: $text;
+}
+
 div.poolOverview {
   margin-top: 40px;
   width: 888px;
@@ -12,7 +17,7 @@ div.poolOverview {
     color: $text-darker;
   }
 
-  & > .table {
+  .table {
     background: $background-white;
     box-shadow: 0px 2px 8px rgba(39, 14, 1, 0.18);
     border-radius: 6px;
@@ -20,6 +25,11 @@ div.poolOverview {
     display: flex;
     justify-content: space-between;
     height: 56px;
+
+    &:hover {
+      background: $background-darker;
+      box-shadow: 2px 2px 12px rgba(39, 14, 1, 0.32);
+    }
   }
 
   .left,
