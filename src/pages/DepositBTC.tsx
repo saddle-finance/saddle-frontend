@@ -250,7 +250,7 @@ class DepositBTC extends React.Component<any, State> {
             <PoolInfoCard data={testUsdPoolData} />
           </div>
           <Modal isOpen={modalOpen} onClose={this.closeModal}>
-            <ReviewDeposit />
+            <ReviewDeposit onClose={this.closeModal} />
           </Modal>
         </div>
       </div>

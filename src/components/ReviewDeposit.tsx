@@ -5,7 +5,7 @@ const data = {
   deposit: [
     {
       name: "DAI",
-      value: 6.2,
+      value: 6.21,
       icon: require("../assets/icons/dai.svg"),
     },
     {
@@ -41,31 +41,38 @@ function ReviewDeposit({ onClose, onConfirm }: Props) {
       <div className="table">
         {data.deposit.map((each, index) => (
           <div className="eachToken" key={index}>
-            <span>{each.value}</span>
+            <span className="value">{each.value}</span>
             <img src={each.icon} />
             <span>{each.name}</span>
           </div>
         ))}
         <div
-          style={{ height: "1px", background: "#FAE09E", width: "100%" }}
+          style={{
+            height: "1px",
+            background: "#FAE09E",
+            width: "100%",
+            marginTop: "-8px",
+          }}
         ></div>
-        <div>
-          <span>Share of pool:</span>
-          <span>{data.share}</span>
+        <div className="tableBottomItem">
+          <span className="label">Share of pool:</span>
+          <span className="value">{data.share}%</span>
         </div>
-        <div>
-          <span>Rates:</span>
-          {data.rates.map((each, index) => (
-            <span key={index}>
-              1 {each.name} = {each.rate} USD
-            </span>
-          ))}
+        <div className="tableBottomItem">
+          <span className="label">Rates:</span>
+          <div className="rates value">
+            {data.rates.map((each, index) => (
+              <span key={index}>
+                1 {each.name} = {each.rate} USD
+              </span>
+            ))}
+          </div>
         </div>
       </div>
       <div className="bottom">
         <h4>You will receive</h4>
         <span>{data.sadd}</span>
-        <span>SADD pool tokens</span>
+        <span style={{ float: "right" }}>SADD pool tokens</span>
         <p>
           Output is estimated. If the price changes by more than 0.1% your
           transaction will revert.
