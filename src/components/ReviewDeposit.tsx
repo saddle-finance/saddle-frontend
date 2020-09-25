@@ -5,9 +5,9 @@ interface Props {
   onClose: () => void
   onConfirm: () => void
   data: {
-    deposit:Array<{[key: string]: any}>,
-    rates:Array<{[key: string]: any}>,
-    share: number,
+    deposit: Array<{ [key: string]: any }>
+    rates: Array<{ [key: string]: any }>
+    share: number
     sadd: number
   }
 }

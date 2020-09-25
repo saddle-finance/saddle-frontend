@@ -133,6 +133,7 @@ const testDepositData = {
 function DepositUSD() {
   return (
     <DepositPage
+      title="USD Pool"
       tokensData={testTokensData}
       selected={selected}
       poolData={testUsdPoolData}

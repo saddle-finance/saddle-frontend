@@ -17,6 +17,7 @@ interface State {
 }
 
 interface Props {
+  title: string
   tokensData: Array<{ name: string; icon: string; max: number }>
   selected: { [key: string]: any }
   poolData: {
@@ -47,9 +48,9 @@ interface Props {
     content: { [key: string]: any }
   }
   depositDataFromParent: {
-    deposit:Array<{[key: string]: any}>,
-    rates:Array<{[key: string]: any}>,
-    share: number,
+    deposit: Array<{ [key: string]: any }>
+    rates: Array<{ [key: string]: any }>
+    share: number
     sadd: number
   }
 }
@@ -107,12 +108,13 @@ class DepositPage extends React.Component<Props, State> {
   render() {
     const { advanced, modalOpen, popUp } = this.state
     const {
+      title,
       selected,
       tokensData,
       poolData,
       transactionInfoData,
       myShareData,
-      depositDataFromParent
+      depositDataFromParent,
     } = this.props
 
     return (
@@ -120,7 +122,7 @@ class DepositPage extends React.Component<Props, State> {
         <TopMenu activeTab={"pool"} />
         <div className="content">
           <div className="form">
-            <h3>Add Liqudity in BTC Pool</h3>
+            <h3>Add Liqudity in {title}</h3>
             {tokensData.map((token, index) => (
               <>
                 <TokenInput token={token} key={index} />

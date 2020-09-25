@@ -80,7 +80,7 @@ const testDepositData = {
   deposit: [
     {
       name: "tBTC",
-      value: 2.20,
+      value: 2.2,
       icon: require("../assets/icons/tbtc.svg"),
     },
     {
@@ -99,7 +99,7 @@ const testDepositData = {
       rate: 10910.11,
     },
   ],
-  share: 0.003500,
+  share: 0.0035,
   sadd: 80.6942,
 }
 // Dumb data end here
@@ -107,6 +107,7 @@ const testDepositData = {
 function DepositBTC() {
   return (
     <DepositPage
+      title="BTC Pool"
       tokensData={testTokensData}
       selected={selected}
       poolData={testBTCPoolData}
