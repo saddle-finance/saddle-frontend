@@ -4,17 +4,15 @@ div.deposit {
   min-height: 110vh;
   background: $background;
   color: $text;
+  padding-bottom: 24px;
 
   .content {
     width: 864px;
     margin: 0 auto;
-
-    .form {
-      float: left;
-    }
+    display: flex;
+    gap: 80px;
 
     .infoPanels {
-      float: right;
       margin-top: 104px;
     }
 
@@ -82,8 +80,8 @@ div.deposit {
       align-items: center;
 
       input {
-        width: 24px;
-        height: 24px;
+        width: 20px;
+        height: 20px;
         margin: 0 16px 0 0;
       }
     }
@@ -120,6 +118,10 @@ div.deposit {
     }
   }
 
+  div.transactionInfoContainer {
+    display: none;
+  }
+
   div.transactionInfo {
     display: flex;
     gap: 32px;
@@ -137,5 +139,9 @@ div.deposit {
     span.slippage {
       color: $error;
     }
+  }
+
+  div.show {
+    display: block;
   }
 }

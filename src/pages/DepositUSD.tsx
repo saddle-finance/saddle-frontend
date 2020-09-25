@@ -96,27 +96,33 @@ const testTokensData = [
 const selected = {
   maxSlippage: 0.1,
   gas: "standard",
-  infiniteApproval: false,
-}
-
-const testTransInfoData = {
-  minimumReceive: 0.836,
-  lpTokenValue: "1.034 USD",
-  benefit: -2.836,
+  infiniteApproval: true,
 }
 // Dumb data end here
 
 interface State {
   advanced: boolean
+  info: {
+    isInfo: boolean
+    content: { [key: string]: any }
+  }
 }
 
 class DepositUSD extends React.Component<any, State> {
   state: State = {
     advanced: true,
+    info: {
+      isInfo: true,
+      content: {
+        minimumReceive: 0.836,
+        lpTokenValue: "1.034 USD",
+        benefit: -2.836,
+      },
+    },
   }
 
   render() {
-    const { advanced } = this.state
+    const { advanced, info } = this.state
 
     return (
       <div className="deposit">
@@ -159,7 +165,6 @@ class DepositUSD extends React.Component<any, State> {
                 <div className="infiniteApproval">
                   <input type="checkbox" checked={selected.infiniteApproval} />
                   <span>Infinite Approval</span>
-                  <span className="checkmark"></span>
                 </div>
                 <div className="paramater">
                   Max Slippage:
@@ -207,31 +212,35 @@ class DepositUSD extends React.Component<any, State> {
               </div>
             </div>
             <button className="actionBtn">Deposit</button>
-            <div className="transactionInfo">
-              <div className="transactionInfoItem">
-                <span>Minimum Receive</span>
-                <span className="value">
-                  {testTransInfoData.minimumReceive}
-                </span>
-              </div>
-              <div className="transactionInfoItem">
-                <span>Saddle LP token value</span>
-                <span className="value">{testTransInfoData.lpTokenValue}</span>
-              </div>
-              <div className="transactionInfoItem">
-                {testTransInfoData.benefit > 0 ? (
-                  <span className="bonus">Bonus</span>
-                ) : (
-                  <span className="slippage">Slippage</span>
-                )}
-                <span
-                  className={
-                    "value " +
-                    (testTransInfoData.benefit > 0 ? "bonus" : "slippage")
-                  }
-                >
-                  {testTransInfoData.benefit}
-                </span>
+            <div
+              className={
+                "transactionInfoContainer " + classNames({ show: info.isInfo })
+              }
+            >
+              <div className="transactionInfo">
+                <div className="transactionInfoItem">
+                  <span>Minimum Receive</span>
+                  <span className="value">{info.content.minimumReceive}</span>
+                </div>
+                <div className="transactionInfoItem">
+                  <span>Saddle LP token value</span>
+                  <span className="value">{info.content.lpTokenValue}</span>
+                </div>
+                <div className="transactionInfoItem">
+                  {info.content.benefit > 0 ? (
+                    <span className="bonus">Bonus</span>
+                  ) : (
+                    <span className="slippage">Slippage</span>
+                  )}
+                  <span
+                    className={
+                      "value " +
+                      (info.content.benefit > 0 ? "bonus" : "slippage")
+                    }
+                  >
+                    {info.content.benefit}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
