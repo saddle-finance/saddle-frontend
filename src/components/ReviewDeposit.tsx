@@ -20,7 +20,7 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props) {
         {data.deposit.map((each, index) => (
           <div className="eachToken" key={index}>
             <span className="value">{each.value}</span>
-            <img src={each.icon} />
+            <img src={each.icon} alt={each.name} />
             <span>{each.name}</span>
           </div>
         ))}
