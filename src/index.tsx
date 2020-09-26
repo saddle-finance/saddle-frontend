@@ -7,7 +7,7 @@ import { Router } from "react-router-dom"
 import "./index.css"
 import { Routes } from "./routes"
 import * as serviceWorker from "./serviceWorker"
-import { store } from "./store"
+import store from "./state"
 
 ReactDOM.render(
   <React.StrictMode>

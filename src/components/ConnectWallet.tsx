@@ -6,8 +6,8 @@ import { Twemoji } from "react-emoji-render"
 import { Provider } from "@ethersproject/abstract-provider"
 import { Signer } from "@ethersproject/abstract-signer"
 
-import { connectMetamask } from "../actions"
-import { State } from "../reducers"
+import { connectMetamask } from "../state/wallet"
+import { AppState } from "../state"
 
 interface Props {
   onPress: () => null
@@ -36,7 +36,7 @@ const mapDispatchToProps = (dispatch: (a: any) => null) => ({
   onPress: () => dispatch(connectMetamask()),
 })
 
-const mapStateToProps = (state: State) => state.wallet
+const mapStateToProps = (state: AppState) => state.wallet
 
 const WalletStatus = connect(mapStateToProps, mapDispatchToProps)(_WalletStatus)
 
