@@ -1,19 +1,18 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import history from "./history"
 import { Provider } from "react-redux"
-import { Router } from "react-router-dom"
+import { BrowserRouter as Router } from "react-router-dom"
 
 import "./index.css"
-import { Routes } from "./routes"
+import App from "./pages/App"
 import * as serviceWorker from "./serviceWorker"
-import { store } from "./store"
+import store from "./state"
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <Router history={history}>
-        <Routes />
+      <Router>
+        <App />
       </Router>
     </Provider>
   </React.StrictMode>,

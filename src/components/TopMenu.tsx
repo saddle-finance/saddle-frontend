@@ -19,10 +19,7 @@ function TopMenu({ activeTab }: Props) {
       </h1>
       <ul className="nav">
         <li>
-          <Link
-            to="/home"
-            className={classNames({ active: activeTab === "swap" })}
-          >
+          <Link to="/" className={classNames({ active: activeTab === "swap" })}>
             Swap
           </Link>
         </li>

@@ -6,9 +6,9 @@ import {
   setAccount,
   setProvider,
   setSigner,
-  CONNECT_METAMASK,
-} from "../actions"
-import { State } from "../reducers"
+  connectMetamask,
+} from "../state/wallet"
+import { AppState } from "../state"
 
 declare global {
   interface Window {
@@ -23,7 +23,7 @@ export function* checkAccountEnabled() {
     yield delay(500)
     if (window.ethereum.selectedAddress) {
       yield put(setAccount(window.ethereum.selectedAddress))
-      const provider = yield select((s: State) => s.wallet.provider)
+      const provider = yield select((s: AppState) => s.wallet.provider)
       yield put(setSigner(provider.getSigner()))
     }
   }
@@ -32,7 +32,7 @@ export function* checkAccountEnabled() {
 function* enableAccount() {
   yield* checkAccountEnabled()
 
-  const { provider, account } = yield select((s: State) => s.wallet)
+  const { provider, account } = yield select((s: AppState) => s.wallet)
   if (window.ethereum !== undefined && !account) {
     const accounts: string[] = yield call(window.ethereum.enable)
     yield put(setAccount(accounts[0]))
@@ -41,5 +41,5 @@ function* enableAccount() {
 }
 
 export function* watchConnectProvider() {
-  yield takeEvery(CONNECT_METAMASK, enableAccount)
+  yield takeEvery(connectMetamask, enableAccount)
 }

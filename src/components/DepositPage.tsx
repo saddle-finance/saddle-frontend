@@ -122,7 +122,7 @@ class DepositPage extends React.Component<Props, State> {
         <TopMenu activeTab={"pool"} />
         <div className="content">
           <div className="form">
-            <h3>Add Liqudity in {title}</h3>
+            <h3>Add Liquidity in {title}</h3>
             {tokensData.map((token, index) => (
               <>
                 <TokenInput token={token} key={index} />
