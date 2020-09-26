@@ -3,7 +3,7 @@ import "./SwapPage.scss"
 import classNames from "classnames"
 
 import TopMenu from "./TopMenu"
-import SwapForm2 from "./SwapForm2"
+import SwapForm from "./SwapForm"
 import Modal from "./Modal"
 import ReviewSwap from "./ReviewSwap"
 import ConfirmTransaction from "./ConfirmTransaction"
@@ -89,13 +89,9 @@ class SwapPage extends React.Component<Props, State> {
       <div className="swapPage">
         <TopMenu activeTab={"swap"} />
         <div className="content">
-          <SwapForm2
-            title="From"
-            tokens={tokens}
-            selected={selectedTokens[0]}
-          />
+          <SwapForm title="From" tokens={tokens} selected={selectedTokens[0]} />
           <img src={require("../assets/icons/icon_change.svg")} alt="" />
-          <SwapForm2 title="To" tokens={tokens} selected={selectedTokens[1]} />
+          <SwapForm title="To" tokens={tokens} selected={selectedTokens[1]} />
           <div className="priceTable">
             <span className="title">Price</span>
             <span className="pair">{rate.pair}</span>

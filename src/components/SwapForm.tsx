@@ -1,14 +1,37 @@
 import React from "react"
+import "./SwapForm.scss"
+import classNames from "classnames"
 
-import TokenAmountSelector from "./TokenAmountSelector"
+interface Props {
+  title: string
+  tokens: Array<{ name: string; value: number; icon: string }>
+  selected: string
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void
+}
 
-function SwapForm() {
+function SwapForm({ title, tokens, selected }: Props) {
   return (
-    <form className="swap">
-      <TokenAmountSelector label="From" tokens={["usdc", "dai", "usdt"]} />
-      <TokenAmountSelector label="To" tokens={["usdc", "dai", "usdt"]} />
-      <button type="button">Swap!</button>
-    </form>
+    <div className="swapForm">
+      <div className="head">
+        <h4 className="title">{title}</h4>
+        <input></input>
+        {title === "From" ? <button className="max">MAX</button> : ""}
+      </div>
+      <ul className="tokenList">
+        {tokens.map((token, i) => (
+          <div
+            className={
+              "tokenListItem " + classNames({ active: selected === token.name })
+            }
+            key={i}
+          >
+            <img className="tokenIcon" src={token.icon} alt="" />
+            <span className="tokenName">{token.name}</span>
+            <span className="tokenValue">{token.value}</span>
+          </div>
+        ))}
+      </ul>
+    </div>
   )
 }
 
