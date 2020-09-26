@@ -1,0 +1,122 @@
+@import "../styles/theme";
+
+div.reviewDeposit {
+  color: $text;
+  font-size: 16px;
+
+  h3 {
+    margin: 8px auto 40px auto;
+    color: $text-darker;
+    font-weight: $normal;
+  }
+
+  .table {
+    padding-bottom: 16px;
+    span {
+      vertical-align: top;
+    }
+
+    .eachToken {
+      margin-bottom: 20px;
+      text-align: right;
+
+      img {
+        margin-right: 8px;
+      }
+
+      & > .value {
+        float: left;
+      }
+    }
+
+    .tableBottomItem {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: row;
+      gap: 16px;
+
+      span {
+        text-align: end;
+      }
+
+      & > .label {
+        width: 48%;
+      }
+
+      & > .value {
+        width: 52%;
+      }
+    }
+
+    div.rates {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      span {
+        display: block;
+      }
+    }
+  }
+
+  div.bottom {
+    background: $background;
+    margin: 0 -24px -24px -24px;
+    padding: 16px 24px 24px 24px;
+    border-radius: 0px 0px 4px 4px;
+
+    h4 {
+      margin: 0 auto 16px auto;
+      color: $text-darker;
+      font-size: 18px;
+      font-weight: $normal;
+    }
+
+    p {
+      font-size: 14px;
+      font-style: italic;
+      margin-top: 24px;
+      margin-bottom: 32px;
+    }
+
+    & > button {
+      width: 176px;
+      height: 44px;
+      border-radius: 4px;
+
+      &:hover,
+      &:active {
+        outline: none;
+      }
+    }
+
+    button.confirm {
+      border: none;
+      background: $primary;
+      color: $white;
+      font-weight: $bold;
+      font-size: 16px;
+      letter-spacing: 0.02em;
+      margin-right: 18px;
+
+      &:hover,
+      &:focus {
+        opacity: 0.8;
+      }
+    }
+
+    button.cancel {
+      background: $background-white;
+      border: 1px solid #fae09e;
+      color: $text-primary;
+      font-weight: $normal;
+      font-size: 16px;
+      letter-spacing: 0.02em;
+
+      &:hover,
+      &:focus {
+        border: 2px solid $outline;
+      }
+    }
+  }
+}
