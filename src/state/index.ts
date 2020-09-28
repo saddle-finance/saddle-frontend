@@ -1,33 +1,13 @@
 import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit"
-import createSagaMiddleware from "redux-saga"
 
-import wallet from "./wallet"
-
-import { rootSaga } from "../sagas"
-
-const sagaMiddleware = createSagaMiddleware()
+import user from "./user"
 
 const store = configureStore({
   reducer: {
-    wallet,
+    user,
   },
-  middleware: [
-    ...getDefaultMiddleware({
-      thunk: false,
-      // TODO: is redux the right place to store the provider/signer?
-      serializableCheck: {
-        ignoredActions: ["wallet/setProvider", "wallet/setSigner"],
-        ignoredPaths: ["wallet.provider", "wallet.signer"],
-      },
-      immutableCheck: {
-        ignoredPaths: ["wallet.provider", "wallet.signer"],
-      },
-    }),
-    sagaMiddleware,
-  ],
+  middleware: [...getDefaultMiddleware({ thunk: false })],
 })
-
-sagaMiddleware.run(rootSaga)
 
 export default store
 

@@ -4,7 +4,7 @@ import classNames from "classnames"
 import { Twemoji } from "react-emoji-render"
 import { Link } from "react-router-dom"
 
-import WalletStatus from "./ConnectWallet"
+import Web3Status from "./Web3Status"
 
 interface Props {
   activeTab: string
@@ -32,7 +32,7 @@ function TopMenu({ activeTab }: Props) {
           </Link>
         </li>
       </ul>
-      <WalletStatus />
+      <Web3Status />
     </header>
   )
 }
