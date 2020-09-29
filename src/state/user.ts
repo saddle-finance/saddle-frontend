@@ -1,23 +1,31 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 
 interface UserState {
-  advancedMode: boolean
+  userSwapAdvancedMode: boolean
+  userPoolAdvancedMode: boolean
 }
 
 const initialState: UserState = {
-  advancedMode: false,
+  userSwapAdvancedMode: false,
+  userPoolAdvancedMode: false,
 }
 
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    updateUserAdvancedMode(state, action: PayloadAction<boolean>) {
-      state.advancedMode = action.payload
+    updateUserSwapAdvancedMode(state, action: PayloadAction<boolean>) {
+      state.userSwapAdvancedMode = action.payload
+    },
+    updateUserPoolAdvancedMode(state, action: PayloadAction<boolean>) {
+      state.userSwapAdvancedMode = action.payload
     },
   },
 })
 
-export const { updateUserAdvancedMode } = userSlice.actions
+export const {
+  updateUserSwapAdvancedMode,
+  updateUserPoolAdvancedMode,
+} = userSlice.actions
 
 export default userSlice.reducer
