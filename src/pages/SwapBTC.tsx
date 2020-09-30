@@ -41,8 +41,6 @@ const info = {
   isInfo: false,
   message: "Estimated TX Cost $3.14",
 }
-
-const advanced = false
 // End of dumb data
 
 function SwapUSD() {
@@ -53,7 +51,6 @@ function SwapUSD() {
       selectedTokens={selectedTokens}
       error={error}
       info={info}
-      advanced={advanced}
     />
   )
 }
