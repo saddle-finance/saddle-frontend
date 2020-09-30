@@ -18,7 +18,7 @@ const userSlice = createSlice({
       state.userSwapAdvancedMode = action.payload
     },
     updateUserPoolAdvancedMode(state, action: PayloadAction<boolean>) {
-      state.userSwapAdvancedMode = action.payload
+      state.userPoolAdvancedMode = action.payload
     },
   },
 })
