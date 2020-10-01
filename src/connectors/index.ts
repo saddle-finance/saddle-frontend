@@ -1,10 +1,10 @@
-import { Web3Provider } from "@ethersproject/providers"
-import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
-import { WalletLinkConnector } from "@web3-react/walletlink-connector"
-import { PortisConnector } from "@web3-react/portis-connector"
-import { SquarelinkConnector } from "@web3-react/squarelink-connector"
 import { InjectedConnector } from "@web3-react/injected-connector"
 import { NetworkConnector } from "@web3-react/network-connector"
+import { PortisConnector } from "@web3-react/portis-connector"
+import { SquarelinkConnector } from "@web3-react/squarelink-connector"
+import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
+import { WalletLinkConnector } from "@web3-react/walletlink-connector"
+import { Web3Provider } from "@ethersproject/providers"
 
 const NETWORK_URL = process.env.REACT_APP_NETWORK_URL
 export const NETWORK_CHAIN_ID: number = parseInt(

@@ -1,40 +1,46 @@
-import React from "react"
 import "./ConnectWallet.scss"
 
+import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
 import {
   injected,
-  walletconnect,
-  walletlink,
   portis,
   squarelink,
+  walletconnect,
+  walletlink,
 } from "../connectors"
-import { useWeb3React, UnsupportedChainIdError } from "@web3-react/core"
+
+import React from "react"
+import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
+import metamaskIcon from "../assets/icons/metamask.svg"
+import portisIcon from "../assets/icons/portis.svg"
+import squarelinkIcon from "../assets/icons/squarelink.svg"
+import walletconnectIcon from "../assets/icons/walletconnect.svg"
 
 // Dumb data starts
 const wallets = [
   {
     name: "MetaMask",
-    icon: require("../assets/icons/metamask.svg"),
+    icon: metamaskIcon,
     connector: injected,
   },
   {
     name: "Wallet Connect",
-    icon: require("../assets/icons/walletconnect.svg"),
+    icon: walletconnectIcon,
     connector: walletconnect,
   },
   {
     name: "Coinbase Wallet",
-    icon: require("../assets/icons/coinbasewallet.svg"),
+    icon: coinbasewalletIcon,
     connector: walletlink,
   },
   {
     name: "Portis",
-    icon: require("../assets/icons/portis.svg"),
+    icon: portisIcon,
     connector: portis,
   },
   {
     name: "Squarelink",
-    icon: require("../assets/icons/squarelink.svg"),
+    icon: squarelinkIcon,
     connector: squarelink,
   },
 ]

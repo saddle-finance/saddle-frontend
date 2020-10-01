@@ -1,9 +1,10 @@
-import React, { useState } from "react"
-import { useWeb3React } from "@web3-react/core"
 import "./Web3Status.scss"
 
-import Modal from "./Modal"
+import React, { useState } from "react"
+
 import ConnectWallet from "./ConnectWallet"
+import Modal from "./Modal"
+import { useWeb3React } from "@web3-react/core"
 
 // Todo: Link profile image to real account image
 
