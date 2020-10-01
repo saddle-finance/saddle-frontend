@@ -1,8 +1,12 @@
 import "./ConfirmTransaction.scss"
 
 import React from "react"
+<<<<<<< HEAD
 
 const signImg = require("../assets/icons/icon_sign.svg")
+=======
+import signImg from "../assets/icons/icon_sign.svg"
+>>>>>>> Enable eslint:recommended linting rules and fix errors
 
 function ConfirmTransaction() {
   return (

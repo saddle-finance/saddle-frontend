@@ -4,25 +4,32 @@ import MyShare from "../components/MyShare"
 import PoolOverview from "../components/PoolOverview"
 import React from "react"
 import TopMenu from "../components/TopMenu"
+<<<<<<< HEAD
+=======
+import daiLogo from "../assets/icons/dai.svg"
+import susdLogo from "../assets/icons/susd.svg"
+import usdcLogo from "../assets/icons/usdc.svg"
+import usdtLogo from "../assets/icons/usdt.svg"
+>>>>>>> Enable eslint:recommended linting rules and fix errors
 
 const poolData = {
   title: "USD Pool",
   tokens: [
     {
       name: "USDT",
-      icon: require("../assets/icons/usdt.svg"),
+      icon: usdtLogo,
     },
     {
       name: "DAI",
-      icon: require("../assets/icons/dai.svg"),
+      icon: daiLogo,
     },
     {
       name: "USDC",
-      icon: require("../assets/icons/usdc.svg"),
+      icon: usdcLogo,
     },
     {
       name: "sUSD",
-      icon: require("../assets/icons/susd.svg"),
+      icon: susdLogo,
     },
   ],
   APY: 1.32,

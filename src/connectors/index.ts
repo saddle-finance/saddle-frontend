@@ -17,10 +17,11 @@ export const network = new NetworkConnector({
   urls: { [NETWORK_CHAIN_ID]: NETWORK_URL },
 })
 
+const { getProvider } = network
+
 let networkLibrary: Web3Provider | undefined
 export function getNetworkLibrary(): Web3Provider {
-  return (networkLibrary =
-    networkLibrary ?? new Web3Provider(network.getProvider))
+  return (networkLibrary = networkLibrary ?? new Web3Provider(getProvider))
 }
 
 export const injected = new InjectedConnector({

@@ -1,5 +1,7 @@
 // / <reference types="react-scripts" />
 
+declare module "*.svg"
+
 interface Window {
   ethereum?: {
     isMetaMask?: true

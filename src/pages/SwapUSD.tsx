@@ -1,27 +1,31 @@
 import React from "react"
 import SwapPage from "../components/SwapPage"
+import daiLogo from "../assets/icons/dai.svg"
+import susdLogo from "../assets/icons/susd.svg"
+import usdcLogo from "../assets/icons/usdc.svg"
+import usdtLogo from "../assets/icons/usdt.svg"
 
 // Dumb data for UI
 const testList = [
   {
     name: "DAI",
     value: 11.58,
-    icon: require("../assets/icons/dai.svg"),
+    icon: daiLogo,
   },
   {
     name: "USDC",
     value: 99.45,
-    icon: require("../assets/icons/usdc.svg"),
+    icon: usdcLogo,
   },
   {
     name: "USDT",
     value: 0,
-    icon: require("../assets/icons/usdt.svg"),
+    icon: usdtLogo,
   },
   {
     name: "sUSD",
     value: 0,
-    icon: require("../assets/icons/susd.svg"),
+    icon: susdLogo,
   },
 ]
 

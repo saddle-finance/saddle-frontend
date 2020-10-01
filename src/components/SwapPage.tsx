@@ -9,6 +9,10 @@ import Modal from "./Modal"
 import ReviewSwap from "./ReviewSwap"
 import SwapForm from "./SwapForm"
 import TopMenu from "./TopMenu"
+<<<<<<< HEAD
+=======
+import changeIcon from "../assets/icons/icon_change.svg"
+>>>>>>> Enable eslint:recommended linting rules and fix errors
 import classNames from "classnames"
 import { updateUserSwapAdvancedMode } from "../state/user"
 
@@ -50,7 +54,7 @@ const SwapPage = (props: Props) => {
       <TopMenu activeTab={"swap"} />
       <div className="content">
         <SwapForm title="From" tokens={tokens} selected={selectedTokens[0]} />
-        <img src={require("../assets/icons/icon_change.svg")} alt="" />
+        <img src={changeIcon} alt="" />
         <SwapForm title="To" tokens={tokens} selected={selectedTokens[1]} />
         <div className="priceTable">
           <span className="title">Price</span>

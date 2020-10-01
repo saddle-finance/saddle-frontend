@@ -4,6 +4,13 @@ import MyShare from "../components/MyShare"
 import PoolOverview from "../components/PoolOverview"
 import React from "react"
 import TopMenu from "../components/TopMenu"
+<<<<<<< HEAD
+=======
+import renbtcLogo from "../assets/icons/renbtc.svg"
+import sbtcLogo from "../assets/icons/sbtc.svg"
+import tbtcLogo from "../assets/icons/tbtc.svg"
+import wbtcLogo from "../assets/icons/wbtc.svg"
+>>>>>>> Enable eslint:recommended linting rules and fix errors
 
 // Dumb data start here
 const poolData = {
@@ -11,19 +18,19 @@ const poolData = {
   tokens: [
     {
       name: "tBTC",
-      icon: require("../assets/icons/tbtc.svg"),
+      icon: tbtcLogo,
     },
     {
       name: "wBTC",
-      icon: require("../assets/icons/wbtc.svg"),
+      icon: wbtcLogo,
     },
     {
       name: "renBTC",
-      icon: require("../assets/icons/renbtc.svg"),
+      icon: renbtcLogo,
     },
     {
       name: "sBTC",
-      icon: require("../assets/icons/sbtc.svg"),
+      icon: sbtcLogo,
     },
   ],
   APY: 2.68,

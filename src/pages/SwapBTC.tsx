@@ -1,27 +1,31 @@
 import React from "react"
 import SwapPage from "../components/SwapPage"
+import renbtcLogo from "../assets/icons/renbtc.svg"
+import sbtcLogo from "../assets/icons/sbtc.svg"
+import tbtcLogo from "../assets/icons/tbtc.svg"
+import wbtcLogo from "../assets/icons/wbtc.svg"
 
 // Dumb data for UI
 const testList = [
   {
     name: "tBTC",
     value: 2.32,
-    icon: require("../assets/icons/tbtc.svg"),
+    icon: tbtcLogo,
   },
   {
     name: "wBTC",
     value: 1.45,
-    icon: require("../assets/icons/wbtc.svg"),
+    icon: wbtcLogo,
   },
   {
     name: "renBTC",
     value: 0,
-    icon: require("../assets/icons/renbtc.svg"),
+    icon: renbtcLogo,
   },
   {
     name: "sBTC",
     value: 0,
-    icon: require("../assets/icons/sbtc.svg"),
+    icon: sbtcLogo,
   },
 ]
 
