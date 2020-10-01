@@ -2,10 +2,7 @@ import "./AssetButton.scss"
 
 import { Link } from "react-router-dom"
 import React from "react"
-<<<<<<< HEAD
-=======
 import defaultIcon from "../assets/icons/icon_btc.svg"
->>>>>>> Enable eslint:recommended linting rules and fix errors
 
 interface Props {
   title: string

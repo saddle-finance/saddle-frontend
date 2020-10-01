@@ -1,10 +1,5 @@
 import "./index.css"
 
-<<<<<<< HEAD
-import * as serviceWorker from "./serviceWorker"
-
-=======
->>>>>>> Enable eslint:recommended linting rules and fix errors
 import { Web3ReactProvider, createWeb3ReactRoot } from "@web3-react/core"
 
 import App from "./pages/App"

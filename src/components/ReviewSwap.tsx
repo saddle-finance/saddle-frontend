@@ -1,16 +1,9 @@
 import "./ReviewSwap.scss"
 
 import React from "react"
-<<<<<<< HEAD
-
-const iconDown = require("../assets/icons/icon_down.svg")
-const USDC = require("../assets/icons/usdc.svg")
-const USDT = require("../assets/icons/usdt.svg")
-=======
 import USDC from "../assets/icons/usdc.svg"
 import USDT from "../assets/icons/usdt.svg"
 import iconDown from "../assets/icons/icon_down.svg"
->>>>>>> Enable eslint:recommended linting rules and fix errors
 
 const data = {
   from: {

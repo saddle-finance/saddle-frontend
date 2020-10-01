@@ -4,11 +4,8 @@ import * as React from "react"
 
 import AssetButton from "../components/AssetButton"
 import TopMenu from "../components/TopMenu"
-<<<<<<< HEAD
-=======
 import btcIcon from "../assets/icons/icon_btc.svg"
 import usdIcon from "../assets/icons/icon_usd.svg"
->>>>>>> Enable eslint:recommended linting rules and fix errors
 
 function Pool() {
   return (

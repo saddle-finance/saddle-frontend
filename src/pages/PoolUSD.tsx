@@ -4,13 +4,10 @@ import MyShare from "../components/MyShare"
 import PoolOverview from "../components/PoolOverview"
 import React from "react"
 import TopMenu from "../components/TopMenu"
-<<<<<<< HEAD
-=======
 import daiLogo from "../assets/icons/dai.svg"
 import susdLogo from "../assets/icons/susd.svg"
 import usdcLogo from "../assets/icons/usdc.svg"
 import usdtLogo from "../assets/icons/usdt.svg"
->>>>>>> Enable eslint:recommended linting rules and fix errors
 
 const poolData = {
   title: "USD Pool",

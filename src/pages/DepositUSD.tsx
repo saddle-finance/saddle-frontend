@@ -1,12 +1,9 @@
 import DepositPage from "../components/DepositPage"
 import React from "react"
-<<<<<<< HEAD
-=======
 import daiLogo from "../assets/icons/dai.svg"
 import susdLogo from "../assets/icons/susd.svg"
 import usdcLogo from "../assets/icons/usdc.svg"
 import usdtLogo from "../assets/icons/usdt.svg"
->>>>>>> Enable eslint:recommended linting rules and fix errors
 
 // Dumb data start here
 const testMyShareData = {

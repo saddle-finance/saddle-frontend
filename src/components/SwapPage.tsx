@@ -9,10 +9,7 @@ import Modal from "./Modal"
 import ReviewSwap from "./ReviewSwap"
 import SwapForm from "./SwapForm"
 import TopMenu from "./TopMenu"
-<<<<<<< HEAD
-=======
 import changeIcon from "../assets/icons/icon_change.svg"
->>>>>>> Enable eslint:recommended linting rules and fix errors
 import classNames from "classnames"
 import { updateUserSwapAdvancedMode } from "../state/user"
 

@@ -1,12 +1,9 @@
 import DepositPage from "../components/DepositPage"
 import React from "react"
-<<<<<<< HEAD
-=======
 import renbtcLogo from "../assets/icons/renbtc.svg"
 import sbtcLogo from "../assets/icons/sbtc.svg"
 import tbtcLogo from "../assets/icons/tbtc.svg"
 import wbtcLogo from "../assets/icons/wbtc.svg"
->>>>>>> Enable eslint:recommended linting rules and fix errors
 
 // Dumb data start here
 const testBTCPoolData = {
