@@ -19,6 +19,10 @@ const wallets = [
     name: "Portis",
     icon: require("../assets/icons/portis.svg"),
   },
+  {
+    name: "Squarelink",
+    icon: require("../assets/icons/squarelink.svg"),
+  },
 ]
 
 // Dumb data ends
@@ -30,7 +34,7 @@ function ConnectWallet() {
         {wallets.map((wallet, index) => (
           <button key={index}>
             <span>{wallet.name}</span>
-            <img src={wallet.icon} alt="Icon" />
+            <img src={wallet.icon} alt="Icon" className="icon" />
           </button>
         ))}
       </div>

@@ -1,9 +1,67 @@
 @import "../styles/theme";
 
 div.connectWallet {
+  color: $text;
+
   h3 {
     font-weight: $normal;
-    font-size: 20px;
-    color: $text;
+    font-size: 18px;
+    color: $text-darker;
+    margin-top: -8px;
+    margin-bottom: 16px;
+  }
+
+  div.walletList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: $background;
+
+    margin: 0 -24px;
+    padding: 32px;
+
+    & > button {
+      background: $background-white;
+      color: $text;
+      outline: none;
+      border: 1px solid $background-darker;
+      border-radius: 10px;
+      width: 100%;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      &:hover {
+        cursor: pointer;
+        background-color: $background-darker;
+        border: 1px solid $outline;
+      }
+    }
+
+    img.icon {
+      width: 24px;
+    }
+
+    span {
+      line-height: 24px;
+      font-size: 16px;
+    }
+
+  }
+
+  p {
+    padding: 24px 32px 32px 32px;
+    margin: -24px;
+    background: $background;
+
+    a {
+      color: $text-primary;
+      font-weight: $medium;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 }
