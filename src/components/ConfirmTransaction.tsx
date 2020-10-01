@@ -1,5 +1,6 @@
-import React from "react"
 import "./ConfirmTransaction.scss"
+
+import React from "react"
 
 const signImg = require("../assets/icons/icon_sign.svg")
 

@@ -1,7 +1,7 @@
+import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
+
 import React from "react"
 import { Twemoji } from "react-emoji-render"
-import { useWeb3React, UnsupportedChainIdError } from "@web3-react/core"
-
 import { injected } from "../connectors"
 
 const Web3Status = () => {

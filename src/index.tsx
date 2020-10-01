@@ -1,15 +1,17 @@
+import "./index.css"
+
+import * as serviceWorker from "./serviceWorker"
+
+import { Web3ReactProvider, createWeb3ReactRoot } from "@web3-react/core"
+
+import App from "./pages/App"
+import { NetworkContextName } from "./constants"
+import { Provider } from "react-redux"
 import React from "react"
 import ReactDOM from "react-dom"
-import { Provider } from "react-redux"
 import { BrowserRouter as Router } from "react-router-dom"
-import { createWeb3ReactRoot, Web3ReactProvider } from "@web3-react/core"
-
-import { NetworkContextName } from "./constants"
-import "./index.css"
-import App from "./pages/App"
-import * as serviceWorker from "./serviceWorker"
-import store from "./state"
 import getLibrary from "./utils/getLibrary"
+import store from "./state"
 
 const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName)
 

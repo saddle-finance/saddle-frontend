@@ -1,9 +1,9 @@
-import React from "react"
 import "./PoolUSD_BTC.scss"
 
-import TopMenu from "../components/TopMenu"
-import PoolOverview from "../components/PoolOverview"
 import MyShare from "../components/MyShare"
+import PoolOverview from "../components/PoolOverview"
+import React from "react"
+import TopMenu from "../components/TopMenu"
 
 const poolData = {
   title: "USD Pool",

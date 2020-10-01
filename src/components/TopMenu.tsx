@@ -1,10 +1,10 @@
-import React from "react"
 import "./TopMenu.scss"
-import classNames from "classnames"
-import { Twemoji } from "react-emoji-render"
-import { Link } from "react-router-dom"
 
+import { Link } from "react-router-dom"
+import React from "react"
+import { Twemoji } from "react-emoji-render"
 import Web3Status from "./Web3Status"
+import classNames from "classnames"
 
 interface Props {
   activeTab: string
