@@ -200,7 +200,10 @@ const SwapPage = (props: Props) => {
         </div>
         <button
           className={"swap " + classNames({ disabled: error.isError })}
-          onClick={() => setModalOpen(true)}
+          onClick={() => {
+            setModalOpen(true)
+            setPopUp("review")
+          }}
           disabled={error.isError}
         >
           Swap
