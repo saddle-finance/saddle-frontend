@@ -1,5 +1,9 @@
 import DepositPage from "../components/DepositPage"
 import React from "react"
+import renbtcLogo from "../assets/icons/renbtc.svg"
+import sbtcLogo from "../assets/icons/sbtc.svg"
+import tbtcLogo from "../assets/icons/tbtc.svg"
+import wbtcLogo from "../assets/icons/wbtc.svg"
 
 // Dumb data start here
 const testBTCPoolData = {
@@ -13,25 +17,25 @@ const testBTCPoolData = {
   tokens: [
     {
       name: "tBTC",
-      icon: require("../assets/icons/tbtc.svg"),
+      icon: tbtcLogo,
       percent: 12.34,
       value: 17633722.4,
     },
     {
       name: "wBTC",
-      icon: require("../assets/icons/wbtc.svg"),
+      icon: wbtcLogo,
       percent: 33.98,
       value: 48424123.64,
     },
     {
       name: "renBTC",
-      icon: require("../assets/icons/renbtc.svg"),
+      icon: renbtcLogo,
       percent: 38.96,
       value: 55675199.22,
     },
     {
       name: "sBTC",
-      icon: require("../assets/icons/sbtc.svg"),
+      icon: sbtcLogo,
       percent: 14.8,
       value: 21157478.96,
     },
@@ -41,22 +45,22 @@ const testBTCPoolData = {
 const testTokensData = [
   {
     name: "tBTC",
-    icon: require("../assets/icons/tbtc.svg"),
+    icon: tbtcLogo,
     max: 2.02,
   },
   {
     name: "wBTC",
-    icon: require("../assets/icons/wbtc.svg"),
+    icon: wbtcLogo,
     max: 1.31,
   },
   {
     name: "renBTC",
-    icon: require("../assets/icons/renbtc.svg"),
+    icon: renbtcLogo,
     max: 0.1,
   },
   {
     name: "sBTC",
-    icon: require("../assets/icons/sbtc.svg"),
+    icon: sbtcLogo,
     max: 0.2,
   },
 ]
@@ -81,12 +85,12 @@ const testDepositData = {
     {
       name: "tBTC",
       value: 2.2,
-      icon: require("../assets/icons/tbtc.svg"),
+      icon: tbtcLogo,
     },
     {
       name: "wBTC",
       value: 8.65,
-      icon: require("../assets/icons/wbtc.svg"),
+      icon: wbtcLogo,
     },
   ],
   rates: [

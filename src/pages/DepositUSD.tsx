@@ -1,5 +1,9 @@
 import DepositPage from "../components/DepositPage"
 import React from "react"
+import daiLogo from "../assets/icons/dai.svg"
+import susdLogo from "../assets/icons/susd.svg"
+import usdcLogo from "../assets/icons/usdc.svg"
+import usdtLogo from "../assets/icons/usdt.svg"
 
 // Dumb data start here
 const testMyShareData = {
@@ -39,25 +43,25 @@ const testUsdPoolData = {
   tokens: [
     {
       name: "DAI",
-      icon: require("../assets/icons/dai.svg"),
+      icon: daiLogo,
       percent: 12.34,
       value: 17633722.4,
     },
     {
       name: "USDC",
-      icon: require("../assets/icons/usdc.svg"),
+      icon: usdcLogo,
       percent: 33.98,
       value: 48424123.64,
     },
     {
       name: "USDT",
-      icon: require("../assets/icons/usdt.svg"),
+      icon: usdtLogo,
       percent: 38.96,
       value: 55675199.22,
     },
     {
       name: "sUSD",
-      icon: require("../assets/icons/susd.svg"),
+      icon: susdLogo,
       percent: 14.8,
       value: 21157478.96,
     },
@@ -67,22 +71,22 @@ const testUsdPoolData = {
 const testTokensData = [
   {
     name: "DAI",
-    icon: require("../assets/icons/dai.svg"),
+    icon: daiLogo,
     max: 7.02,
   },
   {
     name: "USDC",
-    icon: require("../assets/icons/usdc.svg"),
+    icon: usdcLogo,
     max: 1.01,
   },
   {
     name: "USDT",
-    icon: require("../assets/icons/usdt.svg"),
+    icon: usdtLogo,
     max: 0,
   },
   {
     name: "sUSD",
-    icon: require("../assets/icons/susd.svg"),
+    icon: susdLogo,
     max: 0,
   },
 ]
@@ -106,12 +110,12 @@ const testDepositData = {
     {
       name: "DAI",
       value: 6.21,
-      icon: require("../assets/icons/dai.svg"),
+      icon: daiLogo,
     },
     {
       name: "USDC",
       value: 8.65,
-      icon: require("../assets/icons/usdc.svg"),
+      icon: usdcLogo,
     },
   ],
   rates: [

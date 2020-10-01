@@ -2,6 +2,7 @@ import "./AssetButton.scss"
 
 import { Link } from "react-router-dom"
 import React from "react"
+import defaultIcon from "../assets/icons/icon_btc.svg"
 
 interface Props {
   title: string
@@ -15,10 +16,7 @@ function AssetButton({ title, to, icon }: Props) {
   return (
     <Link to={to}>
       <button className="asset">
-        <img
-          src={icon ? icon : require("../assets/icons/icon_btc.svg")}
-          alt=""
-        />
+        <img src={icon ? icon : defaultIcon} alt="" />
         <span>{title}</span>
       </button>
     </Link>
