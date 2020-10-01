@@ -7,7 +7,7 @@ div.walletStatus {
     background: none;
     font-family: $font-family;
     font-size: 18px;
-  
+
     &:hover,
     &:focus,
     &:active {
@@ -41,5 +41,4 @@ div.walletStatus {
       background: $background-button-hover;
     }
   }
-  
 }
