@@ -1,5 +1,6 @@
-import React from "react"
 import "./TokenInput.scss"
+
+import React from "react"
 
 interface Props {
   token: any

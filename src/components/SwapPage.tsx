@@ -1,15 +1,16 @@
-import React, { useState } from "react"
-import { useSelector, useDispatch } from "react-redux"
 import "./SwapPage.scss"
-import classNames from "classnames"
+
+import React, { useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
 
 import { AppState } from "../state/index"
-import { updateUserSwapAdvancedMode } from "../state/user"
-import TopMenu from "./TopMenu"
-import SwapForm from "./SwapForm"
+import ConfirmTransaction from "./ConfirmTransaction"
 import Modal from "./Modal"
 import ReviewSwap from "./ReviewSwap"
-import ConfirmTransaction from "./ConfirmTransaction"
+import SwapForm from "./SwapForm"
+import TopMenu from "./TopMenu"
+import classNames from "classnames"
+import { updateUserSwapAdvancedMode } from "../state/user"
 
 // TODO:
 // - Use state to add function of exchange button in priceTable

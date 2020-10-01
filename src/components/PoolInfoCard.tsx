@@ -1,5 +1,6 @@
-import React from "react"
 import "./PoolInfoCard.scss"
+
+import React from "react"
 
 interface Props {
   data: {

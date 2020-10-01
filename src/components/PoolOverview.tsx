@@ -1,8 +1,8 @@
+import "./PoolOverview.scss"
+
+import { Link } from "react-router-dom"
 import React from "react"
 import classNames from "classnames"
-import { Link } from "react-router-dom"
-
-import "./PoolOverview.scss"
 
 interface Props {
   to: string

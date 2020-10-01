@@ -1,5 +1,5 @@
-import React from "react"
 import DepositPage from "../components/DepositPage"
+import React from "react"
 
 // Dumb data start here
 const testMyShareData = {

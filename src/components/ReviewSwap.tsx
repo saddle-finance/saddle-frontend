@@ -1,5 +1,6 @@
-import React from "react"
 import "./ReviewSwap.scss"
+
+import React from "react"
 
 const iconDown = require("../assets/icons/icon_down.svg")
 const USDC = require("../assets/icons/usdc.svg")

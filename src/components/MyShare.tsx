@@ -1,5 +1,6 @@
-import React from "react"
 import "./MyShare.scss"
+
+import React from "react"
 
 interface Props {
   data?: {

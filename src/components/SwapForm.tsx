@@ -1,5 +1,6 @@
-import React from "react"
 import "./SwapForm.scss"
+
+import React from "react"
 import classNames from "classnames"
 
 interface Props {

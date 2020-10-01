@@ -1,8 +1,8 @@
-import React from "react"
 import "./Home.scss"
 
-import TopMenu from "../components/TopMenu"
 import AssetButton from "../components/AssetButton"
+import React from "react"
+import TopMenu from "../components/TopMenu"
 
 function Home() {
   return (

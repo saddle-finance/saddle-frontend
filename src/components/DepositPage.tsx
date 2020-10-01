@@ -1,17 +1,18 @@
-import React, { useState } from "react"
-import { useSelector, useDispatch } from "react-redux"
 import "./DepositPage.scss"
-import classNames from "classnames"
 
-import { AppState } from "../state/index"
-import { updateUserPoolAdvancedMode } from "../state/user"
-import TopMenu from "./TopMenu"
+import React, { useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+
+import { AppState } from "../state"
+import ConfirmTransaction from "./ConfirmTransaction"
+import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
-import TokenInput from "./TokenInput"
-import Modal from "./Modal"
 import ReviewDeposit from "./ReviewDeposit"
-import ConfirmTransaction from "./ConfirmTransaction"
+import TokenInput from "./TokenInput"
+import TopMenu from "./TopMenu"
+import classNames from "classnames"
+import { updateUserPoolAdvancedMode } from "../state/user"
 
 interface Props {
   title: string

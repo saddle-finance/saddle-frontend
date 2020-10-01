@@ -1,5 +1,6 @@
-import React from "react"
 import "./ReviewDeposit.scss"
+
+import React from "react"
 
 interface Props {
   onClose: () => void

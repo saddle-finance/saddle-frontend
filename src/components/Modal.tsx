@@ -1,5 +1,6 @@
-import React, { ReactNode } from "react"
 import "./Modal.scss"
+
+import React, { ReactNode } from "react"
 
 interface Props {
   isOpen: boolean

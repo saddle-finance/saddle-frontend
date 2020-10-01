@@ -1,8 +1,9 @@
-import * as React from "react"
 import "./Pool.scss"
 
-import TopMenu from "../components/TopMenu"
+import * as React from "react"
+
 import AssetButton from "../components/AssetButton"
+import TopMenu from "../components/TopMenu"
 
 function Pool() {
   return (

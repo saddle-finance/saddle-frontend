@@ -1,16 +1,15 @@
-import React from "react"
-import { Switch, Route } from "react-router-dom"
+import { Route, Switch } from "react-router-dom"
 
-import Web3ReactManager from "../components/Web3ReactManager"
-
+import DepositBTC from "./DepositBTC"
+import DepositUSD from "./DepositUSD"
 import Home from "./Home"
 import Pool from "./Pool"
-import PoolUSD from "./PoolUSD"
 import PoolBTC from "./PoolBTC"
-import SwapUSD from "./SwapUSD"
+import PoolUSD from "./PoolUSD"
+import React from "react"
 import SwapBTC from "./SwapBTC"
-import DepositUSD from "./DepositUSD"
-import DepositBTC from "./DepositBTC"
+import SwapUSD from "./SwapUSD"
+import Web3ReactManager from "../components/Web3ReactManager"
 
 export default function App() {
   return (
