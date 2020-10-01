@@ -1,12 +1,14 @@
 import "./DepositPage.scss"
 
-import React, { useState } from "react"
+import React, { ReactElement, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
+import { AppDispatch } from "../state"
 import { AppState } from "../state"
 import ConfirmTransaction from "./ConfirmTransaction"
 import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
+import { PayloadAction } from "@reduxjs/toolkit"
 import PoolInfoCard from "./PoolInfoCard"
 import ReviewDeposit from "./ReviewDeposit"
 import TokenInput from "./TokenInput"
@@ -14,6 +16,7 @@ import TopMenu from "./TopMenu"
 import classNames from "classnames"
 import { updateUserPoolAdvancedMode } from "../state/user"
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   title: string
   tokensData: Array<{ name: string; icon: string; max: number }>
@@ -52,8 +55,9 @@ interface Props {
     sadd: number
   }
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
-const DepositPage = (props: Props) => {
+const DepositPage = (props: Props): ReactElement => {
   const {
     title,
     selected,
@@ -68,7 +72,7 @@ const DepositPage = (props: Props) => {
   const [infiniteApproval, setInfiniteApproval] = useState(false)
   const [popUp, setPopUp] = useState("")
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { userPoolAdvancedMode: advanced } = useSelector(
     (state: AppState) => state.user,
   )
@@ -88,7 +92,9 @@ const DepositPage = (props: Props) => {
           <div className="advancedOptions">
             <span
               className="title"
-              onClick={() => dispatch(updateUserPoolAdvancedMode(!advanced))}
+              onClick={(): PayloadAction<boolean> =>
+                dispatch(updateUserPoolAdvancedMode(!advanced))
+              }
             >
               Advanced Options
               <svg
@@ -114,7 +120,7 @@ const DepositPage = (props: Props) => {
                 <input
                   type="checkbox"
                   checked={infiniteApproval}
-                  onChange={() => setInfiniteApproval(!infiniteApproval)}
+                  onChange={(): void => setInfiniteApproval(!infiniteApproval)}
                 />
                 <span>Infinite Approval</span>
               </div>
@@ -165,7 +171,7 @@ const DepositPage = (props: Props) => {
           </div>
           <button
             className="actionBtn"
-            onClick={() => {
+            onClick={(): void => {
               setModalOpen(true)
               setPopUp("review")
             }}
@@ -222,12 +228,12 @@ const DepositPage = (props: Props) => {
           {/* space divider */}
           <PoolInfoCard data={poolData} />
         </div>
-        <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
+        <Modal isOpen={modalOpen} onClose={(): void => setModalOpen(false)}>
           {popUp === "review" ? (
             <ReviewDeposit
               data={depositDataFromParent}
-              onConfirm={() => setPopUp("confirm")}
-              onClose={() => setModalOpen(false)}
+              onConfirm={(): void => setPopUp("confirm")}
+              onClose={(): void => setModalOpen(false)}
             />
           ) : null}
           {popUp === "confirm" ? <ConfirmTransaction /> : null}

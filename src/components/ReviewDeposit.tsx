@@ -1,7 +1,8 @@
 import "./ReviewDeposit.scss"
 
-import React from "react"
+import React, { ReactElement } from "react"
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   onClose: () => void
   onConfirm: () => void
@@ -12,8 +13,9 @@ interface Props {
     sadd: number
   }
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
-function ReviewDeposit({ onClose, onConfirm, data }: Props) {
+function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
   return (
     <div className="reviewDeposit">
       <h3>Review Deposit</h3>

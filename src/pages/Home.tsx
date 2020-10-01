@@ -1,12 +1,13 @@
 import "./Home.scss"
 
+import React, { ReactElement } from "react"
+
 import AssetButton from "../components/AssetButton"
-import React from "react"
 import TopMenu from "../components/TopMenu"
 import btcIcon from "../assets/icons/icon_btc.svg"
 import usdIcon from "../assets/icons/icon_usd.svg"
 
-function Home() {
+function Home(): ReactElement {
   return (
     <div className="homepage">
       <TopMenu activeTab={"swap"} />

@@ -1,11 +1,13 @@
 import "./SwapPage.scss"
 
-import React, { useState } from "react"
+import React, { ReactElement, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
+import { AppDispatch } from "../state"
 import { AppState } from "../state/index"
 import ConfirmTransaction from "./ConfirmTransaction"
 import Modal from "./Modal"
+import { PayloadAction } from "@reduxjs/toolkit"
 import ReviewSwap from "./ReviewSwap"
 import SwapForm from "./SwapForm"
 import TopMenu from "./TopMenu"
@@ -29,19 +31,19 @@ const selected = {
 
 interface Props {
   tokens: Array<{ name: string; value: number; icon: string }>
-  rate: { [key: string]: any }
+  rate: { [key: string]: any } // eslint-disable-line @typescript-eslint/no-explicit-any
   selectedTokens: string[]
   error: { isError: boolean; message: string }
   info: { isInfo: boolean; message: string }
 }
 
-const SwapPage = (props: Props) => {
+const SwapPage = (props: Props): ReactElement => {
   const { tokens, rate, selectedTokens, error, info } = props
 
   const [modalOpen, setModalOpen] = useState(false)
   const [popUp, setPopUp] = useState("")
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { userSwapAdvancedMode: advanced } = useSelector(
     (state: AppState) => state.user,
   )
@@ -79,7 +81,9 @@ const SwapPage = (props: Props) => {
         <div className="advancedOptions">
           <div
             className="title"
-            onClick={() => dispatch(updateUserSwapAdvancedMode(!advanced))}
+            onClick={(): PayloadAction<boolean> =>
+              dispatch(updateUserSwapAdvancedMode(!advanced))
+            }
           >
             Advanced Options
             {/* When advanced = true, icon will be upside down */}
@@ -200,7 +204,7 @@ const SwapPage = (props: Props) => {
         </div>
         <button
           className={"swap " + classNames({ disabled: error.isError })}
-          onClick={() => {
+          onClick={(): void => {
             setModalOpen(true)
             setPopUp("review")
           }}
@@ -211,11 +215,11 @@ const SwapPage = (props: Props) => {
         <div className={"info " + classNames({ showInfo: info.isInfo })}>
           {info.message}
         </div>
-        <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
+        <Modal isOpen={modalOpen} onClose={(): void => setModalOpen(false)}>
           {popUp === "review" ? (
             <ReviewSwap
-              onClose={() => setModalOpen(false)}
-              onConfirm={() => setPopUp("confirm")}
+              onClose={(): void => setModalOpen(false)}
+              onConfirm={(): void => setPopUp("confirm")}
             />
           ) : null}
           {popUp === "confirm" ? <ConfirmTransaction /> : null}

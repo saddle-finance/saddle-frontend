@@ -2,6 +2,7 @@
 
 declare module "*.svg"
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface Window {
   ethereum?: {
     isMetaMask?: true

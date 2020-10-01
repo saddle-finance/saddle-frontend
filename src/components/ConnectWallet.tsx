@@ -1,5 +1,6 @@
 import "./ConnectWallet.scss"
 
+import React, { ReactElement } from "react"
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
 import {
   injected,
@@ -9,7 +10,6 @@ import {
   walletlink,
 } from "../connectors"
 
-import React from "react"
 import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
 import metamaskIcon from "../assets/icons/metamask.svg"
 import portisIcon from "../assets/icons/portis.svg"
@@ -49,7 +49,7 @@ interface Props {
   onClose: () => void
 }
 // Dumb data ends
-function ConnectWallet({ onClose }: Props) {
+function ConnectWallet({ onClose }: Props): ReactElement {
   const { activate } = useWeb3React()
 
   return (
@@ -59,7 +59,7 @@ function ConnectWallet({ onClose }: Props) {
         {wallets.map((wallet, index) => (
           <button
             key={index}
-            onClick={() => {
+            onClick={(): void => {
               activate(wallet.connector, undefined, true).catch((error) => {
                 if (error instanceof UnsupportedChainIdError) {
                   activate(wallet.connector) // a little janky...can't use setError because the connector isn't set

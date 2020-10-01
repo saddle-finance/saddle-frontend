@@ -1,5 +1,6 @@
+import React, { ReactElement } from "react"
+
 import DepositPage from "../components/DepositPage"
-import React from "react"
 import daiLogo from "../assets/icons/dai.svg"
 import susdLogo from "../assets/icons/susd.svg"
 import usdcLogo from "../assets/icons/usdc.svg"
@@ -133,7 +134,7 @@ const testDepositData = {
 }
 // Dumb data end here
 
-function DepositUSD() {
+function DepositUSD(): ReactElement {
   return (
     <DepositPage
       title="USD Pool"

@@ -1,5 +1,6 @@
+import React, { ReactElement } from "react"
+
 import DepositPage from "../components/DepositPage"
-import React from "react"
 import renbtcLogo from "../assets/icons/renbtc.svg"
 import sbtcLogo from "../assets/icons/sbtc.svg"
 import tbtcLogo from "../assets/icons/tbtc.svg"
@@ -108,7 +109,7 @@ const testDepositData = {
 }
 // Dumb data end here
 
-function DepositBTC() {
+function DepositBTC(): ReactElement {
   return (
     <DepositPage
       title="BTC Pool"

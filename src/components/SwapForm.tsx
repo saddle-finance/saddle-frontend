@@ -1,6 +1,7 @@
 import "./SwapForm.scss"
 
-import React from "react"
+import React, { ReactElement } from "react"
+
 import classNames from "classnames"
 
 interface Props {
@@ -10,7 +11,7 @@ interface Props {
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void
 }
 
-function SwapForm({ title, tokens, selected }: Props) {
+function SwapForm({ title, tokens, selected }: Props): ReactElement {
   return (
     <div className="swapForm">
       <div className="head">

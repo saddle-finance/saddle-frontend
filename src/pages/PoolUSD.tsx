@@ -1,8 +1,9 @@
 import "./PoolUSD_BTC.scss"
 
+import React, { ReactElement } from "react"
+
 import MyShare from "../components/MyShare"
 import PoolOverview from "../components/PoolOverview"
-import React from "react"
 import TopMenu from "../components/TopMenu"
 import daiLogo from "../assets/icons/dai.svg"
 import susdLogo from "../assets/icons/susd.svg"
@@ -41,7 +42,7 @@ const shareData = {
   token: ["DAI", "USDC", "USDT", "sUSD"],
 }
 
-function PoolUSD() {
+function PoolUSD(): ReactElement {
   return (
     <div className="poolUsd">
       <TopMenu activeTab={"pool"} />

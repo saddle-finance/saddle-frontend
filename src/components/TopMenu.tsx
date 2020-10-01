@@ -1,7 +1,8 @@
 import "./TopMenu.scss"
 
+import React, { ReactElement } from "react"
+
 import { Link } from "react-router-dom"
-import React from "react"
 import { Twemoji } from "react-emoji-render"
 import Web3Status from "./Web3Status"
 import classNames from "classnames"
@@ -10,7 +11,7 @@ interface Props {
   activeTab: string
 }
 
-function TopMenu({ activeTab }: Props) {
+function TopMenu({ activeTab }: Props): ReactElement {
   return (
     <header className="top">
       <h1>

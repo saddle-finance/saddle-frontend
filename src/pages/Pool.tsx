@@ -1,13 +1,13 @@
 import "./Pool.scss"
 
-import * as React from "react"
+import React, { ReactElement } from "react"
 
 import AssetButton from "../components/AssetButton"
 import TopMenu from "../components/TopMenu"
 import btcIcon from "../assets/icons/icon_btc.svg"
 import usdIcon from "../assets/icons/icon_usd.svg"
 
-function Pool() {
+function Pool(): ReactElement {
   return (
     <div className="poolpage">
       <TopMenu activeTab={"pool"} />

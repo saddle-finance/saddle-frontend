@@ -1,4 +1,5 @@
-import React from "react"
+import React, { ReactElement } from "react"
+
 import SwapPage from "../components/SwapPage"
 import daiLogo from "../assets/icons/dai.svg"
 import susdLogo from "../assets/icons/susd.svg"
@@ -47,7 +48,7 @@ const info = {
 }
 // End of dumb data
 
-function SwapUSD() {
+function SwapUSD(): ReactElement {
   return (
     <SwapPage
       tokens={testList}

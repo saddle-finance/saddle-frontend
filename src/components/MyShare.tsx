@@ -1,6 +1,6 @@
 import "./MyShare.scss"
 
-import React from "react"
+import React, { ReactElement } from "react"
 
 interface Props {
   data?: {
@@ -11,7 +11,7 @@ interface Props {
   }
 }
 
-function MyShare({ data }: Props) {
+function MyShare({ data }: Props): ReactElement | null {
   if (!data) return null
   else
     return (

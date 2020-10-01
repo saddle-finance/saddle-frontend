@@ -1,6 +1,6 @@
 import "./Modal.scss"
 
-import React, { ReactNode } from "react"
+import React, { ReactElement, ReactNode } from "react"
 
 interface Props {
   isOpen: boolean
@@ -9,7 +9,7 @@ interface Props {
   height?: string
 }
 
-function Modal({ isOpen, onClose, children, height }: Props) {
+function Modal({ isOpen, onClose, children }: Props): ReactElement | null {
   if (!isOpen) return null
   else
     return (
