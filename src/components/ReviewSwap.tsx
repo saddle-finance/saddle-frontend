@@ -1,6 +1,7 @@
 import "./ReviewSwap.scss"
 
-import React from "react"
+import React, { ReactElement } from "react"
+
 import USDC from "../assets/icons/usdc.svg"
 import USDT from "../assets/icons/usdt.svg"
 import iconDown from "../assets/icons/icon_down.svg"
@@ -28,10 +29,10 @@ const data = {
 interface Props {
   onClose: () => void
   onConfirm: () => void
-  data?: any
+  data?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-function ReviewSwap({ onClose, onConfirm }: Props) {
+function ReviewSwap({ onClose, onConfirm }: Props): ReactElement {
   return (
     <div className="reviewSwap">
       <h3>Review Swap</h3>

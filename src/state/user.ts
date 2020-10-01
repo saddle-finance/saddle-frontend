@@ -14,10 +14,10 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    updateUserSwapAdvancedMode(state, action: PayloadAction<boolean>) {
+    updateUserSwapAdvancedMode(state, action: PayloadAction<boolean>): void {
       state.userSwapAdvancedMode = action.payload
     },
-    updateUserPoolAdvancedMode(state, action: PayloadAction<boolean>) {
+    updateUserPoolAdvancedMode(state, action: PayloadAction<boolean>): void {
       state.userPoolAdvancedMode = action.payload
     },
   },

@@ -1,12 +1,12 @@
 import "./TokenInput.scss"
 
-import React from "react"
+import React, { ReactElement } from "react"
 
 interface Props {
-  token: any
+  token: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
-function TokenInput({ token }: Props) {
+function TokenInput({ token }: Props): ReactElement {
   return (
     <div className="tokenInput">
       <img alt="" src={token.icon} />

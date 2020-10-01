@@ -1,3 +1,4 @@
+import React, { ReactElement } from "react"
 import { Route, Switch } from "react-router-dom"
 
 import DepositBTC from "./DepositBTC"
@@ -6,12 +7,11 @@ import Home from "./Home"
 import Pool from "./Pool"
 import PoolBTC from "./PoolBTC"
 import PoolUSD from "./PoolUSD"
-import React from "react"
 import SwapBTC from "./SwapBTC"
 import SwapUSD from "./SwapUSD"
 import Web3ReactManager from "../components/Web3ReactManager"
 
-export default function App() {
+export default function App(): ReactElement {
   return (
     <Web3ReactManager>
       <Switch>

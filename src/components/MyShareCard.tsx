@@ -1,6 +1,6 @@
 import "./MyShareCard.scss"
 
-import React from "react"
+import React, { ReactElement } from "react"
 
 interface Props {
   data?: {
@@ -13,7 +13,7 @@ interface Props {
   }
 }
 
-function MyShareCard({ data }: Props) {
+function MyShareCard({ data }: Props): ReactElement | null {
   if (!data) return null
   else
     return (

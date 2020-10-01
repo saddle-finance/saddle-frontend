@@ -9,7 +9,7 @@ export default function Web3ReactManager({
   children,
 }: {
   children: JSX.Element
-}) {
+}): JSX.Element | null {
   const { active } = useWeb3React()
   const {
     active: networkActive,
@@ -37,7 +37,7 @@ export default function Web3ReactManager({
       setShowLoader(true)
     }, 600)
 
-    return () => {
+    return (): void => {
       clearTimeout(timeout)
     }
   }, [])

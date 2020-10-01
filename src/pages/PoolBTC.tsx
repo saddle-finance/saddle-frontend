@@ -1,8 +1,9 @@
 import "./PoolUSD_BTC.scss"
 
+import React, { ReactElement } from "react"
+
 import MyShare from "../components/MyShare"
 import PoolOverview from "../components/PoolOverview"
-import React from "react"
 import TopMenu from "../components/TopMenu"
 import renbtcLogo from "../assets/icons/renbtc.svg"
 import sbtcLogo from "../assets/icons/sbtc.svg"
@@ -36,7 +37,7 @@ const poolData = {
 }
 // Dumb data end here
 
-function PoolBTC() {
+function PoolBTC(): ReactElement {
   return (
     <div className="poolBtc">
       <TopMenu activeTab={"pool"} />

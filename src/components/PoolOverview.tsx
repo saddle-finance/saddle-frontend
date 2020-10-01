@@ -1,7 +1,8 @@
 import "./PoolOverview.scss"
 
+import React, { ReactElement } from "react"
+
 import { Link } from "react-router-dom"
-import React from "react"
 import classNames from "classnames"
 
 interface Props {
@@ -15,7 +16,7 @@ interface Props {
   }
 }
 
-function PoolOverview({ data, to }: Props) {
+function PoolOverview({ data, to }: Props): ReactElement {
   return (
     <div className="poolOverview">
       <h4>Pool Overview</h4>

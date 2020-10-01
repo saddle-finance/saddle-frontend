@@ -1,6 +1,6 @@
 import "./PoolInfoCard.scss"
 
-import React from "react"
+import React, { ReactElement } from "react"
 
 interface Props {
   data: {
@@ -20,7 +20,7 @@ interface Props {
   }
 }
 
-function PoolInfoCard({ data }: Props) {
+function PoolInfoCard({ data }: Props): ReactElement {
   return (
     <div className="poolInfoCard">
       <p>{data.name}</p>

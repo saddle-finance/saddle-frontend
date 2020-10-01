@@ -1,7 +1,8 @@
 import "./AssetButton.scss"
 
+import React, { ReactElement } from "react"
+
 import { Link } from "react-router-dom"
-import React from "react"
 import defaultIcon from "../assets/icons/icon_btc.svg"
 
 interface Props {
@@ -12,7 +13,7 @@ interface Props {
 
 // const icon_btc = require("../assets/icons/icon_btc.svg") as string;
 
-function AssetButton({ title, to, icon }: Props) {
+function AssetButton({ title, to, icon }: Props): ReactElement {
   return (
     <Link to={to}>
       <button className="asset">
