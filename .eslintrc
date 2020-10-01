@@ -25,11 +25,7 @@
     "mocha": true,
     "node": true
   },
-  "globals": {
-    "require": "off"
-  },
   "rules": {
-    "@typescript-eslint/no-var-requires": 0,
     "no-invalid-this": 0,
     "sort-imports": "error"
   }
