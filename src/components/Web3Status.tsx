@@ -1,35 +1,37 @@
-import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
+import "./Web3Status.scss"
 
-import React from "react"
-import { Twemoji } from "react-emoji-render"
-import { injected } from "../connectors"
+import React, { useState } from "react"
+
+import ConnectWallet from "./ConnectWallet"
+import Modal from "./Modal"
+import { useWeb3React } from "@web3-react/core"
+
+// Todo: Link profile image to real account image
 
 const Web3Status = () => {
-  const { account, activate } = useWeb3React()
+  const { account } = useWeb3React()
+  const [modalOpen, setModalOpen] = useState(false)
 
   return (
     <div className="walletStatus">
-      <button
-        type="button"
-        onClick={() => {
-          activate(injected, undefined, true).catch((error) => {
-            if (error instanceof UnsupportedChainIdError) {
-              activate(injected) // a little janky...can't use setError because the connector isn't set
-            } else {
-              // TODO: handle error
-            }
-          })
-        }}
-      >
-        {!account && <Twemoji className="indicator" text=":red_circle:" />}
-        &nbsp;
-        {account
-          ? `Connected to ${account.substring(0, 6)}...${account.substring(
-              account.length - 4,
-              account.length,
-            )}!`
-          : "Connect Wallet"}
+      <button type="button" onClick={() => setModalOpen(true)}>
+        {account ? (
+          <div className="hasAccount">
+            <span>
+              {account.substring(0, 6)}...
+              {account.substring(account.length - 4, account.length)}
+            </span>
+
+            {/* Link real profile image here */}
+            <img alt="profile" src={require("../assets/icons/profile.svg")} />
+          </div>
+        ) : (
+          <div className="noAccount">Connect Wallet</div>
+        )}
       </button>
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
+        <ConnectWallet onClose={() => setModalOpen(false)} />
+      </Modal>
     </div>
   )
 }
