@@ -1,0 +1,45 @@
+@import "../styles/theme";
+
+div.walletStatus {
+  & > button {
+    border: none;
+    padding: 0;
+    background: none;
+    font-family: $font-family;
+    font-size: 18px;
+  
+    &:hover,
+    &:focus,
+    &:active {
+      outline: none;
+    }
+  }
+  .hasAccount img {
+    margin-right: 0;
+    margin-left: 8px;
+  }
+  .hasAccount span {
+    vertical-align: top;
+  }
+  .noAccount {
+    height: 40px;
+    width: 170px;
+    background: $background-button;
+    border-radius: 4px;
+    line-height: 40px;
+    color: $text-primary;
+    font-weight: $medium;
+
+    &:hover,
+    &:focus,
+    &:active {
+      outline: none;
+      border: 2px solid $outline;
+      width: 166px;
+      transform: none;
+      transition: none;
+      background: $background-button-hover;
+    }
+  }
+  
+}

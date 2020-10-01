@@ -1,8 +1,10 @@
-import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
-
 import React from "react"
-import { Twemoji } from "react-emoji-render"
+import { useWeb3React, UnsupportedChainIdError } from "@web3-react/core"
+import "./Web3Status.scss"
+
 import { injected } from "../connectors"
+
+// Todo: Link profile image to real account image
 
 const Web3Status = () => {
   const { account, activate } = useWeb3React()
@@ -21,14 +23,19 @@ const Web3Status = () => {
           })
         }}
       >
-        {!account && <Twemoji className="indicator" text=":red_circle:" />}
-        &nbsp;
-        {account
-          ? `Connected to ${account.substring(0, 6)}...${account.substring(
-              account.length - 4,
-              account.length,
-            )}!`
-          : "Connect Wallet"}
+        {account ? (
+          <div className="hasAccount">
+            <span>
+              {account.substring(0, 6)}...
+              {account.substring(account.length - 4, account.length)}
+            </span>
+
+            {/* Link real profile image here */}
+            <img alt="profile" src={require("../assets/icons/profile.svg")} />
+          </div>
+        ) : (
+          <div className="noAccount">Connect Wallet</div>
+        )}
       </button>
     </div>
   )
