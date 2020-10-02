@@ -1,6 +1,7 @@
-import React, { ReactElement } from "react"
+import React, { ReactElement, useEffect } from "react"
 import { Route, Switch } from "react-router-dom"
 
+import { AppDispatch } from "../state"
 import DepositBTC from "./DepositBTC"
 import DepositUSD from "./DepositUSD"
 import Home from "./Home"
@@ -10,8 +11,17 @@ import PoolUSD from "./PoolUSD"
 import SwapBTC from "./SwapBTC"
 import SwapUSD from "./SwapUSD"
 import Web3ReactManager from "../components/Web3ReactManager"
+import fetchGasPrices from "../utils/updateGasPrices"
+import { useDispatch } from "react-redux"
 
 export default function App(): ReactElement {
+  const dispatch = useDispatch<AppDispatch>()
+
+  // TODO: figure out how frequently we want to update gas prices and where
+  useEffect(() => {
+    fetchGasPrices(dispatch)
+  }, [dispatch])
+
   return (
     <Web3ReactManager>
       <Switch>

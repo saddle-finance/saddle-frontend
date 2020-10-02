@@ -68,7 +68,6 @@ const testTokensData = [
 
 const selected = {
   maxSlippage: 0.1,
-  gas: "standard",
   infiniteApproval: false,
 }
 
