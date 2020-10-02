@@ -11,8 +11,6 @@ interface Props {
   icon?: string
 }
 
-// const icon_btc = require("../assets/icons/icon_btc.svg") as string;
-
 function AssetButton({ title, to, icon }: Props): ReactElement {
   return (
     <Link to={to}>

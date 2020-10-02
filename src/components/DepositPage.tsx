@@ -1,5 +1,10 @@
 import "./DepositPage.scss"
 
+import {
+  GasPrices,
+  updateCustomGasPrice,
+  updateSelectedGasPrice,
+} from "../state/application"
 import React, { ReactElement, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
@@ -76,6 +81,13 @@ const DepositPage = (props: Props): ReactElement => {
   const { userPoolAdvancedMode: advanced } = useSelector(
     (state: AppState) => state.user,
   )
+  const {
+    gasStandard,
+    gasFast,
+    gasInstant,
+    gasCustom,
+    selectedGasPrice,
+  } = useSelector((state: AppState) => state.application)
 
   return (
     <div className="deposit">
@@ -146,26 +158,49 @@ const DepositPage = (props: Props): ReactElement => {
                 Gas:
                 <span
                   className={classNames({
-                    selected: selected.gas === "standard",
+                    selected: selectedGasPrice === GasPrices.Standard,
                   })}
+                  onClick={(): PayloadAction<GasPrices> =>
+                    dispatch(updateSelectedGasPrice(GasPrices.Standard))
+                  }
                 >
-                  75 Standard
+                  {gasStandard} Standard
                 </span>
                 <span
                   className={classNames({
-                    selected: selected.gas === "fast",
+                    selected: selectedGasPrice === GasPrices.Fast,
                   })}
+                  onClick={(): PayloadAction<GasPrices> =>
+                    dispatch(updateSelectedGasPrice(GasPrices.Fast))
+                  }
                 >
-                  82 Fast
+                  {gasFast} Fast
                 </span>
                 <span
                   className={classNames({
-                    selected: selected.gas === "instant",
+                    selected: selectedGasPrice === GasPrices.Instant,
                   })}
+                  onClick={(): PayloadAction<GasPrices> =>
+                    dispatch(updateSelectedGasPrice(GasPrices.Instant))
+                  }
                 >
-                  87 Instant
+                  {gasInstant} Instant
                 </span>
-                <input type="number" />
+                <input
+                  type="number"
+                  className={classNames({
+                    selected: selectedGasPrice === GasPrices.Custom,
+                  })}
+                  defaultValue={gasCustom}
+                  onClick={(): PayloadAction<GasPrices> =>
+                    dispatch(updateSelectedGasPrice(GasPrices.Custom))
+                  }
+                  onChange={(
+                    e: React.ChangeEvent<HTMLInputElement>,
+                  ): PayloadAction<number> =>
+                    dispatch(updateCustomGasPrice(Number(e.target.value)))
+                  }
+                ></input>
               </div>
             </div>
           </div>

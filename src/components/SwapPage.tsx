@@ -1,11 +1,16 @@
 import "./SwapPage.scss"
 
 import React, { ReactElement, useState } from "react"
+import {
+  updateCustomGasPrice,
+  updateSelectedGasPrice,
+} from "../state/application"
 import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
 import { AppState } from "../state/index"
 import ConfirmTransaction from "./ConfirmTransaction"
+import { GasPrices } from "../state/application"
 import Modal from "./Modal"
 import { PayloadAction } from "@reduxjs/toolkit"
 import ReviewSwap from "./ReviewSwap"
@@ -23,7 +28,6 @@ import { updateUserSwapAdvancedMode } from "../state/user"
 // Dumb data for UI
 const selected = {
   tradePool: "Y",
-  gas: "standard",
   maxSlippage: 0.5,
   infiniteApproval: false,
 }
@@ -47,6 +51,13 @@ const SwapPage = (props: Props): ReactElement => {
   const { userSwapAdvancedMode: advanced } = useSelector(
     (state: AppState) => state.user,
   )
+  const {
+    gasStandard,
+    gasFast,
+    gasInstant,
+    gasCustom,
+    selectedGasPrice,
+  } = useSelector((state: AppState) => state.application)
 
   return (
     <div className="swapPage">
@@ -154,26 +165,49 @@ const SwapPage = (props: Props): ReactElement => {
                 <div className="options">
                   <button
                     className={classNames({
-                      selected: selected.gas === "standard",
+                      selected: selectedGasPrice === GasPrices.Standard,
                     })}
+                    onClick={(): PayloadAction<GasPrices> =>
+                      dispatch(updateSelectedGasPrice(GasPrices.Standard))
+                    }
                   >
-                    75 Standard
+                    {gasStandard} Standard
                   </button>
                   <button
                     className={classNames({
-                      selected: selected.gas === "fast",
+                      selected: selectedGasPrice === GasPrices.Fast,
                     })}
+                    onClick={(): PayloadAction<GasPrices> =>
+                      dispatch(updateSelectedGasPrice(GasPrices.Fast))
+                    }
                   >
-                    82 Fast
+                    {gasFast} Fast
                   </button>
                   <button
                     className={classNames({
-                      selected: selected.gas === "instant",
+                      selected: selectedGasPrice === GasPrices.Instant,
                     })}
+                    onClick={(): PayloadAction<GasPrices> =>
+                      dispatch(updateSelectedGasPrice(GasPrices.Instant))
+                    }
                   >
-                    89 Instant
+                    {gasInstant} Instant
                   </button>
-                  <input></input>
+                  <input
+                    type="number"
+                    className={classNames({
+                      selected: selectedGasPrice === GasPrices.Custom,
+                    })}
+                    defaultValue={gasCustom}
+                    onClick={(): PayloadAction<GasPrices> =>
+                      dispatch(updateSelectedGasPrice(GasPrices.Custom))
+                    }
+                    onChange={(
+                      e: React.ChangeEvent<HTMLInputElement>,
+                    ): PayloadAction<number> =>
+                      dispatch(updateCustomGasPrice(Number(e.target.value)))
+                    }
+                  ></input>
                 </div>
               </div>
               <div className="tradePool tableOption">
