@@ -4,7 +4,7 @@ import {
   GasPrices,
   updateCustomGasPrice,
   updateSelectedGasPrice,
-} from "../state/application"
+} from "../state/user"
 import React, { ReactElement, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
@@ -19,7 +19,7 @@ import ReviewDeposit from "./ReviewDeposit"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
-import { updateUserPoolAdvancedMode } from "../state/user"
+import { updatePoolAdvancedMode } from "../state/user"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
@@ -78,16 +78,14 @@ const DepositPage = (props: Props): ReactElement => {
   const [popUp, setPopUp] = useState("")
 
   const dispatch = useDispatch<AppDispatch>()
-  const { userPoolAdvancedMode: advanced } = useSelector(
-    (state: AppState) => state.user,
-  )
   const {
-    gasStandard,
-    gasFast,
-    gasInstant,
+    userPoolAdvancedMode: advanced,
     gasCustom,
     selectedGasPrice,
-  } = useSelector((state: AppState) => state.application)
+  } = useSelector((state: AppState) => state.user)
+  const { gasStandard, gasFast, gasInstant } = useSelector(
+    (state: AppState) => state.application,
+  )
 
   return (
     <div className="deposit">
@@ -105,7 +103,7 @@ const DepositPage = (props: Props): ReactElement => {
             <span
               className="title"
               onClick={(): PayloadAction<boolean> =>
-                dispatch(updateUserPoolAdvancedMode(!advanced))
+                dispatch(updatePoolAdvancedMode(!advanced))
               }
             >
               Advanced Options

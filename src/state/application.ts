@@ -1,50 +1,28 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
-export enum GasPrices {
-  Standard = "STANDARD",
-  Fast = "FAST",
-  Instant = "INSTANT",
-  Custom = "CUSTOM",
-}
-
-interface GasState {
+interface GasPrices {
   gasStandard?: number
   gasFast?: number
   gasInstant?: number
 }
 
-type ApplicationState = {
-  gasCustom?: number
-  selectedGasPrice: GasPrices
-} & GasState
+type ApplicationState = {} & GasPrices
 
-const initialState: ApplicationState = {
-  selectedGasPrice: GasPrices.Standard,
-}
+const initialState: ApplicationState = {}
 
 const applicationSlice = createSlice({
   name: "application",
   initialState,
   reducers: {
-    updateGasPrices(state, action: PayloadAction<GasState>): void {
+    updateGasPrices(state, action: PayloadAction<GasPrices>): void {
       const { gasStandard, gasFast, gasInstant } = action.payload
       state.gasStandard = gasStandard
       state.gasFast = gasFast
       state.gasInstant = gasInstant
     },
-    updateCustomGasPrice(state, action: PayloadAction<number>): void {
-      state.gasCustom = action.payload
-    },
-    updateSelectedGasPrice(state, action: PayloadAction<GasPrices>): void {
-      state.selectedGasPrice = action.payload
-    },
   },
 })
 
-export const {
-  updateGasPrices,
-  updateCustomGasPrice,
-  updateSelectedGasPrice,
-} = applicationSlice.actions
+export const { updateGasPrices } = applicationSlice.actions
 
 export default applicationSlice.reducer

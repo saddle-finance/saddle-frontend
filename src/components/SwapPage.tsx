@@ -1,16 +1,13 @@
 import "./SwapPage.scss"
 
 import React, { ReactElement, useState } from "react"
-import {
-  updateCustomGasPrice,
-  updateSelectedGasPrice,
-} from "../state/application"
+import { updateCustomGasPrice, updateSelectedGasPrice } from "../state/user"
 import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
 import { AppState } from "../state/index"
 import ConfirmTransaction from "./ConfirmTransaction"
-import { GasPrices } from "../state/application"
+import { GasPrices } from "../state/user"
 import Modal from "./Modal"
 import { PayloadAction } from "@reduxjs/toolkit"
 import ReviewSwap from "./ReviewSwap"
@@ -18,7 +15,7 @@ import SwapForm from "./SwapForm"
 import TopMenu from "./TopMenu"
 import changeIcon from "../assets/icons/icon_change.svg"
 import classNames from "classnames"
-import { updateUserSwapAdvancedMode } from "../state/user"
+import { updateSwapAdvancedMode } from "../state/user"
 
 // TODO:
 // - Use state to add function of exchange button in priceTable
@@ -48,16 +45,14 @@ const SwapPage = (props: Props): ReactElement => {
   const [popUp, setPopUp] = useState("")
 
   const dispatch = useDispatch<AppDispatch>()
-  const { userSwapAdvancedMode: advanced } = useSelector(
-    (state: AppState) => state.user,
-  )
   const {
-    gasStandard,
-    gasFast,
-    gasInstant,
+    userSwapAdvancedMode: advanced,
     gasCustom,
     selectedGasPrice,
-  } = useSelector((state: AppState) => state.application)
+  } = useSelector((state: AppState) => state.user)
+  const { gasStandard, gasFast, gasInstant } = useSelector(
+    (state: AppState) => state.application,
+  )
 
   return (
     <div className="swapPage">
@@ -93,7 +88,7 @@ const SwapPage = (props: Props): ReactElement => {
           <div
             className="title"
             onClick={(): PayloadAction<boolean> =>
-              dispatch(updateUserSwapAdvancedMode(!advanced))
+              dispatch(updateSwapAdvancedMode(!advanced))
             }
           >
             Advanced Options
