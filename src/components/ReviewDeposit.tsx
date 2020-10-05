@@ -59,7 +59,7 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
           transaction will revert.
         </p>
         <button onClick={onConfirm} className="confirm">
-          Confirm Swap
+          Confirm Deposit
         </button>
         <button onClick={onClose} className="cancel">
           Cancel

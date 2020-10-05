@@ -85,12 +85,12 @@ const WithdrawPage = (props: Props): ReactElement => {
   )
 
   return (
-    <div className="deposit">
+    <div className="withdraw">
       <TopMenu activeTab={"pool"} />
       <div className="content">
         <div className="form">
           <h3>Withdraw from {title}</h3>
-          <div>
+          <div className="percentage">
             <span>Withdraw percentage (%): </span>
             <input />
           </div>

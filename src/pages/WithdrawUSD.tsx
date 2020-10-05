@@ -93,7 +93,7 @@ const testTokensData = [
 ]
 
 const testTransInfoData = {
-  isInfo: true,
+  isInfo: false,
   content: {
     minimumReceive: 0.083,
     lpTokenValue: "10.34 USD",
