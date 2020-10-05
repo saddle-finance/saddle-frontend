@@ -11,6 +11,7 @@ import PoolUSD from "./PoolUSD"
 import SwapBTC from "./SwapBTC"
 import SwapUSD from "./SwapUSD"
 import Web3ReactManager from "../components/Web3ReactManager"
+import WithdrawUSD from "./WithdrawUSD"
 import fetchGasPrices from "../utils/updateGasPrices"
 import { useDispatch } from "react-redux"
 
@@ -33,6 +34,7 @@ export default function App(): ReactElement {
         <Route exact path="/pool/usd" component={PoolUSD} />
         <Route exact path="/pool/btc/deposit" component={DepositBTC} />
         <Route exact path="/pool/usd/deposit" component={DepositUSD} />
+        <Route exact path="/pool/usd/withdraw" component={WithdrawUSD} />
       </Switch>
     </Web3ReactManager>
   )
