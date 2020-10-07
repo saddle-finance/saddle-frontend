@@ -1,11 +1,11 @@
 import React, { ReactElement } from "react"
 
 import WithdrawPage from "../components/WithdrawPage"
+
 import daiLogo from "../assets/icons/dai.svg"
 import susdLogo from "../assets/icons/susd.svg"
 import usdcLogo from "../assets/icons/usdc.svg"
 import usdtLogo from "../assets/icons/usdt.svg"
-
 // Dumb data start here
 const testMyShareData = {
   name: "USD Pool",
@@ -100,33 +100,6 @@ const testTransInfoData = {
     benefit: 1.836,
   },
 }
-
-const testDepositData = {
-  deposit: [
-    {
-      name: "DAI",
-      value: 6.21,
-      icon: daiLogo,
-    },
-    {
-      name: "USDC",
-      value: 8.65,
-      icon: usdcLogo,
-    },
-  ],
-  rates: [
-    {
-      name: "DAI",
-      rate: 1.02,
-    },
-    {
-      name: "USDC",
-      rate: 0.99,
-    },
-  ],
-  share: 0.000024,
-  sadd: 0.325496,
-}
 // Dumb data end here
 
 function WithdrawUSD(): ReactElement {
@@ -137,7 +110,6 @@ function WithdrawUSD(): ReactElement {
       poolData={testUsdPoolData}
       transactionInfoData={testTransInfoData}
       myShareData={testMyShareData}
-      depositDataFromParent={testDepositData}
     />
   )
 }

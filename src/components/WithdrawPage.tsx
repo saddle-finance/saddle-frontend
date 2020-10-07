@@ -15,10 +15,51 @@ import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
 import { PayloadAction } from "@reduxjs/toolkit"
 import PoolInfoCard from "./PoolInfoCard"
+import ReviewWithdraw from "./ReviewWithdraw"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
 
+import daiLogo from "../assets/icons/dai.svg"
+// import susdLogo from "../assets/icons/susd.svg"
+import usdcLogo from "../assets/icons/usdc.svg"
+import usdtLogo from "../assets/icons/usdt.svg"
+
+const testWithdrawData = {
+  withdraw: [
+    {
+      name: "DAI",
+      value: 23.21,
+      icon: daiLogo,
+    },
+    {
+      name: "USDC",
+      value: 30.65,
+      icon: usdcLogo,
+    },
+    {
+      name: "USDT",
+      value: 20.15,
+      icon: usdtLogo,
+    },
+  ],
+  rates: [
+    {
+      name: "DAI",
+      rate: 1.02,
+    },
+    {
+      name: "USDC",
+      rate: 0.99,
+    },
+    {
+      name: "USDT",
+      rate: 1.01,
+    },
+  ],
+  share: 0.000024,
+  sadd: 0.325496,
+}
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   title: string
@@ -50,12 +91,6 @@ interface Props {
   transactionInfoData: {
     isInfo: boolean
     content: { [key: string]: any }
-  }
-  depositDataFromParent: {
-    deposit: Array<{ [key: string]: any }>
-    rates: Array<{ [key: string]: any }>
-    share: number
-    sadd: number
   }
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -103,7 +138,7 @@ const WithdrawPage = (props: Props): ReactElement => {
   const onSubmit = (): void => {
     if (percentage > 0 && percentage <= 100) {
       setModalOpen(true)
-      setPopUp("confirm")
+      setPopUp("review")
     }
   }
 
@@ -198,7 +233,7 @@ const WithdrawPage = (props: Props): ReactElement => {
               onSubmit()
             }}
           >
-            Deposit
+            Withdraw
           </button>
           <div
             className={
@@ -251,13 +286,13 @@ const WithdrawPage = (props: Props): ReactElement => {
           <PoolInfoCard data={poolData} />
         </div>
         <Modal isOpen={modalOpen} onClose={(): void => setModalOpen(false)}>
-          {/* {popUp === "review" ? (
-            <ReviewDeposit
-              data={depositDataFromParent}
+          {popUp === "review" ? (
+            <ReviewWithdraw
+              data={testWithdrawData}
               onConfirm={(): void => setPopUp("confirm")}
               onClose={(): void => setModalOpen(false)}
             />
-          ) : null} */}
+          ) : null}
           {popUp === "confirm" ? <ConfirmTransaction /> : null}
         </Modal>
       </div>
