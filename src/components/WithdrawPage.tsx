@@ -121,7 +121,7 @@ const WithdrawPage = (props: Props): ReactElement => {
   const onPercentChange = (value: string): void => {
     const percent = parseInt(value)
     if (percent <= 0 || percent > 100) {
-      setPercentage(100)
+      setPercentage(percent)
       setError("Please input a number between 0 and 100")
     } else {
       setError("")
@@ -135,8 +135,12 @@ const WithdrawPage = (props: Props): ReactElement => {
     }
   }
 
+  const validPercentage = (value: number): boolean => {
+    return value > 0 && value <= 100 ? true : false
+  }
+
   const onSubmit = (): void => {
-    if (percentage > 0 && percentage <= 100) {
+    if (validPercentage(percentage)) {
       setModalOpen(true)
       setPopUp("review")
     }
@@ -229,6 +233,7 @@ const WithdrawPage = (props: Props): ReactElement => {
           <button
             className="actionBtn"
             type="submit"
+            disabled={!validPercentage(percentage)}
             onClick={(): void => {
               onSubmit()
             }}

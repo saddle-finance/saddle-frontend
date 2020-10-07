@@ -84,6 +84,15 @@ div.withdraw {
         box-shadow: $shadow-hover;
       }
     }
+
+    .actionBtn:disabled {
+      cursor: not-allowed;
+      background: $disabled;
+
+      &:hover {
+        transform: none;
+      }
+    }
   }
 
   .advancedOptions {
