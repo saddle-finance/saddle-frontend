@@ -7,6 +7,7 @@ interface Props {
 }
 
 function TokenInput({ token }: Props): ReactElement {
+  console.log(token)
   return (
     <div className="tokenInput">
       <img alt="" src={token.icon} />

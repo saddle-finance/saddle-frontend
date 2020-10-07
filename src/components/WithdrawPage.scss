@@ -1,0 +1,176 @@
+@import "../styles/theme.scss";
+
+div.withdraw {
+  min-height: 110vh;
+  background: $background;
+  color: $text;
+  padding-bottom: 24px;
+
+  .content {
+    width: 864px;
+    margin: 0 auto;
+    display: flex;
+    gap: 80px;
+
+    .infoPanels {
+      margin-top: 104px;
+    }
+
+    .form h3 {
+      font-size: 20px;
+      font-weight: $normal;
+      line-height: 24px;
+      color: $text-darker;
+      margin: 40px auto;
+      text-align: center;
+    }
+
+    .percentage {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+
+      input {
+        height: 40px;
+        width: 170px;
+        display: block;
+        background: $white;
+        border: none;
+        border-radius: 0;
+
+        padding-left: 16px;
+        color: $text;
+        font-size: 16px;
+        font-family: $font-family;
+        font-style: normal;
+        font-weight: $normal;
+
+        &:focus {
+          outline: $outline solid 1px;
+        }
+      }
+
+      .error {
+        margin-top: 8px;
+        color: $error;
+        font-size: 14px;
+        text-align: right;
+        width: 100%;
+      }
+    }
+
+    .actionBtn {
+      background: $primary;
+      color: $white;
+      margin-top: 40px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 24px;
+      display: block;
+      width: 170px;
+      height: 40px;
+      border: none;
+      border-radius: 4px;
+      font-size: 18px;
+      font-weight: $medium;
+      box-shadow: $shadow;
+
+      &:hover,
+      &:focus {
+        outline: none;
+        opacity: 0.8;
+        box-shadow: $shadow-hover;
+      }
+    }
+
+    .actionBtn:disabled {
+      cursor: not-allowed;
+      background: $disabled;
+
+      &:hover {
+        transform: none;
+      }
+    }
+  }
+
+  .advancedOptions {
+    .combination {
+      display: block;
+      position: relative;
+      cursor: pointer;
+      font-size: 16px;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      display: flex;
+      align-items: center;
+
+      input {
+        width: 20px;
+        height: 20px;
+        margin: 0 16px 0 0;
+      }
+    }
+
+    div.paramater {
+      margin-top: 16px;
+
+      span {
+        margin-left: 16px;
+        cursor: pointer;
+      }
+
+      input {
+        width: 64px;
+        height: 24px;
+        margin-left: 16px;
+        border: none;
+        border-radius: 0;
+
+        &:focus {
+          outline: 1px solid $outline;
+        }
+      }
+
+      .selected {
+        color: $text-primary;
+        font-weight: $medium;
+        text-decoration: underline;
+      }
+    }
+
+    .show {
+      display: block;
+    }
+  }
+
+  div.transactionInfoContainer {
+    display: none;
+  }
+
+  div.transactionInfo {
+    display: flex;
+    gap: 32px;
+
+    span.value {
+      display: block;
+      color: $text-darker;
+      font-weight: $medium;
+    }
+
+    span.bonus {
+      color: $text-green;
+    }
+
+    span.slippage {
+      color: $error;
+    }
+  }
+
+  div.show {
+    display: block;
+  }
+}

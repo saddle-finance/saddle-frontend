@@ -1,4 +1,4 @@
-import "./ReviewDeposit.scss"
+import "./ReviewWithdraw.scss"
 
 import React, { ReactElement } from "react"
 
@@ -7,7 +7,7 @@ interface Props {
   onClose: () => void
   onConfirm: () => void
   data: {
-    deposit: Array<{ [key: string]: any }>
+    withdraw: Array<{ [key: string]: any }>
     rates: Array<{ [key: string]: any }>
     share: number
     sadd: number
@@ -15,12 +15,12 @@ interface Props {
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
+function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
   return (
-    <div className="reviewDeposit">
-      <h3>Review Deposit</h3>
+    <div className="reviewWithdraw">
+      <h3>You will receive</h3>
       <div className="table">
-        {data.deposit.map((each, index) => (
+        {data.withdraw.map((each, index) => (
           <div className="eachToken" key={index}>
             <span className="value">{each.value}</span>
             <img src={each.icon} alt={each.name} />
@@ -51,15 +51,12 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
         </div>
       </div>
       <div className="bottom">
-        <h4>You will receive</h4>
-        <span>{data.sadd}</span>
-        <span style={{ float: "right" }}>SADD pool tokens</span>
         <p>
           Output is estimated. If the price changes by more than 0.1% your
           transaction will revert.
         </p>
         <button onClick={onConfirm} className="confirm">
-          Confirm Deposit
+          Confirm Withdraw
         </button>
         <button onClick={onClose} className="cancel">
           Cancel
@@ -69,4 +66,4 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
   )
 }
 
-export default ReviewDeposit
+export default ReviewWithdraw

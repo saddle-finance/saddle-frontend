@@ -2,7 +2,10 @@ import "./MyShare.scss"
 
 import React, { ReactElement } from "react"
 
+import { Link } from "react-router-dom"
+
 interface Props {
+  to: string
   data?: {
     name: string
     share: number
@@ -11,7 +14,7 @@ interface Props {
   }
 }
 
-function MyShare({ data }: Props): ReactElement | null {
+function MyShare({ to, data }: Props): ReactElement | null {
   if (!data) return null
   else
     return (
@@ -32,7 +35,9 @@ function MyShare({ data }: Props): ReactElement | null {
               <span>{data.token.map((coin) => coin + ", ")}</span>
             </div>
           </div>
-          <button className="withdraw">Withdraw</button>
+          <Link to={to}>
+            <button className="withdraw">Withdraw</button>
+          </Link>
         </div>
       </div>
     )

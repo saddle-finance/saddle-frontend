@@ -49,7 +49,9 @@ function PoolUSD(): ReactElement {
       <div className="content">
         <PoolOverview data={poolData} to="/pool/usd/deposit" />
         <div style={{ height: "40px" }}></div> {/* space divider */}
-        <MyShare data={shareData} />
+        {shareData.share && (
+          <MyShare data={shareData} to="/pool/usd/withdraw" />
+        )}
       </div>
     </div>
   )

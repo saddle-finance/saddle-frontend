@@ -35,6 +35,13 @@ const poolData = {
   saddAPY: "160.63% to 433.65%",
   volume: 80495.38,
 }
+
+const shareData = {
+  name: "USD Pool",
+  share: 0,
+  USDbalance: 0,
+  token: ["tBTC", "wBTC", "renBTC", "sBTC"],
+}
 // Dumb data end here
 
 function PoolBTC(): ReactElement {
@@ -43,7 +50,9 @@ function PoolBTC(): ReactElement {
       <TopMenu activeTab={"pool"} />
       <div className="content">
         <PoolOverview data={poolData} to="/pool/btc/deposit" />
-        <MyShare />
+        {shareData.share ? (
+          <MyShare data={shareData} to="/pool/btc/withdraw" />
+        ) : null}
       </div>
     </div>
   )
