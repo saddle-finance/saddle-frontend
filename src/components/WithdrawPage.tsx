@@ -74,6 +74,7 @@ const WithdrawPage = (props: Props): ReactElement => {
   const [popUp, setPopUp] = useState("")
   const [percentage, setPercentage] = useState(100)
   const [error, setError] = useState("")
+  const [currentTokensData, setCurrentTokensData] = useState(tokensData)
 
   const dispatch = useDispatch<AppDispatch>()
   const { gasCustom, selectedGasPrice } = useSelector(
@@ -85,11 +86,17 @@ const WithdrawPage = (props: Props): ReactElement => {
   const onPercentChange = (value: string): void => {
     const percent = parseInt(value)
     if (percent <= 0 || percent > 100) {
-      setPercentage(0)
+      setPercentage(100)
       setError("Please input a number between 0 and 100")
     } else {
       setError("")
       setPercentage(percent)
+      setCurrentTokensData(
+        tokensData.map((token) => ({
+          ...token,
+          max: Math.floor(token.max * percent) / 100,
+        })),
+      )
     }
   }
 
@@ -118,7 +125,7 @@ const WithdrawPage = (props: Props): ReactElement => {
             />
             {error && <div className="error">{error}</div>}
           </div>
-          {tokensData.map((token, index) => (
+          {currentTokensData.map((token, index) => (
             <div key={index}>
               <TokenInput token={token} />
               <div style={{ height: "24px" }}></div> {/* space divider */}
