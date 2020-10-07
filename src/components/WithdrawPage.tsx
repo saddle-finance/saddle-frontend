@@ -15,7 +15,6 @@ import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
 import { PayloadAction } from "@reduxjs/toolkit"
 import PoolInfoCard from "./PoolInfoCard"
-import ReviewDeposit from "./ReviewDeposit"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
@@ -64,17 +63,17 @@ interface Props {
 const WithdrawPage = (props: Props): ReactElement => {
   const {
     title,
-    // selected,
     tokensData,
     poolData,
     transactionInfoData,
     myShareData,
-    depositDataFromParent,
   } = props
 
   const [modalOpen, setModalOpen] = useState(false)
   const [combination, setCombination] = useState(false)
   const [popUp, setPopUp] = useState("")
+  const [percentage, setPercentage] = useState(100)
+  const [error, setError] = useState("")
 
   const dispatch = useDispatch<AppDispatch>()
   const { gasCustom, selectedGasPrice } = useSelector(
@@ -83,6 +82,23 @@ const WithdrawPage = (props: Props): ReactElement => {
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
+  const onPercentChange = (value: string): void => {
+    const percent = parseInt(value)
+    if (percent <= 0 || percent > 100) {
+      setPercentage(0)
+      setError("Please input a number between 0 and 100")
+    } else {
+      setError("")
+      setPercentage(percent)
+    }
+  }
+
+  const onSubmit = (): void => {
+    if (percentage > 0 && percentage <= 100) {
+      setModalOpen(true)
+      setPopUp("confirm")
+    }
+  }
 
   return (
     <div className="withdraw">
@@ -92,7 +108,15 @@ const WithdrawPage = (props: Props): ReactElement => {
           <h3>Withdraw from {title}</h3>
           <div className="percentage">
             <span>Withdraw percentage (%): </span>
-            <input />
+            <input
+              type="number"
+              step="10"
+              placeholder="100"
+              onChange={(e: React.FormEvent<HTMLInputElement>): void =>
+                onPercentChange(e.currentTarget.value)
+              }
+            />
+            {error && <div className="error">{error}</div>}
           </div>
           {tokensData.map((token, index) => (
             <div key={index}>
@@ -162,9 +186,9 @@ const WithdrawPage = (props: Props): ReactElement => {
 
           <button
             className="actionBtn"
+            type="submit"
             onClick={(): void => {
-              setModalOpen(true)
-              setPopUp("review")
+              onSubmit()
             }}
           >
             Deposit
@@ -220,13 +244,13 @@ const WithdrawPage = (props: Props): ReactElement => {
           <PoolInfoCard data={poolData} />
         </div>
         <Modal isOpen={modalOpen} onClose={(): void => setModalOpen(false)}>
-          {popUp === "review" ? (
+          {/* {popUp === "review" ? (
             <ReviewDeposit
               data={depositDataFromParent}
               onConfirm={(): void => setPopUp("confirm")}
               onClose={(): void => setModalOpen(false)}
             />
-          ) : null}
+          ) : null} */}
           {popUp === "confirm" ? <ConfirmTransaction /> : null}
         </Modal>
       </div>

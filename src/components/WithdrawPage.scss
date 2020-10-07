@@ -27,6 +27,7 @@ div.withdraw {
 
     .percentage {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 24px;
@@ -49,6 +50,14 @@ div.withdraw {
         &:focus {
           outline: $outline solid 1px;
         }
+      }
+
+      .error {
+        margin-top: 8px;
+        color: $error;
+        font-size: 14px;
+        text-align: right;
+        width: 100%;
       }
     }
 
