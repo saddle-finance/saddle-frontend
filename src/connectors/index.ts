@@ -29,9 +29,9 @@ export function getNetworkLibrary(): Web3Provider {
 }
 
 export const injected = new InjectedConnector({
-  // mainnet, ropsten, rinkeby, goerli, kovan
+  // mainnet, ropsten, rinkeby, goerli, kovan, local buidler
   // see: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
-  supportedChainIds: [1, 3, 4, 5, 42],
+  supportedChainIds: [1, 3, 4, 5, 42, 31337],
 })
 
 export const walletconnect = new WalletConnectConnector({

@@ -1,3 +1,4 @@
+import { DAI, SUSD, USDC, USDT } from "../constants"
 import React, { ReactElement } from "react"
 
 import DepositPage from "../components/DepositPage"
@@ -5,6 +6,7 @@ import daiLogo from "../assets/icons/dai.svg"
 import susdLogo from "../assets/icons/susd.svg"
 import usdcLogo from "../assets/icons/usdc.svg"
 import usdtLogo from "../assets/icons/usdt.svg"
+import { useTokenBalance } from "../state/wallet/hooks"
 
 // Dumb data start here
 const testMyShareData = {
@@ -134,6 +136,17 @@ const testDepositData = {
 // Dumb data end here
 
 function DepositUSD(): ReactElement {
+  const daiBalance = useTokenBalance(DAI)
+  const usdcBalance = useTokenBalance(USDC)
+  const usdtBalance = useTokenBalance(USDT)
+  const susdBalance = useTokenBalance(SUSD)
+
+  // TODO: cleanup
+  testTokensData[0].max = daiBalance
+  testTokensData[1].max = usdcBalance
+  testTokensData[2].max = usdtBalance
+  testTokensData[3].max = susdBalance
+
   return (
     <DepositPage
       title="USD Pool"
