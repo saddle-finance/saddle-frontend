@@ -34,7 +34,7 @@
     "history": "^5.0.0",
     "node-sass": "^4.14.1",
     "prettier": "^2.1.2",
-    "react": "^16.13.1",
+    "react": "^16.14.0",
     "react-device-detect": "^1.14.0",
     "react-dom": "^16.13.1",
     "react-emoji-render": "^1.2.4",
