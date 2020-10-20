@@ -1,7 +1,7 @@
 import { Contract } from "@ethersproject/contracts"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import SWAP_ABI from "../constants/abis/swap.json"
-import { TEST_SWAP_ADDRESS } from "../constants"
+import { TEST_STABLECOIN_SWAP_ADDRESS } from "../constants"
 import { getContract } from "../utils"
 import { useActiveWeb3React } from "./index"
 import { useMemo } from "react"
@@ -40,5 +40,9 @@ export function useTokenContract(
 export function useSwapContract(
   withSignerIfPossible?: boolean,
 ): Contract | null {
-  return useContract(TEST_SWAP_ADDRESS, SWAP_ABI, withSignerIfPossible)
+  return useContract(
+    TEST_STABLECOIN_SWAP_ADDRESS,
+    SWAP_ABI,
+    withSignerIfPossible,
+  )
 }
