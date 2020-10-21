@@ -1,4 +1,5 @@
 import "./index.css"
+import "normalize.css"
 
 import { Web3ReactProvider, createWeb3ReactRoot } from "@web3-react/core"
 
