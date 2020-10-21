@@ -6,12 +6,15 @@ import { Link } from "react-router-dom"
 import { Twemoji } from "react-emoji-render"
 import Web3Status from "./Web3Status"
 import classNames from "classnames"
+import { useTranslation } from "react-i18next"
 
 interface Props {
   activeTab: string
 }
 
 function TopMenu({ activeTab }: Props): ReactElement {
+  const { t } = useTranslation()
+
   return (
     <header className="top">
       <h1>
@@ -21,7 +24,7 @@ function TopMenu({ activeTab }: Props): ReactElement {
       <ul className="nav">
         <li>
           <Link to="/" className={classNames({ active: activeTab === "swap" })}>
-            Swap
+            {t("swap")}
           </Link>
         </li>
         <li>
@@ -29,7 +32,7 @@ function TopMenu({ activeTab }: Props): ReactElement {
             to="/pool"
             className={classNames({ active: activeTab === "pool" })}
           >
-            Pool
+            {t("pool")}
           </Link>
         </li>
       </ul>
