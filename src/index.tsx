@@ -1,4 +1,5 @@
 import "./index.css"
+import "./i18n"
 
 import { Web3ReactProvider, createWeb3ReactRoot } from "@web3-react/core"
 

@@ -16,6 +16,7 @@ import TopMenu from "./TopMenu"
 import changeIcon from "../assets/icons/icon_change.svg"
 import classNames from "classnames"
 import { updateSwapAdvancedMode } from "../state/user"
+import { useTranslation } from "react-i18next"
 
 // TODO:
 // - Use state to add function of exchange button in priceTable
@@ -39,6 +40,7 @@ interface Props {
 }
 
 const SwapPage = (props: Props): ReactElement => {
+  const { t } = useTranslation()
   const { tokens, rate, selectedTokens, error, info } = props
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -58,9 +60,17 @@ const SwapPage = (props: Props): ReactElement => {
     <div className="swapPage">
       <TopMenu activeTab={"swap"} />
       <div className="content">
-        <SwapForm title="From" tokens={tokens} selected={selectedTokens[0]} />
+        <SwapForm
+          title={t("from")}
+          tokens={tokens}
+          selected={selectedTokens[0]}
+        />
         <img src={changeIcon} alt="" />
-        <SwapForm title="To" tokens={tokens} selected={selectedTokens[1]} />
+        <SwapForm
+          title={t("to")}
+          tokens={tokens}
+          selected={selectedTokens[1]}
+        />
         <div className="priceTable">
           <span className="title">Price</span>
           <span className="pair">{rate.pair}</span>
@@ -91,7 +101,7 @@ const SwapPage = (props: Props): ReactElement => {
               dispatch(updateSwapAdvancedMode(!advanced))
             }
           >
-            Advanced Options
+            {t("advancedOptions")}
             {/* When advanced = true, icon will be upside down */}
             <svg
               className={classNames({ upsideDown: advanced })}
@@ -239,7 +249,7 @@ const SwapPage = (props: Props): ReactElement => {
           }}
           disabled={error.isError}
         >
-          Swap
+          {t("swap")}
         </button>
         <div className={"info " + classNames({ showInfo: info.isInfo })}>
           {info.message}
