@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect } from "react"
+import React, { ReactElement, Suspense, useEffect } from "react"
 import { Route, Switch } from "react-router-dom"
 
 import { AppDispatch } from "../state"
@@ -24,18 +24,20 @@ export default function App(): ReactElement {
   }, [dispatch])
 
   return (
-    <Web3ReactManager>
-      <Switch>
-        <Route exact path="/" component={Home} />
-        <Route exact path="/swap/btc" component={SwapBTC} />
-        <Route exact path="/swap/usd" component={SwapUSD} />
-        <Route exact path="/pool" component={Pool} />
-        <Route exact path="/pool/btc" component={PoolBTC} />
-        <Route exact path="/pool/usd" component={PoolUSD} />
-        <Route exact path="/pool/btc/deposit" component={DepositBTC} />
-        <Route exact path="/pool/usd/deposit" component={DepositUSD} />
-        <Route exact path="/pool/usd/withdraw" component={WithdrawUSD} />
-      </Switch>
-    </Web3ReactManager>
+    <Suspense fallback={null}>
+      <Web3ReactManager>
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <Route exact path="/swap/btc" component={SwapBTC} />
+          <Route exact path="/swap/usd" component={SwapUSD} />
+          <Route exact path="/pool" component={Pool} />
+          <Route exact path="/pool/btc" component={PoolBTC} />
+          <Route exact path="/pool/usd" component={PoolUSD} />
+          <Route exact path="/pool/btc/deposit" component={DepositBTC} />
+          <Route exact path="/pool/usd/deposit" component={DepositUSD} />
+          <Route exact path="/pool/usd/withdraw" component={WithdrawUSD} />
+        </Switch>
+      </Web3ReactManager>
+    </Suspense>
   )
 }

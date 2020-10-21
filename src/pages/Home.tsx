@@ -6,13 +6,16 @@ import AssetButton from "../components/AssetButton"
 import TopMenu from "../components/TopMenu"
 import btcIcon from "../assets/icons/icon_btc.svg"
 import usdIcon from "../assets/icons/icon_usd.svg"
+import { useTranslation } from "react-i18next"
 
 function Home(): ReactElement {
+  const { t } = useTranslation()
+
   return (
     <div className="homepage">
       <TopMenu activeTab={"swap"} />
       <div className="content">
-        <h3>Choose Asset</h3>
+        <h3>{t("chooseAsset")}</h3>
         <div className="button_group">
           <div className="button_usd">
             <AssetButton title="USD" to="/swap/usd" icon={usdIcon} />
