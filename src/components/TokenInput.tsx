@@ -7,13 +7,29 @@ interface Props {
 }
 
 function TokenInput({ token }: Props): ReactElement {
-  console.log(token)
+  const [value, setValue] = React.useState<number | undefined>()
+  function onClickMax(e: React.MouseEvent<HTMLButtonElement>): void {
+    e.preventDefault()
+    setValue(token.max)
+  }
+  function onChangeInput(e: React.ChangeEvent<HTMLInputElement>): void {
+    setValue(Number(e.target.value))
+  }
   return (
     <div className="tokenInput">
       <img alt="" src={token.icon} />
       <span>{token.name}</span>
-      <span className="max">MAX: {token.max}</span>
-      <input type="number" placeholder={token.max} />
+      <button className="max" onClick={onClickMax}>
+        MAX: {token.max}
+      </button>
+      <input
+        type="number"
+        value={value}
+        onChange={onChangeInput}
+        placeholder={token.max}
+        max={token.max}
+        min={0}
+      />
     </div>
   )
 }
