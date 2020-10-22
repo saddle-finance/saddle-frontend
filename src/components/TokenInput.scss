@@ -30,14 +30,11 @@ div.tokenInput {
     margin-right: 8px;
   }
 
-  span.max {
+  button.max {
     float: right;
     color: $text-primary;
-    text-decoration: underline;
-
-    &:hover,
-    &:focus {
-      cursor: pointer;
-    }
+    background: none !important;
+    border: none;
+    padding: 0 !important;
   }
 }
