@@ -19,11 +19,11 @@ import ReviewWithdraw from "./ReviewWithdraw"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
-
 import daiLogo from "../assets/icons/dai.svg"
 // import susdLogo from "../assets/icons/susd.svg"
 import usdcLogo from "../assets/icons/usdc.svg"
 import usdtLogo from "../assets/icons/usdt.svg"
+import { useTranslation } from "react-i18next"
 
 const testWithdrawData = {
   withdraw: [
@@ -96,6 +96,7 @@ interface Props {
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 const WithdrawPage = (props: Props): ReactElement => {
+  const { t } = useTranslation()
   const {
     title,
     tokensData,
@@ -122,7 +123,7 @@ const WithdrawPage = (props: Props): ReactElement => {
     const percent = parseInt(value)
     if (percent <= 0 || percent > 100) {
       setPercentage(percent)
-      setError("Please input a number between 0 and 100")
+      setError(t("inputNotValid"))
     } else {
       setError("")
       setPercentage(percent)
@@ -151,9 +152,9 @@ const WithdrawPage = (props: Props): ReactElement => {
       <TopMenu activeTab={"pool"} />
       <div className="content">
         <div className="form">
-          <h3>Withdraw from {title}</h3>
+          <h3>{`${t("withdrawFrom")}} ${title}`}</h3>
           <div className="percentage">
-            <span>Withdraw percentage (%): </span>
+            <span>{`${t("withdrawPercentage")} (%):`}</span>
             <input
               type="number"
               step="10"
@@ -178,10 +179,10 @@ const WithdrawPage = (props: Props): ReactElement => {
                 checked={combination}
                 onChange={(): void => setCombination(!combination)}
               />
-              <span>Combination of all</span>
+              <span>{t("combinationOfAll")}</span>
             </div>
             <div className="paramater">
-              Gas:
+              {`${t("gas")}:`}
               <span
                 className={classNames({
                   selected: selectedGasPrice === GasPrices.Standard,
@@ -190,7 +191,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                   dispatch(updateSelectedGasPrice(GasPrices.Standard))
                 }
               >
-                {gasStandard} Standard
+                {gasStandard} {t("standard")}
               </span>
               <span
                 className={classNames({
@@ -200,7 +201,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                   dispatch(updateSelectedGasPrice(GasPrices.Fast))
                 }
               >
-                {gasFast} Fast
+                {gasFast} {t("fast")}
               </span>
               <span
                 className={classNames({
@@ -210,7 +211,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                   dispatch(updateSelectedGasPrice(GasPrices.Instant))
                 }
               >
-                {gasInstant} Instant
+                {gasInstant} {t("instant")}
               </span>
               <input
                 type="number"
@@ -238,7 +239,7 @@ const WithdrawPage = (props: Props): ReactElement => {
               onSubmit()
             }}
           >
-            Withdraw
+            {t("withdraw")}
           </button>
           <div
             className={
@@ -248,22 +249,22 @@ const WithdrawPage = (props: Props): ReactElement => {
           >
             <div className="transactionInfo">
               <div className="transactionInfoItem">
-                <span>Minimum Receive</span>
+                <span>{t("youWillReceive")}</span>
                 <span className="value">
                   {transactionInfoData.content.minimumReceive}
                 </span>
               </div>
               <div className="transactionInfoItem">
-                <span>Saddle LP token value</span>
+                <span>{`Saddle LP ${t("tokenValue")}`}</span>
                 <span className="value">
                   {transactionInfoData.content.lpTokenValue}
                 </span>
               </div>
               <div className="transactionInfoItem">
                 {transactionInfoData.content.benefit > 0 ? (
-                  <span className="bonus">Bonus</span>
+                  <span className="bonus">{t("bonus")}</span>
                 ) : (
-                  <span className="slippage">Slippage</span>
+                  <span className="slippage">{t("maxSlippage")}</span>
                 )}
                 <span
                   className={

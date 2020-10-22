@@ -2,6 +2,8 @@ import "./ReviewDeposit.scss"
 
 import React, { ReactElement } from "react"
 
+import { useTranslation } from "react-i18next"
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   onClose: () => void
@@ -16,9 +18,11 @@ interface Props {
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
+  const { t } = useTranslation()
+
   return (
     <div className="reviewDeposit">
-      <h3>Review Deposit</h3>
+      <h3>{t("reviewDeposit")}</h3>
       <div className="table">
         {data.deposit.map((each, index) => (
           <div className="eachToken" key={index}>
@@ -36,11 +40,11 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
           }}
         ></div>
         <div className="tableBottomItem">
-          <span className="label">Share of pool:</span>
+          <span className="label">{t("yourPoolShare")}</span>
           <span className="value">{data.share}%</span>
         </div>
         <div className="tableBottomItem">
-          <span className="label">Rates:</span>
+          <span className="label">{`${t("rates")}:`}</span>
           <div className="rates value">
             {data.rates.map((each, index) => (
               <span key={index}>
@@ -51,18 +55,15 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
         </div>
       </div>
       <div className="bottom">
-        <h4>You will receive</h4>
+        <h4>{t("youWillReceive")}</h4>
         <span>{data.sadd}</span>
-        <span style={{ float: "right" }}>SADD pool tokens</span>
-        <p>
-          Output is estimated. If the price changes by more than 0.1% your
-          transaction will revert.
-        </p>
+        <span style={{ float: "right" }}>{`SADL ${t("poolTokens")}`}</span>
+        <p>{t("estimatedOutput")}</p>
         <button onClick={onConfirm} className="confirm">
-          Confirm Deposit
+          {t("confirmDeposit")}
         </button>
         <button onClick={onClose} className="cancel">
-          Cancel
+          {t("cancel")}
         </button>
       </div>
     </div>

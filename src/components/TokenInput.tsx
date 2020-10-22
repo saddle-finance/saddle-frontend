@@ -2,11 +2,14 @@ import "./TokenInput.scss"
 
 import React, { ReactElement } from "react"
 
+import { useTranslation } from "react-i18next"
+
 interface Props {
   token: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 function TokenInput({ token }: Props): ReactElement {
+  const { t } = useTranslation()
   const [value, setValue] = React.useState<number | undefined>()
   function onClickMax(e: React.MouseEvent<HTMLButtonElement>): void {
     e.preventDefault()
@@ -15,12 +18,13 @@ function TokenInput({ token }: Props): ReactElement {
   function onChangeInput(e: React.ChangeEvent<HTMLInputElement>): void {
     setValue(Number(e.target.value))
   }
+
   return (
     <div className="tokenInput">
       <img alt="" src={token.icon} />
       <span>{token.name}</span>
       <button className="max" onClick={onClickMax}>
-        MAX: {token.max}
+        {`${t("max")}: ${token.max}`}
       </button>
       <input
         type="number"

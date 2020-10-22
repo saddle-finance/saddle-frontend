@@ -3,6 +3,7 @@ import "./SwapForm.scss"
 import React, { ReactElement } from "react"
 
 import classNames from "classnames"
+import { useTranslation } from "react-i18next"
 
 interface Props {
   title: string
@@ -12,12 +13,14 @@ interface Props {
 }
 
 function SwapForm({ title, tokens, selected }: Props): ReactElement {
+  const { t } = useTranslation()
+
   return (
     <div className="swapForm">
       <div className="head">
         <h4 className="title">{title}</h4>
         <input></input>
-        {title === "From" ? <button className="max">MAX</button> : ""}
+        {title === "From" ? <button className="max">{t("max")}</button> : ""}
       </div>
       <ul className="tokenList">
         {tokens.map((token, i) => (

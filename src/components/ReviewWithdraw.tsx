@@ -2,6 +2,8 @@ import "./ReviewWithdraw.scss"
 
 import React, { ReactElement } from "react"
 
+import { useTranslation } from "react-i18next"
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   onClose: () => void
@@ -16,9 +18,11 @@ interface Props {
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
+  const { t } = useTranslation()
+
   return (
     <div className="reviewWithdraw">
-      <h3>You will receive</h3>
+      <h3>{t("youWillReceive")}</h3>
       <div className="table">
         {data.withdraw.map((each, index) => (
           <div className="eachToken" key={index}>
@@ -36,11 +40,11 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
           }}
         ></div>
         <div className="tableBottomItem">
-          <span className="label">Share of pool:</span>
+          <span className="label">{t("yourPoolShare")}</span>
           <span className="value">{data.share}%</span>
         </div>
         <div className="tableBottomItem">
-          <span className="label">Rates:</span>
+          <span className="label">{`${t("rates")}:`}</span>
           <div className="rates value">
             {data.rates.map((each, index) => (
               <span key={index}>
@@ -51,15 +55,12 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
         </div>
       </div>
       <div className="bottom">
-        <p>
-          Output is estimated. If the price changes by more than 0.1% your
-          transaction will revert.
-        </p>
+        <p>{t("estimatedOutput")}</p>
         <button onClick={onConfirm} className="confirm">
-          Confirm Withdraw
+          {t("confirmWithdraw")}
         </button>
         <button onClick={onClose} className="cancel">
-          Cancel
+          {t("cancel")}
         </button>
       </div>
     </div>

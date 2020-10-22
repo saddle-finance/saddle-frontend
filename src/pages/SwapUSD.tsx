@@ -5,6 +5,7 @@ import daiLogo from "../assets/icons/dai.svg"
 import susdLogo from "../assets/icons/susd.svg"
 import usdcLogo from "../assets/icons/usdc.svg"
 import usdtLogo from "../assets/icons/usdt.svg"
+import { useTranslation } from "react-i18next"
 
 // Dumb data for UI
 const testList = [
@@ -36,19 +37,21 @@ const testPrice = {
 }
 
 const selectedTokens = ["DAI", "USDT"]
-
-const error = {
-  isError: true,
-  message: "Insufficient balance",
-}
-
-const info = {
-  isInfo: true,
-  message: "Estimated TX Cost $3.14",
-}
 // End of dumb data
 
 function SwapUSD(): ReactElement {
+  const { t } = useTranslation()
+
+  const info = {
+    isInfo: true,
+    message: `${t("estimatedTxCost")} $3.14`,
+  }
+
+  const error = {
+    isError: true,
+    message: t("insufficientBalance"),
+  }
+
   return (
     <SwapPage
       tokens={testList}
