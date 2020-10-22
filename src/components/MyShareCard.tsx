@@ -2,6 +2,8 @@ import "./MyShareCard.scss"
 
 import React, { ReactElement } from "react"
 
+import { useTranslation } from "react-i18next"
+
 interface Props {
   data?: {
     name: string
@@ -14,15 +16,17 @@ interface Props {
 }
 
 function MyShareCard({ data }: Props): ReactElement | null {
+  const { t } = useTranslation()
+
   if (!data) return null
   else
     return (
       <div className="myShareCard">
-        <p>My Share: {data.share}% of pool</p>
+        <p>{`${t("yourPoolShare")}: ${data.share}`}</p>
         <div className="info">
-          <span>Total value: {data.value}</span>
-          <span>Balance: {data.USDbalance}USD</span>
-          <span>Averaged balance: {data.aveBalance}</span>
+          <span>{`${t("totalValue")}: ${data.value}`}</span>
+          <span>{`${t("balance")}: ${data.USDbalance} USD`}</span>
+          <span>{`${t("averagedBalance")}: ${data.aveBalance}`}</span>
         </div>
         <div className="divider"></div> {/* divider */}
         <div className="tokenList">

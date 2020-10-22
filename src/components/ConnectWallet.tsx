@@ -14,6 +14,7 @@ import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
 import metamaskIcon from "../assets/icons/metamask.svg"
 import portisIcon from "../assets/icons/portis.svg"
 import squarelinkIcon from "../assets/icons/squarelink.svg"
+import { useTranslation } from "react-i18next"
 import walletconnectIcon from "../assets/icons/walletconnect.svg"
 
 // Dumb data starts
@@ -50,11 +51,12 @@ interface Props {
 }
 // Dumb data ends
 function ConnectWallet({ onClose }: Props): ReactElement {
+  const { t } = useTranslation()
   const { activate } = useWeb3React()
 
   return (
     <div className="connectWallet">
-      <h3>Connect to a wallet</h3>
+      <h3>{t("connectWallet")}</h3>
       <div className="walletList">
         {wallets.map((wallet, index) => (
           <button
@@ -76,9 +78,9 @@ function ConnectWallet({ onClose }: Props): ReactElement {
         ))}
       </div>
       <p>
-        Don&apos;t have a wallet? &nbsp;
+        {t("dontHaveWallet")}
         <a href="https://ethereum.org/en/wallets/" target="blank">
-          Get a wallet!
+          {t("getWallet")}
         </a>
       </p>
     </div>

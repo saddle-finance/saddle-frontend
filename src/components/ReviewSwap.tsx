@@ -5,6 +5,7 @@ import React, { ReactElement } from "react"
 import USDC from "../assets/icons/usdc.svg"
 import USDT from "../assets/icons/usdt.svg"
 import iconDown from "../assets/icons/icon_down.svg"
+import { useTranslation } from "react-i18next"
 
 const data = {
   from: {
@@ -33,9 +34,11 @@ interface Props {
 }
 
 function ReviewSwap({ onClose, onConfirm }: Props): ReactElement {
+  const { t } = useTranslation()
+
   return (
     <div className="reviewSwap">
-      <h3>Review Swap</h3>
+      <h3>{t("reviewSwap")}</h3>
       <div className="swapTable">
         <div className="from">
           <span>{data.from.value}</span>
@@ -53,7 +56,7 @@ function ReviewSwap({ onClose, onConfirm }: Props): ReactElement {
           </div>
         </div>
         <div className="priceTable">
-          <span className="title">Price</span>
+          <span className="title">{t("price")}</span>
           <span className="pair">
             {data.pair.token1}/{data.pair.token2}
           </span>
@@ -79,15 +82,12 @@ function ReviewSwap({ onClose, onConfirm }: Props): ReactElement {
         </div>
       </div>
       <div className="bottom">
-        <p>
-          Output is estimated. You will receive at least {data.receive.value}{" "}
-          {data.receive.token} or the transaction will revert.
-        </p>
+        <p>{t("estimatedOutput")}</p>
         <button onClick={onConfirm} className="confirm">
-          Confirm Swap
+          {t("confirmSwap")}
         </button>
         <button onClick={onClose} className="cancel">
-          Cancel
+          {t("cancel")}
         </button>
       </div>
     </div>

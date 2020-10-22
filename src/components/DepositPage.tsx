@@ -20,6 +20,7 @@ import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
 import { updatePoolAdvancedMode } from "../state/user"
+import { useTranslation } from "react-i18next"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
@@ -63,6 +64,7 @@ interface Props {
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 const DepositPage = (props: Props): ReactElement => {
+  const { t } = useTranslation()
   const {
     title,
     selected,
@@ -92,7 +94,7 @@ const DepositPage = (props: Props): ReactElement => {
       <TopMenu activeTab={"pool"} />
       <div className="content">
         <div className="form">
-          <h3>Add Liquidity in {title}</h3>
+          <h3>{`${t("addLiquidity")} ${title}`}</h3>
           {tokensData.map((token, index) => (
             <div key={index}>
               <TokenInput token={token} />
@@ -106,7 +108,7 @@ const DepositPage = (props: Props): ReactElement => {
                 dispatch(updatePoolAdvancedMode(!advanced))
               }
             >
-              Advanced Options
+              {t("advancedOptions")}
               <svg
                 className={classNames({ upsideDown: advanced })}
                 width="16"
@@ -132,10 +134,10 @@ const DepositPage = (props: Props): ReactElement => {
                   checked={infiniteApproval}
                   onChange={(): void => setInfiniteApproval(!infiniteApproval)}
                 />
-                <span>Infinite Approval</span>
+                <span>{t("infiniteApproval")}</span>
               </div>
               <div className="paramater">
-                Max Slippage:
+                {`${t("maxSlippage")}:`}
                 <span
                   className={classNames({
                     selected: selected.maxSlippage === 0.1,
@@ -153,7 +155,7 @@ const DepositPage = (props: Props): ReactElement => {
                 <input type="number" />%
               </div>
               <div className="paramater">
-                Gas:
+                {`${t("gas")}:`}
                 <span
                   className={classNames({
                     selected: selectedGasPrice === GasPrices.Standard,
@@ -162,7 +164,7 @@ const DepositPage = (props: Props): ReactElement => {
                     dispatch(updateSelectedGasPrice(GasPrices.Standard))
                   }
                 >
-                  {gasStandard} Standard
+                  {gasStandard} {t("standard")}
                 </span>
                 <span
                   className={classNames({
@@ -172,7 +174,7 @@ const DepositPage = (props: Props): ReactElement => {
                     dispatch(updateSelectedGasPrice(GasPrices.Fast))
                   }
                 >
-                  {gasFast} Fast
+                  {gasFast} {t("fast")}
                 </span>
                 <span
                   className={classNames({
@@ -182,7 +184,7 @@ const DepositPage = (props: Props): ReactElement => {
                     dispatch(updateSelectedGasPrice(GasPrices.Instant))
                   }
                 >
-                  {gasInstant} Instant
+                  {gasInstant} {t("instant")}
                 </span>
                 <input
                   type="number"
@@ -209,7 +211,7 @@ const DepositPage = (props: Props): ReactElement => {
               setPopUp("review")
             }}
           >
-            Deposit
+            {t("confirmDeposit")}
           </button>
           <div
             className={
@@ -219,22 +221,22 @@ const DepositPage = (props: Props): ReactElement => {
           >
             <div className="transactionInfo">
               <div className="transactionInfoItem">
-                <span>Minimum Receive</span>
+                <span>{t("youWillReceive")}</span>
                 <span className="value">
                   {transactionInfoData.content.minimumReceive}
                 </span>
               </div>
               <div className="transactionInfoItem">
-                <span>Saddle LP token value</span>
+                <span>{`Saddle LP ${t("tokenValue")}`}</span>
                 <span className="value">
                   {transactionInfoData.content.lpTokenValue}
                 </span>
               </div>
               <div className="transactionInfoItem">
                 {transactionInfoData.content.benefit > 0 ? (
-                  <span className="bonus">Bonus</span>
+                  <span className="bonus">{t("bonus")}</span>
                 ) : (
-                  <span className="slippage">Slippage</span>
+                  <span className="slippage">{t("maxSlippage")}</span>
                 )}
                 <span
                   className={

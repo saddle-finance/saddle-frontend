@@ -2,6 +2,8 @@ import "./PoolInfoCard.scss"
 
 import React, { ReactElement } from "react"
 
+import { useTranslation } from "react-i18next"
+
 interface Props {
   data: {
     name: string
@@ -21,33 +23,35 @@ interface Props {
 }
 
 function PoolInfoCard({ data }: Props): ReactElement {
+  const { t } = useTranslation()
+
   return (
     <div className="poolInfoCard">
       <p>{data.name}</p>
       <div className="info">
         <div className="infoItem">
-          <span className="label">Fee</span>
+          <span className="label">{t("fee")}</span>
           <span>{data.fee}%</span>
         </div>
         <div className="infoItem">
-          <span className="label">Admin fee</span>
+          <span className="label">{t("adminFee")}</span>
           <span>{data.adminFee}%</span>
         </div>
         <div className="infoItem">
-          <span className="label">Virtual price</span>
+          <span className="label">{t("virtualPrice")}</span>
           <span>{data.virtualPrice}</span>
         </div>
         <div className="infoItem">
-          <span className="label">Daily volume</span>
+          <span className="label">{t("dailyVolume")}</span>
           <span>{data.volume}</span>
         </div>
         <div className="infoItem">
-          <span className="label">Liquidity utilization</span>
+          <span className="label">{t("liquidityUtilization")}</span>
           <span>{data.utilization}%</span>
         </div>
       </div>
       <div className="bottom">
-        <p>Curreny reserves {data.reserve} in total</p>
+        <p>{`${t("currencyReserves")} ${data.reserve} ${t("inTotal")}`}</p>
         <div className="tokenList">
           {data.tokens.map((token, index) => (
             <div className="token" key={index}>

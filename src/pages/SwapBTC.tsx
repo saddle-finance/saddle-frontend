@@ -4,6 +4,7 @@ import SwapPage from "../components/SwapPage"
 import renbtcLogo from "../assets/icons/renbtc.svg"
 import sbtcLogo from "../assets/icons/sbtc.svg"
 import tbtcLogo from "../assets/icons/tbtc.svg"
+import { useTranslation } from "react-i18next"
 import wbtcLogo from "../assets/icons/wbtc.svg"
 
 // Dumb data for UI
@@ -36,19 +37,20 @@ const testPrice = {
 }
 
 const selectedTokens = ["tBTC", "wBTC"]
-
-const error = {
-  isError: false,
-  message: "Insufficient balance",
-}
-
-const info = {
-  isInfo: false,
-  message: "Estimated TX Cost $3.14",
-}
 // End of dumb data
 
 function SwapUSD(): ReactElement {
+  const { t } = useTranslation()
+
+  const info = {
+    isInfo: false,
+    message: `${t("estimatedTxCost")} $3.14`,
+  }
+
+  const error = {
+    isError: false,
+    message: t("insufficientBalance"),
+  }
   return (
     <SwapPage
       tokens={testList}

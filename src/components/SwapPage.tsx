@@ -72,7 +72,7 @@ const SwapPage = (props: Props): ReactElement => {
           selected={selectedTokens[1]}
         />
         <div className="priceTable">
-          <span className="title">Price</span>
+          <span className="title">{t("price")}</span>
           <span className="pair">{rate.pair}</span>
           <button className="exchange">
             <svg
@@ -127,26 +127,26 @@ const SwapPage = (props: Props): ReactElement => {
           <div className={"tableContainer " + classNames({ show: advanced })}>
             <div className="table">
               <div className="infiniteApproval tableOption">
-                <span className="label">Infinite Approval</span>
+                <span className="label">{t("infiniteApproval")}</span>
                 <div className="options">
                   <button
                     className={classNames({
                       selected: selected.infiniteApproval,
                     })}
                   >
-                    Yes
+                    {t("yes")}
                   </button>
                   <button
                     className={classNames({
                       selected: !selected.infiniteApproval,
                     })}
                   >
-                    No
+                    {t("no")}
                   </button>
                 </div>
               </div>
               <div className="maxSlippage tableOption">
-                <span className="label">Max Slippage</span>
+                <span className="label">{t("maxSlippage")}</span>
                 <div className="options">
                   <button
                     className={classNames({
@@ -166,7 +166,7 @@ const SwapPage = (props: Props): ReactElement => {
                 </div>
               </div>
               <div className="maxSlippage tableOption">
-                <span className="label">Gas</span>
+                <span className="label">{t("gas")}</span>
                 <div className="options">
                   <button
                     className={classNames({
@@ -176,7 +176,7 @@ const SwapPage = (props: Props): ReactElement => {
                       dispatch(updateSelectedGasPrice(GasPrices.Standard))
                     }
                   >
-                    {gasStandard} Standard
+                    {gasStandard} {t("standard")}
                   </button>
                   <button
                     className={classNames({
@@ -186,7 +186,7 @@ const SwapPage = (props: Props): ReactElement => {
                       dispatch(updateSelectedGasPrice(GasPrices.Fast))
                     }
                   >
-                    {gasFast} Fast
+                    {gasFast} {t("fast")}
                   </button>
                   <button
                     className={classNames({
@@ -196,7 +196,7 @@ const SwapPage = (props: Props): ReactElement => {
                       dispatch(updateSelectedGasPrice(GasPrices.Instant))
                     }
                   >
-                    {gasInstant} Instant
+                    {gasInstant} {t("instant")}
                   </button>
                   <input
                     type="number"
@@ -216,7 +216,7 @@ const SwapPage = (props: Props): ReactElement => {
                 </div>
               </div>
               <div className="tradePool tableOption">
-                <span className="label">Trade Pool</span>
+                <span className="label">{t("pool")}</span>
                 <div className="options">
                   <button
                     className={classNames({

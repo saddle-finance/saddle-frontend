@@ -4,6 +4,7 @@ import React, { ReactElement } from "react"
 
 import { Link } from "react-router-dom"
 import classNames from "classnames"
+import { useTranslation } from "react-i18next"
 
 interface Props {
   to: string
@@ -17,9 +18,11 @@ interface Props {
 }
 
 function PoolOverview({ data, to }: Props): ReactElement {
+  const { t } = useTranslation()
+
   return (
     <div className="poolOverview">
-      <h4>Pool Overview</h4>
+      <h4>{t("poolOverview")}</h4>
       <Link to={to}>
         <div className="table">
           <div className="left">
@@ -36,7 +39,7 @@ function PoolOverview({ data, to }: Props): ReactElement {
 
           <div className="right">
             <div className="Apy">
-              <span className="label">APY</span>
+              <span className="label">{t("apy")}</span>
               <span
                 className={
                   classNames({ plus: data.APY }) +
@@ -47,11 +50,11 @@ function PoolOverview({ data, to }: Props): ReactElement {
               </span>
             </div>
             <div className="saddApy">
-              <span className="label">SADD APY</span>
+              <span className="label">SADL</span>
               <span>{data.saddAPY}</span>
             </div>
             <div className="volume">
-              <span className="label">Volume</span>
+              <span className="label">{t("volume")}</span>
               <span>${data.volume}</span>
             </div>
           </div>
