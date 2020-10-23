@@ -18,9 +18,12 @@ function TopMenu({ activeTab }: Props): ReactElement {
   return (
     <header className="top">
       <h1>
-        <Twemoji className="logo" svg text=":horse_face:" />
-        <span className="title">Saddle</span>
+        <Link to="/">
+          <Twemoji className="logo" svg text=":horse_face:" />
+          <span className="title">Saddle</span>
+        </Link>
       </h1>
+
       <ul className="nav">
         <li>
           <Link to="/" className={classNames({ active: activeTab === "swap" })}>
