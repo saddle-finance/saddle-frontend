@@ -3,6 +3,8 @@
 div.poolpage {
   min-height: 100vh;
   background-color: $background;
+  padding-bottom: 40px;
+  box-sizing: border-box;      // Make the padding included in height calculation
 
   .content {
     margin: 0 auto;
