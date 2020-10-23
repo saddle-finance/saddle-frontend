@@ -21,7 +21,7 @@ function TokenInput({ token }: Props): ReactElement {
 
   return (
     <div className="tokenInput">
-      <img alt="" src={token.icon} />
+      <img alt="icon" src={token.icon} />
       <span>{token.name}</span>
       <button className="max" onClick={onClickMax}>
         {`${t("max")}: ${token.max}`}

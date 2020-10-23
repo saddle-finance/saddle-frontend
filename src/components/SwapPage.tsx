@@ -65,7 +65,7 @@ const SwapPage = (props: Props): ReactElement => {
           tokens={tokens}
           selected={selectedTokens[0]}
         />
-        <img src={changeIcon} alt="" />
+        <img src={changeIcon} alt="swap to" />
         <SwapForm
           title={t("to")}
           tokens={tokens}

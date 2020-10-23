@@ -15,7 +15,7 @@ function AssetButton({ title, to, icon }: Props): ReactElement {
   return (
     <Link to={to}>
       <button className="asset">
-        <img src={icon ? icon : defaultIcon} alt="" />
+        <img src={icon ? icon : defaultIcon} alt="icon" />
         <span>{title}</span>
       </button>
     </Link>

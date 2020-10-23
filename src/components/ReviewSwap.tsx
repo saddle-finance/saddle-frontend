@@ -43,15 +43,15 @@ function ReviewSwap({ onClose, onConfirm }: Props): ReactElement {
         <div className="from">
           <span>{data.from.value}</span>
           <div className="floatRight">
-            <img className="tokenIcon" src={USDC} alt="" />
+            <img className="tokenIcon" src={USDC} alt="icon" />
             <span className="tokenValue">{data.from.token}</span>
           </div>
         </div>
-        <img src={iconDown} alt="" />
+        <img src={iconDown} alt="to" />
         <div className="to">
           <span>{data.to.value}</span>
           <div className="floatRight">
-            <img className="tokenIcon" src={USDT} alt="" />
+            <img className="tokenIcon" src={USDT} alt="icon" />
             <span className="tokenValue">{data.to.token}</span>
           </div>
         </div>

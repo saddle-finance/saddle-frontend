@@ -30,7 +30,7 @@ function PoolOverview({ data, to }: Props): ReactElement {
             <span style={{ marginRight: "8px" }}>[</span>
             {data.tokens.map((token, index) => (
               <div className="token" key={index}>
-                <img alt="" src={token.icon} />
+                <img alt="icon" src={token.icon} />
                 <span>{token.name}</span>
               </div>
             ))}

@@ -30,7 +30,7 @@ function SwapForm({ title, tokens, selected }: Props): ReactElement {
             }
             key={i}
           >
-            <img className="tokenIcon" src={token.icon} alt="" />
+            <img className="tokenIcon" src={token.icon} alt="icon" />
             <span className="tokenName">{token.name}</span>
             <span className="tokenValue">{token.value}</span>
           </div>

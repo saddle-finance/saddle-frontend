@@ -55,7 +55,7 @@ function PoolInfoCard({ data }: Props): ReactElement {
         <div className="tokenList">
           {data.tokens.map((token, index) => (
             <div className="token" key={index}>
-              <img alt="" src={token.icon} />
+              <img alt="icon" src={token.icon} />
               <span>{token.name}</span>
               <span className="tokenPercent">{token.percent}%</span>
               <span className="tokenValue">{token.value}</span>

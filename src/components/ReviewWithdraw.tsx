@@ -27,7 +27,7 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
         {data.withdraw.map((each, index) => (
           <div className="eachToken" key={index}>
             <span className="value">{each.value}</span>
-            <img src={each.icon} alt={each.name} />
+            <img src={each.icon} alt="icon" />
             <span>{each.name}</span>
           </div>
         ))}

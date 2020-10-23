@@ -73,7 +73,7 @@ function ConnectWallet({ onClose }: Props): ReactElement {
             }}
           >
             <span>{wallet.name}</span>
-            <img src={wallet.icon} alt="Icon" className="icon" />
+            <img src={wallet.icon} alt="icon" className="icon" />
           </button>
         ))}
       </div>
