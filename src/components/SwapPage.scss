@@ -30,6 +30,12 @@ div.swapPage {
     text-align: right;
     color: $text;
 
+    button,
+    svg {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
     button.exchange {
       border: none;
       background: $background-darker;
@@ -48,7 +54,6 @@ div.swapPage {
     }
     & > .value {
       margin-left: 32px;
-      color: $text-primary;
     }
   }
 
