@@ -1,10 +1,11 @@
 @import "../styles/theme.scss";
 
 div.withdraw {
-  min-height: 110vh;
+  min-height: 100vh;
   background: $background;
   color: $text;
-  padding-bottom: 24px;
+  padding-bottom: 40px;
+  box-sizing: border-box; // Make the padding included in height calculation
 
   .content {
     width: 864px;
