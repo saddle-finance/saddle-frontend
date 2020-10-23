@@ -12,9 +12,6 @@ div.reviewDeposit {
 
   .table {
     padding-bottom: 16px;
-    span {
-      vertical-align: top;
-    }
 
     .eachToken {
       margin-bottom: 20px;
@@ -22,6 +19,7 @@ div.reviewDeposit {
 
       img {
         margin-right: 8px;
+        vertical-align: text-bottom;
       }
 
       & > .value {
