@@ -3,9 +3,9 @@ import "./TopMenu.scss"
 import React, { ReactElement } from "react"
 
 import { Link } from "react-router-dom"
-import { Twemoji } from "react-emoji-render"
 import Web3Status from "./Web3Status"
 import classNames from "classnames"
+import logo from "../assets/icons/logo.svg"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -19,8 +19,7 @@ function TopMenu({ activeTab }: Props): ReactElement {
     <header className="top">
       <h1>
         <Link to="/">
-          <Twemoji className="logo" svg text=":horse_face:" />
-          <span className="title">Saddle</span>
+          <img className="logo" alt="logo" src={logo} />
         </Link>
       </h1>
 
