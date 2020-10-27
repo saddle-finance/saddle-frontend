@@ -9,7 +9,7 @@ div.walletStatus {
     padding: 0;
     background: none;
     font-family: $font-family;
-    font-size: 18px;
+    font-size: 16px;
 
     &:hover,
     &:focus,
@@ -25,21 +25,21 @@ div.walletStatus {
   .noAccount {
     height: 40px;
     width: 170px;
-    background: $background-button;
-    border-radius: 4px;
+    border: 1px solid $white;
+    border-radius: 8px;
     line-height: 40px;
-    color: $text-darker;
-    font-weight: $medium;
+    color: $primary;
+    font-weight: $normal;
 
     &:hover,
     &:focus,
     &:active {
       outline: none;
-      border: 2px solid $outline;
-      width: 166px;
+      border: 2px solid $white;
+      width: 168px;
       transform: none;
       transition: none;
-      background: $background-button-hover;
+      cursor: pointer;
     }
   }
 }

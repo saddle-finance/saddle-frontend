@@ -78,7 +78,7 @@ function ConnectWallet({ onClose }: Props): ReactElement {
         ))}
       </div>
       <p>
-        {t("dontHaveWallet")}
+        {t("dontHaveWallet") + " "}
         <a href="https://ethereum.org/en/wallets/" target="blank">
           {t("getWallet")}
         </a>
