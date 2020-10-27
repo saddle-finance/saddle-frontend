@@ -1,7 +1,10 @@
 @import "../styles/theme";
 
 div.walletStatus {
+  display: flex;
+  justify-content: flex-end;
   & > button {
+    color: $text-darker;
     border: none;
     padding: 0;
     background: none;
@@ -25,7 +28,7 @@ div.walletStatus {
     background: $background-button;
     border-radius: 4px;
     line-height: 40px;
-    color: $text-primary;
+    color: $text-darker;
     font-weight: $medium;
 
     &:hover,
