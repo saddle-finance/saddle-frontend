@@ -11,10 +11,12 @@
     padding: 0 32px;
 
     h4.title {
-      font-weight: $normal;
-      font-size: 18px;
+      font-family: $font-family-title;
+      font-weight: $bold;
+      font-size: 30px;
       margin-top: 0;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
+      color: $text-darker;
     }
 
     & > input {

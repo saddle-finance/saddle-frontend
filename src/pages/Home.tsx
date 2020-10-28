@@ -15,7 +15,7 @@ function Home(): ReactElement {
     <div className="homepage">
       <TopMenu activeTab={"swap"} />
       <div className="content">
-        <h3>{t("chooseAsset")}</h3>
+        <h3>{t("whichAssetBucketDoYouWantToSwap")}</h3>
         <div className="button_group">
           <div className="button_usd">
             <AssetButton title="USD" to="/swap/usd" icon={usdIcon} />

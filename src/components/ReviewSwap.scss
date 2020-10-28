@@ -4,8 +4,9 @@ div.reviewSwap {
   margin-top: 0;
 
   h3 {
-    font-size: 20px;
-    font-weight: $normal;
+    font-family: $font-family-title;
+    font-size: 30px;
+    font-weight: $bold;
     color: $text-darker;
     margin-top: 16px;
   }
@@ -34,7 +35,7 @@ div.reviewSwap {
     background: $background;
     margin: 0 -24px -24px -24px;
     padding: 24px;
-    border-radius: 0px 0px 4px 4px;
+    border-radius: 0px 0px 8px 8px;
 
     p {
       margin: 0 0 32px 0;

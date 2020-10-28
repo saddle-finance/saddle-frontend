@@ -152,7 +152,7 @@ const WithdrawPage = (props: Props): ReactElement => {
       <TopMenu activeTab={"pool"} />
       <div className="content">
         <div className="form">
-          <h3>{`${t("withdrawFrom")}} ${title}`}</h3>
+          <h3>{`${t("withdrawFrom")} ${title}`}</h3>
           <div className="percentage">
             <span>{`${t("withdrawPercentage")} (%):`}</span>
             <input

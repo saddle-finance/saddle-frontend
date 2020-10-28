@@ -9,12 +9,13 @@ div.poolpage {
   .content {
     margin: 0 auto;
     h3 {
+      font-family: $font-family-title;
       text-align: center;
       margin-bottom: 64px;
       margin-top: 10%;
-      font-weight: $medium;
-      font-size: 24px;
-      color: $text-darker;
+      font-weight: $bold;
+      font-size: 30px;
+      color: $text;
     }
     & > .button_group {
       margin-left: auto;
