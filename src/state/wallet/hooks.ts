@@ -1,26 +1,30 @@
-import { useEffect, useState } from "react"
+import { BLOCK_TIME, Token } from "../../constants"
 
-import { Token } from "../../constants"
+import { BigNumber } from "@ethersproject/bignumber"
+import { formatUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../../hooks"
+import usePoller from "../../hooks/usePoller"
+import { useState } from "react"
 import { useTokenContract } from "../../hooks/useContract"
 
 export function useTokenBalance(t: Token): number {
   const { account, chainId } = useActiveWeb3React()
+  const [balance, setBalance] = useState<BigNumber>(BigNumber.from(0))
 
-  const [tokenBalance, setTokenBalance] = useState(0)
   const address = chainId ? t.addresses[chainId] : undefined
   const tokenContract = useTokenContract(address)
 
-  useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    async function fetchBalances() {
-      const balance = await tokenContract?.balanceOf(account)
-      setTokenBalance(balance / Math.pow(10, t.decimals))
+  usePoller((): void => {
+    async function pollBalance(): Promise<void> {
+      const newBalance = await tokenContract?.balanceOf(account)
+      if (newBalance !== balance) {
+        setBalance(newBalance)
+      }
     }
     if (account && chainId) {
-      fetchBalances()
+      pollBalance()
     }
-  }, [account, chainId, tokenContract, t])
+  }, 2 * BLOCK_TIME)
 
-  return tokenBalance
+  return parseFloat(formatUnits(balance, t.decimals))
 }

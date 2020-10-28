@@ -25,7 +25,7 @@ import { useTranslation } from "react-i18next"
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   title: string
-  tokensData: Array<{ name: string; icon: string; max: number }>
+  tokens: Array<{ name: string; icon: string; max: number }>
   selected: { [key: string]: any }
   poolData: {
     name: string
@@ -68,7 +68,7 @@ const DepositPage = (props: Props): ReactElement => {
   const {
     title,
     selected,
-    tokensData,
+    tokens,
     poolData,
     transactionInfoData,
     myShareData,
@@ -95,7 +95,7 @@ const DepositPage = (props: Props): ReactElement => {
       <div className="content">
         <div className="form">
           <h3>{`${t("addLiquidity")} ${title}`}</h3>
-          {tokensData.map((token, index) => (
+          {tokens.map((token, index) => (
             <div key={index}>
               <TokenInput token={token} />
               <div style={{ height: "24px" }}></div> {/* space divider */}
