@@ -1,28 +1,17 @@
 @import "fonts";
 
 // Colors
-$primary: #00f4d7;
 $background: #000;
+$background-element: rgba(0, 0, 0, 0.56);
+$background-element-hover: rgba(0, 0, 0, 0.8);
 $background-main: #000 url("../assets/bg.svg") center/auto 60% no-repeat;
 $outline: #fff;
 
 $text: #fff;
 $text-darker: #ffffe9;
 $text-red: #f53535;
-// Updated
-$background-white: #fffefb;
-$background-darker: #fae09e;
-// $outline: #eeba0b;
 
-$text-primary: #d67a0a;
-
-$green: #65d03d;
-$disabled: #aaaeb2;
-$error: #df362d;
-$white: #ffffff;
-
-$background-button: #fae2bf;
-$background-button-hover: #f8d4a4;
+$primary: #00f4d7;
 
 // Fonts
 $font-family: "Source Code Pro", monospace;
@@ -34,5 +23,20 @@ $medium: 500;
 $bold: 700;
 
 $shadow: 0px 2px 8px rgba(39, 14, 1, 0.18);
-$shadow-hover: 2px 2px 12px rgba(39, 14, 1, 0.32);
+// Updated until here
+
+$white: #ffffff;
+$background-white: #fffefb;
+$background-darker: #fae09e;
+
+$text-primary: #d67a0a;
+
+$green: #65d03d;
+$disabled: #aaaeb2;
+$error: #df362d;
+
+$background-button: #fae2bf;
+$background-button-hover: #f8d4a4;
+
+$shadow-hover: 2px 2px 12px rgba(68, 64, 64, 0.14);
 $shadow-popup: 2px 4px 12px rgba(0, 0, 0, 0.4);
