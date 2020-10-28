@@ -5,13 +5,14 @@ div.confirmTransaction {
   text-align: center;
 
   h3 {
+    font-family: $font-family-title;
     font-style: normal;
-    font-weight: 500;
-    font-size: 20px;
-    line-height: 24px;
+    font-weight: $bold;
+    font-size: 30px;
   }
 
   img {
-    margin-top: 48px;
+    margin-top: 24px;
+    margin-bottom: 63px;
   }
 }

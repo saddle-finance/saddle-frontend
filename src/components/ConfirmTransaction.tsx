@@ -10,8 +10,8 @@ function ConfirmTransaction(): ReactElement {
 
   return (
     <div className="confirmTransaction">
-      <h3>{t("confirmTransaction")}</h3>
       <img src={signImg} alt="confirm in wallet" />
+      <h3>{t("confirmTransaction")}</h3>
     </div>
   )
 }

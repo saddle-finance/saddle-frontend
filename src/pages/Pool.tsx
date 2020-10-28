@@ -15,7 +15,7 @@ function Pool(): ReactElement {
     <div className="poolpage">
       <TopMenu activeTab={"pool"} />
       <div className="content">
-        <h3>{t("chooseAsset")}</h3>
+        <h3>{t("whichAssetPoolDoYouWantToChoose")}</h3>
         <div className="button_group">
           <div className="button_usd">
             <AssetButton title="USD" to="/pool/usd" icon={usdIcon} />

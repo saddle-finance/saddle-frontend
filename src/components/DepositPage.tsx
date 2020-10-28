@@ -211,7 +211,7 @@ const DepositPage = (props: Props): ReactElement => {
               setPopUp("review")
             }}
           >
-            {t("confirmDeposit")}
+            {t("deposit")}
           </button>
           <div
             className={

@@ -5,9 +5,11 @@ div.reviewWithdraw {
   font-size: 16px;
 
   h3 {
-    margin: 8px auto 40px auto;
+    font-family: $font-family-title;
+    font-size: 30px;
+    font-weight: $bold;
     color: $text-darker;
-    font-weight: $normal;
+    margin: 8px auto 40px auto;
   }
 
   .table {
