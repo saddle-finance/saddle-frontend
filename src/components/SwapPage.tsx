@@ -3,7 +3,6 @@ import "./SwapPage.scss"
 import React, { ReactElement, useState } from "react"
 import { updateCustomGasPrice, updateSelectedGasPrice } from "../state/user"
 import { useDispatch, useSelector } from "react-redux"
-
 import { AppDispatch } from "../state"
 import { AppState } from "../state/index"
 import ConfirmTransaction from "./ConfirmTransaction"
@@ -13,7 +12,6 @@ import { PayloadAction } from "@reduxjs/toolkit"
 import ReviewSwap from "./ReviewSwap"
 import SwapForm from "./SwapForm"
 import TopMenu from "./TopMenu"
-import changeIcon from "../assets/icons/icon_change.svg"
 import classNames from "classnames"
 import { updateSwapAdvancedMode } from "../state/user"
 import { useTranslation } from "react-i18next"
@@ -65,7 +63,7 @@ const SwapPage = (props: Props): ReactElement => {
           tokens={tokens}
           selected={selectedTokens[0]}
         />
-        <img src={changeIcon} alt="swap to" />
+        <div style={{ width: "64px" }} /> {/* Add Space */}
         <SwapForm
           title={t("to")}
           tokens={tokens}
@@ -237,7 +235,6 @@ const SwapPage = (props: Props): ReactElement => {
             </div>
           </div>
         </div>
-
         <div className={"error " + classNames({ showError: error.isError })}>
           {error.message}
         </div>

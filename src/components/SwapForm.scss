@@ -1,11 +1,11 @@
 @import "../styles/theme";
 
 .swapForm {
-  width: 384px;
-  background: $background;
-  border: 2px solid $background-darker;
-  border-radius: 4px;
-  padding-top: 32px;
+  width: 380px;
+  background: $background-element;
+  border: 1px solid $outline;
+  border-radius: 10px;
+  padding-top: 24px;
 
   .head {
     padding: 0 32px;
@@ -19,59 +19,83 @@
       color: $text-darker;
     }
 
-    & > input {
-      width: 240px;
+    .inputField {
+      position: relative;
+    }
+
+    input {
+      width: 252px;
       height: 32px;
-      background: $background-white;
-      border: 1px solid $background-darker;
-      border-radius: 0;
-      box-sizing: border-box;
-      margin-right: 24px;
+      background: $white;
+      outline: none;
+      border: none;
+      padding: 0 56px 0 8px;
+      margin-bottom: 24px;
     }
 
     input:focus {
       outline: none;
-      background: $white;
-      border: 2px solid $outline;
     }
 
-    & > button.max {
+    button.max {
+      position: absolute;
+      right: 8px;
+      z-index: 1;
       height: 32px;
-      width: 56px;
-      background: $background-button;
+      background: none;
       border: none;
-      color: $text-primary;
+      color: $text-red;
       font-weight: $medium;
       font-size: 16px;
+      text-decoration: underline;
+
+      &:hover {
+        font-weight: $bold;
+      }
+
+      &:focus {
+        outline: none;
+      }
     }
   }
 
   ul.tokenList {
-    padding: 0;
+    padding: 0 32px;
     margin-bottom: 0;
-    margin-top: 24px;
   }
 
   .tokenListItem {
     height: 56px;
     background: $background;
-    border-bottom: 1px solid $background-darker;
-    padding: 0 32px;
+    position: relative;
 
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     align-items: center;
+
+    .divider {
+      height: 1px;
+      width: 320px;
+      background-color: $divider-red;
+      position: absolute;
+      bottom: 0;
+    }
 
     &:hover {
       cursor: pointer;
     }
 
     &.active {
-      background: $background-darker;
-    }
-
-    &:last-child {
-      border: none;
+      background: linear-gradient(
+        to bottom,
+        transparent 20%,
+        $divider-red 20% 80%,
+        transparent 80%
+      );
+      margin-left: -10px;
+      margin-right: -10px;
+      padding: 0 10px;
     }
 
     & > img.tokenIcon {
@@ -81,6 +105,7 @@
 
     & > .tokenName {
       margin-left: 16px;
+      font-weight: $bold;
     }
 
     & > .tokenValue {
@@ -90,7 +115,6 @@
     .tokenName,
     .tokenValue {
       font-size: 16px;
-      font-weight: $normal;
       color: $text;
     }
   }
