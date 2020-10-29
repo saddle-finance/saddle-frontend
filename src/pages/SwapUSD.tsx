@@ -18,10 +18,6 @@ const testPrice = {
 
 function SwapUSD(): ReactElement {
   const { t } = useTranslation()
-  const [selectedTokenFrom, setSelectedTokenFrom] = React.useState(
-    testList[0].name,
-  )
-  const [selectedTokenTo, setSelectedTokenTo] = React.useState(testList[1].name)
 
   const daiBalance = useTokenBalance(DAI)
   const usdcBalance = useTokenBalance(USDC)
@@ -50,6 +46,11 @@ function SwapUSD(): ReactElement {
       icon: susdLogo,
     },
   ]
+
+  const [selectedTokenFrom, setSelectedTokenFrom] = React.useState(
+    tokens[0].name,
+  )
+  const [selectedTokenTo, setSelectedTokenTo] = React.useState(tokens[1].name)
 
   const info = {
     isInfo: true,

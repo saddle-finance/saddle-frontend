@@ -18,10 +18,6 @@ const testPrice = {
 
 function SwapUSD(): ReactElement {
   const { t } = useTranslation()
-  const [selectedTokenFrom, setSelectedTokenFrom] = React.useState(
-    testList[0].name,
-  )
-  const [selectedTokenTo, setSelectedTokenTo] = React.useState(testList[1].name)
 
   const tbtcBalance = useTokenBalance(TBTC)
   const wbtcBalance = useTokenBalance(WBTC)
@@ -50,6 +46,11 @@ function SwapUSD(): ReactElement {
       icon: sbtcLogo,
     },
   ]
+
+  const [selectedTokenFrom, setSelectedTokenFrom] = React.useState(
+    tokens[0].name,
+  )
+  const [selectedTokenTo, setSelectedTokenTo] = React.useState(tokens[1].name)
 
   const info = {
     isInfo: false,
