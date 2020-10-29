@@ -39,7 +39,13 @@ const shareData = {
   name: "USD Pool",
   share: 0.001,
   USDbalance: 80.23,
-  token: ["DAI", "USDC", "USDT", "sUSD"],
+  amount: 81.36,
+  token: [
+    { name: "DAI", value: 19.9 },
+    { name: "USDC", value: 20.1 },
+    { name: "USDT", value: 22.8 },
+    { name: "sUSD", value: 19.6 },
+  ],
 }
 
 function PoolUSD(): ReactElement {
