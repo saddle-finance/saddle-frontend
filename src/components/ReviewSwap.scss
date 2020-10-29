@@ -2,43 +2,73 @@
 
 div.reviewSwap {
   margin-top: 0;
+  padding: 40px;
+  background-color: $white;
+  color: $text-black;
+  border-radius: 8px;
 
   h3 {
     font-family: $font-family-title;
     font-size: 30px;
     font-weight: $bold;
-    color: $text-darker;
-    margin-top: 16px;
+    color: $text-black;
+    margin-top: 0;
+    margin-bottom: 24px;
   }
 
   .swapTable {
-    margin: 32px 0 0 0;
+    margin: 0;
 
     .floatRight {
       float: right;
     }
 
-    img {
-      margin: 8px 0;
+    img.arrowDown {
+      margin-top: 8px;
+      margin-bottom: 8px;
+      margin-left: auto;
+      float: right;
+    }
+
+    .to {
+      clear: right;
     }
 
     img.tokenIcon {
-      margin: 0 auto;
+      vertical-align: text-bottom;
     }
 
-    span.tokenValue {
-      margin-left: 4px;
+    span.tokenName {
+      margin-left: 8px;
+      font-weight: $bold;
+    }
+
+    .divider {
+      background-color: $divider-red;
+      margin: 16px 0 20px 0;
+    }
+
+    .priceTable {
+      width: 100%;
+      color: $text-black;
+    }
+
+    .gas,
+    .slippage {
+      margin-top: 8px;
     }
   }
 
   .bottom {
     background: $background;
-    margin: 0 -24px -24px -24px;
-    padding: 24px;
+    margin: 40px -40px -40px -40px;
+    padding: 24px 40px 40px 40px;
     border-radius: 0px 0px 8px 8px;
 
     p {
       margin: 0 0 32px 0;
+      color: $text;
+      line-height: 20px;
     }
 
     & > button {
@@ -55,7 +85,7 @@ div.reviewSwap {
     button.confirm {
       border: none;
       background: $primary;
-      color: $white;
+      color: $text-black;
       font-weight: $bold;
       font-size: 16px;
       letter-spacing: 0.02em;
@@ -63,21 +93,24 @@ div.reviewSwap {
 
       &:hover,
       &:focus {
-        opacity: 0.8;
+        outline: none;
+        background-color: $primary-blue;
+        color: $text;
+        box-shadow: $shadow-hover;
       }
     }
 
     button.cancel {
       background: $background-white;
-      border: 1px solid #fae09e;
-      color: $text-primary;
-      font-weight: $normal;
+      border: none;
+      color: $text-black;
+      font-weight: $bold;
       font-size: 16px;
       letter-spacing: 0.02em;
 
       &:hover,
       &:focus {
-        border: 2px solid $outline;
+        color: $primary-blue;
       }
     }
   }

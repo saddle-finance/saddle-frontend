@@ -19,8 +19,14 @@ function SwapForm({ title, tokens, selected }: Props): ReactElement {
     <div className="swapForm">
       <div className="head">
         <h4 className="title">{title}</h4>
-        <input></input>
-        {title === "From" ? <button className="max">{t("max")}</button> : ""}
+        <div className="inputField">
+          <input></input>
+          {title === t("from") ? (
+            <button className="max">{t("max")}</button>
+          ) : (
+            ""
+          )}
+        </div>
       </div>
       <ul className="tokenList">
         {tokens.map((token, i) => (
@@ -33,6 +39,7 @@ function SwapForm({ title, tokens, selected }: Props): ReactElement {
             <img className="tokenIcon" src={token.icon} alt="icon" />
             <span className="tokenName">{token.name}</span>
             <span className="tokenValue">{token.value}</span>
+            {i === tokens.length - 1 ? "" : <div className="divider"></div>}
           </div>
         ))}
       </ul>
