@@ -175,8 +175,9 @@ div.swapPage {
     width: 240px;
     height: 48px;
     border: none;
+    border-radius: 6px;
     background: $primary;
-    color: $white;
+    color: $black;
     font-weight: $bold;
     font-size: 20px;
     letter-spacing: 0.04em;
@@ -187,7 +188,8 @@ div.swapPage {
     &:hover,
     &:focus {
       outline: none;
-      opacity: 0.8;
+      background-color: $primary-blue;
+      color: $text;
       box-shadow: $shadow-hover;
     }
   }
@@ -197,6 +199,8 @@ div.swapPage {
     color: rgba(0, 0, 0, 0.2);
 
     &:hover {
+      background-color: $primary;
+      color: rgba(0, 0, 0, 0.2);
       transform: none;
       opacity: 1;
     }
