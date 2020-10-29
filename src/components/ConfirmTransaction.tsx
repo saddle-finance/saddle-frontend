@@ -2,7 +2,7 @@ import "./ConfirmTransaction.scss"
 
 import React, { ReactElement } from "react"
 
-import signImg from "../assets/icons/icon_sign.svg"
+import signImg from "../assets/icons/image_sign.svg"
 import { useTranslation } from "react-i18next"
 
 function ConfirmTransaction(): ReactElement {

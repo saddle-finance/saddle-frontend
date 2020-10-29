@@ -1,8 +1,11 @@
 @import "../styles/theme";
 
 div.confirmTransaction {
-  margin-top: 48px;
+  margin-top: 0;
+  padding: 40px 40px 16px 40px;
   text-align: center;
+  background: $background-element;
+  border-radius: 8px;
 
   h3 {
     font-family: $font-family-title;
@@ -12,7 +15,7 @@ div.confirmTransaction {
   }
 
   img {
-    margin-top: 24px;
-    margin-bottom: 63px;
+    margin-top: 40px;
+    margin-bottom: 48px;
   }
 }
