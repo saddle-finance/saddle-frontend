@@ -161,6 +161,7 @@ const SwapPage = (props: Props): ReactElement => {
                     1%
                   </button>
                   <input></input>
+                  <span style={{ marginLeft: "4px" }}>%</span>
                 </div>
               </div>
               <div className="maxSlippage tableOption">

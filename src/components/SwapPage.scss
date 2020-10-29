@@ -78,7 +78,7 @@ div.swapPage {
 
   .advancedOptions {
     width: 100%;
-    margin-bottom: 56px;
+    margin-bottom: 32px;
 
     .divider {
       display: block;
@@ -97,17 +97,21 @@ div.swapPage {
     }
 
     .table {
-      display: none;
-      width: 100%;
-      margin-top: 8px;
+      width: calc(100% - 16px);
+      margin-top: 16px;
+      border: 1px solid $outline;
+      border-radius: 10px;
+      padding: 16px 8px;
 
       display: flex;
       flex-direction: row-reverse;
 
       input {
-        width: 40px;
+        width: 42px;
         border: none;
         border-radius: 0;
+        height: 20px;
+        font-size: 80%;
       }
 
       input:focus {
@@ -115,8 +119,13 @@ div.swapPage {
         border: 1px solid $outline;
       }
 
+      .label {
+        font-weight: $bold;
+        font-size: 16px;
+      }
+
       .tableOption {
-        margin-left: 48px;
+        margin-left: 32px;
 
         &:last-child {
           margin-left: 0;
@@ -134,7 +143,7 @@ div.swapPage {
       font-size: 16px;
       font-weight: $normal;
       color: $text;
-      padding: 0 16px 0 0;
+      padding: 0 12px 0 0;
 
       &:hover {
         transform: none;

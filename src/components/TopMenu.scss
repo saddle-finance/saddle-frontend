@@ -26,11 +26,9 @@ header.top {
     .logo {
       background-color: #ffffe9;
       border-radius: 52px;
-      // transition: transform 0.4s;
       display: inline-block;
       margin-right: 0.4em;
       &:hover {
-        // transform: rotate(-10deg) translate(0, 8px);
         cursor: pointer;
       }
     }
