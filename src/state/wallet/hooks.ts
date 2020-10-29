@@ -16,7 +16,8 @@ export function useTokenBalance(t: Token): number {
 
   usePoller((): void => {
     async function pollBalance(): Promise<void> {
-      const newBalance = await tokenContract?.balanceOf(account)
+      const newBalance =
+        (await tokenContract?.balanceOf(account)) || BigNumber.from(0)
       if (newBalance !== balance) {
         setBalance(newBalance)
       }
