@@ -3,7 +3,7 @@
 div.modal {
   display: block; /* Hidden by default */
   position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
+  z-index: 10; /* Sit on top */
   left: 0;
   top: 0;
   width: 100%; /* Full width */
@@ -16,10 +16,8 @@ div.modal {
 div.modalContent {
   width: 450px;
   min-height: 332px;
-  // background-color: $background;
   border: 1px solid $outline;
   margin: auto;
-  // padding: 40px;
   box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.3);
   border-radius: 8px;
 
