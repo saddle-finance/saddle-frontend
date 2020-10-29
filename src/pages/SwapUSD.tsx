@@ -14,8 +14,6 @@ const testPrice = {
   pair: "DAI/USDC",
   value: 1.0261,
 }
-
-const selectedTokens = ["DAI", "USDT"]
 // End of dumb data
 
 function SwapUSD(): ReactElement {
@@ -49,6 +47,11 @@ function SwapUSD(): ReactElement {
     },
   ]
 
+  const [selectedTokenFrom, setSelectedTokenFrom] = React.useState(
+    tokens[0].name,
+  )
+  const [selectedTokenTo, setSelectedTokenTo] = React.useState(tokens[1].name)
+
   const info = {
     isInfo: true,
     message: `${t("estimatedTxCost")} $3.14`,
@@ -63,7 +66,10 @@ function SwapUSD(): ReactElement {
     <SwapPage
       tokens={tokens}
       rate={testPrice}
-      selectedTokens={selectedTokens}
+      selectedTokenFrom={selectedTokenFrom}
+      selectedTokenTo={selectedTokenTo}
+      onSelectTokenFrom={setSelectedTokenFrom}
+      onSelectTokenTo={setSelectedTokenTo}
       error={error}
       info={info}
     />

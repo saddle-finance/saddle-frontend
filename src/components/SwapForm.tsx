@@ -9,10 +9,15 @@ interface Props {
   title: string
   tokens: Array<{ name: string; value: number; icon: string }>
   selected: string
-  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void
+  onChangeSelected: (tokenName: string) => void
 }
 
-function SwapForm({ title, tokens, selected }: Props): ReactElement {
+function SwapForm({
+  title,
+  tokens,
+  selected,
+  onChangeSelected,
+}: Props): ReactElement {
   const { t } = useTranslation()
 
   return (
@@ -35,6 +40,7 @@ function SwapForm({ title, tokens, selected }: Props): ReactElement {
               "tokenListItem " + classNames({ active: selected === token.name })
             }
             key={i}
+            onClick={(): void => onChangeSelected(token.name)}
           >
             <img className="tokenIcon" src={token.icon} alt="icon" />
             <span className="tokenName">{token.name}</span>

@@ -32,14 +32,26 @@ const selected = {
 interface Props {
   tokens: Array<{ name: string; value: number; icon: string }>
   rate: { [key: string]: any } // eslint-disable-line @typescript-eslint/no-explicit-any
-  selectedTokens: string[]
   error: { isError: boolean; message: string }
   info: { isInfo: boolean; message: string }
+  selectedTokenFrom: string
+  onSelectTokenFrom: (tokenName: string) => void
+  selectedTokenTo: string
+  onSelectTokenTo: (tokenName: string) => void
 }
 
 const SwapPage = (props: Props): ReactElement => {
   const { t } = useTranslation()
-  const { tokens, rate, selectedTokens, error, info } = props
+  const {
+    tokens,
+    rate,
+    error,
+    info,
+    selectedTokenFrom,
+    selectedTokenTo,
+    onSelectTokenFrom,
+    onSelectTokenTo,
+  } = props
 
   const [modalOpen, setModalOpen] = useState(false)
   const [popUp, setPopUp] = useState("")
@@ -61,13 +73,15 @@ const SwapPage = (props: Props): ReactElement => {
         <SwapForm
           title={t("from")}
           tokens={tokens}
-          selected={selectedTokens[0]}
+          onChangeSelected={onSelectTokenFrom}
+          selected={selectedTokenFrom}
         />
         <div style={{ width: "64px" }} /> {/* Add Space */}
         <SwapForm
           title={t("to")}
           tokens={tokens}
-          selected={selectedTokens[1]}
+          onChangeSelected={onSelectTokenTo}
+          selected={selectedTokenTo}
         />
         <div className="infoSection">
           <div className="priceTable">

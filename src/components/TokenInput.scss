@@ -11,7 +11,7 @@ div.tokenInput {
     margin-top: 8px;
 
     padding-left: 16px;
-    color: $text;
+    color: $text-black;
     font-size: 16px;
     font-family: $font-family;
     font-style: normal;
@@ -33,5 +33,10 @@ div.tokenInput {
     background: none !important;
     border: none;
     padding: 0 !important;
+    outline: none;
+    cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
