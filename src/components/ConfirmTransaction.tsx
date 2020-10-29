@@ -11,7 +11,16 @@ function ConfirmTransaction(): ReactElement {
   return (
     <div className="confirmTransaction">
       <img src={signImg} alt="confirm in wallet" />
-      <h3>{t("confirmTransaction")}</h3>
+      <h3>
+        {t("confirmTransaction")
+          .split("\n")
+          .map((line, key) => (
+            <span key={key}>
+              {line}
+              <br />
+            </span>
+          ))}
+      </h3>
     </div>
   )
 }
