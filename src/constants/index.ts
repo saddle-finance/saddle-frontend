@@ -28,6 +28,8 @@ export class Token {
   }
 }
 
+export const BLOCK_TIME = 15000
+
 export const TEST_STABLECOIN_SWAP_ADDRESS =
   "0x0C6c3C47A1f650809B0D1048FDf9603e09473D7E"
 export const TEST_BTC_SWAP_ADDRESS =

@@ -71,29 +71,6 @@ const testUsdPoolData = {
   ],
 }
 
-const testTokensData = [
-  {
-    name: "DAI",
-    icon: daiLogo,
-    max: 7.02,
-  },
-  {
-    name: "USDC",
-    icon: usdcLogo,
-    max: 1.01,
-  },
-  {
-    name: "USDT",
-    icon: usdtLogo,
-    max: 0,
-  },
-  {
-    name: "sUSD",
-    icon: susdLogo,
-    max: 0,
-  },
-]
-
 const selected = {
   maxSlippage: 0.1,
 }
@@ -141,16 +118,33 @@ function DepositUSD(): ReactElement {
   const usdtBalance = useTokenBalance(USDT)
   const susdBalance = useTokenBalance(SUSD)
 
-  // TODO: cleanup
-  testTokensData[0].max = daiBalance
-  testTokensData[1].max = usdcBalance
-  testTokensData[2].max = usdtBalance
-  testTokensData[3].max = susdBalance
+  const tokens = [
+    {
+      name: "DAI",
+      icon: daiLogo,
+      max: daiBalance,
+    },
+    {
+      name: "USDC",
+      icon: usdcLogo,
+      max: usdcBalance,
+    },
+    {
+      name: "USDT",
+      icon: usdtLogo,
+      max: usdtBalance,
+    },
+    {
+      name: "sUSD",
+      icon: susdLogo,
+      max: susdBalance,
+    },
+  ]
 
   return (
     <DepositPage
       title="USD Pool"
-      tokensData={testTokensData}
+      tokens={tokens}
       selected={selected}
       poolData={testUsdPoolData}
       transactionInfoData={testTransInfoData}

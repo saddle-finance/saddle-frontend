@@ -1,9 +1,11 @@
+import { RENBTC, SBTC, TBTC, WBTC } from "../constants"
 import React, { ReactElement } from "react"
 
 import DepositPage from "../components/DepositPage"
 import renbtcLogo from "../assets/icons/renbtc.svg"
 import sbtcLogo from "../assets/icons/sbtc.svg"
 import tbtcLogo from "../assets/icons/tbtc.svg"
+import { useTokenBalance } from "../state/wallet/hooks"
 import wbtcLogo from "../assets/icons/wbtc.svg"
 
 // Dumb data start here
@@ -42,29 +44,6 @@ const testBTCPoolData = {
     },
   ],
 }
-
-const testTokensData = [
-  {
-    name: "tBTC",
-    icon: tbtcLogo,
-    max: 2.02,
-  },
-  {
-    name: "wBTC",
-    icon: wbtcLogo,
-    max: 1.31,
-  },
-  {
-    name: "renBTC",
-    icon: renbtcLogo,
-    max: 0.1,
-  },
-  {
-    name: "sBTC",
-    icon: sbtcLogo,
-    max: 0.2,
-  },
-]
 
 const selected = {
   maxSlippage: 0.1,
@@ -109,10 +88,38 @@ const testDepositData = {
 // Dumb data end here
 
 function DepositBTC(): ReactElement {
+  const tbtcBalance = useTokenBalance(TBTC)
+  const wbtcBalance = useTokenBalance(WBTC)
+  const renbtcBalance = useTokenBalance(RENBTC)
+  const sbtcBalance = useTokenBalance(SBTC)
+
+  const tokens = [
+    {
+      name: "tBTC",
+      icon: tbtcLogo,
+      max: tbtcBalance,
+    },
+    {
+      name: "wBTC",
+      icon: wbtcLogo,
+      max: wbtcBalance,
+    },
+    {
+      name: "renBTC",
+      icon: renbtcLogo,
+      max: renbtcBalance,
+    },
+    {
+      name: "sBTC",
+      icon: sbtcLogo,
+      max: sbtcBalance,
+    },
+  ]
+
   return (
     <DepositPage
       title="BTC Pool"
-      tokensData={testTokensData}
+      tokens={tokens}
       selected={selected}
       poolData={testBTCPoolData}
       transactionInfoData={testTransInfoData}
