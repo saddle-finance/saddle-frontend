@@ -22,11 +22,10 @@ function PoolOverview({ data, to }: Props): ReactElement {
 
   return (
     <div className="poolOverview">
-      <h4>{t("poolOverview")}</h4>
       <Link to={to}>
         <div className="table">
+          <h4 className="title">{data.title}</h4>
           <div className="left">
-            <span className="title">{data.title}</span>
             <span style={{ marginRight: "8px" }}>[</span>
             {data.tokens.map((token, index) => (
               <div className="token" key={index}>
@@ -46,7 +45,8 @@ function PoolOverview({ data, to }: Props): ReactElement {
                   classNames({ minus: !data.APY })
                 }
               >
-                {data.APY ? "+" + data.APY : "-" + data.APY}
+                {data.APY}
+                {/* {data.APY ? "+" + data.APY : "-" + data.APY} */}
               </span>
             </div>
             <div className="saddApy">

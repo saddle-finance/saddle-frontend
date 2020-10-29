@@ -2,33 +2,37 @@
 
 a {
   text-decoration: none;
-  color: $text;
+  color: $text-darker;
 }
 
 div.poolOverview {
   margin-top: 40px;
   width: 888px;
 
-  h4 {
+  h4.title {
+    width: 100%;
+    font-family: $font-family-title;
     margin-top: 0;
     margin-bottom: 24px;
-    font-size: 18px;
-    font-weight: $medium;
+    font-size: 30px;
+    font-weight: $bold;
     color: $text-darker;
   }
 
   .table {
-    background: $background-white;
-    box-shadow: 0px 2px 8px rgba(39, 14, 1, 0.18);
-    border-radius: 6px;
-    padding: 16px;
+    background: $background-element;
+    box-shadow: $shadow;
+    border: 1px solid $outline;
+    border-radius: 10px;
+    padding: 32px;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
-    height: 56px;
 
     &:hover {
-      background: $background-darker;
-      box-shadow: 2px 2px 12px rgba(39, 14, 1, 0.32);
+      box-shadow: $shadow-hover;
+      padding: 30px;
+      border: 3px solid $outline;
     }
   }
 
