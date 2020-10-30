@@ -34,7 +34,7 @@ function Pool(): ReactElement {
           When liquidity is supplied to a pool, the liquidity provider (LP)
           receives special tokens called LP tokens in proportion to how much
           liquidity they supplied to the pool. When a trade is facilitated by
-          the pool a 0.3% feis proportionally distributed amongst all the LP
+          the pool a 0.04% fee is proportionally distributed amongst all the LP
           token holders. If the liquidity provider wants to get their underlying
           liquidity back, plus any accrued fees, they must burn their LP tokens.
         </p>

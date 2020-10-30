@@ -46,7 +46,6 @@ function PoolOverview({ data, to }: Props): ReactElement {
                 }
               >
                 {data.APY}
-                {/* {data.APY ? "+" + data.APY : "-" + data.APY} */}
               </span>
             </div>
             <div className="saddApy">
