@@ -1,46 +1,50 @@
 @import "../styles/theme";
 
 div.poolInfoCard {
-  width: 368px;
-  padding: 16px;
-  background: $background;
-  border: 1px solid $outline;
-  color: $text;
+  color: $text-darker;
   font-size: 16px;
+  font-weight: $normal;
 
-  p {
-    margin: 0;
-  }
-
-  span {
-    font-weight: $normal;
+  h4 {
+    width: 100%;
+    font-family: $font-family-title;
+    margin-top: 24px;
+    margin-right: 0;
+    margin-bottom: 24px;
+    font-size: 30px;
+    font-weight: $bold;
+    color: $text-darker;
   }
 
   div.info {
-    display: flex;
-    flex-wrap: wrap;
-
     & > .infoItem {
-      min-width: 30%;
-      margin-top: 32px;
+      margin-top: 8px;
     }
+
+    .value {
+      font-weight: $bold;
+    }
+  }
+
+  .twoColumn {
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
 
     span {
-      font-weight: $medium;
-    }
-    span.label {
       display: block;
-      font-weight: $normal;
+      line-height: 20px;
     }
   }
 
-  div.bottom {
-    margin: 16px -16px -16px -16px;
-    padding: 16px 32px 24px 16px;
-    background: $background-darker;
+  .bottom {
+    h4 {
+      margin-bottom: 4px;
+    }
   }
-
   .tokenList {
+    margin-top: 8px;
+
     display: flex;
     flex-wrap: wrap;
 
