@@ -22,16 +22,21 @@ function MyShareCard({ data }: Props): ReactElement | null {
   else
     return (
       <div className="myShareCard">
-        <p>{`${t("yourPoolShare")}: ${data.share}`}</p>
+        <h4>{t("myShare")}</h4>
         <div className="info">
-          <span>{`${t("totalValue")}: ${data.value}`}</span>
-          <span>{`${t("balance")}: ${data.USDbalance} USD`}</span>
-          <span>{`${t("averagedBalance")}: ${data.aveBalance}`}</span>
+          <div className="poolShare">
+            <span>{data.share} of pool</span>
+          </div>
+          <div className="balance">
+            <span>{t("usdBalance") + ": " + data.USDbalance}</span>
+          </div>
+          <div className="amount">
+            <span>Total amount: {data.value}</span>
+          </div>
         </div>
-        <div className="divider"></div>
-        <div className="tokenList">
+        <div className="currency">
           {data.token.map((coin, index) => (
-            <div className="token" key={index}>
+            <div key={index}>
               <span className="tokenName">{coin.name}</span>
               <span>{coin.value}</span>
             </div>

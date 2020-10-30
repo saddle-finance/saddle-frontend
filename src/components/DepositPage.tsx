@@ -256,11 +256,10 @@ const DepositPage = (props: Props): ReactElement => {
           <MyShareCard data={myShareData} />
           <div
             style={{
-              height: "24px",
               display: myShareData ? "block" : "none",
             }}
+            className="divider"
           ></div>{" "}
-          {/* space divider */}
           <PoolInfoCard data={poolData} />
         </div>
         <Modal isOpen={modalOpen} onClose={(): void => setModalOpen(false)}>
