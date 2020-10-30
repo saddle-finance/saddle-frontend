@@ -39,6 +39,7 @@ const poolData = {
 const shareData = {
   name: "USD Pool",
   share: 0,
+  amount: 0,
   USDbalance: 0,
   token: ["tBTC", "wBTC", "renBTC", "sBTC"],
 }
@@ -50,9 +51,7 @@ function PoolBTC(): ReactElement {
       <TopMenu activeTab={"pool"} />
       <div className="content">
         <PoolOverview data={poolData} to="/pool/btc/deposit" />
-        {shareData.share ? (
-          <MyShare data={shareData} to="/pool/btc/withdraw" />
-        ) : null}
+        {shareData.share ? <MyShare to="/pool/btc/withdraw" /> : null}
       </div>
     </div>
   )

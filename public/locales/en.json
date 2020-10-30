@@ -13,7 +13,6 @@
   "confirmTransaction": "Confirm this transaction in your wallet\n...",
   "confirmWithdraw": "Confirm Withdraw",
   "connectWallet": "Connect to a wallet",
-  "currency": "Currency",
   "currencyReserves": "Currency reserves",
   "dailyVolume": "Daily volume",
   "deposit": "Deposit",
@@ -33,6 +32,7 @@
   "liquidityUtilization": "Liquidity utilization",
   "max": "MAX",
   "maxSlippage": "Max Slippage",
+  "myShare": "My Share",
   "no": "No",
   "pool": "Pool",
   "poolOverview": "Pool Overview",
@@ -55,6 +55,5 @@
   "withdrawFrom": "Withdraw from",
   "withdrawPercentage": "Withdraw percentage",
   "yes": "Yes",
-  "youWillReceive": "You will receive at least",
-  "yourPoolShare": "Your Pool Share"
+  "youWillReceive": "You will receive at least"
 }

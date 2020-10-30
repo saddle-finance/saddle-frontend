@@ -13,7 +13,6 @@
   "confirmTransaction": "在您的钱包中确认此交易\n...",
   "confirmWithdraw": "确认提款",
   "connectWallet": "连接到钱包",
-  "currency": "货币",
   "currencyReserves": "货币储备",
   "dailyVolume": "日交易量",
   "deposit": "存入",
@@ -33,6 +32,7 @@
   "liquidityUtilization": "流动性利用",
   "max": "最高",
   "maxSlippage": "最大滑移",
+  "myShare": "我的份额",
   "no": "没有",
   "pool": "资金池",
   "poolOverview": "池概述",
@@ -55,6 +55,5 @@
   "withdrawFrom": "退出",
   "withdrawPercentage": "提款百分比",
   "yes": "是",
-  "youWillReceive": "你将至少收到",
-  "yourPoolShare": "你的资金池份额"
+  "youWillReceive": "你将至少收到"
 }

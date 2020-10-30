@@ -28,7 +28,7 @@ function MyShareCard({ data }: Props): ReactElement | null {
           <span>{`${t("balance")}: ${data.USDbalance} USD`}</span>
           <span>{`${t("averagedBalance")}: ${data.aveBalance}`}</span>
         </div>
-        <div className="divider"></div> {/* divider */}
+        <div className="divider"></div>
         <div className="tokenList">
           {data.token.map((coin, index) => (
             <div className="token" key={index}>
