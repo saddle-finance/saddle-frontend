@@ -159,12 +159,11 @@ const DepositPage = (props: Props): ReactElement => {
                   fillRule="evenodd"
                   clipRule="evenodd"
                   d="M14.8252 0C16.077 0 16.3783 0.827943 15.487 1.86207L8.80565 9.61494C8.35999 10.1321 7.63098 10.1246 7.19174 9.61494L0.510262 1.86207C-0.376016 0.833678 -0.0777447 0 1.17205 0L14.8252 0Z"
-                  fill="#EA860B"
+                  fill="#00f4d7"
                 />
               </svg>
             </span>
-            {/* When advanced = true, divider will be shown */}
-            <div className={"divider " + classNames({ show: advanced })}></div>
+            <div className="divider"></div>
             <div className={"tableContainer" + classNames({ show: advanced })}>
               <div className="infiniteApproval">
                 <input
@@ -193,7 +192,7 @@ const DepositPage = (props: Props): ReactElement => {
                 <input type="number" />%
               </div>
               <div className="paramater">
-                {`${t("gas")}:`}
+                {`${t("gas")}(GWEI):`}
                 <span
                   className={classNames({
                     selected: selectedGasPrice === GasPrices.Standard,
