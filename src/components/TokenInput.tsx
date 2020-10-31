@@ -24,7 +24,7 @@ function TokenInput({ token }: Props): ReactElement {
       <img alt="icon" src={token.icon} />
       <span>{token.name}</span>
       <button className="max" onClick={onClickMax}>
-        {`${t("max")}: ${token.max}`}
+        {`${t("max")}:${Math.floor(token.max * 100) / 100}`}
       </button>
       <input
         type="number"

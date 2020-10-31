@@ -1,14 +1,20 @@
 @import "../styles/theme.scss";
 
 div.tokenInput {
+  display: flex;
+  position: relative;
+  align-items: center;
+
   input {
-    width: 384px;
-    height: 40px;
+    position: absolute;
+    left: 60px;
+    width: 258px;
+    height: 32px;
     display: block;
     background: $white;
     border: none;
     border-radius: 0;
-    margin-top: 8px;
+    margin-left: 16px;
 
     padding-left: 16px;
     color: $text-black;
@@ -18,8 +24,12 @@ div.tokenInput {
     font-weight: $normal;
 
     &:focus {
-      outline: $outline solid 1px;
+      outline: none;
     }
+  }
+
+  span {
+    line-height: 40px;
   }
 
   img {
@@ -28,15 +38,24 @@ div.tokenInput {
   }
 
   button.max {
-    float: right;
-    color: $text-primary;
+    position: absolute;
+    right: 16px;
+    z-index: 1;
+    height: 32px;
+    color: $text-red;
     background: none !important;
     border: none;
-    padding: 0 !important;
-    outline: none;
+    font-weight: $medium;
+    letter-spacing: -0.06em;
     cursor: pointer;
+    text-decoration: underline;
+
     &:hover {
-      text-decoration: underline;
+      font-weight: $bold;
+    }
+
+    &:focus {
+      outline: none;
     }
   }
 }

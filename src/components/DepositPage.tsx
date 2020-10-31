@@ -93,14 +93,52 @@ const DepositPage = (props: Props): ReactElement => {
     <div className="deposit">
       <TopMenu activeTab={"pool"} />
       <div className="content">
-        <div className="form">
-          <h3>{`${t("addLiquidity")} ${title}`}</h3>
-          {tokens.map((token, index) => (
-            <div key={index}>
-              <TokenInput token={token} />
-              <div style={{ height: "24px" }}></div> {/* space divider */}
+        <div className="left">
+          <div className="form">
+            <h3>{`${t("addLiquidity")} ${title}`}</h3>
+            {tokens.map((token, index) => (
+              <div key={index}>
+                <TokenInput token={token} />
+                {index === tokens.length - 1 ? (
+                  ""
+                ) : (
+                  <div className="divider"></div>
+                )}
+              </div>
+            ))}
+            <div
+              className={
+                "transactionInfoContainer " +
+                classNames({ show: transactionInfoData.isInfo })
+              }
+            >
+              <div className="transactionInfo">
+                <div className="transactionInfoItem">
+                  <span>{`Saddle LP ${t("tokenValue")}: `}</span>
+                  <span className="value">
+                    {transactionInfoData.content.lpTokenValue}
+                  </span>
+                </div>
+                <div className="transactionInfoItem">
+                  {transactionInfoData.content.benefit > 0 ? (
+                    <span className="bonus">{`${t("bonus")}: `}</span>
+                  ) : (
+                    <span className="slippage">{t("maxSlippage")}</span>
+                  )}
+                  <span
+                    className={
+                      "value " +
+                      (transactionInfoData.content.benefit > 0
+                        ? "bonus"
+                        : "slippage")
+                    }
+                  >
+                    {transactionInfoData.content.benefit}
+                  </span>
+                </div>
+              </div>
             </div>
-          ))}
+          </div>
           <div className="advancedOptions">
             <span
               className="title"
@@ -213,44 +251,6 @@ const DepositPage = (props: Props): ReactElement => {
           >
             {t("deposit")}
           </button>
-          <div
-            className={
-              "transactionInfoContainer " +
-              classNames({ show: transactionInfoData.isInfo })
-            }
-          >
-            <div className="transactionInfo">
-              <div className="transactionInfoItem">
-                <span>{t("youWillReceive")}</span>
-                <span className="value">
-                  {transactionInfoData.content.minimumReceive}
-                </span>
-              </div>
-              <div className="transactionInfoItem">
-                <span>{`Saddle LP ${t("tokenValue")}`}</span>
-                <span className="value">
-                  {transactionInfoData.content.lpTokenValue}
-                </span>
-              </div>
-              <div className="transactionInfoItem">
-                {transactionInfoData.content.benefit > 0 ? (
-                  <span className="bonus">{t("bonus")}</span>
-                ) : (
-                  <span className="slippage">{t("maxSlippage")}</span>
-                )}
-                <span
-                  className={
-                    "value " +
-                    (transactionInfoData.content.benefit > 0
-                      ? "bonus"
-                      : "slippage")
-                  }
-                >
-                  {transactionInfoData.content.benefit}
-                </span>
-              </div>
-            </div>
-          </div>
         </div>
         <div className="infoPanels">
           <MyShareCard data={myShareData} />

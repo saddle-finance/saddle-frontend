@@ -8,10 +8,10 @@ div.deposit {
   box-sizing: border-box; // Make the padding included in height calculation
 
   .content {
-    width: 864px;
+    width: 888px;
     margin: 0 auto;
     display: flex;
-    gap: 80px;
+    gap: 20px;
 
     .infoPanels {
       margin-top: 40px;
@@ -20,22 +20,37 @@ div.deposit {
       border: 1px solid $outline;
       border-radius: 10px;
       background: $background-element;
+    }
 
-      .divider {
-        width: 100%;
-        height: 1px;
-        background: $divider-red;
-        margin: 16px 0;
-      }
+    .left {
+      width: 434px;
+    }
+
+    .form {
+      width: 434px;
+      border: 1px solid $outline;
+      border-radius: 10px;
+      padding: 40px;
+      margin-top: 40px;
+      box-sizing: border-box;
     }
 
     .form h3 {
       font-family: $font-family-title;
       font-size: 30px;
+      margin-top: 0;
+      margin-bottom: 48px;
       font-weight: $bold;
       color: $text-darker;
-      margin: 40px auto;
       text-align: center;
+    }
+
+    .form .divider,
+    .infoPanels .divider {
+      width: 100%;
+      height: 1px;
+      background: $divider-red;
+      margin: 16px 0;
     }
 
     .actionBtn {
@@ -140,13 +155,14 @@ div.deposit {
   }
 
   div.transactionInfo {
+    margin-top: 32px;
     display: flex;
-    gap: 32px;
+    flex-direction: column;
+    gap: 8px;
 
     span.value {
-      display: block;
       color: $text-darker;
-      font-weight: $medium;
+      font-weight: $bold;
     }
 
     span.bonus {
