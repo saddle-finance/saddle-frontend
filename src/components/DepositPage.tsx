@@ -93,14 +93,52 @@ const DepositPage = (props: Props): ReactElement => {
     <div className="deposit">
       <TopMenu activeTab={"pool"} />
       <div className="content">
-        <div className="form">
-          <h3>{`${t("addLiquidity")} ${title}`}</h3>
-          {tokens.map((token, index) => (
-            <div key={index}>
-              <TokenInput token={token} />
-              <div style={{ height: "24px" }}></div> {/* space divider */}
+        <div className="left">
+          <div className="form">
+            <h3>{`${t("addLiquidity")} ${title}`}</h3>
+            {tokens.map((token, index) => (
+              <div key={index}>
+                <TokenInput token={token} />
+                {index === tokens.length - 1 ? (
+                  ""
+                ) : (
+                  <div className="divider"></div>
+                )}
+              </div>
+            ))}
+            <div
+              className={
+                "transactionInfoContainer " +
+                classNames({ show: transactionInfoData.isInfo })
+              }
+            >
+              <div className="transactionInfo">
+                <div className="transactionInfoItem">
+                  <span>{`Saddle LP ${t("tokenValue")}: `}</span>
+                  <span className="value">
+                    {transactionInfoData.content.lpTokenValue}
+                  </span>
+                </div>
+                <div className="transactionInfoItem">
+                  {transactionInfoData.content.benefit > 0 ? (
+                    <span className="bonus">{`${t("bonus")}: `}</span>
+                  ) : (
+                    <span className="slippage">{t("maxSlippage")}</span>
+                  )}
+                  <span
+                    className={
+                      "value " +
+                      (transactionInfoData.content.benefit > 0
+                        ? "bonus"
+                        : "slippage")
+                    }
+                  >
+                    {transactionInfoData.content.benefit}
+                  </span>
+                </div>
+              </div>
             </div>
-          ))}
+          </div>
           <div className="advancedOptions">
             <span
               className="title"
@@ -121,12 +159,11 @@ const DepositPage = (props: Props): ReactElement => {
                   fillRule="evenodd"
                   clipRule="evenodd"
                   d="M14.8252 0C16.077 0 16.3783 0.827943 15.487 1.86207L8.80565 9.61494C8.35999 10.1321 7.63098 10.1246 7.19174 9.61494L0.510262 1.86207C-0.376016 0.833678 -0.0777447 0 1.17205 0L14.8252 0Z"
-                  fill="#EA860B"
+                  fill="#00f4d7"
                 />
               </svg>
             </span>
-            {/* When advanced = true, divider will be shown */}
-            <div className={"divider " + classNames({ show: advanced })}></div>
+            <div className="divider"></div>
             <div className={"tableContainer" + classNames({ show: advanced })}>
               <div className="infiniteApproval">
                 <input
@@ -155,7 +192,7 @@ const DepositPage = (props: Props): ReactElement => {
                 <input type="number" />%
               </div>
               <div className="paramater">
-                {`${t("gas")}:`}
+                {`${t("gas")}(GWEI):`}
                 <span
                   className={classNames({
                     selected: selectedGasPrice === GasPrices.Standard,
@@ -213,54 +250,15 @@ const DepositPage = (props: Props): ReactElement => {
           >
             {t("deposit")}
           </button>
-          <div
-            className={
-              "transactionInfoContainer " +
-              classNames({ show: transactionInfoData.isInfo })
-            }
-          >
-            <div className="transactionInfo">
-              <div className="transactionInfoItem">
-                <span>{t("youWillReceive")}</span>
-                <span className="value">
-                  {transactionInfoData.content.minimumReceive}
-                </span>
-              </div>
-              <div className="transactionInfoItem">
-                <span>{`Saddle LP ${t("tokenValue")}`}</span>
-                <span className="value">
-                  {transactionInfoData.content.lpTokenValue}
-                </span>
-              </div>
-              <div className="transactionInfoItem">
-                {transactionInfoData.content.benefit > 0 ? (
-                  <span className="bonus">{t("bonus")}</span>
-                ) : (
-                  <span className="slippage">{t("maxSlippage")}</span>
-                )}
-                <span
-                  className={
-                    "value " +
-                    (transactionInfoData.content.benefit > 0
-                      ? "bonus"
-                      : "slippage")
-                  }
-                >
-                  {transactionInfoData.content.benefit}
-                </span>
-              </div>
-            </div>
-          </div>
         </div>
         <div className="infoPanels">
           <MyShareCard data={myShareData} />
           <div
             style={{
-              height: "24px",
               display: myShareData ? "block" : "none",
             }}
+            className="divider"
           ></div>{" "}
-          {/* space divider */}
           <PoolInfoCard data={poolData} />
         </div>
         <Modal isOpen={modalOpen} onClose={(): void => setModalOpen(false)}>

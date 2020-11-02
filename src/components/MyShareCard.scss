@@ -1,40 +1,46 @@
 @import "../styles/theme";
 
 div.myShareCard {
-  background: $background;
-  border: 1px solid $outline;
-  width: 368px;
-  padding: 16px;
-  color: $text;
+  color: $text-darker;
   font-size: 16px;
 
-  p {
+  h4 {
+    width: 100%;
+    font-family: $font-family-title;
     margin-top: 0;
+    margin-right: 0;
     margin-bottom: 24px;
+    font-size: 30px;
+    font-weight: $bold;
+    color: $text-darker;
   }
+
   div.info {
+    width: 100%;
     display: flex;
     flex-wrap: wrap;
+    gap: 8px;
+    align-items: flex-start;
     justify-content: space-between;
-    gap: 10px;
+    align-content: space-between;
   }
 
-  div.divider {
-    height: 1px;
+  .poolShare {
     width: 100%;
-    background: $background-darker;
-    margin: 10px 0;
   }
 
-  div.tokenList {
+  .poolShare span {
+    color: $primary;
+  }
+
+  div.currency {
+    width: 100%;
+    margin-top: 16px;
     display: flex;
     justify-content: space-between;
 
-    .token:last-child {
-      margin-right: 56px;
-    }
-
-    span.tokenName {
+    .tokenName {
+      font-weight: $bold;
       display: block;
     }
   }

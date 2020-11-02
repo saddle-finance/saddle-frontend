@@ -27,31 +27,35 @@ function PoolInfoCard({ data }: Props): ReactElement {
 
   return (
     <div className="poolInfoCard">
-      <p>{data.name}</p>
+      <h4>{data.name}</h4>
       <div className="info">
         <div className="infoItem">
-          <span className="label">{t("fee")}</span>
-          <span>{data.fee}%</span>
+          <span className="label">{t("fee") + ": "}</span>
+          <span className="value">{data.fee}%</span>
         </div>
         <div className="infoItem">
-          <span className="label">{t("adminFee")}</span>
-          <span>{data.adminFee}%</span>
+          <span className="label">{t("virtualPrice") + ": "}</span>
+          <span className="value">{data.virtualPrice}</span>
         </div>
         <div className="infoItem">
-          <span className="label">{t("virtualPrice")}</span>
-          <span>{data.virtualPrice}</span>
+          <span className="label">{t("totalLocked") + " ($): "}</span>
+          <span className="value">{data.reserve}</span>
         </div>
-        <div className="infoItem">
-          <span className="label">{t("dailyVolume")}</span>
-          <span>{data.volume}</span>
-        </div>
-        <div className="infoItem">
-          <span className="label">{t("liquidityUtilization")}</span>
-          <span>{data.utilization}%</span>
+        <div className="twoColumn">
+          <div className="infoItem">
+            <span className="label">{t("adminFee") + ": "}</span>
+            <span className="value">{data.adminFee}%</span>
+          </div>
+          <div className="infoItem">
+            <span className="label">{t("dailyVolume") + ": "}</span>
+            <span className="value">{data.volume}</span>
+          </div>
         </div>
       </div>
+      <div className="divider" />
       <div className="bottom">
-        <p>{`${t("currencyReserves")} ${data.reserve} ${t("inTotal")}`}</p>
+        <h4>{t("currencyReserves")}</h4>
+        <span>{`$${data.reserve} ${t("inTotal")}`}</span>
         <div className="tokenList">
           {data.tokens.map((token, index) => (
             <div className="token" key={index}>
