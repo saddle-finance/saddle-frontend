@@ -95,7 +95,7 @@ div.reviewWithdraw {
     button.confirm {
       border: none;
       background: $primary;
-      color: $white;
+      color: $text-black;
       font-weight: $bold;
       font-size: 16px;
       letter-spacing: 0.02em;
@@ -104,20 +104,24 @@ div.reviewWithdraw {
       &:hover,
       &:focus {
         opacity: 0.8;
+        outline: none;
+        background-color: $primary-blue;
+        color: $text;
+        box-shadow: $shadow-hover;
       }
     }
 
     button.cancel {
       background: $background-white;
-      border: 1px solid #fae09e;
-      color: $text-primary;
-      font-weight: $normal;
+      border: none;
+      color: $text-black;
+      font-weight: $bold;
       font-size: 16px;
       letter-spacing: 0.02em;
 
       &:hover,
       &:focus {
-        border: 2px solid $outline;
+        color: $primary-blue;
       }
     }
   }

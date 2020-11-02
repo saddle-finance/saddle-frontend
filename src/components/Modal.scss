@@ -8,18 +8,21 @@ div.modal {
   top: 0;
   width: 100%; /* Full width */
   height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
+  overflow: hidden; /* Enable scroll if needed */
   background-color: rgba(0, 0, 0, 0.7); /* Black w/ opacity */
-  padding-top: 8%; /* Location of the box */
+  padding-top: 4%; /* Location of the box */
 }
 
 div.modalContent {
-  width: 450px;
+  width: 465px;
   min-height: 332px;
   border: 1px solid $outline;
   margin: auto;
   box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.3);
   border-radius: 8px;
+
+  max-height: calc(100vh - 72px);
+  overflow: auto;
 
   .close {
     color: #aaa;
