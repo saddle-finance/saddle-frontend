@@ -1,23 +1,31 @@
 @import "../styles/theme";
 
 div.reviewWithdraw {
-  color: $text;
-  font-size: 16px;
+  margin-top: 0;
+  padding: 40px;
+  background-color: $white;
+  color: $text-black;
+  border-radius: 8px;
 
   h3 {
     font-family: $font-family-title;
     font-size: 30px;
     font-weight: $bold;
-    color: $text-darker;
-    margin: 8px auto 40px auto;
+    color: $text-black;
+    margin-top: 0;
+    margin-bottom: 24px;
   }
 
   .table {
-    padding-bottom: 16px;
+    display: flex;
+    flex-direction: column;
 
     .eachToken {
-      margin-bottom: 20px;
-      text-align: right;
+      margin-bottom: 16px;
+
+      div {
+        display: inline-block;
+      }
 
       img {
         margin-right: 8px;
@@ -25,19 +33,19 @@ div.reviewWithdraw {
       }
 
       & > .value {
-        float: left;
+        width: 50%;
+      }
+      & > .token {
+        width: 50%;
       }
     }
 
-    .tableBottomItem {
-      margin-top: 16px;
+    .withdrawInItem {
+      margin-bottom: 16px;
+
       display: flex;
       flex-direction: row;
       gap: 16px;
-
-      span {
-        text-align: end;
-      }
 
       & > .label {
         width: 48%;
@@ -61,9 +69,11 @@ div.reviewWithdraw {
 
   div.bottom {
     background: $background;
-    margin: 0 -24px -24px -24px;
-    padding: 16px 24px 24px 24px;
-    border-radius: 0px 0px 4px 4px;
+    margin: 0 -40px -40px -40px;
+    padding: 16px 40px 24px 40px;
+    border-radius: 0px 0px 8px 8px;
+
+    color: $text;
 
     p {
       font-size: 14px;
@@ -110,5 +120,12 @@ div.reviewWithdraw {
         border: 2px solid $outline;
       }
     }
+  }
+
+  .divider {
+    background-color: $divider-red;
+    margin: 12px 0 16px 0;
+    height: 1px;
+    width: 100%;
   }
 }
