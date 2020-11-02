@@ -24,26 +24,25 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
     <div className="reviewDeposit">
       <h3>{t("reviewDeposit")}</h3>
       <div className="table">
-        {data.deposit.map((each, index) => (
-          <div className="eachToken" key={index}>
-            <span className="value">{each.value}</span>
-            <img src={each.icon} alt="icon" />
-            <span>{each.name}</span>
-          </div>
-        ))}
-        <div
-          style={{
-            height: "1px",
-            background: "#FAE09E",
-            width: "100%",
-            marginTop: "-8px",
-          }}
-        ></div>
-        <div className="tableBottomItem">
+        <div className="tokenList">
+          {data.deposit.map((each, index) => (
+            <div className="eachToken" key={index}>
+              <div className="value">
+                <span className="value">{each.value}</span>
+              </div>
+              <div className="token">
+                <img src={each.icon} alt="icon" />
+                <span>{each.name}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="divider" style={{ height: "1px", width: "100%" }}></div>
+        <div className="depositInfoItem">
           <span className="label">{t("yourPoolShare")}</span>
           <span className="value">{data.share}%</span>
         </div>
-        <div className="tableBottomItem">
+        <div className="depositInfoItem">
           <span className="label">{`${t("rates")}:`}</span>
           <div className="rates value">
             {data.rates.map((each, index) => (
@@ -55,9 +54,10 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
         </div>
       </div>
       <div className="bottom">
-        <h4>{t("youWillReceive")}</h4>
-        <span>{data.sadd}</span>
-        <span style={{ float: "right" }}>{`SADL ${t("poolTokens")}`}</span>
+        <span>{`${t("youWillReceive")} ${data.sadd} SADL ${t(
+          "poolTokens",
+        )}`}</span>
+        <div className="divider" style={{ height: "1px", width: "100%" }}></div>
         <p>{t("estimatedOutput")}</p>
         <button onClick={onConfirm} className="confirm">
           {t("confirmDeposit")}

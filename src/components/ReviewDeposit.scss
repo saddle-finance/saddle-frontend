@@ -1,50 +1,63 @@
 @import "../styles/theme";
 
 div.reviewDeposit {
-  color: $text;
-  font-size: 16px;
+  margin-top: 0;
+  padding: 40px;
+  background-color: $white;
+  color: $text-black;
+  border-radius: 8px;
 
   h3 {
     font-family: $font-family-title;
     font-size: 30px;
     font-weight: $bold;
-    color: $text-darker;
-    margin: 8px auto 40px auto;
+    color: $text-black;
+    margin-top: 0;
+    margin-bottom: 24px;
   }
 
   .table {
     padding-bottom: 16px;
+    display: flex;
+    flex-direction: column;
 
     .eachToken {
-      margin-bottom: 20px;
-      text-align: right;
+      margin-bottom: 16px;
 
       img {
         margin-right: 8px;
         vertical-align: text-bottom;
       }
 
+      div {
+        display: inline-block;
+      }
+
       & > .value {
-        float: left;
+        width: 50%;
+      }
+      & > .token {
+        width: 50%;
+      }
+
+      &:last-of-type {
+        margin-bottom: 0;
       }
     }
 
-    .tableBottomItem {
-      margin-top: 16px;
+    .depositInfoItem {
+      margin-bottom: 16px;
+
       display: flex;
       flex-direction: row;
       gap: 16px;
 
-      span {
-        text-align: end;
-      }
-
       & > .label {
-        width: 48%;
+        width: 50%;
       }
 
       & > .value {
-        width: 52%;
+        width: 50%;
       }
     }
 
@@ -61,22 +74,22 @@ div.reviewDeposit {
 
   div.bottom {
     background: $background;
-    margin: 0 -24px -24px -24px;
-    padding: 16px 24px 24px 24px;
-    border-radius: 0px 0px 4px 4px;
+    margin: 16px -40px -40px -40px;
+    padding: 24px 40px 40px 40px;
+    border-radius: 0px 0px 8px 8px;
 
-    h4 {
-      margin: 0 auto 16px auto;
-      color: $text-darker;
-      font-size: 18px;
-      font-weight: $normal;
-    }
+    color: $text;
 
     p {
       font-size: 14px;
       font-style: italic;
       margin-top: 24px;
       margin-bottom: 32px;
+      color: $text;
+    }
+
+    span {
+      font-size: 14px;
     }
 
     & > button {
@@ -93,7 +106,7 @@ div.reviewDeposit {
     button.confirm {
       border: none;
       background: $primary;
-      color: $white;
+      color: $text-black;
       font-weight: $bold;
       font-size: 16px;
       letter-spacing: 0.02em;
@@ -101,22 +114,30 @@ div.reviewDeposit {
 
       &:hover,
       &:focus {
-        opacity: 0.8;
+        outline: none;
+        background-color: $primary-blue;
+        color: $text;
+        box-shadow: $shadow-hover;
       }
     }
 
     button.cancel {
       background: $background-white;
-      border: 1px solid #fae09e;
-      color: $text-primary;
-      font-weight: $normal;
+      border: none;
+      color: $text-black;
+      font-weight: $bold;
       font-size: 16px;
       letter-spacing: 0.02em;
 
       &:hover,
       &:focus {
-        border: 2px solid $outline;
+        color: $primary-blue;
       }
     }
+  }
+
+  .divider {
+    background-color: $divider-red;
+    margin: 16px 0 20px 0;
   }
 }
