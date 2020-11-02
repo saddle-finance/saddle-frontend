@@ -17,7 +17,6 @@ div.reviewDeposit {
   }
 
   .table {
-    padding-bottom: 16px;
     display: flex;
     flex-direction: column;
 
@@ -74,8 +73,8 @@ div.reviewDeposit {
 
   div.bottom {
     background: $background;
-    margin: 16px -40px -40px -40px;
-    padding: 24px 40px 40px 40px;
+    margin: 0 -40px -40px -40px;
+    padding: 16px 40px 24px 40px;
     border-radius: 0px 0px 8px 8px;
 
     color: $text;
@@ -138,6 +137,6 @@ div.reviewDeposit {
 
   .divider {
     background-color: $divider-red;
-    margin: 16px 0 20px 0;
+    margin: 12px 0 16px 0;
   }
 }

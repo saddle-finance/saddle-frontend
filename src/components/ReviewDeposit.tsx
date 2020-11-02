@@ -1,6 +1,7 @@
 import "./ReviewDeposit.scss"
 
 import React, { ReactElement } from "react"
+import { GasPrices } from "../state/user"
 
 import { useTranslation } from "react-i18next"
 
@@ -13,11 +14,13 @@ interface Props {
     rates: Array<{ [key: string]: any }>
     share: number
     sadd: number
+    slippage: number
   }
+  gas: GasPrices
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
+function ReviewDeposit({ onClose, onConfirm, data, gas }: Props): ReactElement {
   const { t } = useTranslation()
 
   return (
@@ -39,11 +42,19 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
         </div>
         <div className="divider" style={{ height: "1px", width: "100%" }}></div>
         <div className="depositInfoItem">
-          <span className="label">{t("yourPoolShare")}</span>
+          <span className="label">{t("shareOfPool")}</span>
           <span className="value">{data.share}%</span>
         </div>
         <div className="depositInfoItem">
-          <span className="label">{`${t("rates")}:`}</span>
+          <span className="label">{t("gas")}</span>
+          <span className="value">{gas}</span>
+        </div>
+        <div className="depositInfoItem">
+          <span className="label">{t("slippage")}</span>
+          <span className="value">{data.slippage}%</span>
+        </div>
+        <div className="depositInfoItem">
+          <span className="label">{t("rates")}</span>
           <div className="rates value">
             {data.rates.map((each, index) => (
               <span key={index}>
