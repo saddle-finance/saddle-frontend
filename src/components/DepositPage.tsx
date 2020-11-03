@@ -59,6 +59,7 @@ interface Props {
     rates: Array<{ [key: string]: any }>
     share: number
     sadd: number
+    slippage: number
   }
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -265,6 +266,7 @@ const DepositPage = (props: Props): ReactElement => {
           {popUp === "review" ? (
             <ReviewDeposit
               data={depositDataFromParent}
+              gas={selectedGasPrice}
               onConfirm={(): void => setPopUp("confirm")}
               onClose={(): void => setModalOpen(false)}
             />

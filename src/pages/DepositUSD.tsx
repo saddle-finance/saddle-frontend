@@ -84,7 +84,7 @@ const testTransInfoData = {
   },
 }
 
-const testDepositData = {
+const depositDataFromParentTest = {
   deposit: [
     {
       name: "DAI",
@@ -109,6 +109,7 @@ const testDepositData = {
   ],
   share: 0.000024,
   sadd: 0.325496,
+  slippage: 0.1,
 }
 // Dumb data end here
 
@@ -149,7 +150,7 @@ function DepositUSD(): ReactElement {
       poolData={testUsdPoolData}
       transactionInfoData={testTransInfoData}
       myShareData={testMyShareData}
-      depositDataFromParent={testDepositData}
+      depositDataFromParent={depositDataFromParentTest}
     />
   )
 }

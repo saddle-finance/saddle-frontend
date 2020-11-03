@@ -41,6 +41,7 @@
   "rates": "费率",
   "reviewDeposit": "审查存款",
   "reviewSwap": "评论交换",
+  "shareOfPool": "股份",
   "standard": "标准",
   "swap": "兑换",
   "to": "至",
@@ -56,5 +57,5 @@
   "withdrawFrom": "退出",
   "withdrawPercentage": "提款百分比",
   "yes": "是",
-  "youWillReceive": "你将至少收到"
+  "youWillReceive": "你将获得"
 }

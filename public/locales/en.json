@@ -36,11 +36,11 @@
   "no": "No",
   "pool": "Pool",
   "poolOverview": "Pool Overview",
-  "poolTokens": "Pool Tokens",
   "price": "Price",
   "rates": "Rates",
   "reviewDeposit": "Review Deposit",
   "reviewSwap": "Review Swap",
+  "shareOfPool": "Share of Pool",
   "standard": "Standard",
   "swap": "Swap",
   "to": "To",
@@ -56,5 +56,5 @@
   "withdrawFrom": "Withdraw from",
   "withdrawPercentage": "Withdraw percentage",
   "yes": "Yes",
-  "youWillReceive": "You will receive at least"
+  "youWillReceive": "You will receive"
 }

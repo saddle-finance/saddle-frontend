@@ -1,6 +1,7 @@
 import "./ReviewDeposit.scss"
 
 import React, { ReactElement } from "react"
+import { GasPrices } from "../state/user"
 
 import { useTranslation } from "react-i18next"
 
@@ -13,51 +14,61 @@ interface Props {
     rates: Array<{ [key: string]: any }>
     share: number
     sadd: number
+    slippage: number
   }
+  gas: GasPrices
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
+function ReviewDeposit({ onClose, onConfirm, data, gas }: Props): ReactElement {
   const { t } = useTranslation()
 
   return (
     <div className="reviewDeposit">
       <h3>{t("reviewDeposit")}</h3>
       <div className="table">
-        {data.deposit.map((each, index) => (
-          <div className="eachToken" key={index}>
-            <span className="value">{each.value}</span>
-            <img src={each.icon} alt="icon" />
-            <span>{each.name}</span>
-          </div>
-        ))}
-        <div
-          style={{
-            height: "1px",
-            background: "#FAE09E",
-            width: "100%",
-            marginTop: "-8px",
-          }}
-        ></div>
-        <div className="tableBottomItem">
-          <span className="label">{t("yourPoolShare")}</span>
+        <div className="tokenList">
+          {data.deposit.map((token, index) => (
+            <div className="eachToken" key={index}>
+              <div className="value">
+                <span className="value">{token.value}</span>
+              </div>
+              <div className="token">
+                <img src={token.icon} alt="icon" />
+                <span>{token.name}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="divider" style={{ height: "1px", width: "100%" }}></div>
+        <div className="depositInfoItem">
+          <span className="label">{t("shareOfPool")}</span>
           <span className="value">{data.share}%</span>
         </div>
-        <div className="tableBottomItem">
-          <span className="label">{`${t("rates")}:`}</span>
+        <div className="depositInfoItem">
+          <span className="label">{t("gas")}</span>
+          <span className="value">{gas}</span>
+        </div>
+        <div className="depositInfoItem">
+          <span className="label">{t("maxSlippage")}</span>
+          <span className="value">{data.slippage}%</span>
+        </div>
+        <div className="depositInfoItem">
+          <span className="label">{t("rates")}</span>
           <div className="rates value">
-            {data.rates.map((each, index) => (
+            {data.rates.map((rate, index) => (
               <span key={index}>
-                1 {each.name} = {each.rate} USD
+                1 {rate.name}={rate.rate} USD
               </span>
             ))}
           </div>
         </div>
       </div>
       <div className="bottom">
-        <h4>{t("youWillReceive")}</h4>
-        <span>{data.sadd}</span>
-        <span style={{ float: "right" }}>{`SADL ${t("poolTokens")}`}</span>
+        <span>{`${t("youWillReceive")} ${data.sadd} SADL ${t(
+          "poolTokens",
+        )}`}</span>
+        <div className="divider" style={{ height: "1px", width: "100%" }}></div>
         <p>{t("estimatedOutput")}</p>
         <button onClick={onConfirm} className="confirm">
           {t("confirmDeposit")}
