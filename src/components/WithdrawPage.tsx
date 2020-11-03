@@ -292,6 +292,7 @@ const WithdrawPage = (props: Props): ReactElement => {
           {popUp === "review" ? (
             <ReviewWithdraw
               data={testWithdrawData}
+              gas={selectedGasPrice}
               onConfirm={(): void => setPopUp("confirm")}
               onClose={(): void => setModalOpen(false)}
             />
