@@ -19,6 +19,8 @@ $white: #ffffff;
 $black: #000;
 $error: #fb5a5a;
 
+$disabled: #aaaeb2;
+
 // Fonts
 $font-family: "Source Code Pro", monospace;
 $font-family-title: "Noe Display";
@@ -29,18 +31,10 @@ $medium: 500;
 $bold: 700;
 
 $shadow: 0px 2px 8px rgba(39, 14, 1, 0.18);
+$shadow-hover: 2px 2px 12px rgba(68, 64, 64, 0.14);
 // Updated until here
 
 $background-white: #fffefb;
 $background-darker: #fae09e;
 
 $text-primary: #d67a0a;
-
-$green: #65d03d;
-$disabled: #aaaeb2;
-
-$background-button: #fae2bf;
-$background-button-hover: #f8d4a4;
-
-$shadow-hover: 2px 2px 12px rgba(68, 64, 64, 0.14);
-$shadow-popup: 2px 4px 12px rgba(0, 0, 0, 0.4);

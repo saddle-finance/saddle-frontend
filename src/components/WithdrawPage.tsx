@@ -169,9 +169,45 @@ const WithdrawPage = (props: Props): ReactElement => {
             {currentTokensData.map((token, index) => (
               <div key={index}>
                 <TokenInput token={token} />
-                <div style={{ height: "24px" }}></div> {/* space divider */}
+                {index === currentTokensData.length - 1 ? (
+                  ""
+                ) : (
+                  <div className="divider"></div>
+                )}
               </div>
             ))}
+            <div
+              className={
+                "transactionInfoContainer " +
+                classNames({ show: transactionInfoData.isInfo })
+              }
+            >
+              <div className="transactionInfo">
+                <div className="transactionInfoItem">
+                  <span>{`Saddle LP ${t("tokenValue")}: `}</span>
+                  <span className="value">
+                    {transactionInfoData.content.lpTokenValue}
+                  </span>
+                </div>
+                <div className="transactionInfoItem">
+                  {transactionInfoData.content.benefit > 0 ? (
+                    <span className="bonus">{t("bonus")}: </span>
+                  ) : (
+                    <span className="slippage">{t("maxSlippage")}</span>
+                  )}
+                  <span
+                    className={
+                      "value " +
+                      (transactionInfoData.content.benefit > 0
+                        ? "bonus"
+                        : "slippage")
+                    }
+                  >
+                    {transactionInfoData.content.benefit}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
           <div className="advancedOptions">
             <div className="combination">
@@ -231,7 +267,6 @@ const WithdrawPage = (props: Props): ReactElement => {
               ></input>
             </div>
           </div>
-
           <button
             className="actionBtn"
             type="submit"
@@ -242,44 +277,6 @@ const WithdrawPage = (props: Props): ReactElement => {
           >
             {t("withdraw")}
           </button>
-          <div
-            className={
-              "transactionInfoContainer " +
-              classNames({ show: transactionInfoData.isInfo })
-            }
-          >
-            <div className="transactionInfo">
-              <div className="transactionInfoItem">
-                <span>{t("youWillReceive")}</span>
-                <span className="value">
-                  {transactionInfoData.content.minimumReceive}
-                </span>
-              </div>
-              <div className="transactionInfoItem">
-                <span>{`Saddle LP ${t("tokenValue")}`}</span>
-                <span className="value">
-                  {transactionInfoData.content.lpTokenValue}
-                </span>
-              </div>
-              <div className="transactionInfoItem">
-                {transactionInfoData.content.benefit > 0 ? (
-                  <span className="bonus">{t("bonus")}</span>
-                ) : (
-                  <span className="slippage">{t("maxSlippage")}</span>
-                )}
-                <span
-                  className={
-                    "value " +
-                    (transactionInfoData.content.benefit > 0
-                      ? "bonus"
-                      : "slippage")
-                  }
-                >
-                  {transactionInfoData.content.benefit}
-                </span>
-              </div>
-            </div>
-          </div>
         </div>
         <div className="infoPanels">
           <MyShareCard data={myShareData} />

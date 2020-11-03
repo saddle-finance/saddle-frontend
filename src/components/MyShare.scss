@@ -19,7 +19,7 @@ div.myShare {
   }
   svg {
     fill: $text-red;
-    transition: transform 0.5s ease-in;
+    transition: transform 0.3s ease-in;
 
     &:hover {
       transform: scale(1.36);
