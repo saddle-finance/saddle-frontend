@@ -151,27 +151,28 @@ const WithdrawPage = (props: Props): ReactElement => {
     <div className="withdraw">
       <TopMenu activeTab={"pool"} />
       <div className="content">
-        <div className="form">
-          <h3>{`${t("withdrawFrom")} ${title}`}</h3>
-          <div className="percentage">
-            <span>{`${t("withdrawPercentage")} (%):`}</span>
-            <input
-              type="number"
-              step="10"
-              placeholder="100"
-              onChange={(e: React.FormEvent<HTMLInputElement>): void =>
-                onPercentChange(e.currentTarget.value)
-              }
-            />
-            {error && <div className="error">{error}</div>}
-          </div>
-          {currentTokensData.map((token, index) => (
-            <div key={index}>
-              <TokenInput token={token} />
-              <div style={{ height: "24px" }}></div> {/* space divider */}
+        <div className="left">
+          <div className="form">
+            <h3>{`${t("withdrawFrom")} ${title}`}</h3>
+            <div className="percentage">
+              <span>{`${t("withdrawPercentage")} (%):`}</span>
+              <input
+                type="number"
+                step="10"
+                placeholder="100"
+                onChange={(e: React.FormEvent<HTMLInputElement>): void =>
+                  onPercentChange(e.currentTarget.value)
+                }
+              />
+              {error && <div className="error">{error}</div>}
             </div>
-          ))}
-
+            {currentTokensData.map((token, index) => (
+              <div key={index}>
+                <TokenInput token={token} />
+                <div style={{ height: "24px" }}></div> {/* space divider */}
+              </div>
+            ))}
+          </div>
           <div className="advancedOptions">
             <div className="combination">
               <input
@@ -284,11 +285,10 @@ const WithdrawPage = (props: Props): ReactElement => {
           <MyShareCard data={myShareData} />
           <div
             style={{
-              height: "24px",
               display: myShareData ? "block" : "none",
             }}
+            className="divider"
           ></div>{" "}
-          {/* space divider */}
           <PoolInfoCard data={poolData} />
         </div>
         <Modal isOpen={modalOpen} onClose={(): void => setModalOpen(false)}>
