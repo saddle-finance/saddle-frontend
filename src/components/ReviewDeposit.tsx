@@ -28,14 +28,14 @@ function ReviewDeposit({ onClose, onConfirm, data, gas }: Props): ReactElement {
       <h3>{t("reviewDeposit")}</h3>
       <div className="table">
         <div className="tokenList">
-          {data.deposit.map((each, index) => (
+          {data.deposit.map((token, index) => (
             <div className="eachToken" key={index}>
               <div className="value">
-                <span className="value">{each.value}</span>
+                <span className="value">{token.value}</span>
               </div>
               <div className="token">
-                <img src={each.icon} alt="icon" />
-                <span>{each.name}</span>
+                <img src={token.icon} alt="icon" />
+                <span>{token.name}</span>
               </div>
             </div>
           ))}
@@ -50,15 +50,15 @@ function ReviewDeposit({ onClose, onConfirm, data, gas }: Props): ReactElement {
           <span className="value">{gas}</span>
         </div>
         <div className="depositInfoItem">
-          <span className="label">{t("slippage")}</span>
+          <span className="label">{t("maxSlippage")}</span>
           <span className="value">{data.slippage}%</span>
         </div>
         <div className="depositInfoItem">
           <span className="label">{t("rates")}</span>
           <div className="rates value">
-            {data.rates.map((each, index) => (
+            {data.rates.map((rate, index) => (
               <span key={index}>
-                1 {each.name} = {each.rate} USD
+                1 {rate.name}={rate.rate} USD
               </span>
             ))}
           </div>

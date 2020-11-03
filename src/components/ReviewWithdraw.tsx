@@ -31,33 +31,33 @@ function ReviewWithdraw({
       <h3>{t("youWillReceive")}</h3>
       <div className="table">
         <div className="tokenList">
-          {data.withdraw.map((each, index) => (
+          {data.withdraw.map((token, index) => (
             <div className="eachToken" key={index}>
               <div className="value">
-                <span className="value">{each.value}</span>
+                <span className="value">{token.value}</span>
               </div>
               <div className="token">
-                <img src={each.icon} alt="icon" />
-                <span>{each.name}</span>
+                <img src={token.icon} alt="icon" />
+                <span>{token.name}</span>
               </div>
             </div>
           ))}
         </div>
         <div className="divider"></div>
-        <div className="withdrawInItem">
-          <span className="label">{t("yourPoolShare")}</span>
+        <div className="withdrawInfoItem">
+          <span className="label">{t("shareOfPool")}</span>
           <span className="value">{data.share}%</span>
         </div>
-        <div className="withdrawInItem">
+        <div className="withdrawInfoItem">
           <span className="label">{t("gas")}</span>
           <span className="value">{gas}</span>
         </div>
-        <div className="withdrawInItem">
+        <div className="withdrawInfoItem">
           <span className="label">{`${t("rates")}:`}</span>
           <div className="rates value">
-            {data.rates.map((each, index) => (
+            {data.rates.map((rate, index) => (
               <span key={index}>
-                1 {each.name} = {each.rate} USD
+                1 {rate.name} = {rate.rate} USD
               </span>
             ))}
           </div>
