@@ -81,6 +81,30 @@ div.deposit {
     }
   }
 
+  div.transactionInfoContainer {
+    display: none;
+  }
+
+  div.transactionInfo {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    span.value {
+      color: $text-darker;
+      font-weight: $bold;
+    }
+
+    span.bonus {
+      color: $primary;
+    }
+
+    span.slippage {
+      color: $error;
+    }
+  }
+
   .advancedOptions {
     margin-top: 24px;
     svg {
@@ -105,7 +129,6 @@ div.deposit {
     .infiniteApproval {
       display: block;
       position: relative;
-      cursor: pointer;
       font-size: 16px;
       -webkit-user-select: none;
       -moz-user-select: none;
@@ -115,9 +138,38 @@ div.deposit {
       align-items: center;
 
       input {
+        width: 24px;
+        height: 24px;
+
+        opacity: 0;
+        &:checked + .checkbox_control svg {
+          transform: scale(1);
+        }
+      }
+      .checkbox_control {
+        display: inline-grid;
         width: 20px;
         height: 20px;
-        margin: 0 16px 0 0;
+        border-radius: 0.25em;
+        border: 0.1em solid #fff;
+      }
+
+      .checkbox_control svg {
+        margin: 0;
+        transition: transform 0.1s ease-in 25ms;
+        transform: scale(0);
+        transform-origin: bottom left;
+      }
+
+      .checkbox_input {
+        display: grid;
+        grid-template-areas: "checkbox";
+        margin-right: 8px;
+
+        > * {
+          grid-area: checkbox;
+          cursor: pointer;
+        }
       }
     }
 
@@ -129,6 +181,11 @@ div.deposit {
         cursor: pointer;
         letter-spacing: -0.06em;
       }
+      span.selected {
+        color: $orange;
+        font-weight: $medium;
+        text-decoration: underline;
+      }
 
       input {
         width: 52px;
@@ -136,45 +193,16 @@ div.deposit {
         margin-left: 16px;
         border: none;
         border-radius: 0;
+        color: $text-black;
 
         &:focus {
-          outline: 1px solid $outline;
+          outline: none;
         }
-      }
-
-      .selected {
-        color: $orange;
-        font-weight: $medium;
-        text-decoration: underline;
       }
     }
 
     .show {
       display: block;
-    }
-  }
-
-  div.transactionInfoContainer {
-    display: none;
-  }
-
-  div.transactionInfo {
-    margin-top: 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-
-    span.value {
-      color: $text-darker;
-      font-weight: $bold;
-    }
-
-    span.bonus {
-      color: $primary;
-    }
-
-    span.slippage {
-      color: $error;
     }
   }
 
