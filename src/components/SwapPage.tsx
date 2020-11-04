@@ -139,7 +139,14 @@ const SwapPage = (props: Props): ReactElement => {
           <div className={"tableContainer " + classNames({ show: advanced })}>
             <div className="table">
               <div className="infiniteApproval tableOption">
-                <span className="label">{t("infiniteApproval")}</span>
+                <div className="IAlabel">
+                  {t("infiniteApproval")}
+                  <span className="tooltipText">
+                    Allow Saddle to spend all of your USDC now and in the
+                    future. You will not need to approve again.
+                  </span>
+                  {/* Replace placeholder text "USDC" to real token name */}
+                </div>
                 <div className="options">
                   <button
                     className={classNames({
