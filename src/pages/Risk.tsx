@@ -35,8 +35,8 @@ function Risk(): ReactElement {
           and F. This multisig has capabilities to pause new deposits and trades
           in case of technical emergencies. Users will always be able to
           withdraw their funds regardless of new deposits being paused. Once a
-          &lt;x&gt; months period is over the multisig will lose
-          capabilities to pause.
+          &lt;x&gt; months period is over the multisig will lose capabilities to
+          pause.
         </p>
         <h3>Permanent loss of a peg</h3>
         <p>
