@@ -37,6 +37,14 @@ function TopMenu({ activeTab }: Props): ReactElement {
             {t("pool")}
           </Link>
         </li>
+        <li>
+          <Link
+            to="/risk"
+            className={classNames({ active: activeTab == t("risk") })}
+          >
+            Risk
+          </Link>
+        </li>
       </ul>
       <Web3Status />
     </header>
