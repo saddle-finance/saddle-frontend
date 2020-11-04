@@ -191,7 +191,14 @@ const DepositPage = (props: Props): ReactElement => {
                     </svg>
                   </span>
                 </label>
-                <span>{t("infiniteApproval")}</span>
+                <div className="IAlabel">
+                  {t("infiniteApproval")}
+                  <span className="tooltipText">
+                    Allow Saddle to spend all of your USDC now and in the
+                    future. You will not need to approve again.
+                  </span>
+                  {/* Replace placeholder text "USDC" to real token name */}
+                </div>
               </div>
               <div className="paramater">
                 {`${t("maxSlippage")}:`}
