@@ -1,0 +1,26 @@
+@import "../styles/theme";
+
+div.riskpage {
+  min-height: 100vh;
+  background: $background-main;
+  padding-bottom: 40px;
+  box-sizing: border-box; // Make the padding included in height calculation
+
+  .content {
+    padding-top: 24px;
+    background-color: $background-element;
+    margin: 0 auto;
+    width: 888px;
+    color: $text-darker;
+  }
+
+  h3 {
+    margin-top: 40px;
+    margin-bottom: 16px;
+    font-size: 20px;
+  }
+
+  p {
+    line-height: 24px;
+  }
+}

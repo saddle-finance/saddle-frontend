@@ -138,6 +138,97 @@ div.swapPage {
       }
     }
 
+    .infiniteApproval {
+      display: block;
+      position: relative;
+      font-size: 16px;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      align-items: center;
+
+      input {
+        width: 24px;
+        height: 24px;
+
+        opacity: 0;
+        &:checked + .checkbox_control svg {
+          transform: scale(1);
+        }
+      }
+      .checkbox_control {
+        display: inline-grid;
+        width: 20px;
+        height: 20px;
+        border-radius: 0.25em;
+        border: 0.1em solid #fff;
+      }
+      .checkbox_control svg {
+        margin: 0;
+        transition: transform 0.1s ease-in 25ms;
+        transform: scale(0);
+        transform-origin: bottom left;
+      }
+      .checkbox_input {
+        display: grid;
+        grid-template-areas: "checkbox";
+        margin-right: 8px;
+
+        > * {
+          grid-area: checkbox;
+          cursor: pointer;
+        }
+      }
+
+      .IAlabel {
+        position: relative;
+        border-bottom: 1px dotted $text;
+        font-weight: $bold;
+
+        &:hover {
+          cursor: help;
+        }
+      }
+
+      .IAlabel .tooltipText {
+        visibility: hidden;
+        width: 360px;
+        background-color: $white;
+        color: $text-black;
+        border-radius: 8px;
+        padding: 6px 8px;
+
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: $normal;
+        letter-spacing: -0.04em;
+
+        /* Position the tooltip */
+        position: absolute;
+        z-index: 1;
+        bottom: 200%;
+        left: 50%;
+        margin-left: -200px;
+      }
+
+      /* Tooltip arrow */
+      .IAlabel .tooltipText::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 40%;
+        margin-left: -5px;
+        border-width: 10px;
+        border-style: solid;
+        border-color: $white transparent transparent transparent;
+      }
+
+      .IAlabel:hover .tooltipText {
+        visibility: visible;
+      }
+    }
+
     .options > button {
       border: none;
       background: $background;
@@ -157,7 +248,7 @@ div.swapPage {
       }
 
       &.selected {
-        color: $text-primary;
+        color: $orange;
         font-weight: $medium;
         text-decoration: underline;
       }

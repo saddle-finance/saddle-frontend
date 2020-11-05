@@ -76,7 +76,7 @@ const SwapPage = (props: Props): ReactElement => {
           onChangeSelected={onSelectTokenFrom}
           selected={selectedTokenFrom}
         />
-        <div style={{ width: "64px" }} /> {/* Add Space */}
+        <div style={{ width: "64px" }} />
         <SwapForm
           title={t("to")}
           tokens={tokens}
@@ -139,7 +139,14 @@ const SwapPage = (props: Props): ReactElement => {
           <div className={"tableContainer " + classNames({ show: advanced })}>
             <div className="table">
               <div className="infiniteApproval tableOption">
-                <span className="label">{t("infiniteApproval")}</span>
+                <div className="IAlabel">
+                  {t("infiniteApproval")}
+                  <span className="tooltipText">
+                    Allow Saddle to spend all of your USDC now and in the
+                    future. You will not need to approve again.
+                  </span>
+                  {/* TODO: Replace placeholder text "USDC" to real token name */}
+                </div>
                 <div className="options">
                   <button
                     className={classNames({

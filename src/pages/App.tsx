@@ -8,6 +8,7 @@ import Home from "./Home"
 import Pool from "./Pool"
 import PoolBTC from "./PoolBTC"
 import PoolUSD from "./PoolUSD"
+import Risk from "./Risk"
 import SwapBTC from "./SwapBTC"
 import SwapUSD from "./SwapUSD"
 import Web3ReactManager from "../components/Web3ReactManager"
@@ -36,6 +37,7 @@ export default function App(): ReactElement {
           <Route exact path="/pool/btc/deposit" component={DepositBTC} />
           <Route exact path="/pool/usd/deposit" component={DepositUSD} />
           <Route exact path="/pool/usd/withdraw" component={WithdrawUSD} />
+          <Route exact path="/risk" component={Risk} />
         </Switch>
       </Web3ReactManager>
     </Suspense>
