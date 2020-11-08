@@ -11,8 +11,7 @@ export function useTokenBalance(t: Token): number {
   const { account, chainId } = useActiveWeb3React()
   const [balance, setBalance] = useState<BigNumber>(BigNumber.from(0))
 
-  const address = chainId ? t.addresses[chainId] : undefined
-  const tokenContract = useTokenContract(address)
+  const tokenContract = useTokenContract(t)
 
   usePoller((): void => {
     async function pollBalance(): Promise<void> {

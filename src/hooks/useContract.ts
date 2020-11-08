@@ -1,7 +1,7 @@
+import { TEST_STABLECOIN_SWAP_ADDRESS, Token } from "../constants"
 import { Contract } from "@ethersproject/contracts"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import SWAP_ABI from "../constants/abis/swap.json"
-import { TEST_STABLECOIN_SWAP_ADDRESS } from "../constants"
 import { getContract } from "../utils"
 import { useActiveWeb3React } from "./index"
 import { useMemo } from "react"
@@ -31,9 +31,11 @@ function useContract(
 }
 
 export function useTokenContract(
-  tokenAddress?: string,
+  t: Token,
   withSignerIfPossible?: boolean,
 ): Contract | null {
+  const { chainId } = useActiveWeb3React()
+  const tokenAddress = chainId ? t.addresses[chainId] : undefined
   return useContract(tokenAddress, ERC20_ABI, withSignerIfPossible)
 }
 
