@@ -139,7 +139,7 @@ function DepositBTC(): ReactElement {
 
       await Promise.all(
         BTC_POOL_TOKENS.map((token) => {
-          checkAndApproveTokenForTrade(
+          return checkAndApproveTokenForTrade(
             tokenContracts[token.symbol],
             TEST_STABLECOIN_SWAP_ADDRESS,
             account,
