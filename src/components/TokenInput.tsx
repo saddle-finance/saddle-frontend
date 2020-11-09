@@ -5,33 +5,42 @@ import React, { ReactElement } from "react"
 import { useTranslation } from "react-i18next"
 
 interface Props {
-  token: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  name: string
+  icon: string
+  max: number
+  inputValue: number
+  onChange: (value: number) => void
 }
 
-function TokenInput({ token }: Props): ReactElement {
+function TokenInput({
+  name,
+  icon,
+  max,
+  inputValue,
+  onChange,
+}: Props): ReactElement {
   const { t } = useTranslation()
-  const [value, setValue] = React.useState<number | undefined>()
   function onClickMax(e: React.MouseEvent<HTMLButtonElement>): void {
     e.preventDefault()
-    setValue(token.max)
+    onChange(max)
   }
   function onChangeInput(e: React.ChangeEvent<HTMLInputElement>): void {
-    setValue(Number(e.target.value))
+    onChange(Number(e.target.value))
   }
 
   return (
     <div className="tokenInput">
-      <img alt="icon" src={token.icon} />
-      <span>{token.name}</span>
+      <img alt="icon" src={icon} />
+      <span>{name}</span>
       <button className="max" onClick={onClickMax}>
-        {`${t("max")}:${Math.floor(token.max * 100) / 100}`}
+        {`${t("max")}:${Math.floor(max * 100) / 100}`}
       </button>
       <input
         type="number"
-        value={value}
+        value={inputValue}
         onChange={onChangeInput}
-        placeholder={token.max}
-        max={token.max}
+        placeholder={String(max)}
+        max={max}
         min={0}
       />
     </div>

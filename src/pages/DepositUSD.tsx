@@ -1,11 +1,14 @@
-import { DAI, SUSD, USDC, USDT } from "../constants"
+import {
+  DAI,
+  STABLECOIN_POOL_TOKENS,
+  SUSD,
+  Token,
+  USDC,
+  USDT,
+} from "../constants"
 import React, { ReactElement } from "react"
 
 import DepositPage from "../components/DepositPage"
-import daiLogo from "../assets/icons/dai.svg"
-import susdLogo from "../assets/icons/susd.svg"
-import usdcLogo from "../assets/icons/usdc.svg"
-import usdtLogo from "../assets/icons/usdt.svg"
 import { useTokenBalance } from "../state/wallet/hooks"
 
 // Dumb data start here
@@ -17,19 +20,19 @@ const testMyShareData = {
   aveBalance: 98.42,
   token: [
     {
-      name: "DAI",
+      name: DAI.name,
       value: 19.9,
     },
     {
-      name: "USDC",
+      name: USDC.name,
       value: 30.9,
     },
     {
-      name: "USDT",
+      name: USDT.name,
       value: 32.9,
     },
     {
-      name: "sUSD",
+      name: SUSD.name,
       value: 27.63,
     },
   ],
@@ -45,26 +48,26 @@ const testUsdPoolData = {
   reserve: 142890495.38,
   tokens: [
     {
-      name: "DAI",
-      icon: daiLogo,
+      name: DAI.name,
+      icon: DAI.icon,
       percent: 12.34,
       value: 17633722.4,
     },
     {
-      name: "USDC",
-      icon: usdcLogo,
+      name: USDC.name,
+      icon: USDC.icon,
       percent: 33.98,
       value: 48424123.64,
     },
     {
-      name: "USDT",
-      icon: usdtLogo,
+      name: USDT.name,
+      icon: USDT.icon,
       percent: 38.96,
       value: 55675199.22,
     },
     {
-      name: "sUSD",
-      icon: susdLogo,
+      name: SUSD.name,
+      icon: SUSD.icon,
       percent: 14.8,
       value: 21157478.96,
     },
@@ -87,23 +90,23 @@ const testTransInfoData = {
 const depositDataFromParentTest = {
   deposit: [
     {
-      name: "DAI",
+      name: DAI.name,
       value: 6.21,
-      icon: daiLogo,
+      icon: DAI.icon,
     },
     {
-      name: "USDC",
+      name: USDC.name,
       value: 8.65,
-      icon: usdcLogo,
+      icon: USDC.icon,
     },
   ],
   rates: [
     {
-      name: "DAI",
+      name: DAI.name,
       rate: 1.02,
     },
     {
-      name: "USDC",
+      name: USDC.name,
       rate: 0.99,
     },
   ],
@@ -114,39 +117,40 @@ const depositDataFromParentTest = {
 // Dumb data end here
 
 function DepositUSD(): ReactElement {
-  const daiBalance = useTokenBalance(DAI)
-  const usdcBalance = useTokenBalance(USDC)
-  const usdtBalance = useTokenBalance(USDT)
-  const susdBalance = useTokenBalance(SUSD)
+  // Token input values
+  const [tokenFormState, setTokenFormState] = React.useState({
+    [DAI.symbol]: 0,
+    [USDC.symbol]: 0,
+    [USDT.symbol]: 0,
+    [SUSD.symbol]: 0,
+  })
+  function updateTokenValue(tokenName: string, value: number): void {
+    setTokenFormState((prevState) => ({ ...prevState, [tokenName]: value }))
+  }
 
-  const tokens = [
-    {
-      name: "DAI",
-      icon: daiLogo,
-      max: daiBalance,
-    },
-    {
-      name: "USDC",
-      icon: usdcLogo,
-      max: usdcBalance,
-    },
-    {
-      name: "USDT",
-      icon: usdtLogo,
-      max: usdtBalance,
-    },
-    {
-      name: "sUSD",
-      icon: susdLogo,
-      max: susdBalance,
-    },
-  ]
+  // Account Token balances
+  const tokenBalances = {
+    [DAI.symbol]: useTokenBalance(DAI),
+    [USDC.symbol]: useTokenBalance(USDC),
+    [USDT.symbol]: useTokenBalance(USDT),
+    [SUSD.symbol]: useTokenBalance(SUSD),
+  }
+
+  const tokens = STABLECOIN_POOL_TOKENS.map((token: Token) => ({
+    name: token.name,
+    symbol: token.symbol,
+    icon: token.icon,
+    max: tokenBalances[token.symbol],
+    inputValue: tokenFormState[token.symbol],
+  }))
 
   return (
     <DepositPage
+      onConfirmTransaction={(): void => undefined}
+      onChangeTokenInputValue={updateTokenValue}
       title="USD Pool"
       tokens={tokens}
-      selected={selected}
+      selected={selected} // todo(david) get rid of this prop
       poolData={testUsdPoolData}
       transactionInfoData={testTransInfoData}
       myShareData={testMyShareData}

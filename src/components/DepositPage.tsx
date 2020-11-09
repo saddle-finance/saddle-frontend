@@ -25,7 +25,15 @@ import { useTranslation } from "react-i18next"
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   title: string
-  tokens: Array<{ name: string; icon: string; max: number }>
+  onConfirmTransaction: () => void
+  onChangeTokenInputValue: (tokenSymbol: string, value: number) => void
+  tokens: Array<{
+    symbol: string
+    name: string
+    icon: string
+    max: number
+    inputValue: number
+  }>
   selected: { [key: string]: any }
   poolData: {
     name: string
@@ -74,6 +82,8 @@ const DepositPage = (props: Props): ReactElement => {
     transactionInfoData,
     myShareData,
     depositDataFromParent,
+    onChangeTokenInputValue,
+    onConfirmTransaction,
   } = props
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -99,7 +109,12 @@ const DepositPage = (props: Props): ReactElement => {
             <h3>{`${t("addLiquidity")} ${title}`}</h3>
             {tokens.map((token, index) => (
               <div key={index}>
-                <TokenInput token={token} />
+                <TokenInput
+                  {...token}
+                  onChange={(value): void =>
+                    onChangeTokenInputValue(token.symbol, value)
+                  }
+                />
                 {index === tokens.length - 1 ? (
                   ""
                 ) : (
@@ -293,7 +308,10 @@ const DepositPage = (props: Props): ReactElement => {
             <ReviewDeposit
               data={depositDataFromParent}
               gas={selectedGasPrice}
-              onConfirm={(): void => setPopUp("confirm")}
+              onConfirm={(): void => {
+                setPopUp("confirm")
+                onConfirmTransaction?.()
+              }}
               onClose={(): void => setModalOpen(false)}
             />
           ) : null}

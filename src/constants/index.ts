@@ -19,11 +19,11 @@ export enum ChainId {
 }
 
 export class Token {
-  addresses: { [chainId in ChainId]: string }
-  decimals: number
-  symbol: string
-  name: string
-  icon: string
+  readonly addresses: { [chainId in ChainId]: string }
+  readonly decimals: number
+  readonly symbol: string
+  readonly name: string
+  readonly icon: string
 
   constructor(
     addresses: { [chainId in ChainId]: string },
@@ -90,6 +90,8 @@ export const SUSD = new Token(
   susdLogo,
 )
 
+export const STABLECOIN_POOL_TOKENS = [DAI, USDC, USDT, SUSD]
+
 // Tokenized BTC
 const TBTC_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0x8daebade922df735c38c80c7ebd708af50815faa",
@@ -138,3 +140,5 @@ export const SBTC = new Token(
   "sBTC",
   sbtcLogo,
 )
+
+export const BTC_POOL_TOKENS = [TBTC, WBTC, RENBTC, SBTC]

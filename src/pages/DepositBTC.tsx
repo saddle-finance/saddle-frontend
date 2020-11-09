@@ -1,12 +1,19 @@
-import { RENBTC, SBTC, TBTC, WBTC } from "../constants"
+import {
+  BTC_POOL_TOKENS,
+  RENBTC,
+  SBTC,
+  TBTC,
+  TEST_STABLECOIN_SWAP_ADDRESS,
+  WBTC,
+} from "../constants"
 import React, { ReactElement } from "react"
 
+import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
-import renbtcLogo from "../assets/icons/renbtc.svg"
-import sbtcLogo from "../assets/icons/sbtc.svg"
-import tbtcLogo from "../assets/icons/tbtc.svg"
+import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
+import { useActiveWeb3React } from "../hooks"
 import { useTokenBalance } from "../state/wallet/hooks"
-import wbtcLogo from "../assets/icons/wbtc.svg"
+import { useTokenContract } from "../hooks/useContract"
 
 // Dumb data start here
 const testBTCPoolData = {
@@ -19,26 +26,26 @@ const testBTCPoolData = {
   reserve: 142890495.38,
   tokens: [
     {
-      name: "tBTC",
-      icon: tbtcLogo,
+      name: TBTC.name,
+      icon: TBTC.icon,
       percent: 12.34,
       value: 17633722.4,
     },
     {
-      name: "wBTC",
-      icon: wbtcLogo,
+      name: WBTC.name,
+      icon: WBTC.icon,
       percent: 33.98,
       value: 48424123.64,
     },
     {
-      name: "renBTC",
-      icon: renbtcLogo,
+      name: RENBTC.name,
+      icon: RENBTC.icon,
       percent: 38.96,
       value: 55675199.22,
     },
     {
-      name: "sBTC",
-      icon: sbtcLogo,
+      name: SBTC.name,
+      icon: SBTC.icon,
       percent: 14.8,
       value: 21157478.96,
     },
@@ -62,23 +69,23 @@ const testTransInfoData = {
 const testDepositData = {
   deposit: [
     {
-      name: "tBTC",
+      name: TBTC.name,
       value: 2.2,
-      icon: tbtcLogo,
+      icon: TBTC.icon,
     },
     {
-      name: "wBTC",
+      name: WBTC.name,
       value: 8.65,
-      icon: wbtcLogo,
+      icon: WBTC.icon,
     },
   ],
   rates: [
     {
-      name: "tBTC",
+      name: TBTC.name,
       rate: 10902.32,
     },
     {
-      name: "wBTC",
+      name: WBTC.name,
       rate: 10910.11,
     },
   ],
@@ -89,36 +96,70 @@ const testDepositData = {
 // Dumb data end here
 
 function DepositBTC(): ReactElement {
-  const tbtcBalance = useTokenBalance(TBTC)
-  const wbtcBalance = useTokenBalance(WBTC)
-  const renbtcBalance = useTokenBalance(RENBTC)
-  const sbtcBalance = useTokenBalance(SBTC)
+  const { account } = useActiveWeb3React()
 
-  const tokens = [
-    {
-      name: "tBTC",
-      icon: tbtcLogo,
-      max: tbtcBalance,
-    },
-    {
-      name: "wBTC",
-      icon: wbtcLogo,
-      max: wbtcBalance,
-    },
-    {
-      name: "renBTC",
-      icon: renbtcLogo,
-      max: renbtcBalance,
-    },
-    {
-      name: "sBTC",
-      icon: sbtcLogo,
-      max: sbtcBalance,
-    },
-  ]
+  // Token Contracts
+  const tokenContracts = {
+    [TBTC.symbol]: useTokenContract(TBTC),
+    [WBTC.symbol]: useTokenContract(WBTC),
+    [RENBTC.symbol]: useTokenContract(RENBTC),
+    [SBTC.symbol]: useTokenContract(SBTC),
+  }
+  // Token input values
+  const [tokenFormState, setTokenFormState] = React.useState({
+    [TBTC.symbol]: 0,
+    [WBTC.symbol]: 0,
+    [RENBTC.symbol]: 0,
+    [SBTC.symbol]: 0,
+  })
+  function updateTokenValue(tokenName: string, value: number): void {
+    setTokenFormState((prevState) => ({ ...prevState, [tokenName]: value }))
+  }
+
+  // Account Token balances
+  const tokenBalances = {
+    [TBTC.symbol]: useTokenBalance(TBTC),
+    [WBTC.symbol]: useTokenBalance(WBTC),
+    [RENBTC.symbol]: useTokenBalance(RENBTC),
+    [SBTC.symbol]: useTokenBalance(SBTC),
+  }
+
+  const tokens = BTC_POOL_TOKENS.map((token) => ({
+    symbol: token.symbol,
+    name: token.name,
+    icon: token.icon,
+    max: tokenBalances[token.symbol],
+    inputValue: tokenFormState[token.symbol],
+  }))
+
+  async function approveAndDeposit(): Promise<void> {
+    try {
+      if (!account) throw new Error("Account is missing")
+      // For each token being desposited, check the allowance and approve it if necessary
+
+      await Promise.all(
+        BTC_POOL_TOKENS.map((token) => {
+          checkAndApproveTokenForTrade(
+            tokenContracts[token.symbol],
+            TEST_STABLECOIN_SWAP_ADDRESS,
+            account,
+            BigNumber.from(10)
+              .pow(token.decimals)
+              .mul(tokenFormState[token.symbol]),
+          )
+        }),
+      )
+      // TODO(david) actually spend the money
+    } catch (e: any) {
+      // TODO(david) create a toast component to show errors
+      console.error(e)
+    }
+  }
 
   return (
     <DepositPage
+      onConfirmTransaction={approveAndDeposit}
+      onChangeTokenInputValue={updateTokenValue}
       title="BTC Pool"
       tokens={tokens}
       selected={selected}
