@@ -11,6 +11,7 @@ import React, { ReactElement } from "react"
 import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
+import parseStringToBigNumber from "../utils/parseStringToBigNumber"
 import { useActiveWeb3React } from "../hooks"
 import { useTokenBalance } from "../state/wallet/hooks"
 import { useTokenContract } from "../hooks/useContract"
@@ -105,15 +106,22 @@ function DepositBTC(): ReactElement {
     [RENBTC.symbol]: useTokenContract(RENBTC),
     [SBTC.symbol]: useTokenContract(SBTC),
   }
-  // Token input values
+  // Token input values, both "raw" and formatted "safe" BigNumbers with native decimals
   const [tokenFormState, setTokenFormState] = React.useState({
-    [TBTC.symbol]: 0,
-    [WBTC.symbol]: 0,
-    [RENBTC.symbol]: 0,
-    [SBTC.symbol]: 0,
+    [TBTC.symbol]: { raw: "0", safe: BigNumber.from("0") },
+    [WBTC.symbol]: { raw: "0", safe: BigNumber.from("0") },
+    [RENBTC.symbol]: { raw: "0", safe: BigNumber.from("0") },
+    [SBTC.symbol]: { raw: "0", safe: BigNumber.from("0") },
   })
-  function updateTokenValue(tokenName: string, value: number): void {
-    setTokenFormState((prevState) => ({ ...prevState, [tokenName]: value }))
+
+  function updateTokenValue(tokenSymbol: string, value: string): void {
+    setTokenFormState((prevState) => ({
+      ...prevState,
+      [tokenSymbol]: {
+        raw: value,
+        safe: parseStringToBigNumber(value, tokenSymbol),
+      },
+    }))
   }
 
   // Account Token balances
@@ -129,7 +137,7 @@ function DepositBTC(): ReactElement {
     name: token.name,
     icon: token.icon,
     max: tokenBalances[token.symbol],
-    inputValue: tokenFormState[token.symbol],
+    inputValue: tokenFormState[token.symbol].raw,
   }))
 
   async function approveAndDeposit(): Promise<void> {
@@ -143,9 +151,7 @@ function DepositBTC(): ReactElement {
             tokenContracts[token.symbol],
             TEST_STABLECOIN_SWAP_ADDRESS,
             account,
-            BigNumber.from(10)
-              .pow(token.decimals)
-              .mul(tokenFormState[token.symbol]),
+            tokenFormState[token.symbol].safe,
           )
         }),
       )

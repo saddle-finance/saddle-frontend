@@ -8,7 +8,9 @@ import {
 } from "../constants"
 import React, { ReactElement } from "react"
 
+import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
+import parseStringToBigNumber from "../utils/parseStringToBigNumber"
 import { useTokenBalance } from "../state/wallet/hooks"
 
 // Dumb data start here
@@ -117,15 +119,22 @@ const depositDataFromParentTest = {
 // Dumb data end here
 
 function DepositUSD(): ReactElement {
-  // Token input values
+  // Token input values, both "raw" and formatted "safe" BigNumbers
   const [tokenFormState, setTokenFormState] = React.useState({
-    [DAI.symbol]: 0,
-    [USDC.symbol]: 0,
-    [USDT.symbol]: 0,
-    [SUSD.symbol]: 0,
+    [DAI.symbol]: { raw: "0", safe: BigNumber.from("0") },
+    [USDC.symbol]: { raw: "0", safe: BigNumber.from("0") },
+    [USDT.symbol]: { raw: "0", safe: BigNumber.from("0") },
+    [SUSD.symbol]: { raw: "0", safe: BigNumber.from("0") },
   })
-  function updateTokenValue(tokenName: string, value: number): void {
-    setTokenFormState((prevState) => ({ ...prevState, [tokenName]: value }))
+
+  function updateTokenValue(tokenSymbol: string, value: string): void {
+    setTokenFormState((prevState) => ({
+      ...prevState,
+      [tokenSymbol]: {
+        raw: value,
+        safe: parseStringToBigNumber(value, tokenSymbol),
+      },
+    }))
   }
 
   // Account Token balances
@@ -141,7 +150,7 @@ function DepositUSD(): ReactElement {
     symbol: token.symbol,
     icon: token.icon,
     max: tokenBalances[token.symbol],
-    inputValue: tokenFormState[token.symbol],
+    inputValue: tokenFormState[token.symbol].raw,
   }))
 
   return (

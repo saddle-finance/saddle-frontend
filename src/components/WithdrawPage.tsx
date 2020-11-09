@@ -63,13 +63,13 @@ const testWithdrawData = {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   title: string
-  onChangeTokenInputValue: (tokenSymbol: string, value: number) => void
+  onChangeTokenInputValue: (tokenSymbol: string, value: string) => void
   tokensData: Array<{
     symbol: string
     name: string
     icon: string
     max: number
-    inputValue: number
+    inputValue: string
   }>
   selected?: { [key: string]: any }
   poolData: {

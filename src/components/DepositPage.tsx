@@ -26,13 +26,13 @@ import { useTranslation } from "react-i18next"
 interface Props {
   title: string
   onConfirmTransaction: () => void
-  onChangeTokenInputValue: (tokenSymbol: string, value: number) => void
+  onChangeTokenInputValue: (tokenSymbol: string, value: string) => void
   tokens: Array<{
     symbol: string
     name: string
     icon: string
     max: number
-    inputValue: number
+    inputValue: string
   }>
   selected: { [key: string]: any }
   poolData: {

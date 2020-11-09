@@ -8,8 +8,8 @@ interface Props {
   name: string
   icon: string
   max: number
-  inputValue: number
-  onChange: (value: number) => void
+  inputValue: string
+  onChange: (value: string) => void
 }
 
 function TokenInput({
@@ -22,10 +22,10 @@ function TokenInput({
   const { t } = useTranslation()
   function onClickMax(e: React.MouseEvent<HTMLButtonElement>): void {
     e.preventDefault()
-    onChange(max)
+    onChange(String(max))
   }
   function onChangeInput(e: React.ChangeEvent<HTMLInputElement>): void {
-    onChange(Number(e.target.value))
+    onChange(e.target.value)
   }
 
   return (
@@ -36,12 +36,12 @@ function TokenInput({
         {`${t("max")}:${Math.floor(max * 100) / 100}`}
       </button>
       <input
-        type="number"
+        // type="number"
         value={inputValue}
         onChange={onChangeInput}
         placeholder={String(max)}
-        max={max}
-        min={0}
+        // max={max}
+        // min={0}
       />
     </div>
   )

@@ -76,28 +76,28 @@ const testTokensData = [
     icon: DAI.icon,
     symbol: DAI.symbol,
     max: 7.02,
-    inputValue: 0,
+    inputValue: "0",
   },
   {
     name: USDC.name,
     icon: USDC.icon,
     symbol: USDC.symbol,
     max: 1.01,
-    inputValue: 0,
+    inputValue: "0",
   },
   {
     name: USDT.name,
     icon: USDT.icon,
     symbol: USDT.symbol,
     max: 0,
-    inputValue: 0,
+    inputValue: "0",
   },
   {
     name: SUSD.name,
     icon: SUSD.icon,
     symbol: SUSD.symbol,
     max: 0,
-    inputValue: 0,
+    inputValue: "0",
   },
 ]
 

@@ -142,3 +142,11 @@ export const SBTC = new Token(
 )
 
 export const BTC_POOL_TOKENS = [TBTC, WBTC, RENBTC, SBTC]
+
+// maps a symbol string to a token object
+export const TOKENS_MAP: {
+  [symbol: string]: Token
+} = STABLECOIN_POOL_TOKENS.concat(BTC_POOL_TOKENS).reduce(
+  (acc, token) => ({ ...acc, [token.symbol]: token }),
+  {},
+)
