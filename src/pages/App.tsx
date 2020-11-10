@@ -11,6 +11,7 @@ import PoolUSD from "./PoolUSD"
 import Risk from "./Risk"
 import SwapBTC from "./SwapBTC"
 import SwapUSD from "./SwapUSD"
+import ToastsProvider from "../providers/ToastsProvider"
 import Web3ReactManager from "../components/Web3ReactManager"
 import WithdrawUSD from "./WithdrawUSD"
 import fetchGasPrices from "../utils/updateGasPrices"
@@ -27,18 +28,20 @@ export default function App(): ReactElement {
   return (
     <Suspense fallback={null}>
       <Web3ReactManager>
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route exact path="/swap/btc" component={SwapBTC} />
-          <Route exact path="/swap/usd" component={SwapUSD} />
-          <Route exact path="/pool" component={Pool} />
-          <Route exact path="/pool/btc" component={PoolBTC} />
-          <Route exact path="/pool/usd" component={PoolUSD} />
-          <Route exact path="/pool/btc/deposit" component={DepositBTC} />
-          <Route exact path="/pool/usd/deposit" component={DepositUSD} />
-          <Route exact path="/pool/usd/withdraw" component={WithdrawUSD} />
-          <Route exact path="/risk" component={Risk} />
-        </Switch>
+        <ToastsProvider>
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route exact path="/swap/btc" component={SwapBTC} />
+            <Route exact path="/swap/usd" component={SwapUSD} />
+            <Route exact path="/pool" component={Pool} />
+            <Route exact path="/pool/btc" component={PoolBTC} />
+            <Route exact path="/pool/usd" component={PoolUSD} />
+            <Route exact path="/pool/btc/deposit" component={DepositBTC} />
+            <Route exact path="/pool/usd/deposit" component={DepositUSD} />
+            <Route exact path="/pool/usd/withdraw" component={WithdrawUSD} />
+            <Route exact path="/risk" component={Risk} />
+          </Switch>
+        </ToastsProvider>
       </Web3ReactManager>
     </Suspense>
   )
