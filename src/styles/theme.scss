@@ -34,14 +34,18 @@ $bold: 700;
 $shadow: 0px 2px 8px rgba(39, 14, 1, 0.18);
 $shadow-hover: 2px 2px 12px rgba(68, 64, 64, 0.14);
 
-
-// Global styles 
-p, span {
+// Global styles
+p,
+span {
   font-family: $font-family;
   line-height: 20px;
   size: 16px;
 }
 
-h1, h2, h3, h4, h5 {
+h1,
+h2,
+h3,
+h4,
+h5 {
   font-family: $font-family-title;
 }
