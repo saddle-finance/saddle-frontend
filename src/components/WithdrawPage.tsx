@@ -63,7 +63,14 @@ const testWithdrawData = {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   title: string
-  tokensData: Array<{ name: string; icon: string; max: number }>
+  onChangeTokenInputValue: (tokenSymbol: string, value: string) => void
+  tokensData: Array<{
+    symbol: string
+    name: string
+    icon: string
+    max: number
+    inputValue: string
+  }>
   selected?: { [key: string]: any }
   poolData: {
     name: string
@@ -103,6 +110,7 @@ const WithdrawPage = (props: Props): ReactElement => {
     poolData,
     transactionInfoData,
     myShareData,
+    onChangeTokenInputValue,
   } = props
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -168,7 +176,12 @@ const WithdrawPage = (props: Props): ReactElement => {
             </div>
             {currentTokensData.map((token, index) => (
               <div key={index}>
-                <TokenInput token={token} />
+                <TokenInput
+                  {...token}
+                  onChange={(value): void =>
+                    onChangeTokenInputValue(token.symbol, value)
+                  }
+                />
                 {index === currentTokensData.length - 1 ? (
                   ""
                 ) : (
