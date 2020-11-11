@@ -1,0 +1,28 @@
+@import "../styles/theme";
+
+div.toast {
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 8px;
+  margin-bottom: 8px;
+  color: $white;
+  background-color: $black;
+
+  &.toast-success {
+    border: 1px solid $primary;
+  }
+
+  &.toast-error {
+    border: 1px solid $error;
+  }
+
+  img {
+    margin-right: 8px;
+  }
+
+  div.title {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: space-between;
+  }
+}
