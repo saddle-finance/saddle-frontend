@@ -3,7 +3,7 @@ import React, { ReactElement, useCallback, useMemo, useState } from "react"
 import Toast from "../components/Toast"
 import ToastsContainer from "../components/ToastsContainer"
 import { createPortal } from "react-dom"
-import getUniqueId from "../utils/getUniqueId"
+import { nanoid } from "@reduxjs/toolkit"
 
 const autoDismissAfterMs = 10 * 1000
 
@@ -29,7 +29,7 @@ export default function ToastsProvider({
   const [toasts, setToasts] = useState<ToastObject[]>([])
   const addToast = useCallback((content, options = {}) => {
     const { autoDismiss = true } = options
-    const toastId = getUniqueId()
+    const toastId = nanoid()
     const removeToast = (): void => {
       // O(n) is the best we can do here and is fine given the use case
       setToasts((prevToasts) => prevToasts.filter(({ id }) => id !== toastId))
