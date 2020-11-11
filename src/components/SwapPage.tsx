@@ -1,8 +1,9 @@
 import "./SwapPage.scss"
 
 import React, { ReactElement, useState } from "react"
-import { updateCustomGasPrice, updateSelectedGasPrice } from "../state/user"
+import { updateGasPriceCustom, updateGasPriceSelected } from "../state/user"
 import { useDispatch, useSelector } from "react-redux"
+
 import { AppDispatch } from "../state"
 import { AppState } from "../state/index"
 import ConfirmTransaction from "./ConfirmTransaction"
@@ -60,7 +61,7 @@ const SwapPage = (props: Props): ReactElement => {
   const {
     userSwapAdvancedMode: advanced,
     gasCustom,
-    selectedGasPrice,
+    gasPriceSelected,
   } = useSelector((state: AppState) => state.user)
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
@@ -190,30 +191,30 @@ const SwapPage = (props: Props): ReactElement => {
                 <div className="options">
                   <button
                     className={classNames({
-                      selected: selectedGasPrice === GasPrices.Standard,
+                      selected: gasPriceSelected === GasPrices.Standard,
                     })}
                     onClick={(): PayloadAction<GasPrices> =>
-                      dispatch(updateSelectedGasPrice(GasPrices.Standard))
+                      dispatch(updateGasPriceSelected(GasPrices.Standard))
                     }
                   >
                     {gasStandard} {t("standard")}
                   </button>
                   <button
                     className={classNames({
-                      selected: selectedGasPrice === GasPrices.Fast,
+                      selected: gasPriceSelected === GasPrices.Fast,
                     })}
                     onClick={(): PayloadAction<GasPrices> =>
-                      dispatch(updateSelectedGasPrice(GasPrices.Fast))
+                      dispatch(updateGasPriceSelected(GasPrices.Fast))
                     }
                   >
                     {gasFast} {t("fast")}
                   </button>
                   <button
                     className={classNames({
-                      selected: selectedGasPrice === GasPrices.Instant,
+                      selected: gasPriceSelected === GasPrices.Instant,
                     })}
                     onClick={(): PayloadAction<GasPrices> =>
-                      dispatch(updateSelectedGasPrice(GasPrices.Instant))
+                      dispatch(updateGasPriceSelected(GasPrices.Instant))
                     }
                   >
                     {gasInstant} {t("instant")}
@@ -221,16 +222,16 @@ const SwapPage = (props: Props): ReactElement => {
                   <input
                     type="number"
                     className={classNames({
-                      selected: selectedGasPrice === GasPrices.Custom,
+                      selected: gasPriceSelected === GasPrices.Custom,
                     })}
-                    defaultValue={gasCustom}
+                    value={gasCustom?.valueRaw}
                     onClick={(): PayloadAction<GasPrices> =>
-                      dispatch(updateSelectedGasPrice(GasPrices.Custom))
+                      dispatch(updateGasPriceSelected(GasPrices.Custom))
                     }
                     onChange={(
                       e: React.ChangeEvent<HTMLInputElement>,
-                    ): PayloadAction<number> =>
-                      dispatch(updateCustomGasPrice(Number(e.target.value)))
+                    ): PayloadAction<string> =>
+                      dispatch(updateGasPriceCustom(e.target.value))
                     }
                   ></input>
                 </div>

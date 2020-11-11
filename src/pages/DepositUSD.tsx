@@ -8,10 +8,9 @@ import {
 } from "../constants"
 import React, { ReactElement } from "react"
 
-import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
-import parseStringToBigNumber from "../utils/parseStringToBigNumber"
 import { useTokenBalance } from "../state/wallet/hooks"
+import { useTokenFormState } from "../hooks/useTokenFormState"
 
 // Dumb data start here
 const testMyShareData = {
@@ -76,10 +75,6 @@ const testUsdPoolData = {
   ],
 }
 
-const selected = {
-  maxSlippage: 0.1,
-}
-
 const testTransInfoData = {
   isInfo: true,
   content: {
@@ -119,24 +114,9 @@ const depositDataFromParentTest = {
 // Dumb data end here
 
 function DepositUSD(): ReactElement {
-  // Token input values, both "raw" and formatted "safe" BigNumbers
-  const [tokenFormState, setTokenFormState] = React.useState({
-    [DAI.symbol]: { raw: "0", safe: BigNumber.from("0") },
-    [USDC.symbol]: { raw: "0", safe: BigNumber.from("0") },
-    [USDT.symbol]: { raw: "0", safe: BigNumber.from("0") },
-    [SUSD.symbol]: { raw: "0", safe: BigNumber.from("0") },
-  })
-
-  function updateTokenValue(tokenSymbol: string, value: string): void {
-    setTokenFormState((prevState) => ({
-      ...prevState,
-      [tokenSymbol]: {
-        raw: value,
-        safe: parseStringToBigNumber(value, tokenSymbol),
-      },
-    }))
-  }
-
+  const [tokenFormState, updateTokenFormValue] = useTokenFormState(
+    STABLECOIN_POOL_TOKENS,
+  )
   // Account Token balances
   const tokenBalances = {
     [DAI.symbol]: useTokenBalance(DAI),
@@ -150,16 +130,15 @@ function DepositUSD(): ReactElement {
     symbol: token.symbol,
     icon: token.icon,
     max: tokenBalances[token.symbol],
-    inputValue: tokenFormState[token.symbol].raw,
+    inputValue: tokenFormState[token.symbol].valueRaw,
   }))
 
   return (
     <DepositPage
       onConfirmTransaction={(): void => undefined}
-      onChangeTokenInputValue={updateTokenValue}
+      onChangeTokenInputValue={updateTokenFormValue}
       title="USD Pool"
       tokens={tokens}
-      selected={selected} // todo(david) get rid of this prop
       poolData={testUsdPoolData}
       transactionInfoData={testTransInfoData}
       myShareData={testMyShareData}

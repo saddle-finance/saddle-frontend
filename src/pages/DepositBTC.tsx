@@ -8,13 +8,12 @@ import {
 } from "../constants"
 import React, { ReactElement } from "react"
 
-import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
-import parseStringToBigNumber from "../utils/parseStringToBigNumber"
 import { useActiveWeb3React } from "../hooks"
 import { useTokenBalance } from "../state/wallet/hooks"
 import { useTokenContract } from "../hooks/useContract"
+import { useTokenFormState } from "../hooks/useTokenFormState"
 
 // Dumb data start here
 const testBTCPoolData = {
@@ -51,11 +50,6 @@ const testBTCPoolData = {
       value: 21157478.96,
     },
   ],
-}
-
-const selected = {
-  maxSlippage: 0.1,
-  infiniteApproval: false,
 }
 
 const testTransInfoData = {
@@ -98,6 +92,9 @@ const testDepositData = {
 
 function DepositBTC(): ReactElement {
   const { account } = useActiveWeb3React()
+  const [tokenFormState, updateTokenFormValue] = useTokenFormState(
+    BTC_POOL_TOKENS,
+  )
 
   // Token Contracts
   const tokenContracts = {
@@ -105,23 +102,6 @@ function DepositBTC(): ReactElement {
     [WBTC.symbol]: useTokenContract(WBTC),
     [RENBTC.symbol]: useTokenContract(RENBTC),
     [SBTC.symbol]: useTokenContract(SBTC),
-  }
-  // Token input values, both "raw" and formatted "safe" BigNumbers with native decimals
-  const [tokenFormState, setTokenFormState] = React.useState({
-    [TBTC.symbol]: { raw: "0", safe: BigNumber.from("0") },
-    [WBTC.symbol]: { raw: "0", safe: BigNumber.from("0") },
-    [RENBTC.symbol]: { raw: "0", safe: BigNumber.from("0") },
-    [SBTC.symbol]: { raw: "0", safe: BigNumber.from("0") },
-  })
-
-  function updateTokenValue(tokenSymbol: string, value: string): void {
-    setTokenFormState((prevState) => ({
-      ...prevState,
-      [tokenSymbol]: {
-        raw: value,
-        safe: parseStringToBigNumber(value, tokenSymbol),
-      },
-    }))
   }
 
   // Account Token balances
@@ -137,7 +117,7 @@ function DepositBTC(): ReactElement {
     name: token.name,
     icon: token.icon,
     max: tokenBalances[token.symbol],
-    inputValue: tokenFormState[token.symbol].raw,
+    inputValue: tokenFormState[token.symbol].valueRaw,
   }))
 
   async function approveAndDeposit(): Promise<void> {
@@ -151,7 +131,7 @@ function DepositBTC(): ReactElement {
             tokenContracts[token.symbol],
             TEST_STABLECOIN_SWAP_ADDRESS,
             account,
-            tokenFormState[token.symbol].safe,
+            tokenFormState[token.symbol].valueSafe,
           )
         }),
       )
@@ -165,10 +145,9 @@ function DepositBTC(): ReactElement {
   return (
     <DepositPage
       onConfirmTransaction={approveAndDeposit}
-      onChangeTokenInputValue={updateTokenValue}
+      onChangeTokenInputValue={updateTokenFormValue}
       title="BTC Pool"
       tokens={tokens}
-      selected={selected}
       poolData={testBTCPoolData}
       transactionInfoData={testTransInfoData}
       depositDataFromParent={testDepositData}

@@ -1,4 +1,10 @@
+import {
+  NumberInputState,
+  numberInputStateCreator,
+} from "../utils/numberInputState"
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
+
+import { BigNumber } from "@ethersproject/bignumber"
 
 export enum GasPrices {
   Standard = "STANDARD",
@@ -7,19 +13,36 @@ export enum GasPrices {
   Custom = "CUSTOM",
 }
 
+export enum Slippages {
+  One = "ONE",
+  OneTenth = "ONE_TENTH",
+  Custom = "CUSTOM",
+}
+
 interface UserState {
   userSwapAdvancedMode: boolean
   userPoolAdvancedMode: boolean
-  gasCustom?: number
-  selectedGasPrice: GasPrices
+  gasCustom?: NumberInputState
+  gasPriceSelected: GasPrices
+  slippageCustom?: NumberInputState
+  slippageSelected: Slippages
 }
 
 const initialState: UserState = {
   userSwapAdvancedMode: false,
   userPoolAdvancedMode: false,
-  selectedGasPrice: GasPrices.Standard,
+  gasPriceSelected: GasPrices.Standard,
+  slippageSelected: Slippages.OneTenth,
 }
 
+const gasCustomStateCreator = numberInputStateCreator(
+  0, // gas is in wei
+  BigNumber.from(0),
+)
+const slippageCustomStateCreator = numberInputStateCreator(
+  4,
+  BigNumber.from(10).pow(4).mul(1),
+)
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -30,11 +53,17 @@ const userSlice = createSlice({
     updatePoolAdvancedMode(state, action: PayloadAction<boolean>): void {
       state.userPoolAdvancedMode = action.payload
     },
-    updateCustomGasPrice(state, action: PayloadAction<number>): void {
-      state.gasCustom = action.payload
+    updateGasPriceCustom(state, action: PayloadAction<string>): void {
+      state.gasCustom = gasCustomStateCreator(action.payload)
     },
-    updateSelectedGasPrice(state, action: PayloadAction<GasPrices>): void {
-      state.selectedGasPrice = action.payload
+    updateGasPriceSelected(state, action: PayloadAction<GasPrices>): void {
+      state.gasPriceSelected = action.payload
+    },
+    updateSlippageSelected(state, action: PayloadAction<Slippages>): void {
+      state.slippageSelected = action.payload
+    },
+    updateSlippageCustom(state, action: PayloadAction<string>): void {
+      state.slippageCustom = slippageCustomStateCreator(action.payload)
     },
   },
 })
@@ -42,8 +71,10 @@ const userSlice = createSlice({
 export const {
   updateSwapAdvancedMode,
   updatePoolAdvancedMode,
-  updateCustomGasPrice,
-  updateSelectedGasPrice,
+  updateGasPriceCustom,
+  updateGasPriceSelected,
+  updateSlippageCustom,
+  updateSlippageSelected,
 } = userSlice.actions
 
 export default userSlice.reducer

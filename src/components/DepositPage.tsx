@@ -2,8 +2,12 @@ import "./DepositPage.scss"
 
 import {
   GasPrices,
-  updateCustomGasPrice,
-  updateSelectedGasPrice,
+  Slippages,
+  updateGasPriceCustom,
+  updateGasPriceSelected,
+  updatePoolAdvancedMode,
+  updateSlippageCustom,
+  updateSlippageSelected,
 } from "../state/user"
 import React, { ReactElement, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
@@ -19,7 +23,6 @@ import ReviewDeposit from "./ReviewDeposit"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
-import { updatePoolAdvancedMode } from "../state/user"
 import { useTranslation } from "react-i18next"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -34,7 +37,7 @@ interface Props {
     max: number
     inputValue: string
   }>
-  selected: { [key: string]: any }
+  selected?: { [key: string]: any }
   poolData: {
     name: string
     fee: number
@@ -76,7 +79,6 @@ const DepositPage = (props: Props): ReactElement => {
   const { t } = useTranslation()
   const {
     title,
-    selected,
     tokens,
     poolData,
     transactionInfoData,
@@ -94,7 +96,9 @@ const DepositPage = (props: Props): ReactElement => {
   const {
     userPoolAdvancedMode: advanced,
     gasCustom,
-    selectedGasPrice,
+    gasPriceSelected,
+    slippageCustom,
+    slippageSelected,
   } = useSelector((state: AppState) => state.user)
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
@@ -219,48 +223,63 @@ const DepositPage = (props: Props): ReactElement => {
                 {`${t("maxSlippage")}:`}
                 <span
                   className={classNames({
-                    selected: selected.maxSlippage === 0.1,
+                    selected: slippageSelected === Slippages.OneTenth,
                   })}
+                  onClick={(e): PayloadAction<Slippages> =>
+                    dispatch(updateSlippageSelected(Slippages.OneTenth))
+                  }
                 >
                   0.1%
                 </span>
                 <span
                   className={classNames({
-                    selected: selected.maxSlippage === 1,
+                    selected: slippageSelected === Slippages.One,
                   })}
+                  onClick={(e): PayloadAction<Slippages> =>
+                    dispatch(updateSlippageSelected(Slippages.One))
+                  }
                 >
                   1%
                 </span>
-                <input type="number" />%
+                <input
+                  value={slippageCustom?.valueRaw}
+                  onClick={(): PayloadAction<Slippages> =>
+                    dispatch(updateSlippageSelected(Slippages.Custom))
+                  }
+                  onChange={(e): PayloadAction<string> =>
+                    dispatch(updateSlippageCustom(e.target.value))
+                  }
+                />
+                %
               </div>
               <div className="paramater">
                 {`${t("gas")}(GWEI):`}
                 <span
                   className={classNames({
-                    selected: selectedGasPrice === GasPrices.Standard,
+                    selected: gasPriceSelected === GasPrices.Standard,
                   })}
                   onClick={(): PayloadAction<GasPrices> =>
-                    dispatch(updateSelectedGasPrice(GasPrices.Standard))
+                    dispatch(updateGasPriceSelected(GasPrices.Standard))
                   }
                 >
                   {gasStandard} {t("standard")}
                 </span>
                 <span
                   className={classNames({
-                    selected: selectedGasPrice === GasPrices.Fast,
+                    selected: gasPriceSelected === GasPrices.Fast,
                   })}
                   onClick={(): PayloadAction<GasPrices> =>
-                    dispatch(updateSelectedGasPrice(GasPrices.Fast))
+                    dispatch(updateGasPriceSelected(GasPrices.Fast))
                   }
                 >
                   {gasFast} {t("fast")}
                 </span>
                 <span
                   className={classNames({
-                    selected: selectedGasPrice === GasPrices.Instant,
+                    selected: gasPriceSelected === GasPrices.Instant,
                   })}
                   onClick={(): PayloadAction<GasPrices> =>
-                    dispatch(updateSelectedGasPrice(GasPrices.Instant))
+                    dispatch(updateGasPriceSelected(GasPrices.Instant))
                   }
                 >
                   {gasInstant} {t("instant")}
@@ -268,16 +287,16 @@ const DepositPage = (props: Props): ReactElement => {
                 <input
                   type="number"
                   className={classNames({
-                    selected: selectedGasPrice === GasPrices.Custom,
+                    selected: gasPriceSelected === GasPrices.Custom,
                   })}
-                  defaultValue={gasCustom}
+                  value={gasCustom?.valueRaw}
                   onClick={(): PayloadAction<GasPrices> =>
-                    dispatch(updateSelectedGasPrice(GasPrices.Custom))
+                    dispatch(updateGasPriceSelected(GasPrices.Custom))
                   }
                   onChange={(
                     e: React.ChangeEvent<HTMLInputElement>,
-                  ): PayloadAction<number> =>
-                    dispatch(updateCustomGasPrice(Number(e.target.value)))
+                  ): PayloadAction<string> =>
+                    dispatch(updateGasPriceCustom(e.target.value))
                   }
                 ></input>
               </div>
@@ -307,7 +326,7 @@ const DepositPage = (props: Props): ReactElement => {
           {popUp === "review" ? (
             <ReviewDeposit
               data={depositDataFromParent}
-              gas={selectedGasPrice}
+              gas={gasPriceSelected}
               onConfirm={(): void => {
                 setPopUp("confirm")
                 onConfirmTransaction?.()

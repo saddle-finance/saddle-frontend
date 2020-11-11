@@ -2,8 +2,8 @@ import "./WithdrawPage.scss"
 
 import {
   GasPrices,
-  updateCustomGasPrice,
-  updateSelectedGasPrice,
+  updateGasPriceCustom,
+  updateGasPriceSelected,
 } from "../state/user"
 import React, { ReactElement, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
@@ -121,7 +121,7 @@ const WithdrawPage = (props: Props): ReactElement => {
   const [currentTokensData, setCurrentTokensData] = useState(tokensData)
 
   const dispatch = useDispatch<AppDispatch>()
-  const { gasCustom, selectedGasPrice } = useSelector(
+  const { gasCustom, gasPriceSelected } = useSelector(
     (state: AppState) => state.user,
   )
   const { gasStandard, gasFast, gasInstant } = useSelector(
@@ -235,47 +235,46 @@ const WithdrawPage = (props: Props): ReactElement => {
               {`${t("gas")}:`}
               <span
                 className={classNames({
-                  selected: selectedGasPrice === GasPrices.Standard,
+                  selected: gasPriceSelected === GasPrices.Standard,
                 })}
                 onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateSelectedGasPrice(GasPrices.Standard))
+                  dispatch(updateGasPriceSelected(GasPrices.Standard))
                 }
               >
                 {gasStandard} {t("standard")}
               </span>
               <span
                 className={classNames({
-                  selected: selectedGasPrice === GasPrices.Fast,
+                  selected: gasPriceSelected === GasPrices.Fast,
                 })}
                 onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateSelectedGasPrice(GasPrices.Fast))
+                  dispatch(updateGasPriceSelected(GasPrices.Fast))
                 }
               >
                 {gasFast} {t("fast")}
               </span>
               <span
                 className={classNames({
-                  selected: selectedGasPrice === GasPrices.Instant,
+                  selected: gasPriceSelected === GasPrices.Instant,
                 })}
                 onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateSelectedGasPrice(GasPrices.Instant))
+                  dispatch(updateGasPriceSelected(GasPrices.Instant))
                 }
               >
                 {gasInstant} {t("instant")}
               </span>
               <input
-                type="number"
                 className={classNames({
-                  selected: selectedGasPrice === GasPrices.Custom,
+                  selected: gasPriceSelected === GasPrices.Custom,
                 })}
-                defaultValue={gasCustom}
+                value={gasCustom?.valueRaw}
                 onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateSelectedGasPrice(GasPrices.Custom))
+                  dispatch(updateGasPriceSelected(GasPrices.Custom))
                 }
                 onChange={(
                   e: React.ChangeEvent<HTMLInputElement>,
-                ): PayloadAction<number> =>
-                  dispatch(updateCustomGasPrice(Number(e.target.value)))
+                ): PayloadAction<string> =>
+                  dispatch(updateGasPriceCustom(e.target.value))
                 }
               ></input>
             </div>
@@ -305,7 +304,7 @@ const WithdrawPage = (props: Props): ReactElement => {
           {popUp === "review" ? (
             <ReviewWithdraw
               data={testWithdrawData}
-              gas={selectedGasPrice}
+              gas={gasPriceSelected}
               onConfirm={(): void => setPopUp("confirm")}
               onClose={(): void => setModalOpen(false)}
             />
