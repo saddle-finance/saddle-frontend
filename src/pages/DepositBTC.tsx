@@ -136,7 +136,7 @@ function DepositBTC(): ReactElement {
         }),
       )
       // TODO(david) actually spend the money
-    } catch (e: any) {
+    } catch (e) {
       // TODO(david) create a toast component to show errors
       console.error(e)
     }

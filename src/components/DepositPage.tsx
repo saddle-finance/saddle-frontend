@@ -225,7 +225,7 @@ const DepositPage = (props: Props): ReactElement => {
                   className={classNames({
                     selected: slippageSelected === Slippages.OneTenth,
                   })}
-                  onClick={(e): PayloadAction<Slippages> =>
+                  onClick={(): PayloadAction<Slippages> =>
                     dispatch(updateSlippageSelected(Slippages.OneTenth))
                   }
                 >
@@ -235,7 +235,7 @@ const DepositPage = (props: Props): ReactElement => {
                   className={classNames({
                     selected: slippageSelected === Slippages.One,
                   })}
-                  onClick={(e): PayloadAction<Slippages> =>
+                  onClick={(): PayloadAction<Slippages> =>
                     dispatch(updateSlippageSelected(Slippages.One))
                   }
                 >
@@ -285,7 +285,6 @@ const DepositPage = (props: Props): ReactElement => {
                   {gasInstant} {t("instant")}
                 </span>
                 <input
-                  type="number"
                   className={classNames({
                     selected: gasPriceSelected === GasPrices.Custom,
                   })}

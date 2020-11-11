@@ -11,10 +11,7 @@ interface TokensStateType {
   [key: string]: NumberInputState
 }
 type UpdateTokenStateFnType = (tokenSymbol: string, value: string) => void
-type UseTokenFormStateReturnType = [
-  TokensStateType,
-  UpdateTokenStateFnType
-]
+type UseTokenFormStateReturnType = [TokensStateType, UpdateTokenStateFnType]
 
 export function useTokenFormState(
   tokens: Token[],
