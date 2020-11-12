@@ -5,7 +5,7 @@ import React, { ReactElement } from "react"
 import { useTranslation } from "react-i18next"
 
 interface Props {
-  name: string
+  symbol: string
   icon: string
   max: number
   inputValue: string
@@ -13,7 +13,7 @@ interface Props {
 }
 
 function TokenInput({
-  name,
+  symbol,
   icon,
   max,
   inputValue,
@@ -31,7 +31,7 @@ function TokenInput({
   return (
     <div className="tokenInput">
       <img alt="icon" src={icon} />
-      <span>{name}</span>
+      <span>{symbol}</span>
       <button className="max" onClick={onClickMax}>
         {`${t("max")}:${Math.floor(max * 100) / 100}`}
       </button>

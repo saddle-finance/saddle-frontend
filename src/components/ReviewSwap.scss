@@ -60,14 +60,14 @@ div.reviewSwap {
   }
 
   .bottom {
-    background: $background;
+    background: $black;
     margin: 40px -40px -40px -40px;
     padding: 24px 40px 40px 40px;
     border-radius: 0px 0px 8px 8px;
 
     p {
       margin: 0 0 32px 0;
-      color: $text;
+      color: $text-white;
       line-height: 20px;
     }
 
@@ -95,8 +95,8 @@ div.reviewSwap {
       &:focus {
         outline: none;
         background-color: $primary-blue;
-        color: $text;
-        box-shadow: $shadow-hover;
+        color: $text-white;
+        box-shadow: var(--shadow-hover);
       }
     }
 

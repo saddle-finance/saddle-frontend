@@ -4,7 +4,7 @@ div.walletStatus {
   display: flex;
   justify-content: flex-end;
   & > button {
-    color: $text-darker;
+    color: var(--text-darker);
     border: none;
     padding: 0;
     background: none;
@@ -25,17 +25,17 @@ div.walletStatus {
   .noAccount {
     height: 40px;
     width: 170px;
-    border: 1px solid $white;
+    border: 1px solid var(--outline);
     border-radius: 8px;
     line-height: 40px;
-    color: $primary;
+    color: var(--header-text);
     font-weight: $normal;
 
     &:hover,
     &:focus,
     &:active {
       outline: none;
-      border: 2px solid $white;
+      border: 2px solid var(--outline);
       width: 168px;
       transform: none;
       transition: none;

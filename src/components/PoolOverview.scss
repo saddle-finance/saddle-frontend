@@ -2,7 +2,7 @@
 
 a {
   text-decoration: none;
-  color: $text-darker;
+  color: var(--text-darker);
 }
 
 div.poolOverview {
@@ -16,13 +16,13 @@ div.poolOverview {
     margin-bottom: 24px;
     font-size: 30px;
     font-weight: $bold;
-    color: $text-darker;
+    color: var(--text-title);
   }
 
   .table {
-    background: $background-element;
-    box-shadow: $shadow;
-    border: 1px solid $outline;
+    background: var(--background-element);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--outline);
     border-radius: 10px;
     padding: 32px;
     display: flex;
@@ -30,9 +30,9 @@ div.poolOverview {
     justify-content: space-between;
 
     &:hover {
-      box-shadow: $shadow-hover;
+      box-shadow: var(--shadow-hover);
       padding: 30px;
-      border: 3px solid $outline;
+      border: 3px solid var(--outline);
     }
   }
 
@@ -74,7 +74,7 @@ div.poolOverview {
 
       .plus {
         font-weight: $medium;
-        color: $primary;
+        color: var(--text-selected);
       }
       .minus {
         font-weight: $medium;

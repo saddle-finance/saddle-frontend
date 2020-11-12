@@ -2,8 +2,8 @@
 
 div.withdraw {
   min-height: 100vh;
-  background: $background-main;
-  color: $text;
+  background: var(--background-main);
+  color: var(--text);
   padding-bottom: 40px;
   box-sizing: border-box; // Make the padding included in height calculation
 
@@ -18,9 +18,9 @@ div.withdraw {
       margin-top: 40px;
       width: 434px;
       padding: 24px 32px;
-      border: 1px solid $outline;
+      border: 1px solid var(--outline);
       border-radius: 10px;
-      background: $background-element;
+      background: var(--background-element);
       box-sizing: border-box;
     }
 
@@ -30,7 +30,8 @@ div.withdraw {
 
     .form {
       width: 434px;
-      border: 1px solid $outline;
+      border: 1px solid var(--outline);
+      background: var(--background-element);
       border-radius: 10px;
       padding: 40px;
       margin-top: 40px;
@@ -43,7 +44,7 @@ div.withdraw {
       margin-top: 0;
       margin-bottom: 48px;
       font-weight: $bold;
-      color: $text-darker;
+      color: var(--text-darker);
       text-align: center;
     }
 
@@ -75,7 +76,7 @@ div.withdraw {
         font-weight: $normal;
 
         &:focus {
-          outline: $outline solid 1px;
+          outline: var(--outline) solid 1px;
         }
       }
 
@@ -101,24 +102,28 @@ div.withdraw {
       background: $primary;
       font-size: 18px;
       font-weight: $bold;
-      box-shadow: $shadow;
+      box-shadow: var(--shadow);
       letter-spacing: 0.04em;
 
       &:hover,
       &:focus {
         outline: none;
         background-color: $primary-blue;
-        color: $text;
-        box-shadow: $shadow-hover;
+        color: $text-white;
+        box-shadow: var(--shadow-hover);
       }
     }
 
     .actionBtn:disabled {
       cursor: not-allowed;
-      background: $disabled;
+      color: rgba(0, 0, 0, 0.2);
 
       &:hover {
+        background-color: $primary;
+        color: rgba(0, 0, 0, 0.2);
         transform: none;
+        opacity: 1;
+        box-shadow: var(--shadow);
       }
     }
   }
@@ -162,12 +167,12 @@ div.withdraw {
         border-radius: 0;
 
         &:focus {
-          outline: 1px solid $outline;
+          outline: 1px solid var(--outline);
         }
       }
 
       .selected {
-        color: $orange;
+        color: var(--text-selected);
         font-weight: $medium;
         text-decoration: underline;
       }
@@ -189,7 +194,7 @@ div.withdraw {
     gap: 8px;
 
     span.value {
-      color: $text-darker;
+      color: var(--text-darker);
       font-weight: $bold;
     }
 
