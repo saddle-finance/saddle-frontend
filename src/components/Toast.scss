@@ -16,6 +16,10 @@ div.toast {
     border: 1px solid $error;
   }
 
+  &.toast-pending {
+    border: 1px solid $white;
+  }
+
   img {
     margin-right: 8px;
   }

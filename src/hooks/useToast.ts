@@ -1,8 +1,14 @@
-import { AddToast, ToastsContext } from "../providers/ToastsProvider"
+import {
+  AddToast,
+  ClearToasts,
+  ToastsContext,
+} from "../providers/ToastsProvider"
 
 import { useContext } from "react"
 
-const useToast = (): { addToast: AddToast } => {
+export const useToast = (): {
+  addToast: AddToast
+  clearToasts: ClearToasts
+} => {
   return useContext(ToastsContext)
 }
-export default useToast

@@ -6,7 +6,7 @@ export interface NumberInputState {
   isValid: boolean
   precision: number
   valueRaw: string
-  valueSafe: BigNumber
+  valueSafe: string // represents a BigNumber
 }
 
 /**
@@ -36,7 +36,7 @@ export function numberInputStateCreator(
       isValid: !isFallback,
       precision,
       valueRaw,
-      valueSafe,
+      valueSafe: valueSafe.toString(),
     }
   }
 }

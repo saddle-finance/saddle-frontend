@@ -1,8 +1,8 @@
 import "./ReviewDeposit.scss"
 
 import React, { ReactElement } from "react"
-import { GasPrices } from "../state/user"
 
+import { GasPrices } from "../state/user"
 import { useTranslation } from "react-i18next"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -14,7 +14,7 @@ interface Props {
     rates: Array<{ [key: string]: any }>
     share: number
     sadd: number
-    slippage: number
+    slippage: string
   }
   gas: GasPrices
 }
