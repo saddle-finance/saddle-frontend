@@ -28,8 +28,10 @@ import { useTranslation } from "react-i18next"
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   title: string
-  onConfirmTransaction: () => void
+  infiniteApproval: boolean
+  onConfirmTransaction: () => Promise<void>
   onChangeTokenInputValue: (tokenSymbol: string, value: string) => void
+  onChangeInfiniteApproval: () => void
   tokens: Array<{
     symbol: string
     name: string
@@ -70,7 +72,7 @@ interface Props {
     rates: Array<{ [key: string]: any }>
     share: number
     sadd: number
-    slippage: number
+    slippage: string
   }
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -84,12 +86,13 @@ const DepositPage = (props: Props): ReactElement => {
     transactionInfoData,
     myShareData,
     depositDataFromParent,
+    infiniteApproval,
     onChangeTokenInputValue,
     onConfirmTransaction,
+    onChangeInfiniteApproval,
   } = props
 
   const [modalOpen, setModalOpen] = useState(false)
-  const [infiniteApproval, setInfiniteApproval] = useState(false)
   const [popUp, setPopUp] = useState("")
 
   const dispatch = useDispatch<AppDispatch>()
@@ -190,9 +193,7 @@ const DepositPage = (props: Props): ReactElement => {
                   <input
                     type="checkbox"
                     checked={infiniteApproval}
-                    onChange={(): void =>
-                      setInfiniteApproval(!infiniteApproval)
-                    }
+                    onChange={onChangeInfiniteApproval}
                   />
                   <span className="checkbox_control">
                     <svg
@@ -282,7 +283,7 @@ const DepositPage = (props: Props): ReactElement => {
                     dispatch(updateGasPriceSelected(GasPrices.Instant))
                   }
                 >
-                  {gasInstant} {t("instant")}
+                  {gasInstant?.toString()} {t("instant")}
                 </span>
                 <input
                   className={classNames({
@@ -328,7 +329,7 @@ const DepositPage = (props: Props): ReactElement => {
               gas={gasPriceSelected}
               onConfirm={(): void => {
                 setPopUp("confirm")
-                onConfirmTransaction?.()
+                onConfirmTransaction?.().finally(() => setModalOpen(false))
               }}
               onClose={(): void => setModalOpen(false)}
             />

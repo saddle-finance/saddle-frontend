@@ -1,14 +1,21 @@
 import {
   DAI,
+  STABLECOIN_POOL_NAME,
   STABLECOIN_POOL_TOKENS,
   SUSD,
   Token,
   USDC,
   USDT,
 } from "../constants"
-import React, { ReactElement } from "react"
+import React, { ReactElement, useState } from "react"
 
+import { AppState } from "../state"
+import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
+import { formatSlippageToString } from "../utils/slippage"
+import { formatUnits } from "@ethersproject/units"
+import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
+import { useSelector } from "react-redux"
 import { useTokenBalance } from "../state/wallet/hooks"
 import { useTokenFormState } from "../hooks/useTokenFormState"
 
@@ -114,9 +121,17 @@ const depositDataFromParentTest = {
 // Dumb data end here
 
 function DepositUSD(): ReactElement {
+  const approveAndDeposit = useApproveAndDeposit(STABLECOIN_POOL_NAME)
+  const [infiniteApproval, setInfiniteApproval] = useState(false)
   const [tokenFormState, updateTokenFormValue] = useTokenFormState(
     STABLECOIN_POOL_TOKENS,
   )
+  const {
+    slippageCustom,
+    slippageSelected,
+    gasPriceSelected,
+    gasCustom,
+  } = useSelector((state: AppState) => state.user)
   // Account Token balances
   const tokenBalances = {
     [DAI.symbol]: useTokenBalance(DAI),
@@ -133,16 +148,42 @@ function DepositUSD(): ReactElement {
     inputValue: tokenFormState[token.symbol].valueRaw,
   }))
 
+  function onConfirmTransaction(): Promise<void> {
+    return approveAndDeposit({
+      slippageCustom,
+      slippageSelected,
+      infiniteApproval,
+      tokenFormState,
+      gasPriceSelected,
+      gasCustom,
+    })
+  }
+  const depositData = {
+    ...depositDataFromParentTest,
+    deposit: STABLECOIN_POOL_TOKENS.filter((t) =>
+      BigNumber.from(tokenFormState[t.symbol].valueSafe).gt(0),
+    ).map((t) => ({
+      name: t.name,
+      value: formatUnits(tokenFormState[t.symbol].valueSafe, t.decimals),
+      icon: t.icon,
+    })),
+    slippage: formatSlippageToString(slippageSelected, slippageCustom),
+  }
+
   return (
     <DepositPage
-      onConfirmTransaction={(): void => undefined}
+      onConfirmTransaction={onConfirmTransaction}
       onChangeTokenInputValue={updateTokenFormValue}
+      onChangeInfiniteApproval={(): void =>
+        setInfiniteApproval((prev) => !prev)
+      }
       title="USD Pool"
       tokens={tokens}
       poolData={testUsdPoolData}
       transactionInfoData={testTransInfoData}
       myShareData={testMyShareData}
-      depositDataFromParent={depositDataFromParentTest}
+      depositDataFromParent={depositData}
+      infiniteApproval={infiniteApproval}
     />
   )
 }

@@ -14,14 +14,14 @@ describe("numberInputStateCreator", () => {
       isValid: true,
       isEmpty: false,
       valueRaw: "123",
-      valueSafe: BigNumber.from(123),
+      valueSafe: "123",
       precision: 0,
     })
     expect(fn2("123")).toEqual({
       isValid: true,
       isEmpty: false,
       valueRaw: "123",
-      valueSafe: BigNumber.from("12300000"),
+      valueSafe: "12300000",
       precision: 5,
     })
   })
@@ -31,7 +31,7 @@ describe("numberInputStateCreator", () => {
       isValid: true,
       isEmpty: false,
       valueRaw: "9.8765",
-      valueSafe: BigNumber.from("987650000"),
+      valueSafe: "987650000",
       precision: 8,
     })
   })
@@ -42,7 +42,7 @@ describe("numberInputStateCreator", () => {
       isValid: false,
       isEmpty: true,
       valueRaw: "",
-      valueSafe: fallback,
+      valueSafe: fallback.toString(),
       precision: 1,
     })
   })
@@ -53,7 +53,7 @@ describe("numberInputStateCreator", () => {
       isValid: false,
       isEmpty: false,
       valueRaw: "1..a",
-      valueSafe: fallback,
+      valueSafe: fallback.toString(),
       precision: 1,
     })
   })
