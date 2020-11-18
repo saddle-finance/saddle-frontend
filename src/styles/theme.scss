@@ -42,6 +42,26 @@ h5 {
   font-family: $font-family-title;
 }
 
+:root {
+  --background: #ffffe9;
+  --background-element: rgba(255, 255, 244, 0.6);
+  --background-element-hover: rgba(255, 255, 255, 0.88);
+  --background-main: #ffffe9 url("../assets/bg_light.svg") center/auto 60%
+    no-repeat fixed;
+  --background-logo: #{$primary};
+  --outline: #000;
+
+  --text: #000;
+  --text-darker: #000;
+  --text-title: #{$primary-blue};
+  --text-selected: #{$primary-blue};
+  --header-text: #1f2023;
+
+  --shadow: 0px 2px 8px rgba(39, 14, 1, 0.1);
+  --shadow-hover: 2px 2px 12px rgba(68, 64, 64, 0.2);
+}
+
+// Dark and light themes
 body.dark {
   --background: #000;
   --background-element: rgba(0, 0, 0, 0.56);
@@ -59,23 +79,4 @@ body.dark {
 
   --shadow: 0px 2px 8px rgba(39, 14, 1, 0.18);
   --shadow-hover: 2px 2px 12px rgba(68, 64, 64, 0.14);
-}
-
-body {
-  --background: #ffffe9;
-  --background-element: rgba(255, 255, 244, 0.6);
-  --background-element-hover: rgba(255, 255, 255, 0.88);
-  --background-main: #ffffe9 url("../assets/bg_light.svg") center/auto 60%
-    no-repeat fixed;
-  --background-logo: #{$primary};
-  --outline: #000;
-
-  --text: #000;
-  --text-darker: #000;
-  --text-title: #{$primary-blue};
-  --text-selected: #{$primary-blue};
-  --header-text: #1f2023;
-
-  --shadow: 0px 2px 8px rgba(39, 14, 1, 0.1);
-  --shadow-hover: 2px 2px 12px rgba(68, 64, 64, 0.2);
 }
