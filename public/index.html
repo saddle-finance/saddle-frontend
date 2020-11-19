@@ -36,7 +36,13 @@
   </head>
   <body>
     <!-- CSS Variables Polyfill for IE11 -->
-    <script>window.MSInputMethodContext && document.documentMode && document.write('<script src="https://cdn.jsdelivr.net/gh/nuxodin/ie11CustomProperties@4.1.0/ie11CustomProperties.min.js"><\/script>');</script>
+    <script>
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src = "https://cdn.jsdelivr.net/gh/nuxodin/ie11CustomProperties@4.1.0/ie11CustomProperties.min.js";
+      
+      window.MSInputMethodContext && document.documentMode && document.head.appendChild(script);
+    </script>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <!--
