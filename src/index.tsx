@@ -10,7 +10,6 @@ import { Provider } from "react-redux"
 import React from "react"
 import ReactDOM from "react-dom"
 import { BrowserRouter as Router } from "react-router-dom"
-import cssVars from "css-vars-ponyfill"
 import getLibrary from "./utils/getLibrary"
 import store from "./state"
 
@@ -19,8 +18,6 @@ const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName)
 if ("ethereum" in window) {
   ;(window.ethereum as any).autoRefreshOnNetworkChange = false // eslint-disable-line @typescript-eslint/no-explicit-any
 }
-
-cssVars({})
 
 ReactDOM.render(
   <React.StrictMode>
