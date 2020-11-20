@@ -67,14 +67,17 @@ function DepositUSD(): ReactElement {
     inputValue: tokenFormState[token.symbol].valueRaw,
   }))
 
-  function onConfirmTransaction(): Promise<void> {
-    return approveAndDeposit({
+  async function onConfirmTransaction(): Promise<void> {
+    await approveAndDeposit({
       slippageCustom,
       slippageSelected,
       infiniteApproval,
       tokenFormState,
       gasPriceSelected,
       gasCustom,
+    })
+    tokens.forEach((t) => {
+      updateTokenFormValue(t.symbol, "0") // TODO can be cleaner
     })
   }
   const depositData = {
