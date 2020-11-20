@@ -40,7 +40,7 @@ const shareData = {
   name: "USD Pool",
   share: 0,
   amount: 0,
-  USDbalance: 0,
+  usdBalance: 0,
   token: ["tBTC", "wBTC", "renBTC", "sBTC"],
 }
 // Dumb data end here

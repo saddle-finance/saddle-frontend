@@ -5,8 +5,11 @@ interface GasPrices {
   gasFast?: number
   gasInstant?: number
 }
+interface TokenPricesUSD {
+  [tokenSymbol: string]: number
+}
 
-type ApplicationState = {} & GasPrices
+type ApplicationState = {} & GasPrices & { tokenPricesUSD?: TokenPricesUSD }
 
 const initialState: ApplicationState = {}
 
@@ -20,9 +23,15 @@ const applicationSlice = createSlice({
       state.gasFast = gasFast
       state.gasInstant = gasInstant
     },
+    updateTokensPricesUSD(state, action: PayloadAction<TokenPricesUSD>): void {
+      state.tokenPricesUSD = action.payload
+    },
   },
 })
 
-export const { updateGasPrices } = applicationSlice.actions
+export const {
+  updateGasPrices,
+  updateTokensPricesUSD,
+} = applicationSlice.actions
 
 export default applicationSlice.reducer

@@ -10,7 +10,7 @@ interface Props {
   data?: {
     name: string
     share: number
-    USDbalance: number
+    usdBalance: number
     amount: number
     token: Array<{ name: string; value: number }>
   }
@@ -41,7 +41,7 @@ function MyShare({ to, data }: Props): ReactElement | null {
               <span>{data.share} of pool</span>
             </div>
             <div className="balance">
-              <span>{t("usdBalance") + ": " + data.USDbalance}</span>
+              <span>{t("usdBalance") + ": " + data.usdBalance}</span>
             </div>
             <div className="amount">
               <span>Total amount: {data.amount}</span>

@@ -14,47 +14,12 @@ import DepositPage from "../components/DepositPage"
 import { formatSlippageToString } from "../utils/slippage"
 import { formatUnits } from "@ethersproject/units"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
+import usePoolData from "../hooks/usePoolData"
 import { useSelector } from "react-redux"
 import { useTokenBalance } from "../state/wallet/hooks"
 import { useTokenFormState } from "../hooks/useTokenFormState"
 
 // Dumb data start here
-const testBTCPoolData = {
-  name: "BTC Pool",
-  fee: 0.04,
-  adminFee: 0,
-  virtualPrice: 1.0224,
-  utilization: 64.02,
-  volume: 46555333.11,
-  reserve: 142890495.38,
-  tokens: [
-    {
-      name: TBTC.name,
-      icon: TBTC.icon,
-      percent: 12.34,
-      value: 17633722.4,
-    },
-    {
-      name: WBTC.name,
-      icon: WBTC.icon,
-      percent: 33.98,
-      value: 48424123.64,
-    },
-    {
-      name: RENBTC.name,
-      icon: RENBTC.icon,
-      percent: 38.96,
-      value: 55675199.22,
-    },
-    {
-      name: SBTC.name,
-      icon: SBTC.icon,
-      percent: 14.8,
-      value: 21157478.96,
-    },
-  ],
-}
-
 const testTransInfoData = {
   isInfo: false,
   content: {
@@ -95,6 +60,7 @@ const testDepositData = {
 
 function DepositBTC(): ReactElement {
   const approveAndDeposit = useApproveAndDeposit(BTC_POOL_NAME)
+  const poolData = usePoolData(BTC_POOL_NAME)
   const [infiniteApproval, setInfiniteApproval] = useState(false)
   const [tokenFormState, updateTokenFormValue] = useTokenFormState(
     BTC_POOL_TOKENS,
@@ -105,6 +71,7 @@ function DepositBTC(): ReactElement {
     gasPriceSelected,
     gasCustom,
   } = useSelector((state: AppState) => state.user)
+  const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
 
   // Account Token balances
   const tokenBalances = {
@@ -122,6 +89,7 @@ function DepositBTC(): ReactElement {
     max: tokenBalances[token.symbol],
     inputValue: tokenFormState[token.symbol].valueRaw,
   }))
+
   function onConfirmTransaction(): Promise<void> {
     return approveAndDeposit({
       slippageCustom,
@@ -142,6 +110,16 @@ function DepositBTC(): ReactElement {
       value: formatUnits(tokenFormState[t.symbol].valueSafe, t.decimals),
       icon: t.icon,
     })),
+    rates:
+      tokenPricesUSD != null
+        ? BTC_POOL_TOKENS.filter((t) =>
+            BigNumber.from(tokenFormState[t.symbol].valueSafe).gt(0),
+          ).map((t) => ({
+            name: t.name,
+            value: formatUnits(tokenFormState[t.symbol].valueSafe, t.decimals),
+            rate: tokenPricesUSD[t.symbol]?.toFixed(3),
+          }))
+        : [],
     slippage: formatSlippageToString(slippageSelected, slippageCustom),
   }
 
@@ -154,7 +132,8 @@ function DepositBTC(): ReactElement {
       }
       title="BTC Pool"
       tokens={tokens}
-      poolData={testBTCPoolData}
+      poolData={poolData}
+      myShareData={null}
       transactionInfoData={testTransInfoData}
       depositDataFromParent={depositData}
       infiniteApproval={infiniteApproval}

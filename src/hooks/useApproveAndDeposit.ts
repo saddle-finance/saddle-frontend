@@ -16,7 +16,7 @@ import {
   WBTC,
 } from "../constants"
 import { GasPrices, Slippages } from "../state/user"
-import { useSwapContract, useTokenContract } from "./useContract"
+import { useSwapContracts, useTokenContract } from "./useContract"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -40,7 +40,7 @@ interface ApproveAndDepositStateArgument {
 export function useApproveAndDeposit(
   poolName: PoolName,
 ): (state: ApproveAndDepositStateArgument) => Promise<void> {
-  const swapContract = useSwapContract()
+  const swapContracts = useSwapContracts()
   const { account } = useActiveWeb3React()
   const { addToast, clearToasts } = useToast()
   const { gasStandard, gasFast, gasInstant } = useSelector(
@@ -123,7 +123,7 @@ export function useApproveAndDeposit(
       // "isFirstTransaction" check can be removed after launch
       const poolTokenBalances: BigNumber[] = await Promise.all(
         tokens.map(async (token, i) => {
-          return await swapContract?.getTokenBalance(i)
+          return await swapContracts?.[poolName]?.getTokenBalance(i)
         }),
       )
       const isFirstTransaction = poolTokenBalances.every((bal) => bal.isZero())
@@ -131,7 +131,7 @@ export function useApproveAndDeposit(
       if (isFirstTransaction) {
         minToMint = BigNumber.from("0")
       } else {
-        minToMint = await swapContract?.calculateTokenAmount(
+        minToMint = await swapContracts?.[poolName]?.calculateTokenAmount(
           tokens.map(({ symbol }) => state.tokenFormState[symbol].valueSafe),
           true, // deposit boolean
         )
@@ -159,7 +159,7 @@ export function useApproveAndDeposit(
         gasPrice = gasStandard
       }
       gasPrice = BigNumber.from(gasPrice)?.mul(BigNumber.from(10).pow(9)) // TODO: unjank this
-      const spendTransaction = await swapContract?.addLiquidity(
+      const spendTransaction = await swapContracts?.[poolName]?.addLiquidity(
         tokens.map(({ symbol }) => state.tokenFormState[symbol].valueSafe),
         minToMint,
         Math.round(new Date().getTime() / 1000 + 60 * 10),

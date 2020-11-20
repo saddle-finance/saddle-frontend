@@ -2,17 +2,11 @@ import "./MyShareCard.scss"
 
 import React, { ReactElement } from "react"
 
+import { UserShareType } from "../hooks/usePoolData"
 import { useTranslation } from "react-i18next"
 
 interface Props {
-  data?: {
-    name: string
-    share: number
-    value: number
-    USDbalance: number
-    aveBalance: number
-    token: Array<{ name: string; value: number }>
-  }
+  data?: UserShareType | null
 }
 
 function MyShareCard({ data }: Props): ReactElement | null {
@@ -28,14 +22,14 @@ function MyShareCard({ data }: Props): ReactElement | null {
             <span>{data.share} of pool</span>
           </div>
           <div className="balance">
-            <span>{t("usdBalance") + ": " + data.USDbalance}</span>
+            <span>{t("usdBalance") + ": " + data.usdBalance}</span>
           </div>
           <div className="amount">
             <span>Total amount: {data.value}</span>
           </div>
         </div>
         <div className="currency">
-          {data.token.map((coin, index) => (
+          {data.tokens.map((coin, index) => (
             <div key={index}>
               <span className="tokenName">{coin.name}</span>
               <span>{coin.value}</span>

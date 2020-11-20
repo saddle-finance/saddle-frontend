@@ -15,6 +15,7 @@ import ToastsProvider from "../providers/ToastsProvider"
 import Web3ReactManager from "../components/Web3ReactManager"
 import WithdrawUSD from "./WithdrawUSD"
 import fetchGasPrices from "../utils/updateGasPrices"
+import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import { useDispatch } from "react-redux"
 
 export default function App(): ReactElement {
@@ -23,6 +24,7 @@ export default function App(): ReactElement {
   // TODO: figure out how frequently we want to update gas prices and where
   useEffect(() => {
     fetchGasPrices(dispatch)
+    fetchTokenPricesUSD(dispatch)
   }, [dispatch])
 
   return (

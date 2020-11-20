@@ -5,6 +5,7 @@ import {
   updateGasPriceCustom,
   updateGasPriceSelected,
 } from "../state/user"
+import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
@@ -72,29 +73,8 @@ interface Props {
     inputValue: string
   }>
   selected?: { [key: string]: any }
-  poolData: {
-    name: string
-    fee: number
-    adminFee: number
-    virtualPrice: number
-    utilization: number
-    volume: number
-    reserve: number
-    tokens: Array<{
-      name: string
-      icon: string
-      percent: number
-      value: number
-    }>
-  }
-  myShareData?: {
-    name: string
-    share: number
-    value: number
-    USDbalance: number
-    aveBalance: number
-    token: Array<{ name: string; value: number }>
-  }
+  poolData: PoolDataType | null
+  myShareData?: UserShareType | null
   transactionInfoData: {
     isInfo: boolean
     content: { [key: string]: any }
