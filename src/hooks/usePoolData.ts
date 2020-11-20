@@ -3,6 +3,7 @@ import {
   PoolName,
   STABLECOIN_POOL_NAME,
   STABLECOIN_POOL_TOKENS,
+  TRANSACTION_TYPES,
 } from "../constants"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 import { useAllContracts, useSwapContracts } from "./useContract"
@@ -47,7 +48,10 @@ export default function usePoolData(poolName: PoolName): PoolDataType | null {
   const swapContracts = useSwapContracts()
   const tokenContracts = useAllContracts()
   const [poolData, setPoolData] = useState<PoolDataType | null>(null)
-  const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
+  const { tokenPricesUSD, lastTransactionTimes } = useSelector(
+    (state: AppState) => state.application,
+  )
+  const lastDepositTime = lastTransactionTimes[TRANSACTION_TYPES.DEPOSIT]
 
   useEffect(() => {
     async function getSwapData(): Promise<void> {
@@ -123,27 +127,30 @@ export default function usePoolData(poolName: PoolName): PoolDataType | null {
       const poolTokens = tokens.map((token, i) => ({
         name: token.name,
         icon: token.icon,
-        percent: formatUnits(
-          tokenBalances[i].mul(100).div(tokenBalancesSum),
-          0,
-        ),
-        value: formatUnits(tokenBalances[i], 18),
+        percent: parseFloat(
+          formatUnits(tokenBalances[i].mul(100).div(tokenBalancesSum), 0),
+        ).toFixed(3),
+        value: parseFloat(formatUnits(tokenBalances[i], 18)).toFixed(3),
       }))
       const userPoolTokens = tokens.map((token, i) => ({
         name: token.name,
         icon: token.icon,
-        percent: formatUnits(
-          userPoolTokenBalances[i].mul(100).div(tokenBalancesSum),
-          0,
-        ),
-        value: formatUnits(userPoolTokenBalances[i], 18),
+        percent: parseFloat(
+          formatUnits(
+            userPoolTokenBalances[i].mul(100).div(tokenBalancesSum),
+            0,
+          ),
+        ).toFixed(3),
+        value: parseFloat(formatUnits(userPoolTokenBalances[i], 18)).toFixed(3),
       }))
       setPoolData({
         name: poolName,
         tokens: poolTokens,
-        reserve: formatUnits(tokenBalancesSum, 18),
-        totalLocked: formatUnits(tokenBalancesUSDSum, 18),
-        virtualPrice: formatUnits(virtualPrice, 18),
+        reserve: parseFloat(formatUnits(tokenBalancesSum, 18)).toFixed(3),
+        totalLocked: parseFloat(formatUnits(tokenBalancesUSDSum, 18)).toFixed(
+          2,
+        ),
+        virtualPrice: parseFloat(formatUnits(virtualPrice, 18)).toFixed(5),
         adminFee: formatUnits(adminFee, 10),
         swapFee: formatUnits(swapFee, 10),
         volume: "XXX", // TODO
@@ -151,10 +158,16 @@ export default function usePoolData(poolName: PoolName): PoolDataType | null {
         userShare: account
           ? {
               name: poolName,
-              share: formatUnits(userShare, 18),
-              value: formatUnits(userPoolTokenBalancesSum, 18),
-              usdBalance: formatUnits(userPoolTokenBalancesUSDSum, 18),
-              avgBalance: formatUnits(userPoolTokenBalancesSum, 18), // TODO: how to calculate?
+              share: parseFloat(formatUnits(userShare, 18)).toFixed(5),
+              value: parseFloat(
+                formatUnits(userPoolTokenBalancesSum, 18),
+              ).toFixed(2),
+              usdBalance: parseFloat(
+                formatUnits(userPoolTokenBalancesUSDSum, 18),
+              ).toFixed(2),
+              avgBalance: parseFloat(
+                formatUnits(userPoolTokenBalancesSum, 18),
+              ).toFixed(2), // TODO: how to calculate?
               tokens: userPoolTokens,
             }
           : null,
@@ -162,6 +175,7 @@ export default function usePoolData(poolName: PoolName): PoolDataType | null {
     }
     getSwapData()
   }, [
+    lastDepositTime,
     poolName,
     swapContracts,
     tokenContracts,

@@ -10,6 +10,7 @@ import {
   SUSD,
   TBTC,
   TEST_STABLECOIN_SWAP_ADDRESS,
+  TRANSACTION_TYPES,
   Token,
   USDC,
   USDT,
@@ -24,7 +25,9 @@ import { NumberInputState } from "../utils/numberInputState"
 import { applySlippage } from "../utils/slippage"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { getFormattedTimeString } from "../utils/dateTime"
+import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
+import { useDispatch } from "react-redux"
 import { useSelector } from "react-redux"
 import { useToast } from "./useToast"
 
@@ -40,6 +43,7 @@ interface ApproveAndDepositStateArgument {
 export function useApproveAndDeposit(
   poolName: PoolName,
 ): (state: ApproveAndDepositStateArgument) => Promise<void> {
+  const dispatch = useDispatch()
   const swapContracts = useSwapContracts()
   const { account } = useActiveWeb3React()
   const { addToast, clearToasts } = useToast()
@@ -168,6 +172,11 @@ export function useApproveAndDeposit(
         },
       )
       await spendTransaction.wait()
+      dispatch(
+        updateLastTransactionTimes({
+          [TRANSACTION_TYPES.DEPOSIT]: Date.now(),
+        }),
+      )
       clearMessage()
       addToast({
         type: "success",

@@ -8,10 +8,17 @@ interface GasPrices {
 interface TokenPricesUSD {
   [tokenSymbol: string]: number
 }
+interface LastTransactionTimes {
+  [transactionType: string]: number
+}
 
-type ApplicationState = {} & GasPrices & { tokenPricesUSD?: TokenPricesUSD }
+type ApplicationState = {} & GasPrices & { tokenPricesUSD?: TokenPricesUSD } & {
+    lastTransactionTimes: LastTransactionTimes
+  }
 
-const initialState: ApplicationState = {}
+const initialState: ApplicationState = {
+  lastTransactionTimes: {},
+}
 
 const applicationSlice = createSlice({
   name: "application",
@@ -26,12 +33,22 @@ const applicationSlice = createSlice({
     updateTokensPricesUSD(state, action: PayloadAction<TokenPricesUSD>): void {
       state.tokenPricesUSD = action.payload
     },
+    updateLastTransactionTimes(
+      state,
+      action: PayloadAction<LastTransactionTimes>,
+    ): void {
+      state.lastTransactionTimes = {
+        ...state.lastTransactionTimes,
+        ...action.payload,
+      }
+    },
   },
 })
 
 export const {
   updateGasPrices,
   updateTokensPricesUSD,
+  updateLastTransactionTimes,
 } = applicationSlice.actions
 
 export default applicationSlice.reducer
