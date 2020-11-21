@@ -2,7 +2,7 @@
 
 div.homepage {
   min-height: 100vh;
-  background: $background-main;
+  background: var(--background-main);
   padding-bottom: 40px;
   box-sizing: border-box; // Make the padding included in height calculation
 
@@ -15,7 +15,7 @@ div.homepage {
       margin-top: 8%;
       font-weight: $bold;
       font-size: 30px;
-      color: $text;
+      color: var(--text);
     }
     & > .button_group {
       margin-left: auto;

@@ -2,7 +2,7 @@
 
 div.poolpage {
   min-height: 100vh;
-  background: $background-main;
+  background: var(--background-main);
   padding-bottom: 40px;
   box-sizing: border-box; // Make the padding included in height calculation
 
@@ -15,7 +15,7 @@ div.poolpage {
       margin-top: 8%;
       font-weight: $bold;
       font-size: 30px;
-      color: $text;
+      color: var(--text);
     }
     & > .button_group {
       margin-left: auto;
@@ -37,7 +37,7 @@ div.poolpage {
       margin-right: auto;
       width: 576px;
       text-align: left;
-      color: $text-darker;
+      color: var(--text-darker);
       line-height: 20px;
     }
   }

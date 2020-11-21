@@ -2,8 +2,8 @@
 
 div.swapPage {
   min-height: 100vh;
-  background: $background-main;
-  color: $text;
+  background: var(--background-main);
+  color: var(--text);
   font-size: 16px;
   padding-bottom: 40px;
   box-sizing: border-box; // Make the padding included in height calculation
@@ -43,7 +43,7 @@ div.swapPage {
     width: 30%;
     margin-right: auto;
     text-align: left;
-    color: $text;
+    color: var(--text);
 
     button,
     svg {
@@ -85,7 +85,7 @@ div.swapPage {
       width: 100%;
       height: 2px;
       margin: 8px 0;
-      background: $outline;
+      background: var(--outline);
     }
 
     .tableContainer {
@@ -98,8 +98,9 @@ div.swapPage {
 
     .table {
       width: calc(100% - 24px);
+      background: var(--background-element);
       margin-top: 16px;
-      border: 1px solid $outline;
+      border: 1px solid var(--outline);
       border-radius: 10px;
       padding: 16px 12px;
 
@@ -115,8 +116,7 @@ div.swapPage {
       }
 
       input:focus {
-        outline: none;
-        border: 1px solid $outline;
+        outline: 1px solid var(--outline);
       }
 
       .label {
@@ -183,7 +183,7 @@ div.swapPage {
 
       .IAlabel {
         position: relative;
-        border-bottom: 1px dotted $text;
+        border-bottom: 1px dotted var(--text);
         font-weight: $bold;
 
         &:hover {
@@ -194,7 +194,7 @@ div.swapPage {
       .IAlabel .tooltipText {
         visibility: hidden;
         width: 360px;
-        background-color: $white;
+        background-color: $primary;
         color: $text-black;
         border-radius: 8px;
         padding: 6px 8px;
@@ -221,7 +221,7 @@ div.swapPage {
         margin-left: -5px;
         border-width: 10px;
         border-style: solid;
-        border-color: $white transparent transparent transparent;
+        border-color: $primary transparent transparent transparent;
       }
 
       .IAlabel:hover .tooltipText {
@@ -231,10 +231,10 @@ div.swapPage {
 
     .options > button {
       border: none;
-      background: $background;
+      background: none;
       font-size: 16px;
       font-weight: $normal;
-      color: $text;
+      color: var(--text);
       letter-spacing: -0.04em;
       padding: 0 12px 0 0;
 
@@ -248,7 +248,7 @@ div.swapPage {
       }
 
       &.selected {
-        color: $orange;
+        color: var(--text-selected);
         font-weight: $medium;
         text-decoration: underline;
       }
@@ -274,7 +274,7 @@ div.swapPage {
     font-weight: $bold;
     font-size: 20px;
     letter-spacing: 0.04em;
-    box-shadow: $shadow;
+    box-shadow: var(--shadow);
 
     margin: 0 auto;
 
@@ -282,8 +282,8 @@ div.swapPage {
     &:focus {
       outline: none;
       background-color: $primary-blue;
-      color: $text;
-      box-shadow: $shadow-hover;
+      color: $text-white;
+      box-shadow: var(--shadow-hover);
     }
   }
 
@@ -296,6 +296,7 @@ div.swapPage {
       color: rgba(0, 0, 0, 0.2);
       transform: none;
       opacity: 1;
+      box-shadow: var(--shadow);
     }
   }
 

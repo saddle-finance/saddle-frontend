@@ -184,7 +184,6 @@ const DepositPage = (props: Props): ReactElement => {
                     >
                       <path
                         fill="none"
-                        stroke="#00f4d7"
                         strokeWidth="4"
                         d="M1.73 12.91l6.37 6.37L22.79 4.59"
                       />

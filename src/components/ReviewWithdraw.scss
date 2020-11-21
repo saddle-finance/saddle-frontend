@@ -67,12 +67,12 @@ div.reviewWithdraw {
   }
 
   div.bottom {
-    background: $background;
+    background: $black;
     margin: 0 -40px -40px -40px;
     padding: 16px 40px 24px 40px;
     border-radius: 0px 0px 8px 8px;
 
-    color: $text;
+    color: $text-white;
 
     p {
       font-size: 14px;
@@ -105,8 +105,8 @@ div.reviewWithdraw {
         opacity: 0.8;
         outline: none;
         background-color: $primary-blue;
-        color: $text;
-        box-shadow: $shadow-hover;
+        color: $text-white;
+        box-shadow: var(--shadow-hover);
       }
     }
 

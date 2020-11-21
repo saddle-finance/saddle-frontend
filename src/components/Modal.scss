@@ -16,7 +16,7 @@ div.modal {
 div.modalContent {
   width: 465px;
   min-height: 332px;
-  border: 1px solid $outline;
+  border: 1px solid $white;
   margin: auto;
   box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.3);
   border-radius: 8px;
@@ -35,7 +35,7 @@ div.modalContent {
 
     &:hover,
     &:focus {
-      color: $primary;
+      color: var(--text-selected);
       text-decoration: none;
       cursor: pointer;
     }

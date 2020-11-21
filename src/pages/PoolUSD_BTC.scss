@@ -3,7 +3,7 @@
 div.poolUsd,
 div.poolBtc {
   min-height: 100vh;
-  background: $background-main;
+  background: var(--background-main);
   padding-bottom: 40px;
   box-sizing: border-box; // Make the padding included in height calculation
 

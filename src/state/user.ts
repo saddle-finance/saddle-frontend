@@ -22,6 +22,7 @@ export enum Slippages {
 interface UserState {
   userSwapAdvancedMode: boolean
   userPoolAdvancedMode: boolean
+  userDarkMode: boolean
   gasCustom?: NumberInputState
   gasPriceSelected: GasPrices
   slippageCustom?: NumberInputState
@@ -31,6 +32,7 @@ interface UserState {
 const initialState: UserState = {
   userSwapAdvancedMode: false,
   userPoolAdvancedMode: false,
+  userDarkMode: false,
   gasPriceSelected: GasPrices.Standard,
   slippageSelected: Slippages.OneTenth,
 }
@@ -53,6 +55,9 @@ const userSlice = createSlice({
     updatePoolAdvancedMode(state, action: PayloadAction<boolean>): void {
       state.userPoolAdvancedMode = action.payload
     },
+    updateDarkMode(state, action: PayloadAction<boolean>): void {
+      state.userDarkMode = action.payload
+    },
     updateGasPriceCustom(state, action: PayloadAction<string>): void {
       state.gasCustom = gasCustomStateCreator(action.payload)
     },
@@ -71,6 +76,7 @@ const userSlice = createSlice({
 export const {
   updateSwapAdvancedMode,
   updatePoolAdvancedMode,
+  updateDarkMode,
   updateGasPriceCustom,
   updateGasPriceSelected,
   updateSlippageCustom,

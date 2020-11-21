@@ -2,8 +2,8 @@
 
 .swapForm {
   width: 380px;
-  background: $background-element;
-  border: 1px solid $outline;
+  background: var(--background-element);
+  border: 1px solid var(--outline);
   border-radius: 10px;
   padding-top: 24px;
 
@@ -16,7 +16,7 @@
       font-size: 30px;
       margin-top: 0;
       margin-bottom: 16px;
-      color: $text-darker;
+      color: var(--text-title);
     }
 
     .inputField {
@@ -28,7 +28,7 @@
       height: 32px;
       background: $white;
       outline: none;
-      border: none;
+      border: 0.1px solid var(--outline);
       padding: 0 56px 0 8px;
       margin-bottom: 24px;
     }
@@ -40,6 +40,7 @@
     button.max {
       position: absolute;
       right: 8px;
+      top: 0;
       z-index: 1;
       height: 32px;
       background: none;
@@ -66,7 +67,6 @@
 
   .tokenListItem {
     height: 56px;
-    background: $background;
     position: relative;
 
     display: flex;
@@ -115,7 +115,7 @@
     .tokenName,
     .tokenValue {
       font-size: 16px;
-      color: $text;
+      color: var(--text);
     }
   }
 }

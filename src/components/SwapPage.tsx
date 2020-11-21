@@ -136,7 +136,6 @@ const SwapPage = (props: Props): ReactElement => {
         </div>
         <div className="advancedOptions">
           <div className="divider"></div>
-          {/* When advanced = true, this table will be shown */}
           <div className={"tableContainer " + classNames({ show: advanced })}>
             <div className="table">
               <div className="infiniteApproval tableOption">

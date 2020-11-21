@@ -1,8 +1,7 @@
 @import "../styles/theme";
 
 header.top {
-  background-color: $background;
-  box-shadow: 0px 2px 14px 2px rgba(0, 0, 0, 0.1);
+  background-color: var(--background);
   height: 88px;
   padding-left: 56px;
   padding-right: 56px;
@@ -15,16 +14,8 @@ header.top {
     margin: 0;
     margin-right: auto;
 
-    .title {
-      color: #ea860b;
-      font-weight: bold;
-      font-size: 36px;
-      line-height: 42px;
-      font-family: "Roboto";
-    }
-
     .logo {
-      background-color: #ffffe9;
+      background-color: var(--background-logo);
       border-radius: 52px;
       display: inline-block;
       margin-right: 0.4em;
@@ -46,8 +37,7 @@ header.top {
         margin-right: 0;
       }
       a {
-        color: $primary;
-        opacity: 0.6;
+        color: var(--header-text);
         text-decoration: none;
         font-style: normal;
         font-weight: $normal;
@@ -59,7 +49,7 @@ header.top {
 
         &.active {
           opacity: 1;
-          color: $primary;
+          // color: var(--header-text);
           font-weight: $bold;
         }
       }
