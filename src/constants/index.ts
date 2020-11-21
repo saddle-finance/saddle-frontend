@@ -170,3 +170,8 @@ export const TOKENS_MAP: {
   (acc, token) => ({ ...acc, [token.symbol]: token }),
   {},
 )
+
+export const TRANSACTION_TYPES = {
+  DEPOSIT: "DEPOSIT",
+  WITHDRAW: "WITHDRAW",
+}

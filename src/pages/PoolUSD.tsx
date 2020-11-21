@@ -38,7 +38,7 @@ const poolData = {
 const shareData = {
   name: "USD Pool",
   share: 0.001,
-  USDbalance: 80.23,
+  usdBalance: 80.23,
   amount: 81.36,
   token: [
     { name: "DAI", value: 19.9 },
