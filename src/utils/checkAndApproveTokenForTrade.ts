@@ -17,7 +17,7 @@ import { MaxUint256 } from "@ethersproject/constants"
  */
 export default async function checkAndApproveTokenForTrade(
   srcTokenContract: Contract,
-  swapAddress: string,
+  swapAddress: string | undefined,
   spenderAddress: string,
   spendingValue: BigNumber, // max is MaxUint256
   infiniteApproval = false,

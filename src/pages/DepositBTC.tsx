@@ -133,7 +133,7 @@ function DepositBTC(): ReactElement {
       title="BTC Pool"
       tokens={tokens}
       poolData={poolData}
-      myShareData={null}
+      myShareData={poolData?.userShare}
       transactionInfoData={testTransInfoData}
       depositDataFromParent={depositData}
       infiniteApproval={infiniteApproval}

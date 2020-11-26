@@ -26,7 +26,7 @@ function PoolInfoCard({ data }: Props): ReactElement {
         </div>
         <div className="infoItem">
           <span className="label">{t("totalLocked") + " ($): "}</span>
-          <span className="value">{data?.reserve}</span>
+          <span className="value">{data?.totalLocked}</span>
         </div>
         <div className="twoColumn">
           <div className="infoItem">

@@ -13,6 +13,12 @@ export enum GasPrices {
   Custom = "CUSTOM",
 }
 
+export enum WithdrawTypes {
+  AllTokens = "ALL",
+  SingleToken = "SINGLE",
+  Imbalance = "IMBALANCE",
+}
+
 export enum Slippages {
   One = "ONE",
   OneTenth = "ONE_TENTH",
@@ -27,6 +33,7 @@ interface UserState {
   gasPriceSelected: GasPrices
   slippageCustom?: NumberInputState
   slippageSelected: Slippages
+  withdrawTypeSelected?: WithdrawTypes
 }
 
 const initialState: UserState = {

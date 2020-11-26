@@ -15,7 +15,7 @@ import {
   USDT,
   WBTC,
 } from "../constants"
-import { GasPrices, Slippages } from "../state/user"
+import { GasPrices, Slippages, WithdrawTypes } from "../state/user"
 import { useSwapContracts, useTokenContract } from "./useContract"
 
 import { AppState } from "../state"
@@ -31,18 +31,19 @@ import { useDispatch } from "react-redux"
 import { useSelector } from "react-redux"
 import { useToast } from "./useToast"
 
-interface ApproveAndDepositStateArgument {
+interface ApproveAndWithdrawStateArgument {
   tokenFormState: { [tokenSymbol: string]: NumberInputState }
   infiniteApproval: boolean
   slippageSelected: Slippages
   slippageCustom?: NumberInputState
   gasPriceSelected: GasPrices
   gasCustom?: NumberInputState
+  withdrawTypeSelected?: WithdrawTypes
 }
 
-export function useApproveAndDeposit(
+export function useApproveAndWithdraw(
   poolName: PoolName,
-): (state: ApproveAndDepositStateArgument) => Promise<void> {
+): (state: ApproveAndWithdrawStateArgument) => Promise<void> {
   const dispatch = useDispatch()
   const swapContracts = useSwapContracts()
   const { account } = useActiveWeb3React()
@@ -77,8 +78,8 @@ export function useApproveAndDeposit(
     new Error("useApproveAndDeposit requires a valid pool name")
   }
 
-  return async function approveAndDeposit(
-    state: ApproveAndDepositStateArgument,
+  return async function approveAndWithdraw(
+    state: ApproveAndWithdrawStateArgument,
   ): Promise<void> {
     try {
       if (!account) throw new Error("Wallet must be connected")
@@ -167,14 +168,38 @@ export function useApproveAndDeposit(
         gasPrice = gasStandard
       }
       gasPrice = toWei(gasPrice?.toString() || "25", "gwei")
-      const spendTransaction = await swapContracts?.[poolName]?.addLiquidity(
-        tokens.map(({ symbol }) => state.tokenFormState[symbol].valueSafe),
-        minToMint,
-        Math.round(new Date().getTime() / 1000 + 60 * 10),
-        {
-          gasPrice,
-        },
-      )
+      let spendTransaction
+      if (state.withdrawTypeSelected === WithdrawTypes.AllTokens) {
+        spendTransaction = await swapContracts?.[poolName]?.removeLiquidity(
+          // TODO add parameters for remove liquidity function
+          Math.round(new Date().getTime() / 1000 + 60 * 10),
+          {
+            gasPrice,
+          },
+        )
+      } else if (state.withdrawTypeSelected === WithdrawTypes.SingleToken) {
+        spendTransaction = await swapContracts?.[
+          poolName
+        ]?.removeLiquidityOneToken(
+          // TODO add parameters for remove liquidity one token function
+          Math.round(new Date().getTime() / 1000 + 60 * 10),
+          {
+            gasPrice,
+          },
+        )
+      } else {
+        // state.withdrawTypeSelected === WithdrawTypes.Imbalance
+        spendTransaction = await swapContracts?.[
+          poolName
+        ]?.removeLiquidityImbalance(
+          // TODO add parameters for remove liquidity imbalance function
+          Math.round(new Date().getTime() / 1000 + 60 * 10),
+          {
+            gasPrice,
+          },
+        )
+      }
+
       await spendTransaction.wait()
       dispatch(
         updateLastTransactionTimes({
@@ -184,7 +209,7 @@ export function useApproveAndDeposit(
       clearMessage()
       addToast({
         type: "success",
-        title: `${getFormattedTimeString()} Liquidity added, giddyup! 🤠`,
+        title: `${getFormattedTimeString()} Liquidity removed, giddyup! 🤠`,
       })
     } catch (e) {
       console.error(e)

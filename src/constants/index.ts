@@ -171,6 +171,7 @@ export const TOKENS_MAP: {
   {},
 )
 
+// Pool addresses
 export const TRANSACTION_TYPES = {
   DEPOSIT: "DEPOSIT",
   WITHDRAW: "WITHDRAW",

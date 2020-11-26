@@ -65,6 +65,8 @@ const testWithdrawData = {
 interface Props {
   title: string
   onChangeTokenInputValue: (tokenSymbol: string, value: string) => void
+  onConfirmTransaction: () => Promise<void>
+  onChangeInfiniteApproval: () => void
   tokensData: Array<{
     symbol: string
     name: string
@@ -90,11 +92,11 @@ const WithdrawPage = (props: Props): ReactElement => {
     poolData,
     transactionInfoData,
     myShareData,
-    onChangeTokenInputValue,
+    onConfirmTransaction,
   } = props
 
   const [modalOpen, setModalOpen] = useState(false)
-  const [combination, setCombination] = useState(false)
+  const [combination, setCombination] = useState(true)
   const [popUp, setPopUp] = useState("")
   const [percentage, setPercentage] = useState(100)
   const [error, setError] = useState("")
@@ -118,10 +120,24 @@ const WithdrawPage = (props: Props): ReactElement => {
       setCurrentTokensData(
         tokensData.map((token) => ({
           ...token,
-          max: Math.floor(token.max * percent) / 100,
+          inputValue: String(Math.floor(token.max * percent) / 100) ?? "0",
         })),
       )
     }
+    setCombination(true)
+  }
+  const onTokenInputChange = (symbol: string, value: string): void => {
+    setCurrentTokensData(
+      currentTokensData.map((token) => {
+        return token.symbol == symbol
+          ? {
+              ...token,
+              inputValue: value,
+            }
+          : token
+      }),
+    )
+    setCombination(false)
   }
 
   const validPercentage = (value: number): boolean => {
@@ -148,6 +164,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                 type="number"
                 step="10"
                 placeholder="100"
+                defaultValue="100"
                 onChange={(e: React.FormEvent<HTMLInputElement>): void =>
                   onPercentChange(e.currentTarget.value)
                 }
@@ -159,7 +176,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                 <TokenInput
                   {...token}
                   onChange={(value): void =>
-                    onChangeTokenInputValue(token.symbol, value)
+                    onTokenInputChange(token.symbol, value)
                   }
                 />
                 {index === currentTokensData.length - 1 ? (
@@ -301,7 +318,10 @@ const WithdrawPage = (props: Props): ReactElement => {
             <ReviewWithdraw
               data={testWithdrawData}
               gas={gasPriceSelected}
-              onConfirm={(): void => setPopUp("confirm")}
+              onConfirm={(): void => {
+                setPopUp("confirm")
+                onConfirmTransaction?.().finally(() => setModalOpen(false))
+              }}
               onClose={(): void => setModalOpen(false)}
             />
           ) : null}
