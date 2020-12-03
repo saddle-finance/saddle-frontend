@@ -11,7 +11,7 @@ import usePoolData from "../hooks/usePoolData"
 function PoolBTC(): ReactElement {
   const [poolData, userShareData] = usePoolData(BTC_POOL_NAME)
   return (
-    <div className="poolUsd">
+    <div className="poolBtc">
       <TopMenu activeTab={"pool"} />
       <div className="content">
         <PoolOverview data={poolData} to="/pool/btc/deposit" />
