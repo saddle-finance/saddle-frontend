@@ -1,12 +1,6 @@
-import {
-  BTC_POOL_TOKENS,
-  PoolName,
-  STABLECOIN_POOL_NAME,
-  STABLECOIN_POOL_TOKENS,
-  TRANSACTION_TYPES,
-} from "../constants"
+import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
 import { formatUnits, parseUnits } from "@ethersproject/units"
-import { useAllContracts, useSwapContracts } from "./useContract"
+import { useAllContracts, useSwapContract } from "./useContract"
 import { useEffect, useState } from "react"
 
 import { AppState } from "../state"
@@ -17,78 +11,88 @@ import { useActiveWeb3React } from "."
 import { useSelector } from "react-redux"
 
 interface TokenShareType {
-  name: string
-  icon: string
   percent: string
-  value: string
-}
-export interface UserShareType {
-  name: string
-  share: string
-  value: string
-  usdBalance: string
-  avgBalance: string
-  tokens: TokenShareType[]
-}
-export interface PoolDataType {
-  name: string
-  tokens: TokenShareType[]
-  reserve: string
-  totalLocked: string
-  virtualPrice: string
-  adminFee: string
-  swapFee: string
-  volume: string
-  utilization: string
-  userShare: UserShareType | null
+  symbol: string
+  value: BigNumber
 }
 
-export default function usePoolData(poolName: PoolName): PoolDataType | null {
+export interface UserShareType {
+  avgBalance: BigNumber
+  currentWithdrawFee: BigNumber
+  lpTokenBalance: BigNumber
+  name: string // TODO: does this need to be on user share?
+  share: BigNumber
+  tokens: TokenShareType[]
+  usdBalance: BigNumber
+  value: BigNumber
+}
+export interface PoolDataType {
+  adminFee: BigNumber
+  apy: string // TODO: calculate
+  name: string
+  reserve: BigNumber
+  swapFee: BigNumber
+  tokens: TokenShareType[]
+  totalLocked: BigNumber
+  utilization: string // TODO: calculate
+  virtualPrice: BigNumber
+  volume: string // TODO: calculate
+}
+
+export type PoolDataHookReturnType = [PoolDataType | null, UserShareType | null]
+
+export default function usePoolData(
+  poolName: PoolName,
+): PoolDataHookReturnType {
   const { account, library } = useActiveWeb3React()
-  const swapContracts = useSwapContracts()
+  const swapContract = useSwapContract(poolName)
   const tokenContracts = useAllContracts()
-  const [poolData, setPoolData] = useState<PoolDataType | null>(null)
+  const [poolData, setPoolData] = useState<PoolDataHookReturnType>([null, null])
   const { tokenPricesUSD, lastTransactionTimes } = useSelector(
     (state: AppState) => state.application,
   )
   const lastDepositTime = lastTransactionTimes[TRANSACTION_TYPES.DEPOSIT]
+  const lastWithdrawTime = lastTransactionTimes[TRANSACTION_TYPES.WITHDRAW]
 
   useEffect(() => {
     async function getSwapData(): Promise<void> {
       if (
         poolName == null ||
-        swapContracts == null ||
+        swapContract == null ||
         tokenContracts == null ||
         tokenPricesUSD == null ||
         library == null
       )
         return
 
-      const tokens =
-        poolName === STABLECOIN_POOL_NAME
-          ? STABLECOIN_POOL_TOKENS
-          : BTC_POOL_TOKENS // TODO: make this a util if we do it often enough
+      const POOL_TOKENS = POOLS_MAP[poolName]
 
       // Swap fees, price, and LP Token data
-      const virtualPrice = await swapContracts?.[poolName]?.getVirtualPrice()
-      const {
-        adminFee,
-        lpToken: lpTokenAddress,
-        swapFee,
-      } = await swapContracts?.[poolName]?.swapStorage()
+      const [
+        virtualPrice,
+        userCurrentWithdrawFee,
+        swapStorage,
+      ] = await Promise.all([
+        swapContract.getVirtualPrice(),
+        swapContract.calculateCurrentWithdrawFee(account),
+        swapContract.swapStorage(),
+      ])
+      const { adminFee, lpToken: lpTokenAddress, swapFee } = swapStorage
       const lpToken = getContract(
         lpTokenAddress,
         LPTOKEN_ABI,
         library,
         account ?? undefined,
       )
-      const userLpTokenBalance = await lpToken.balanceOf(account)
-      const totalLpTokenBalance = await lpToken.totalSupply()
+      const [userLpTokenBalance, totalLpTokenBalance] = await Promise.all([
+        lpToken.balanceOf(account),
+        lpToken.totalSupply(),
+      ])
 
       // Pool token data
       const tokenBalances: BigNumber[] = await Promise.all(
-        tokens.map(async (token, i) => {
-          const balance = await swapContracts?.[poolName]?.getTokenBalance(i)
+        POOL_TOKENS.map(async (token, i) => {
+          const balance = await swapContract.getTokenBalance(i)
           return BigNumber.from(10)
             .pow(18 - token.decimals) // cast all to 18 decimals
             .mul(balance)
@@ -97,7 +101,7 @@ export default function usePoolData(poolName: PoolName): PoolDataType | null {
       const tokenBalancesSum: BigNumber = tokenBalances.reduce((sum, b) =>
         sum.add(b),
       )
-      const tokenBalancesUSD = tokens.map((token, i) => {
+      const tokenBalancesUSD = POOL_TOKENS.map((token, i) => {
         const balance = tokenBalances[i]
         return balance
           .mul(parseUnits(String(tokenPricesUSD[token.symbol]), 18))
@@ -124,60 +128,55 @@ export default function usePoolData(poolName: PoolName): PoolDataType | null {
         (sum, b) => sum.add(b),
       )
 
-      const poolTokens = tokens.map((token, i) => ({
-        name: token.name,
-        icon: token.icon,
+      const poolTokens = POOL_TOKENS.map((token, i) => ({
+        symbol: token.symbol,
         percent: parseFloat(
-          formatUnits(tokenBalances[i].mul(100).div(tokenBalancesSum), 0),
+          formatUnits(tokenBalances[i].mul(10 ** 5).div(tokenBalancesSum), 3),
         ).toFixed(3),
-        value: parseFloat(formatUnits(tokenBalances[i], 18)).toFixed(3),
+        value: tokenBalances[i],
       }))
-      const userPoolTokens = tokens.map((token, i) => ({
-        name: token.name,
-        icon: token.icon,
+      const userPoolTokens = POOL_TOKENS.map((token, i) => ({
+        symbol: token.symbol,
         percent: parseFloat(
           formatUnits(
-            userPoolTokenBalances[i].mul(100).div(tokenBalancesSum),
-            0,
+            userPoolTokenBalances[i].mul(10 ** 5).div(tokenBalancesSum),
+            3,
           ),
         ).toFixed(3),
-        value: parseFloat(formatUnits(userPoolTokenBalances[i], 18)).toFixed(3),
+        value: userPoolTokenBalances[i],
       }))
-      setPoolData({
+      const poolData = {
         name: poolName,
         tokens: poolTokens,
-        reserve: parseFloat(formatUnits(tokenBalancesSum, 18)).toFixed(3),
-        totalLocked: parseFloat(formatUnits(tokenBalancesUSDSum, 18)).toFixed(
-          2,
-        ),
-        virtualPrice: parseFloat(formatUnits(virtualPrice, 18)).toFixed(5),
-        adminFee: formatUnits(adminFee, 10),
-        swapFee: formatUnits(swapFee, 10),
+        reserve: tokenBalancesSum,
+        totalLocked: tokenBalancesUSDSum,
+        virtualPrice: virtualPrice,
+        adminFee: adminFee,
+        swapFee: swapFee,
         volume: "XXX", // TODO
         utilization: "XXX", // TODO
-        userShare: account
-          ? {
-              name: poolName,
-              share: parseFloat(formatUnits(userShare, 18)).toFixed(5),
-              value: parseFloat(
-                formatUnits(userPoolTokenBalancesSum, 18),
-              ).toFixed(2),
-              usdBalance: parseFloat(
-                formatUnits(userPoolTokenBalancesUSDSum, 18),
-              ).toFixed(2),
-              avgBalance: parseFloat(
-                formatUnits(userPoolTokenBalancesSum, 18),
-              ).toFixed(2), // TODO: how to calculate?
-              tokens: userPoolTokens,
-            }
-          : null,
-      })
+        apy: "XXX", // TODO
+      }
+      const userShareData = account
+        ? {
+            name: poolName,
+            share: userShare,
+            value: userPoolTokenBalancesSum,
+            usdBalance: userPoolTokenBalancesUSDSum,
+            avgBalance: userPoolTokenBalancesSum,
+            tokens: userPoolTokens,
+            currentWithdrawFee: userCurrentWithdrawFee,
+            lpTokenBalance: userLpTokenBalance,
+          }
+        : null
+      setPoolData([poolData, userShareData])
     }
     getSwapData()
   }, [
     lastDepositTime,
+    lastWithdrawTime,
     poolName,
-    swapContracts,
+    swapContract,
     tokenContracts,
     tokenPricesUSD,
     account,

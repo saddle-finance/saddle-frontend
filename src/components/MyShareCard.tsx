@@ -2,42 +2,57 @@ import "./MyShareCard.scss"
 
 import React, { ReactElement } from "react"
 
+import { TOKENS_MAP } from "../constants"
 import { UserShareType } from "../hooks/usePoolData"
+import { formatUnits } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
 interface Props {
-  data?: UserShareType | null
+  data: UserShareType | null
 }
 
 function MyShareCard({ data }: Props): ReactElement | null {
   const { t } = useTranslation()
 
   if (!data) return null
-  else
-    return (
-      <div className="myShareCard">
-        <h4>{t("myShare")}</h4>
-        <div className="info">
-          <div className="poolShare">
-            <span>{data.share} of pool</span>
-          </div>
-          <div className="balance">
-            <span>{t("usdBalance") + ": " + data.usdBalance}</span>
-          </div>
-          <div className="amount">
-            <span>Total amount: {data.value}</span>
-          </div>
+  const formattedData = {
+    share: parseFloat(formatUnits(data.share, 18)).toFixed(5),
+    usdBalance: parseFloat(formatUnits(data.usdBalance, 18)).toFixed(2),
+    value: parseFloat(formatUnits(data.value, 18)).toFixed(5),
+    tokens: data.tokens.map((coin) => {
+      const token = TOKENS_MAP[coin.symbol]
+      return {
+        symbol: token.symbol,
+        name: token.name,
+        value: parseFloat(formatUnits(coin.value, 18)).toFixed(3),
+      }
+    }),
+  }
+
+  return (
+    <div className="myShareCard">
+      <h4>{t("myShare")}</h4>
+      <div className="info">
+        <div className="poolShare">
+          <span>{formattedData.share} of pool</span>
         </div>
-        <div className="currency">
-          {data.tokens.map((coin, index) => (
-            <div key={index}>
-              <span className="tokenName">{coin.name}</span>
-              <span>{coin.value}</span>
-            </div>
-          ))}
+        <div className="balance">
+          <span>{t("usdBalance") + ": " + formattedData.usdBalance}</span>
+        </div>
+        <div className="amount">
+          <span>Total amount: {formattedData.value}</span>
         </div>
       </div>
-    )
+      <div className="currency">
+        {formattedData.tokens.map((coin) => (
+          <div key={coin.symbol}>
+            <span className="tokenName">{coin.name}</span>
+            <span>{coin.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 export default MyShareCard

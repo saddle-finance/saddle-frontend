@@ -3,32 +3,44 @@ import "./PoolOverview.scss"
 import React, { ReactElement } from "react"
 
 import { Link } from "react-router-dom"
+import { PoolDataType } from "../hooks/usePoolData"
+import { TOKENS_MAP } from "../constants"
 import classNames from "classnames"
+import { formatUnits } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
 interface Props {
   to: string
-  data: {
-    title: string
-    tokens: Array<{ name: string; icon: string }>
-    APY: number
-    saddAPY: string
-    volume: number
-  }
+  data: PoolDataType | null
 }
 
-function PoolOverview({ data, to }: Props): ReactElement {
+function PoolOverview({ data, to }: Props): ReactElement | null {
   const { t } = useTranslation()
+  if (data == null) return null
+  const formattedData = {
+    name: data.name,
+    volume: data.volume,
+    apy: data.apy,
+    tokens: data.tokens.map((coin) => {
+      const token = TOKENS_MAP[coin.symbol]
+      return {
+        symbol: token.symbol,
+        name: token.name,
+        icon: token.icon,
+        value: parseFloat(formatUnits(coin.value, token.decimals)).toFixed(3),
+      }
+    }),
+  }
 
   return (
     <div className="poolOverview">
       <Link to={to}>
         <div className="table">
-          <h4 className="title">{data.title}</h4>
+          <h4 className="title">{formattedData.name}</h4>
           <div className="left">
             <span style={{ marginRight: "8px" }}>[</span>
-            {data.tokens.map((token, index) => (
-              <div className="token" key={index}>
+            {formattedData.tokens.map((token) => (
+              <div className="token" key={token.symbol}>
                 <img alt="icon" src={token.icon} />
                 <span>{token.name}</span>
               </div>
@@ -41,20 +53,16 @@ function PoolOverview({ data, to }: Props): ReactElement {
               <span className="label">{t("apy")}</span>
               <span
                 className={
-                  classNames({ plus: data.APY }) +
-                  classNames({ minus: !data.APY })
+                  classNames({ plus: formattedData.apy }) +
+                  classNames({ minus: !formattedData.apy })
                 }
               >
-                {data.APY}
+                {formattedData.apy}
               </span>
-            </div>
-            <div className="saddApy">
-              <span className="label">SADL</span>
-              <span>{data.saddAPY}</span>
             </div>
             <div className="volume">
               <span className="label">{t("volume")}</span>
-              <span>${data.volume}</span>
+              <span>${formattedData.volume}</span>
             </div>
           </div>
         </div>

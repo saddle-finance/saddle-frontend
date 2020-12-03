@@ -1,8 +1,10 @@
 import "./PoolInfoCard.scss"
 
+import { POOL_FEE_PRECISION, TOKENS_MAP } from "../constants"
 import React, { ReactElement } from "react"
 
 import { PoolDataType } from "../hooks/usePoolData"
+import { formatUnits } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -11,40 +13,67 @@ interface Props {
 
 function PoolInfoCard({ data }: Props): ReactElement {
   const { t } = useTranslation()
+  const formattedData = {
+    name: data?.name,
+    swapFee: data?.swapFee
+      ? formatUnits(data.swapFee, POOL_FEE_PRECISION)
+      : null,
+    virtualPrice: data?.virtualPrice
+      ? parseFloat(formatUnits(data.virtualPrice, 18)).toFixed(5)
+      : null,
+    reserve: data?.reserve
+      ? parseFloat(formatUnits(data.reserve, 18)).toFixed(3)
+      : null,
+    adminFee: data?.adminFee
+      ? formatUnits(data.adminFee, POOL_FEE_PRECISION)
+      : null,
+    volume: data?.volume,
+    tokens:
+      data?.tokens.map((coin) => {
+        const token = TOKENS_MAP[coin.symbol]
+        return {
+          symbol: token.symbol,
+          name: token.name,
+          icon: token.icon,
+          percent: coin.percent,
+          value: parseFloat(formatUnits(coin.value, 18)).toFixed(3),
+        }
+      }) || [],
+  }
 
   return (
     <div className="poolInfoCard">
-      <h4>{data?.name}</h4>
+      <h4>{formattedData.name}</h4>
       <div className="info">
         <div className="infoItem">
           <span className="label">{t("fee") + ": "}</span>
-          <span className="value">{data?.swapFee}%</span>
+          <span className="value">{formattedData.swapFee}%</span>
         </div>
         <div className="infoItem">
           <span className="label">{t("virtualPrice") + ": "}</span>
-          <span className="value">{data?.virtualPrice}</span>
+          <span className="value">{formattedData.virtualPrice}</span>
         </div>
         <div className="infoItem">
           <span className="label">{t("totalLocked") + " ($): "}</span>
-          <span className="value">{data?.reserve}</span>
+          <span className="value">{formattedData.reserve}</span>
         </div>
         <div className="twoColumn">
           <div className="infoItem">
             <span className="label">{t("adminFee") + ": "}</span>
-            <span className="value">{data?.adminFee}%</span>
+            <span className="value">{formattedData.adminFee}%</span>
           </div>
           <div className="infoItem">
             <span className="label">{t("dailyVolume") + ": "}</span>
-            <span className="value">{data?.volume}</span>
+            <span className="value">{formattedData.volume}</span>
           </div>
         </div>
       </div>
       <div className="divider" />
       <div className="bottom">
         <h4>{t("currencyReserves")}</h4>
-        <span>{`$${data?.reserve} ${t("inTotal")}`}</span>
+        <span>{`$${formattedData.reserve} ${t("inTotal")}`}</span>
         <div className="tokenList">
-          {data?.tokens.map((token, index) => (
+          {formattedData.tokens.map((token, index) => (
             <div className="token" key={index}>
               <img alt="icon" src={token.icon} />
               <span>{token.name}</span>

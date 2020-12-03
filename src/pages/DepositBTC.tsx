@@ -60,7 +60,7 @@ const testDepositData = {
 
 function DepositBTC(): ReactElement {
   const approveAndDeposit = useApproveAndDeposit(BTC_POOL_NAME)
-  const poolData = usePoolData(BTC_POOL_NAME)
+  const [poolData, userShareData] = usePoolData(BTC_POOL_NAME)
   const [infiniteApproval, setInfiniteApproval] = useState(false)
   const [tokenFormState, updateTokenFormValue] = useTokenFormState(
     BTC_POOL_TOKENS,
@@ -133,7 +133,7 @@ function DepositBTC(): ReactElement {
       title="BTC Pool"
       tokens={tokens}
       poolData={poolData}
-      myShareData={null}
+      myShareData={userShareData}
       transactionInfoData={testTransInfoData}
       depositDataFromParent={depositData}
       infiniteApproval={infiniteApproval}

@@ -42,7 +42,7 @@ interface Props {
   }>
   selected?: { [key: string]: any }
   poolData: PoolDataType | null
-  myShareData?: UserShareType | null
+  myShareData: UserShareType | null
   transactionInfoData: {
     isInfo: boolean
     content: { [key: string]: any }
