@@ -1,23 +1,14 @@
 import {
   BTC_POOL_NAME,
   BTC_POOL_TOKENS,
-  DAI,
   PoolName,
-  RENBTC,
-  SBTC,
   STABLECOIN_POOL_NAME,
   STABLECOIN_POOL_TOKENS,
-  SUSD,
-  TBTC,
-  TEST_STABLECOIN_SWAP_ADDRESS,
   TRANSACTION_TYPES,
   Token,
-  USDC,
-  USDT,
-  WBTC,
 } from "../constants"
 import { GasPrices, Slippages } from "../state/user"
-import { useSwapContracts, useTokenContract } from "./useContract"
+import { useAllContracts, useSwapContract } from "./useContract"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -44,37 +35,20 @@ export function useApproveAndDeposit(
   poolName: PoolName,
 ): (state: ApproveAndDepositStateArgument) => Promise<void> {
   const dispatch = useDispatch()
-  const swapContracts = useSwapContracts()
+  const swapContract = useSwapContract(poolName)
+  const tokenContracts = useAllContracts()
   const { account } = useActiveWeb3React()
   const { addToast, clearToasts } = useToast()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
-  const tbtcContract = useTokenContract(TBTC)
-  const wbtcContract = useTokenContract(WBTC)
-  const renbtcContract = useTokenContract(RENBTC)
-  const sbtcContract = useTokenContract(SBTC)
-  const daiContract = useTokenContract(DAI)
-  const usdcContract = useTokenContract(USDC)
-  const usdtContract = useTokenContract(USDT)
-  const susdContract = useTokenContract(SUSD)
-  const tokenContracts = {
-    [TBTC.symbol]: tbtcContract,
-    [WBTC.symbol]: wbtcContract,
-    [RENBTC.symbol]: renbtcContract,
-    [SBTC.symbol]: sbtcContract,
-    [DAI.symbol]: daiContract,
-    [USDC.symbol]: usdcContract,
-    [USDT.symbol]: usdtContract,
-    [SUSD.symbol]: susdContract,
-  }
   let tokens: Token[]
   if (poolName === BTC_POOL_NAME) {
     tokens = BTC_POOL_TOKENS
   } else if (poolName === STABLECOIN_POOL_NAME) {
     tokens = STABLECOIN_POOL_TOKENS
   } else {
-    new Error("useApproveAndDeposit requires a valid pool name")
+    throw new Error("useApproveAndDeposit requires a valid pool name")
   }
 
   return async function approveAndDeposit(
@@ -82,17 +56,18 @@ export function useApproveAndDeposit(
   ): Promise<void> {
     try {
       if (!account) throw new Error("Wallet must be connected")
+      if (!swapContract) throw new Error("Swap contract is not loaded")
       // For each token being desposited, check the allowance and approve it if necessary
       for (const token of tokens) {
         const spendingValue = BigNumber.from(
           state.tokenFormState[token.symbol].valueSafe,
         )
         if (spendingValue.isZero()) continue
-        const tokenContract = tokenContracts[token.symbol]
+        const tokenContract = tokenContracts?.[token.symbol]
         if (tokenContract == null) continue
         await checkAndApproveTokenForTrade(
           tokenContract,
-          TEST_STABLECOIN_SWAP_ADDRESS, // TODO: productionize!
+          swapContract.address, // TODO: productionize!
           account,
           spendingValue,
           state.infiniteApproval,
@@ -127,7 +102,7 @@ export function useApproveAndDeposit(
       // "isFirstTransaction" check can be removed after launch
       const poolTokenBalances: BigNumber[] = await Promise.all(
         tokens.map(async (token, i) => {
-          return await swapContracts?.[poolName]?.getTokenBalance(i)
+          return await swapContract.getTokenBalance(i)
         }),
       )
       const isFirstTransaction = poolTokenBalances.every((bal) => bal.isZero())
@@ -135,7 +110,7 @@ export function useApproveAndDeposit(
       if (isFirstTransaction) {
         minToMint = BigNumber.from("0")
       } else {
-        minToMint = await swapContracts?.[poolName]?.calculateTokenAmount(
+        minToMint = await swapContract.calculateTokenAmount(
           tokens.map(({ symbol }) => state.tokenFormState[symbol].valueSafe),
           true, // deposit boolean
         )
@@ -163,7 +138,7 @@ export function useApproveAndDeposit(
         gasPrice = gasStandard
       }
       gasPrice = BigNumber.from(gasPrice)?.mul(BigNumber.from(10).pow(9)) // TODO: unjank this
-      const spendTransaction = await swapContracts?.[poolName]?.addLiquidity(
+      const spendTransaction = await swapContract.addLiquidity(
         tokens.map(({ symbol }) => state.tokenFormState[symbol].valueSafe),
         minToMint,
         Math.round(new Date().getTime() / 1000 + 60 * 10),

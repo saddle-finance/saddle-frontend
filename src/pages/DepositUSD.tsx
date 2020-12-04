@@ -37,7 +37,7 @@ const depositDataFromParentTest = {
 // Dumb data end here
 
 function DepositUSD(): ReactElement {
-  const poolData = usePoolData(STABLECOIN_POOL_NAME)
+  const [poolData, userShareData] = usePoolData(STABLECOIN_POOL_NAME)
   const approveAndDeposit = useApproveAndDeposit(STABLECOIN_POOL_NAME)
   const [infiniteApproval, setInfiniteApproval] = useState(false)
   const [tokenFormState, updateTokenFormValue] = useTokenFormState(
@@ -113,7 +113,7 @@ function DepositUSD(): ReactElement {
       tokens={tokens}
       poolData={poolData}
       transactionInfoData={testTransInfoData}
-      myShareData={poolData?.userShare}
+      myShareData={userShareData}
       depositDataFromParent={depositData}
       infiniteApproval={infiniteApproval}
     />

@@ -1,9 +1,9 @@
 import {
   BTC_POOL_NAME,
   DAI,
+  PoolName,
   RENBTC,
   SBTC,
-  STABLECOIN_POOL_NAME,
   SUSD,
   TBTC,
   TEST_BTC_SWAP_ADDRESS,
@@ -54,9 +54,8 @@ export function useTokenContract(
   return useContract(tokenAddress, ERC20_ABI, withSignerIfPossible)
 }
 
-export function useSwapContracts(
-  withSignerIfPossible?: boolean,
-): AllContractsObject | null {
+export function useSwapContract(poolName: PoolName): Contract | null {
+  const withSignerIfPossible = true
   const stablecoinSwapContract = useContract(
     TEST_STABLECOIN_SWAP_ADDRESS,
     SWAP_ABI,
@@ -67,13 +66,13 @@ export function useSwapContracts(
     SWAP_ABI,
     withSignerIfPossible,
   )
-  return useMemo(
-    () => ({
-      [BTC_POOL_NAME]: btcSwapContract,
-      [STABLECOIN_POOL_NAME]: stablecoinSwapContract,
-    }),
-    [stablecoinSwapContract, btcSwapContract],
-  )
+  return useMemo(() => {
+    if (poolName === BTC_POOL_NAME) {
+      return btcSwapContract
+    } else {
+      return stablecoinSwapContract
+    }
+  }, [stablecoinSwapContract, btcSwapContract, poolName])
 }
 
 interface AllContractsObject {
@@ -123,5 +122,4 @@ export function useAllContracts(): AllContractsObject | null {
     usdtContract,
     susdContract,
   ])
-  // return tokenContracts
 }

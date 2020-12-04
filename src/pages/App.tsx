@@ -13,6 +13,7 @@ import SwapBTC from "./SwapBTC"
 import SwapUSD from "./SwapUSD"
 import ToastsProvider from "../providers/ToastsProvider"
 import Web3ReactManager from "../components/Web3ReactManager"
+import WithdrawBTC from "./WithdrawBTC"
 import WithdrawUSD from "./WithdrawUSD"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
@@ -40,6 +41,7 @@ export default function App(): ReactElement {
             <Route exact path="/pool/usd" component={PoolUSD} />
             <Route exact path="/pool/btc/deposit" component={DepositBTC} />
             <Route exact path="/pool/usd/deposit" component={DepositUSD} />
+            <Route exact path="/pool/btc/withdraw" component={WithdrawBTC} />
             <Route exact path="/pool/usd/withdraw" component={WithdrawUSD} />
             <Route exact path="/risk" component={Risk} />
           </Switch>

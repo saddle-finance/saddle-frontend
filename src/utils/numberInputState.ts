@@ -1,4 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber"
+import { formatUnits } from "@ethersproject/units"
 import parseStringToBigNumber from "../utils/parseStringToBigNumber"
 
 export interface NumberInputState {
@@ -22,21 +23,33 @@ export function numberInputStateCreator(
 ) {
   /**
    * Transforms a user inputted string into a more verbose format including BigNumber representation
-   * @param {string} valueRaw
+   * @param {string} inputValue
    * @return {NumberInputState}
    */
-  return function createNumberInputState(valueRaw: string): NumberInputState {
-    const { value: valueSafe, isFallback } = parseStringToBigNumber(
-      valueRaw,
-      precision,
-      fallback,
-    )
-    return {
-      isEmpty: valueRaw === "",
-      isValid: !isFallback,
-      precision,
-      valueRaw,
-      valueSafe: valueSafe.toString(),
+  return function createNumberInputState(
+    inputValue: string | BigNumber,
+  ): NumberInputState {
+    if (BigNumber.isBigNumber(inputValue)) {
+      return {
+        isEmpty: false,
+        isValid: true,
+        precision,
+        valueRaw: formatUnits(inputValue, precision),
+        valueSafe: inputValue.toString(),
+      }
+    } else {
+      const { value: valueSafe, isFallback } = parseStringToBigNumber(
+        inputValue,
+        precision,
+        fallback,
+      )
+      return {
+        isEmpty: inputValue === "",
+        isValid: !isFallback,
+        precision,
+        valueRaw: inputValue,
+        valueSafe: valueSafe.toString(),
+      }
     }
   }
 }

@@ -171,7 +171,16 @@ export const TOKENS_MAP: {
   {},
 )
 
+export const POOLS_MAP: {
+  [poolName: string]: Token[]
+} = {
+  [BTC_POOL_NAME]: BTC_POOL_TOKENS,
+  [STABLECOIN_POOL_NAME]: STABLECOIN_POOL_TOKENS,
+}
+
 export const TRANSACTION_TYPES = {
   DEPOSIT: "DEPOSIT",
   WITHDRAW: "WITHDRAW",
 }
+
+export const POOL_FEE_PRECISION = 10

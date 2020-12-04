@@ -1,9 +1,5 @@
+import { BTC_POOL_NAME, BTC_POOL_TOKENS, Token } from "../constants"
 import React, { ReactElement } from "react"
-import {
-  STABLECOIN_POOL_NAME,
-  STABLECOIN_POOL_TOKENS,
-  Token,
-} from "../constants"
 import WithdrawPage, { ReviewWithdrawData } from "../components/WithdrawPage"
 
 import { AppState } from "../state"
@@ -24,10 +20,10 @@ const testTransInfoData = {
 }
 // Dumb data end here
 
-function WithdrawUSD(): ReactElement {
-  const [poolData, userShareData] = usePoolData(STABLECOIN_POOL_NAME)
+function WithdrawBTC(): ReactElement {
+  const [poolData, userShareData] = usePoolData(BTC_POOL_NAME)
   const [withdrawFormState, updateWithFormState] = useWithdrawFormState(
-    STABLECOIN_POOL_NAME,
+    BTC_POOL_NAME,
   )
   const { slippageCustom, slippageSelected } = useSelector(
     (state: AppState) => state.user,
@@ -36,7 +32,7 @@ function WithdrawUSD(): ReactElement {
 
   const tokensData = React.useMemo(
     () =>
-      STABLECOIN_POOL_TOKENS.map((token: Token, i) => ({
+      BTC_POOL_TOKENS.map((token: Token, i) => ({
         name: token.name,
         symbol: token.symbol,
         icon: token.icon,
@@ -50,7 +46,7 @@ function WithdrawUSD(): ReactElement {
     rates: [],
     slippage: formatSlippageToString(slippageSelected, slippageCustom),
   }
-  STABLECOIN_POOL_TOKENS.forEach((token, i) => {
+  BTC_POOL_TOKENS.forEach((token, i) => {
     if (BigNumber.from(withdrawFormState.tokenInputs[i].valueSafe).gt(0)) {
       reviewWithdrawData.withdraw.push({
         name: token.name,
@@ -75,7 +71,7 @@ function WithdrawUSD(): ReactElement {
 
   return (
     <WithdrawPage
-      title="USD Pool"
+      title="BTC Pool"
       reviewData={reviewWithdrawData}
       tokensData={tokensData}
       poolData={poolData}
@@ -87,4 +83,4 @@ function WithdrawUSD(): ReactElement {
   )
 }
 
-export default WithdrawUSD
+export default WithdrawBTC
