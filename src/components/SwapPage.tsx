@@ -235,25 +235,7 @@ const SwapPage = (props: Props): ReactElement => {
                   ></input>
                 </div>
               </div>
-              <div className="tradePool tableOption">
-                <span className="label">{t("pool")}</span>
-                <div className="options">
-                  <button
-                    className={classNames({
-                      selected: selected.tradePool === "Y",
-                    })}
-                  >
-                    Y
-                  </button>
-                  <button
-                    className={classNames({
-                      selected: selected.tradePool === "ren",
-                    })}
-                  >
-                    ren
-                  </button>
-                </div>
-              </div>
+              {/* TODO: fix spacing */}
             </div>
           </div>
         </div>
