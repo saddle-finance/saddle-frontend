@@ -1,4 +1,4 @@
-import "./PoolUSD_BTC.scss"
+import "./Pools.scss"
 
 import React, { ReactElement } from "react"
 
@@ -14,11 +14,9 @@ function PoolBTC(): ReactElement {
     <div className="poolBtc">
       <TopMenu activeTab={"pool"} />
       <div className="content">
-        <PoolOverview data={poolData} to="/pool/btc/deposit" />
+        <PoolOverview data={poolData} to="/pool/deposit" />
         <div style={{ height: "40px" }}></div> {/* space divider */}
-        {userShareData && (
-          <MyShare data={userShareData} to="/pool/btc/withdraw" />
-        )}
+        {userShareData && <MyShare data={userShareData} to="/pool/withdraw" />}
       </div>
     </div>
   )
