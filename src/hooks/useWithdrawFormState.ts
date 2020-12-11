@@ -3,32 +3,34 @@ import {
   numberInputStateCreator,
 } from "../utils/numberInputState"
 import { POOLS_MAP, POOL_FEE_PRECISION, PoolName } from "../constants"
+import { formatUnits, parseUnits } from "@ethersproject/units"
 import { useCallback, useMemo, useState } from "react"
 
-import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
-import { applySlippage } from "../utils/slippage"
 import { debounce } from "lodash"
-import { parseUnits } from "@ethersproject/units"
 import usePoolData from "../hooks/usePoolData"
-import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
 
 interface ErrorState {
   field: string
   message: string
 }
-const MULTIPLE = "MULTIPLE"
+const IMBALANCE = "IMBALANCE"
+const ALL = "ALL"
+
+interface TokenInputs {
+  [symbol: string]: NumberInputState
+}
 export interface WithdrawFormState {
   percentage: string | null
-  withdrawIn: string | null
-  tokenInputs: NumberInputState[]
+  withdrawType: string
+  tokenInputs: TokenInputs
   error: ErrorState | null
 }
 type FormFields = Exclude<keyof WithdrawFormState, "error">
 export type WithdrawFormAction = {
   fieldName: FormFields
-  index?: number
+  tokenSymbol?: string
   value: string
 }
 
@@ -39,31 +41,37 @@ export default function useWithdrawFormState(
   const POOL_TOKENS = POOLS_MAP[poolName]
   const swapContract = useSwapContract(poolName)
   const [, userShareData] = usePoolData(poolName)
-  const { slippageCustom, slippageSelected } = useSelector(
-    (state: AppState) => state.user,
-  )
   const tokenInputStateCreators: {
     [tokenSymbol: string]: ReturnType<typeof numberInputStateCreator>
   } = useMemo(
     () =>
       POOL_TOKENS.reduce(
-        (acc, token) => ({
+        (acc, { symbol, decimals }) => ({
           ...acc,
-          [token.symbol]: numberInputStateCreator(
-            token.decimals,
-            BigNumber.from("0"),
-          ),
+          [symbol]: numberInputStateCreator(decimals, BigNumber.from("0")),
         }),
         {},
       ),
     [POOL_TOKENS],
   )
+  const tokenInputsEmptyState = useMemo(
+    () =>
+      POOL_TOKENS.reduce(
+        (acc, { symbol }) => ({
+          ...acc,
+          [symbol]: tokenInputStateCreators[symbol]("0"),
+        }),
+        {},
+      ),
+    [POOL_TOKENS, tokenInputStateCreators],
+  )
   const [formState, setFormState] = useState<WithdrawFormState>({
     percentage: null,
-    tokenInputs: POOL_TOKENS.map((token) =>
-      tokenInputStateCreators[token.symbol]("0"),
-    ),
-    withdrawIn: MULTIPLE,
+    // tokenInputs: POOL_TOKENS.map((token) =>
+    //   tokenInputStateCreators[token.symbol]("0"),
+    // ),
+    tokenInputs: tokenInputsEmptyState,
+    withdrawType: ALL,
     error: null,
   })
 
@@ -74,63 +82,69 @@ export default function useWithdrawFormState(
       if (userShareData == null || swapContract == null) return
       const { fieldName, value: inputValue } = action
 
-      // Apply fees & slippage to userLPTokenBalance
-      let userLPTokenBalance = userShareData.lpTokenBalance
-      userLPTokenBalance = userLPTokenBalance
+      // Apply fees to userLPTokenBalance
+      let effectiveUserLPTokenBalance = userShareData.lpTokenBalance
         .mul(
           BigNumber.from(10 ** POOL_FEE_PRECISION).sub(
             userShareData.currentWithdrawFee,
           ),
         )
         .div(10 ** POOL_FEE_PRECISION)
-      userLPTokenBalance = applySlippage(
-        userLPTokenBalance,
-        slippageSelected,
-        slippageCustom,
-      )
 
       if (fieldName === "tokenInputs") {
-        const { index: inputIndex } = action
-        const newTokenInputValues = POOL_TOKENS.map((token, i) => {
-          return i === inputIndex
-            ? tokenInputStateCreators[token.symbol](inputValue || "0")
-            : state.tokenInputs[i]
-        })
-        const tokenAmounts = newTokenInputValues.map((t) => t.valueSafe)
+        const { tokenSymbol: inputTokenSymbol } = action
+        const newTokenInputValues: TokenInputs = POOL_TOKENS.reduce(
+          (acc, { symbol }) => ({
+            ...acc,
+            [symbol]:
+              symbol === inputTokenSymbol
+                ? tokenInputStateCreators[symbol](inputValue || "0")
+                : state.tokenInputs[symbol],
+          }),
+          {},
+        )
 
         let error: ErrorState | null = null
         try {
+          const tokenAmounts = POOL_TOKENS.map(
+            ({ symbol }) => newTokenInputValues[symbol].valueSafe,
+          )
           const inputCalculatedLPTokenAmount = await swapContract.calculateTokenAmount(
             tokenAmounts,
             false,
           )
-          if (inputCalculatedLPTokenAmount.gt(userLPTokenBalance)) {
-            error = { field: "token", message: "Insufficient balance." }
+          if (inputCalculatedLPTokenAmount.gt(effectiveUserLPTokenBalance)) {
+            error = { field: "tokenInputs", message: "Insufficient balance." }
           }
         } catch {
           // calculateTokenAmount errors if amount exceeds amount in pool
-          error = { field: "token", message: "Insufficient balance in pool." }
+          error = {
+            field: "tokenInputs",
+            message: "Insufficient balance in pool.",
+          }
         }
         setFormState((prevState) => ({
           ...prevState,
           error,
         }))
         return
-      } else if (fieldName === "withdrawIn" || fieldName === "percentage") {
+      } else if (fieldName === "withdrawType" || fieldName === "percentage") {
         // these fields are handled similarly so we group them together
 
-        const withdrawIn =
-          fieldName === "withdrawIn" ? inputValue : state.withdrawIn || MULTIPLE
+        const withdrawType =
+          fieldName === "withdrawType" ? inputValue : state.withdrawType
         const percentageRaw =
           fieldName === "percentage" ? inputValue : state.percentage || "100"
-        if (+percentageRaw < 0 || +percentageRaw > 100) {
+        if (
+          isNaN(+percentageRaw) ||
+          +percentageRaw < 0 ||
+          +percentageRaw > 100
+        ) {
           // Check if percent is out of bounds
           setFormState((prevState) => ({
             ...prevState,
             error: { field: "percentage", message: "Invalid input" },
-            tokenInputs: POOL_TOKENS.map((token) =>
-              tokenInputStateCreators[token.symbol]("0"),
-            ),
+            tokenInputs: tokenInputsEmptyState,
           }))
           return
         }
@@ -138,35 +152,51 @@ export default function useWithdrawFormState(
         const percentage = parseUnits(percentageRaw, percentagePrecision - 2)
 
         // LP * % to be withdrawn
-        userLPTokenBalance = userLPTokenBalance
+        effectiveUserLPTokenBalance = effectiveUserLPTokenBalance
           .mul(percentage)
           .div(10 ** percentagePrecision)
 
         const tokenRoundingPrecision = 6
-        let newTokenInputs: NumberInputState[]
+        let newTokenInputs: TokenInputs
         let error: ErrorState | null = null
-        if (withdrawIn === MULTIPLE) {
+        console.log("withdrawType", withdrawType)
+
+        if (withdrawType === ALL || withdrawType === IMBALANCE) {
           try {
             const tokenAmounts = await swapContract.calculateRemoveLiquidity(
-              userLPTokenBalance,
+              effectiveUserLPTokenBalance,
             )
-            newTokenInputs = POOL_TOKENS.map((token, i) => {
-              return tokenInputStateCreators[token.symbol](
-                tokenAmounts[i]
-                  .div(10 ** (token.decimals - tokenRoundingPrecision)) // poor man's rounding
-                  .mul(10 ** (token.decimals - tokenRoundingPrecision)),
-              )
-            })
+            newTokenInputs = POOL_TOKENS.reduce(
+              (acc, { symbol, decimals }, i) => ({
+                ...acc,
+                [symbol]: tokenInputStateCreators[symbol](
+                  tokenAmounts[i]
+                    .div(10 ** (decimals - tokenRoundingPrecision)) // poor man's rounding
+                    .mul(10 ** (decimals - tokenRoundingPrecision)),
+                ),
+              }),
+              {},
+            )
           } catch {
-            error = { field: "token", message: "Insufficient balance in pool." }
+            error = {
+              field: "tokenInputs",
+              message: "Insufficient balance in pool.",
+            }
           }
         } else {
+          // Handles case where WithdrawType is a single token
           try {
             const tokenIndex = POOL_TOKENS.findIndex(
-              ({ symbol }) => symbol === withdrawIn,
+              ({ symbol }) => symbol === withdrawType,
             )
+            console.log("tokenIndex", tokenIndex)
+            console.log(
+              "effectiveUserLPTokenBalance",
+              formatUnits(effectiveUserLPTokenBalance, 18),
+            )
+
             let tokenAmount = await swapContract.calculateRemoveLiquidityOneToken(
-              userLPTokenBalance,
+              effectiveUserLPTokenBalance,
               tokenIndex,
             )
             tokenAmount = tokenAmount
@@ -178,13 +208,20 @@ export default function useWithdrawFormState(
                 10 **
                   (POOL_TOKENS[tokenIndex].decimals - tokenRoundingPrecision),
               )
-            newTokenInputs = POOL_TOKENS.map((token, i) =>
-              tokenInputStateCreators[token.symbol](
-                i === tokenIndex ? tokenAmount : "0",
-              ),
+            newTokenInputs = POOL_TOKENS.reduce(
+              (acc, { symbol }, i) => ({
+                ...acc,
+                [symbol]: tokenInputStateCreators[symbol](
+                  i === tokenIndex ? tokenAmount : "0",
+                ),
+              }),
+              {},
             )
           } catch {
-            error = { field: "token", message: "Insufficient balance in pool." }
+            error = {
+              field: "tokenInputs",
+              message: "Insufficient balance in pool.",
+            }
           }
         }
         setFormState((prevState) => ({
@@ -204,22 +241,31 @@ export default function useWithdrawFormState(
       // then call expensive debounced fn to update other fields
       if (action.fieldName === "tokenInputs") {
         setFormState((prevState) => {
-          const newTokenInputs = POOL_TOKENS.map((token, i) => {
-            return i === action.index
-              ? tokenInputStateCreators[token.symbol](action.value)
-              : prevState.tokenInputs[i]
-          })
+          const { tokenSymbol: tokenSymbolInput, value: valueInput } = action
+          const newTokenInputs: TokenInputs = POOL_TOKENS.reduce(
+            (acc, { symbol }) => ({
+              ...acc,
+              [symbol]:
+                symbol === tokenSymbolInput
+                  ? tokenInputStateCreators[symbol](valueInput)
+                  : prevState.tokenInputs[symbol],
+            }),
+            {},
+          )
           const hasMultiple =
-            newTokenInputs.filter((t) => +t.valueRaw > 0).length > 1
-          let withdrawIn = hasMultiple ? MULTIPLE : prevState.withdrawIn
+            POOL_TOKENS.filter(
+              ({ symbol }) => +newTokenInputs[symbol].valueRaw > 0,
+            ).length > 1
+          let withdrawType = hasMultiple ? IMBALANCE : prevState.withdrawType
           if (!hasMultiple) {
-            withdrawIn =
-              POOL_TOKENS.find((t, i) => +newTokenInputs[i].valueRaw > 0)
-                ?.symbol || MULTIPLE // not found when all token inputs = 0
+            withdrawType =
+              POOL_TOKENS.find(
+                ({ symbol }) => +newTokenInputs[symbol].valueRaw > 0,
+              )?.symbol || ALL // not found when all token inputs = 0
           }
           return {
             ...prevState,
-            withdrawIn,
+            withdrawType,
             percentage: null,
             tokenInputs: newTokenInputs,
           }
@@ -227,13 +273,14 @@ export default function useWithdrawFormState(
       } else if (action.fieldName === "percentage") {
         setFormState((prevState) => ({
           ...prevState,
-          withdrawIn: prevState.withdrawIn ? prevState.withdrawIn : MULTIPLE,
+          withdrawType:
+            prevState.withdrawType === IMBALANCE ? ALL : prevState.withdrawType,
           percentage: action.value || "0",
         }))
-      } else if (action.fieldName === "withdrawIn") {
+      } else if (action.fieldName === "withdrawType") {
         setFormState((prevState) => ({
           ...prevState,
-          withdrawIn: action.value,
+          withdrawType: action.value,
         }))
       }
       calculateAndUpdateDynamicFields(formState, action)

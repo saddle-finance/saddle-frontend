@@ -124,11 +124,10 @@ const WithdrawPage = (props: Props): ReactElement => {
                   {...token}
                   // inputValue={parseFloat(token.inputValue).toFixed(5)}
                   onChange={(value): void =>
-                    // onChangeTokenInputValue(token.symbol, value)
                     onFormChange({
                       fieldName: "tokenInputs",
                       value: value,
-                      index,
+                      tokenSymbol: token.symbol,
                     })
                   }
                 />
@@ -179,12 +178,12 @@ const WithdrawPage = (props: Props): ReactElement => {
                   {"All tokens"}
                   <input
                     type="radio"
-                    value={"MULTIPLE"}
-                    checked={formStateData.withdrawIn === "MULTIPLE"}
+                    value={"ALL"}
+                    checked={formStateData.withdrawType === "ALL"}
                     onChange={(): void =>
                       onFormChange({
-                        fieldName: "withdrawIn",
-                        value: "MULTIPLE",
+                        fieldName: "withdrawType",
+                        value: "ALL",
                       })
                     }
                   />
@@ -198,10 +197,10 @@ const WithdrawPage = (props: Props): ReactElement => {
                       <input
                         type="radio"
                         value={t.symbol}
-                        checked={formStateData.withdrawIn === t.symbol}
+                        checked={formStateData.withdrawType === t.symbol}
                         onChange={(): void =>
                           onFormChange({
-                            fieldName: "withdrawIn",
+                            fieldName: "withdrawType",
                             value: t.symbol,
                           })
                         }
