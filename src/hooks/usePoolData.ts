@@ -85,12 +85,9 @@ export default function usePoolData(
         lpToken.totalSupply(),
       ])
 
-      let virtualPrice
-      if (totalLpTokenBalance.isZero()) {
-        virtualPrice = BigNumber.from(10).pow(18)
-      } else {
-        virtualPrice = await swapContract.getVirtualPrice()
-      }
+      const virtualPrice = totalLpTokenBalance.isZero()
+        ? BigNumber.from(10).pow(18)
+        : await swapContract.getVirtualPrice()
 
       // Pool token data
       const tokenBalances: BigNumber[] = await Promise.all(
