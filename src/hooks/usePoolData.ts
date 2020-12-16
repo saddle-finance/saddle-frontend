@@ -3,6 +3,7 @@ import { formatUnits, parseUnits } from "@ethersproject/units"
 import { useAllContracts, useSwapContract } from "./useContract"
 import { useEffect, useState } from "react"
 
+import { AddressZero } from "@ethersproject/constants"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import LPTOKEN_ABI from "../constants/abis/lpToken.json"
@@ -33,7 +34,7 @@ export interface PoolDataType {
   reserve: BigNumber
   swapFee: BigNumber
   tokens: TokenShareType[]
-  totalLocked: BigNumber
+  totalLocked: string
   utilization: string // TODO: calculate
   virtualPrice: BigNumber
   volume: string // TODO: calculate
@@ -68,13 +69,8 @@ export default function usePoolData(
       const POOL_TOKENS = POOLS_MAP[poolName]
 
       // Swap fees, price, and LP Token data
-      const [
-        virtualPrice,
-        userCurrentWithdrawFee,
-        swapStorage,
-      ] = await Promise.all([
-        swapContract.getVirtualPrice(),
-        swapContract.calculateCurrentWithdrawFee(account),
+      const [userCurrentWithdrawFee, swapStorage] = await Promise.all([
+        swapContract.calculateCurrentWithdrawFee(account || AddressZero),
         swapContract.swapStorage(),
       ])
       const { adminFee, lpToken: lpTokenAddress, swapFee } = swapStorage
@@ -85,9 +81,13 @@ export default function usePoolData(
         account ?? undefined,
       )
       const [userLpTokenBalance, totalLpTokenBalance] = await Promise.all([
-        lpToken.balanceOf(account),
+        lpToken.balanceOf(account || AddressZero),
         lpToken.totalSupply(),
       ])
+
+      const virtualPrice = totalLpTokenBalance.isZero()
+        ? BigNumber.from(10).pow(18)
+        : await swapContract.getVirtualPrice()
 
       // Pool token data
       const tokenBalances: BigNumber[] = await Promise.all(
@@ -114,7 +114,11 @@ export default function usePoolData(
       // User share data
       const userShare = userLpTokenBalance
         .mul(BigNumber.from(10).pow(18))
-        .div(totalLpTokenBalance)
+        .div(
+          totalLpTokenBalance.isZero()
+            ? BigNumber.from("1")
+            : totalLpTokenBalance,
+        )
       const userPoolTokenBalances = tokenBalances.map((balance) => {
         return userShare.mul(balance).div(BigNumber.from(10).pow(18))
       })
@@ -131,7 +135,16 @@ export default function usePoolData(
       const poolTokens = POOL_TOKENS.map((token, i) => ({
         symbol: token.symbol,
         percent: parseFloat(
-          formatUnits(tokenBalances[i].mul(10 ** 5).div(tokenBalancesSum), 3),
+          formatUnits(
+            tokenBalances[i]
+              .mul(10 ** 5)
+              .div(
+                totalLpTokenBalance.isZero()
+                  ? BigNumber.from("1")
+                  : tokenBalancesSum,
+              ),
+            3,
+          ),
         ).toFixed(3),
         value: tokenBalances[i],
       }))
@@ -139,7 +152,13 @@ export default function usePoolData(
         symbol: token.symbol,
         percent: parseFloat(
           formatUnits(
-            userPoolTokenBalances[i].mul(10 ** 5).div(tokenBalancesSum),
+            userPoolTokenBalances[i]
+              .mul(10 ** 5)
+              .div(
+                totalLpTokenBalance.isZero()
+                  ? BigNumber.from("1")
+                  : totalLpTokenBalance,
+              ),
             3,
           ),
         ).toFixed(3),
@@ -148,8 +167,8 @@ export default function usePoolData(
       const poolData = {
         name: poolName,
         tokens: poolTokens,
-        reserve: tokenBalancesSum,
-        totalLocked: tokenBalancesUSDSum,
+        reserve: tokenBalancesUSDSum,
+        totalLocked: "XXX", // TODO
         virtualPrice: virtualPrice,
         adminFee: adminFee,
         swapFee: swapFee,
