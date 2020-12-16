@@ -3,6 +3,7 @@ import { formatUnits, parseUnits } from "@ethersproject/units"
 import { useAllContracts, useSwapContract } from "./useContract"
 import { useEffect, useState } from "react"
 
+import { AddressZero } from "@ethersproject/constants"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import LPTOKEN_ABI from "../constants/abis/lpToken.json"
@@ -69,7 +70,7 @@ export default function usePoolData(
 
       // Swap fees, price, and LP Token data
       const [userCurrentWithdrawFee, swapStorage] = await Promise.all([
-        swapContract.calculateCurrentWithdrawFee(account),
+        swapContract.calculateCurrentWithdrawFee(account || AddressZero),
         swapContract.swapStorage(),
       ])
       const { adminFee, lpToken: lpTokenAddress, swapFee } = swapStorage
@@ -80,7 +81,7 @@ export default function usePoolData(
         account ?? undefined,
       )
       const [userLpTokenBalance, totalLpTokenBalance] = await Promise.all([
-        lpToken.balanceOf(account),
+        lpToken.balanceOf(account || AddressZero),
         lpToken.totalSupply(),
       ])
 
