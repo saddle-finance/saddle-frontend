@@ -3,11 +3,11 @@ import {
   numberInputStateCreator,
 } from "../utils/numberInputState"
 import { POOLS_MAP, POOL_FEE_PRECISION, PoolName } from "../constants"
-import { formatUnits, parseUnits } from "@ethersproject/units"
 import { useCallback, useMemo, useState } from "react"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { debounce } from "lodash"
+import { parseUnits } from "@ethersproject/units"
 import usePoolData from "../hooks/usePoolData"
 import { useSwapContract } from "../hooks/useContract"
 
@@ -67,9 +67,6 @@ export default function useWithdrawFormState(
   )
   const [formState, setFormState] = useState<WithdrawFormState>({
     percentage: null,
-    // tokenInputs: POOL_TOKENS.map((token) =>
-    //   tokenInputStateCreators[token.symbol]("0"),
-    // ),
     tokenInputs: tokenInputsEmptyState,
     withdrawType: ALL,
     error: null,
@@ -159,7 +156,6 @@ export default function useWithdrawFormState(
         const tokenRoundingPrecision = 6
         let newTokenInputs: TokenInputs
         let error: ErrorState | null = null
-        console.log("withdrawType", withdrawType)
 
         if (withdrawType === ALL || withdrawType === IMBALANCE) {
           try {
@@ -188,11 +184,6 @@ export default function useWithdrawFormState(
           try {
             const tokenIndex = POOL_TOKENS.findIndex(
               ({ symbol }) => symbol === withdrawType,
-            )
-            console.log("tokenIndex", tokenIndex)
-            console.log(
-              "effectiveUserLPTokenBalance",
-              formatUnits(effectiveUserLPTokenBalance, 18),
             )
 
             let tokenAmount = await swapContract.calculateRemoveLiquidityOneToken(
