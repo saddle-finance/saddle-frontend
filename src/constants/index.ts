@@ -10,7 +10,7 @@ import wbtcLogo from "../assets/icons/wbtc.svg"
 export const NetworkContextName = "NETWORK"
 export const BTC_POOL_NAME = "BTC_POOL"
 export const STABLECOIN_POOL_NAME = "STABLECOIN_POOL"
-export type PoolName = "BTC_POOL" | "STABLECOIN_POOL"
+export type PoolName = typeof BTC_POOL_NAME | typeof STABLECOIN_POOL_NAME
 
 export enum ChainId {
   MAINNET = 1,
