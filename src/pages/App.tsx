@@ -1,3 +1,5 @@
+import "../styles/global.scss"
+
 import React, { ReactElement, Suspense, useEffect } from "react"
 import { Route, Switch } from "react-router-dom"
 
