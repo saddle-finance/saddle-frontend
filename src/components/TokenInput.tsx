@@ -10,6 +10,7 @@ interface Props {
   max?: number
   inputValue: string
   onChange: (value: string) => void
+  disabled?: boolean
 }
 
 function TokenInput({
@@ -18,6 +19,7 @@ function TokenInput({
   max,
   inputValue,
   onChange,
+  disabled,
 }: Props): ReactElement {
   const { t } = useTranslation()
   function onClickMax(e: React.MouseEvent<HTMLButtonElement>): void {
@@ -33,11 +35,16 @@ function TokenInput({
       <img alt="icon" src={icon} />
       <span>{symbol}</span>
       {max != null && (
-        <button className="max" onClick={onClickMax}>
+        <button
+          className="max"
+          onClick={onClickMax}
+          disabled={disabled ? true : false}
+        >
           {`${t("max")}:${Math.floor(max * 100) / 100}`}
         </button>
       )}
       <input
+        disabled={disabled ? true : false}
         value={inputValue}
         onChange={onChangeInput}
         placeholder={max ? String(max) : "0"}

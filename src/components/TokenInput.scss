@@ -7,7 +7,7 @@ div.tokenInput {
 
   input {
     position: absolute;
-    left: 60px;
+    left: 78px;
     width: 168px;
     height: 32px;
     display: block;
@@ -17,7 +17,7 @@ div.tokenInput {
     margin-left: 16px;
 
     padding-left: 16px;
-    padding-right: 90px;
+    padding-right: 72px;
     color: $text-black;
     font-size: 16px;
     font-family: $font-family;
@@ -26,6 +26,11 @@ div.tokenInput {
 
     &:focus {
       outline: none;
+    }
+
+    &:disabled {
+      background-color: $disabled;
+      border: none;
     }
   }
 
@@ -57,6 +62,10 @@ div.tokenInput {
 
     &:focus {
       outline: none;
+    }
+
+    &:disabled {
+      display: none;
     }
   }
 }
