@@ -94,7 +94,7 @@ const WithdrawPage = (props: Props): ReactElement => {
 
   return (
     <div className="withdraw">
-      <TopMenu activeTab={"pool"} />
+      <TopMenu activeTab={"withdraw"} />
       <div className="content">
         <div className="left">
           <div className="form">

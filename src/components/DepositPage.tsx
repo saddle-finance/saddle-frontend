@@ -89,7 +89,7 @@ const DepositPage = (props: Props): ReactElement => {
 
   return (
     <div className="deposit">
-      <TopMenu activeTab={"pool"} />
+      <TopMenu activeTab={"deposit"} />
       <div className="content">
         <div className="left">
           <div className="form">
