@@ -1,0 +1,19 @@
+@import "../styles/theme.scss";
+
+div.eligibility {
+  width: 440px;
+  padding: 16px;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid $divider-red;
+
+  p {
+    color: var(--text);
+    margin: 0;
+    text-align: center;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+}
