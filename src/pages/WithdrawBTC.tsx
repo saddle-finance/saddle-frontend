@@ -1,4 +1,4 @@
-import { BTC_POOL_NAME, BTC_POOL_TOKENS, Token } from "../constants"
+import { BTC_POOL_NAME, BTC_POOL_TOKENS } from "../constants"
 import React, { ReactElement } from "react"
 import WithdrawPage, { ReviewWithdrawData } from "../components/WithdrawPage"
 
@@ -32,11 +32,11 @@ function WithdrawBTC(): ReactElement {
 
   const tokensData = React.useMemo(
     () =>
-      BTC_POOL_TOKENS.map((token: Token, i) => ({
-        name: token.name,
-        symbol: token.symbol,
-        icon: token.icon,
-        inputValue: withdrawFormState.tokenInputs[i].valueRaw,
+      BTC_POOL_TOKENS.map(({ name, symbol, icon }) => ({
+        name,
+        symbol,
+        icon,
+        inputValue: withdrawFormState.tokenInputs[symbol].valueRaw,
       })),
     [withdrawFormState],
   )
@@ -46,24 +46,24 @@ function WithdrawBTC(): ReactElement {
     rates: [],
     slippage: formatSlippageToString(slippageSelected, slippageCustom),
   }
-  BTC_POOL_TOKENS.forEach((token, i) => {
-    if (BigNumber.from(withdrawFormState.tokenInputs[i].valueSafe).gt(0)) {
+  BTC_POOL_TOKENS.forEach(({ name, decimals, icon, symbol }) => {
+    if (BigNumber.from(withdrawFormState.tokenInputs[symbol].valueSafe).gt(0)) {
       reviewWithdrawData.withdraw.push({
-        name: token.name,
+        name,
         value: formatUnits(
-          withdrawFormState.tokenInputs[i].valueSafe,
-          token.decimals,
+          withdrawFormState.tokenInputs[symbol].valueSafe,
+          decimals,
         ),
-        icon: token.icon,
+        icon,
       })
       if (tokenPricesUSD != null) {
         reviewWithdrawData.rates.push({
-          name: token.name,
+          name,
           value: formatUnits(
-            withdrawFormState.tokenInputs[i].valueSafe,
-            token.decimals,
+            withdrawFormState.tokenInputs[symbol].valueSafe,
+            decimals,
           ),
-          rate: tokenPricesUSD[token.symbol]?.toFixed(3),
+          rate: tokenPricesUSD[symbol]?.toFixed(3),
         })
       }
     }

@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch } from "../state"
 import { AppState } from "../state"
 import ConfirmTransaction from "./ConfirmTransaction"
+import IneligibilityBanner from "./IneligibilityBanner"
 import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
 import { PayloadAction } from "@reduxjs/toolkit"
@@ -86,10 +87,14 @@ const DepositPage = (props: Props): ReactElement => {
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
+  // TODO: Add eligibility logic
+  const eligible = false
 
   return (
     <div className="deposit">
       <TopMenu activeTab={"deposit"} />
+      {!eligible && <IneligibilityBanner />}
+
       <div className="content">
         <div className="left">
           <div className="form">
@@ -98,6 +103,7 @@ const DepositPage = (props: Props): ReactElement => {
               <div key={index}>
                 <TokenInput
                   {...token}
+                  disabled={!eligible}
                   onChange={(value): void =>
                     onChangeTokenInputValue(token.symbol, value)
                   }
@@ -287,6 +293,7 @@ const DepositPage = (props: Props): ReactElement => {
               setModalOpen(true)
               setPopUp("review")
             }}
+            disabled={!eligible}
           >
             {t("deposit")}
           </button>
