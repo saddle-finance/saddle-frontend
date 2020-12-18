@@ -14,6 +14,7 @@ import { AppState } from "../state"
 import ConfirmTransaction from "./ConfirmTransaction"
 import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
+import NoShareContent from "./NoShareContent"
 import { PayloadAction } from "@reduxjs/toolkit"
 import PoolInfoCard from "./PoolInfoCard"
 import ReviewWithdraw from "./ReviewWithdraw"
@@ -21,7 +22,6 @@ import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import classNames from "classnames"
-import depositGraph from "../assets/deposit_graph.png"
 import { useTranslation } from "react-i18next"
 
 export interface ReviewWithdrawData {
@@ -97,14 +97,7 @@ const WithdrawPage = (props: Props): ReactElement => {
     <div className="withdraw">
       <TopMenu activeTab={"withdraw"} />
       {!myShareData ? (
-        <div className="no-share">
-          <p>
-            Looks like you have no share. <a href="/#/deposit">Deposit</a> first
-            to get a share.
-          </p>
-          {/* TODO: update placeholder graph below */}
-          <img src={depositGraph} alt="put tokens in pool" />
-        </div>
+        <NoShareContent />
       ) : (
         <div className="content">
           <div className="left">
