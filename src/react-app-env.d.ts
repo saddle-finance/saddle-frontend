@@ -2,6 +2,8 @@
 
 declare module "*.svg"
 
+declare module "*.png"
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Window {
   ethereum?: {

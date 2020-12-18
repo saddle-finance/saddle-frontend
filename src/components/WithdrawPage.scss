@@ -7,6 +7,25 @@ div.withdraw {
   padding-bottom: 40px;
   box-sizing: border-box; // Make the padding included in height calculation
 
+  .no-share {
+    width: 888px;
+    margin: 0 auto;
+    text-align: center;
+    p {
+      margin-top: 40px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    img {
+      width: 60%;
+    }
+
+    a {
+      color: $primary;
+    }
+  }
+
   .content {
     width: 888px;
     margin: 0 auto;
