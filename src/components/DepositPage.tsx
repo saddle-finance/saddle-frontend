@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch } from "../state"
 import { AppState } from "../state"
 import ConfirmTransaction from "./ConfirmTransaction"
-import Eligibility from "./Eligibility"
+import IneligibilityBanner from "./IneligibilityBanner"
 import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
 import { PayloadAction } from "@reduxjs/toolkit"
@@ -93,7 +93,7 @@ const DepositPage = (props: Props): ReactElement => {
   return (
     <div className="deposit">
       <TopMenu activeTab={"pool"} />
-      {!eligible && <Eligibility />}
+      {!eligible && <IneligibilityBanner />}
       <div className="content">
         <div className="left">
           <div className="form">

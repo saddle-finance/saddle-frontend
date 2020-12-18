@@ -1,4 +1,4 @@
-import "./Eligibility.scss"
+import "./IneligibilityBanner.scss"
 import React, { ReactElement } from "react"
 
 function Eligibility(): ReactElement {
