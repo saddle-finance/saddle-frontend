@@ -39,7 +39,7 @@ export interface ReviewWithdrawData {
 
 const testWithdrawData = {
   share: 0.000024,
-  keep: 0.325496,
+  keepToken: 0.325496, // TODO: Calculate or pull from contract to get real value
 }
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {

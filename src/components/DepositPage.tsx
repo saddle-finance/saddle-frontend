@@ -52,7 +52,7 @@ interface Props {
     deposit: Array<{ [key: string]: any }>
     rates: Array<{ [key: string]: any }>
     share: number
-    keep: number
+    keepToken: number // TODO: Calculate or pull from contract to get real value
     slippage: string
   }
 }

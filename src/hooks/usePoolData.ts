@@ -6,7 +6,6 @@ import { useEffect, useState } from "react"
 import { AddressZero } from "@ethersproject/constants"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
-// TODO: Remove LPTOKEN in this page. Replace it with KEEP token
 import LPTOKEN_ABI from "../constants/abis/lpToken.json"
 import { getContract } from "../utils"
 import { useActiveWeb3React } from "."
@@ -21,7 +20,7 @@ interface TokenShareType {
 export interface UserShareType {
   avgBalance: BigNumber
   currentWithdrawFee: BigNumber
-  lpTokenBalance: BigNumber // TODO: Remove LPTOKEN in this page. Replace it with KEEP token
+  lpTokenBalance: BigNumber
   name: string // TODO: does this need to be on user share?
   share: BigNumber
   tokens: TokenShareType[]
@@ -74,7 +73,6 @@ export default function usePoolData(
         swapContract.calculateCurrentWithdrawFee(account || AddressZero),
         swapContract.swapStorage(),
       ])
-      // TODO: Remove LPTOKEN in this page. Replace it with KEEP token
       const { adminFee, lpToken: lpTokenAddress, swapFee } = swapStorage
       const lpToken = getContract(
         lpTokenAddress,
@@ -114,7 +112,6 @@ export default function usePoolData(
       )
 
       // User share data
-      // TODO: Remove LPTOKEN in this page. Replace it with KEEP token
       const userShare = userLpTokenBalance
         .mul(BigNumber.from(10).pow(18))
         .div(

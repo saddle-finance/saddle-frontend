@@ -13,7 +13,7 @@ interface Props {
     withdraw: Array<{ [key: string]: any }>
     rates: Array<{ [key: string]: any }>
     share: number
-    keep: number
+    keepToken: number
   }
   gas: GasPrices
 }

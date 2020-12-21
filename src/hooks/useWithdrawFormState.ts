@@ -81,7 +81,6 @@ export default function useWithdrawFormState(
 
       // Apply fees to userLPTokenBalance
 
-      // TODO: Remove LPTOKEN in this page. Replace it with KEEP token
       let effectiveUserLPTokenBalance = userShareData.lpTokenBalance
         .mul(
           BigNumber.from(10 ** POOL_FEE_PRECISION).sub(
@@ -108,7 +107,6 @@ export default function useWithdrawFormState(
           const tokenAmounts = POOL_TOKENS.map(
             ({ symbol }) => newTokenInputValues[symbol].valueSafe,
           )
-          // TODO: Remove LPTOKEN in this page. Replace it with KEEP token
           const inputCalculatedLPTokenAmount = await swapContract.calculateTokenAmount(
             tokenAmounts,
             false,
@@ -152,7 +150,6 @@ export default function useWithdrawFormState(
         const percentage = parseUnits(percentageRaw, percentagePrecision - 2)
 
         // LP * % to be withdrawn
-        // TODO: Remove LPTOKEN in this page. Replace it with KEEP token
         effectiveUserLPTokenBalance = effectiveUserLPTokenBalance
           .mul(percentage)
           .div(10 ** percentagePrecision)

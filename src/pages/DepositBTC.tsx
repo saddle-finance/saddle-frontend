@@ -53,7 +53,7 @@ const testDepositData = {
     },
   ],
   share: 0.0035,
-  keep: 80.6942,
+  keepToken: 80.6942,
   slippage: 0.05,
 }
 // Dumb data end here
