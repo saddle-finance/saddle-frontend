@@ -14,7 +14,7 @@ import useWithdrawFormState from "../hooks/useWithdrawFormState"
 const testTransInfoData = {
   isInfo: false,
   content: {
-    lpTokenValue: "10.34 USD",
+    keepTokenValue: "1.34 USD",
     benefit: 1.836,
   },
 }
