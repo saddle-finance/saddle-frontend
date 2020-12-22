@@ -96,7 +96,7 @@ const WithdrawPage = (props: Props): ReactElement => {
   return (
     <div className="withdraw">
       <TopMenu activeTab={"withdraw"} />
-      {myShareData ? (
+      {!myShareData ? (
         <NoShareContent />
       ) : (
         <div className="content">
