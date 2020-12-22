@@ -1,13 +1,12 @@
 import { BLOCK_TIME, Token } from "../../constants"
 
 import { BigNumber } from "@ethersproject/bignumber"
-import { formatUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../../hooks"
 import usePoller from "../../hooks/usePoller"
 import { useState } from "react"
 import { useTokenContract } from "../../hooks/useContract"
 
-export function useTokenBalance(t: Token): number {
+export function useTokenBalance(t: Token): BigNumber {
   const { account, chainId } = useActiveWeb3React()
   const [balance, setBalance] = useState<BigNumber>(BigNumber.from(0))
 
@@ -26,5 +25,5 @@ export function useTokenBalance(t: Token): number {
     }
   }, 2 * BLOCK_TIME)
 
-  return parseFloat(formatUnits(balance, t.decimals))
+  return balance
 }

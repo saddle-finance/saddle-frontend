@@ -1,13 +1,12 @@
-import { RENBTC, SBTC, TBTC, WBTC } from "../constants"
+import { BTC_POOL_TOKENS, RENBTC, SBTC, TBTC, WBTC } from "../constants"
 import React, { ReactElement } from "react"
 
+import { AppState } from "../state"
 import SwapPage from "../components/SwapPage"
-import renbtcLogo from "../assets/icons/renbtc.svg"
-import sbtcLogo from "../assets/icons/sbtc.svg"
-import tbtcLogo from "../assets/icons/tbtc.svg"
+import { formatUnits } from "@ethersproject/units"
+import { useSelector } from "react-redux"
 import { useTokenBalance } from "../state/wallet/hooks"
 import { useTranslation } from "react-i18next"
-import wbtcLogo from "../assets/icons/wbtc.svg"
 
 // Dumb data for UI
 const testPrice = {
@@ -18,34 +17,24 @@ const testPrice = {
 
 function SwapUSD(): ReactElement {
   const { t } = useTranslation()
+  const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
 
-  const tbtcBalance = useTokenBalance(TBTC)
-  const wbtcBalance = useTokenBalance(WBTC)
-  const renbtcBalance = useTokenBalance(RENBTC)
-  const sbtcBalance = useTokenBalance(SBTC)
+  const tokenBalances = {
+    [TBTC.symbol]: useTokenBalance(TBTC),
+    [WBTC.symbol]: useTokenBalance(WBTC),
+    [RENBTC.symbol]: useTokenBalance(RENBTC),
+    [SBTC.symbol]: useTokenBalance(SBTC),
+  }
 
-  const tokens = [
-    {
-      name: "tBTC",
-      value: tbtcBalance,
-      icon: tbtcLogo,
-    },
-    {
-      name: "wBTC",
-      value: wbtcBalance,
-      icon: wbtcLogo,
-    },
-    {
-      name: "renBTC",
-      value: renbtcBalance,
-      icon: renbtcLogo,
-    },
-    {
-      name: "sBTC",
-      value: sbtcBalance,
-      icon: sbtcLogo,
-    },
-  ]
+  const tokens = BTC_POOL_TOKENS.map(({ symbol, name, icon, decimals }) => ({
+    name,
+    icon,
+    value: parseFloat(formatUnits(tokenBalances[symbol], decimals)).toFixed(
+      tokenPricesUSD?.[symbol]
+        ? tokenPricesUSD[symbol].toFixed(2).length - 2
+        : 6, // add enough decimals to represent 0.01 USD
+    ),
+  }))
 
   const [selectedTokenFrom, setSelectedTokenFrom] = React.useState(
     tokens[0].name,

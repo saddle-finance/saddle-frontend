@@ -31,7 +31,7 @@ const selected = {
 // End of dumb data
 
 interface Props {
-  tokens: Array<{ name: string; value: number; icon: string }>
+  tokens: Array<{ name: string; value: string; icon: string }>
   rate: { [key: string]: any } // eslint-disable-line @typescript-eslint/no-explicit-any
   error: { isError: boolean; message: string }
   info: { isInfo: boolean; message: string }

@@ -38,7 +38,7 @@ interface Props {
     symbol: string
     name: string
     icon: string
-    max: number
+    max: string
     inputValue: string
   }>
   selected?: { [key: string]: any }
