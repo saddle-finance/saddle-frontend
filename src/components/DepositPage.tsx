@@ -52,7 +52,7 @@ interface Props {
     deposit: Array<{ [key: string]: any }>
     rates: Array<{ [key: string]: any }>
     share: number
-    sadd: number
+    keepToken: number // TODO: Calculate or pull from contract to get real value
     slippage: string
   }
 }
@@ -123,9 +123,9 @@ const DepositPage = (props: Props): ReactElement => {
             >
               <div className="transactionInfo">
                 <div className="transactionInfoItem">
-                  <span>{`Saddle LP ${t("tokenValue")}: `}</span>
+                  <span>{`KEEP ROI ${t("tokenValue")}: `}</span>
                   <span className="value">
-                    {transactionInfoData.content.lpTokenValue}
+                    {transactionInfoData.content.keepTokenValue}
                   </span>
                 </div>
                 <div className="transactionInfoItem">
