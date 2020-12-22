@@ -5,7 +5,6 @@ import { Route, Switch } from "react-router-dom"
 
 import { AppDispatch } from "../state"
 import DepositBTC from "./DepositBTC"
-import PoolBTC from "./PoolBTC"
 import Risk from "./Risk"
 import SwapBTC from "./SwapBTC"
 import ToastsProvider from "../providers/ToastsProvider"
@@ -30,9 +29,8 @@ export default function App(): ReactElement {
         <ToastsProvider>
           <Switch>
             <Route exact path="/" component={SwapBTC} />
-            <Route exact path="/pool" component={PoolBTC} />
-            <Route exact path="/pool/deposit" component={DepositBTC} />
-            <Route exact path="/pool/withdraw" component={WithdrawBTC} />
+            <Route exact path="/deposit" component={DepositBTC} />
+            <Route exact path="/withdraw" component={WithdrawBTC} />
             <Route exact path="/risk" component={Risk} />
           </Switch>
         </ToastsProvider>

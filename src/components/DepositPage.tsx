@@ -92,8 +92,9 @@ const DepositPage = (props: Props): ReactElement => {
 
   return (
     <div className="deposit">
-      <TopMenu activeTab={"pool"} />
+      <TopMenu activeTab={"deposit"} />
       {!eligible && <IneligibilityBanner />}
+
       <div className="content">
         <div className="left">
           <div className="form">

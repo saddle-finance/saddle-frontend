@@ -14,6 +14,7 @@ import { AppState } from "../state"
 import ConfirmTransaction from "./ConfirmTransaction"
 import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
+import NoShareContent from "./NoShareContent"
 import { PayloadAction } from "@reduxjs/toolkit"
 import PoolInfoCard from "./PoolInfoCard"
 import ReviewWithdraw from "./ReviewWithdraw"
@@ -94,123 +95,128 @@ const WithdrawPage = (props: Props): ReactElement => {
 
   return (
     <div className="withdraw">
-      <TopMenu activeTab={"pool"} />
-      <div className="content">
-        <div className="left">
-          <div className="form">
-            <h3>{`${t("withdrawFrom")} ${title}`}</h3>
-            <div className="percentage">
-              <span>{`${t("withdrawPercentage")} (%):`}</span>
-              <input
-                placeholder="100"
-                onChange={(e: React.FormEvent<HTMLInputElement>): void =>
-                  onFormChange({
-                    fieldName: "percentage",
-                    value: e.currentTarget.value,
-                  })
-                }
-                onFocus={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                  e.target.select()
-                }
-                value={formStateData.percentage ? formStateData.percentage : ""}
-              />
-              {formStateData.error && (
-                <div className="error">{formStateData.error.message}</div>
-              )}
-            </div>
-            {tokensData.map((token, index) => (
-              <div key={index}>
-                <TokenInput
-                  {...token}
-                  // inputValue={parseFloat(token.inputValue).toFixed(5)}
-                  onChange={(value): void =>
+      <TopMenu activeTab={"withdraw"} />
+      {myShareData ? (
+        <NoShareContent />
+      ) : (
+        <div className="content">
+          <div className="left">
+            <div className="form">
+              <h3>{`${t("withdrawFrom")} ${title}`}</h3>
+              <div className="percentage">
+                <span>{`${t("withdrawPercentage")} (%):`}</span>
+                <input
+                  placeholder="100"
+                  onChange={(e: React.FormEvent<HTMLInputElement>): void =>
                     onFormChange({
-                      fieldName: "tokenInputs",
-                      value: value,
-                      tokenSymbol: token.symbol,
+                      fieldName: "percentage",
+                      value: e.currentTarget.value,
                     })
                   }
+                  onFocus={(e: React.ChangeEvent<HTMLInputElement>): void =>
+                    e.target.select()
+                  }
+                  value={
+                    formStateData.percentage ? formStateData.percentage : ""
+                  }
                 />
-                {index === tokensData.length - 1 ? (
-                  ""
-                ) : (
-                  <div className="divider"></div>
+                {formStateData.error && (
+                  <div className="error">{formStateData.error.message}</div>
                 )}
               </div>
-            ))}
-            <div
-              className={
-                "transactionInfoContainer " +
-                classNames({ show: transactionInfoData.isInfo })
-              }
-            >
-              <div className="transactionInfo">
-                <div className="transactionInfoItem">
-                  <span>{`KEEP ROI ${t("tokenValue")}: `}</span>
-                  <span className="value">
-                    {transactionInfoData.content.keepTokenValue}
-                  </span>
-                </div>
-                <div className="transactionInfoItem">
-                  {transactionInfoData.content.benefit > 0 ? (
-                    <span className="bonus">{t("bonus")}: </span>
-                  ) : (
-                    <span className="slippage">{t("maxSlippage")}</span>
-                  )}
-                  <span
-                    className={
-                      "value " +
-                      (transactionInfoData.content.benefit > 0
-                        ? "bonus"
-                        : "slippage")
-                    }
-                  >
-                    {transactionInfoData.content.benefit}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="advancedOptions">
-            <div>
-              <div>
-                <label>
-                  {"All tokens"}
-                  <input
-                    type="radio"
-                    value={"ALL"}
-                    checked={formStateData.withdrawType === "ALL"}
-                    onChange={(): void =>
+              {tokensData.map((token, index) => (
+                <div key={index}>
+                  <TokenInput
+                    {...token}
+                    // inputValue={parseFloat(token.inputValue).toFixed(5)}
+                    onChange={(value): void =>
                       onFormChange({
-                        fieldName: "withdrawType",
-                        value: "ALL",
+                        fieldName: "tokenInputs",
+                        value: value,
+                        tokenSymbol: token.symbol,
                       })
                     }
                   />
-                </label>
-              </div>
-              {tokensData.map((t) => {
-                return (
-                  <div key={t.symbol}>
-                    <label>
-                      {t.name}
-                      <input
-                        type="radio"
-                        value={t.symbol}
-                        checked={formStateData.withdrawType === t.symbol}
-                        onChange={(): void =>
-                          onFormChange({
-                            fieldName: "withdrawType",
-                            value: t.symbol,
-                          })
-                        }
-                      />
-                    </label>
+                  {index === tokensData.length - 1 ? (
+                    ""
+                  ) : (
+                    <div className="divider"></div>
+                  )}
+                </div>
+              ))}
+              <div
+                className={
+                  "transactionInfoContainer " +
+                  classNames({ show: transactionInfoData.isInfo })
+                }
+              >
+                <div className="transactionInfo">
+                  <div className="transactionInfoItem">
+                    <span>{`KEEP ROI ${t("tokenValue")}: `}</span>
+                    <span className="value">
+                      {transactionInfoData.content.keepTokenValue}
+                    </span>
                   </div>
-                )
-              })}
+                  <div className="transactionInfoItem">
+                    {transactionInfoData.content.benefit > 0 ? (
+                      <span className="bonus">{t("bonus")}: </span>
+                    ) : (
+                      <span className="slippage">{t("maxSlippage")}</span>
+                    )}
+                    <span
+                      className={
+                        "value " +
+                        (transactionInfoData.content.benefit > 0
+                          ? "bonus"
+                          : "slippage")
+                      }
+                    >
+                      {transactionInfoData.content.benefit}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
-            {/* <label className="combination">
+            <div className="advancedOptions">
+              <div>
+                <div>
+                  <label>
+                    {"All tokens"}
+                    <input
+                      type="radio"
+                      value={"ALL"}
+                      checked={formStateData.withdrawType === "ALL"}
+                      onChange={(): void =>
+                        onFormChange({
+                          fieldName: "withdrawType",
+                          value: "ALL",
+                        })
+                      }
+                    />
+                  </label>
+                </div>
+                {tokensData.map((t) => {
+                  return (
+                    <div key={t.symbol}>
+                      <label>
+                        {t.name}
+                        <input
+                          type="radio"
+                          value={t.symbol}
+                          checked={formStateData.withdrawType === t.symbol}
+                          onChange={(): void =>
+                            onFormChange({
+                              fieldName: "withdrawType",
+                              value: t.symbol,
+                            })
+                          }
+                        />
+                      </label>
+                    </div>
+                  )
+                })}
+              </div>
+              {/* <label className="combination">
               <span className="checkbox_input">
                 <input
                   type="checkbox"
@@ -234,87 +240,88 @@ const WithdrawPage = (props: Props): ReactElement => {
               </span>
               <span className="combLabel">{t("combinationOfAll")}</span>
             </label> */}
-            <div className="paramater">
-              {`${t("gas")}:`}
-              <span
-                className={classNames({
-                  selected: gasPriceSelected === GasPrices.Standard,
-                })}
-                onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateGasPriceSelected(GasPrices.Standard))
-                }
-              >
-                {gasStandard} {t("standard")}
-              </span>
-              <span
-                className={classNames({
-                  selected: gasPriceSelected === GasPrices.Fast,
-                })}
-                onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateGasPriceSelected(GasPrices.Fast))
-                }
-              >
-                {gasFast} {t("fast")}
-              </span>
-              <span
-                className={classNames({
-                  selected: gasPriceSelected === GasPrices.Instant,
-                })}
-                onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateGasPriceSelected(GasPrices.Instant))
-                }
-              >
-                {gasInstant} {t("instant")}
-              </span>
-              <input
-                className={classNames({
-                  selected: gasPriceSelected === GasPrices.Custom,
-                })}
-                value={gasCustom?.valueRaw}
-                onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateGasPriceSelected(GasPrices.Custom))
-                }
-                onChange={(
-                  e: React.ChangeEvent<HTMLInputElement>,
-                ): PayloadAction<string> =>
-                  dispatch(updateGasPriceCustom(e.target.value))
-                }
-              ></input>
+              <div className="paramater">
+                {`${t("gas")}:`}
+                <span
+                  className={classNames({
+                    selected: gasPriceSelected === GasPrices.Standard,
+                  })}
+                  onClick={(): PayloadAction<GasPrices> =>
+                    dispatch(updateGasPriceSelected(GasPrices.Standard))
+                  }
+                >
+                  {gasStandard} {t("standard")}
+                </span>
+                <span
+                  className={classNames({
+                    selected: gasPriceSelected === GasPrices.Fast,
+                  })}
+                  onClick={(): PayloadAction<GasPrices> =>
+                    dispatch(updateGasPriceSelected(GasPrices.Fast))
+                  }
+                >
+                  {gasFast} {t("fast")}
+                </span>
+                <span
+                  className={classNames({
+                    selected: gasPriceSelected === GasPrices.Instant,
+                  })}
+                  onClick={(): PayloadAction<GasPrices> =>
+                    dispatch(updateGasPriceSelected(GasPrices.Instant))
+                  }
+                >
+                  {gasInstant} {t("instant")}
+                </span>
+                <input
+                  className={classNames({
+                    selected: gasPriceSelected === GasPrices.Custom,
+                  })}
+                  value={gasCustom?.valueRaw}
+                  onClick={(): PayloadAction<GasPrices> =>
+                    dispatch(updateGasPriceSelected(GasPrices.Custom))
+                  }
+                  onChange={(
+                    e: React.ChangeEvent<HTMLInputElement>,
+                  ): PayloadAction<string> =>
+                    dispatch(updateGasPriceCustom(e.target.value))
+                  }
+                ></input>
+              </div>
             </div>
+            <button
+              className="actionBtn"
+              type="submit"
+              disabled={!!formStateData.error}
+              onClick={(): void => {
+                onSubmit()
+              }}
+            >
+              {t("withdraw")}
+            </button>
           </div>
-          <button
-            className="actionBtn"
-            type="submit"
-            disabled={!!formStateData.error}
-            onClick={(): void => {
-              onSubmit()
-            }}
-          >
-            {t("withdraw")}
-          </button>
+          <div className="infoPanels">
+            <MyShareCard data={myShareData} />
+            <div
+              style={{
+                display: myShareData ? "block" : "none",
+              }}
+              className="divider"
+            ></div>{" "}
+            <PoolInfoCard data={poolData} />
+          </div>
+          <Modal isOpen={modalOpen} onClose={(): void => setModalOpen(false)}>
+            {popUp === "review" ? (
+              <ReviewWithdraw
+                data={{ ...testWithdrawData, ...reviewData }}
+                gas={gasPriceSelected}
+                onConfirm={(): void => setPopUp("confirm")}
+                onClose={(): void => setModalOpen(false)}
+              />
+            ) : null}
+            {popUp === "confirm" ? <ConfirmTransaction /> : null}
+          </Modal>
         </div>
-        <div className="infoPanels">
-          <MyShareCard data={myShareData} />
-          <div
-            style={{
-              display: myShareData ? "block" : "none",
-            }}
-            className="divider"
-          ></div>{" "}
-          <PoolInfoCard data={poolData} />
-        </div>
-        <Modal isOpen={modalOpen} onClose={(): void => setModalOpen(false)}>
-          {popUp === "review" ? (
-            <ReviewWithdraw
-              data={{ ...testWithdrawData, ...reviewData }}
-              gas={gasPriceSelected}
-              onConfirm={(): void => setPopUp("confirm")}
-              onClose={(): void => setModalOpen(false)}
-            />
-          ) : null}
-          {popUp === "confirm" ? <ConfirmTransaction /> : null}
-        </Modal>
-      </div>
+      )}
     </div>
   )
 }
