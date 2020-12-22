@@ -39,7 +39,7 @@ export interface ReviewWithdrawData {
 
 const testWithdrawData = {
   share: 0.000024,
-  sadd: 0.325496,
+  keepToken: 0.325496, // TODO: Calculate or pull from contract to get real value
 }
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
@@ -146,9 +146,9 @@ const WithdrawPage = (props: Props): ReactElement => {
             >
               <div className="transactionInfo">
                 <div className="transactionInfoItem">
-                  <span>{`Saddle LP ${t("tokenValue")}: `}</span>
+                  <span>{`KEEP ROI ${t("tokenValue")}: `}</span>
                   <span className="value">
-                    {transactionInfoData.content.lpTokenValue}
+                    {transactionInfoData.content.keepTokenValue}
                   </span>
                 </div>
                 <div className="transactionInfoItem">
