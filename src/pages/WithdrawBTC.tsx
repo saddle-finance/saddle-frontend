@@ -12,9 +12,9 @@ import useWithdrawFormState from "../hooks/useWithdrawFormState"
 
 // Dumb data start here
 const testTransInfoData = {
-  isInfo: false,
+  isInfo: true,
   content: {
-    lpTokenValue: "10.34 USD",
+    keepTokenValue: "1.34 USD",
     benefit: 1.836,
   },
 }

@@ -80,6 +80,7 @@ export default function useWithdrawFormState(
       const { fieldName, value: inputValue } = action
 
       // Apply fees to userLPTokenBalance
+
       let effectiveUserLPTokenBalance = userShareData.lpTokenBalance
         .mul(
           BigNumber.from(10 ** POOL_FEE_PRECISION).sub(

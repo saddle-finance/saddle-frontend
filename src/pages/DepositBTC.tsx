@@ -24,14 +24,14 @@ const testTransInfoData = {
   isInfo: false,
   content: {
     minimumReceive: 0.083,
-    lpTokenValue: "10.34 USD",
+    keepTokenValue: "1.34 USD",
     benefit: 1.836,
   },
 }
 
 const testDepositData = {
   share: 0.0035,
-  sadd: 80.6942,
+  keepToken: 80.6942,
 }
 // Dumb data end here
 
