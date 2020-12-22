@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next"
 interface Props {
   symbol: string
   icon: string
-  max?: number
+  max?: string
   inputValue: string
   onChange: (value: string) => void
   disabled?: boolean
@@ -35,19 +35,15 @@ function TokenInput({
       <img alt="icon" src={icon} />
       <span>{symbol}</span>
       {max != null && (
-        <button
-          className="max"
-          onClick={onClickMax}
-          disabled={disabled ? true : false}
-        >
-          {`${t("max")}:${Math.floor(max * 100) / 100}`}
+        <button className="max" onClick={onClickMax} disabled={disabled}>
+          {`${t("max")}: ${max}`}
         </button>
       )}
       <input
         disabled={disabled ? true : false}
         value={inputValue}
         onChange={onChangeInput}
-        placeholder={max ? String(max) : "0"}
+        placeholder={max || "0"}
         onFocus={(e: React.ChangeEvent<HTMLInputElement>): void =>
           e.target.select()
         }

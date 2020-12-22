@@ -30,31 +30,8 @@ const testTransInfoData = {
 }
 
 const testDepositData = {
-  deposit: [
-    {
-      name: TBTC.name,
-      value: 2.2,
-      icon: TBTC.icon,
-    },
-    {
-      name: WBTC.name,
-      value: 8.65,
-      icon: WBTC.icon,
-    },
-  ],
-  rates: [
-    {
-      name: TBTC.name,
-      rate: 10902.32,
-    },
-    {
-      name: WBTC.name,
-      rate: 10910.11,
-    },
-  ],
   share: 0.0035,
   sadd: 80.6942,
-  slippage: 0.05,
 }
 // Dumb data end here
 
@@ -82,12 +59,14 @@ function DepositBTC(): ReactElement {
   }
 
   // A represention of tokens used for UI
-  const tokens = BTC_POOL_TOKENS.map((token) => ({
-    symbol: token.symbol,
-    name: token.name,
-    icon: token.icon,
-    max: tokenBalances[token.symbol],
-    inputValue: tokenFormState[token.symbol].valueRaw,
+  const tokens = BTC_POOL_TOKENS.map(({ symbol, name, icon, decimals }) => ({
+    symbol,
+    name,
+    icon,
+    max: parseFloat(formatUnits(tokenBalances[symbol], decimals)).toFixed(
+      tokenPricesUSD ? tokenPricesUSD[symbol].toFixed(2).length - 2 : 6, // show enough token decimals to represent 0.01 USD
+    ),
+    inputValue: tokenFormState[symbol].valueRaw,
   }))
 
   function onConfirmTransaction(): Promise<void> {
@@ -99,6 +78,7 @@ function DepositBTC(): ReactElement {
       gasPriceSelected,
       gasCustom,
     })
+    // TODO: clear inputs
   }
 
   const depositData = {

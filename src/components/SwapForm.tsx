@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next"
 
 interface Props {
   title: string
-  tokens: Array<{ name: string; value: number; icon: string }>
+  tokens: Array<{ name: string; symbol: string; value: string; icon: string }>
   selected: string
   onChangeSelected: (tokenName: string) => void
 }
