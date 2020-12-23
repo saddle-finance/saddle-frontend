@@ -157,6 +157,7 @@ export function useApproveAndDeposit(
         type: "success",
         title: `${getFormattedTimeString()} Liquidity added, giddyup! 🤠`,
       })
+      return Promise.resolve()
     } catch (e) {
       console.error(e)
       clearToasts()

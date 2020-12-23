@@ -8,10 +8,13 @@ import React from "react"
 import { Token } from "../constants"
 
 interface TokensStateType {
-  [key: string]: NumberInputState
+  [token: string]: NumberInputState
 }
 type UpdateTokenStateFnType = (tokenSymbol: string, value: string) => void
-type UseTokenFormStateReturnType = [TokensStateType, UpdateTokenStateFnType]
+type UpdateTokensStateType = (newState: {
+  [token: string]: string | BigNumber
+}) => void
+type UseTokenFormStateReturnType = [TokensStateType, UpdateTokensStateType]
 
 export function useTokenFormState(
   tokens: Token[],
@@ -41,12 +44,27 @@ export function useTokenFormState(
     ),
   )
 
-  function updateTokenFormValue(tokenSymbol: string, value: string): void {
+  // function updateTokenFormValue(tokenSymbol: string, value: string): void {
+  //   setTokenFormState((prevState) => ({
+  //     ...prevState,
+  //     [tokenSymbol]: tokenInputStateCreators[tokenSymbol](value),
+  //   }))
+  // }
+  function updateTokenFormState(newState: {
+    [symbol: string]: string | BigNumber
+  }): void {
+    const convertedNewState = Object.keys(newState).reduce(
+      (acc, symbol) => ({
+        ...acc,
+        [symbol]: tokenInputStateCreators[symbol](newState[symbol]),
+      }),
+      {},
+    )
     setTokenFormState((prevState) => ({
       ...prevState,
-      [tokenSymbol]: tokenInputStateCreators[tokenSymbol](value),
+      ...convertedNewState,
     }))
   }
 
-  return [tokenFormState, updateTokenFormValue]
+  return [tokenFormState, updateTokenFormState]
 }
