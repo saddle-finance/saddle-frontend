@@ -6,45 +6,72 @@ import classNames from "classnames"
 import { useTranslation } from "react-i18next"
 
 interface Props {
-  title: string
-  tokens: Array<{ name: string; value: string; icon: string }>
+  isSwapFrom: boolean
+  tokens: Array<{
+    name: string
+    value: string
+    icon: string
+    symbol: string
+  }>
   selected: string
-  onChangeSelected: (tokenName: string) => void
+  inputValue: string
+  onChangeSelected: (tokenSymbol: string) => void
+  onChangeAmount?: (value: string) => void
 }
 
 function SwapForm({
-  title,
   tokens,
   selected,
+  inputValue,
+  isSwapFrom,
   onChangeSelected,
+  onChangeAmount,
 }: Props): ReactElement {
   const { t } = useTranslation()
 
   return (
     <div className="swapForm">
       <div className="head">
-        <h4 className="title">{title}</h4>
+        <h4 className="title">{isSwapFrom ? t("from") : t("to")}</h4>
         <div className="inputField">
-          <input></input>
-          {title === t("from") ? (
-            <button className="max">{t("max")}</button>
+          <input
+            value={inputValue}
+            onChange={(e): void => onChangeAmount?.(e.target.value)}
+            onFocus={(e: React.ChangeEvent<HTMLInputElement>): void => {
+              if (isSwapFrom) {
+                e.target.select()
+              }
+            }}
+          />
+          {isSwapFrom ? (
+            <button
+              className="max"
+              onClick={(): void => {
+                const token = tokens.find((t) => t.symbol === selected)
+                if (token && onChangeAmount) {
+                  onChangeAmount(token.value)
+                }
+              }}
+            >
+              {t("max")}
+            </button>
           ) : (
             ""
           )}
         </div>
       </div>
       <ul className="tokenList">
-        {tokens.map((token, i) => (
+        {tokens.map(({ symbol, icon, name, value }, i) => (
           <div
             className={
-              "tokenListItem " + classNames({ active: selected === token.name })
+              "tokenListItem " + classNames({ active: selected === symbol })
             }
-            key={i}
-            onClick={(): void => onChangeSelected(token.name)}
+            key={symbol}
+            onClick={(): void => onChangeSelected(symbol)}
           >
-            <img className="tokenIcon" src={token.icon} alt="icon" />
-            <span className="tokenName">{token.name}</span>
-            <span className="tokenValue">{token.value}</span>
+            <img className="tokenIcon" src={icon} alt="icon" />
+            <span className="tokenName">{name}</span>
+            {isSwapFrom ? <span className="tokenValue">{value}</span> : null}
             {i === tokens.length - 1 ? "" : <div className="divider"></div>}
           </div>
         ))}

@@ -7,35 +7,22 @@ import USDT from "../assets/icons/usdt.svg"
 import iconDown from "../assets/icons/icon_down.svg"
 import { useTranslation } from "react-i18next"
 
-const data = {
-  from: {
-    token: "USDC",
-    value: 99.457839,
-  },
-  to: {
-    token: "USDT",
-    value: 99.1991,
-  },
-  pair: {
-    token1: "USDC",
-    token2: "USDT",
-    value: 0.9971,
-  },
-  receive: {
-    token: "USDT",
-    value: 98.9199,
-  },
-  gas: 80,
-  slippage: 0.5,
-}
-
 interface Props {
   onClose: () => void
   onConfirm: () => void
-  data?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  data: {
+    from: { symbol: string; value: string }
+    to: { symbol: string; value: string }
+    exchangeRateInfo: {
+      pair: string
+      value: string
+    }
+    gas: string
+    slippage: string
+  }
 }
 
-function ReviewSwap({ onClose, onConfirm }: Props): ReactElement {
+function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
   const { t } = useTranslation()
 
   return (
@@ -44,7 +31,7 @@ function ReviewSwap({ onClose, onConfirm }: Props): ReactElement {
       <div className="swapTable">
         <div className="from">
           <img className="tokenIcon" src={USDC} alt="icon" />
-          <span className="tokenName">{data.from.token}</span>
+          <span className="tokenName">{data.from.symbol}</span>
           <div className="floatRight">
             <span>{data.from.value}</span>
           </div>
@@ -52,7 +39,7 @@ function ReviewSwap({ onClose, onConfirm }: Props): ReactElement {
         <img src={iconDown} alt="to" className="arrowDown" />
         <div className="to">
           <img className="tokenIcon" src={USDT} alt="icon" />
-          <span className="tokenName">{data.to.token}</span>
+          <span className="tokenName">{data.to.symbol}</span>
           <div className="floatRight">
             <span>{data.to.value}</span>
           </div>
@@ -61,9 +48,7 @@ function ReviewSwap({ onClose, onConfirm }: Props): ReactElement {
         <div className="swapInfo">
           <div className="priceTable">
             <span className="title">{t("price")}</span>
-            <span className="pair">
-              {data.pair.token1}/{data.pair.token2}
-            </span>
+            <span className="pair">{data.exchangeRateInfo.pair}</span>
             <button className="exchange">
               <svg
                 width="24"
@@ -82,7 +67,9 @@ function ReviewSwap({ onClose, onConfirm }: Props): ReactElement {
                 />
               </svg>
             </button>
-            <span className="value floatRight">{data.pair.value}</span>
+            <span className="value floatRight">
+              {data.exchangeRateInfo.value}
+            </span>
           </div>
           <div className="gas">
             <span className="title">Gas</span>

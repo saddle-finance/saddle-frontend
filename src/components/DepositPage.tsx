@@ -88,7 +88,7 @@ const DepositPage = (props: Props): ReactElement => {
     (state: AppState) => state.application,
   )
   // TODO: Add eligibility logic
-  const eligible = false
+  const eligible = true
 
   return (
     <div className="deposit">
