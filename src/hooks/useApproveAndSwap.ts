@@ -63,7 +63,7 @@ export function useApproveAndSwap(
       if (!account) throw new Error("Wallet must be connected")
       if (!swapContract) throw new Error("Swap contract is not loaded")
 
-      // For each token being desposited, check the allowance and approve it if necessary
+      // For each token being deposited, check the allowance and approve it if necessary
       const tokenContract = tokenContracts?.[state.fromTokenSymbol]
       if (tokenContract == null) return
       const fromToken = TOKENS_MAP[state.fromTokenSymbol]

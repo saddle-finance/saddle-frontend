@@ -63,9 +63,9 @@ function SwapForm({
       <ul className="tokenList">
         {tokens.map(({ symbol, icon, name, value }, i) => (
           <div
-            className={
-              "tokenListItem " + classNames({ active: selected === symbol })
-            }
+            className={classNames("tokenListItem", {
+              active: selected === symbol,
+            })}
             key={symbol}
             onClick={(): void => onChangeSelected(symbol)}
           >
