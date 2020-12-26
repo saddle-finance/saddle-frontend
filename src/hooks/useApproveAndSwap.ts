@@ -4,6 +4,7 @@ import {
   PoolName,
   STABLECOIN_POOL_NAME,
   STABLECOIN_POOL_TOKENS,
+  TOKENS_MAP,
   TRANSACTION_TYPES,
   Token,
 } from "../constants"
@@ -23,8 +24,11 @@ import { useDispatch } from "react-redux"
 import { useSelector } from "react-redux"
 import { useToast } from "./useToast"
 
-interface ApproveAndDepositStateArgument {
-  tokenFormState: { [tokenSymbol: string]: NumberInputState }
+interface ApproveAndSwapStateArgument {
+  fromTokenSymbol: string
+  toTokenSymbol: string
+  fromAmount: BigNumber
+  toAmount: BigNumber
   infiniteApproval: boolean
   slippageSelected: Slippages
   slippageCustom?: NumberInputState
@@ -32,9 +36,9 @@ interface ApproveAndDepositStateArgument {
   gasCustom?: NumberInputState
 }
 
-export function useApproveAndDeposit(
+export function useApproveAndSwap(
   poolName: PoolName,
-): (state: ApproveAndDepositStateArgument) => Promise<void> {
+): (state: ApproveAndSwapStateArgument) => Promise<void> {
   const dispatch = useDispatch()
   const swapContract = useSwapContract(poolName)
   const tokenContracts = useAllContracts()
@@ -43,79 +47,61 @@ export function useApproveAndDeposit(
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
-  let tokens: Token[]
+  let POOL_TOKENS: Token[]
   if (poolName === BTC_POOL_NAME) {
-    tokens = BTC_POOL_TOKENS
+    POOL_TOKENS = BTC_POOL_TOKENS
   } else if (poolName === STABLECOIN_POOL_NAME) {
-    tokens = STABLECOIN_POOL_TOKENS
+    POOL_TOKENS = STABLECOIN_POOL_TOKENS
   } else {
-    throw new Error("useApproveAndDeposit requires a valid pool name")
+    throw new Error("useApproveAndSwap requires a valid pool name")
   }
 
-  return async function approveAndDeposit(
-    state: ApproveAndDepositStateArgument,
+  return async function approveAndSwap(
+    state: ApproveAndSwapStateArgument,
   ): Promise<void> {
     try {
       if (!account) throw new Error("Wallet must be connected")
       if (!swapContract) throw new Error("Swap contract is not loaded")
-      // For each token being desposited, check the allowance and approve it if necessary
-      for (const token of tokens) {
-        const spendingValue = BigNumber.from(
-          state.tokenFormState[token.symbol].valueSafe,
-        )
-        if (spendingValue.isZero()) continue
-        const tokenContract = tokenContracts?.[token.symbol]
-        if (tokenContract == null) continue
-        await checkAndApproveTokenForTrade(
-          tokenContract,
-          swapContract.address, // TODO: productionize!
-          account,
-          spendingValue,
-          state.infiniteApproval,
-          {
-            onTransactionStart: () => {
-              return addToast(
-                {
-                  type: "pending",
-                  title: `${getFormattedTimeString()} Approving spend for ${
-                    token.name
-                  }`,
-                },
-                {
-                  autoDismiss: false, // TODO: be careful of orphan toasts on error
-                },
-              )
-            },
-            onTransactionSuccess: () => {
-              return addToast({
-                type: "success",
-                title: `${getFormattedTimeString()} Successfully approved spend for ${
-                  token.name
+
+      // For each token being deposited, check the allowance and approve it if necessary
+      const tokenContract = tokenContracts?.[state.fromTokenSymbol]
+      if (tokenContract == null) return
+      const fromToken = TOKENS_MAP[state.fromTokenSymbol]
+      await checkAndApproveTokenForTrade(
+        tokenContract,
+        swapContract.address,
+        account,
+        state.fromAmount,
+        state.infiniteApproval,
+        {
+          onTransactionStart: () => {
+            return addToast(
+              {
+                type: "pending",
+                title: `${getFormattedTimeString()} Approving spend for ${
+                  fromToken.name
                 }`,
-              })
-            },
-            onTransactionError: () => {
-              throw new Error("Your transaction could not be completed")
-            },
+              },
+              {
+                autoDismiss: false, // TODO: be careful of orphan toasts on error
+              },
+            )
           },
-        )
-      }
-      // "isFirstTransaction" check can be removed after launch
-      const poolTokenBalances: BigNumber[] = await Promise.all(
-        tokens.map(async (token, i) => {
-          return await swapContract.getTokenBalance(i)
-        }),
+          onTransactionSuccess: () => {
+            return addToast({
+              type: "success",
+              title: `${getFormattedTimeString()} Successfully approved spend for ${
+                fromToken.name
+              }`,
+            })
+          },
+          onTransactionError: () => {
+            throw new Error("Your transaction could not be completed")
+          },
+        },
       )
-      const isFirstTransaction = poolTokenBalances.every((bal) => bal.isZero())
-      let minToMint: BigNumber
-      if (isFirstTransaction) {
-        minToMint = BigNumber.from("0")
-      } else {
-        minToMint = await swapContract.calculateTokenAmount(
-          tokens.map(({ symbol }) => state.tokenFormState[symbol].valueSafe),
-          true, // deposit boolean
-        )
-      }
+
+      let minToMint = state.toAmount
       console.debug(`MinToMint 1: ${minToMint.toString()}`)
 
       minToMint = applySlippage(
@@ -126,7 +112,7 @@ export function useApproveAndDeposit(
       console.debug(`MinToMint 2: ${minToMint.toString()}`)
       const clearMessage = addToast({
         type: "pending",
-        title: `${getFormattedTimeString()} Starting your deposit...`,
+        title: `${getFormattedTimeString()} Starting your Swap...`,
       })
       let gasPrice
       if (state.gasPriceSelected === GasPrices.Custom) {
@@ -139,24 +125,32 @@ export function useApproveAndDeposit(
         gasPrice = gasStandard
       }
       gasPrice = parseUnits(String(gasPrice) || "45", 9)
-      const spendTransaction = await swapContract.addLiquidity(
-        tokens.map(({ symbol }) => state.tokenFormState[symbol].valueSafe),
+      const indexFrom = POOL_TOKENS.findIndex(
+        ({ symbol }) => symbol === state.fromTokenSymbol,
+      )
+      const indexTo = POOL_TOKENS.findIndex(
+        ({ symbol }) => symbol === state.toTokenSymbol,
+      )
+      const swapTransaction = await swapContract.swap(
+        indexFrom,
+        indexTo,
+        state.fromAmount,
         minToMint,
         Math.round(new Date().getTime() / 1000 + 60 * 10),
         {
           gasPrice,
         },
       )
-      await spendTransaction.wait()
+      await swapTransaction.wait()
       dispatch(
         updateLastTransactionTimes({
-          [TRANSACTION_TYPES.DEPOSIT]: Date.now(),
+          [TRANSACTION_TYPES.SWAP]: Date.now(),
         }),
       )
       clearMessage()
       addToast({
         type: "success",
-        title: `${getFormattedTimeString()} Liquidity added, giddyup! 🤠`,
+        title: `${getFormattedTimeString()} Swap completed, giddyup! 🤠`,
       })
       return Promise.resolve()
     } catch (e) {

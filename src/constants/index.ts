@@ -181,6 +181,7 @@ export const POOLS_MAP: {
 export const TRANSACTION_TYPES = {
   DEPOSIT: "DEPOSIT",
   WITHDRAW: "WITHDRAW",
+  SWAP: "SWAP",
 }
 
 export const POOL_FEE_PRECISION = 10

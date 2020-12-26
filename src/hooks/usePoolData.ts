@@ -54,6 +54,7 @@ export default function usePoolData(
   )
   const lastDepositTime = lastTransactionTimes[TRANSACTION_TYPES.DEPOSIT]
   const lastWithdrawTime = lastTransactionTimes[TRANSACTION_TYPES.WITHDRAW]
+  const lastSwapTime = lastTransactionTimes[TRANSACTION_TYPES.SWAP]
 
   useEffect(() => {
     async function getSwapData(): Promise<void> {
@@ -194,6 +195,7 @@ export default function usePoolData(
   }, [
     lastDepositTime,
     lastWithdrawTime,
+    lastSwapTime,
     poolName,
     swapContract,
     tokenContracts,

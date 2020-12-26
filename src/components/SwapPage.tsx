@@ -17,41 +17,44 @@ import classNames from "classnames"
 import { updateSwapAdvancedMode } from "../state/user"
 import { useTranslation } from "react-i18next"
 
-// TODO:
-// - Use state to add function of exchange button in priceTable
-// - Use state to add function of MAX button
-// - Use state to add function of input fields
-
 // Dumb data for UI
 const selected = {
-  tradePool: "Y",
   maxSlippage: 0.5,
-  infiniteApproval: false,
 }
 // End of dumb data
 
 interface Props {
-  tokens: Array<{ name: string; value: string; icon: string }>
-  rate: { [key: string]: any } // eslint-disable-line @typescript-eslint/no-explicit-any
-  error: { isError: boolean; message: string }
+  tokens: Array<{ symbol: string; name: string; value: string; icon: string }>
+  exchangeRateInfo: { pair: string; value: string }
+  error: string | null
   info: { isInfo: boolean; message: string }
-  selectedTokenFrom: string
-  onSelectTokenFrom: (tokenName: string) => void
-  selectedTokenTo: string
-  onSelectTokenTo: (tokenName: string) => void
+  infiniteApproval: boolean
+  fromState: { symbol: string; value: string }
+  toState: { symbol: string; value: string }
+  onChangeInfiniteApproval: (approval: boolean) => void
+  onChangeFromToken: (tokenSymbol: string) => void
+  onChangeFromAmount: (amount: string) => void
+  onChangeToToken: (tokenSymbol: string) => void
+  onConfirmTransaction: () => Promise<void>
+  onClickReverseExchangeDirection: () => void
 }
 
 const SwapPage = (props: Props): ReactElement => {
   const { t } = useTranslation()
   const {
     tokens,
-    rate,
+    exchangeRateInfo,
     error,
     info,
-    selectedTokenFrom,
-    selectedTokenTo,
-    onSelectTokenFrom,
-    onSelectTokenTo,
+    fromState,
+    toState,
+    infiniteApproval,
+    onChangeInfiniteApproval,
+    onChangeFromToken,
+    onChangeFromAmount,
+    onChangeToToken,
+    onConfirmTransaction,
+    onClickReverseExchangeDirection,
   } = props
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -72,23 +75,29 @@ const SwapPage = (props: Props): ReactElement => {
       <TopMenu activeTab={"swap"} />
       <div className="content">
         <SwapForm
-          title={t("from")}
+          isSwapFrom={true}
           tokens={tokens}
-          onChangeSelected={onSelectTokenFrom}
-          selected={selectedTokenFrom}
+          onChangeSelected={onChangeFromToken}
+          onChangeAmount={onChangeFromAmount}
+          selected={fromState.symbol}
+          inputValue={fromState.value}
         />
         <div style={{ width: "64px" }} />
         <SwapForm
-          title={t("to")}
+          isSwapFrom={false}
           tokens={tokens}
-          onChangeSelected={onSelectTokenTo}
-          selected={selectedTokenTo}
+          onChangeSelected={onChangeToToken}
+          selected={toState.symbol}
+          inputValue={toState.value}
         />
         <div className="infoSection">
           <div className="priceTable">
             <span className="title">{t("price")}</span>
-            <span className="pair">{rate.pair}</span>
-            <button className="exchange">
+            <span className="pair">{exchangeRateInfo.pair}</span>
+            <button
+              className="exchange"
+              onClick={onClickReverseExchangeDirection}
+            >
               <svg
                 width="24"
                 height="20"
@@ -106,7 +115,7 @@ const SwapPage = (props: Props): ReactElement => {
                 />
               </svg>
             </button>
-            <span className="value">{rate.value}</span>
+            <span className="value">{exchangeRateInfo.value}</span>
           </div>
           <div className="cost">{info.isInfo ? info.message : "..."}</div>
           <div
@@ -142,23 +151,24 @@ const SwapPage = (props: Props): ReactElement => {
                 <div className="IAlabel">
                   {t("infiniteApproval")}
                   <span className="tooltipText">
-                    Allow Saddle to spend all of your USDC now and in the
-                    future. You will not need to approve again.
+                    {`Allow Saddle to spend all of your ${fromState.symbol} now and in the
+                    future. You will not need to approve again.`}
                   </span>
-                  {/* TODO: Replace placeholder text "USDC" to real token name */}
                 </div>
                 <div className="options">
                   <button
                     className={classNames({
-                      selected: selected.infiniteApproval,
+                      selected: infiniteApproval,
                     })}
+                    onClick={(): void => onChangeInfiniteApproval(true)}
                   >
                     {t("yes")}
                   </button>
                   <button
                     className={classNames({
-                      selected: !selected.infiniteApproval,
+                      selected: !infiniteApproval,
                     })}
+                    onClick={(): void => onChangeInfiniteApproval(false)}
                   >
                     {t("no")}
                   </button>
@@ -240,23 +250,36 @@ const SwapPage = (props: Props): ReactElement => {
           </div>
         </div>
         <button
-          className={"swap " + classNames({ disabled: error.isError })}
+          className={
+            "swap " + classNames({ disabled: !!error || +toState.value <= 0 })
+          }
           onClick={(): void => {
             setModalOpen(true)
             setPopUp("review")
           }}
-          disabled={error.isError}
+          disabled={!!error || +toState.value <= 0}
         >
           {t("swap")}
         </button>
-        <div className={"error " + classNames({ showError: error.isError })}>
-          {error.message}
+        <div className={"error " + classNames({ showError: !!error })}>
+          {error}
         </div>
         <Modal isOpen={modalOpen} onClose={(): void => setModalOpen(false)}>
           {popUp === "review" ? (
             <ReviewSwap
               onClose={(): void => setModalOpen(false)}
-              onConfirm={(): void => setPopUp("confirm")}
+              onConfirm={async (): Promise<void> => {
+                setPopUp("confirm")
+                await onConfirmTransaction()
+                setModalOpen(false)
+              }}
+              data={{
+                from: fromState,
+                to: toState,
+                exchangeRateInfo,
+                gas: gasPriceSelected, // TODO: refactor
+                slippage: "SLIPPAGE", // TODO: refactor
+              }}
             />
           ) : null}
           {popUp === "confirm" ? <ConfirmTransaction /> : null}
@@ -265,5 +288,4 @@ const SwapPage = (props: Props): ReactElement => {
     </div>
   )
 }
-
 export default SwapPage

@@ -39,7 +39,7 @@ function DepositBTC(): ReactElement {
   const approveAndDeposit = useApproveAndDeposit(BTC_POOL_NAME)
   const [poolData, userShareData] = usePoolData(BTC_POOL_NAME)
   const [infiniteApproval, setInfiniteApproval] = useState(false)
-  const [tokenFormState, updateTokenFormValue] = useTokenFormState(
+  const [tokenFormState, updateTokenFormState] = useTokenFormState(
     BTC_POOL_TOKENS,
   )
   const {
@@ -69,8 +69,8 @@ function DepositBTC(): ReactElement {
     inputValue: tokenFormState[symbol].valueRaw,
   }))
 
-  function onConfirmTransaction(): Promise<void> {
-    return approveAndDeposit({
+  async function onConfirmTransaction(): Promise<void> {
+    await approveAndDeposit({
       slippageCustom,
       slippageSelected,
       infiniteApproval,
@@ -78,26 +78,38 @@ function DepositBTC(): ReactElement {
       gasPriceSelected,
       gasCustom,
     })
-    // TODO: clear inputs
+    // Clear input after deposit
+    updateTokenFormState(
+      BTC_POOL_TOKENS.reduce(
+        (acc, t) => ({
+          ...acc,
+          [t.symbol]: "0",
+        }),
+        {},
+      ),
+    )
+  }
+  function updateTokenFormValue(symbol: string, value: string): void {
+    updateTokenFormState({ [symbol]: value })
   }
 
   const depositData = {
     ...testDepositData,
-    deposit: BTC_POOL_TOKENS.filter((t) =>
-      BigNumber.from(tokenFormState[t.symbol].valueSafe).gt(0),
-    ).map((t) => ({
-      name: t.name,
-      value: formatUnits(tokenFormState[t.symbol].valueSafe, t.decimals),
-      icon: t.icon,
+    deposit: BTC_POOL_TOKENS.filter(({ symbol }) =>
+      BigNumber.from(tokenFormState[symbol].valueSafe).gt(0),
+    ).map(({ symbol, name, icon, decimals }) => ({
+      name: name,
+      value: formatUnits(tokenFormState[symbol].valueSafe, decimals),
+      icon: icon,
     })),
     rates:
       tokenPricesUSD != null
-        ? BTC_POOL_TOKENS.filter((t) =>
-            BigNumber.from(tokenFormState[t.symbol].valueSafe).gt(0),
-          ).map((t) => ({
-            name: t.name,
-            value: formatUnits(tokenFormState[t.symbol].valueSafe, t.decimals),
-            rate: tokenPricesUSD[t.symbol]?.toFixed(3),
+        ? BTC_POOL_TOKENS.filter(({ symbol }) =>
+            BigNumber.from(tokenFormState[symbol].valueSafe).gt(0),
+          ).map(({ symbol, name, decimals }) => ({
+            name: name,
+            value: formatUnits(tokenFormState[symbol].valueSafe, decimals),
+            rate: tokenPricesUSD[symbol]?.toFixed(2),
           }))
         : [],
     slippage: formatSlippageToString(slippageSelected, slippageCustom),
