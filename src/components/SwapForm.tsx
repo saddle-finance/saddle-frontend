@@ -72,9 +72,9 @@ function SwapForm({
           const formattedBalance = commify(parseFloat(value).toFixed(6))
           return (
             <div
-              className={
-                "tokenListItem " + classNames({ active: selected === symbol })
-              }
+              className={classNames("tokenListItem", {
+                active: selected === symbol,
+              })}
               key={symbol}
               onClick={(): void => onChangeSelected(symbol)}
             >
