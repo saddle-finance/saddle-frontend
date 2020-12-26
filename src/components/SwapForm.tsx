@@ -3,6 +3,7 @@ import "./SwapForm.scss"
 import React, { ReactElement } from "react"
 
 import classNames from "classnames"
+import { commify } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -35,13 +36,19 @@ function SwapForm({
         <h4 className="title">{isSwapFrom ? t("from") : t("to")}</h4>
         <div className="inputField">
           <input
+            autoComplete="off"
+            autoCorrect="off"
+            type="text"
             value={inputValue}
+            placeholder="0.0"
+            spellCheck="false"
             onChange={(e): void => onChangeAmount?.(e.target.value)}
             onFocus={(e: React.ChangeEvent<HTMLInputElement>): void => {
               if (isSwapFrom) {
                 e.target.select()
               }
             }}
+            readOnly={!isSwapFrom}
           />
           {isSwapFrom ? (
             <button
@@ -61,20 +68,25 @@ function SwapForm({
         </div>
       </div>
       <ul className="tokenList">
-        {tokens.map(({ symbol, icon, name, value }, i) => (
-          <div
-            className={
-              "tokenListItem " + classNames({ active: selected === symbol })
-            }
-            key={symbol}
-            onClick={(): void => onChangeSelected(symbol)}
-          >
-            <img className="tokenIcon" src={icon} alt="icon" />
-            <span className="tokenName">{name}</span>
-            {isSwapFrom ? <span className="tokenValue">{value}</span> : null}
-            {i === tokens.length - 1 ? "" : <div className="divider"></div>}
-          </div>
-        ))}
+        {tokens.map(({ symbol, value, icon, name }, i) => {
+          const formattedBalance = commify(parseFloat(value).toFixed(6))
+          return (
+            <div
+              className={
+                "tokenListItem " + classNames({ active: selected === symbol })
+              }
+              key={symbol}
+              onClick={(): void => onChangeSelected(symbol)}
+            >
+              <img className="tokenIcon" src={icon} alt="icon" />
+              <span className="tokenName">{name}</span>
+              {isSwapFrom ? (
+                <span className="tokenValue">{formattedBalance}</span>
+              ) : null}
+              {i === tokens.length - 1 ? "" : <div className="divider"></div>}
+            </div>
+          )
+        })}
       </ul>
     </div>
   )

@@ -26,7 +26,6 @@ interface FormState {
 function SwapUSD(): ReactElement {
   const { t } = useTranslation()
   const approveAndSwap = useApproveAndSwap(BTC_POOL_NAME)
-  const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const [infiniteApproval, setInfiniteApproval] = useState(false)
   const {
     slippageCustom,
@@ -41,7 +40,7 @@ function SwapUSD(): ReactElement {
     error: null,
     from: {
       symbol: BTC_POOL_TOKENS[0].symbol,
-      value: "0",
+      value: "0.0",
     },
     to: {
       symbol: BTC_POOL_TOKENS[1].symbol,
@@ -78,18 +77,15 @@ function SwapUSD(): ReactElement {
     icon,
     symbol,
     value: tokenBalances
-      ? parseFloat(formatUnits(tokenBalances[symbol], decimals)).toFixed(
-          tokenPricesUSD?.[symbol]
-            ? tokenPricesUSD[symbol].toFixed(2).length - 2
-            : 6, // add enough decimals to represent 0.01 USD
-        )
+      ? formatUnits(tokenBalances[symbol], decimals)
       : "0.00",
   }))
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const calculateSwapAmount = useCallback(
     debounce(async (formStateArg) => {
       if (swapContract == null || tokenBalances === null) return
-      if (isNaN(formStateArg.from.value)) {
+      const cleanedFormFromValue = formStateArg.from.value.replace(/[$,]/g, "") // remove common copy/pasted financial characters
+      if (isNaN(cleanedFormFromValue) || cleanedFormFromValue === "") {
         setFormState((prevState) => ({
           ...prevState,
           to: {
@@ -107,7 +103,7 @@ function SwapUSD(): ReactElement {
         ({ symbol }) => symbol === formStateArg.to.symbol,
       )
       const tokenAmount = parseUnits(
-        formStateArg.from.value,
+        cleanedFormFromValue,
         TOKENS_MAP[formStateArg.from.symbol].decimals,
       )
       let error: string | null = null
