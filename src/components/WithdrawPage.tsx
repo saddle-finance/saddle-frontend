@@ -67,7 +67,6 @@ interface Props {
 const WithdrawPage = (props: Props): ReactElement => {
   const { t } = useTranslation()
   const {
-    title,
     tokensData,
     poolData,
     transactionInfoData,
@@ -102,7 +101,7 @@ const WithdrawPage = (props: Props): ReactElement => {
         <div className="content">
           <div className="left">
             <div className="form">
-              <h3>{`${t("withdrawFrom")} ${title}`}</h3>
+              <h3>{t("withdraw")}</h3>
               <div className="percentage">
                 <span>{`${t("withdrawPercentage")} (%):`}</span>
                 <input
@@ -151,12 +150,6 @@ const WithdrawPage = (props: Props): ReactElement => {
                 }
               >
                 <div className="transactionInfo">
-                  <div className="transactionInfoItem">
-                    <span>{`KEEP ROI ${t("tokenValue")}: `}</span>
-                    <span className="value">
-                      {transactionInfoData.content.keepTokenValue}
-                    </span>
-                  </div>
                   <div className="transactionInfoItem">
                     {transactionInfoData.content.benefit > 0 ? (
                       <span className="bonus">{t("bonus")}: </span>

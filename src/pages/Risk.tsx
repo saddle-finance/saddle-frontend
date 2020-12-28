@@ -13,41 +13,30 @@ function Risk(): ReactElement {
       <TopMenu activeTab={t("risk")} />
       <div className="content">
         <p>
-          Providing liquidity to Saddle is highly risky. Before making a
-          deposit, we highly recommend reading the code and understanding the
-          risks involved with being a Liquidity Provider (LP).
+          {t("riskIntro")}{" "}
+          <a href="https://github.com/saddle-finance/saddle-contract">
+            {t("riskIntro2")}
+          </a>{" "}
+          {t("riskIntro3")}
         </p>
-        <h3>Audits</h3>
+        <h3>{t("audits")}</h3>
         <p>
-          The Saddle smart contracts were audited by Certik and Quantstamp.
+          {t("riskAudits")}{" "}
+          <a href="https://github.com/saddle-finance/saddle-audits">
+            {t("riskAudits2")}
+          </a>
+          {"."}
           <br />
           <br />
-          Please keep in mind that security audits don’t completely eliminate
-          risks. Do not supply assets that you cannot afford to Saddle as a
-          liquidity provider. <br />
+          {t("riskAudits3")}
           <br />
-          Using Saddle as an exchange user should be significantly less risky
-          but keep in mind there are still risks.
+          <br />
+          {t("riskAudits4")}
         </p>
-        <h3>Admin keys</h3>
-        <p>
-          Saddle launched with a n-m multisig. The signers are A, B, C, D, E,
-          and F. This multisig has capabilities to pause new deposits and trades
-          in case of technical emergencies. Users will always be able to
-          withdraw their funds regardless of new deposits being paused. Once a
-          &lt;x&gt; months period is over the multisig will lose capabilities to
-          pause.
-        </p>
-        <h3>Permanent loss of a peg</h3>
-        <p>
-          If one of the stablecoins in the pool significantly depegs below
-          $1.00, it&apos;ll effectively mean that pool liquidity providers will
-          hold nearly all of that asset.{" "}
-          <b>
-            This means that if one of the assets in the pool fails those that
-            deposited other assets will be wiped out as well.
-          </b>
-        </p>
+        <h3>{t("adminKeys")}</h3>
+        <p>{t("riskAdminKeys")}</p>
+        <h3>{t("lossOfPeg")}</h3>
+        <p>{t("riskLossOfPeg")}</p>
       </div>
     </div>
   )
