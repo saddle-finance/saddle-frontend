@@ -8,25 +8,47 @@ import { formatUnits } from "@ethersproject/units"
  * @param {BigNumber} inputValue
  * @param {Slippages} slippageSelected
  * @param {NumberInputState} slippageCustom
+ * @param {boolean} add
  * @return {BigNumber}
  */
-export function applySlippage(
+export function _applySlippage(
+  inputValue: BigNumber,
+  slippageSelected: Slippages,
+  slippageCustom?: NumberInputState,
+  add = false,
+): BigNumber {
+  let numerator
+  let denominator
+  if (slippageSelected === Slippages.Custom && !!slippageCustom) {
+    denominator = BigNumber.from(10).pow(slippageCustom.precision + 2)
+    numerator = add
+      ? denominator.add(slippageCustom.valueSafe)
+      : denominator.sub(slippageCustom.valueSafe)
+  } else if (slippageSelected === Slippages.OneTenth) {
+    denominator = 1000
+    numerator = denominator + (add ? 1 : -1)
+  } else {
+    // default to 1%
+    denominator = 100
+    numerator = denominator + (add ? 1 : -1)
+  }
+  return inputValue.mul(numerator).div(denominator)
+}
+
+export function addSlippage(
   inputValue: BigNumber,
   slippageSelected: Slippages,
   slippageCustom?: NumberInputState,
 ): BigNumber {
-  if (slippageSelected === Slippages.Custom && !!slippageCustom) {
-    const customDenominator = BigNumber.from(10).pow(
-      slippageCustom.precision + 2,
-    )
-    const customNumerator = customDenominator.sub(slippageCustom.valueSafe)
-    return inputValue.mul(customNumerator).div(customDenominator)
-  } else if (slippageSelected === Slippages.OneTenth) {
-    return inputValue.mul(999).div(1000)
-  } else {
-    // default to 1%
-    return inputValue.mul(99).div(100)
-  }
+  return _applySlippage(inputValue, slippageSelected, slippageCustom, true)
+}
+
+export function subtractSlippage(
+  inputValue: BigNumber,
+  slippageSelected: Slippages,
+  slippageCustom?: NumberInputState,
+): BigNumber {
+  return _applySlippage(inputValue, slippageSelected, slippageCustom, false)
 }
 
 export function formatSlippageToString(

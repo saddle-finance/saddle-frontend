@@ -5,10 +5,10 @@ import { useAllContracts, useSwapContract } from "./useContract"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import { NumberInputState } from "../utils/numberInputState"
-import { applySlippage } from "../utils/slippage"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { getFormattedTimeString } from "../utils/dateTime"
 import { parseUnits } from "@ethersproject/units"
+import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
 import { useDispatch } from "react-redux"
@@ -108,7 +108,7 @@ export function useApproveAndDeposit(
       }
       console.debug(`MinToMint 1: ${minToMint.toString()}`)
 
-      minToMint = applySlippage(
+      minToMint = subtractSlippage(
         minToMint,
         state.slippageSelected,
         state.slippageCustom,
