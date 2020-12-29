@@ -8,8 +8,8 @@ import usdtLogo from "../assets/icons/usdt.svg"
 import wbtcLogo from "../assets/icons/wbtc.svg"
 
 export const NetworkContextName = "NETWORK"
-export const BTC_POOL_NAME = "BTC_POOL"
-export const STABLECOIN_POOL_NAME = "STABLECOIN_POOL"
+export const BTC_POOL_NAME = "BTC Pool"
+export const STABLECOIN_POOL_NAME = "Stablecoin Pool"
 export type PoolName = typeof BTC_POOL_NAME | typeof STABLECOIN_POOL_NAME
 
 export enum ChainId {
@@ -131,7 +131,7 @@ export const WBTC = new Token(
   8,
   "WBTC",
   "wrapped-bitcoin",
-  "Wrapped Bitcoin",
+  "WBTC",
   wbtcLogo,
 )
 

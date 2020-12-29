@@ -52,7 +52,7 @@ interface Props {
     deposit: Array<{ [key: string]: any }>
     rates: Array<{ [key: string]: any }>
     share: number
-    keepToken: number // TODO: Calculate or pull from contract to get real value
+    lpToken: number // TODO: Calculate or pull from contract to get real value
     slippage: string
   }
 }
@@ -61,7 +61,6 @@ interface Props {
 const DepositPage = (props: Props): ReactElement => {
   const { t } = useTranslation()
   const {
-    title,
     tokens,
     poolData,
     transactionInfoData,
@@ -98,7 +97,7 @@ const DepositPage = (props: Props): ReactElement => {
       <div className="content">
         <div className="left">
           <div className="form">
-            <h3>{`${t("addLiquidity")} ${title}`}</h3>
+            <h3>{t("addLiquidity")}</h3>
             {tokens.map((token, index) => (
               <div key={index}>
                 <TokenInput

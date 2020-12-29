@@ -31,7 +31,7 @@ const testTransInfoData = {
 
 const testDepositData = {
   share: 0.0035,
-  keepToken: 80.6942,
+  lpToken: 80.6942,
 }
 // Dumb data end here
 

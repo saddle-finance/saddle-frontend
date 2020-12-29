@@ -13,7 +13,7 @@ interface Props {
     deposit: Array<{ [key: string]: any }>
     rates: Array<{ [key: string]: any }>
     share: number
-    keepToken: number
+    lpToken: number
     slippage: string
   }
   gas: GasPrices
@@ -65,9 +65,7 @@ function ReviewDeposit({ onClose, onConfirm, data, gas }: Props): ReactElement {
         </div>
       </div>
       <div className="bottom">
-        <span>{`${t("youWillReceive")} ${data.keepToken} KEEP ${t(
-          "poolTokens",
-        )}`}</span>
+        <span>{`${t("youWillReceive")} ${data.lpToken} ${t("lpTokens")}`}</span>
         <div className="divider" style={{ height: "1px", width: "100%" }}></div>
         <p>{t("estimatedOutput")}</p>
         <button onClick={onConfirm} className="confirm">

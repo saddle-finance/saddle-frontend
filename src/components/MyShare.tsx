@@ -18,7 +18,7 @@ function MyShare({ to, data }: Props): ReactElement | null {
 
   if (!data) return null
   const formattedData = {
-    share: parseFloat(formatUnits(data.share, 18)).toFixed(5),
+    share: (parseFloat(formatUnits(data.share, 18)) * 100).toFixed(2),
     usdBalance: parseFloat(formatUnits(data.usdBalance, 18)).toFixed(2),
     value: parseFloat(formatUnits(data.value, 18)).toFixed(5),
     tokens: data.tokens.map((coin) => {
@@ -47,13 +47,19 @@ function MyShare({ to, data }: Props): ReactElement | null {
         </Link>
         <div className="info">
           <div className="poolShare">
-            <span>{formattedData.share} of pool</span>
+            <span>
+              {formattedData.share}% {t("ofPool")}
+            </span>
           </div>
           <div className="balance">
-            <span>{t("usdBalance") + ": " + formattedData.usdBalance}</span>
+            <span>
+              {t("usdBalance")}: {formattedData.usdBalance}
+            </span>
           </div>
           <div className="amount">
-            <span>Total amount: {formattedData.value}</span>
+            <span>
+              {t("totalAmount")}: {formattedData.value}
+            </span>
           </div>
         </div>
         <div className="divider"></div>
