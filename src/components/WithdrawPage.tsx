@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
 import { AppState } from "../state"
+import { BigNumber } from "ethers"
 import ConfirmTransaction from "./ConfirmTransaction"
 import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
@@ -95,7 +96,7 @@ const WithdrawPage = (props: Props): ReactElement => {
   return (
     <div className="withdraw">
       <TopMenu activeTab={"withdraw"} />
-      {!myShareData ? (
+      {!myShareData || myShareData.lpTokenBalance.eq(BigNumber.from(0)) ? (
         <NoShareContent />
       ) : (
         <div className="content">

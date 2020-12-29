@@ -38,6 +38,8 @@
   "maxSlippage": "Max Slippage",
   "myShare": "My Share",
   "no": "No",
+  "noDeposit": "You don't have any funds to withdraw.  Visit the",
+  "noDeposit2": "page to get started!",
   "ofPool": "of pool",
   "pool": "Pool",
   "poolOverview": "Pool Overview",
