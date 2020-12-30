@@ -137,6 +137,7 @@ export default function useWithdrawFormState(
             effectiveUserLPTokenBalance,
           )
           nextState = {
+            lpTokenAmountToSpend: effectiveUserLPTokenBalance,
             tokenInputs: POOL_TOKENS.reduce(
               (acc, { symbol }, i) => ({
                 ...acc,

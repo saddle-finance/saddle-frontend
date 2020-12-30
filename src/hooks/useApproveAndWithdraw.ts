@@ -55,7 +55,11 @@ export function useApproveAndWithdraw(
         lpTokenContract,
         swapContract.address,
         account,
-        state.lpTokenAmountToSpend,
+        addSlippage(
+          BigNumber.from(state.lpTokenAmountToSpend),
+          slippageSelected,
+          slippageCustom,
+        ),
         state.infiniteApproval,
         {
           onTransactionStart: () => {
