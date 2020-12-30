@@ -6,6 +6,7 @@ import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import { formatSlippageToString } from "../utils/slippage"
 import { formatUnits } from "@ethersproject/units"
+import { useApproveAndWithdraw } from "../hooks/useApproveAndWithdraw"
 import usePoolData from "../hooks/usePoolData"
 import { useSelector } from "react-redux"
 import useWithdrawFormState from "../hooks/useWithdrawFormState"
@@ -22,14 +23,29 @@ const testTransInfoData = {
 
 function WithdrawBTC(): ReactElement {
   const [poolData, userShareData] = usePoolData(BTC_POOL_NAME)
-  const [withdrawFormState, updateWithFormState] = useWithdrawFormState(
+  const [withdrawFormState, updateWithdrawFormState] = useWithdrawFormState(
     BTC_POOL_NAME,
   )
+  const [infiniteApproval, setInfiniteApproval] = useState(false)
   const { slippageCustom, slippageSelected } = useSelector(
     (state: AppState) => state.user,
   )
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
-  const [infiniteApproval, setInfiniteApproval] = useState(false)
+  const approveAndWithdraw = useApproveAndWithdraw(BTC_POOL_NAME)
+
+  async function onConfirmTransaction(): Promise<void> {
+    const {
+      withdrawType,
+      tokenInputs,
+      lpTokenAmountToSpend,
+    } = withdrawFormState
+    await approveAndWithdraw({
+      tokenFormState: tokenInputs,
+      infiniteApproval,
+      withdrawType,
+      lpTokenAmountToSpend,
+    })
+  }
 
   const tokensData = React.useMemo(
     () =>
@@ -79,11 +95,12 @@ function WithdrawBTC(): ReactElement {
       transactionInfoData={testTransInfoData}
       myShareData={userShareData}
       formStateData={withdrawFormState}
-      onFormChange={updateWithFormState}
-      infiniteApproval={infiniteApproval}
+      onConfirmTransaction={onConfirmTransaction}
+      onFormChange={updateWithdrawFormState}
       onChangeInfiniteApproval={(): void =>
-        setInfiniteApproval((prevState) => !prevState)
+        setInfiniteApproval((prev) => !prev)
       }
+      infiniteApproval={infiniteApproval}
     />
   )
 }
