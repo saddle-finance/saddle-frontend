@@ -13,6 +13,7 @@ import { AppDispatch } from "../state"
 import { AppState } from "../state"
 import { BigNumber } from "ethers"
 import ConfirmTransaction from "./ConfirmTransaction"
+import InfiniteApproval from "../components/InfiniteApproval"
 import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
 import NoShareContent from "./NoShareContent"
@@ -62,6 +63,8 @@ interface Props {
   }
   formStateData: WithdrawFormState
   onFormChange: (action: any) => void
+  onChangeInfiniteApproval: () => void
+  infiniteApproval: boolean
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -75,6 +78,8 @@ const WithdrawPage = (props: Props): ReactElement => {
     onFormChange,
     formStateData,
     reviewData,
+    infiniteApproval,
+    onChangeInfiniteApproval,
   } = props
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -235,6 +240,12 @@ const WithdrawPage = (props: Props): ReactElement => {
               <span className="combLabel">{t("combinationOfAll")}</span>
             </label> */}
               <div className="paramater">
+                <InfiniteApproval
+                  checked={infiniteApproval}
+                  onChange={onChangeInfiniteApproval}
+                />
+              </div>
+              <div className="paramater">
                 {`${t("gas")}:`}
                 <span
                   className={classNames({
@@ -279,7 +290,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                   ): PayloadAction<string> =>
                     dispatch(updateGasPriceCustom(e.target.value))
                   }
-                ></input>
+                />
               </div>
             </div>
             <button

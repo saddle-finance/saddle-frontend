@@ -17,6 +17,7 @@ import { AppDispatch } from "../state"
 import { AppState } from "../state"
 import ConfirmTransaction from "./ConfirmTransaction"
 import IneligibilityBanner from "./IneligibilityBanner"
+import InfiniteApproval from "./InfiniteApproval"
 import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
 import { PayloadAction } from "@reduxjs/toolkit"
@@ -173,37 +174,11 @@ const DepositPage = (props: Props): ReactElement => {
             </span>
             <div className="divider"></div>
             <div className={"tableContainer" + classNames({ show: advanced })}>
-              <div className="infiniteApproval">
-                <label className="checkbox_input">
-                  <input
-                    type="checkbox"
-                    checked={infiniteApproval}
-                    onChange={onChangeInfiniteApproval}
-                  />
-                  <span className="checkbox_control">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      focusable="false"
-                    >
-                      <path
-                        fill="none"
-                        strokeWidth="4"
-                        d="M1.73 12.91l6.37 6.37L22.79 4.59"
-                      />
-                    </svg>
-                  </span>
-                </label>
-                <div className="IAlabel">
-                  {t("infiniteApproval")}
-                  <span className="tooltipText">
-                    Allow Saddle to spend all of your USDC now and in the
-                    future. You will not need to approve again.
-                  </span>
-                  {/* TODO: Replace placeholder text "USDC" to real token name */}
-                </div>
-              </div>
+              <InfiniteApproval
+                checked={infiniteApproval}
+                onChange={onChangeInfiniteApproval}
+              />
+
               <div className="paramater">
                 {`${t("maxSlippage")}:`}
                 <span

@@ -1,0 +1,92 @@
+@import "../styles/theme.scss";
+
+.infiniteApproval {
+  position: relative;
+  font-size: 16px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  display: flex;
+  align-items: center;
+
+  input {
+    width: 24px;
+    height: 24px;
+
+    opacity: 0;
+    &:checked + .checkbox_control svg {
+      transform: scale(1);
+    }
+  }
+  .checkbox_control {
+    display: inline-grid;
+    width: 20px;
+    height: 20px;
+    border-radius: 0.25em;
+    border: 0.1em solid var(--outline);
+  }
+  .checkbox_control svg {
+    margin: 0;
+    stroke: var(--text-selected);
+    transition: transform 0.1s ease-in 25ms;
+    transform: scale(0);
+    transform-origin: bottom left;
+  }
+  .checkbox_input {
+    display: grid;
+    grid-template-areas: "checkbox";
+    margin-right: 8px;
+
+    > * {
+      grid-area: checkbox;
+      cursor: pointer;
+    }
+  }
+
+  .IAlabel {
+    position: relative;
+    border-bottom: 1px dotted var(--text);
+
+    &:hover {
+      cursor: help;
+    }
+  }
+
+  .IAlabel .tooltipText {
+    visibility: hidden;
+    width: 360px;
+    background-color: $primary;
+    color: $text-black;
+    border-radius: 8px;
+    padding: 6px 8px;
+
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: $normal;
+    letter-spacing: -0.04em;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    bottom: 200%;
+    left: 50%;
+    margin-left: -100px;
+  }
+
+  /* Tooltip arrow */
+  .IAlabel .tooltipText::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 40%;
+    margin-left: -5px;
+    border-width: 10px;
+    border-style: solid;
+    border-color: $white transparent transparent transparent;
+  }
+
+  .IAlabel:hover .tooltipText {
+    visibility: visible;
+  }
+}

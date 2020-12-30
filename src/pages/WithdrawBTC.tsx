@@ -1,5 +1,5 @@
 import { BTC_POOL_NAME, BTC_POOL_TOKENS } from "../constants"
-import React, { ReactElement } from "react"
+import React, { ReactElement, useState } from "react"
 import WithdrawPage, { ReviewWithdrawData } from "../components/WithdrawPage"
 
 import { AppState } from "../state"
@@ -29,6 +29,7 @@ function WithdrawBTC(): ReactElement {
     (state: AppState) => state.user,
   )
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
+  const [infiniteApproval, setInfiniteApproval] = useState(false)
 
   const tokensData = React.useMemo(
     () =>
@@ -79,6 +80,10 @@ function WithdrawBTC(): ReactElement {
       myShareData={userShareData}
       formStateData={withdrawFormState}
       onFormChange={updateWithFormState}
+      infiniteApproval={infiniteApproval}
+      onChangeInfiniteApproval={(): void =>
+        setInfiniteApproval((prevState) => !prevState)
+      }
     />
   )
 }
