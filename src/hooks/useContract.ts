@@ -13,13 +13,14 @@ import {
   USDT,
   WBTC,
 } from "../constants"
+import { useMemo, useState } from "react"
 
 import { Contract } from "@ethersproject/contracts"
 import ERC20_ABI from "../constants/abis/erc20.json"
+import LPTOKEN_ABI from "../constants/abis/lpToken.json"
 import SWAP_ABI from "../constants/abis/swap.json"
 import { getContract } from "../utils"
 import { useActiveWeb3React } from "./index"
-import { useMemo } from "react"
 
 // returns null on errors
 function useContract(
@@ -73,6 +74,15 @@ export function useSwapContract(poolName: PoolName): Contract | null {
       return stablecoinSwapContract
     }
   }, [stablecoinSwapContract, btcSwapContract, poolName])
+}
+
+export function useLPTokenContract(poolName: PoolName): Contract | null {
+  const swapContract = useSwapContract(poolName)
+  const [lpTokenAddress, setLPTokenAddress] = useState("")
+  swapContract
+    ?.swapStorage()
+    .then(({ lpToken }: { lpToken: string }) => setLPTokenAddress(lpToken))
+  return useContract(lpTokenAddress, LPTOKEN_ABI)
 }
 
 interface AllContractsObject {
