@@ -100,6 +100,7 @@ export function useApproveAndDeposit(
         minToMint = BigNumber.from("0")
       } else {
         minToMint = await swapContract.calculateTokenAmount(
+          account,
           POOL_TOKENS.map(
             ({ symbol }) => state.tokenFormState[symbol].valueSafe,
           ),
