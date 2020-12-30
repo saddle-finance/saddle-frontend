@@ -296,7 +296,10 @@ const WithdrawPage = (props: Props): ReactElement => {
             <button
               className="actionBtn"
               type="submit"
-              disabled={!!formStateData.error}
+              disabled={
+                !!formStateData.error ||
+                formStateData.lpTokenAmountToSpend.isZero()
+              }
               onClick={(): void => {
                 onSubmit()
               }}

@@ -248,6 +248,7 @@ export default function useWithdrawFormState(
           }
           nextState = {
             withdrawType,
+            lpTokenAmountToSpend: BigNumber.from("0"),
             percentage: null,
             tokenInputs: newTokenInputs,
           }
