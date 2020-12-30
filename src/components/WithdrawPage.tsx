@@ -181,7 +181,6 @@ const WithdrawPage = (props: Props): ReactElement => {
             <div className="advancedOptions">
               <div>
                 <label>
-                  {"All tokens"}
                   <input
                     type="radio"
                     value={"ALL"}
@@ -193,13 +192,13 @@ const WithdrawPage = (props: Props): ReactElement => {
                       })
                     }
                   />
+                  {"All tokens"}
                 </label>
               </div>
               {tokensData.map((t) => {
                 return (
                   <div key={t.symbol}>
                     <label>
-                      {t.name}
                       <input
                         type="radio"
                         value={t.symbol}
@@ -211,6 +210,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                           })
                         }
                       />
+                      {t.name}
                     </label>
                   </div>
                 )
