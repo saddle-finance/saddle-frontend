@@ -1,13 +1,16 @@
 import "./IneligibilityBanner.scss"
+
 import React, { ReactElement } from "react"
 
+import { useTranslation } from "react-i18next"
+
 function Eligibility(): ReactElement {
+  const { t } = useTranslation()
+
   return (
     <div className="eligibility">
       <p>
-        You are not eligible for deposit at this moment. Deposits at this time
-        are only available to holders of common defi governance tokens.{" "}
-        <a href="#top">Learn more</a>
+        {t("notEligible")} &lt;<a href="#top">{t("learnMore")}</a>&gt;
       </p>
       {/* TODO: Add related article link */}
     </div>
