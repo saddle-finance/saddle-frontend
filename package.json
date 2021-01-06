@@ -75,6 +75,7 @@
     "storybook": "start-storybook -p 6006 -s public --no-dll",
     "build-storybook": "build-storybook -s public --no-dll"
   },
+  "homepage": ".",
   "husky": {
     "hooks": {
       "pre-commit": "npm run lint:fix"
