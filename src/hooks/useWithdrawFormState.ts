@@ -283,7 +283,10 @@ export default function useWithdrawFormState(
         }
         const pendingTokenInput =
           action.fieldName === "tokenInputs" &&
-          (isNaN(+action.value) || +action.value === 0)
+          POOL_TOKENS.every(({ symbol }) => {
+            const stateValue = finalState.tokenInputs[symbol].valueRaw
+            return isNaN(+stateValue) || +stateValue === 0
+          })
         if (!finalState.error && !pendingTokenInput) {
           calculateAndUpdateDynamicFields(finalState)
         }

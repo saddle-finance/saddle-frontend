@@ -23,7 +23,7 @@ interface FormState {
     value: BigNumber
   }
 }
-function SwapUSD(): ReactElement {
+function SwapBTC(): ReactElement {
   const { t } = useTranslation()
   const approveAndSwap = useApproveAndSwap(BTC_POOL_NAME)
   const [infiniteApproval, setInfiniteApproval] = useState(false)
@@ -260,4 +260,4 @@ function SwapUSD(): ReactElement {
   )
 }
 
-export default SwapUSD
+export default SwapBTC

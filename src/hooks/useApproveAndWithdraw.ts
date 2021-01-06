@@ -51,15 +51,19 @@ export function useApproveAndWithdraw(
       if (!swapContract) throw new Error("Swap contract is not loaded")
       if (state.lpTokenAmountToSpend.isZero()) return
       if (lpTokenContract == null) return
+      const allowanceAmount =
+        state.withdrawType === "IMBALANCE"
+          ? addSlippage(
+              state.lpTokenAmountToSpend,
+              slippageSelected,
+              slippageCustom,
+            )
+          : state.lpTokenAmountToSpend
       await checkAndApproveTokenForTrade(
         lpTokenContract,
         swapContract.address,
         account,
-        addSlippage(
-          BigNumber.from(state.lpTokenAmountToSpend),
-          slippageSelected,
-          slippageCustom,
-        ),
+        allowanceAmount,
         state.infiniteApproval,
         {
           onTransactionStart: () => {
@@ -90,19 +94,20 @@ export function useApproveAndWithdraw(
         title: `${getFormattedTimeString()} Starting your withdraw...`,
       })
       let gasPrice
-      if (gasPriceSelected === GasPrices.Custom) {
-        gasPrice = gasCustom?.valueSafe
-      } else if (gasPriceSelected === GasPrices.Fast) {
-        gasPrice = gasFast
+      if (gasPriceSelected === GasPrices.Custom && gasCustom?.valueSafe) {
+        gasPrice = gasCustom.valueSafe
+      } else if (gasPriceSelected === GasPrices.Standard) {
+        gasPrice = gasStandard
       } else if (gasPriceSelected === GasPrices.Instant) {
         gasPrice = gasInstant
       } else {
-        gasPrice = gasStandard
+        gasPrice = gasFast
       }
-      gasPrice = parseUnits(gasPrice?.toString() || "25", "gwei")
+      gasPrice = parseUnits(gasPrice?.toString() || "45", "gwei")
       console.debug(
         `lpTokenAmountToSpend: ${formatUnits(state.lpTokenAmountToSpend, 18)}`,
       )
+      const inTenMinutes = Math.round(new Date().getTime() / 1000 + 60 * 10)
       let spendTransaction
       if (state.withdrawType === "ALL") {
         spendTransaction = await swapContract.removeLiquidity(
@@ -114,23 +119,22 @@ export function useApproveAndWithdraw(
               slippageCustom,
             ),
           ),
-          Math.round(new Date().getTime() / 1000 + 60 * 10),
+          inTenMinutes,
           {
             gasPrice,
           },
         )
       } else if (state.withdrawType === "IMBALANCE") {
-        // TODO: check math
         spendTransaction = await swapContract.removeLiquidityImbalance(
           POOL_TOKENS.map(
             ({ symbol }) => state.tokenFormState[symbol].valueSafe,
           ),
           addSlippage(
-            BigNumber.from(state.lpTokenAmountToSpend),
+            state.lpTokenAmountToSpend,
             slippageSelected,
             slippageCustom,
           ),
-          Math.round(new Date().getTime() / 1000 + 60 * 10),
+          inTenMinutes,
           {
             gasPrice,
           },
@@ -147,7 +151,7 @@ export function useApproveAndWithdraw(
             slippageSelected,
             slippageCustom,
           ),
-          Math.round(new Date().getTime() / 1000 + 60 * 10),
+          inTenMinutes,
           {
             gasPrice,
           },
