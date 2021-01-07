@@ -97,15 +97,16 @@ div.swapPage {
     }
 
     .table {
-      width: calc(100% - 24px);
+      width: calc(100% - 48px);
       background: var(--background-element);
       margin-top: 16px;
       border: 1px solid var(--outline);
       border-radius: 10px;
-      padding: 16px 12px;
+      padding: 16px 24px;
 
       display: flex;
       flex-direction: row-reverse;
+      justify-content: space-between;
 
       input {
         width: 42px;
@@ -113,6 +114,7 @@ div.swapPage {
         border-radius: 0;
         height: 20px;
         font-size: 80%;
+        outline: 1px solid $black;
       }
 
       input:focus {
@@ -125,16 +127,8 @@ div.swapPage {
         letter-spacing: -0.04em;
       }
 
-      .tableOption {
-        margin-left: 32px;
-
-        &:last-child {
-          margin-left: 0;
-        }
-
-        .options {
-          margin-top: 8px;
-        }
+      .tableOption .options {
+        margin-top: 10px;
       }
     }
 
@@ -236,10 +230,11 @@ div.swapPage {
       font-weight: $normal;
       color: var(--text);
       letter-spacing: -0.04em;
-      padding: 0 12px 0 0;
+      padding: 0 16px 0 0;
 
       &:hover {
         transform: none;
+        font-weight: $bold;
       }
 
       &:focus {

@@ -174,7 +174,7 @@ const SwapPage = (props: Props): ReactElement => {
                   </button>
                 </div>
               </div>
-              <div className="maxSlippage tableOption">
+              <div className="tableOption">
                 <span className="label">{t("maxSlippage")}</span>
                 <div className="options">
                   <button
@@ -195,7 +195,7 @@ const SwapPage = (props: Props): ReactElement => {
                   <span style={{ marginLeft: "4px" }}>%</span>
                 </div>
               </div>
-              <div className="maxSlippage tableOption">
+              <div className="tableOption">
                 <span className="label">{t("gas")}</span>
                 <div className="options">
                   <button
@@ -245,7 +245,6 @@ const SwapPage = (props: Props): ReactElement => {
                   ></input>
                 </div>
               </div>
-              {/* TODO: fix spacing */}
             </div>
           </div>
         </div>
