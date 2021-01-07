@@ -10,9 +10,12 @@ function Eligibility(): ReactElement {
   return (
     <div className="eligibility">
       <p>
-        {t("notEligible")} &lt;<a href="#top">{t("learnMore")}</a>&gt;
+        {t("notEligible")} &lt;
+        <a href="https://docs.saddle.finance/faq#what-is-saddles-guarded-launch-proof-of-governance-who-can-participate">
+          {t("learnMore")}
+        </a>
+        &gt;
       </p>
-      {/* TODO: Add related article link */}
     </div>
   )
 }
