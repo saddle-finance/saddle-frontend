@@ -65,6 +65,7 @@ interface Props {
   onFormChange: (action: any) => void
   onChangeInfiniteApproval: () => void
   infiniteApproval: boolean
+  onConfirmTransaction: () => Promise<void>
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -80,6 +81,7 @@ const WithdrawPage = (props: Props): ReactElement => {
     reviewData,
     infiniteApproval,
     onChangeInfiniteApproval,
+    onConfirmTransaction,
   } = props
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -178,44 +180,43 @@ const WithdrawPage = (props: Props): ReactElement => {
             </div>
             <div className="advancedOptions">
               <div>
-                <div>
-                  <label>
-                    {"All tokens"}
-                    <input
-                      type="radio"
-                      value={"ALL"}
-                      checked={formStateData.withdrawType === "ALL"}
-                      onChange={(): void =>
-                        onFormChange({
-                          fieldName: "withdrawType",
-                          value: "ALL",
-                        })
-                      }
-                    />
-                  </label>
-                </div>
-                {tokensData.map((t) => {
-                  return (
-                    <div key={t.symbol}>
-                      <label>
-                        {t.name}
-                        <input
-                          type="radio"
-                          value={t.symbol}
-                          checked={formStateData.withdrawType === t.symbol}
-                          onChange={(): void =>
-                            onFormChange({
-                              fieldName: "withdrawType",
-                              value: t.symbol,
-                            })
-                          }
-                        />
-                      </label>
-                    </div>
-                  )
-                })}
+                <label>
+                  <input
+                    type="radio"
+                    value={"ALL"}
+                    checked={formStateData.withdrawType === "ALL"}
+                    onChange={(): void =>
+                      onFormChange({
+                        fieldName: "withdrawType",
+                        value: "ALL",
+                      })
+                    }
+                  />
+                  {"All tokens"}
+                </label>
               </div>
-              {/* <label className="combination">
+              {tokensData.map((t) => {
+                return (
+                  <div key={t.symbol}>
+                    <label>
+                      <input
+                        type="radio"
+                        value={t.symbol}
+                        checked={formStateData.withdrawType === t.symbol}
+                        onChange={(): void =>
+                          onFormChange({
+                            fieldName: "withdrawType",
+                            value: t.symbol,
+                          })
+                        }
+                      />
+                      {t.name}
+                    </label>
+                  </div>
+                )
+              })}
+            </div>
+            {/* <label className="combination">
               <span className="checkbox_input">
                 <input
                   type="checkbox"
@@ -239,64 +240,66 @@ const WithdrawPage = (props: Props): ReactElement => {
               </span>
               <span className="combLabel">{t("combinationOfAll")}</span>
             </label> */}
-              <div className="paramater">
-                <InfiniteApproval
-                  checked={infiniteApproval}
-                  onChange={onChangeInfiniteApproval}
-                />
-              </div>
-              <div className="paramater">
-                {`${t("gas")}:`}
-                <span
-                  className={classNames({
-                    selected: gasPriceSelected === GasPrices.Standard,
-                  })}
-                  onClick={(): PayloadAction<GasPrices> =>
-                    dispatch(updateGasPriceSelected(GasPrices.Standard))
-                  }
-                >
-                  {gasStandard} {t("standard")}
-                </span>
-                <span
-                  className={classNames({
-                    selected: gasPriceSelected === GasPrices.Fast,
-                  })}
-                  onClick={(): PayloadAction<GasPrices> =>
-                    dispatch(updateGasPriceSelected(GasPrices.Fast))
-                  }
-                >
-                  {gasFast} {t("fast")}
-                </span>
-                <span
-                  className={classNames({
-                    selected: gasPriceSelected === GasPrices.Instant,
-                  })}
-                  onClick={(): PayloadAction<GasPrices> =>
-                    dispatch(updateGasPriceSelected(GasPrices.Instant))
-                  }
-                >
-                  {gasInstant} {t("instant")}
-                </span>
-                <input
-                  className={classNames({
-                    selected: gasPriceSelected === GasPrices.Custom,
-                  })}
-                  value={gasCustom?.valueRaw}
-                  onClick={(): PayloadAction<GasPrices> =>
-                    dispatch(updateGasPriceSelected(GasPrices.Custom))
-                  }
-                  onChange={(
-                    e: React.ChangeEvent<HTMLInputElement>,
-                  ): PayloadAction<string> =>
-                    dispatch(updateGasPriceCustom(e.target.value))
-                  }
-                />
-              </div>
+            <div className="paramater">
+              <InfiniteApproval
+                checked={infiniteApproval}
+                onChange={onChangeInfiniteApproval}
+              />
+            </div>
+            <div className="paramater">
+              {`${t("gas")}:`}
+              <span
+                className={classNames({
+                  selected: gasPriceSelected === GasPrices.Standard,
+                })}
+                onClick={(): PayloadAction<GasPrices> =>
+                  dispatch(updateGasPriceSelected(GasPrices.Standard))
+                }
+              >
+                {gasStandard} {t("standard")}
+              </span>
+              <span
+                className={classNames({
+                  selected: gasPriceSelected === GasPrices.Fast,
+                })}
+                onClick={(): PayloadAction<GasPrices> =>
+                  dispatch(updateGasPriceSelected(GasPrices.Fast))
+                }
+              >
+                {gasFast} {t("fast")}
+              </span>
+              <span
+                className={classNames({
+                  selected: gasPriceSelected === GasPrices.Instant,
+                })}
+                onClick={(): PayloadAction<GasPrices> =>
+                  dispatch(updateGasPriceSelected(GasPrices.Instant))
+                }
+              >
+                {gasInstant} {t("instant")}
+              </span>
+              <input
+                className={classNames({
+                  selected: gasPriceSelected === GasPrices.Custom,
+                })}
+                value={gasCustom?.valueRaw}
+                onClick={(): PayloadAction<GasPrices> =>
+                  dispatch(updateGasPriceSelected(GasPrices.Custom))
+                }
+                onChange={(
+                  e: React.ChangeEvent<HTMLInputElement>,
+                ): PayloadAction<string> =>
+                  dispatch(updateGasPriceCustom(e.target.value))
+                }
+              />
             </div>
             <button
               className="actionBtn"
               type="submit"
-              disabled={!!formStateData.error}
+              disabled={
+                !!formStateData.error ||
+                formStateData.lpTokenAmountToSpend.isZero()
+              }
               onClick={(): void => {
                 onSubmit()
               }}
@@ -319,7 +322,10 @@ const WithdrawPage = (props: Props): ReactElement => {
               <ReviewWithdraw
                 data={{ ...testWithdrawData, ...reviewData }}
                 gas={gasPriceSelected}
-                onConfirm={(): void => setPopUp("confirm")}
+                onConfirm={(): void => {
+                  onConfirmTransaction()
+                  setPopUp("confirm")
+                }}
                 onClose={(): void => setModalOpen(false)}
               />
             ) : null}
