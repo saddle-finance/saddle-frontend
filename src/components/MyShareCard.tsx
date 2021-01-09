@@ -6,6 +6,7 @@ import { TOKENS_MAP } from "../constants"
 import { UserShareType } from "../hooks/usePoolData"
 import { formatUnits } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
+import { useWeb3React } from "@web3-react/core"
 
 interface Props {
   data: UserShareType | null
@@ -13,8 +14,10 @@ interface Props {
 
 function MyShareCard({ data }: Props): ReactElement | null {
   const { t } = useTranslation()
+  const { account } = useWeb3React()
 
   if (!data) return null
+
   const formattedData = {
     share: (parseFloat(formatUnits(data.share, 18)) * 100).toFixed(2),
     usdBalance: parseFloat(formatUnits(data.usdBalance, 18)).toFixed(2),
@@ -57,6 +60,7 @@ function MyShareCard({ data }: Props): ReactElement | null {
           </div>
         ))}
       </div>
+      {account}
     </div>
   )
 }

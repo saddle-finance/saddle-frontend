@@ -63,6 +63,19 @@ export const MERKLETREE_DATA: { [chainId in ChainId]: string } = {
   [ChainId.HARDHAT]: "hardhat.json",
 }
 
+export const BTC_SWAP_TOKEN_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0x4D0224D6b03f00720F2D567dF2859b856c86AbD7",
+  [ChainId.HARDHAT]: "0xB955b6c65Ff69bfe07A557aa385055282b8a5eA3",
+}
+export const BTC_SWAP_TOKEN = new Token(
+  BTC_SWAP_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "BLPT",
+  "blpt",
+  "Bitcoin Swap Token",
+  "", // TODO add logo
+)
+
 // Stablecoins
 const DAI_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
@@ -195,3 +208,6 @@ export const TRANSACTION_TYPES = {
 }
 
 export const POOL_FEE_PRECISION = 10
+
+// TODO Change this below for efficient log queries
+export const MAINNET_DEPLOYED_BLOCK = 0
