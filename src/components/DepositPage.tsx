@@ -20,8 +20,10 @@ import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
 import { formatUnits } from "@ethersproject/units"
+import { getMerkleProof } from "../utils/merkleTree"
 import { logEvent } from "../utils/googleAnalytics"
 import { updatePoolAdvancedMode } from "../state/user"
+import { useActiveWeb3React } from "../hooks"
 import { useTranslation } from "react-i18next"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -57,6 +59,7 @@ interface Props {
 
 const DepositPage = (props: Props): ReactElement => {
   const { t } = useTranslation()
+  const { account } = useActiveWeb3React()
   const {
     tokens,
     poolData,
@@ -76,8 +79,7 @@ const DepositPage = (props: Props): ReactElement => {
   const { userPoolAdvancedMode: advanced } = useSelector(
     (state: AppState) => state.user,
   )
-  // TODO: Add eligibility logic
-  const eligible = true
+  const eligible = !!getMerkleProof(account)?.length
   let errorMessage = null
   if (!isAcceptingDeposits) {
     errorMessage = t("poolIsNotAcceptingDeposits")
@@ -123,9 +125,9 @@ const DepositPage = (props: Props): ReactElement => {
               </div>
             ))}
             <div
-              className={
-                "transactionInfoContainer " + classNames({ show: true }) // transactionInfoData.isInfo })
-              }
+              className={classNames("transactionInfoContainer", {
+                show: transactionInfoData.isInfo, // TODO review this "isInfo" logic
+              })}
             >
               <div className="transactionInfo">
                 {poolData?.keepApr && (
