@@ -1,6 +1,7 @@
-import { BytesLike } from "@ethersproject/bytes"
-import merkleTreeData from "../constants/exampleMerkleTreeData.json"
-
+interface MerkleTreeData {
+  merkleRoot: string
+  allowedAccounts: Record<string, Account>
+}
 interface Account {
   proof: string[]
   flags: {
@@ -9,9 +10,12 @@ interface Account {
     yam: boolean
   }
 }
-const ALLOWED_ACCOUNTS: Record<string, Account> = merkleTreeData.allowedAccounts
 
-export function getMerkleProof(address?: string | null): BytesLike[] {
+export function getMerkleProof(
+  merkleTreeData: MerkleTreeData,
+  address?: string | null,
+): string[] {
+  const ALLOWED_ACCOUNTS = merkleTreeData.allowedAccounts
   if (address && address in ALLOWED_ACCOUNTS) {
     return ALLOWED_ACCOUNTS[address].proof
   }

@@ -20,10 +20,8 @@ import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
 import { formatUnits } from "@ethersproject/units"
-import { getMerkleProof } from "../utils/merkleTree"
 import { logEvent } from "../utils/googleAnalytics"
 import { updatePoolAdvancedMode } from "../state/user"
-import { useActiveWeb3React } from "../hooks"
 import { useTranslation } from "react-i18next"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -54,12 +52,12 @@ interface Props {
     share: number
     lpToken: number // TODO: Calculate or pull from contract to get real value
   }
+  hasMerkleProof: boolean
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 const DepositPage = (props: Props): ReactElement => {
   const { t } = useTranslation()
-  const { account } = useActiveWeb3React()
   const {
     tokens,
     poolData,
@@ -70,6 +68,7 @@ const DepositPage = (props: Props): ReactElement => {
     isAcceptingDeposits,
     onChangeTokenInputValue,
     onConfirmTransaction,
+    hasMerkleProof,
   } = props
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -79,7 +78,6 @@ const DepositPage = (props: Props): ReactElement => {
   const { userPoolAdvancedMode: advanced } = useSelector(
     (state: AppState) => state.user,
   )
-  const eligible = !!getMerkleProof(account)?.length
   let errorMessage = null
   if (!isAcceptingDeposits) {
     errorMessage = t("poolIsNotAcceptingDeposits")
@@ -90,7 +88,7 @@ const DepositPage = (props: Props): ReactElement => {
   return (
     <div className="deposit">
       <TopMenu activeTab={"deposit"} />
-      {!eligible && <IneligibilityBanner />}
+      {!hasMerkleProof && <IneligibilityBanner />}
 
       <div className="content">
         <div className="left">
@@ -112,7 +110,7 @@ const DepositPage = (props: Props): ReactElement => {
               <div key={index}>
                 <TokenInput
                   {...token}
-                  disabled={!eligible || !isAcceptingDeposits}
+                  disabled={!isAcceptingDeposits || !hasMerkleProof}
                   onChange={(value): void =>
                     onChangeTokenInputValue(token.symbol, value)
                   }
@@ -211,7 +209,7 @@ const DepositPage = (props: Props): ReactElement => {
               setPopUp("review")
             }}
             disabled={
-              !eligible || willExceedMaxDeposits || !isAcceptingDeposits
+              !hasMerkleProof || willExceedMaxDeposits || !isAcceptingDeposits
             }
           >
             {t("deposit")}

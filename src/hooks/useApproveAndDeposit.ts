@@ -7,7 +7,6 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { NumberInputState } from "../utils/numberInputState"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { getFormattedTimeString } from "../utils/dateTime"
-import { getMerkleProof } from "../utils/merkleTree"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
@@ -23,6 +22,7 @@ interface ApproveAndDepositStateArgument {
   slippageCustom?: NumberInputState
   gasPriceSelected: GasPrices
   gasCustom?: NumberInputState
+  merkleProof: string[]
 }
 
 export function useApproveAndDeposit(
@@ -47,10 +47,8 @@ export function useApproveAndDeposit(
     try {
       if (!account) throw new Error("Wallet must be connected")
       if (!swapContract) throw new Error("Swap contract is not loaded")
-      if (!getMerkleProof(account)?.length) {
-        console.error("You are not approved to deposit at this time")
-        return
-      }
+      if (!state.merkleProof.length)
+        throw new Error("User is not approved to deposit at this time")
       // For each token being desposited, check the allowance and approve it if necessary
       for (const token of POOL_TOKENS) {
         const spendingValue = BigNumber.from(
@@ -139,7 +137,7 @@ export function useApproveAndDeposit(
         POOL_TOKENS.map(({ symbol }) => state.tokenFormState[symbol].valueSafe),
         minToMint,
         Math.round(new Date().getTime() / 1000 + 60 * 10),
-        getMerkleProof(account),
+        state.merkleProof,
         {
           gasPrice,
         },

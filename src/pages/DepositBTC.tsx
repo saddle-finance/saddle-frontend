@@ -12,6 +12,8 @@ import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
 import { formatUnits } from "@ethersproject/units"
+import { getMerkleProof } from "../utils/merkleTree"
+import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
 import usePoolData from "../hooks/usePoolData"
@@ -19,6 +21,9 @@ import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
 import { useTokenBalance } from "../state/wallet/hooks"
 import { useTokenFormState } from "../hooks/useTokenFormState"
+
+// TODO add production data w/ isProduction
+const merkleTreeDataPromise = import("../constants/exampleMerkleTreeData.json")
 
 // Dumb data start here
 const testTransInfoData = {
@@ -36,11 +41,11 @@ const testDepositData = {
 }
 // Dumb data end here
 
-function DepositBTC(): ReactElement {
+function DepositBTC(): ReactElement | null {
+  const { account } = useActiveWeb3React()
   const approveAndDeposit = useApproveAndDeposit(BTC_POOL_NAME)
   const [poolData, userShareData] = usePoolData(BTC_POOL_NAME)
   const swapContract = useSwapContract(BTC_POOL_NAME)
-  const { account } = useActiveWeb3React()
   const [tokenFormState, updateTokenFormState] = useTokenFormState(
     BTC_POOL_TOKENS,
   )
@@ -52,17 +57,37 @@ function DepositBTC(): ReactElement {
     infiniteApproval,
   } = useSelector((state: AppState) => state.user)
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
+  const [userMerkleProof, setUserMerkleProof] = useState<string[] | null>(null)
+  useEffect(() => {
+    merkleTreeDataPromise.then((data) => {
+      const proof = getMerkleProof(data, account)
+      setUserMerkleProof(proof)
+    })
+  }, [account])
   const [willExceedMaxDeposits, setWillExceedMaxDeposit] = useState(true)
   useEffect(() => {
+    // evaluate if a new deposit will exceed the pool's per-user limit
     async function calculateMaxDeposits(): Promise<void> {
       if (swapContract == null || userShareData == null || poolData == null)
         return
-      let depositLPTokenAmount = BigNumber.from(0)
+      let depositLPTokenAmount
       if (poolData.totalLocked.gt(0)) {
         depositLPTokenAmount = await swapContract.calculateTokenAmount(
           account,
           BTC_POOL_TOKENS.map(({ symbol }) => tokenFormState[symbol].valueSafe),
           true, // deposit boolean
+        )
+      } else {
+        // when pool is empty, estimate the lptokens by just summing the input instead of calling contract
+        depositLPTokenAmount = parseUnits(
+          String(
+            BTC_POOL_TOKENS.reduce(
+              (sum, { symbol }) =>
+                sum + (+tokenFormState[symbol].valueRaw || 0),
+              0,
+            ),
+          ),
+          18,
         )
       }
 
@@ -103,7 +128,12 @@ function DepositBTC(): ReactElement {
     ),
     inputValue: tokenFormState[symbol].valueRaw,
   }))
+  const hasMerkleProof = userMerkleProof != null && !!userMerkleProof?.length
 
+  if (userMerkleProof == null) {
+    // TODO: replace with loader component
+    return null
+  }
   async function onConfirmTransaction(): Promise<void> {
     if (willExceedMaxDeposits && !poolData?.isAcceptingDeposits) return
     await approveAndDeposit({
@@ -113,6 +143,7 @@ function DepositBTC(): ReactElement {
       tokenFormState,
       gasPriceSelected,
       gasCustom,
+      merkleProof: userMerkleProof || [],
     })
     // Clear input after deposit
     updateTokenFormState(
@@ -163,6 +194,7 @@ function DepositBTC(): ReactElement {
       infiniteApproval={infiniteApproval}
       willExceedMaxDeposits={willExceedMaxDeposits}
       isAcceptingDeposits={!!poolData?.isAcceptingDeposits}
+      hasMerkleProof={hasMerkleProof}
     />
   )
 }
