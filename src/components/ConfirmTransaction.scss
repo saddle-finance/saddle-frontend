@@ -14,9 +14,11 @@ div.confirmTransaction {
     font-size: 30px;
   }
 
-  img {
+  svg {
     margin-top: 40px;
     margin-bottom: 40px;
+
+    fill: var(--sign-graph);
 
     background-color: var(--background-logo);
     border-radius: 240px;
