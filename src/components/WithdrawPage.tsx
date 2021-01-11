@@ -100,10 +100,13 @@ const WithdrawPage = (props: Props): ReactElement => {
     setPopUp("review")
   }
 
+  const noShare =
+    !myShareData || myShareData.lpTokenBalance.eq(BigNumber.from(0))
+
   return (
-    <div className="withdraw">
+    <div className={"withdraw " + classNames({ noShare: noShare })}>
       <TopMenu activeTab={"withdraw"} />
-      {!myShareData || myShareData.lpTokenBalance.eq(BigNumber.from(0)) ? (
+      {noShare ? (
         <NoShareContent />
       ) : (
         <div className="content">

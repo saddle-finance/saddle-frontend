@@ -96,11 +96,11 @@ div.withdraw {
       margin-bottom: 24px;
       display: block;
       width: 170px;
-      height: 48px;
+      height: 40px;
       border: none;
       border-radius: 6px;
       background: $primary;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: $bold;
       box-shadow: var(--shadow);
       letter-spacing: 0.04em;
@@ -245,4 +245,8 @@ div.withdraw {
     background: $divider-red;
     margin: 16px 0;
   }
+}
+
+div.noShare {
+  background: var(--background);
 }
