@@ -32,6 +32,7 @@ import { useTranslation } from "react-i18next"
 interface Props {
   title: string
   infiniteApproval: boolean
+  willExceedMaxDeposits: boolean
   onConfirmTransaction: () => Promise<void>
   onChangeTokenInputValue: (tokenSymbol: string, value: string) => void
   onChangeInfiniteApproval: () => void
@@ -68,6 +69,7 @@ const DepositPage = (props: Props): ReactElement => {
     myShareData,
     depositDataFromParent,
     infiniteApproval,
+    willExceedMaxDeposits,
     onChangeTokenInputValue,
     onConfirmTransaction,
     onChangeInfiniteApproval,
@@ -99,6 +101,18 @@ const DepositPage = (props: Props): ReactElement => {
         <div className="left">
           <div className="form">
             <h3>{t("addLiquidity")}</h3>
+            {willExceedMaxDeposits && (
+              <div className="error">
+                {t("depositLimitExceeded")}{" "}
+                <a
+                  href="https://docs.saddle.finance/faq#what-is-saddles-guarded-launch-proof-of-governance-who-can-participate"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {t("learnMore")}
+                </a>
+              </div>
+            )}
             {tokens.map((token, index) => (
               <div key={index}>
                 <TokenInput
@@ -267,7 +281,7 @@ const DepositPage = (props: Props): ReactElement => {
               setModalOpen(true)
               setPopUp("review")
             }}
-            disabled={!eligible}
+            disabled={!eligible || willExceedMaxDeposits}
           >
             {t("deposit")}
           </button>

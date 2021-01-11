@@ -11,7 +11,11 @@ function Eligibility(): ReactElement {
     <div className="eligibility">
       <p>
         {t("notEligible")} &lt;
-        <a href="https://docs.saddle.finance/faq#what-is-saddles-guarded-launch-proof-of-governance-who-can-participate">
+        <a
+          href="https://docs.saddle.finance/faq#what-is-saddles-guarded-launch-proof-of-governance-who-can-participate"
+          target="_blank"
+          rel="noreferrer"
+        >
           {t("learnMore")}
         </a>
         &gt;

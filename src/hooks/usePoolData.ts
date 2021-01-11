@@ -3,6 +3,7 @@ import { formatUnits, parseUnits } from "@ethersproject/units"
 import { useAllContracts, useSwapContract } from "./useContract"
 import { useEffect, useState } from "react"
 
+import ALLOWLIST_ABI from "../constants/abis/allowList.json"
 import { AddressZero } from "@ethersproject/constants"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -26,6 +27,7 @@ export interface UserShareType {
   tokens: TokenShareType[]
   usdBalance: BigNumber
   value: BigNumber
+  lpTokenCap: BigNumber
 }
 export interface PoolDataType {
   adminFee: BigNumber
@@ -70,9 +72,14 @@ export default function usePoolData(
       const POOL_TOKENS = POOLS_MAP[poolName]
 
       // Swap fees, price, and LP Token data
-      const [userCurrentWithdrawFee, swapStorage] = await Promise.all([
+      const [
+        userCurrentWithdrawFee,
+        swapStorage,
+        allowlistAddress,
+      ] = await Promise.all([
         swapContract.calculateCurrentWithdrawFee(account || AddressZero),
         swapContract.swapStorage(),
+        swapContract.allowlist(),
       ])
       const { adminFee, lpToken: lpTokenAddress, swapFee } = swapStorage
       const lpToken = getContract(
@@ -85,6 +92,14 @@ export default function usePoolData(
         lpToken.balanceOf(account || AddressZero),
         lpToken.totalSupply(),
       ])
+      const allowlist = getContract(
+        allowlistAddress,
+        ALLOWLIST_ABI,
+        library,
+        account ?? undefined,
+      )
+      const lpTokenCap = await allowlist.getPoolCap(account)
+      console.log(lpTokenCap.toString())
 
       const virtualPrice = totalLpTokenBalance.isZero()
         ? BigNumber.from(10).pow(18)
@@ -187,6 +202,7 @@ export default function usePoolData(
             tokens: userPoolTokens,
             currentWithdrawFee: userCurrentWithdrawFee,
             lpTokenBalance: userLpTokenBalance,
+            lpTokenCap,
           }
         : null
       setPoolData([poolData, userShareData])

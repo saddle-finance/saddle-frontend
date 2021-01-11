@@ -176,4 +176,12 @@ div.deposit {
   div.show {
     display: block;
   }
+
+  .error {
+    width: 100%;
+    color: $error;
+    font-weight: $normal;
+    text-align: center;
+    margin: 8px;
+  }
 }
