@@ -27,7 +27,6 @@ export interface UserShareType {
   tokens: TokenShareType[]
   usdBalance: BigNumber
   value: BigNumber
-  lpTokenCap: BigNumber
 }
 export interface PoolDataType {
   adminFee: BigNumber
@@ -40,6 +39,8 @@ export interface PoolDataType {
   utilization: string // TODO: calculate
   virtualPrice: BigNumber
   volume: string // TODO: calculate
+  poolAccountLimit: BigNumber
+  isAcceptingDeposits: boolean
 }
 
 export type PoolDataHookReturnType = [PoolDataType | null, UserShareType | null]
@@ -98,8 +99,11 @@ export default function usePoolData(
         library,
         account ?? undefined,
       )
-      const lpTokenCap = await allowlist.getPoolCap(account)
-      console.log(lpTokenCap.toString())
+      const poolAccountLimit = await allowlist.getPoolAccountLimit(
+        swapContract.address,
+      )
+      const poolLPTokenCap = await allowlist.getPoolCap(swapContract.address)
+      const isAcceptingDeposits = poolLPTokenCap.lt(totalLpTokenBalance)
 
       const virtualPrice = totalLpTokenBalance.isZero()
         ? BigNumber.from(10).pow(18)
@@ -191,6 +195,8 @@ export default function usePoolData(
         volume: "XXX", // TODO
         utilization: "XXX", // TODO
         apy: "XXX", // TODO
+        poolAccountLimit,
+        isAcceptingDeposits,
       }
       const userShareData = account
         ? {
@@ -202,7 +208,6 @@ export default function usePoolData(
             tokens: userPoolTokens,
             currentWithdrawFee: userCurrentWithdrawFee,
             lpTokenBalance: userLpTokenBalance,
-            lpTokenCap,
           }
         : null
       setPoolData([poolData, userShareData])

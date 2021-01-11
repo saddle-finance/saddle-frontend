@@ -45,6 +45,7 @@
   "notEligible": "Unfortunately, this address isn't eligible to deposit as part of our guarded launch, \"Proof of Governance\".",
   "ofPool": "of pool",
   "pool": "Pool",
+  "poolIsNotAcceptingDeposits": "Pool is not accepting additional deposits at this time",
   "poolOverview": "Pool Overview",
   "price": "Price",
   "rates": "Rates",

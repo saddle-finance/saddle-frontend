@@ -14,7 +14,7 @@ function Eligibility(): ReactElement {
         <a
           href="https://docs.saddle.finance/faq#what-is-saddles-guarded-launch-proof-of-governance-who-can-participate"
           target="_blank"
-          rel="noreferrer"
+          rel="noopener noreferrer"
         >
           {t("learnMore")}
         </a>

@@ -56,7 +56,8 @@ function DepositBTC(): ReactElement {
   const [willExceedMaxDeposits, setWillExceedMaxDeposit] = useState(true)
   useEffect(() => {
     async function calculateMaxDeposits(): Promise<void> {
-      if (swapContract == null || userShareData == null) return
+      if (swapContract == null || userShareData == null || poolData == null)
+        return
       const depositLPTokenAmount = await swapContract.calculateTokenAmount(
         account,
         BTC_POOL_TOKENS.map(({ symbol }) => tokenFormState[symbol].valueSafe),
@@ -66,7 +67,7 @@ function DepositBTC(): ReactElement {
         userShareData?.lpTokenBalance,
       )
       const exceedsMaxDeposits = futureUserLPTokenBalance.gt(
-        userShareData?.lpTokenCap,
+        poolData.poolAccountLimit,
       )
       if (willExceedMaxDeposits !== exceedsMaxDeposits) {
         setWillExceedMaxDeposit(exceedsMaxDeposits)
@@ -74,6 +75,7 @@ function DepositBTC(): ReactElement {
     }
     calculateMaxDeposits()
   }, [
+    poolData,
     tokenFormState,
     swapContract,
     userShareData,
@@ -100,7 +102,7 @@ function DepositBTC(): ReactElement {
   }))
 
   async function onConfirmTransaction(): Promise<void> {
-    if (willExceedMaxDeposits) return
+    if (willExceedMaxDeposits && !poolData?.isAcceptingDeposits) return
     await approveAndDeposit({
       slippageCustom,
       slippageSelected,
@@ -161,6 +163,7 @@ function DepositBTC(): ReactElement {
       depositDataFromParent={depositData}
       infiniteApproval={infiniteApproval}
       willExceedMaxDeposits={willExceedMaxDeposits}
+      isAcceptingDeposits={!!poolData?.isAcceptingDeposits}
     />
   )
 }
