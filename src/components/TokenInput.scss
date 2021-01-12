@@ -8,7 +8,7 @@ div.tokenInput {
   input {
     position: absolute;
     left: 78px;
-    width: 120px;
+    width: 168px;
     height: 32px;
     display: block;
     background: $white;
@@ -32,6 +32,10 @@ div.tokenInput {
       background-color: $disabled;
       border: none;
     }
+  }
+
+  input.hasMaxButton {
+    width: 120px;
   }
 
   span {
