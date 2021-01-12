@@ -9,12 +9,15 @@ import {
   updateSlippageCustom,
   updateSlippageSelected,
 } from "../state/user"
+import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
 import { AppState } from "../state"
 import ConfirmTransaction from "./ConfirmTransaction"
+import IneligibilityBanner from "./IneligibilityBanner"
+import InfiniteApproval from "./InfiniteApproval"
 import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
 import { PayloadAction } from "@reduxjs/toolkit"
@@ -28,39 +31,20 @@ import { useTranslation } from "react-i18next"
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   title: string
-  onConfirmTransaction: () => void
+  infiniteApproval: boolean
+  onConfirmTransaction: () => Promise<void>
   onChangeTokenInputValue: (tokenSymbol: string, value: string) => void
+  onChangeInfiniteApproval: () => void
   tokens: Array<{
     symbol: string
     name: string
     icon: string
-    max: number
+    max: string
     inputValue: string
   }>
   selected?: { [key: string]: any }
-  poolData: {
-    name: string
-    fee: number
-    adminFee: number
-    virtualPrice: number
-    utilization: number
-    volume: number
-    reserve: number
-    tokens: Array<{
-      name: string
-      icon: string
-      percent: number
-      value: number
-    }>
-  }
-  myShareData?: {
-    name: string
-    share: number
-    value: number
-    USDbalance: number
-    aveBalance: number
-    token: Array<{ name: string; value: number }>
-  }
+  poolData: PoolDataType | null
+  myShareData: UserShareType | null
   transactionInfoData: {
     isInfo: boolean
     content: { [key: string]: any }
@@ -69,8 +53,8 @@ interface Props {
     deposit: Array<{ [key: string]: any }>
     rates: Array<{ [key: string]: any }>
     share: number
-    sadd: number
-    slippage: number
+    lpToken: number // TODO: Calculate or pull from contract to get real value
+    slippage: string
   }
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -78,18 +62,18 @@ interface Props {
 const DepositPage = (props: Props): ReactElement => {
   const { t } = useTranslation()
   const {
-    title,
     tokens,
     poolData,
     transactionInfoData,
     myShareData,
     depositDataFromParent,
+    infiniteApproval,
     onChangeTokenInputValue,
     onConfirmTransaction,
+    onChangeInfiniteApproval,
   } = props
 
   const [modalOpen, setModalOpen] = useState(false)
-  const [infiniteApproval, setInfiniteApproval] = useState(false)
   const [popUp, setPopUp] = useState("")
 
   const dispatch = useDispatch<AppDispatch>()
@@ -103,18 +87,23 @@ const DepositPage = (props: Props): ReactElement => {
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
+  // TODO: Add eligibility logic
+  const eligible = true
 
   return (
     <div className="deposit">
-      <TopMenu activeTab={"pool"} />
+      <TopMenu activeTab={"deposit"} />
+      {!eligible && <IneligibilityBanner />}
+
       <div className="content">
         <div className="left">
           <div className="form">
-            <h3>{`${t("addLiquidity")} ${title}`}</h3>
+            <h3>{t("addLiquidity")}</h3>
             {tokens.map((token, index) => (
               <div key={index}>
                 <TokenInput
                   {...token}
+                  disabled={!eligible}
                   onChange={(value): void =>
                     onChangeTokenInputValue(token.symbol, value)
                   }
@@ -134,9 +123,9 @@ const DepositPage = (props: Props): ReactElement => {
             >
               <div className="transactionInfo">
                 <div className="transactionInfoItem">
-                  <span>{`Saddle LP ${t("tokenValue")}: `}</span>
+                  <span>{`KEEP ROI ${t("tokenValue")}: `}</span>
                   <span className="value">
-                    {transactionInfoData.content.lpTokenValue}
+                    {transactionInfoData.content.keepTokenValue}
                   </span>
                 </div>
                 <div className="transactionInfoItem">
@@ -185,40 +174,11 @@ const DepositPage = (props: Props): ReactElement => {
             </span>
             <div className="divider"></div>
             <div className={"tableContainer" + classNames({ show: advanced })}>
-              <div className="infiniteApproval">
-                <label className="checkbox_input">
-                  <input
-                    type="checkbox"
-                    checked={infiniteApproval}
-                    onChange={(): void =>
-                      setInfiniteApproval(!infiniteApproval)
-                    }
-                  />
-                  <span className="checkbox_control">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                      focusable="false"
-                    >
-                      <path
-                        fill="none"
-                        stroke="#00f4d7"
-                        strokeWidth="4"
-                        d="M1.73 12.91l6.37 6.37L22.79 4.59"
-                      />
-                    </svg>
-                  </span>
-                </label>
-                <div className="IAlabel">
-                  {t("infiniteApproval")}
-                  <span className="tooltipText">
-                    Allow Saddle to spend all of your USDC now and in the
-                    future. You will not need to approve again.
-                  </span>
-                  {/* TODO: Replace placeholder text "USDC" to real token name */}
-                </div>
-              </div>
+              <InfiniteApproval
+                checked={infiniteApproval}
+                onChange={onChangeInfiniteApproval}
+              />
+
               <div className="paramater">
                 {`${t("maxSlippage")}:`}
                 <span
@@ -282,7 +242,7 @@ const DepositPage = (props: Props): ReactElement => {
                     dispatch(updateGasPriceSelected(GasPrices.Instant))
                   }
                 >
-                  {gasInstant} {t("instant")}
+                  {gasInstant?.toString()} {t("instant")}
                 </span>
                 <input
                   className={classNames({
@@ -307,6 +267,7 @@ const DepositPage = (props: Props): ReactElement => {
               setModalOpen(true)
               setPopUp("review")
             }}
+            disabled={!eligible}
           >
             {t("deposit")}
           </button>
@@ -328,7 +289,7 @@ const DepositPage = (props: Props): ReactElement => {
               gas={gasPriceSelected}
               onConfirm={(): void => {
                 setPopUp("confirm")
-                onConfirmTransaction?.()
+                onConfirmTransaction?.().finally(() => setModalOpen(false))
               }}
               onClose={(): void => setModalOpen(false)}
             />

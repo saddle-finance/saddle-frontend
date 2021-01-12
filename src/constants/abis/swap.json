@@ -92,6 +92,45 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newAdminFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "NewAdminFee",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newSwapFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "NewSwapFee",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newWithdrawFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "NewWithdrawFee",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "previousOwner",
@@ -111,6 +150,37 @@
     "anonymous": false,
     "inputs": [],
     "name": "Paused",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "oldA",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newA",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "initialTime",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "futureTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "RampA",
     "type": "event"
   },
   {
@@ -210,6 +280,25 @@
       }
     ],
     "name": "RemoveLiquidityOne",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "A",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "time",
+        "type": "uint256"
+      }
+    ],
+    "name": "StopRampA",
     "type": "event"
   },
   {
@@ -320,6 +409,11 @@
     "constant": true,
     "inputs": [
       {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
@@ -340,6 +434,11 @@
   {
     "constant": true,
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
       {
         "internalType": "uint256",
         "name": "tokenAmount",
@@ -398,6 +497,11 @@
     "constant": true,
     "inputs": [
       {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
         "internalType": "uint256[]",
         "name": "amounts",
         "type": "uint256[]"
@@ -424,6 +528,21 @@
     "constant": true,
     "inputs": [],
     "name": "getA",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getAPrecise",
     "outputs": [
       {
         "internalType": "uint256",
@@ -614,6 +733,26 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "futureA",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "futureTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "rampA",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
       },
@@ -760,6 +899,15 @@
   },
   {
     "constant": false,
+    "inputs": [],
+    "name": "stopRampA",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
     "inputs": [
       {
         "internalType": "uint8",
@@ -800,7 +948,22 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "A",
+        "name": "initialA",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "futureA",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "initialATime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "futureATime",
         "type": "uint256"
       },
       {
@@ -847,6 +1010,26 @@
     "constant": false,
     "inputs": [],
     "name": "unpause",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "transferAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateUserWithdrawFee",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",

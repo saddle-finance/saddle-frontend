@@ -1,13 +1,21 @@
 import { BLOCK_TIME, Token } from "../../constants"
+import {
+  BTC_POOL_NAME,
+  PoolName,
+  RENBTC,
+  SBTC,
+  TBTC,
+  WBTC,
+} from "../../constants"
 
 import { BigNumber } from "@ethersproject/bignumber"
-import { formatUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../../hooks"
+import { useMemo } from "react"
 import usePoller from "../../hooks/usePoller"
 import { useState } from "react"
 import { useTokenContract } from "../../hooks/useContract"
 
-export function useTokenBalance(t: Token): number {
+export function useTokenBalance(t: Token): BigNumber {
   const { account, chainId } = useActiveWeb3React()
   const [balance, setBalance] = useState<BigNumber>(BigNumber.from(0))
 
@@ -26,5 +34,28 @@ export function useTokenBalance(t: Token): number {
     }
   }, 2 * BLOCK_TIME)
 
-  return parseFloat(formatUnits(balance, t.decimals))
+  return balance
+}
+
+export function usePoolTokenBalances(
+  poolName: PoolName,
+): { [token: string]: BigNumber } | null {
+  const tbtcTokenBalance = useTokenBalance(TBTC)
+  const wtcTokenBalance = useTokenBalance(WBTC)
+  const renbtcTokenBalance = useTokenBalance(RENBTC)
+  const sbtcTokenBalance = useTokenBalance(SBTC)
+  const btcPoolTokenBalances = useMemo(
+    () => ({
+      [TBTC.symbol]: tbtcTokenBalance,
+      [WBTC.symbol]: wtcTokenBalance,
+      [RENBTC.symbol]: renbtcTokenBalance,
+      [SBTC.symbol]: sbtcTokenBalance,
+    }),
+    [tbtcTokenBalance, wtcTokenBalance, renbtcTokenBalance, sbtcTokenBalance],
+  )
+
+  if (poolName === BTC_POOL_NAME) {
+    return btcPoolTokenBalances
+  }
+  return null
 }

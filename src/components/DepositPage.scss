@@ -2,8 +2,8 @@
 
 div.deposit {
   min-height: 100vh;
-  background: $background-main;
-  color: $text;
+  background: var(--background-main);
+  color: var(--text);
   padding-bottom: 40px;
   box-sizing: border-box; // Make the padding included in height calculation
 
@@ -18,9 +18,9 @@ div.deposit {
       margin-top: 40px;
       width: 434px;
       padding: 24px 32px;
-      border: 1px solid $outline;
+      border: 1px solid var(--outline);
       border-radius: 10px;
-      background: $background-element;
+      background: var(--background-element);
       box-sizing: border-box;
     }
 
@@ -30,7 +30,8 @@ div.deposit {
 
     .form {
       width: 434px;
-      border: 1px solid $outline;
+      border: 1px solid var(--outline);
+      background: var(--background-element);
       border-radius: 10px;
       padding: 40px;
       margin-top: 40px;
@@ -43,7 +44,7 @@ div.deposit {
       margin-top: 0;
       margin-bottom: 48px;
       font-weight: $bold;
-      color: $text-darker;
+      color: var(--text);
       text-align: center;
     }
 
@@ -68,15 +69,28 @@ div.deposit {
       background: $primary;
       font-size: 18px;
       font-weight: $bold;
-      box-shadow: $shadow;
+      box-shadow: var(--shadow);
       letter-spacing: 0.04em;
 
       &:hover,
       &:focus {
         outline: none;
         background-color: $primary-blue;
-        color: $text;
-        box-shadow: $shadow-hover;
+        color: $text-white;
+        box-shadow: var(--shadow-hover);
+      }
+    }
+
+    .actionBtn:disabled {
+      cursor: not-allowed;
+      color: rgba(0, 0, 0, 0.2);
+
+      &:hover {
+        background-color: $primary;
+        color: rgba(0, 0, 0, 0.2);
+        transform: none;
+        opacity: 1;
+        box-shadow: var(--shadow);
       }
     }
   }
@@ -92,12 +106,12 @@ div.deposit {
     gap: 8px;
 
     span.value {
-      color: $text-darker;
+      color: var(--text-darker);
       font-weight: $bold;
     }
 
     span.bonus {
-      color: $primary;
+      color: var(--text-selected);
     }
 
     span.slippage {
@@ -119,102 +133,11 @@ div.deposit {
       width: 100%;
       height: 1px;
       margin: 10px 0 20px 0;
-      background: $outline;
+      background: var(--outline);
     }
 
     .tableContainer {
       display: none;
-    }
-
-    .infiniteApproval {
-      display: block;
-      position: relative;
-      font-size: 16px;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      display: flex;
-      align-items: center;
-
-      input {
-        width: 24px;
-        height: 24px;
-
-        opacity: 0;
-        &:checked + .checkbox_control svg {
-          transform: scale(1);
-        }
-      }
-      .checkbox_control {
-        display: inline-grid;
-        width: 20px;
-        height: 20px;
-        border-radius: 0.25em;
-        border: 0.1em solid #fff;
-      }
-      .checkbox_control svg {
-        margin: 0;
-        transition: transform 0.1s ease-in 25ms;
-        transform: scale(0);
-        transform-origin: bottom left;
-      }
-      .checkbox_input {
-        display: grid;
-        grid-template-areas: "checkbox";
-        margin-right: 8px;
-
-        > * {
-          grid-area: checkbox;
-          cursor: pointer;
-        }
-      }
-
-      .IAlabel {
-        position: relative;
-        border-bottom: 1px dotted $text;
-
-        &:hover {
-          cursor: help;
-        }
-      }
-
-      .IAlabel .tooltipText {
-        visibility: hidden;
-        width: 360px;
-        background-color: $white;
-        color: $text-black;
-        border-radius: 8px;
-        padding: 6px 8px;
-
-        font-size: 14px;
-        line-height: 20px;
-        font-weight: $normal;
-        letter-spacing: -0.04em;
-
-        /* Position the tooltip */
-        position: absolute;
-        z-index: 1;
-        bottom: 200%;
-        left: 50%;
-        margin-left: -100px;
-      }
-
-      /* Tooltip arrow */
-      .IAlabel .tooltipText::after {
-        content: "";
-        position: absolute;
-        top: 100%;
-        left: 40%;
-        margin-left: -5px;
-        border-width: 10px;
-        border-style: solid;
-        border-color: $white transparent transparent transparent;
-      }
-
-      .IAlabel:hover .tooltipText {
-        visibility: visible;
-      }
     }
 
     div.paramater {
@@ -226,7 +149,7 @@ div.deposit {
         letter-spacing: -0.06em;
       }
       span.selected {
-        color: $orange;
+        color: var(--text-selected);
         font-weight: $medium;
         text-decoration: underline;
       }
@@ -240,7 +163,7 @@ div.deposit {
         color: $text-black;
 
         &:focus {
-          outline: none;
+          outline: 1px solid var(--outline);
         }
       }
     }

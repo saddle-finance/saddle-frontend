@@ -1,7 +1,7 @@
 @import "../styles/theme";
 
 div.myShareCard {
-  color: $text-darker;
+  color: var(--text-darker);
   font-size: 16px;
 
   h4 {
@@ -12,7 +12,7 @@ div.myShareCard {
     margin-bottom: 24px;
     font-size: 30px;
     font-weight: $bold;
-    color: $text-darker;
+    color: var(--text-title);
   }
 
   div.info {
@@ -30,7 +30,7 @@ div.myShareCard {
   }
 
   .poolShare span {
-    color: $primary;
+    color: var(--text-selected);
   }
 
   div.currency {

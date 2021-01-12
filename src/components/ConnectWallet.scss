@@ -1,32 +1,32 @@
 @import "../styles/theme";
 
 div.connectWallet {
-  color: $text;
+  color: var(--text);
   padding: 40px;
-  background: $background;
+  background: var(--background);
   border-radius: 8px;
 
-  h3 {
+  & > h3 {
     font-weight: $bold;
     font-size: 20px;
     margin-top: 0;
     margin-bottom: 16px;
-    color: $text-darker;
+    color: var(--text-darker);
   }
 
   div.walletList {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 16px;
 
     margin: 0 -24px;
     padding: 32px;
 
     & > button {
-      background: $background;
-      color: $text;
+      background: var(--background);
+      color: var(--text);
       outline: none;
-      border: 1px solid $outline;
+      border: 1px solid var(--outline);
       border-radius: 10px;
       width: 100%;
       padding: 16px;
@@ -36,7 +36,8 @@ div.connectWallet {
 
       &:hover {
         cursor: pointer;
-        border: 1px solid $primary;
+        padding: 15px;
+        border: 2px solid var(--text-selected);
       }
     }
 
@@ -53,11 +54,11 @@ div.connectWallet {
   p {
     padding: 24px 32px 32px 32px;
     margin: -24px;
-    background: $background;
+    background: var(--background);
     border-radius: 8px;
 
     a {
-      color: $orange;
+      color: var(--text-selected);
       font-weight: $medium;
 
       &:hover {

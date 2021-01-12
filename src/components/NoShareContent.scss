@@ -1,0 +1,47 @@
+@import "../styles/theme.scss";
+
+div.no-share {
+  width: 888px;
+  margin: 0 auto;
+  text-align: center;
+
+  h2 {
+    font-size: 30px;
+  }
+  p {
+    margin-top: 24px;
+    margin-bottom: 40px;
+  }
+
+  img {
+    margin-top: 64px;
+    margin-bottom: 48px;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  .actionBtn {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 170px;
+    height: 40px;
+    border: none;
+    border-radius: 6px;
+    background: $primary;
+    font-size: 16px;
+    font-weight: $bold;
+    box-shadow: var(--shadow);
+    letter-spacing: 0.04em;
+
+    &:hover,
+    &:focus {
+      outline: none;
+      background-color: $primary-blue;
+      color: $text-white;
+      box-shadow: var(--shadow-hover);
+    }
+  }
+}

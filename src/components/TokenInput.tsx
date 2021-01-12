@@ -5,19 +5,21 @@ import React, { ReactElement } from "react"
 import { useTranslation } from "react-i18next"
 
 interface Props {
-  name: string
+  symbol: string
   icon: string
-  max: number
+  max?: string
   inputValue: string
   onChange: (value: string) => void
+  disabled?: boolean
 }
 
 function TokenInput({
-  name,
+  symbol,
   icon,
   max,
   inputValue,
   onChange,
+  disabled,
 }: Props): ReactElement {
   const { t } = useTranslation()
   function onClickMax(e: React.MouseEvent<HTMLButtonElement>): void {
@@ -31,17 +33,20 @@ function TokenInput({
   return (
     <div className="tokenInput">
       <img alt="icon" src={icon} />
-      <span>{name}</span>
-      <button className="max" onClick={onClickMax}>
-        {`${t("max")}:${Math.floor(max * 100) / 100}`}
-      </button>
+      <span>{symbol}</span>
+      {max != null && (
+        <button className="max" onClick={onClickMax} disabled={disabled}>
+          {`${t("max")}: ${max}`}
+        </button>
+      )}
       <input
-        // type="number"
+        disabled={disabled ? true : false}
         value={inputValue}
         onChange={onChangeInput}
-        placeholder={String(max)}
-        // max={max}
-        // min={0}
+        placeholder={max || "0"}
+        onFocus={(e: React.ChangeEvent<HTMLInputElement>): void =>
+          e.target.select()
+        }
       />
     </div>
   )

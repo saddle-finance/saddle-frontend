@@ -1,7 +1,5 @@
 import { InjectedConnector } from "@web3-react/injected-connector"
 import { NetworkConnector } from "@web3-react/network-connector"
-import { PortisConnector } from "@web3-react/portis-connector"
-import { SquarelinkConnector } from "@web3-react/squarelink-connector"
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
 import { WalletLinkConnector } from "@web3-react/walletlink-connector"
 import { Web3Provider } from "@ethersproject/providers"
@@ -44,14 +42,4 @@ export const walletconnect = new WalletConnectConnector({
 export const walletlink = new WalletLinkConnector({
   url: NETWORK_URL,
   appName: "Saddle",
-})
-
-export const portis = new PortisConnector({
-  dAppId: process.env.PORTIS_DAPP_ID as string,
-  networks: [1, 100],
-})
-
-export const squarelink = new SquarelinkConnector({
-  clientId: process.env.SQUARELINK_CLIENT_ID as string,
-  networks: [1, 100],
 })

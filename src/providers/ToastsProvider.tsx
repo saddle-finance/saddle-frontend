@@ -7,12 +7,19 @@ import { nanoid } from "@reduxjs/toolkit"
 
 const autoDismissAfterMs = 10 * 1000
 
-export const ToastsContext = React.createContext<{ addToast: AddToast }>({
+export const ToastsContext = React.createContext<{
+  addToast: AddToast
+  clearToasts: ClearToasts
+}>({
   addToast: () => {
     throw new Error("To add a toast, wrap the app in a ToastsProvider.")
   },
+  clearToasts: () => {
+    throw new Error("To remove toasts, wrap the app in a ToastsProvider.")
+  },
 })
-export type AddToast = (content: ToastContent, options?: {}) => void
+export type AddToast = (content: ToastContent, options?: {}) => () => void
+export type ClearToasts = () => void
 export interface ToastObject {
   id: string
   content: ToastContent
@@ -20,14 +27,14 @@ export interface ToastObject {
   remove: () => void
 }
 interface ToastContent {
-  type: "info" | "success" | "error"
+  type: "success" | "error" | "pending"
   title: string
 }
 export default function ToastsProvider({
   children,
 }: React.PropsWithChildren<{}>): ReactElement {
   const [toasts, setToasts] = useState<ToastObject[]>([])
-  const addToast = useCallback((content, options = {}) => {
+  const addToast = useCallback((content, options = {}): (() => void) => {
     const { autoDismiss = true } = options
     const toastId = nanoid()
     const removeToast = (): void => {
@@ -51,12 +58,19 @@ export default function ToastsProvider({
     }
     // add toast to list
     setToasts((prevToasts) => [...prevToasts, toast])
+    // return callback to kill toast
+    return removeToast
   }, [])
+  const clearToasts = useCallback(() => {
+    setToasts([])
+  }, [])
+
   const contextValue = useMemo(
     () => ({
       addToast,
+      clearToasts,
     }),
-    [addToast],
+    [addToast, clearToasts],
   )
 
   return (

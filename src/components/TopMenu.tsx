@@ -3,6 +3,7 @@ import "./TopMenu.scss"
 import React, { ReactElement } from "react"
 
 import { Link } from "react-router-dom"
+import ThemeChanger from "./ThemeChanger"
 import Web3Status from "./Web3Status"
 import classNames from "classnames"
 import logo from "../assets/icons/logo.svg"
@@ -31,10 +32,18 @@ function TopMenu({ activeTab }: Props): ReactElement {
         </li>
         <li>
           <Link
-            to="/pool"
-            className={classNames({ active: activeTab === "pool" })}
+            to="/deposit"
+            className={classNames({ active: activeTab === "deposit" })}
           >
-            {t("pool")}
+            {t("deposit")}
+          </Link>
+        </li>
+        <li>
+          <Link
+            to="/withdraw"
+            className={classNames({ active: activeTab === "withdraw" })}
+          >
+            {t("withdraw")}
           </Link>
         </li>
         <li>
@@ -42,11 +51,12 @@ function TopMenu({ activeTab }: Props): ReactElement {
             to="/risk"
             className={classNames({ active: activeTab === t("risk") })}
           >
-            Risk
+            {t("risk")}
           </Link>
         </li>
       </ul>
       <Web3Status />
+      <ThemeChanger />
     </header>
   )
 }

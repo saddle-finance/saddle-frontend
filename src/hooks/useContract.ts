@@ -1,10 +1,26 @@
-import { TEST_STABLECOIN_SWAP_ADDRESS, Token } from "../constants"
+import {
+  BTC_POOL_NAME,
+  DAI,
+  PoolName,
+  RENBTC,
+  SBTC,
+  SUSD,
+  TBTC,
+  TEST_BTC_SWAP_ADDRESS,
+  TEST_STABLECOIN_SWAP_ADDRESS,
+  Token,
+  USDC,
+  USDT,
+  WBTC,
+} from "../constants"
+import { useMemo, useState } from "react"
+
 import { Contract } from "@ethersproject/contracts"
 import ERC20_ABI from "../constants/abis/erc20.json"
+import LPTOKEN_ABI from "../constants/abis/lpToken.json"
 import SWAP_ABI from "../constants/abis/swap.json"
 import { getContract } from "../utils"
 import { useActiveWeb3React } from "./index"
-import { useMemo } from "react"
 
 // returns null on errors
 function useContract(
@@ -39,12 +55,81 @@ export function useTokenContract(
   return useContract(tokenAddress, ERC20_ABI, withSignerIfPossible)
 }
 
-export function useSwapContract(
-  withSignerIfPossible?: boolean,
-): Contract | null {
-  return useContract(
+export function useSwapContract(poolName: PoolName): Contract | null {
+  const withSignerIfPossible = true
+  const stablecoinSwapContract = useContract(
     TEST_STABLECOIN_SWAP_ADDRESS,
     SWAP_ABI,
     withSignerIfPossible,
   )
+  const btcSwapContract = useContract(
+    TEST_BTC_SWAP_ADDRESS,
+    SWAP_ABI,
+    withSignerIfPossible,
+  )
+  return useMemo(() => {
+    if (poolName === BTC_POOL_NAME) {
+      return btcSwapContract
+    } else {
+      return stablecoinSwapContract
+    }
+  }, [stablecoinSwapContract, btcSwapContract, poolName])
+}
+
+export function useLPTokenContract(poolName: PoolName): Contract | null {
+  const swapContract = useSwapContract(poolName)
+  const [lpTokenAddress, setLPTokenAddress] = useState("")
+  swapContract
+    ?.swapStorage()
+    .then(({ lpToken }: { lpToken: string }) => setLPTokenAddress(lpToken))
+  return useContract(lpTokenAddress, LPTOKEN_ABI)
+}
+
+interface AllContractsObject {
+  [x: string]: Contract | null
+}
+export function useAllContracts(): AllContractsObject | null {
+  const tbtcContract = useTokenContract(TBTC)
+  const wbtcContract = useTokenContract(WBTC)
+  const renbtcContract = useTokenContract(RENBTC)
+  const sbtcContract = useTokenContract(SBTC)
+  const daiContract = useTokenContract(DAI)
+  const usdcContract = useTokenContract(USDC)
+  const usdtContract = useTokenContract(USDT)
+  const susdContract = useTokenContract(SUSD)
+
+  return useMemo(() => {
+    if (
+      ![
+        tbtcContract,
+        wbtcContract,
+        renbtcContract,
+        sbtcContract,
+        daiContract,
+        usdcContract,
+        usdtContract,
+        susdContract,
+      ].some(Boolean)
+    )
+      return null
+    return {
+      [TBTC.symbol]: tbtcContract,
+      [WBTC.symbol]: wbtcContract,
+      [RENBTC.symbol]: renbtcContract,
+      [SBTC.symbol]: sbtcContract,
+      [DAI.symbol]: daiContract,
+      [USDC.symbol]: usdcContract,
+      [USDT.symbol]: usdtContract,
+      [SUSD.symbol]: susdContract,
+    }
+  }, [
+    tbtcContract,
+    wbtcContract,
+    renbtcContract,
+    sbtcContract,
+    daiContract,
+    usdcContract,
+    usdtContract,
+    susdContract,
+  ])
 }

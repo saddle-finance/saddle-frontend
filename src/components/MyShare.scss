@@ -9,7 +9,7 @@ div.myShare {
     margin-bottom: 24px;
     font-size: 30px;
     font-weight: $bold;
-    color: $text-darker;
+    color: var(--text-title);
   }
 
   .withdraw {
@@ -27,9 +27,9 @@ div.myShare {
   }
   .table {
     width: 428px;
-    background: $background-element;
-    box-shadow: $shadow;
-    border: 1px solid $outline;
+    background: var(--background-element);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--outline);
     border-radius: 10px;
     padding: 32px;
     display: flex;
@@ -39,7 +39,7 @@ div.myShare {
 
     span {
       font-weight: $normal;
-      color: $text-darker;
+      color: var(--text-darker);
       font-size: 16px;
       line-height: 20px;
       display: block;
@@ -61,7 +61,7 @@ div.myShare {
     }
 
     .poolShare span {
-      color: $primary;
+      color: var(--text-selected);
     }
 
     .divider {
@@ -79,25 +79,6 @@ div.myShare {
 
     .tokenName {
       font-weight: $bold;
-    }
-  }
-
-  button.withdraw {
-    width: 170px;
-    height: 40px;
-    border-radius: 4px;
-    background: $primary;
-    color: $white;
-    font-weight: $bold;
-    font-size: 16px;
-    letter-spacing: 0.02em;
-    border: none;
-
-    &:hover,
-    &:focus {
-      outline: none;
-      opacity: 0.8;
-      cursor: pointer;
     }
   }
 }

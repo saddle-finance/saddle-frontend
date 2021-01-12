@@ -1,8 +1,8 @@
 import "./ReviewDeposit.scss"
 
 import React, { ReactElement } from "react"
-import { GasPrices } from "../state/user"
 
+import { GasPrices } from "../state/user"
 import { useTranslation } from "react-i18next"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -13,8 +13,8 @@ interface Props {
     deposit: Array<{ [key: string]: any }>
     rates: Array<{ [key: string]: any }>
     share: number
-    sadd: number
-    slippage: number
+    lpToken: number
+    slippage: string
   }
   gas: GasPrices
 }
@@ -65,9 +65,7 @@ function ReviewDeposit({ onClose, onConfirm, data, gas }: Props): ReactElement {
         </div>
       </div>
       <div className="bottom">
-        <span>{`${t("youWillReceive")} ${data.sadd} SADL ${t(
-          "poolTokens",
-        )}`}</span>
+        <span>{`${t("youWillReceive")} ${data.lpToken} ${t("lpTokens")}`}</span>
         <div className="divider" style={{ height: "1px", width: "100%" }}></div>
         <p>{t("estimatedOutput")}</p>
         <button onClick={onConfirm} className="confirm">

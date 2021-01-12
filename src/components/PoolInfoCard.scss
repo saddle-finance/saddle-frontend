@@ -1,7 +1,7 @@
 @import "../styles/theme";
 
 div.poolInfoCard {
-  color: $text-darker;
+  color: var(--text-darker);
   font-size: 16px;
   font-weight: $normal;
 
@@ -13,7 +13,7 @@ div.poolInfoCard {
     margin-bottom: 24px;
     font-size: 30px;
     font-weight: $bold;
-    color: $text-darker;
+    color: var(--text-title);
   }
 
   div.info {

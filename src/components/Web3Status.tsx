@@ -4,6 +4,7 @@ import React, { ReactElement, useState } from "react"
 
 import ConnectWallet from "./ConnectWallet"
 import Modal from "./Modal"
+import { useTranslation } from "react-i18next"
 import { useWeb3React } from "@web3-react/core"
 
 // Todo: Link profile image to real account image
@@ -11,6 +12,7 @@ import { useWeb3React } from "@web3-react/core"
 const Web3Status = (): ReactElement => {
   const { account } = useWeb3React()
   const [modalOpen, setModalOpen] = useState(false)
+  const { t } = useTranslation()
 
   return (
     <div className="walletStatus">
@@ -26,7 +28,7 @@ const Web3Status = (): ReactElement => {
             <img alt="profile" src={require("../assets/icons/profile.svg")} />
           </div>
         ) : (
-          <div className="noAccount">Connect Wallet</div>
+          <div className="noAccount">{t("connectWallet")}</div>
         )}
       </button>
       <Modal isOpen={modalOpen} onClose={(): void => setModalOpen(false)}>
