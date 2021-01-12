@@ -6,7 +6,7 @@ div.connectWallet {
   background: var(--background);
   border-radius: 8px;
 
-  h3 {
+  & > h3 {
     font-weight: $bold;
     font-size: 20px;
     margin-top: 0;
