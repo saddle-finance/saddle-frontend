@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch } from "../state"
 import { AppState } from "../state"
 import { BigNumber } from "ethers"
+import Checkbox from "./Checkbox"
 import ConfirmTransaction from "./ConfirmTransaction"
 import InfiniteApproval from "../components/InfiniteApproval"
 import Modal from "./Modal"
@@ -182,119 +183,86 @@ const WithdrawPage = (props: Props): ReactElement => {
               </div>
             </div>
             <div className="advancedOptions">
-              <div>
-                <label>
-                  <input
-                    type="radio"
-                    value={"ALL"}
-                    checked={formStateData.withdrawType === "ALL"}
-                    onChange={(): void =>
-                      onFormChange({
-                        fieldName: "withdrawType",
-                        value: "ALL",
-                      })
-                    }
-                  />
-                  {"All tokens"}
-                </label>
-              </div>
-              {tokensData.map((t) => {
-                return (
-                  <div key={t.symbol}>
-                    <label>
-                      <input
-                        type="radio"
-                        value={t.symbol}
-                        checked={formStateData.withdrawType === t.symbol}
-                        onChange={(): void =>
-                          onFormChange({
-                            fieldName: "withdrawType",
-                            value: t.symbol,
-                          })
-                        }
-                      />
-                      {t.name}
-                    </label>
-                  </div>
-                )
-              })}
-            </div>
-            {/* <label className="combination">
-              <span className="checkbox_input">
-                <input
-                  type="checkbox"
-                  checked={combination}
-                  onChange={(): void => setCombination(!combination)}
+              <div className="paramater horizontalDisplay">
+                <Checkbox
+                  checked={formStateData.withdrawType === "ALL"}
+                  onChange={(): void =>
+                    onFormChange({
+                      fieldName: "withdrawType",
+                      value: "ALL",
+                    })
+                  }
+                  label="All Tokens"
                 />
-                <span className="checkbox_control">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                    focusable="false"
-                  >
-                    <path
-                      fill="none"
-                      strokeWidth="4"
-                      d="M1.73 12.91l6.37 6.37L22.79 4.59"
+                {tokensData.map((t) => {
+                  return (
+                    <Checkbox
+                      key={t.symbol}
+                      checked={formStateData.withdrawType === t.symbol}
+                      onChange={(): void =>
+                        onFormChange({
+                          fieldName: "withdrawType",
+                          value: t.symbol,
+                        })
+                      }
+                      label={t.name}
                     />
-                  </svg>
+                  )
+                })}
+              </div>
+              <div className="paramater">
+                <InfiniteApproval
+                  checked={infiniteApproval}
+                  onChange={onChangeInfiniteApproval}
+                />
+              </div>
+              <div className="paramater">
+                {`${t("gas")}:`}
+                <span
+                  className={classNames({
+                    selected: gasPriceSelected === GasPrices.Standard,
+                  })}
+                  onClick={(): PayloadAction<GasPrices> =>
+                    dispatch(updateGasPriceSelected(GasPrices.Standard))
+                  }
+                >
+                  {gasStandard} {t("standard")}
                 </span>
-              </span>
-              <span className="combLabel">{t("combinationOfAll")}</span>
-            </label> */}
-            <div className="paramater">
-              <InfiniteApproval
-                checked={infiniteApproval}
-                onChange={onChangeInfiniteApproval}
-              />
-            </div>
-            <div className="paramater">
-              {`${t("gas")}:`}
-              <span
-                className={classNames({
-                  selected: gasPriceSelected === GasPrices.Standard,
-                })}
-                onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateGasPriceSelected(GasPrices.Standard))
-                }
-              >
-                {gasStandard} {t("standard")}
-              </span>
-              <span
-                className={classNames({
-                  selected: gasPriceSelected === GasPrices.Fast,
-                })}
-                onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateGasPriceSelected(GasPrices.Fast))
-                }
-              >
-                {gasFast} {t("fast")}
-              </span>
-              <span
-                className={classNames({
-                  selected: gasPriceSelected === GasPrices.Instant,
-                })}
-                onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateGasPriceSelected(GasPrices.Instant))
-                }
-              >
-                {gasInstant} {t("instant")}
-              </span>
-              <input
-                className={classNames({
-                  selected: gasPriceSelected === GasPrices.Custom,
-                })}
-                value={gasCustom?.valueRaw}
-                onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateGasPriceSelected(GasPrices.Custom))
-                }
-                onChange={(
-                  e: React.ChangeEvent<HTMLInputElement>,
-                ): PayloadAction<string> =>
-                  dispatch(updateGasPriceCustom(e.target.value))
-                }
-              />
+                <span
+                  className={classNames({
+                    selected: gasPriceSelected === GasPrices.Fast,
+                  })}
+                  onClick={(): PayloadAction<GasPrices> =>
+                    dispatch(updateGasPriceSelected(GasPrices.Fast))
+                  }
+                >
+                  {gasFast} {t("fast")}
+                </span>
+                <span
+                  className={classNames({
+                    selected: gasPriceSelected === GasPrices.Instant,
+                  })}
+                  onClick={(): PayloadAction<GasPrices> =>
+                    dispatch(updateGasPriceSelected(GasPrices.Instant))
+                  }
+                >
+                  {gasInstant} {t("instant")}
+                </span>
+                <input
+                  className={classNames({
+                    selected: gasPriceSelected === GasPrices.Custom,
+                  })}
+                  value={gasCustom?.valueRaw}
+                  onClick={(): PayloadAction<GasPrices> =>
+                    dispatch(updateGasPriceSelected(GasPrices.Custom))
+                  }
+                  onChange={(
+                    e: React.ChangeEvent<HTMLInputElement>,
+                  ): PayloadAction<string> =>
+                    dispatch(updateGasPriceCustom(e.target.value))
+                  }
+                />
+              </div>
             </div>
             <button
               className="actionBtn"
