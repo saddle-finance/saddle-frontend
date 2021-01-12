@@ -8,7 +8,7 @@ div.tokenInput {
   input {
     position: absolute;
     left: 78px;
-    width: 168px;
+    width: 120px;
     height: 32px;
     display: block;
     background: $white;
@@ -45,20 +45,16 @@ div.tokenInput {
 
   button.max {
     position: absolute;
-    right: 2px;
+    right: 0px;
     z-index: 1;
     height: 32px;
-    color: $text-red;
-    background: none !important;
+    color: $white;
+    background: $text-red;
     border: none;
+    border-radius: 6px;
     font-weight: $medium;
     letter-spacing: -0.06em;
     cursor: pointer;
-    text-decoration: underline;
-
-    &:hover {
-      font-weight: $bold;
-    }
 
     &:focus {
       outline: none;

@@ -34,11 +34,6 @@ function TokenInput({
     <div className="tokenInput">
       <img alt="icon" src={icon} />
       <span>{symbol}</span>
-      {max != null && (
-        <button className="max" onClick={onClickMax} disabled={disabled}>
-          {`${t("max")}: ${max}`}
-        </button>
-      )}
       <input
         disabled={disabled ? true : false}
         value={inputValue}
@@ -48,6 +43,11 @@ function TokenInput({
           e.target.select()
         }
       />
+      {max != null && (
+        <button className="max" onClick={onClickMax} disabled={disabled}>
+          {t("max")}
+        </button>
+      )}
     </div>
   )
 }
