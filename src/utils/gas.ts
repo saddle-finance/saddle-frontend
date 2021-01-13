@@ -2,7 +2,7 @@ import { GasPrices } from "../state/user"
 import { NumberInputState } from "./numberInputState"
 
 export function formatGasToString(
-  gasPricesUSD: {
+  gasPricesGwei: {
     gasStandard?: number
     gasFast?: number
     gasInstant?: number
@@ -10,7 +10,7 @@ export function formatGasToString(
   gasSelected: GasPrices,
   gasCustom?: NumberInputState,
 ): string {
-  const { gasStandard = 0, gasFast = 0, gasInstant = 0 } = gasPricesUSD
+  const { gasStandard = 0, gasFast = 0, gasInstant = 0 } = gasPricesGwei
   let gasPrice
   if (gasSelected === GasPrices.Custom) {
     gasPrice = gasCustom?.valueSafe
