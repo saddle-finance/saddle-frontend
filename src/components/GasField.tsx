@@ -21,7 +21,7 @@ export function GasField(): ReactElement {
     (state: AppState) => state.application,
   )
   return (
-    <div>
+    <div className="gasField">
       <span className="label">{t("gas")}</span>
       <div className="options">
         {[GasPrices.Standard, GasPrices.Fast, GasPrices.Instant].map(

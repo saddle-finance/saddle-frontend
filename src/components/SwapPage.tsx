@@ -10,17 +10,12 @@ import { GasField } from "./GasField"
 import Modal from "./Modal"
 import { PayloadAction } from "@reduxjs/toolkit"
 import ReviewSwap from "./ReviewSwap"
+import SlippageField from "./SlippageField"
 import SwapForm from "./SwapForm"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
 import { updateSwapAdvancedMode } from "../state/user"
 import { useTranslation } from "react-i18next"
-
-// Dumb data for UI
-const selected = {
-  maxSlippage: 0.5,
-}
-// End of dumb data
 
 interface Props {
   tokens: Array<{ symbol: string; name: string; value: string; icon: string }>
@@ -169,25 +164,7 @@ const SwapPage = (props: Props): ReactElement => {
                 </div>
               </div>
               <div className="tableOption">
-                <span className="label">{t("maxSlippage")}</span>
-                <div className="options">
-                  <button
-                    className={classNames({
-                      selected: selected.maxSlippage === 0.5,
-                    })}
-                  >
-                    0.5%
-                  </button>
-                  <button
-                    className={classNames({
-                      selected: selected.maxSlippage === 1,
-                    })}
-                  >
-                    1%
-                  </button>
-                  <input></input>
-                  <span style={{ marginLeft: "4px" }}>%</span>
-                </div>
+                <SlippageField />
               </div>
               <div className="tableOption">
                 <GasField />

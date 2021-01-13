@@ -2,12 +2,6 @@ import "./DepositPage.scss"
 
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
-import {
-  Slippages,
-  updatePoolAdvancedMode,
-  updateSlippageCustom,
-  updateSlippageSelected,
-} from "../state/user"
 import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
@@ -21,9 +15,11 @@ import MyShareCard from "./MyShareCard"
 import { PayloadAction } from "@reduxjs/toolkit"
 import PoolInfoCard from "./PoolInfoCard"
 import ReviewDeposit from "./ReviewDeposit"
+import SlippageField from "./SlippageField"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
+import { updatePoolAdvancedMode } from "../state/user"
 import { useTranslation } from "react-i18next"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -74,12 +70,9 @@ const DepositPage = (props: Props): ReactElement => {
   const [popUp, setPopUp] = useState("")
 
   const dispatch = useDispatch<AppDispatch>()
-  const {
-    userPoolAdvancedMode: advanced,
-    gasPriceSelected,
-    slippageCustom,
-    slippageSelected,
-  } = useSelector((state: AppState) => state.user)
+  const { userPoolAdvancedMode: advanced, gasPriceSelected } = useSelector(
+    (state: AppState) => state.user,
+  )
   // TODO: Add eligibility logic
   const eligible = true
 
@@ -173,37 +166,7 @@ const DepositPage = (props: Props): ReactElement => {
               />
 
               <div className="parameter">
-                {`${t("maxSlippage")}:`}
-                <span
-                  className={classNames({
-                    selected: slippageSelected === Slippages.OneTenth,
-                  })}
-                  onClick={(): PayloadAction<Slippages> =>
-                    dispatch(updateSlippageSelected(Slippages.OneTenth))
-                  }
-                >
-                  0.1%
-                </span>
-                <span
-                  className={classNames({
-                    selected: slippageSelected === Slippages.One,
-                  })}
-                  onClick={(): PayloadAction<Slippages> =>
-                    dispatch(updateSlippageSelected(Slippages.One))
-                  }
-                >
-                  1%
-                </span>
-                <input
-                  value={slippageCustom?.valueRaw}
-                  onClick={(): PayloadAction<Slippages> =>
-                    dispatch(updateSlippageSelected(Slippages.Custom))
-                  }
-                  onChange={(e): PayloadAction<string> =>
-                    dispatch(updateSlippageCustom(e.target.value))
-                  }
-                />
-                %
+                <SlippageField />
               </div>
               <div className="parameter">
                 <GasField />

@@ -13,6 +13,7 @@ import MyShareCard from "./MyShareCard"
 import NoShareContent from "./NoShareContent"
 import PoolInfoCard from "./PoolInfoCard"
 import ReviewWithdraw from "./ReviewWithdraw"
+import SlippageField from "./SlippageField"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
@@ -206,6 +207,18 @@ const WithdrawPage = (props: Props): ReactElement => {
                   </div>
                 )
               })}
+              <div className="paramater">
+                <InfiniteApproval
+                  checked={infiniteApproval}
+                  onChange={onChangeInfiniteApproval}
+                />
+              </div>
+              <div className="paramater">
+                <GasField />
+              </div>
+              <div className="paramater">
+                <SlippageField />
+              </div>
             </div>
             {/* <label className="combination">
               <span className="checkbox_input">
@@ -231,15 +244,7 @@ const WithdrawPage = (props: Props): ReactElement => {
               </span>
               <span className="combLabel">{t("combinationOfAll")}</span>
             </label> */}
-            <div className="paramater">
-              <InfiniteApproval
-                checked={infiniteApproval}
-                onChange={onChangeInfiniteApproval}
-              />
-            </div>
-            <div className="paramater">
-              <GasField />
-            </div>
+
             <button
               className="actionBtn"
               type="submit"
