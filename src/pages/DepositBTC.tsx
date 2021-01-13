@@ -11,7 +11,6 @@ import React, { ReactElement, useState } from "react"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
-import { formatSlippageToString } from "../utils/slippage"
 import { formatUnits } from "@ethersproject/units"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
 import usePoolData from "../hooks/usePoolData"
@@ -112,7 +111,6 @@ function DepositBTC(): ReactElement {
             rate: tokenPricesUSD[symbol]?.toFixed(2),
           }))
         : [],
-    slippage: formatSlippageToString(slippageSelected, slippageCustom),
   }
 
   return (
