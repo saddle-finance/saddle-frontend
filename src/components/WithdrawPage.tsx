@@ -7,7 +7,7 @@ import { AppState } from "../state"
 import { BigNumber } from "ethers"
 import ConfirmTransaction from "./ConfirmTransaction"
 import { GasField } from "./GasField"
-import InfiniteApproval from "../components/InfiniteApproval"
+import InfiniteApprovalField from "./InfiniteApprovalField"
 import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
 import NoShareContent from "./NoShareContent"
@@ -58,8 +58,6 @@ interface Props {
   }
   formStateData: WithdrawFormState
   onFormChange: (action: any) => void
-  onChangeInfiniteApproval: () => void
-  infiniteApproval: boolean
   onConfirmTransaction: () => Promise<void>
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -74,8 +72,6 @@ const WithdrawPage = (props: Props): ReactElement => {
     onFormChange,
     formStateData,
     reviewData,
-    infiniteApproval,
-    onChangeInfiniteApproval,
     onConfirmTransaction,
   } = props
 
@@ -208,16 +204,13 @@ const WithdrawPage = (props: Props): ReactElement => {
                 )
               })}
               <div className="paramater">
-                <InfiniteApproval
-                  checked={infiniteApproval}
-                  onChange={onChangeInfiniteApproval}
-                />
-              </div>
-              <div className="paramater">
                 <GasField />
               </div>
               <div className="paramater">
                 <SlippageField />
+              </div>
+              <div className="paramater">
+                <InfiniteApprovalField />
               </div>
             </div>
             {/* <label className="combination">

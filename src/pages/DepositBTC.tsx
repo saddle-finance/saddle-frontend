@@ -6,7 +6,7 @@ import {
   TBTC,
   WBTC,
 } from "../constants"
-import React, { ReactElement, useState } from "react"
+import React, { ReactElement } from "react"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -37,7 +37,6 @@ const testDepositData = {
 function DepositBTC(): ReactElement {
   const approveAndDeposit = useApproveAndDeposit(BTC_POOL_NAME)
   const [poolData, userShareData] = usePoolData(BTC_POOL_NAME)
-  const [infiniteApproval, setInfiniteApproval] = useState(false)
   const [tokenFormState, updateTokenFormState] = useTokenFormState(
     BTC_POOL_TOKENS,
   )
@@ -46,6 +45,7 @@ function DepositBTC(): ReactElement {
     slippageSelected,
     gasPriceSelected,
     gasCustom,
+    infiniteApproval,
   } = useSelector((state: AppState) => state.user)
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
 
@@ -117,16 +117,12 @@ function DepositBTC(): ReactElement {
     <DepositPage
       onConfirmTransaction={onConfirmTransaction}
       onChangeTokenInputValue={updateTokenFormValue}
-      onChangeInfiniteApproval={(): void =>
-        setInfiniteApproval((prev) => !prev)
-      }
       title="BTC Pool"
       tokens={tokens}
       poolData={poolData}
       myShareData={userShareData}
       transactionInfoData={testTransInfoData}
       depositDataFromParent={depositData}
-      infiniteApproval={infiniteApproval}
     />
   )
 }

@@ -9,7 +9,7 @@ import { AppState } from "../state"
 import ConfirmTransaction from "./ConfirmTransaction"
 import { GasField } from "./GasField"
 import IneligibilityBanner from "./IneligibilityBanner"
-import InfiniteApproval from "./InfiniteApproval"
+import InfiniteApprovalField from "./InfiniteApprovalField"
 import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
 import { PayloadAction } from "@reduxjs/toolkit"
@@ -25,10 +25,8 @@ import { useTranslation } from "react-i18next"
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   title: string
-  infiniteApproval: boolean
   onConfirmTransaction: () => Promise<void>
   onChangeTokenInputValue: (tokenSymbol: string, value: string) => void
-  onChangeInfiniteApproval: () => void
   tokens: Array<{
     symbol: string
     name: string
@@ -60,10 +58,8 @@ const DepositPage = (props: Props): ReactElement => {
     transactionInfoData,
     myShareData,
     depositDataFromParent,
-    infiniteApproval,
     onChangeTokenInputValue,
     onConfirmTransaction,
-    onChangeInfiniteApproval,
   } = props
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -143,7 +139,7 @@ const DepositPage = (props: Props): ReactElement => {
             >
               {t("advancedOptions")}
               <svg
-                className={classNames({ upsideDown: advanced })}
+                className={classNames("triangle", { upsideDown: advanced })}
                 width="16"
                 height="10"
                 viewBox="0 0 16 10"
@@ -160,16 +156,14 @@ const DepositPage = (props: Props): ReactElement => {
             </span>
             <div className="divider"></div>
             <div className={"tableContainer" + classNames({ show: advanced })}>
-              <InfiniteApproval
-                checked={infiniteApproval}
-                onChange={onChangeInfiniteApproval}
-              />
-
+              <div className="parameter">
+                <GasField />
+              </div>
               <div className="parameter">
                 <SlippageField />
               </div>
               <div className="parameter">
-                <GasField />
+                <InfiniteApprovalField />
               </div>
             </div>
           </div>

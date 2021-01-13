@@ -7,6 +7,7 @@ import { AppDispatch } from "../state"
 import { AppState } from "../state/index"
 import ConfirmTransaction from "./ConfirmTransaction"
 import { GasField } from "./GasField"
+import InfintiteApprovalField from "./InfiniteApprovalField"
 import Modal from "./Modal"
 import { PayloadAction } from "@reduxjs/toolkit"
 import ReviewSwap from "./ReviewSwap"
@@ -22,10 +23,8 @@ interface Props {
   exchangeRateInfo: { pair: string; value: string }
   error: string | null
   info: { isInfo: boolean; message: string }
-  infiniteApproval: boolean
   fromState: { symbol: string; value: string }
   toState: { symbol: string; value: string }
-  onChangeInfiniteApproval: (approval: boolean) => void
   onChangeFromToken: (tokenSymbol: string) => void
   onChangeFromAmount: (amount: string) => void
   onChangeToToken: (tokenSymbol: string) => void
@@ -42,8 +41,6 @@ const SwapPage = (props: Props): ReactElement => {
     info,
     fromState,
     toState,
-    infiniteApproval,
-    onChangeInfiniteApproval,
     onChangeFromToken,
     onChangeFromAmount,
     onChangeToToken,
@@ -136,38 +133,14 @@ const SwapPage = (props: Props): ReactElement => {
           <div className="divider"></div>
           <div className={"tableContainer " + classNames({ show: advanced })}>
             <div className="table">
-              <div className="infiniteApproval tableOption">
-                <div className="IAlabel">
-                  {t("infiniteApproval")}
-                  <span className="tooltipText">
-                    {`Allow Saddle to spend all of your ${fromState.symbol} now and in the
-                    future. You will not need to approve again.`}
-                  </span>
-                </div>
-                <div className="options">
-                  <button
-                    className={classNames({
-                      selected: infiniteApproval,
-                    })}
-                    onClick={(): void => onChangeInfiniteApproval(true)}
-                  >
-                    {t("yes")}
-                  </button>
-                  <button
-                    className={classNames({
-                      selected: !infiniteApproval,
-                    })}
-                    onClick={(): void => onChangeInfiniteApproval(false)}
-                  >
-                    {t("no")}
-                  </button>
-                </div>
+              <div className="parameter">
+                <GasField />
               </div>
-              <div className="tableOption">
+              <div className="parameter">
                 <SlippageField />
               </div>
-              <div className="tableOption">
-                <GasField />
+              <div className="parameter">
+                <InfintiteApprovalField />
               </div>
             </div>
           </div>
