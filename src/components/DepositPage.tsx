@@ -121,18 +121,18 @@ const DepositPage = (props: Props): ReactElement => {
               }
             >
               <div className="transactionInfo">
-                {poolData?.keepApy && (
+                {poolData?.keepApr && (
                   <div className="transactionInfoItem">
                     <a
                       href="https://docs.saddle.finance/faq#what-are-saddles-liquidity-provider-rewards"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <span>{`KEEP APY:`}</span>
+                      <span>{`KEEP APR:`}</span>
                     </a>{" "}
                     <span className="value">
                       {parseFloat(
-                        formatUnits(poolData.keepApy, 18 - 2),
+                        formatUnits(poolData.keepApr, 18 - 2),
                       ).toFixed(2)}
                       %
                     </span>
