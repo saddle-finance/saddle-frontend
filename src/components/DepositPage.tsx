@@ -66,7 +66,7 @@ const DepositPage = (props: Props): ReactElement => {
   const [popUp, setPopUp] = useState("")
 
   const dispatch = useDispatch<AppDispatch>()
-  const { userPoolAdvancedMode: advanced, gasPriceSelected } = useSelector(
+  const { userPoolAdvancedMode: advanced } = useSelector(
     (state: AppState) => state.user,
   )
   // TODO: Add eligibility logic

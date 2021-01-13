@@ -52,7 +52,7 @@ const SwapPage = (props: Props): ReactElement => {
   const [popUp, setPopUp] = useState("")
 
   const dispatch = useDispatch<AppDispatch>()
-  const { userSwapAdvancedMode: advanced, gasPriceSelected } = useSelector(
+  const { userSwapAdvancedMode: advanced } = useSelector(
     (state: AppState) => state.user,
   )
 
