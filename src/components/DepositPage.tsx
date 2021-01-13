@@ -26,6 +26,7 @@ import ReviewDeposit from "./ReviewDeposit"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
+import { formatUnits } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -116,17 +117,27 @@ const DepositPage = (props: Props): ReactElement => {
             ))}
             <div
               className={
-                "transactionInfoContainer " +
-                classNames({ show: transactionInfoData.isInfo })
+                "transactionInfoContainer " + classNames({ show: true }) // transactionInfoData.isInfo })
               }
             >
               <div className="transactionInfo">
-                <div className="transactionInfoItem">
-                  <span>{`KEEP ROI ${t("tokenValue")}: `}</span>
-                  <span className="value">
-                    {transactionInfoData.content.keepTokenValue}
-                  </span>
-                </div>
+                {poolData?.keepApy && (
+                  <div className="transactionInfoItem">
+                    <a
+                      href="https://docs.saddle.finance/faq#what-are-saddles-liquidity-provider-rewards"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span>{`KEEP APY:`}</span>
+                    </a>{" "}
+                    <span className="value">
+                      {parseFloat(
+                        formatUnits(poolData.keepApy, 18 - 2),
+                      ).toFixed(2)}
+                      %
+                    </span>
+                  </div>
+                )}
                 <div className="transactionInfoItem">
                   {transactionInfoData.content.benefit > 0 ? (
                     <span className="bonus">{`${t("bonus")}: `}</span>
