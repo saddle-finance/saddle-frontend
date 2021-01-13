@@ -276,8 +276,6 @@ const SwapPage = (props: Props): ReactElement => {
                 from: fromState,
                 to: toState,
                 exchangeRateInfo,
-                gas: gasPriceSelected, // TODO: refactor
-                slippage: "SLIPPAGE", // TODO: refactor
               }}
             />
           ) : null}
