@@ -11,7 +11,7 @@ import { PayloadAction } from "@reduxjs/toolkit"
 import classNames from "classnames"
 import { useTranslation } from "react-i18next"
 
-export function GasField(): ReactElement {
+export default function GasField(): ReactElement {
   const { t } = useTranslation()
   const dispatch = useDispatch<AppDispatch>()
   const { gasCustom, gasPriceSelected } = useSelector(
