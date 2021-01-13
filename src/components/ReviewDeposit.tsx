@@ -2,7 +2,10 @@ import "./ReviewDeposit.scss"
 
 import React, { ReactElement } from "react"
 
-import { GasPrices } from "../state/user"
+import { AppState } from "../state/index"
+import { formatGasToString } from "../utils/gas"
+import { formatSlippageToString } from "../utils/slippage"
+import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -14,14 +17,21 @@ interface Props {
     rates: Array<{ [key: string]: any }>
     share: number
     lpToken: number
-    slippage: string
   }
-  gas: GasPrices
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-function ReviewDeposit({ onClose, onConfirm, data, gas }: Props): ReactElement {
+function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
   const { t } = useTranslation()
+  const {
+    slippageCustom,
+    slippageSelected,
+    gasPriceSelected,
+    gasCustom,
+  } = useSelector((state: AppState) => state.user)
+  const { gasStandard, gasFast, gasInstant } = useSelector(
+    (state: AppState) => state.application,
+  )
 
   return (
     <div className="reviewDeposit">
@@ -47,11 +57,20 @@ function ReviewDeposit({ onClose, onConfirm, data, gas }: Props): ReactElement {
         </div>
         <div className="depositInfoItem">
           <span className="label">{t("gas")}</span>
-          <span className="value">{gas}</span>
+          <span className="value">
+            {formatGasToString(
+              { gasStandard, gasFast, gasInstant },
+              gasPriceSelected,
+              gasCustom,
+            )}{" "}
+            GWEI
+          </span>
         </div>
         <div className="depositInfoItem">
           <span className="label">{t("maxSlippage")}</span>
-          <span className="value">{data.slippage}%</span>
+          <span className="value">
+            {formatSlippageToString(slippageSelected, slippageCustom)}%
+          </span>
         </div>
         <div className="depositInfoItem">
           <span className="label">{t("rates")}</span>

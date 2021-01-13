@@ -56,7 +56,6 @@ interface Props {
     rates: Array<{ [key: string]: any }>
     share: number
     lpToken: number // TODO: Calculate or pull from contract to get real value
-    slippage: string
   }
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -310,7 +309,6 @@ const DepositPage = (props: Props): ReactElement => {
           {popUp === "review" ? (
             <ReviewDeposit
               data={depositDataFromParent}
-              gas={gasPriceSelected}
               onConfirm={(): void => {
                 setPopUp("confirm")
                 onConfirmTransaction?.().finally(() => setModalOpen(false))
