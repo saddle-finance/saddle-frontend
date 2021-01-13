@@ -1,21 +1,19 @@
 import "./DepositPage.scss"
 
+import { PoolDataType, UserShareType } from "../hooks/usePoolData"
+import React, { ReactElement, useState } from "react"
 import {
-  GasPrices,
   Slippages,
-  updateGasPriceCustom,
-  updateGasPriceSelected,
   updatePoolAdvancedMode,
   updateSlippageCustom,
   updateSlippageSelected,
 } from "../state/user"
-import { PoolDataType, UserShareType } from "../hooks/usePoolData"
-import React, { ReactElement, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
 import { AppState } from "../state"
 import ConfirmTransaction from "./ConfirmTransaction"
+import { GasField } from "./GasField"
 import IneligibilityBanner from "./IneligibilityBanner"
 import InfiniteApproval from "./InfiniteApproval"
 import Modal from "./Modal"
@@ -78,14 +76,10 @@ const DepositPage = (props: Props): ReactElement => {
   const dispatch = useDispatch<AppDispatch>()
   const {
     userPoolAdvancedMode: advanced,
-    gasCustom,
     gasPriceSelected,
     slippageCustom,
     slippageSelected,
   } = useSelector((state: AppState) => state.user)
-  const { gasStandard, gasFast, gasInstant } = useSelector(
-    (state: AppState) => state.application,
-  )
   // TODO: Add eligibility logic
   const eligible = true
 
@@ -178,7 +172,7 @@ const DepositPage = (props: Props): ReactElement => {
                 onChange={onChangeInfiniteApproval}
               />
 
-              <div className="paramater">
+              <div className="parameter">
                 {`${t("maxSlippage")}:`}
                 <span
                   className={classNames({
@@ -211,52 +205,8 @@ const DepositPage = (props: Props): ReactElement => {
                 />
                 %
               </div>
-              <div className="paramater">
-                {`${t("gas")}(GWEI):`}
-                <span
-                  className={classNames({
-                    selected: gasPriceSelected === GasPrices.Standard,
-                  })}
-                  onClick={(): PayloadAction<GasPrices> =>
-                    dispatch(updateGasPriceSelected(GasPrices.Standard))
-                  }
-                >
-                  {gasStandard} {t("standard")}
-                </span>
-                <span
-                  className={classNames({
-                    selected: gasPriceSelected === GasPrices.Fast,
-                  })}
-                  onClick={(): PayloadAction<GasPrices> =>
-                    dispatch(updateGasPriceSelected(GasPrices.Fast))
-                  }
-                >
-                  {gasFast} {t("fast")}
-                </span>
-                <span
-                  className={classNames({
-                    selected: gasPriceSelected === GasPrices.Instant,
-                  })}
-                  onClick={(): PayloadAction<GasPrices> =>
-                    dispatch(updateGasPriceSelected(GasPrices.Instant))
-                  }
-                >
-                  {gasInstant?.toString()} {t("instant")}
-                </span>
-                <input
-                  className={classNames({
-                    selected: gasPriceSelected === GasPrices.Custom,
-                  })}
-                  value={gasCustom?.valueRaw}
-                  onClick={(): PayloadAction<GasPrices> =>
-                    dispatch(updateGasPriceSelected(GasPrices.Custom))
-                  }
-                  onChange={(
-                    e: React.ChangeEvent<HTMLInputElement>,
-                  ): PayloadAction<string> =>
-                    dispatch(updateGasPriceCustom(e.target.value))
-                  }
-                ></input>
+              <div className="parameter">
+                <GasField />
               </div>
             </div>
           </div>

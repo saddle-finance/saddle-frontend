@@ -1,0 +1,46 @@
+@import "../styles/theme";
+input {
+  width: 42px;
+  border: none;
+  border-radius: 0;
+  height: 20px;
+  font-size: 80%;
+  outline: 1px solid $black;
+}
+
+input:focus {
+  outline: 1px solid var(--outline);
+}
+
+.label {
+  font-weight: $bold;
+  font-size: 16px;
+  letter-spacing: -0.04em;
+}
+
+.options > button {
+  border: none;
+  background: none;
+  font-size: 16px;
+  font-weight: $normal;
+  color: var(--text);
+  letter-spacing: -0.04em;
+  padding: 0 16px 0 0;
+  cursor: pointer;
+
+  &:hover {
+    transform: none;
+    font-weight: $bold;
+  }
+
+  &:focus {
+    outline: none;
+    border: none;
+  }
+
+  &.selected {
+    color: var(--text-selected);
+    font-weight: $medium;
+    text-decoration: underline;
+  }
+}
