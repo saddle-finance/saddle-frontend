@@ -5,11 +5,11 @@ import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
 import { injected, walletconnect, walletlink } from "../connectors"
 
 import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
+import { logEvent } from "../utils/googleAnalytics"
 import metamaskIcon from "../assets/icons/metamask.svg"
 import { useTranslation } from "react-i18next"
 import walletconnectIcon from "../assets/icons/walletconnect.svg"
 
-// Dumb data starts
 const wallets = [
   {
     name: "MetaMask",
@@ -31,7 +31,7 @@ const wallets = [
 interface Props {
   onClose: () => void
 }
-// Dumb data ends
+
 function ConnectWallet({ onClose }: Props): ReactElement {
   const { t } = useTranslation()
   const { activate } = useWeb3React()
@@ -51,6 +51,7 @@ function ConnectWallet({ onClose }: Props): ReactElement {
                   // TODO: handle error
                 }
               })
+              logEvent("change_wallet", { name: wallet.name })
               onClose()
             }}
           >

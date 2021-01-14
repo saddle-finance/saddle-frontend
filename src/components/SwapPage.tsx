@@ -15,6 +15,7 @@ import SlippageField from "./SlippageField"
 import SwapForm from "./SwapForm"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
+import { logEvent } from "../utils/googleAnalytics"
 import { updateSwapAdvancedMode } from "../state/user"
 import { useTranslation } from "react-i18next"
 
@@ -167,6 +168,10 @@ const SwapPage = (props: Props): ReactElement => {
               onConfirm={async (): Promise<void> => {
                 setPopUp("confirm")
                 await onConfirmTransaction()
+                logEvent("swap", {
+                  from: fromState.symbol,
+                  to: toState.symbol,
+                })
                 setModalOpen(false)
               }}
               data={{
