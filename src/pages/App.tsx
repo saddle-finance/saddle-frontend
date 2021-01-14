@@ -19,11 +19,14 @@ import usePoller from "../hooks/usePoller"
 export default function App(): ReactElement {
   const dispatch = useDispatch<AppDispatch>()
 
-  const fetchGasAndTokenPrices = useCallback(() => {
+  const fetchAndUpdateGasPrice = useCallback(() => {
     fetchGasPrices(dispatch)
+  }, [dispatch])
+  const fetchAndUpdateTokensPrice = useCallback(() => {
     fetchTokenPricesUSD(dispatch)
   }, [dispatch])
-  usePoller(fetchGasAndTokenPrices, BLOCK_TIME * 5)
+  usePoller(fetchAndUpdateGasPrice, BLOCK_TIME)
+  usePoller(fetchAndUpdateTokensPrice, BLOCK_TIME * 3)
 
   return (
     <Suspense fallback={null}>
