@@ -26,6 +26,8 @@ import ReviewDeposit from "./ReviewDeposit"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
+import { formatUnits } from "@ethersproject/units"
+import { logEvent } from "../utils/googleAnalytics"
 import { useTranslation } from "react-i18next"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -138,17 +140,27 @@ const DepositPage = (props: Props): ReactElement => {
             ))}
             <div
               className={
-                "transactionInfoContainer " +
-                classNames({ show: transactionInfoData.isInfo })
+                "transactionInfoContainer " + classNames({ show: true }) // transactionInfoData.isInfo })
               }
             >
               <div className="transactionInfo">
-                <div className="transactionInfoItem">
-                  <span>{`KEEP ROI ${t("tokenValue")}: `}</span>
-                  <span className="value">
-                    {transactionInfoData.content.keepTokenValue}
-                  </span>
-                </div>
+                {poolData?.keepApr && (
+                  <div className="transactionInfoItem">
+                    <a
+                      href="https://docs.saddle.finance/faq#what-are-saddles-liquidity-provider-rewards"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span>{`KEEP APR:`}</span>
+                    </a>{" "}
+                    <span className="value">
+                      {parseFloat(
+                        formatUnits(poolData.keepApr, 18 - 2),
+                      ).toFixed(2)}
+                      %
+                    </span>
+                  </div>
+                )}
                 <div className="transactionInfoItem">
                   {transactionInfoData.content.benefit > 0 ? (
                     <span className="bonus">{`${t("bonus")}: `}</span>
@@ -312,6 +324,10 @@ const DepositPage = (props: Props): ReactElement => {
               onConfirm={(): void => {
                 setPopUp("confirm")
                 onConfirmTransaction?.().finally(() => setModalOpen(false))
+                logEvent(
+                  "deposit",
+                  (poolData && { pool: poolData?.name }) || {},
+                )
               }}
               onClose={(): void => setModalOpen(false)}
             />

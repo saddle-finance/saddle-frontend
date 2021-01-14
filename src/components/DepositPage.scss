@@ -117,6 +117,10 @@ div.deposit {
     span.slippage {
       color: $error;
     }
+
+    a {
+      color: var(--text-selected);
+    }
   }
 
   .advancedOptions {
