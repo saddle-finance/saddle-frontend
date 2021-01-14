@@ -373,6 +373,11 @@
         "internalType": "uint256",
         "name": "deadline",
         "type": "uint256"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "merkleProof",
+        "type": "bytes32[]"
       }
     ],
     "name": "addLiquidity",
@@ -384,19 +389,6 @@
       }
     ],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "allowlist",
-    "outputs": [
-      {
-        "internalType": "contract IAllowlist",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -531,6 +523,13 @@
   },
   {
     "inputs": [],
+    "name": "disableGuard",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "getA",
     "outputs": [
       {
@@ -569,6 +568,19 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getAllowlist",
+    "outputs": [
+      {
+        "internalType": "contract IAllowlist",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -848,19 +860,6 @@
       }
     ],
     "name": "setDefaultWithdrawFee",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bool",
-        "name": "isGuarded_",
-        "type": "bool"
-      }
-    ],
-    "name": "setIsGuarded",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
