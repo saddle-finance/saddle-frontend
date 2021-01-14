@@ -3,6 +3,7 @@ import { formatUnits, parseUnits } from "@ethersproject/units"
 import { useAllContracts, useSwapContract } from "./useContract"
 import { useEffect, useState } from "react"
 
+import ALLOWLIST_ABI from "../constants/abis/allowList.json"
 import { AddressZero } from "@ethersproject/constants"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -38,6 +39,8 @@ export interface PoolDataType {
   utilization: string // TODO: calculate
   virtualPrice: BigNumber
   volume: string // TODO: calculate
+  poolAccountLimit: BigNumber
+  isAcceptingDeposits: boolean
   keepApr: BigNumber
 }
 
@@ -71,9 +74,14 @@ export default function usePoolData(
       const POOL_TOKENS = POOLS_MAP[poolName]
 
       // Swap fees, price, and LP Token data
-      const [userCurrentWithdrawFee, swapStorage] = await Promise.all([
+      const [
+        userCurrentWithdrawFee,
+        swapStorage,
+        allowlistAddress,
+      ] = await Promise.all([
         swapContract.calculateCurrentWithdrawFee(account || AddressZero),
         swapContract.swapStorage(),
+        swapContract.allowlist(),
       ])
       const { adminFee, lpToken: lpTokenAddress, swapFee } = swapStorage
       const lpToken = getContract(
@@ -86,6 +94,17 @@ export default function usePoolData(
         lpToken.balanceOf(account || AddressZero),
         lpToken.totalSupply(),
       ])
+      const allowlist = getContract(
+        allowlistAddress,
+        ALLOWLIST_ABI,
+        library,
+        account ?? undefined,
+      )
+      const poolAccountLimit = await allowlist.getPoolAccountLimit(
+        swapContract.address,
+      )
+      const poolLPTokenCap = await allowlist.getPoolCap(swapContract.address)
+      const isAcceptingDeposits = poolLPTokenCap.lt(totalLpTokenBalance)
 
       const virtualPrice = totalLpTokenBalance.isZero()
         ? BigNumber.from(10).pow(18)
@@ -186,6 +205,8 @@ export default function usePoolData(
         volume: "XXX", // TODO
         utilization: "XXX", // TODO
         apy: "XXX", // TODO
+        poolAccountLimit,
+        isAcceptingDeposits,
         keepApr,
       }
       const userShareData = account

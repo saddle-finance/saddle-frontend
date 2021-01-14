@@ -6,15 +6,17 @@ import {
   TBTC,
   WBTC,
 } from "../constants"
-import React, { ReactElement, useState } from "react"
+import React, { ReactElement, useEffect, useState } from "react"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
 import { formatUnits } from "@ethersproject/units"
+import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
 import usePoolData from "../hooks/usePoolData"
 import { useSelector } from "react-redux"
+import { useSwapContract } from "../hooks/useContract"
 import { useTokenBalance } from "../state/wallet/hooks"
 import { useTokenFormState } from "../hooks/useTokenFormState"
 
@@ -38,6 +40,8 @@ function DepositBTC(): ReactElement {
   const approveAndDeposit = useApproveAndDeposit(BTC_POOL_NAME)
   const [poolData, userShareData] = usePoolData(BTC_POOL_NAME)
   const [infiniteApproval, setInfiniteApproval] = useState(false)
+  const swapContract = useSwapContract(BTC_POOL_NAME)
+  const { account } = useActiveWeb3React()
   const [tokenFormState, updateTokenFormState] = useTokenFormState(
     BTC_POOL_TOKENS,
   )
@@ -48,7 +52,35 @@ function DepositBTC(): ReactElement {
     gasCustom,
   } = useSelector((state: AppState) => state.user)
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
-
+  const [willExceedMaxDeposits, setWillExceedMaxDeposit] = useState(true)
+  useEffect(() => {
+    async function calculateMaxDeposits(): Promise<void> {
+      if (swapContract == null || userShareData == null || poolData == null)
+        return
+      const depositLPTokenAmount = await swapContract.calculateTokenAmount(
+        account,
+        BTC_POOL_TOKENS.map(({ symbol }) => tokenFormState[symbol].valueSafe),
+        true, // deposit boolean
+      )
+      const futureUserLPTokenBalance = depositLPTokenAmount.add(
+        userShareData?.lpTokenBalance,
+      )
+      const exceedsMaxDeposits = futureUserLPTokenBalance.gt(
+        poolData.poolAccountLimit,
+      )
+      if (willExceedMaxDeposits !== exceedsMaxDeposits) {
+        setWillExceedMaxDeposit(exceedsMaxDeposits)
+      }
+    }
+    calculateMaxDeposits()
+  }, [
+    poolData,
+    tokenFormState,
+    swapContract,
+    userShareData,
+    account,
+    willExceedMaxDeposits,
+  ])
   // Account Token balances
   const tokenBalances = {
     [TBTC.symbol]: useTokenBalance(TBTC),
@@ -69,6 +101,7 @@ function DepositBTC(): ReactElement {
   }))
 
   async function onConfirmTransaction(): Promise<void> {
+    if (willExceedMaxDeposits && !poolData?.isAcceptingDeposits) return
     await approveAndDeposit({
       slippageCustom,
       slippageSelected,
@@ -127,6 +160,8 @@ function DepositBTC(): ReactElement {
       transactionInfoData={testTransInfoData}
       depositDataFromParent={depositData}
       infiniteApproval={infiniteApproval}
+      willExceedMaxDeposits={willExceedMaxDeposits}
+      isAcceptingDeposits={!!poolData?.isAcceptingDeposits}
     />
   )
 }

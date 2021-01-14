@@ -34,6 +34,8 @@ import { useTranslation } from "react-i18next"
 interface Props {
   title: string
   infiniteApproval: boolean
+  willExceedMaxDeposits: boolean
+  isAcceptingDeposits: boolean
   onConfirmTransaction: () => Promise<void>
   onChangeTokenInputValue: (tokenSymbol: string, value: string) => void
   onChangeInfiniteApproval: () => void
@@ -69,6 +71,8 @@ const DepositPage = (props: Props): ReactElement => {
     myShareData,
     depositDataFromParent,
     infiniteApproval,
+    willExceedMaxDeposits,
+    isAcceptingDeposits,
     onChangeTokenInputValue,
     onConfirmTransaction,
     onChangeInfiniteApproval,
@@ -90,6 +94,12 @@ const DepositPage = (props: Props): ReactElement => {
   )
   // TODO: Add eligibility logic
   const eligible = true
+  let errorMessage = null
+  if (!isAcceptingDeposits) {
+    errorMessage = t("poolIsNotAcceptingDeposits")
+  } else if (willExceedMaxDeposits) {
+    errorMessage = t("depositLimitExceeded")
+  }
 
   return (
     <div className="deposit">
@@ -100,11 +110,23 @@ const DepositPage = (props: Props): ReactElement => {
         <div className="left">
           <div className="form">
             <h3>{t("addLiquidity")}</h3>
+            {errorMessage && (
+              <div className="error">
+                {errorMessage}{" "}
+                <a
+                  href="https://docs.saddle.finance/faq#what-is-saddles-guarded-launch-proof-of-governance-who-can-participate"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t("learnMore")}
+                </a>
+              </div>
+            )}
             {tokens.map((token, index) => (
               <div key={index}>
                 <TokenInput
                   {...token}
-                  disabled={!eligible}
+                  disabled={!eligible || !isAcceptingDeposits}
                   onChange={(value): void =>
                     onChangeTokenInputValue(token.symbol, value)
                   }
@@ -278,7 +300,9 @@ const DepositPage = (props: Props): ReactElement => {
               setModalOpen(true)
               setPopUp("review")
             }}
-            disabled={!eligible}
+            disabled={
+              !eligible || willExceedMaxDeposits || !isAcceptingDeposits
+            }
           >
             {t("deposit")}
           </button>
