@@ -64,7 +64,8 @@ div.tokenInput {
     }
 
     &:disabled {
-      display: none;
+      background: $disabled;
+      cursor: not-allowed;
     }
   }
 }
