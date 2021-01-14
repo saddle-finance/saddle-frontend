@@ -18,8 +18,8 @@ import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import classNames from "classnames"
-import { useSelector } from "react-redux"
 import { logEvent } from "../utils/googleAnalytics"
+import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
 export interface ReviewWithdrawData {

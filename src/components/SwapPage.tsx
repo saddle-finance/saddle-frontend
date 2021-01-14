@@ -7,7 +7,7 @@ import { AppDispatch } from "../state"
 import { AppState } from "../state/index"
 import ConfirmTransaction from "./ConfirmTransaction"
 import GasField from "./GasField"
-import InfintiteApprovalField from "./InfiniteApprovalField"
+import InfiniteApprovalField from "./InfiniteApprovalField"
 import Modal from "./Modal"
 import { PayloadAction } from "@reduxjs/toolkit"
 import ReviewSwap from "./ReviewSwap"
@@ -141,7 +141,7 @@ const SwapPage = (props: Props): ReactElement => {
                 <SlippageField />
               </div>
               <div className="parameter">
-                <InfintiteApprovalField />
+                <InfiniteApprovalField />
               </div>
             </div>
           </div>

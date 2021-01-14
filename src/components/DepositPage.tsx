@@ -19,9 +19,9 @@ import SlippageField from "./SlippageField"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
-import { updatePoolAdvancedMode } from "../state/user"
 import { formatUnits } from "@ethersproject/units"
 import { logEvent } from "../utils/googleAnalytics"
+import { updatePoolAdvancedMode } from "../state/user"
 import { useTranslation } from "react-i18next"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -63,7 +63,6 @@ const DepositPage = (props: Props): ReactElement => {
     transactionInfoData,
     myShareData,
     depositDataFromParent,
-    infiniteApproval,
     willExceedMaxDeposits,
     isAcceptingDeposits,
     onChangeTokenInputValue,

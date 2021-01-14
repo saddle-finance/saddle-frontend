@@ -9,7 +9,7 @@ import { PayloadAction } from "@reduxjs/toolkit"
 import { updateInfiniteApproval } from "../state/user"
 import { useTranslation } from "react-i18next"
 
-export default function InfintiteApprovalField(): ReactElement {
+export default function InfiniteApprovalField(): ReactElement {
   const { t } = useTranslation()
   const dispatch = useDispatch<AppDispatch>()
   const { infiniteApproval } = useSelector((state: AppState) => state.user)
@@ -17,10 +17,7 @@ export default function InfintiteApprovalField(): ReactElement {
     <div className="infiniteApproval">
       <div className="label">
         {t("infiniteApproval")}
-        <span className="tooltipText">
-          Allow Saddle to spend all of the selected tokens now and in the
-          future. You will not need to approve again.
-        </span>
+        <span className="tooltipText">{t("infiniteApprovalTooltip")}</span>
       </div>
       <label className="checkbox_input">
         <input
