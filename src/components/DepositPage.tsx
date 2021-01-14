@@ -27,6 +27,7 @@ import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
 import { formatUnits } from "@ethersproject/units"
+import { logEvent } from "../utils/googleAnalytics"
 import { useTranslation } from "react-i18next"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -299,6 +300,10 @@ const DepositPage = (props: Props): ReactElement => {
               onConfirm={(): void => {
                 setPopUp("confirm")
                 onConfirmTransaction?.().finally(() => setModalOpen(false))
+                logEvent(
+                  "deposit",
+                  (poolData && { pool: poolData?.name }) || {},
+                )
               }}
               onClose={(): void => setModalOpen(false)}
             />

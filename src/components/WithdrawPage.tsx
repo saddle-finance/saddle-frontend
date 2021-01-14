@@ -24,6 +24,7 @@ import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import classNames from "classnames"
+import { logEvent } from "../utils/googleAnalytics"
 import { useTranslation } from "react-i18next"
 
 export interface ReviewWithdrawData {
@@ -328,6 +329,10 @@ const WithdrawPage = (props: Props): ReactElement => {
                 onConfirm={(): void => {
                   onConfirmTransaction()
                   setPopUp("confirm")
+                  logEvent(
+                    "withdraw",
+                    (poolData && { pool: poolData?.name }) || {},
+                  )
                 }}
                 onClose={(): void => setModalOpen(false)}
               />
