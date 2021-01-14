@@ -26,12 +26,16 @@ import ReviewDeposit from "./ReviewDeposit"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
+import { formatUnits } from "@ethersproject/units"
+import { logEvent } from "../utils/googleAnalytics"
 import { useTranslation } from "react-i18next"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   title: string
   infiniteApproval: boolean
+  willExceedMaxDeposits: boolean
+  isAcceptingDeposits: boolean
   onConfirmTransaction: () => Promise<void>
   onChangeTokenInputValue: (tokenSymbol: string, value: string) => void
   onChangeInfiniteApproval: () => void
@@ -54,7 +58,6 @@ interface Props {
     rates: Array<{ [key: string]: any }>
     share: number
     lpToken: number // TODO: Calculate or pull from contract to get real value
-    slippage: string
   }
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -68,6 +71,8 @@ const DepositPage = (props: Props): ReactElement => {
     myShareData,
     depositDataFromParent,
     infiniteApproval,
+    willExceedMaxDeposits,
+    isAcceptingDeposits,
     onChangeTokenInputValue,
     onConfirmTransaction,
     onChangeInfiniteApproval,
@@ -89,6 +94,12 @@ const DepositPage = (props: Props): ReactElement => {
   )
   // TODO: Add eligibility logic
   const eligible = true
+  let errorMessage = null
+  if (!isAcceptingDeposits) {
+    errorMessage = t("poolIsNotAcceptingDeposits")
+  } else if (willExceedMaxDeposits) {
+    errorMessage = t("depositLimitExceeded")
+  }
 
   return (
     <div className="deposit">
@@ -99,11 +110,23 @@ const DepositPage = (props: Props): ReactElement => {
         <div className="left">
           <div className="form">
             <h3>{t("addLiquidity")}</h3>
+            {errorMessage && (
+              <div className="error">
+                {errorMessage}{" "}
+                <a
+                  href="https://docs.saddle.finance/faq#what-is-saddles-guarded-launch-proof-of-governance-who-can-participate"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t("learnMore")}
+                </a>
+              </div>
+            )}
             {tokens.map((token, index) => (
               <div key={index}>
                 <TokenInput
                   {...token}
-                  disabled={!eligible}
+                  disabled={!eligible || !isAcceptingDeposits}
                   onChange={(value): void =>
                     onChangeTokenInputValue(token.symbol, value)
                   }
@@ -117,17 +140,27 @@ const DepositPage = (props: Props): ReactElement => {
             ))}
             <div
               className={
-                "transactionInfoContainer " +
-                classNames({ show: transactionInfoData.isInfo })
+                "transactionInfoContainer " + classNames({ show: true }) // transactionInfoData.isInfo })
               }
             >
               <div className="transactionInfo">
-                <div className="transactionInfoItem">
-                  <span>{`KEEP ROI ${t("tokenValue")}: `}</span>
-                  <span className="value">
-                    {transactionInfoData.content.keepTokenValue}
-                  </span>
-                </div>
+                {poolData?.keepApr && (
+                  <div className="transactionInfoItem">
+                    <a
+                      href="https://docs.saddle.finance/faq#what-are-saddles-liquidity-provider-rewards"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span>{`KEEP APR:`}</span>
+                    </a>{" "}
+                    <span className="value">
+                      {parseFloat(
+                        formatUnits(poolData.keepApr, 18 - 2),
+                      ).toFixed(2)}
+                      %
+                    </span>
+                  </div>
+                )}
                 <div className="transactionInfoItem">
                   {transactionInfoData.content.benefit > 0 ? (
                     <span className="bonus">{`${t("bonus")}: `}</span>
@@ -267,7 +300,9 @@ const DepositPage = (props: Props): ReactElement => {
               setModalOpen(true)
               setPopUp("review")
             }}
-            disabled={!eligible}
+            disabled={
+              !eligible || willExceedMaxDeposits || !isAcceptingDeposits
+            }
           >
             {t("deposit")}
           </button>
@@ -286,10 +321,13 @@ const DepositPage = (props: Props): ReactElement => {
           {popUp === "review" ? (
             <ReviewDeposit
               data={depositDataFromParent}
-              gas={gasPriceSelected}
               onConfirm={(): void => {
                 setPopUp("confirm")
                 onConfirmTransaction?.().finally(() => setModalOpen(false))
+                logEvent(
+                  "deposit",
+                  (poolData && { pool: poolData?.name }) || {},
+                )
               }}
               onClose={(): void => setModalOpen(false)}
             />
