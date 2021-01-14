@@ -29,6 +29,7 @@
   "getWallet": "Get a wallet!",
   "inTotal": "in total",
   "infiniteApproval": "Infinite Approval",
+  "infiniteApprovalTooltip": "Allow Saddle to spend all of the selected tokens now and in the future. You will not need to approve again.",
   "inputNotValid": "Not a valid input value",
   "instant": "Instant",
   "insufficientBalance": "Insufficient balance",

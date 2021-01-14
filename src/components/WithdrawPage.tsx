@@ -1,30 +1,25 @@
 import "./WithdrawPage.scss"
 
-import {
-  GasPrices,
-  updateGasPriceCustom,
-  updateGasPriceSelected,
-} from "../state/user"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
 
-import { AppDispatch } from "../state"
 import { AppState } from "../state"
 import { BigNumber } from "ethers"
 import ConfirmTransaction from "./ConfirmTransaction"
-import InfiniteApproval from "../components/InfiniteApproval"
+import GasField from "./GasField"
+import InfiniteApprovalField from "./InfiniteApprovalField"
 import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
 import NoShareContent from "./NoShareContent"
-import { PayloadAction } from "@reduxjs/toolkit"
 import PoolInfoCard from "./PoolInfoCard"
 import ReviewWithdraw from "./ReviewWithdraw"
+import SlippageField from "./SlippageField"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import classNames from "classnames"
 import { logEvent } from "../utils/googleAnalytics"
+import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
 export interface ReviewWithdrawData {
@@ -64,8 +59,6 @@ interface Props {
   }
   formStateData: WithdrawFormState
   onFormChange: (action: any) => void
-  onChangeInfiniteApproval: () => void
-  infiniteApproval: boolean
   onConfirmTransaction: () => Promise<void>
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -80,21 +73,13 @@ const WithdrawPage = (props: Props): ReactElement => {
     onFormChange,
     formStateData,
     reviewData,
-    infiniteApproval,
-    onChangeInfiniteApproval,
     onConfirmTransaction,
   } = props
 
   const [modalOpen, setModalOpen] = useState(false)
   const [popUp, setPopUp] = useState("")
 
-  const dispatch = useDispatch<AppDispatch>()
-  const { gasCustom, gasPriceSelected } = useSelector(
-    (state: AppState) => state.user,
-  )
-  const { gasStandard, gasFast, gasInstant } = useSelector(
-    (state: AppState) => state.application,
-  )
+  const { gasPriceSelected } = useSelector((state: AppState) => state.user)
 
   const onSubmit = (): void => {
     setModalOpen(true)
@@ -219,6 +204,15 @@ const WithdrawPage = (props: Props): ReactElement => {
                   </div>
                 )
               })}
+              <div className="paramater">
+                <GasField />
+              </div>
+              <div className="paramater">
+                <SlippageField />
+              </div>
+              <div className="paramater">
+                <InfiniteApprovalField />
+              </div>
             </div>
             {/* <label className="combination">
               <span className="checkbox_input">
@@ -244,59 +238,7 @@ const WithdrawPage = (props: Props): ReactElement => {
               </span>
               <span className="combLabel">{t("combinationOfAll")}</span>
             </label> */}
-            <div className="paramater">
-              <InfiniteApproval
-                checked={infiniteApproval}
-                onChange={onChangeInfiniteApproval}
-              />
-            </div>
-            <div className="paramater">
-              {`${t("gas")}:`}
-              <span
-                className={classNames({
-                  selected: gasPriceSelected === GasPrices.Standard,
-                })}
-                onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateGasPriceSelected(GasPrices.Standard))
-                }
-              >
-                {gasStandard} {t("standard")}
-              </span>
-              <span
-                className={classNames({
-                  selected: gasPriceSelected === GasPrices.Fast,
-                })}
-                onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateGasPriceSelected(GasPrices.Fast))
-                }
-              >
-                {gasFast} {t("fast")}
-              </span>
-              <span
-                className={classNames({
-                  selected: gasPriceSelected === GasPrices.Instant,
-                })}
-                onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateGasPriceSelected(GasPrices.Instant))
-                }
-              >
-                {gasInstant} {t("instant")}
-              </span>
-              <input
-                className={classNames({
-                  selected: gasPriceSelected === GasPrices.Custom,
-                })}
-                value={gasCustom?.valueRaw}
-                onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateGasPriceSelected(GasPrices.Custom))
-                }
-                onChange={(
-                  e: React.ChangeEvent<HTMLInputElement>,
-                ): PayloadAction<string> =>
-                  dispatch(updateGasPriceCustom(e.target.value))
-                }
-              />
-            </div>
+
             <button
               className="actionBtn"
               type="submit"

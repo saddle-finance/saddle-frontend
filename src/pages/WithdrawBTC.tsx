@@ -1,5 +1,5 @@
 import { BTC_POOL_NAME, BTC_POOL_TOKENS } from "../constants"
-import React, { ReactElement, useState } from "react"
+import React, { ReactElement } from "react"
 import WithdrawPage, { ReviewWithdrawData } from "../components/WithdrawPage"
 
 import { AppState } from "../state"
@@ -26,8 +26,7 @@ function WithdrawBTC(): ReactElement {
   const [withdrawFormState, updateWithdrawFormState] = useWithdrawFormState(
     BTC_POOL_NAME,
   )
-  const [infiniteApproval, setInfiniteApproval] = useState(false)
-  const { slippageCustom, slippageSelected } = useSelector(
+  const { slippageCustom, slippageSelected, infiniteApproval } = useSelector(
     (state: AppState) => state.user,
   )
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
@@ -97,10 +96,6 @@ function WithdrawBTC(): ReactElement {
       formStateData={withdrawFormState}
       onConfirmTransaction={onConfirmTransaction}
       onFormChange={updateWithdrawFormState}
-      onChangeInfiniteApproval={(): void =>
-        setInfiniteApproval((prev) => !prev)
-      }
-      infiniteApproval={infiniteApproval}
     />
   )
 }
