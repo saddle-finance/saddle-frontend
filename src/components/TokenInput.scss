@@ -50,10 +50,9 @@ div.tokenInput {
   button.max {
     position: absolute;
     right: 0px;
-    z-index: 1;
     height: 32px;
     color: $white;
-    background: $text-red;
+    background: $divider-red;
     border: none;
     border-radius: 6px;
     font-weight: $medium;
