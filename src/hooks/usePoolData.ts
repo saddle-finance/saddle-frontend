@@ -38,6 +38,7 @@ export interface PoolDataType {
   utilization: string // TODO: calculate
   virtualPrice: BigNumber
   volume: string // TODO: calculate
+  keepApr: BigNumber
 }
 
 export type PoolDataHookReturnType = [PoolDataType | null, UserShareType | null]
@@ -111,6 +112,15 @@ export default function usePoolData(
       const tokenBalancesUSDSum: BigNumber = tokenBalancesUSD.reduce((sum, b) =>
         sum.add(b),
       )
+      // (weeksPerYear * KEEPPerWeek * KEEPPrice) / (BTCPrice * BTCInPool)
+      const comparisonPoolToken = POOL_TOKENS[0]
+      const keepAPRNumerator = BigNumber.from(52 * 125000)
+        .mul(BigNumber.from(10).pow(18))
+        .mul(parseUnits(String(tokenPricesUSD.KEEP), 18))
+      const keepAPRDenominator = totalLpTokenBalance
+        .mul(parseUnits(String(tokenPricesUSD[comparisonPoolToken.symbol]), 6))
+        .div(1e6)
+      const keepApr = keepAPRNumerator.div(keepAPRDenominator)
 
       // User share data
       const userShare = userLpTokenBalance
@@ -176,6 +186,7 @@ export default function usePoolData(
         volume: "XXX", // TODO
         utilization: "XXX", // TODO
         apy: "XXX", // TODO
+        keepApr,
       }
       const userShareData = account
         ? {
