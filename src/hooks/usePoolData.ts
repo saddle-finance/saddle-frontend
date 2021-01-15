@@ -81,7 +81,7 @@ export default function usePoolData(
       ] = await Promise.all([
         swapContract.calculateCurrentWithdrawFee(account || AddressZero),
         swapContract.swapStorage(),
-        swapContract.allowlist(),
+        swapContract.getAllowlist(),
       ])
       const { adminFee, lpToken: lpTokenAddress, swapFee } = swapStorage
       const lpToken = getContract(
@@ -139,7 +139,12 @@ export default function usePoolData(
       const keepAPRDenominator = totalLpTokenBalance
         .mul(parseUnits(String(tokenPricesUSD[comparisonPoolToken.symbol]), 6))
         .div(1e6)
-      const keepApr = keepAPRNumerator.div(keepAPRDenominator)
+
+      let keepApr = BigNumber.from(0)
+
+      if (!keepAPRDenominator.isZero()) {
+        keepApr = keepAPRNumerator.div(keepAPRDenominator)  
+      }
 
       // User share data
       const userShare = userLpTokenBalance
