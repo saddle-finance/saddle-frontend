@@ -1,13 +1,13 @@
 import {
   BTC_POOL_NAME,
+  BTC_SWAP_ADDRESSES,
   DAI,
   PoolName,
   RENBTC,
   SBTC,
+  STABLECOIN_SWAP_ADDRESSES,
   SUSD,
   TBTC,
-  TEST_BTC_SWAP_ADDRESS,
-  TEST_STABLECOIN_SWAP_ADDRESS,
   Token,
   USDC,
   USDT,
@@ -57,13 +57,14 @@ export function useTokenContract(
 
 export function useSwapContract(poolName: PoolName): Contract | null {
   const withSignerIfPossible = true
+  const { chainId } = useActiveWeb3React()
   const stablecoinSwapContract = useContract(
-    TEST_STABLECOIN_SWAP_ADDRESS,
+    chainId ? STABLECOIN_SWAP_ADDRESSES[chainId] : undefined,
     SWAP_ABI,
     withSignerIfPossible,
   )
   const btcSwapContract = useContract(
-    TEST_BTC_SWAP_ADDRESS,
+    chainId ? BTC_SWAP_ADDRESSES[chainId] : undefined,
     SWAP_ABI,
     withSignerIfPossible,
   )
