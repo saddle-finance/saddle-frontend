@@ -139,8 +139,8 @@ export default function usePoolData(
       const keepAPRDenominator = totalLpTokenBalance
         .mul(parseUnits(String(tokenPricesUSD[comparisonPoolToken.symbol]), 6))
         .div(1e6)
-      const keepApr = keepAPRDenominator.isZero()
-        ? BigNumber.from(0)
+      const keepApr = totalLpTokenBalance.isZero()
+        ? keepAPRNumerator
         : keepAPRNumerator.div(keepAPRDenominator)
 
       // User share data
