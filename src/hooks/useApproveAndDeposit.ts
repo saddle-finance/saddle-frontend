@@ -22,6 +22,7 @@ interface ApproveAndDepositStateArgument {
   slippageCustom?: NumberInputState
   gasPriceSelected: GasPrices
   gasCustom?: NumberInputState
+  merkleProof: string[]
 }
 
 export function useApproveAndDeposit(
@@ -46,6 +47,8 @@ export function useApproveAndDeposit(
     try {
       if (!account) throw new Error("Wallet must be connected")
       if (!swapContract) throw new Error("Swap contract is not loaded")
+      if (!state.merkleProof.length)
+        throw new Error("User is not approved to deposit at this time")
       // For each token being desposited, check the allowance and approve it if necessary
       for (const token of POOL_TOKENS) {
         const spendingValue = BigNumber.from(
@@ -134,10 +137,7 @@ export function useApproveAndDeposit(
         POOL_TOKENS.map(({ symbol }) => state.tokenFormState[symbol].valueSafe),
         minToMint,
         Math.round(new Date().getTime() / 1000 + 60 * 10),
-        [
-          "0x8a3552d60a98e0ade765adddad0a2e420ca9b1eef5f326ba7ab860bb4ea72c94",
-          "0xa216d5da9e6fad5b8d8a82e2df1aa2465b66fb408f2da71ff5fe6f272da5b11b",
-        ], // TODO: Remove when merkle logic is landed
+        state.merkleProof,
         {
           gasPrice,
         },

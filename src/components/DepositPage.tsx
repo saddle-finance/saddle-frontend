@@ -52,6 +52,7 @@ interface Props {
     share: number
     lpToken: number // TODO: Calculate or pull from contract to get real value
   }
+  hasMerkleProof: boolean
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -67,6 +68,7 @@ const DepositPage = (props: Props): ReactElement => {
     isAcceptingDeposits,
     onChangeTokenInputValue,
     onConfirmTransaction,
+    hasMerkleProof,
   } = props
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -76,8 +78,6 @@ const DepositPage = (props: Props): ReactElement => {
   const { userPoolAdvancedMode: advanced } = useSelector(
     (state: AppState) => state.user,
   )
-  // TODO: Add eligibility logic
-  const eligible = true
   let errorMessage = null
   if (!isAcceptingDeposits) {
     errorMessage = t("poolIsNotAcceptingDeposits")
@@ -88,7 +88,7 @@ const DepositPage = (props: Props): ReactElement => {
   return (
     <div className="deposit">
       <TopMenu activeTab={"deposit"} />
-      {!eligible && <IneligibilityBanner />}
+      {!hasMerkleProof && <IneligibilityBanner />}
 
       <div className="content">
         <div className="left">
@@ -110,7 +110,7 @@ const DepositPage = (props: Props): ReactElement => {
               <div key={index}>
                 <TokenInput
                   {...token}
-                  disabled={!eligible || !isAcceptingDeposits}
+                  disabled={!isAcceptingDeposits || !hasMerkleProof}
                   onChange={(value): void =>
                     onChangeTokenInputValue(token.symbol, value)
                   }
@@ -123,9 +123,9 @@ const DepositPage = (props: Props): ReactElement => {
               </div>
             ))}
             <div
-              className={
-                "transactionInfoContainer " + classNames({ show: true }) // transactionInfoData.isInfo })
-              }
+              className={classNames("transactionInfoContainer", {
+                show: transactionInfoData.isInfo, // TODO review this "isInfo" logic
+              })}
             >
               <div className="transactionInfo">
                 {poolData?.keepApr && (
@@ -209,7 +209,7 @@ const DepositPage = (props: Props): ReactElement => {
               setPopUp("review")
             }}
             disabled={
-              !eligible || willExceedMaxDeposits || !isAcceptingDeposits
+              !hasMerkleProof || willExceedMaxDeposits || !isAcceptingDeposits
             }
           >
             {t("deposit")}

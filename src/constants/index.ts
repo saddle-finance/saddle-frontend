@@ -49,7 +49,7 @@ export class Token {
 export const BLOCK_TIME = 15000
 
 export const STABLECOIN_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: "0xTODO",
+  [ChainId.MAINNET]: "0xA449CbB5B1D4175B3D92487AC61A834fA4f25DA3",
   [ChainId.HARDHAT]: "0x1613beB3B2C4f22Ee086B2b38C1476A3cE7f78E8",
 }
 
