@@ -86,7 +86,6 @@ const WithdrawPage = (props: Props): ReactElement => {
     setModalOpen(true)
     setPopUp("review")
   }
- 
   const noShare =
     !myShareData || myShareData.lpTokenBalance.eq(BigNumber.from(0))
 
