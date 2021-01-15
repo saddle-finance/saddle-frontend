@@ -13,6 +13,7 @@ import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
 import { formatUnits } from "@ethersproject/units"
 import { getMerkleProof } from "../utils/merkleTree"
+import { isProduction } from "../utils/environment"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
@@ -21,9 +22,6 @@ import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
 import { useTokenBalance } from "../state/wallet/hooks"
 import { useTokenFormState } from "../hooks/useTokenFormState"
-
-// TODO add production data w/ isProduction
-const merkleTreeDataPromise = import("../constants/exampleMerkleTreeData.json")
 
 // Dumb data start here
 const testTransInfoData = {
@@ -59,10 +57,27 @@ function DepositBTC(): ReactElement | null {
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const [userMerkleProof, setUserMerkleProof] = useState<string[] | null>(null)
   useEffect(() => {
-    merkleTreeDataPromise.then((data) => {
-      const proof = getMerkleProof(data, account)
-      setUserMerkleProof(proof)
-    })
+    if (!account) {
+      setUserMerkleProof(null)
+      return
+    }
+    if (isProduction()) {
+      fetch(`https://ipfs.saddle.exchange/merkle-proofs/${account}`).then(
+        (resp) => {
+          if (resp.ok) {
+            resp.json().then((proof) => setUserMerkleProof(proof))
+          } else {
+            // API will 404 if account proof doesn't exist
+            setUserMerkleProof(null)
+          }
+        },
+      )
+    } else {
+      import("../constants/exampleMerkleTreeData.json").then((data) => {
+        const proof = getMerkleProof(data, account)
+        setUserMerkleProof(proof)
+      })
+    }
   }, [account])
   const [willExceedMaxDeposits, setWillExceedMaxDeposit] = useState(true)
   useEffect(() => {
