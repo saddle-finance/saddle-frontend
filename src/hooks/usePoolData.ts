@@ -1,9 +1,4 @@
-import {
-  MAINNET_DEPLOYED_BLOCK,
-  POOLS_MAP,
-  PoolName,
-  TRANSACTION_TYPES,
-} from "../constants"
+import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 import { useAllContracts, useSwapContract } from "./useContract"
 import { useEffect, useState } from "react"
@@ -51,25 +46,6 @@ export interface PoolDataType {
 
 export type PoolDataHookReturnType = [PoolDataType | null, UserShareType | null]
 
-type PoolDataPoint = [number, string, number]
-
-function getClosestDataPointInPoolStats(
-  poolStats: PoolDataPoint[] | undefined,
-  blockNumber: number,
-): PoolDataPoint | null {
-  if (!poolStats) {
-    return null
-  }
-  let closestPoint = poolStats[0]
-  for (const poolDataPoint of poolStats) {
-    if (poolDataPoint[0] > blockNumber) {
-      break
-    }
-    closestPoint = poolDataPoint
-  }
-  return closestPoint
-}
-
 export default function usePoolData(
   poolName: PoolName,
 ): PoolDataHookReturnType {
@@ -77,24 +53,12 @@ export default function usePoolData(
   const swapContract = useSwapContract(poolName)
   const tokenContracts = useAllContracts()
   const [poolData, setPoolData] = useState<PoolDataHookReturnType>([null, null])
-  const [poolStats, setPoolStats] = useState()
   const { tokenPricesUSD, lastTransactionTimes } = useSelector(
     (state: AppState) => state.application,
   )
   const lastDepositTime = lastTransactionTimes[TRANSACTION_TYPES.DEPOSIT]
   const lastWithdrawTime = lastTransactionTimes[TRANSACTION_TYPES.WITHDRAW]
   const lastSwapTime = lastTransactionTimes[TRANSACTION_TYPES.SWAP]
-
-  useEffect(() => {
-    ;(async function (): Promise<void> {
-      const req = await fetch(
-        "https://mehmeta-team-bucket.storage.fleek.co/pool-stats-dev.json?t=" +
-          +new Date(),
-      )
-      const data = await req.json()
-      setPoolStats(data)
-    })()
-  }, [])
 
   useEffect(() => {
     async function getSwapData(): Promise<void> {
@@ -149,103 +113,12 @@ export default function usePoolData(
 
       // const vp = await swapContract.getVirtualPrice()
 
-      let totalDepositsBTC = null
-      let totalDepositsUSD = null
+      const totalDepositsBTC = null
+      const totalDepositsUSD = null
       const totalWithdrawalsBTC = null
       const totalWithdrawalsUSD = null
       const totalProfitBTC = null
       const totalProfitUSD = null
-
-      // Historical deposit data
-      if (account && poolStats) {
-        totalDepositsUSD = BigNumber.from(0)
-        totalDepositsBTC = BigNumber.from(0)
-
-        // eslint-disable-next-line new-cap
-        const liquidityAdditionFilter = swapContract.filters.AddLiquidity()
-        liquidityAdditionFilter.topics = liquidityAdditionFilter.topics || []
-        liquidityAdditionFilter.topics.push(
-          "0x000000000000000000000000" + account.slice(2),
-        )
-        Object.assign(liquidityAdditionFilter, {
-          fromBlock: MAINNET_DEPLOYED_BLOCK,
-          toBlock: "latest",
-        })
-
-        const liqAdditions = await library.getLogs(liquidityAdditionFilter)
-        // Get all hashes of liquidity addition txes
-        const liqAdditionTxHashes = liqAdditions.map(
-          (log) => log.transactionHash,
-        )
-        console.log(liqAdditionTxHashes)
-
-        if (tokenContracts.BLPT) {
-          // Get the LP token receipt txes
-          // eslint-disable-next-line new-cap
-          const transferFilter = tokenContracts.BLPT.filters.Transfer()
-          Object.assign(transferFilter, {
-            fromBlock: MAINNET_DEPLOYED_BLOCK,
-            toBlock: "latest",
-          })
-          if (transferFilter.topics) {
-            // No filter on the from address
-            transferFilter.topics.push([])
-            // To the account address
-            transferFilter.topics.push(
-              "0x000000000000000000000000" + account.slice(2),
-            )
-          }
-
-          const tokenReceivings = await library.getLogs(transferFilter)
-          // Ensure all token receipts are through liquidity additions
-          const tokensReceivedThroughLPLogs = tokenReceivings.filter((log) =>
-            liqAdditionTxHashes.includes(log.transactionHash),
-          )
-
-          for (const txLog of tokensReceivedThroughLPLogs) {
-            // txLog
-            const poolStatsDataPoint = getClosestDataPointInPoolStats(
-              poolStats,
-              txLog.blockNumber,
-            )
-
-            if (poolStatsDataPoint) {
-              const virtualPriceAtBlock = BigNumber.from(poolStatsDataPoint[1])
-              const btcPriceAtBlock = BigNumber.from(poolStatsDataPoint[2])
-              const parsedTxLog = tokenContracts.BLPT.interface.parseLog(txLog)
-              const depositBTC = parsedTxLog.args.value.mul(virtualPriceAtBlock)
-
-              totalDepositsBTC = totalDepositsBTC.add(depositBTC)
-              totalDepositsUSD = totalDepositsUSD.add(
-                depositBTC.mul(btcPriceAtBlock),
-              )
-            }
-          }
-
-          console.log(formatUnits(totalDepositsBTC, 36))
-          console.log(formatUnits(totalDepositsUSD, 36))
-          console.log(totalWithdrawalsBTC)
-          console.log(totalWithdrawalsUSD)
-          console.log(totalProfitBTC)
-          console.log(totalProfitUSD)
-        }
-
-        /*
-        console.log(liqAdditionTxHashes)
-        console.log(liqAdditions
-          .map((log) => swapContract.interface.parseLog(log)))
-        totalDeposits = liqAdditions
-          .map((log) => swapContract.interface.parseLog(log).args.tokenAmounts)
-          .reduce((amounts, amountArray) => {
-            for (const i of [0, 1, 2, 3]) {
-              amounts[i].add(amountArray[i])
-            }
-            return amounts
-          }, totalDeposits)
-          console.log('totalDeposits')
-        console.log(totalDeposits)
-        */
-      }
 
       const virtualPrice = totalLpTokenBalance.isZero()
         ? BigNumber.from(10).pow(18)
@@ -380,7 +253,6 @@ export default function usePoolData(
     tokenPricesUSD,
     account,
     library,
-    poolStats,
   ])
 
   return poolData

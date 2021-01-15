@@ -19,6 +19,7 @@ import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
 import usePoolData from "../hooks/usePoolData"
+import useHistoricalPoolData from "../hooks/useHistoricalPoolData"
 import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
 import { useTokenBalance } from "../state/wallet/hooks"
@@ -44,6 +45,8 @@ function DepositBTC(): ReactElement | null {
   const { account, chainId } = useActiveWeb3React()
   const approveAndDeposit = useApproveAndDeposit(BTC_POOL_NAME)
   const [poolData, userShareData] = usePoolData(BTC_POOL_NAME)
+  const historicalPoolData = useHistoricalPoolData(BTC_POOL_NAME)
+  console.log(historicalPoolData)
   const swapContract = useSwapContract(BTC_POOL_NAME)
   const [tokenFormState, updateTokenFormState] = useTokenFormState(
     BTC_POOL_TOKENS,
