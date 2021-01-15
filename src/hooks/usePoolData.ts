@@ -100,9 +100,8 @@ export default function usePoolData(
         library,
         account ?? undefined,
       )
-      const poolAccountLimit = await allowlist.getAllowedAmount(
+      const poolAccountLimit = await allowlist.getPoolAccountLimit(
         swapContract.address,
-        account || AddressZero,
       )
       const poolLPTokenCap = await allowlist.getPoolCap(swapContract.address)
       const isAcceptingDeposits = poolLPTokenCap.lt(totalLpTokenBalance)
