@@ -39,7 +39,6 @@ const testDepositData = {
 function DepositBTC(): ReactElement {
   const approveAndDeposit = useApproveAndDeposit(BTC_POOL_NAME)
   const [poolData, userShareData] = usePoolData(BTC_POOL_NAME)
-  const [infiniteApproval, setInfiniteApproval] = useState(false)
   const swapContract = useSwapContract(BTC_POOL_NAME)
   const { account } = useActiveWeb3React()
   const [tokenFormState, updateTokenFormState] = useTokenFormState(
@@ -50,6 +49,7 @@ function DepositBTC(): ReactElement {
     slippageSelected,
     gasPriceSelected,
     gasCustom,
+    infiniteApproval,
   } = useSelector((state: AppState) => state.user)
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const [willExceedMaxDeposits, setWillExceedMaxDeposit] = useState(true)
@@ -150,9 +150,6 @@ function DepositBTC(): ReactElement {
     <DepositPage
       onConfirmTransaction={onConfirmTransaction}
       onChangeTokenInputValue={updateTokenFormValue}
-      onChangeInfiniteApproval={(): void =>
-        setInfiniteApproval((prev) => !prev)
-      }
       title="BTC Pool"
       tokens={tokens}
       poolData={poolData}

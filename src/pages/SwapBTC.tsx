@@ -26,12 +26,12 @@ interface FormState {
 function SwapBTC(): ReactElement {
   const { t } = useTranslation()
   const approveAndSwap = useApproveAndSwap(BTC_POOL_NAME)
-  const [infiniteApproval, setInfiniteApproval] = useState(false)
   const {
     slippageCustom,
     slippageSelected,
     gasPriceSelected,
     gasCustom,
+    infiniteApproval,
   } = useSelector((state: AppState) => state.user)
   const [exchangeRate, setExchangeRate] = useState("0")
   const tokenBalances = usePoolTokenBalances(BTC_POOL_NAME)
@@ -247,8 +247,6 @@ function SwapBTC(): ReactElement {
           TOKENS_MAP[formState.to.symbol].decimals,
         ),
       }}
-      infiniteApproval={infiniteApproval}
-      onChangeInfiniteApproval={setInfiniteApproval}
       onChangeFromAmount={handleUpdateAmountFrom}
       onChangeFromToken={handleUpdateTokenFrom}
       onChangeToToken={handleUpdateTokenTo}

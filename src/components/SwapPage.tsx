@@ -1,16 +1,17 @@
 import "./SwapPage.scss"
 
 import React, { ReactElement, useState } from "react"
-import { updateGasPriceCustom, updateGasPriceSelected } from "../state/user"
 import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
 import { AppState } from "../state/index"
 import ConfirmTransaction from "./ConfirmTransaction"
-import { GasPrices } from "../state/user"
+import GasField from "./GasField"
+import InfiniteApprovalField from "./InfiniteApprovalField"
 import Modal from "./Modal"
 import { PayloadAction } from "@reduxjs/toolkit"
 import ReviewSwap from "./ReviewSwap"
+import SlippageField from "./SlippageField"
 import SwapForm from "./SwapForm"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
@@ -18,21 +19,13 @@ import { logEvent } from "../utils/googleAnalytics"
 import { updateSwapAdvancedMode } from "../state/user"
 import { useTranslation } from "react-i18next"
 
-// Dumb data for UI
-const selected = {
-  maxSlippage: 0.5,
-}
-// End of dumb data
-
 interface Props {
   tokens: Array<{ symbol: string; name: string; value: string; icon: string }>
   exchangeRateInfo: { pair: string; value: string }
   error: string | null
   info: { isInfo: boolean; message: string }
-  infiniteApproval: boolean
   fromState: { symbol: string; value: string }
   toState: { symbol: string; value: string }
-  onChangeInfiniteApproval: (approval: boolean) => void
   onChangeFromToken: (tokenSymbol: string) => void
   onChangeFromAmount: (amount: string) => void
   onChangeToToken: (tokenSymbol: string) => void
@@ -49,8 +42,6 @@ const SwapPage = (props: Props): ReactElement => {
     info,
     fromState,
     toState,
-    infiniteApproval,
-    onChangeInfiniteApproval,
     onChangeFromToken,
     onChangeFromAmount,
     onChangeToToken,
@@ -62,13 +53,8 @@ const SwapPage = (props: Props): ReactElement => {
   const [popUp, setPopUp] = useState("")
 
   const dispatch = useDispatch<AppDispatch>()
-  const {
-    userSwapAdvancedMode: advanced,
-    gasCustom,
-    gasPriceSelected,
-  } = useSelector((state: AppState) => state.user)
-  const { gasStandard, gasFast, gasInstant } = useSelector(
-    (state: AppState) => state.application,
+  const { userSwapAdvancedMode: advanced } = useSelector(
+    (state: AppState) => state.user,
   )
 
   return (
@@ -148,103 +134,14 @@ const SwapPage = (props: Props): ReactElement => {
           <div className="divider"></div>
           <div className={"tableContainer " + classNames({ show: advanced })}>
             <div className="table">
-              <div className="infiniteApproval tableOption">
-                <div className="IAlabel">
-                  {t("infiniteApproval")}
-                  <span className="tooltipText">
-                    {`Allow Saddle to spend all of your ${fromState.symbol} now and in the
-                    future. You will not need to approve again.`}
-                  </span>
-                </div>
-                <div className="options">
-                  <button
-                    className={classNames({
-                      selected: infiniteApproval,
-                    })}
-                    onClick={(): void => onChangeInfiniteApproval(true)}
-                  >
-                    {t("yes")}
-                  </button>
-                  <button
-                    className={classNames({
-                      selected: !infiniteApproval,
-                    })}
-                    onClick={(): void => onChangeInfiniteApproval(false)}
-                  >
-                    {t("no")}
-                  </button>
-                </div>
+              <div className="parameter">
+                <GasField />
               </div>
-              <div className="tableOption">
-                <span className="label">{t("maxSlippage")}</span>
-                <div className="options">
-                  <button
-                    className={classNames({
-                      selected: selected.maxSlippage === 0.5,
-                    })}
-                  >
-                    0.5%
-                  </button>
-                  <button
-                    className={classNames({
-                      selected: selected.maxSlippage === 1,
-                    })}
-                  >
-                    1%
-                  </button>
-                  <input></input>
-                  <span style={{ marginLeft: "4px" }}>%</span>
-                </div>
+              <div className="parameter">
+                <SlippageField />
               </div>
-              <div className="tableOption">
-                <span className="label">{t("gas")}</span>
-                <div className="options">
-                  <button
-                    className={classNames({
-                      selected: gasPriceSelected === GasPrices.Standard,
-                    })}
-                    onClick={(): PayloadAction<GasPrices> =>
-                      dispatch(updateGasPriceSelected(GasPrices.Standard))
-                    }
-                  >
-                    {gasStandard} {t("standard")}
-                  </button>
-                  <button
-                    className={classNames({
-                      selected: gasPriceSelected === GasPrices.Fast,
-                    })}
-                    onClick={(): PayloadAction<GasPrices> =>
-                      dispatch(updateGasPriceSelected(GasPrices.Fast))
-                    }
-                  >
-                    {gasFast} {t("fast")}
-                  </button>
-                  <button
-                    className={classNames({
-                      selected: gasPriceSelected === GasPrices.Instant,
-                    })}
-                    onClick={(): PayloadAction<GasPrices> =>
-                      dispatch(updateGasPriceSelected(GasPrices.Instant))
-                    }
-                  >
-                    {gasInstant} {t("instant")}
-                  </button>
-                  <input
-                    type="number"
-                    className={classNames({
-                      selected: gasPriceSelected === GasPrices.Custom,
-                    })}
-                    value={gasCustom?.valueRaw}
-                    onClick={(): PayloadAction<GasPrices> =>
-                      dispatch(updateGasPriceSelected(GasPrices.Custom))
-                    }
-                    onChange={(
-                      e: React.ChangeEvent<HTMLInputElement>,
-                    ): PayloadAction<string> =>
-                      dispatch(updateGasPriceCustom(e.target.value))
-                    }
-                  ></input>
-                </div>
+              <div className="parameter">
+                <InfiniteApprovalField />
               </div>
             </div>
           </div>
