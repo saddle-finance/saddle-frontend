@@ -284,6 +284,8 @@ export default function usePoolData(
         ? keepAPRNumerator
         : keepAPRNumerator.div(keepAPRDenominator)
 
+        
+
       // User share data
       const userShare = userLpTokenBalance
         .mul(BigNumber.from(10).pow(18))
