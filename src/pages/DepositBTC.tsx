@@ -58,7 +58,7 @@ function DepositBTC(): ReactElement | null {
   const [userMerkleProof, setUserMerkleProof] = useState<string[] | null>(null)
   useEffect(() => {
     if (!account) {
-      setUserMerkleProof(null)
+      setUserMerkleProof([])
       return
     }
     if (isProduction()) {
@@ -68,7 +68,7 @@ function DepositBTC(): ReactElement | null {
             resp.json().then((proof) => setUserMerkleProof(proof))
           } else {
             // API will 404 if account proof doesn't exist
-            setUserMerkleProof(null)
+            setUserMerkleProof([])
           }
         },
       )
