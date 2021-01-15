@@ -5,7 +5,6 @@ import React, { ReactElement, useState } from "react"
 
 import { AppState } from "../state"
 import { BigNumber } from "ethers"
-import Checkbox from "./Checkbox"
 import ConfirmTransaction from "./ConfirmTransaction"
 import GasField from "./GasField"
 import InfiniteApprovalField from "./InfiniteApprovalField"
@@ -13,6 +12,7 @@ import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
 import NoShareContent from "./NoShareContent"
 import PoolInfoCard from "./PoolInfoCard"
+import RadioButton from "./RadioButton"
 import ReviewWithdraw from "./ReviewWithdraw"
 import SlippageField from "./SlippageField"
 import TokenInput from "./TokenInput"
@@ -86,7 +86,7 @@ const WithdrawPage = (props: Props): ReactElement => {
     setModalOpen(true)
     setPopUp("review")
   }
-
+  // TODO: change back
   const noShare =
     myShareData && myShareData.lpTokenBalance.eq(BigNumber.from(0))
 
@@ -120,6 +120,33 @@ const WithdrawPage = (props: Props): ReactElement => {
                 {formStateData.error && (
                   <div className="error">{formStateData.error.message}</div>
                 )}
+              </div>
+              <div className="horizontalDisplay">
+                <RadioButton
+                  checked={formStateData.withdrawType === "ALL"}
+                  onChange={(): void =>
+                    onFormChange({
+                      fieldName: "withdrawType",
+                      value: "ALL",
+                    })
+                  }
+                  label="Combo"
+                />
+                {tokensData.map((t) => {
+                  return (
+                    <RadioButton
+                      key={t.symbol}
+                      checked={formStateData.withdrawType === t.symbol}
+                      onChange={(): void =>
+                        onFormChange({
+                          fieldName: "withdrawType",
+                          value: t.symbol,
+                        })
+                      }
+                      label={t.name}
+                    />
+                  )
+                })}
               </div>
               {tokensData.map((token, index) => (
                 <div key={index}>
@@ -169,33 +196,6 @@ const WithdrawPage = (props: Props): ReactElement => {
               </div>
             </div>
             <div className="advancedOptions">
-              <div className="paramater horizontalDisplay">
-                <Checkbox
-                  checked={formStateData.withdrawType === "ALL"}
-                  onChange={(): void =>
-                    onFormChange({
-                      fieldName: "withdrawType",
-                      value: "ALL",
-                    })
-                  }
-                  label="All Tokens"
-                />
-                {tokensData.map((t) => {
-                  return (
-                    <Checkbox
-                      key={t.symbol}
-                      checked={formStateData.withdrawType === t.symbol}
-                      onChange={(): void =>
-                        onFormChange({
-                          fieldName: "withdrawType",
-                          value: t.symbol,
-                        })
-                      }
-                      label={t.name}
-                    />
-                  )
-                })}
-              </div>
               <div className="paramater">
                 <GasField />
               </div>
