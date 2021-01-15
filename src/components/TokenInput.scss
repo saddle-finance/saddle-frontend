@@ -34,6 +34,10 @@ div.tokenInput {
     }
   }
 
+  input.hasMaxButton {
+    width: 120px;
+  }
+
   span {
     line-height: 40px;
   }
@@ -45,27 +49,23 @@ div.tokenInput {
 
   button.max {
     position: absolute;
-    right: 2px;
-    z-index: 1;
+    right: 0px;
     height: 32px;
-    color: $text-red;
-    background: none !important;
+    color: $white;
+    background: $divider-red;
     border: none;
+    border-radius: 6px;
     font-weight: $medium;
     letter-spacing: -0.06em;
     cursor: pointer;
-    text-decoration: underline;
-
-    &:hover {
-      font-weight: $bold;
-    }
 
     &:focus {
       outline: none;
     }
 
     &:disabled {
-      display: none;
+      background: $disabled;
+      cursor: not-allowed;
     }
   }
 }

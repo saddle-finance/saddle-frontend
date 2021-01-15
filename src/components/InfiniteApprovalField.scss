@@ -10,15 +10,6 @@
   display: flex;
   align-items: center;
 
-  input {
-    width: 24px;
-    height: 24px;
-
-    opacity: 0;
-    &:checked + .checkbox_control svg {
-      transform: scale(1);
-    }
-  }
   .checkbox_control {
     display: inline-grid;
     width: 20px;
@@ -36,11 +27,21 @@
   .checkbox_input {
     display: grid;
     grid-template-areas: "checkbox";
-    margin-right: 8px;
+    margin-right: 4px;
 
     > * {
       grid-area: checkbox;
       cursor: pointer;
+    }
+
+    & > input {
+      width: 24px;
+      height: 24px;
+
+      opacity: 0;
+      &:checked + .checkbox_control svg {
+        transform: scale(1);
+      }
     }
   }
 

@@ -1,7 +1,7 @@
 import "./TokenInput.scss"
 
 import React, { ReactElement } from "react"
-
+import classNames from "classnames"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -34,13 +34,9 @@ function TokenInput({
     <div className="tokenInput">
       <img alt="icon" src={icon} />
       <span>{symbol}</span>
-      {max != null && (
-        <button className="max" onClick={onClickMax} disabled={disabled}>
-          {`${t("max")}: ${max}`}
-        </button>
-      )}
       <input
         disabled={disabled ? true : false}
+        className={classNames({ hasMaxButton: max })}
         value={inputValue}
         onChange={onChangeInput}
         placeholder={max || "0"}
@@ -48,6 +44,11 @@ function TokenInput({
           e.target.select()
         }
       />
+      {max != null && (
+        <button className="max" onClick={onClickMax} disabled={disabled}>
+          {t("max")}
+        </button>
+      )}
     </div>
   )
 }

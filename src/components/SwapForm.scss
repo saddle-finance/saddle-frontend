@@ -37,18 +37,22 @@
       outline: none;
     }
 
+    input.hasMaxButton {
+      width: 204px;
+    }
+
     button.max {
       position: absolute;
-      right: 8px;
-      top: 0;
-      z-index: 1;
+      right: 0px;
       height: 32px;
-      background: none;
+      color: $white;
+      background: $divider-red;
       border: none;
-      color: $text-red;
+      border-radius: 6px;
       font-weight: $medium;
       font-size: 16px;
-      text-decoration: underline;
+      letter-spacing: -0.06em;
+      cursor: pointer;
 
       &:hover {
         font-weight: $bold;
