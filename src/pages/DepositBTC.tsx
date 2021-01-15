@@ -57,11 +57,15 @@ function DepositBTC(): ReactElement {
     async function calculateMaxDeposits(): Promise<void> {
       if (swapContract == null || userShareData == null || poolData == null)
         return
-      const depositLPTokenAmount = await swapContract.calculateTokenAmount(
-        account,
-        BTC_POOL_TOKENS.map(({ symbol }) => tokenFormState[symbol].valueSafe),
-        true, // deposit boolean
-      )
+      let depositLPTokenAmount = BigNumber.from(0)
+      if (poolData.totalLocked.gt(0)) {
+        depositLPTokenAmount = await swapContract.calculateTokenAmount(
+          account,
+          BTC_POOL_TOKENS.map(({ symbol }) => tokenFormState[symbol].valueSafe),
+          true, // deposit boolean
+        )
+      }
+
       const futureUserLPTokenBalance = depositLPTokenAmount.add(
         userShareData?.lpTokenBalance,
       )

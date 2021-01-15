@@ -35,7 +35,7 @@ export interface PoolDataType {
   reserve: BigNumber
   swapFee: BigNumber
   tokens: TokenShareType[]
-  totalLocked: string
+  totalLocked: BigNumber
   utilization: string // TODO: calculate
   virtualPrice: BigNumber
   volume: string // TODO: calculate
@@ -81,7 +81,7 @@ export default function usePoolData(
       ] = await Promise.all([
         swapContract.calculateCurrentWithdrawFee(account || AddressZero),
         swapContract.swapStorage(),
-        swapContract.allowlist(),
+        swapContract.getAllowlist(),
       ])
       const { adminFee, lpToken: lpTokenAddress, swapFee } = swapStorage
       const lpToken = getContract(
@@ -104,7 +104,7 @@ export default function usePoolData(
         swapContract.address,
       )
       const poolLPTokenCap = await allowlist.getPoolCap(swapContract.address)
-      const isAcceptingDeposits = poolLPTokenCap.lt(totalLpTokenBalance)
+      const isAcceptingDeposits = poolLPTokenCap.gt(totalLpTokenBalance)
 
       const virtualPrice = totalLpTokenBalance.isZero()
         ? BigNumber.from(10).pow(18)
@@ -139,7 +139,9 @@ export default function usePoolData(
       const keepAPRDenominator = totalLpTokenBalance
         .mul(parseUnits(String(tokenPricesUSD[comparisonPoolToken.symbol]), 6))
         .div(1e6)
-      const keepApr = keepAPRNumerator.div(keepAPRDenominator)
+      const keepApr = keepAPRDenominator.isZero()
+        ? BigNumber.from(0)
+        : keepAPRNumerator.div(keepAPRDenominator)
 
       // User share data
       const userShare = userLpTokenBalance
@@ -198,7 +200,7 @@ export default function usePoolData(
         name: poolName,
         tokens: poolTokens,
         reserve: tokenBalancesUSDSum,
-        totalLocked: "XXX", // TODO
+        totalLocked: tokenBalancesSum,
         virtualPrice: virtualPrice,
         adminFee: adminFee,
         swapFee: swapFee,
