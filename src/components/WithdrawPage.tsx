@@ -12,6 +12,7 @@ import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
 import NoShareContent from "./NoShareContent"
 import PoolInfoCard from "./PoolInfoCard"
+import RadioButton from "./RadioButton"
 import ReviewWithdraw from "./ReviewWithdraw"
 import SlippageField from "./SlippageField"
 import TokenInput from "./TokenInput"
@@ -85,7 +86,6 @@ const WithdrawPage = (props: Props): ReactElement => {
     setModalOpen(true)
     setPopUp("review")
   }
-
   const noShare =
     !myShareData || myShareData.lpTokenBalance.eq(BigNumber.from(0))
 
@@ -119,6 +119,33 @@ const WithdrawPage = (props: Props): ReactElement => {
                 {formStateData.error && (
                   <div className="error">{formStateData.error.message}</div>
                 )}
+              </div>
+              <div className="horizontalDisplay">
+                <RadioButton
+                  checked={formStateData.withdrawType === "ALL"}
+                  onChange={(): void =>
+                    onFormChange({
+                      fieldName: "withdrawType",
+                      value: "ALL",
+                    })
+                  }
+                  label="Combo"
+                />
+                {tokensData.map((t) => {
+                  return (
+                    <RadioButton
+                      key={t.symbol}
+                      checked={formStateData.withdrawType === t.symbol}
+                      onChange={(): void =>
+                        onFormChange({
+                          fieldName: "withdrawType",
+                          value: t.symbol,
+                        })
+                      }
+                      label={t.name}
+                    />
+                  )
+                })}
               </div>
               {tokensData.map((token, index) => (
                 <div key={index}>
@@ -168,42 +195,6 @@ const WithdrawPage = (props: Props): ReactElement => {
               </div>
             </div>
             <div className="advancedOptions">
-              <div>
-                <label>
-                  <input
-                    type="radio"
-                    value={"ALL"}
-                    checked={formStateData.withdrawType === "ALL"}
-                    onChange={(): void =>
-                      onFormChange({
-                        fieldName: "withdrawType",
-                        value: "ALL",
-                      })
-                    }
-                  />
-                  {"All tokens"}
-                </label>
-              </div>
-              {tokensData.map((t) => {
-                return (
-                  <div key={t.symbol}>
-                    <label>
-                      <input
-                        type="radio"
-                        value={t.symbol}
-                        checked={formStateData.withdrawType === t.symbol}
-                        onChange={(): void =>
-                          onFormChange({
-                            fieldName: "withdrawType",
-                            value: t.symbol,
-                          })
-                        }
-                      />
-                      {t.name}
-                    </label>
-                  </div>
-                )
-              })}
               <div className="paramater">
                 <GasField />
               </div>
@@ -214,31 +205,6 @@ const WithdrawPage = (props: Props): ReactElement => {
                 <InfiniteApprovalField />
               </div>
             </div>
-            {/* <label className="combination">
-              <span className="checkbox_input">
-                <input
-                  type="checkbox"
-                  checked={combination}
-                  onChange={(): void => setCombination(!combination)}
-                />
-                <span className="checkbox_control">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                    focusable="false"
-                  >
-                    <path
-                      fill="none"
-                      strokeWidth="4"
-                      d="M1.73 12.91l6.37 6.37L22.79 4.59"
-                    />
-                  </svg>
-                </span>
-              </span>
-              <span className="combLabel">{t("combinationOfAll")}</span>
-            </label> */}
-
             <button
               className="actionBtn"
               type="submit"

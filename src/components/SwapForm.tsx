@@ -39,6 +39,7 @@ function SwapForm({
             autoComplete="off"
             autoCorrect="off"
             type="text"
+            className={classNames({ hasMaxButton: isSwapFrom })}
             value={inputValue}
             placeholder="0.0"
             spellCheck="false"
