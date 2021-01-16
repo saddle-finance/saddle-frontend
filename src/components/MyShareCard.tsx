@@ -1,9 +1,9 @@
 import "./MyShareCard.scss"
 
 import React, { ReactElement } from "react"
-import { HistoricalPoolDataType } from "../hooks/useHistoricalPoolData"
 import { commify, formatUnits } from "@ethersproject/units"
 
+import { HistoricalPoolDataType } from "../hooks/useHistoricalPoolData"
 import { TOKENS_MAP } from "../constants"
 import { UserShareType } from "../hooks/usePoolData"
 import { useTranslation } from "react-i18next"
