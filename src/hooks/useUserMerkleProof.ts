@@ -19,6 +19,7 @@ export function useUserMerkleProof(
 
   const [userMerkleProof, setUserMerkleProof] = useState<string[] | null>(null)
   const [hasValidMerkleState, setHasValidMerkleState] = useState<boolean>(false)
+  const isAccountVerified = userShareData?.isAccountVerified
   useEffect(() => {
     async function computeMerkleState(): Promise<void> {
       if (!account) {
@@ -33,7 +34,7 @@ export function useUserMerkleProof(
         setHasValidMerkleState(true)
         return
       }
-      if (userShareData?.isAccountVerified) {
+      if (isAccountVerified) {
         // gas trick where we don't need to send proofs if already verified
         setUserMerkleProof([])
         setHasValidMerkleState(true)
@@ -65,7 +66,7 @@ export function useUserMerkleProof(
       }
     }
     computeMerkleState()
-  }, [account, chainId, userShareData?.isAccountVerified, swapContract])
+  }, [account, chainId, isAccountVerified, swapContract])
   return {
     userMerkleProof,
     hasValidMerkleState,
