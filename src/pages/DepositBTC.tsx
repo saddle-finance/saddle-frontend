@@ -1,6 +1,7 @@
 import {
   BTC_POOL_NAME,
   BTC_POOL_TOKENS,
+  MERKLETREE_DATA,
   RENBTC,
   SBTC,
   TBTC,
@@ -40,7 +41,7 @@ const testDepositData = {
 // Dumb data end here
 
 function DepositBTC(): ReactElement | null {
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const approveAndDeposit = useApproveAndDeposit(BTC_POOL_NAME)
   const [poolData, userShareData] = usePoolData(BTC_POOL_NAME)
   const swapContract = useSwapContract(BTC_POOL_NAME)
@@ -73,12 +74,16 @@ function DepositBTC(): ReactElement | null {
         },
       )
     } else {
-      import("../constants/exampleMerkleTreeData.json").then((data) => {
-        const proof = getMerkleProof(data, account)
-        setUserMerkleProof(proof)
-      })
+      if (chainId) {
+        import(`../constants/merkleTreeData/${MERKLETREE_DATA[chainId]}`).then(
+          (data) => {
+            const proof = getMerkleProof(data, account)
+            setUserMerkleProof(proof)
+          },
+        )
+      }
     }
-  }, [account])
+  }, [account, chainId])
   const [willExceedMaxDeposits, setWillExceedMaxDeposit] = useState(true)
   useEffect(() => {
     // evaluate if a new deposit will exceed the pool's per-user limit

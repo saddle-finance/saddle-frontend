@@ -58,6 +58,11 @@ export const BTC_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.HARDHAT]: "0x851356ae760d987E095750cCeb3bC6014560891C",
 }
 
+export const MERKLETREE_DATA: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "mainnetTestAccounts.json",
+  [ChainId.HARDHAT]: "hardhat.json",
+}
+
 // Stablecoins
 const DAI_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0x6B175474E89094C44Da98b954EedeAC495271d0F",

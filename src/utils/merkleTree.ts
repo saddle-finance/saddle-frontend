@@ -4,11 +4,6 @@ interface MerkleTreeData {
 }
 interface Account {
   proof: string[]
-  flags: {
-    yearn: boolean
-    curve: boolean
-    yam: boolean
-  }
 }
 
 export function getMerkleProof(
