@@ -1,5 +1,7 @@
 @import "../styles/theme";
 
+$margin-top: 16px;
+
 div.myShareCard {
   color: var(--text-darker);
   font-size: 16px;
@@ -42,6 +44,12 @@ div.myShareCard {
     .tokenName {
       font-weight: $bold;
       display: block;
+    }
+  }
+  .historicalPoolData {
+    margin-top: $margin-top;
+    .label {
+      font-weight: $bold;
     }
   }
 }

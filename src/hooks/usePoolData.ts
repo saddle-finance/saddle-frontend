@@ -106,20 +106,6 @@ export default function usePoolData(
       const poolLPTokenCap = await allowlist.getPoolCap(swapContract.address)
       const isAcceptingDeposits = poolLPTokenCap.gt(totalLpTokenBalance)
 
-      const totalDeposits = new Array(4)
-      totalDeposits.fill(BigNumber.from("0"))
-      const totalWithdrawals = new Array(4)
-      totalWithdrawals.fill(BigNumber.from("0"))
-
-      // const vp = await swapContract.getVirtualPrice()
-
-      const totalDepositsBTC = null
-      const totalDepositsUSD = null
-      const totalWithdrawalsBTC = null
-      const totalWithdrawalsUSD = null
-      const totalProfitBTC = null
-      const totalProfitUSD = null
-
       const virtualPrice = totalLpTokenBalance.isZero()
         ? BigNumber.from(10).pow(18)
         : await swapContract.getVirtualPrice()
@@ -153,6 +139,8 @@ export default function usePoolData(
       const keepAPRDenominator = totalLpTokenBalance
         .mul(parseUnits(String(tokenPricesUSD[comparisonPoolToken.symbol]), 6))
         .div(1e6)
+
+
       const keepApr = totalLpTokenBalance.isZero()
         ? keepAPRNumerator
         : keepAPRNumerator.div(keepAPRDenominator)
@@ -237,7 +225,6 @@ export default function usePoolData(
             tokens: userPoolTokens,
             currentWithdrawFee: userCurrentWithdrawFee,
             lpTokenBalance: userLpTokenBalance,
-            totalDeposits,
           }
         : null
       setPoolData([poolData, userShareData])

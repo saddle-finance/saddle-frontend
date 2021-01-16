@@ -1,13 +1,15 @@
 import { DEPLOYED_BLOCK, PoolName } from "../constants"
-import { EventFilter } from "@ethersproject/contracts"
-import { formatUnits, parseUnits } from "@ethersproject/units"
 import { useAllContracts, useSwapContract } from "./useContract"
 import { useEffect, useState } from "react"
 
+import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
-import { getContract } from "../utils"
+import { EventFilter } from "@ethersproject/contracts"
 import { Web3Provider } from "@ethersproject/providers"
+import { formatUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
+import usePoolData from "./usePoolData"
+import { useSelector } from "react-redux"
 
 export interface HistoricalPoolDataType {
   name: string
@@ -38,34 +40,36 @@ function getClosestDataPointInPoolStats(
   return closestPoint
 }
 
-async function getEventHashes(library: Web3Provider, account: string, eventFilter: EventFilter, fromBlock: number) {
-
-      eventFilter.topics = eventFilter.topics || []
-      eventFilter.topics.push(
-        "0x000000000000000000000000" + account.slice(2),
-      )
-      Object.assign(eventFilter, {
-        fromBlock,
-        toBlock: "latest",
-      })
-      // Get all hashes of liquidity addition txes
-      const events = await library.getLogs(eventFilter)
-      return events.map(
-        (log) => log.transactionHash,
-      )
+async function getEventHashes(
+  library: Web3Provider,
+  account: string,
+  eventFilter: EventFilter,
+  fromBlock: number,
+): Promise<Array<string>> {
+  eventFilter.topics = eventFilter.topics || []
+  eventFilter.topics.push("0x000000000000000000000000" + account.slice(2))
+  Object.assign(eventFilter, {
+    fromBlock,
+    toBlock: "latest",
+  })
+  // Get all hashes of liquidity addition txes
+  const events = await library.getLogs(eventFilter)
+  return events.map((log) => log.transactionHash)
 }
 
 export default function useHistoricalPoolData(
   poolName: PoolName,
-): HistoricalPoolDataType | undefined {
+): HistoricalPoolDataType | null {
   const { account, library, chainId } = useActiveWeb3React()
+  const [poolData, userShareData] = usePoolData(poolName)
   const swapContract = useSwapContract(poolName)
   const tokenContracts = useAllContracts()
+  const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
 
   const [
     historicalPoolData,
     setHistoricalPoolData,
-  ] = useState<HistoricalPoolDataType>()
+  ] = useState<HistoricalPoolDataType | null>(null)
   const [poolStats, setPoolStats] = useState()
   const deployedBlock = chainId ? DEPLOYED_BLOCK[chainId] : 0
 
@@ -90,7 +94,11 @@ export default function useHistoricalPoolData(
         !swapContract ||
         !tokenContracts ||
         !poolStats ||
-        !tokenContracts.BLPT
+        !tokenContracts.BLPT ||
+        !poolData ||
+        !userShareData ||
+        !tokenPricesUSD ||
+        !tokenPricesUSD.BTC
       )
         return
 
@@ -107,25 +115,42 @@ export default function useHistoricalPoolData(
         toBlock: "latest",
       }
 
-      const addLiquidityHashes = await getEventHashes(library, account, swapContract.filters.AddLiquidity(), deployedBlock)
-      
-      const removeLiquidityHashes = await getEventHashes(library, account,swapContract.filters.RemoveLiquidity(), deployedBlock)
+      const addLiquidityHashes = await getEventHashes(
+        library,
+        account,
+        // eslint-disable-next-line new-cap
+        swapContract.filters.AddLiquidity(),
+        deployedBlock,
+      )
 
-      const removeLiquidityOneHashes = await getEventHashes(library, account,swapContract.filters.RemoveLiquidityOne(), deployedBlock)
-      
-      const removeLiquidityImbalanceHashes = await getEventHashes(library, account,swapContract.filters.RemoveLiquidityImbalance(), deployedBlock)
-      const allLiquidityRemovalHashes = [...removeLiquidityHashes, ...removeLiquidityOneHashes, ...removeLiquidityImbalanceHashes]
+      const removeLiquidityHashes = await getEventHashes(
+        library,
+        account,
+        // eslint-disable-next-line new-cap
+        swapContract.filters.RemoveLiquidity(),
+        deployedBlock,
+      )
 
-      console.log('addLiquidityHashes')
-      console.log(addLiquidityHashes)
-      console.log('removeLiquidityHashes')
-      console.log(removeLiquidityHashes)
-      console.log('removeLiquidityOneHashes')
-      console.log(removeLiquidityOneHashes)
-      console.log('removeLiquidityImbalanceHashes')
-      console.log(removeLiquidityImbalanceHashes)
-      console.log('allLiquidityRemovalHashes')
-      console.log(allLiquidityRemovalHashes)
+      const removeLiquidityOneHashes = await getEventHashes(
+        library,
+        account,
+        // eslint-disable-next-line new-cap
+        swapContract.filters.RemoveLiquidityOne(),
+        deployedBlock,
+      )
+
+      const removeLiquidityImbalanceHashes = await getEventHashes(
+        library,
+        account,
+        // eslint-disable-next-line new-cap
+        swapContract.filters.RemoveLiquidityImbalance(),
+        deployedBlock,
+      )
+      const allLiquidityRemovalHashes = [
+        ...removeLiquidityHashes,
+        ...removeLiquidityOneHashes,
+        ...removeLiquidityImbalanceHashes,
+      ]
 
       // Deposits
       // Get the LP token receipt txes
@@ -157,6 +182,11 @@ export default function useHistoricalPoolData(
           const virtualPriceAtBlock = BigNumber.from(poolStatsDataPoint[1])
           const btcPriceAtBlock = BigNumber.from(poolStatsDataPoint[2])
           const parsedTxLog = tokenContracts.BLPT.interface.parseLog(txLog)
+          console.log(poolStatsDataPoint)
+          console.log("parsedTxLog.args.value")
+          console.log(formatUnits(parsedTxLog.args.value))
+          console.log("virtualPriceAtBlock")
+          console.log(formatUnits(virtualPriceAtBlock))
           const depositBTC = parsedTxLog.args.value.mul(virtualPriceAtBlock)
 
           totalDepositsBTC = totalDepositsBTC.add(depositBTC)
@@ -180,11 +210,8 @@ export default function useHistoricalPoolData(
       const tokenSentForLiquidityRemovalLogs = tokenSentLogs.filter((log) =>
         allLiquidityRemovalHashes.includes(log.transactionHash),
       )
-      console.log('tokenSentForLiquidityRemovalLogs')
-      console.log(tokenSentForLiquidityRemovalLogs)
 
       for (const txLog of tokenSentForLiquidityRemovalLogs) {
-        // txLog
         const poolStatsDataPoint = getClosestDataPointInPoolStats(
           poolStats,
           txLog.blockNumber,
@@ -202,30 +229,19 @@ export default function useHistoricalPoolData(
         }
       }
 
-      
+      const currentUserValueBTC = userShareData.lpTokenBalance.mul(
+        poolData.virtualPrice,
+      )
+      const currentUserValueUSD = currentUserValueBTC.mul(
+        BigNumber.from(tokenPricesUSD.BTC),
+      )
 
-      console.log(formatUnits(totalDepositsBTC, 36))
-      console.log(formatUnits(totalDepositsUSD, 36))
-      console.log(totalWithdrawalsBTC)
-      console.log(totalWithdrawalsUSD)
-      console.log(totalProfitBTC)
-      console.log(totalProfitUSD)
-
-      /*
-        console.log(liqAdditionTxHashes)
-        console.log(liqAdditions
-          .map((log) => swapContract.interface.parseLog(log)))
-        totalDeposits = liqAdditions
-          .map((log) => swapContract.interface.parseLog(log).args.tokenAmounts)
-          .reduce((amounts, amountArray) => {
-            for (const i of [0, 1, 2, 3]) {
-              amounts[i].add(amountArray[i])
-            }
-            return amounts
-          }, totalDeposits)
-          console.log('totalDeposits')
-        console.log(totalDeposits)
-        */
+      totalProfitBTC = currentUserValueBTC
+        .add(totalWithdrawalsBTC)
+        .sub(totalDepositsBTC)
+      totalProfitUSD = currentUserValueUSD
+        .add(totalWithdrawalsUSD)
+        .sub(totalDepositsUSD)
 
       setHistoricalPoolData({
         name: poolName,
@@ -238,7 +254,18 @@ export default function useHistoricalPoolData(
       })
     }
     setData()
-  }, [poolName, swapContract, tokenContracts, account, library, poolStats])
+  }, [
+    poolName,
+    swapContract,
+    tokenContracts,
+    account,
+    library,
+    poolStats,
+    poolData,
+    userShareData,
+    tokenPricesUSD,
+    deployedBlock,
+  ])
 
   return historicalPoolData
 }

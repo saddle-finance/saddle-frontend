@@ -8,6 +8,7 @@ import { AppDispatch } from "../state"
 import { AppState } from "../state"
 import ConfirmTransaction from "./ConfirmTransaction"
 import GasField from "./GasField"
+import { HistoricalPoolDataType } from "../hooks/useHistoricalPoolData"
 import IneligibilityBanner from "./IneligibilityBanner"
 import InfiniteApprovalField from "./InfiniteApprovalField"
 import Modal from "./Modal"
@@ -41,6 +42,7 @@ interface Props {
   }>
   selected?: { [key: string]: any }
   poolData: PoolDataType | null
+  historicalPoolData: HistoricalPoolDataType | null
   myShareData: UserShareType | null
   transactionInfoData: {
     isInfo: boolean
@@ -61,6 +63,7 @@ const DepositPage = (props: Props): ReactElement => {
   const {
     tokens,
     poolData,
+    historicalPoolData,
     transactionInfoData,
     myShareData,
     depositDataFromParent,
@@ -216,7 +219,10 @@ const DepositPage = (props: Props): ReactElement => {
           </button>
         </div>
         <div className="infoPanels">
-          <MyShareCard data={myShareData} />
+          <MyShareCard
+            data={myShareData}
+            historicalPoolData={historicalPoolData}
+          />
           <div
             style={{
               display: myShareData ? "block" : "none",

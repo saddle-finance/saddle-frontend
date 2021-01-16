@@ -18,8 +18,8 @@ import { isProduction } from "../utils/environment"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
-import usePoolData from "../hooks/usePoolData"
 import useHistoricalPoolData from "../hooks/useHistoricalPoolData"
+import usePoolData from "../hooks/usePoolData"
 import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
 import { useTokenBalance } from "../state/wallet/hooks"
@@ -211,6 +211,7 @@ function DepositBTC(): ReactElement | null {
       title="BTC Pool"
       tokens={tokens}
       poolData={poolData}
+      historicalPoolData={historicalPoolData}
       myShareData={userShareData}
       transactionInfoData={testTransInfoData}
       depositDataFromParent={depositData}
