@@ -88,27 +88,27 @@ function MyShareCard({ data, historicalPoolData }: Props): ReactElement | null {
       {historicalFormattedData ? (
         <div className="historicalPoolData">
           <div key="deposits-btc">
-            <span className="label">Total Deposits (BTC): </span>
+            <span className="label">{t("totalDeposits")} (BTC): </span>
             <span>{historicalFormattedData.totalDepositsBTC}</span>
           </div>
           <div key="withdrawals-btc">
-            <span className="label">Total Withdrawals (BTC): </span>
+            <span className="label">{t("totalWithdrawals")} (BTC): </span>
             <span>{historicalFormattedData.totalWithdrawalsBTC}</span>
           </div>
           <div key="profit-btc">
-            <span className="label">Total Profit (BTC): </span>
+            <span className="label">{t("totalProfit")} (BTC): </span>
             <span>{historicalFormattedData.totalProfitBTC}</span>
           </div>
           <div key="deposits-usd">
-            <span className="label">Total Deposits (USD): </span>
+            <span className="label">{t("totalDeposits")} (USD): </span>
             <span>{historicalFormattedData.totalDepositsUSD}</span>
           </div>
           <div key="withdrawals-usd">
-            <span className="label">Total Withdrawals (USD): </span>
+            <span className="label">{t("totalWithdrawals")} (USD): </span>
             <span>{historicalFormattedData.totalWithdrawalsUSD}</span>
           </div>
           <div key="profit-usd">
-            <span className="label">Total Profit (USD): </span>
+            <span className="label">{t("totalProfit")} (USD): </span>
             <span>{historicalFormattedData.totalProfitUSD}</span>
           </div>
         </div>
