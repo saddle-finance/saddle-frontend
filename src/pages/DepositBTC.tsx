@@ -39,8 +39,10 @@ const testDepositData = {
 // Dumb data end here
 
 function DepositBTC(): ReactElement | null {
-  const userMerkleProof = useUserMerkleProof()
   const { account } = useActiveWeb3React()
+  const { userMerkleProof, hasValidMerkleState } = useUserMerkleProof(
+    BTC_POOL_NAME,
+  )
   const approveAndDeposit = useApproveAndDeposit(BTC_POOL_NAME)
   const [poolData, userShareData] = usePoolData(BTC_POOL_NAME)
   const swapContract = useSwapContract(BTC_POOL_NAME)
@@ -119,7 +121,6 @@ function DepositBTC(): ReactElement | null {
     ),
     inputValue: tokenFormState[symbol].valueRaw,
   }))
-  const hasMerkleProof = userMerkleProof != null && !!userMerkleProof?.length
 
   if (userMerkleProof == null) {
     // TODO: replace with loader component
@@ -134,7 +135,10 @@ function DepositBTC(): ReactElement | null {
       tokenFormState,
       gasPriceSelected,
       gasCustom,
-      merkleProof: userMerkleProof || [],
+      merkleData: {
+        userMerkleProof: userMerkleProof || [],
+        hasValidMerkleState,
+      },
     })
     // Clear input after deposit
     updateTokenFormState(
@@ -185,7 +189,7 @@ function DepositBTC(): ReactElement | null {
       infiniteApproval={infiniteApproval}
       willExceedMaxDeposits={willExceedMaxDeposits}
       isAcceptingDeposits={!!poolData?.isAcceptingDeposits}
-      hasMerkleProof={hasMerkleProof}
+      hasValidMerkleState={hasValidMerkleState}
     />
   )
 }
