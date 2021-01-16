@@ -16,7 +16,7 @@ function PoolInfoCard({ data }: Props): ReactElement {
   const formattedData = {
     name: data?.name,
     swapFee: data?.swapFee
-      ? formatUnits(data.swapFee, POOL_FEE_PRECISION)
+      ? formatUnits(data.swapFee, POOL_FEE_PRECISION - 2)
       : null,
     virtualPrice: data?.virtualPrice
       ? parseFloat(formatUnits(data.virtualPrice, 18)).toFixed(5)
@@ -25,7 +25,7 @@ function PoolInfoCard({ data }: Props): ReactElement {
       ? commify(parseFloat(formatUnits(data.reserve, 18)).toFixed(3))
       : null,
     adminFee: data?.adminFee
-      ? formatUnits(data.adminFee, POOL_FEE_PRECISION)
+      ? formatUnits(data.adminFee, POOL_FEE_PRECISION - 2)
       : null,
     volume: data?.volume,
     tokens:
