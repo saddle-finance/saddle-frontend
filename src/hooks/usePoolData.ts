@@ -18,16 +18,6 @@ interface TokenShareType {
   value: BigNumber
 }
 
-export interface UserShareType {
-  avgBalance: BigNumber
-  currentWithdrawFee: BigNumber
-  lpTokenBalance: BigNumber
-  name: string // TODO: does this need to be on user share?
-  share: BigNumber
-  tokens: TokenShareType[]
-  usdBalance: BigNumber
-  value: BigNumber
-}
 export interface PoolDataType {
   adminFee: BigNumber
   apy: string // TODO: calculate
@@ -42,6 +32,18 @@ export interface PoolDataType {
   poolAccountLimit: BigNumber
   isAcceptingDeposits: boolean
   keepApr: BigNumber
+}
+
+export interface UserShareType {
+  avgBalance: BigNumber
+  currentWithdrawFee: BigNumber
+  lpTokenBalance: BigNumber
+  name: string // TODO: does this need to be on user share?
+  share: BigNumber
+  tokens: TokenShareType[]
+  usdBalance: BigNumber
+  value: BigNumber
+  isAccountVerified: boolean
 }
 
 export type PoolDataHookReturnType = [PoolDataType | null, UserShareType | null]
@@ -90,20 +92,25 @@ export default function usePoolData(
         library,
         account ?? undefined,
       )
-      const [userLpTokenBalance, totalLpTokenBalance] = await Promise.all([
-        lpToken.balanceOf(account || AddressZero),
-        lpToken.totalSupply(),
-      ])
       const allowlist = getContract(
         allowlistAddress,
         ALLOWLIST_ABI,
         library,
         account ?? undefined,
       )
-      const poolAccountLimit = await allowlist.getPoolAccountLimit(
-        swapContract.address,
-      )
-      const poolLPTokenCap = await allowlist.getPoolCap(swapContract.address)
+      const [
+        userLpTokenBalance,
+        totalLpTokenBalance,
+        poolAccountLimit,
+        poolLPTokenCap,
+        isAccountVerified,
+      ] = await Promise.all([
+        lpToken.balanceOf(account || AddressZero),
+        lpToken.totalSupply(),
+        allowlist.getPoolAccountLimit(swapContract.address),
+        allowlist.getPoolCap(swapContract.address),
+        allowlist.isAccountVerified(account),
+      ])
       const isAcceptingDeposits = poolLPTokenCap.gt(totalLpTokenBalance)
 
       const virtualPrice = totalLpTokenBalance.isZero()
@@ -222,6 +229,7 @@ export default function usePoolData(
             tokens: userPoolTokens,
             currentWithdrawFee: userCurrentWithdrawFee,
             lpTokenBalance: userLpTokenBalance,
+            isAccountVerified,
           }
         : null
       setPoolData([poolData, userShareData])

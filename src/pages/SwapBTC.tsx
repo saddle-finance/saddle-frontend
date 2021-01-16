@@ -63,10 +63,10 @@ function SwapBTC(): ReactElement {
       const rate = await swapContract.calculateSwap(
         indexFrom,
         indexTo,
-        BigNumber.from(1).mul(10).pow(fromToken.decimals),
+        BigNumber.from(10).pow(fromToken.decimals - 1),
       )
 
-      setExchangeRate(formatUnits(rate, toToken.decimals).slice(0, 6))
+      setExchangeRate(formatUnits(rate, toToken.decimals - 1).slice(0, 6))
     }
     updateExchange()
   }, [formState, swapContract])

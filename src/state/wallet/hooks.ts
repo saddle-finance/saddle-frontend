@@ -32,7 +32,7 @@ export function useTokenBalance(t: Token): BigNumber {
     if (account && chainId) {
       pollBalance()
     }
-  }, 2 * BLOCK_TIME)
+  }, BLOCK_TIME)
 
   return balance
 }

@@ -2,7 +2,9 @@ import "./WithdrawPage.scss"
 
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
 
+import { AppDispatch } from "../state"
 import { AppState } from "../state"
 import { BigNumber } from "ethers"
 import ConfirmTransaction from "./ConfirmTransaction"
@@ -12,6 +14,7 @@ import InfiniteApprovalField from "./InfiniteApprovalField"
 import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
 import NoShareContent from "./NoShareContent"
+import { PayloadAction } from "@reduxjs/toolkit"
 import PoolInfoCard from "./PoolInfoCard"
 import RadioButton from "./RadioButton"
 import ReviewWithdraw from "./ReviewWithdraw"
@@ -21,7 +24,7 @@ import TopMenu from "./TopMenu"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import classNames from "classnames"
 import { logEvent } from "../utils/googleAnalytics"
-import { useSelector } from "react-redux"
+import { updatePoolAdvancedMode } from "../state/user"
 import { useTranslation } from "react-i18next"
 
 export interface ReviewWithdrawData {
@@ -79,7 +82,10 @@ const WithdrawPage = (props: Props): ReactElement => {
     reviewData,
     onConfirmTransaction,
   } = props
-
+  const dispatch = useDispatch<AppDispatch>()
+  const { userPoolAdvancedMode: advanced } = useSelector(
+    (state: AppState) => state.user,
+  )
   const [modalOpen, setModalOpen] = useState(false)
   const [popUp, setPopUp] = useState("")
 
@@ -198,14 +204,42 @@ const WithdrawPage = (props: Props): ReactElement => {
               </div>
             </div>
             <div className="advancedOptions">
-              <div className="paramater">
-                <GasField />
-              </div>
-              <div className="paramater">
-                <SlippageField />
-              </div>
-              <div className="paramater">
-                <InfiniteApprovalField />
+              <span
+                className="title"
+                onClick={(): PayloadAction<boolean> =>
+                  dispatch(updatePoolAdvancedMode(!advanced))
+                }
+              >
+                {t("advancedOptions")}
+                <svg
+                  className={classNames("triangle", { upsideDown: advanced })}
+                  width="16"
+                  height="10"
+                  viewBox="0 0 16 10"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M14.8252 0C16.077 0 16.3783 0.827943 15.487 1.86207L8.80565 9.61494C8.35999 10.1321 7.63098 10.1246 7.19174 9.61494L0.510262 1.86207C-0.376016 0.833678 -0.0777447 0 1.17205 0L14.8252 0Z"
+                    fill="#00f4d7"
+                  />
+                </svg>
+              </span>
+              <div className="divider"></div>
+              <div
+                className={"tableContainer" + classNames({ show: advanced })}
+              >
+                <div className="parameter">
+                  <GasField />
+                </div>
+                <div className="parameter">
+                  <SlippageField />
+                </div>
+                <div className="parameter">
+                  <InfiniteApprovalField />
+                </div>
               </div>
             </div>
             <button
