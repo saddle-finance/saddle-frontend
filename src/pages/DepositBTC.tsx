@@ -1,7 +1,6 @@
 import {
   BTC_POOL_NAME,
   BTC_POOL_TOKENS,
-  MERKLETREE_DATA,
   RENBTC,
   SBTC,
   TBTC,
@@ -13,8 +12,6 @@ import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
 import { formatUnits } from "@ethersproject/units"
-import { getMerkleProof } from "../utils/merkleTree"
-import { isProduction } from "../utils/environment"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
@@ -23,6 +20,7 @@ import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
 import { useTokenBalance } from "../state/wallet/hooks"
 import { useTokenFormState } from "../hooks/useTokenFormState"
+import { useUserMerkleProof } from "../hooks/useUserMerkleProof"
 
 // Dumb data start here
 const testTransInfoData = {
@@ -41,7 +39,10 @@ const testDepositData = {
 // Dumb data end here
 
 function DepositBTC(): ReactElement | null {
-  const { account, chainId } = useActiveWeb3React()
+  const { account } = useActiveWeb3React()
+  const { userMerkleProof, hasValidMerkleState } = useUserMerkleProof(
+    BTC_POOL_NAME,
+  )
   const approveAndDeposit = useApproveAndDeposit(BTC_POOL_NAME)
   const [poolData, userShareData] = usePoolData(BTC_POOL_NAME)
   const swapContract = useSwapContract(BTC_POOL_NAME)
@@ -56,34 +57,6 @@ function DepositBTC(): ReactElement | null {
     infiniteApproval,
   } = useSelector((state: AppState) => state.user)
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
-  const [userMerkleProof, setUserMerkleProof] = useState<string[] | null>(null)
-  useEffect(() => {
-    if (!account) {
-      setUserMerkleProof([])
-      return
-    }
-    if (isProduction()) {
-      fetch(`https://ipfs.saddle.exchange/merkle-proofs/${account}`).then(
-        (resp) => {
-          if (resp.ok) {
-            resp.json().then((proof) => setUserMerkleProof(proof))
-          } else {
-            // API will 404 if account proof doesn't exist
-            setUserMerkleProof([])
-          }
-        },
-      )
-    } else {
-      if (chainId) {
-        import(`../constants/merkleTreeData/${MERKLETREE_DATA[chainId]}`).then(
-          (data) => {
-            const proof = getMerkleProof(data, account)
-            setUserMerkleProof(proof)
-          },
-        )
-      }
-    }
-  }, [account, chainId])
   const [willExceedMaxDeposits, setWillExceedMaxDeposit] = useState(true)
   useEffect(() => {
     // evaluate if a new deposit will exceed the pool's per-user limit
@@ -148,7 +121,6 @@ function DepositBTC(): ReactElement | null {
     ),
     inputValue: tokenFormState[symbol].valueRaw,
   }))
-  const hasMerkleProof = userMerkleProof != null && !!userMerkleProof?.length
 
   if (userMerkleProof == null) {
     // TODO: replace with loader component
@@ -163,7 +135,10 @@ function DepositBTC(): ReactElement | null {
       tokenFormState,
       gasPriceSelected,
       gasCustom,
-      merkleProof: userMerkleProof || [],
+      merkleData: {
+        userMerkleProof: userMerkleProof || [],
+        hasValidMerkleState,
+      },
     })
     // Clear input after deposit
     updateTokenFormState(
@@ -214,7 +189,7 @@ function DepositBTC(): ReactElement | null {
       infiniteApproval={infiniteApproval}
       willExceedMaxDeposits={willExceedMaxDeposits}
       isAcceptingDeposits={!!poolData?.isAcceptingDeposits}
-      hasMerkleProof={hasMerkleProof}
+      hasValidMerkleState={hasValidMerkleState}
     />
   )
 }

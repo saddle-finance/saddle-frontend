@@ -136,6 +136,32 @@ div.withdraw {
 
   .advancedOptions {
     margin-top: 24px;
+    svg.triangle {
+      margin-left: 10px;
+      transform: norotate(0deg);
+    }
+    svg.upsideDown.triangle {
+      transform: rotate(-180deg);
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      margin: 10px 0 20px 0;
+      background: var(--outline);
+    }
+
+    .tableContainer {
+      display: none;
+    }
+
+    div.parameter {
+      margin-top: 16px;
+    }
+
+    .show {
+      display: block;
+    }
   }
   div.paramater {
     margin-top: 16px;

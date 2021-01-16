@@ -1,10 +1,10 @@
 import "./MyShareCard.scss"
 
 import React, { ReactElement } from "react"
+import { commify, formatUnits } from "@ethersproject/units"
 
 import { TOKENS_MAP } from "../constants"
 import { UserShareType } from "../hooks/usePoolData"
-import { formatUnits } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -17,14 +17,16 @@ function MyShareCard({ data }: Props): ReactElement | null {
   if (!data) return null
   const formattedData = {
     share: (parseFloat(formatUnits(data.share, 18)) * 100).toFixed(2),
-    usdBalance: parseFloat(formatUnits(data.usdBalance, 18)).toFixed(2),
-    value: parseFloat(formatUnits(data.value, 18)).toFixed(5),
+    usdBalance: commify(
+      parseFloat(formatUnits(data.usdBalance, 18)).toFixed(2),
+    ),
+    value: commify(parseFloat(formatUnits(data.value, 18)).toFixed(5)),
     tokens: data.tokens.map((coin) => {
       const token = TOKENS_MAP[coin.symbol]
       return {
         symbol: token.symbol,
         name: token.name,
-        value: parseFloat(formatUnits(coin.value, 18)).toFixed(3),
+        value: commify(parseFloat(formatUnits(coin.value, 18)).toFixed(3)),
       }
     }),
   }

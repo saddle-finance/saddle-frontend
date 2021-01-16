@@ -52,7 +52,7 @@ interface Props {
     share: number
     lpToken: number // TODO: Calculate or pull from contract to get real value
   }
-  hasMerkleProof: boolean
+  hasValidMerkleState: boolean
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -68,7 +68,7 @@ const DepositPage = (props: Props): ReactElement => {
     isAcceptingDeposits,
     onChangeTokenInputValue,
     onConfirmTransaction,
-    hasMerkleProof,
+    hasValidMerkleState,
   } = props
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -88,7 +88,7 @@ const DepositPage = (props: Props): ReactElement => {
   return (
     <div className="deposit">
       <TopMenu activeTab={"deposit"} />
-      {!hasMerkleProof && <IneligibilityBanner />}
+      {!hasValidMerkleState && <IneligibilityBanner />}
 
       <div className="content">
         <div className="left">
@@ -110,7 +110,7 @@ const DepositPage = (props: Props): ReactElement => {
               <div key={index}>
                 <TokenInput
                   {...token}
-                  disabled={!isAcceptingDeposits || !hasMerkleProof}
+                  disabled={!isAcceptingDeposits || !hasValidMerkleState}
                   onChange={(value): void =>
                     onChangeTokenInputValue(token.symbol, value)
                   }
@@ -209,7 +209,9 @@ const DepositPage = (props: Props): ReactElement => {
               setPopUp("review")
             }}
             disabled={
-              !hasMerkleProof || willExceedMaxDeposits || !isAcceptingDeposits
+              !hasValidMerkleState ||
+              willExceedMaxDeposits ||
+              !isAcceptingDeposits
             }
           >
             {t("deposit")}
