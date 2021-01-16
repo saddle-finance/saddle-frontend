@@ -63,7 +63,9 @@ export const MERKLETREE_DATA: { [chainId in ChainId]: string } = {
   [ChainId.HARDHAT]: "hardhat.json",
 }
 
-export const BTC_SWAP_TOKEN_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+export const BTC_SWAP_TOKEN_CONTRACT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
   [ChainId.MAINNET]: "0x4D0224D6b03f00720F2D567dF2859b856c86AbD7",
   [ChainId.HARDHAT]: "0xB955b6c65Ff69bfe07A557aa385055282b8a5eA3",
 }
