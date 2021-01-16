@@ -1,4 +1,4 @@
-import { DEPLOYED_BLOCK, PoolName } from "../constants"
+import { DEPLOYED_BLOCK, POOL_STATS_URL, PoolName } from "../constants"
 import { useAllContracts, useSwapContract } from "./useContract"
 import { useEffect, useState } from "react"
 
@@ -6,7 +6,6 @@ import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import { EventFilter } from "@ethersproject/contracts"
 import { Web3Provider } from "@ethersproject/providers"
-import { formatUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import usePoolData from "./usePoolData"
 import { useSelector } from "react-redux"
@@ -72,18 +71,16 @@ export default function useHistoricalPoolData(
   ] = useState<HistoricalPoolDataType | null>(null)
   const [poolStats, setPoolStats] = useState()
   const deployedBlock = chainId ? DEPLOYED_BLOCK[chainId] : 0
+  const poolStatsURL = chainId ? POOL_STATS_URL[chainId] : null
 
   useEffect(() => {
     ;(async function (): Promise<void> {
       // TODO don't set it if this fails!
-      const req = await fetch(
-        "https://mehmeta-team-bucket.storage.fleek.co/pool-stats-dev.json?t=" +
-          +new Date(),
-      )
+      const req = await fetch(`${poolStatsURL}?t=${+new Date()}`)
       const data = await req.json()
       setPoolStats(data)
     })()
-  }, [])
+  }, [poolStatsURL])
 
   useEffect(() => {
     async function setData(): Promise<void> {
@@ -96,6 +93,7 @@ export default function useHistoricalPoolData(
         !poolStats ||
         !tokenContracts.BLPT ||
         !poolData ||
+        !poolStatsURL ||
         !userShareData ||
         !tokenPricesUSD ||
         !tokenPricesUSD.BTC
@@ -182,11 +180,6 @@ export default function useHistoricalPoolData(
           const virtualPriceAtBlock = BigNumber.from(poolStatsDataPoint[1])
           const btcPriceAtBlock = BigNumber.from(poolStatsDataPoint[2])
           const parsedTxLog = tokenContracts.BLPT.interface.parseLog(txLog)
-          console.log(poolStatsDataPoint)
-          console.log("parsedTxLog.args.value")
-          console.log(formatUnits(parsedTxLog.args.value))
-          console.log("virtualPriceAtBlock")
-          console.log(formatUnits(virtualPriceAtBlock))
           const depositBTC = parsedTxLog.args.value.mul(virtualPriceAtBlock)
 
           totalDepositsBTC = totalDepositsBTC.add(depositBTC)
@@ -265,6 +258,7 @@ export default function useHistoricalPoolData(
     userShareData,
     tokenPricesUSD,
     deployedBlock,
+    poolStatsURL,
   ])
 
   return historicalPoolData

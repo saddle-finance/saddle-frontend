@@ -46,7 +46,6 @@ function DepositBTC(): ReactElement | null {
   const approveAndDeposit = useApproveAndDeposit(BTC_POOL_NAME)
   const [poolData, userShareData] = usePoolData(BTC_POOL_NAME)
   const historicalPoolData = useHistoricalPoolData(BTC_POOL_NAME)
-  console.log(historicalPoolData)
   const swapContract = useSwapContract(BTC_POOL_NAME)
   const [tokenFormState, updateTokenFormState] = useTokenFormState(
     BTC_POOL_TOKENS,
@@ -60,6 +59,7 @@ function DepositBTC(): ReactElement | null {
   } = useSelector((state: AppState) => state.user)
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const [userMerkleProof, setUserMerkleProof] = useState<string[] | null>(null)
+  const [willExceedMaxDeposits, setWillExceedMaxDeposit] = useState(true)
   useEffect(() => {
     if (!account) {
       setUserMerkleProof([])
@@ -87,7 +87,6 @@ function DepositBTC(): ReactElement | null {
       }
     }
   }, [account, chainId])
-  const [willExceedMaxDeposits, setWillExceedMaxDeposit] = useState(true)
   useEffect(() => {
     // evaluate if a new deposit will exceed the pool's per-user limit
     async function calculateMaxDeposits(): Promise<void> {

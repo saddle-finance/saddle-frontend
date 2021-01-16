@@ -133,12 +133,6 @@ export function useApproveAndDeposit(
         gasPrice = gasStandard
       }
       gasPrice = parseUnits(String(gasPrice) || "45", 9)
-      console.log(
-        "POOL_TOKENS.map(({ symbol }) => state.tokenFormState[symbol].valueSafe)",
-      )
-      console.log(
-        POOL_TOKENS.map(({ symbol }) => state.tokenFormState[symbol].valueSafe),
-      )
 
       const spendTransaction = await swapContract.addLiquidity(
         POOL_TOKENS.map(({ symbol }) => state.tokenFormState[symbol].valueSafe),
