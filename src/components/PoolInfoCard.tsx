@@ -2,9 +2,9 @@ import "./PoolInfoCard.scss"
 
 import { POOL_FEE_PRECISION, TOKENS_MAP } from "../constants"
 import React, { ReactElement } from "react"
+import { commify, formatUnits } from "@ethersproject/units"
 
 import { PoolDataType } from "../hooks/usePoolData"
-import { formatUnits } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -22,7 +22,7 @@ function PoolInfoCard({ data }: Props): ReactElement {
       ? parseFloat(formatUnits(data.virtualPrice, 18)).toFixed(5)
       : null,
     reserve: data?.reserve
-      ? parseFloat(formatUnits(data.reserve, 18)).toFixed(3)
+      ? commify(parseFloat(formatUnits(data.reserve, 18)).toFixed(3))
       : null,
     adminFee: data?.adminFee
       ? formatUnits(data.adminFee, POOL_FEE_PRECISION)
@@ -36,7 +36,7 @@ function PoolInfoCard({ data }: Props): ReactElement {
           name: token.name,
           icon: token.icon,
           percent: coin.percent,
-          value: parseFloat(formatUnits(coin.value, 18)).toFixed(3),
+          value: commify(parseFloat(formatUnits(coin.value, 18)).toFixed(3)),
         }
       }) || [],
   }
