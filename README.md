@@ -1,10 +1,36 @@
 # saddle-frontend
 
+An open source UI for Saddle 🤠
+
+The UI is deployed on IPFS and accessible at
+[saddle.exchange](https://saddle.exchange/#/) or
+[saddlefinance.eth.link](https://saddlefinance.eth.link/#/).
+
 ## Installation
 
 ```lang=bash
 $ npm install
 ```
+
+### Pool Stats Setup
+
+Pool stats data is required to calculate lifetime deposits, withdrawals and
+profit in USD/BTC.  You will need to update the `ChainId.HARDHAT` value for
+`POOL_STATS_URL` in `src/constants/index.ts` to point to your own [Fleek
+bucket](https://fleek.co/):
+
+```lang=ts
+export const POOL_STATS_URL: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]:
+    "https://alphast0rm-team-bucket.storage.fleek.co/pool-stats.json",
+  [ChainId.HARDHAT]:
+    "https://YOUR_BUCKET_NAME_HERE.storage.fleek.co/pool-stats-dev.json",
+}
+```
+
+You will also need to run the stats script in the [saddle-pool-stats
+repo](https://github.com/saddle-finance/saddle-pool-stats) after every
+transaction to update the pool stats to have the numbers computed correctly.
 
 ## Usage
 
