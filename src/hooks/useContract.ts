@@ -1,6 +1,7 @@
 import {
   BTC_POOL_NAME,
   BTC_SWAP_ADDRESSES,
+  BTC_SWAP_TOKEN,
   DAI,
   PoolName,
   RENBTC,
@@ -98,6 +99,7 @@ export function useAllContracts(): AllContractsObject | null {
   const usdcContract = useTokenContract(USDC)
   const usdtContract = useTokenContract(USDT)
   const susdContract = useTokenContract(SUSD)
+  const btcSwapTokenContract = useTokenContract(BTC_SWAP_TOKEN)
 
   return useMemo(() => {
     if (
@@ -110,6 +112,7 @@ export function useAllContracts(): AllContractsObject | null {
         usdcContract,
         usdtContract,
         susdContract,
+        btcSwapTokenContract,
       ].some(Boolean)
     )
       return null
@@ -122,6 +125,7 @@ export function useAllContracts(): AllContractsObject | null {
       [USDC.symbol]: usdcContract,
       [USDT.symbol]: usdtContract,
       [SUSD.symbol]: susdContract,
+      [BTC_SWAP_TOKEN.symbol]: btcSwapTokenContract,
     }
   }, [
     tbtcContract,
@@ -132,5 +136,6 @@ export function useAllContracts(): AllContractsObject | null {
     usdcContract,
     usdtContract,
     susdContract,
+    btcSwapTokenContract,
   ])
 }
