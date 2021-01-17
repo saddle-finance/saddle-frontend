@@ -60,9 +60,9 @@ div.reviewDeposit {
     }
 
     div.rates {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      display: grid;
+      grid-template-rows: auto;
+      row-gap: 8px;
 
       span {
         display: block;

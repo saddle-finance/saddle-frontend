@@ -10,9 +10,10 @@ div.withdraw {
   .content {
     width: 888px;
     margin: 0 auto;
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: 20px;
+    align-items: start;
 
     .infoPanels {
       margin-top: 40px;
@@ -217,9 +218,9 @@ div.withdraw {
 
   div.transactionInfo {
     margin-top: 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    display: grid;
+    grid-template-rows: auto;
+    row-gap: 8px;
 
     span.value {
       color: var(--text-darker);

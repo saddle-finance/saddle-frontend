@@ -17,12 +17,9 @@ div.myShareCard {
 
   div.info {
     width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: flex-start;
-    justify-content: space-between;
-    align-content: space-between;
+    display: grid;
+    grid-template-rows: auto;
+    row-gap: 8px;
   }
 
   .poolShare {
