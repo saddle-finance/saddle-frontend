@@ -118,15 +118,19 @@ div.deposit {
     span.slippage {
       color: $error;
     }
+
+    a {
+      color: var(--text-selected);
+    }
   }
 
   .advancedOptions {
     margin-top: 24px;
-    svg {
+    svg.triangle {
       margin-left: 10px;
       transform: norotate(0deg);
     }
-    svg.upsideDown {
+    svg.upsideDown.triangle {
       transform: rotate(-180deg);
     }
 
@@ -141,32 +145,8 @@ div.deposit {
       display: none;
     }
 
-    div.paramater {
+    div.parameter {
       margin-top: 16px;
-
-      span {
-        margin-left: 8px;
-        cursor: pointer;
-        letter-spacing: -0.06em;
-      }
-      span.selected {
-        color: var(--text-selected);
-        font-weight: $medium;
-        text-decoration: underline;
-      }
-
-      input {
-        width: 52px;
-        height: 24px;
-        margin-left: 16px;
-        border: none;
-        border-radius: 0;
-        color: $text-black;
-
-        &:focus {
-          outline: 1px solid var(--outline);
-        }
-      }
     }
 
     .show {
@@ -176,5 +156,13 @@ div.deposit {
 
   div.show {
     display: block;
+  }
+
+  .error {
+    width: 100%;
+    color: $error;
+    font-weight: $normal;
+    text-align: center;
+    margin: 8px;
   }
 }

@@ -2,9 +2,12 @@ import "./ReviewSwap.scss"
 
 import React, { ReactElement } from "react"
 
-import USDC from "../assets/icons/usdc.svg"
-import USDT from "../assets/icons/usdt.svg"
+import { AppState } from "../state/index"
+import { TOKENS_MAP } from "../constants"
+import { formatGasToString } from "../utils/gas"
+import { formatSlippageToString } from "../utils/slippage"
 import iconDown from "../assets/icons/icon_down.svg"
+import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -17,20 +20,29 @@ interface Props {
       pair: string
       value: string
     }
-    gas: string
-    slippage: string
   }
 }
 
 function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
   const { t } = useTranslation()
+  const {
+    slippageCustom,
+    slippageSelected,
+    gasPriceSelected,
+    gasCustom,
+  } = useSelector((state: AppState) => state.user)
+  const { gasStandard, gasFast, gasInstant } = useSelector(
+    (state: AppState) => state.application,
+  )
+  const fromToken = TOKENS_MAP[data.from.symbol]
+  const toToken = TOKENS_MAP[data.to.symbol]
 
   return (
     <div className="reviewSwap">
       <h3>{t("reviewSwap")}</h3>
       <div className="swapTable">
         <div className="from">
-          <img className="tokenIcon" src={USDC} alt="icon" />
+          <img className="tokenIcon" src={fromToken.icon} alt="icon" />
           <span className="tokenName">{data.from.symbol}</span>
           <div className="floatRight">
             <span>{data.from.value}</span>
@@ -38,7 +50,7 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
         </div>
         <img src={iconDown} alt="to" className="arrowDown" />
         <div className="to">
-          <img className="tokenIcon" src={USDT} alt="icon" />
+          <img className="tokenIcon" src={toToken.icon} alt="icon" />
           <span className="tokenName">{data.to.symbol}</span>
           <div className="floatRight">
             <span>{data.to.value}</span>
@@ -72,12 +84,21 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
             </span>
           </div>
           <div className="gas">
-            <span className="title">Gas</span>
-            <span className="value floatRight">{data.gas} GWEI</span>
+            <span className="title">{t("gas")}</span>
+            <span className="value floatRight">
+              {formatGasToString(
+                { gasStandard, gasFast, gasInstant },
+                gasPriceSelected,
+                gasCustom,
+              )}{" "}
+              GWEI
+            </span>
           </div>
           <div className="slippage">
-            <span className="title">Max Slippage</span>
-            <span className="value floatRight">{data.slippage}%</span>
+            <span className="title">{t("maxSlippage")}</span>
+            <span className="value floatRight">
+              {formatSlippageToString(slippageSelected, slippageCustom)}%
+            </span>
           </div>
         </div>
       </div>

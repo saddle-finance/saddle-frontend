@@ -11,5 +11,6 @@ interface Window {
     on?: (...args: any[]) => void
     removeListener?: (...args: any[]) => void
   }
+  gtag?: (...args: any[]) => void
   web3?: {}
 }

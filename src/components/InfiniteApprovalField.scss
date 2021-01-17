@@ -10,15 +10,6 @@
   display: flex;
   align-items: center;
 
-  input {
-    width: 24px;
-    height: 24px;
-
-    opacity: 0;
-    &:checked + .checkbox_control svg {
-      transform: scale(1);
-    }
-  }
   .checkbox_control {
     display: inline-grid;
     width: 20px;
@@ -36,24 +27,38 @@
   .checkbox_input {
     display: grid;
     grid-template-areas: "checkbox";
-    margin-right: 8px;
+    margin-right: 4px;
 
     > * {
       grid-area: checkbox;
       cursor: pointer;
     }
+
+    & > input {
+      width: 24px;
+      height: 24px;
+
+      opacity: 0;
+      &:checked + .checkbox_control svg {
+        transform: scale(1);
+      }
+    }
   }
 
-  .IAlabel {
+  .label {
     position: relative;
     border-bottom: 1px dotted var(--text);
+    font-weight: $bold;
+    font-size: 16px;
+    letter-spacing: -0.04em;
+    margin-right: 16px;
 
     &:hover {
       cursor: help;
     }
   }
 
-  .IAlabel .tooltipText {
+  .label .tooltipText {
     visibility: hidden;
     width: 360px;
     background-color: $primary;
@@ -75,7 +80,7 @@
   }
 
   /* Tooltip arrow */
-  .IAlabel .tooltipText::after {
+  .label .tooltipText::after {
     content: "";
     position: absolute;
     top: 100%;
@@ -86,7 +91,7 @@
     border-color: $white transparent transparent transparent;
   }
 
-  .IAlabel:hover .tooltipText {
+  .label:hover .tooltipText {
     visibility: visible;
   }
 }
