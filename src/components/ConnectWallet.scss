@@ -15,9 +15,9 @@ div.connectWallet {
   }
 
   div.walletList {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+    display: grid;
+    grid-template-rows: auto;
+    row-gap: 16px;
 
     margin: 0 -24px;
     padding: 32px;
