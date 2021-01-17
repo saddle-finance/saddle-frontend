@@ -275,8 +275,8 @@ const WithdrawPage = (props: Props): ReactElement => {
                 data={{ ...testWithdrawData, ...reviewData }}
                 gas={gasPriceSelected}
                 onConfirm={(): void => {
-                  onConfirmTransaction()
                   setPopUp("confirm")
+                  onConfirmTransaction?.().finally(() => setModalOpen(false))
                   logEvent(
                     "withdraw",
                     (poolData && { pool: poolData?.name }) || {},

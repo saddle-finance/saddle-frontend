@@ -165,14 +165,13 @@ const SwapPage = (props: Props): ReactElement => {
           {popUp === "review" ? (
             <ReviewSwap
               onClose={(): void => setModalOpen(false)}
-              onConfirm={async (): Promise<void> => {
+              onConfirm={(): void => {
                 setPopUp("confirm")
-                await onConfirmTransaction()
                 logEvent("swap", {
                   from: fromState.symbol,
                   to: toState.symbol,
                 })
-                setModalOpen(false)
+                onConfirmTransaction?.().finally(() => setModalOpen(false))
               }}
               data={{
                 from: fromState,

@@ -14,7 +14,7 @@ function Modal({ isOpen, onClose, children }: Props): ReactElement | null {
   else
     return (
       // Modal container, provide the dark background
-      <div className="modal">
+      <div className="modal" onClick={onClose}>
         {/* Modal content */}
         <div className="modalContent">
           <span className="close" onClick={onClose}>
