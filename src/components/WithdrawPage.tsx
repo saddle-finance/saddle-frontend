@@ -9,6 +9,7 @@ import { AppState } from "../state"
 import { BigNumber } from "ethers"
 import ConfirmTransaction from "./ConfirmTransaction"
 import GasField from "./GasField"
+import { HistoricalPoolDataType } from "../hooks/useHistoricalPoolData"
 import InfiniteApprovalField from "./InfiniteApprovalField"
 import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
@@ -56,6 +57,7 @@ interface Props {
   reviewData: ReviewWithdrawData
   selected?: { [key: string]: any }
   poolData: PoolDataType | null
+  historicalPoolData: HistoricalPoolDataType | null
   myShareData: UserShareType | null
   transactionInfoData: {
     isInfo: boolean
@@ -72,6 +74,7 @@ const WithdrawPage = (props: Props): ReactElement => {
   const {
     tokensData,
     poolData,
+    historicalPoolData,
     transactionInfoData,
     myShareData,
     onFormChange,
@@ -254,7 +257,10 @@ const WithdrawPage = (props: Props): ReactElement => {
             </button>
           </div>
           <div className="infoPanels">
-            <MyShareCard data={myShareData} />
+            <MyShareCard
+              data={myShareData}
+              historicalPoolData={historicalPoolData}
+            />
             <div
               style={{
                 display: myShareData ? "block" : "none",

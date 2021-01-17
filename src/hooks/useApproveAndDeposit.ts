@@ -137,6 +137,7 @@ export function useApproveAndDeposit(
         gasPrice = gasStandard
       }
       gasPrice = parseUnits(String(gasPrice) || "45", 9)
+
       const spendTransaction = await swapContract.addLiquidity(
         POOL_TOKENS.map(({ symbol }) => state.tokenFormState[symbol].valueSafe),
         minToMint,
