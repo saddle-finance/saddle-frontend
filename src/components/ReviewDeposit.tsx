@@ -15,8 +15,8 @@ interface Props {
   data: {
     deposit: Array<{ [key: string]: any }>
     rates: Array<{ [key: string]: any }>
-    share: number
-    lpToken: number
+    shareOfPool: string
+    lpToken: string
   }
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -53,7 +53,7 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
         <div className="divider" style={{ height: "1px", width: "100%" }}></div>
         <div className="depositInfoItem">
           <span className="label">{t("shareOfPool")}</span>
-          <span className="value">{data.share}%</span>
+          <span className="value">{data.shareOfPool}%</span>
         </div>
         <div className="depositInfoItem">
           <span className="label">{t("gas")}</span>
@@ -77,7 +77,7 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
           <div className="rates value">
             {data.rates.map((rate, index) => (
               <span key={index}>
-                1 {rate.name}={rate.rate} USD
+                1 {rate.name} = {rate.rate} USD
               </span>
             ))}
           </div>

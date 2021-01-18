@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
 import { AppState } from "../state"
+import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
 import GasField from "./GasField"
 import { HistoricalPoolDataType } from "../hooks/useHistoricalPoolData"
@@ -45,14 +46,13 @@ interface Props {
   historicalPoolData: HistoricalPoolDataType | null
   myShareData: UserShareType | null
   transactionInfoData: {
-    isInfo: boolean
-    content: { [key: string]: any }
+    bonus: BigNumber
   }
   depositDataFromParent: {
     deposit: Array<{ [key: string]: any }>
     rates: Array<{ [key: string]: any }>
-    share: number
-    lpToken: number // TODO: Calculate or pull from contract to get real value
+    shareOfPool: string
+    lpToken: string
   }
   hasValidMerkleState: boolean
 }
@@ -87,6 +87,7 @@ const DepositPage = (props: Props): ReactElement => {
   } else if (willExceedMaxDeposits) {
     errorMessage = t("depositLimitExceeded")
   }
+  const validDepositAmount = +depositDataFromParent.lpToken > 0
 
   return (
     <div className="deposit">
@@ -125,11 +126,7 @@ const DepositPage = (props: Props): ReactElement => {
                 )}
               </div>
             ))}
-            <div
-              className={classNames("transactionInfoContainer", {
-                show: transactionInfoData.isInfo, // TODO review this "isInfo" logic
-              })}
-            >
+            <div className={classNames("transactionInfoContainer", "show")}>
               <div className="transactionInfo">
                 {poolData?.keepApr && (
                   <div className="transactionInfoItem">
@@ -149,7 +146,7 @@ const DepositPage = (props: Props): ReactElement => {
                   </div>
                 )}
                 <div className="transactionInfoItem">
-                  {transactionInfoData.content.benefit > 0 ? (
+                  {transactionInfoData.bonus.gte(0) ? (
                     <span className="bonus">{`${t("bonus")}: `}</span>
                   ) : (
                     <span className="slippage">{t("maxSlippage")}</span>
@@ -157,12 +154,14 @@ const DepositPage = (props: Props): ReactElement => {
                   <span
                     className={
                       "value " +
-                      (transactionInfoData.content.benefit > 0
-                        ? "bonus"
-                        : "slippage")
+                      (transactionInfoData.bonus.gte(0) ? "bonus" : "slippage")
                     }
                   >
-                    {transactionInfoData.content.benefit}
+                    {" "}
+                    {parseFloat(
+                      formatUnits(transactionInfoData.bonus, 18),
+                    ).toFixed(4)}
+                    %
                   </span>
                 </div>
               </div>
@@ -214,7 +213,8 @@ const DepositPage = (props: Props): ReactElement => {
             disabled={
               !hasValidMerkleState ||
               willExceedMaxDeposits ||
-              !isAcceptingDeposits
+              !isAcceptingDeposits ||
+              !validDepositAmount
             }
           >
             {t("deposit")}
