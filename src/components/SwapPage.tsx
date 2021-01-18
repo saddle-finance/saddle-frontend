@@ -17,6 +17,7 @@ import TopMenu from "./TopMenu"
 import classNames from "classnames"
 import { logEvent } from "../utils/googleAnalytics"
 import { updateSwapAdvancedMode } from "../state/user"
+import { useActiveWeb3React } from "../hooks"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -35,6 +36,7 @@ interface Props {
 
 const SwapPage = (props: Props): ReactElement => {
   const { t } = useTranslation()
+  const { account } = useActiveWeb3React()
   const {
     tokens,
     exchangeRateInfo,
@@ -76,7 +78,7 @@ const SwapPage = (props: Props): ReactElement => {
           selected={toState.symbol}
           inputValue={toState.value}
         />
-        {exchangeRateInfo.value <= 0.9 ? (
+        {account && exchangeRateInfo.value <= 0.9 ? (
           <div className="exchangeWarning">
             {t("lowExchangeRate", { rate: exchangeRateInfo.value.toFixed(4) })}
           </div>
