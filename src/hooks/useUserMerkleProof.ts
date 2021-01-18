@@ -41,12 +41,18 @@ export function useUserMerkleProof(
         return
       }
       if (isProduction()) {
-        const resp = await fetch(
-          `https://ipfs.saddle.exchange/merkle-proofs/${account}`,
-          { mode: "no-cors" },
-        )
-        if (resp.ok) {
-          resp.json().then((proof) => {
+        let res
+        try {
+          res = await fetch(
+            `https://ipfs.saddle.exchange/merkle-proofs/${account}`,
+          )
+        } catch {
+          setUserMerkleProof([])
+          setHasValidMerkleState(false)
+          return
+        }
+        if (res?.ok) {
+          res.json().then((proof) => {
             setUserMerkleProof(proof)
             setHasValidMerkleState(true)
           })

@@ -75,9 +75,12 @@ export default function useHistoricalPoolData(
 
   useEffect(() => {
     ;(async function (): Promise<void> {
-      const res = await fetch(`${poolStatsURL}?t=${+new Date()}`, {
-        mode: "no-cors",
-      })
+      let res
+      try {
+        res = await fetch(`${poolStatsURL}?t=${+new Date()}`)
+      } catch {
+        return
+      }
       const data = await res.json()
       if (data?.length) {
         setPoolStats(data)
