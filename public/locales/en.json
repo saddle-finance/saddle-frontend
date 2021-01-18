@@ -36,6 +36,7 @@
   "learnMore": "Learn more",
   "liquidityUtilization": "Liquidity utilization",
   "lossOfPeg": "Permanent loss of a peg",
+  "lowExchangeRate": "Warning: Low exchange rate! {{rate}}",
   "lpTokens": "pool LP tokens",
   "max": "MAX",
   "maxSlippage": "Max Slippage",

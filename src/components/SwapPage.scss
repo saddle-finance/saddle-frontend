@@ -20,6 +20,16 @@ div.swapPage {
     flex-wrap: wrap;
   }
 
+  .exchangeWarning {
+    color: $white;
+    background-color: $text-red;
+    padding: 8px;
+    width: 100%;
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+  }
+
   .infoSection {
     width: 100%;
     display: flex;
