@@ -1,5 +1,7 @@
 # saddle-frontend
 
+[![CI](https://github.com/saddle-finance/saddle-frontend/workflows/CI/badge.svg)](https://github.com/saddle-finance/saddle-frontend/actions?query=workflow%3ACI)
+
 An open source UI for Saddle 🤠
 
 The UI is deployed on IPFS and accessible at
@@ -8,7 +10,7 @@ The UI is deployed on IPFS and accessible at
 
 ## Installation
 
-```lang=bash
+```bash
 $ npm install
 ```
 
@@ -19,7 +21,7 @@ profit in USD/BTC.  You will need to update the `ChainId.HARDHAT` value for
 `POOL_STATS_URL` in `src/constants/index.ts` to point to your own [Fleek
 bucket](https://fleek.co/):
 
-```lang=ts
+```typescript
 export const POOL_STATS_URL: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]:
     "https://alphast0rm-team-bucket.storage.fleek.co/pool-stats.json",
@@ -34,6 +36,6 @@ transaction to update the pool stats to have the numbers computed correctly.
 
 ## Usage
 
-```lang=bash
+```bash
 $ npm run start
 ```
