@@ -46,6 +46,7 @@ function WithdrawBTC(): ReactElement {
       withdrawType,
       lpTokenAmountToSpend,
     })
+    updateWithdrawFormState({ fieldName: "reset", value: "reset" })
   }
 
   const tokensData = React.useMemo(

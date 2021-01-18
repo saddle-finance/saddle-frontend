@@ -49,8 +49,7 @@ const SwapPage = (props: Props): ReactElement => {
     onClickReverseExchangeDirection,
   } = props
 
-  const [modalOpen, setModalOpen] = useState(false)
-  const [popUp, setPopUp] = useState("")
+  const [currentModal, setCurrentModal] = useState<string | null>(null)
 
   const dispatch = useDispatch<AppDispatch>()
   const { userSwapAdvancedMode: advanced } = useSelector(
@@ -151,8 +150,7 @@ const SwapPage = (props: Props): ReactElement => {
             "swap " + classNames({ disabled: !!error || +toState.value <= 0 })
           }
           onClick={(): void => {
-            setModalOpen(true)
-            setPopUp("review")
+            setCurrentModal("review")
           }}
           disabled={!!error || +toState.value <= 0}
         >
@@ -161,18 +159,21 @@ const SwapPage = (props: Props): ReactElement => {
         <div className={"error " + classNames({ showError: !!error })}>
           {error}
         </div>
-        <Modal isOpen={modalOpen} onClose={(): void => setModalOpen(false)}>
-          {popUp === "review" ? (
+        <Modal
+          isOpen={!!currentModal}
+          onClose={(): void => setCurrentModal(null)}
+        >
+          {currentModal === "review" ? (
             <ReviewSwap
-              onClose={(): void => setModalOpen(false)}
+              onClose={(): void => setCurrentModal(null)}
               onConfirm={async (): Promise<void> => {
-                setPopUp("confirm")
-                await onConfirmTransaction()
+                setCurrentModal("confirm")
                 logEvent("swap", {
                   from: fromState.symbol,
                   to: toState.symbol,
                 })
-                setModalOpen(false)
+                await onConfirmTransaction?.()
+                setCurrentModal(null)
               }}
               data={{
                 from: fromState,
@@ -181,7 +182,7 @@ const SwapPage = (props: Props): ReactElement => {
               }}
             />
           ) : null}
-          {popUp === "confirm" ? <ConfirmTransaction /> : null}
+          {currentModal === "confirm" ? <ConfirmTransaction /> : null}
         </Modal>
       </div>
     </div>
