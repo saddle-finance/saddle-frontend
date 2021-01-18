@@ -78,7 +78,7 @@ const SwapPage = (props: Props): ReactElement => {
         />
         {exchangeRateInfo.value <= 0.9 ? (
           <div className="exchangeWarning">
-            Warning: Low exchange rate! {exchangeRateInfo.value.toFixed(4)}
+            {t("lowExchangeRate", { rate: exchangeRateInfo.value.toFixed(4) })}
           </div>
         ) : null}
         <div className="infoSection">
