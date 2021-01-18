@@ -21,7 +21,7 @@ import { useTranslation } from "react-i18next"
 
 interface Props {
   tokens: Array<{ symbol: string; name: string; value: string; icon: string }>
-  exchangeRateInfo: { pair: string; value: string }
+  exchangeRateInfo: { pair: string; value: number }
   error: string | null
   info: { isInfo: boolean; message: string }
   fromState: { symbol: string; value: string }
@@ -76,6 +76,11 @@ const SwapPage = (props: Props): ReactElement => {
           selected={toState.symbol}
           inputValue={toState.value}
         />
+        {exchangeRateInfo.value <= 0.9 ? (
+          <div className="exchangeWarning">
+            {t("lowExchangeRate", { rate: exchangeRateInfo.value.toFixed(4) })}
+          </div>
+        ) : null}
         <div className="infoSection">
           <div className="priceTable">
             <span className="title">{t("price")}</span>
@@ -101,7 +106,7 @@ const SwapPage = (props: Props): ReactElement => {
                 />
               </svg>
             </button>
-            <span className="value">{exchangeRateInfo.value}</span>
+            <span className="value">{exchangeRateInfo.value.toFixed(4)}</span>
           </div>
           <div className="cost">{info.isInfo ? info.message : "..."}</div>
           <div

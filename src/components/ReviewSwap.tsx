@@ -18,7 +18,7 @@ interface Props {
     to: { symbol: string; value: string }
     exchangeRateInfo: {
       pair: string
-      value: string
+      value: number
     }
   }
 }
@@ -80,7 +80,7 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
               </svg>
             </button>
             <span className="value floatRight">
-              {data.exchangeRateInfo.value}
+              {data.exchangeRateInfo.value.toFixed(4)}
             </span>
           </div>
           <div className="gas">
