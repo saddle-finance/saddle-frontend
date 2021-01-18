@@ -43,6 +43,7 @@ export function useUserMerkleProof(
       if (isProduction()) {
         const resp = await fetch(
           `https://ipfs.saddle.exchange/merkle-proofs/${account}`,
+          { mode: "no-cors" },
         )
         if (resp.ok) {
           resp.json().then((proof) => {
