@@ -159,7 +159,7 @@ function DepositBTC(): ReactElement | null {
   const depositData = {
     shareOfPool: parseFloat(
       formatUnits(
-        poolData?.totalLocked
+        poolData?.totalLocked.gt(0)
           ? estDepositLPTokenAmount
               .mul(BigNumber.from(10).pow(18))
               .div(poolData?.totalLocked)
