@@ -86,14 +86,11 @@ const WithdrawPage = (props: Props): ReactElement => {
   const { userPoolAdvancedMode: advanced } = useSelector(
     (state: AppState) => state.user,
   )
-  const [modalOpen, setModalOpen] = useState(false)
-  const [popUp, setPopUp] = useState("")
-
   const { gasPriceSelected } = useSelector((state: AppState) => state.user)
+  const [currentModal, setCurrentModal] = useState<string | null>(null)
 
   const onSubmit = (): void => {
-    setModalOpen(true)
-    setPopUp("review")
+    setCurrentModal("review")
   }
   const noShare =
     !myShareData || myShareData.lpTokenBalance.eq(BigNumber.from(0))
@@ -249,9 +246,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                 !!formStateData.error ||
                 formStateData.lpTokenAmountToSpend.isZero()
               }
-              onClick={(): void => {
-                onSubmit()
-              }}
+              onClick={onSubmit}
             >
               {t("withdraw")}
             </button>
@@ -269,23 +264,27 @@ const WithdrawPage = (props: Props): ReactElement => {
             ></div>{" "}
             <PoolInfoCard data={poolData} />
           </div>
-          <Modal isOpen={modalOpen} onClose={(): void => setModalOpen(false)}>
-            {popUp === "review" ? (
+          <Modal
+            isOpen={!!currentModal}
+            onClose={(): void => setCurrentModal(null)}
+          >
+            {currentModal === "review" ? (
               <ReviewWithdraw
                 data={{ ...testWithdrawData, ...reviewData }}
                 gas={gasPriceSelected}
-                onConfirm={(): void => {
-                  setPopUp("confirm")
-                  onConfirmTransaction?.().finally(() => setModalOpen(false))
+                onConfirm={async (): Promise<void> => {
+                  setCurrentModal("confirm")
                   logEvent(
                     "withdraw",
                     (poolData && { pool: poolData?.name }) || {},
                   )
+                  await onConfirmTransaction?.()
+                  setCurrentModal(null)
                 }}
-                onClose={(): void => setModalOpen(false)}
+                onClose={(): void => setCurrentModal(null)}
               />
             ) : null}
-            {popUp === "confirm" ? <ConfirmTransaction /> : null}
+            {currentModal === "confirm" ? <ConfirmTransaction /> : null}
           </Modal>
         </div>
       )}

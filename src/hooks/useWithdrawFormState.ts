@@ -31,7 +31,7 @@ export interface WithdrawFormState {
 }
 type FormFields = Exclude<keyof WithdrawFormState, "error">
 export type WithdrawFormAction = {
-  fieldName: FormFields
+  fieldName: FormFields | "reset"
   tokenSymbol?: string
   value: string
 }
@@ -67,13 +67,17 @@ export default function useWithdrawFormState(
       ),
     [POOL_TOKENS, tokenInputStateCreators],
   )
-  const [formState, setFormState] = useState<WithdrawFormState>({
-    percentage: "",
-    tokenInputs: tokenInputsEmptyState,
-    withdrawType: ALL,
-    error: null,
-    lpTokenAmountToSpend: BigNumber.from("0"),
-  })
+  const formEmptyState = useMemo(
+    () => ({
+      percentage: "",
+      tokenInputs: tokenInputsEmptyState,
+      withdrawType: ALL,
+      error: null,
+      lpTokenAmountToSpend: BigNumber.from("0"),
+    }),
+    [tokenInputsEmptyState],
+  )
+  const [formState, setFormState] = useState<WithdrawFormState>(formEmptyState)
 
   // TODO: resolve this, it's a little unsafe
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -275,6 +279,8 @@ export default function useWithdrawFormState(
             percentage: prevState.percentage || "100",
             withdrawType: action.value,
           }
+        } else if (action.fieldName === "reset") {
+          nextState = formEmptyState
         }
         const finalState = {
           ...prevState,
@@ -298,6 +304,7 @@ export default function useWithdrawFormState(
       calculateAndUpdateDynamicFields,
       tokenInputStateCreators,
       tokenInputsEmptyState,
+      formEmptyState,
     ],
   )
 

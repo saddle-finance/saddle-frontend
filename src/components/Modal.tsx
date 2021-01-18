@@ -14,10 +14,25 @@ function Modal({ isOpen, onClose, children }: Props): ReactElement | null {
   else
     return (
       // Modal container, provide the dark background
-      <div className="modal" onClick={onClose}>
+      <div
+        className="modal"
+        onClick={(e: React.MouseEvent<HTMLSpanElement, MouseEvent>): void => {
+          if (e.target === e.currentTarget) {
+            onClose()
+          }
+        }}
+      >
         {/* Modal content */}
         <div className="modalContent">
-          <span className="close" onClick={onClose}>
+          <span
+            className="close"
+            onClick={(
+              e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
+            ): void => {
+              e.stopPropagation()
+              onClose()
+            }}
+          >
             &times;
           </span>
           {children}

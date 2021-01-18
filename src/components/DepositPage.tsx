@@ -74,8 +74,7 @@ const DepositPage = (props: Props): ReactElement => {
     hasValidMerkleState,
   } = props
 
-  const [modalOpen, setModalOpen] = useState(false)
-  const [popUp, setPopUp] = useState("")
+  const [currentModal, setCurrentModal] = useState<string | null>(null)
 
   const dispatch = useDispatch<AppDispatch>()
   const { userPoolAdvancedMode: advanced } = useSelector(
@@ -208,8 +207,7 @@ const DepositPage = (props: Props): ReactElement => {
           <button
             className="actionBtn"
             onClick={(): void => {
-              setModalOpen(true)
-              setPopUp("review")
+              setCurrentModal("review")
             }}
             disabled={
               !hasValidMerkleState ||
@@ -233,22 +231,26 @@ const DepositPage = (props: Props): ReactElement => {
           ></div>{" "}
           <PoolInfoCard data={poolData} />
         </div>
-        <Modal isOpen={modalOpen} onClose={(): void => setModalOpen(false)}>
-          {popUp === "review" ? (
+        <Modal
+          isOpen={!!currentModal}
+          onClose={(): void => setCurrentModal(null)}
+        >
+          {currentModal === "review" ? (
             <ReviewDeposit
               data={depositDataFromParent}
-              onConfirm={(): void => {
-                setPopUp("confirm")
-                onConfirmTransaction?.().finally(() => setModalOpen(false))
+              onConfirm={async (): Promise<void> => {
+                setCurrentModal("confirm")
                 logEvent(
                   "deposit",
                   (poolData && { pool: poolData?.name }) || {},
                 )
+                await onConfirmTransaction?.()
+                setCurrentModal(null)
               }}
-              onClose={(): void => setModalOpen(false)}
+              onClose={(): void => setCurrentModal(null)}
             />
           ) : null}
-          {popUp === "confirm" ? <ConfirmTransaction /> : null}
+          {currentModal === "confirm" ? <ConfirmTransaction /> : null}
         </Modal>
       </div>
     </div>
