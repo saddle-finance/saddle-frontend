@@ -208,7 +208,7 @@ export default function usePoolData(
         name: poolName,
         tokens: poolTokens,
         reserve: tokenBalancesUSDSum,
-        totalLocked: tokenBalancesSum,
+        totalLocked: totalLpTokenBalance,
         virtualPrice: virtualPrice,
         adminFee: adminFee,
         swapFee: swapFee,
