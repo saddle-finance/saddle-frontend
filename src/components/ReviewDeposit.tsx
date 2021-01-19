@@ -77,7 +77,7 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
           <div className="rates value">
             {data.rates.map((rate, index) => (
               <span key={index}>
-                1 {rate.name} = {rate.rate} USD
+                1 {rate.name} = ${rate.rate}
               </span>
             ))}
           </div>

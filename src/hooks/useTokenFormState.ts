@@ -38,7 +38,7 @@ export function useTokenFormState(
     tokens.reduce(
       (acc, token) => ({
         ...acc,
-        [token.symbol]: tokenInputStateCreators[token.symbol]("0"),
+        [token.symbol]: tokenInputStateCreators[token.symbol](""),
       }),
       {},
     ),

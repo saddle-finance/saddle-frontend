@@ -58,9 +58,9 @@ export function formatSlippageToString(
   if (slippageSelected === Slippages.Custom && !!slippageCustom) {
     return formatUnits(slippageCustom.valueSafe, slippageCustom?.precision)
   } else if (slippageSelected === Slippages.OneTenth) {
-    return formatUnits(BigNumber.from(1), 3)
+    return formatUnits(BigNumber.from(100), 3)
   } else if (slippageSelected === Slippages.One) {
-    return formatUnits(BigNumber.from(1), 2)
+    return formatUnits(BigNumber.from(100), 2)
   } else {
     return "N/A"
   }
