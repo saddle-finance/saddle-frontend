@@ -56,12 +56,10 @@ function DepositBTC(): ReactElement | null {
         return
       }
       const tokenInputSum = parseUnits(
-        String(
-          BTC_POOL_TOKENS.reduce(
-            (sum, { symbol }) => sum + (+tokenFormState[symbol].valueRaw || 0),
-            0,
-          ),
-        ),
+        BTC_POOL_TOKENS.reduce(
+          (sum, { symbol }) => sum + (+tokenFormState[symbol].valueRaw || 0),
+          0,
+        ).toFixed(18),
         18,
       )
       let depositLPTokenAmount
