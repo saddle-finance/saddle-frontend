@@ -32,6 +32,7 @@ export interface PoolDataType {
   poolAccountLimit: BigNumber
   isAcceptingDeposits: boolean
   keepApr: BigNumber
+  poolLPTokenCap: BigNumber
 }
 
 export interface UserShareType {
@@ -111,7 +112,14 @@ export default function usePoolData(
         allowlist.getPoolCap(swapContract.address),
         allowlist.isAccountVerified(account),
       ])
-      const isAcceptingDeposits = poolLPTokenCap.gt(totalLpTokenBalance)
+      // Since we will never exactly hit the cap, subtract 0.5btc for some wiggle room
+      const isAcceptingDeposits = poolLPTokenCap
+        .sub(
+          BigNumber.from(10)
+            .pow(18 - 1)
+            .mul(5),
+        )
+        .gt(totalLpTokenBalance)
 
       const virtualPrice = totalLpTokenBalance.isZero()
         ? BigNumber.from(10).pow(18)
@@ -216,6 +224,7 @@ export default function usePoolData(
         utilization: "XXX", // TODO
         apy: "XXX", // TODO
         poolAccountLimit,
+        poolLPTokenCap,
         isAcceptingDeposits,
         keepApr,
       }
