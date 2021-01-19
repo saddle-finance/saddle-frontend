@@ -1,11 +1,11 @@
 import { BTC_POOL_NAME, BTC_POOL_TOKENS } from "../constants"
 import React, { ReactElement } from "react"
 import WithdrawPage, { ReviewWithdrawData } from "../components/WithdrawPage"
+import { commify, formatUnits } from "@ethersproject/units"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import { formatSlippageToString } from "../utils/slippage"
-import { formatUnits } from "@ethersproject/units"
 import { useApproveAndWithdraw } from "../hooks/useApproveAndWithdraw"
 import useHistoricalPoolData from "../hooks/useHistoricalPoolData"
 import usePoolData from "../hooks/usePoolData"
@@ -69,9 +69,11 @@ function WithdrawBTC(): ReactElement {
     if (BigNumber.from(withdrawFormState.tokenInputs[symbol].valueSafe).gt(0)) {
       reviewWithdrawData.withdraw.push({
         name,
-        value: formatUnits(
-          withdrawFormState.tokenInputs[symbol].valueSafe,
-          decimals,
+        value: commify(
+          formatUnits(
+            withdrawFormState.tokenInputs[symbol].valueSafe,
+            decimals,
+          ),
         ),
         icon,
       })
@@ -82,7 +84,7 @@ function WithdrawBTC(): ReactElement {
             withdrawFormState.tokenInputs[symbol].valueSafe,
             decimals,
           ),
-          rate: tokenPricesUSD[symbol]?.toFixed(3),
+          rate: commify(tokenPricesUSD[symbol]?.toFixed(2)),
         })
       }
     }
