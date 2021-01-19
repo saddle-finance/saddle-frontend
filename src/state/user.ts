@@ -77,12 +77,20 @@ const userSlice = createSlice({
       action: PayloadAction<GasPrices>,
     ): void {
       state.gasPriceSelected = action.payload
+      if (action.payload !== GasPrices.Custom) {
+        // clear custom value when standard option selected
+        state.gasCustom = gasCustomStateCreator("")
+      }
     },
     updateSlippageSelected(
       state: UserState,
       action: PayloadAction<Slippages>,
     ): void {
       state.slippageSelected = action.payload
+      if (action.payload !== Slippages.Custom) {
+        // clear custom value when standard option selected
+        state.slippageCustom = slippageCustomStateCreator("")
+      }
     },
     updateSlippageCustom(
       state: UserState,
