@@ -75,12 +75,16 @@ function DepositBTC(): ReactElement | null {
       }
       setEstDepositLPTokenAmount(depositLPTokenAmount)
 
+      // check if the new deposit will violate either the user cap or pool cap
       const futureUserLPTokenBalance = depositLPTokenAmount.add(
-        userShareData?.lpTokenBalance,
+        userShareData?.lpTokenBalance || BigNumber.from("0"),
       )
-      const exceedsMaxDeposits = futureUserLPTokenBalance.gt(
-        poolData.poolAccountLimit,
+      const futurePoolLPTokenBalance = depositLPTokenAmount.add(
+        poolData.totalLocked,
       )
+      const exceedsMaxDeposits =
+        futureUserLPTokenBalance.gt(poolData.poolAccountLimit) ||
+        futurePoolLPTokenBalance.gt(poolData.poolLPTokenCap)
       if (willExceedMaxDeposits !== exceedsMaxDeposits) {
         setWillExceedMaxDeposit(exceedsMaxDeposits)
       }

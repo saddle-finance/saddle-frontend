@@ -161,7 +161,7 @@ const DepositPage = (props: Props): ReactElement => {
                   >
                     {" "}
                     {parseFloat(
-                      formatUnits(transactionInfoData.bonus, 18),
+                      formatUnits(transactionInfoData.bonus, 18 - 2),
                     ).toFixed(4)}
                     %
                   </span>

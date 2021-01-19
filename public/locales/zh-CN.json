@@ -60,7 +60,7 @@
   "risk": "风险",
   "riskAdminKeys": "Saddle的管理密钥是由3/5Gnosis Safe多重签名所控制，持有者分别为Mariano Conti、Kain Warwick、DegenSpartan、Klim K、和Damir Bandalo。多重签名能够在技术紧急情况下暂停新的存款和交易。但即使新的存款被暂停，用户仍能自由提取资金。多重签名也能够更动交易/提款费用以及每池/账户的存款上限。",
   "riskAudits": "Saddle智能合约已经过以下公司审计：",
-  "riskAudits2": "Open Zeppelin、Quantstamp和Certik",
+  "riskAudits2": "OpenZeppelin、Quantstamp和Certik",
   "riskAudits3": "请切记安全性审计并无法完全排除风险。若您为流动性提供者，切勿将自己承担不起损失的资产投入Saddle。",
   "riskAudits4": "虽然作为Saddle的交易用户风险应会大幅降低，但是仍要谨记风险依然存在。",
   "riskIntro": "为Saddle提供流动性具有很高的风险。因此我们强烈建议您在使用协议前",
