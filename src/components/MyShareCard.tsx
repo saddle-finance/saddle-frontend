@@ -41,15 +41,13 @@ function MyShareCard({ data }: Props): ReactElement | null {
             {formattedData.share}% {t("ofPool")}
           </span>
         </div>
-        <div className="balance">
-          <span>
-            {t("usdBalance")}: {formattedData.usdBalance}
-          </span>
+        <div className="infoItem">
+          <span className="label bold">{t("usdBalance") + ": "}</span>
+          <span className="value">{"$" + formattedData.usdBalance}</span>
         </div>
-        <div className="amount">
-          <span>
-            {t("totalAmount")}: {formattedData.value}
-          </span>
+        <div className="infoItem">
+          <span className="label bold">{t("totalAmount") + ": "}</span>
+          <span className="value">{formattedData.value}</span>
         </div>
       </div>
       <div className="currency">

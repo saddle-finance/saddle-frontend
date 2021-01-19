@@ -34,7 +34,7 @@ div.myShareCard {
 
   div.currency {
     width: 100%;
-    margin-top: 16px;
+    margin-top: 24px;
     display: flex;
     justify-content: space-between;
 
@@ -48,5 +48,9 @@ div.myShareCard {
     .label {
       font-weight: $bold;
     }
+  }
+
+  .bold {
+    font-weight: $bold;
   }
 }

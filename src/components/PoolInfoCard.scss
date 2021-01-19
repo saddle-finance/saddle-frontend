@@ -17,24 +17,9 @@ div.poolInfoCard {
   }
 
   div.info {
-    & > .infoItem {
-      margin-top: 8px;
-    }
-
-    .value {
-      font-weight: $bold;
-    }
-  }
-
-  .twoColumn {
-    margin-top: 24px;
-    display: flex;
-    justify-content: space-between;
-
-    span {
-      display: block;
-      line-height: 20px;
-    }
+    display: grid;
+    grid-template-rows: auto;
+    row-gap: 10px;
   }
 
   .bottom {
@@ -73,5 +58,9 @@ div.poolInfoCard {
       display: block;
       margin-top: 8px;
     }
+  }
+
+  .bold {
+    font-weight: $bold;
   }
 }
