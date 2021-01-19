@@ -13,20 +13,22 @@ interface Props {
 
 function PoolInfoCard({ data }: Props): ReactElement {
   const { t } = useTranslation()
+  const swapFee = data?.swapFee
+    ? formatUnits(data.swapFee, POOL_FEE_PRECISION - 2)
+    : null
+  const adminFee = data?.adminFee
+    ? formatUnits(data.adminFee, POOL_FEE_PRECISION - 2)
+    : null
   const formattedData = {
     name: data?.name,
-    swapFee: data?.swapFee
-      ? formatUnits(data.swapFee, POOL_FEE_PRECISION - 2)
-      : null,
+    swapFee,
     virtualPrice: data?.virtualPrice
       ? parseFloat(formatUnits(data.virtualPrice, 18)).toFixed(5)
       : null,
     reserve: data?.reserve
       ? commify(parseFloat(formatUnits(data.reserve, 18)).toFixed(3))
       : null,
-    adminFee: data?.adminFee
-      ? formatUnits(data.adminFee, POOL_FEE_PRECISION - 2)
-      : null,
+    adminFee: swapFee && adminFee ? `${adminFee}% of ${swapFee}%` : null,
     volume: data?.volume,
     tokens:
       data?.tokens.map((coin) => {
@@ -60,7 +62,7 @@ function PoolInfoCard({ data }: Props): ReactElement {
         <div className="twoColumn">
           <div className="infoItem">
             <span className="label">{t("adminFee") + ": "}</span>
-            <span className="value">{formattedData.adminFee}%</span>
+            <span className="value">{formattedData.adminFee}</span>
           </div>
           <div className="infoItem">
             <span className="label">{t("dailyVolume") + ": "}</span>
