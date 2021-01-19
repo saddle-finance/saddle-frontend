@@ -23,8 +23,7 @@ bucket](https://fleek.co/):
 
 ```typescript
 export const POOL_STATS_URL: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]:
-    "https://alphast0rm-team-bucket.storage.fleek.co/pool-stats.json",
+  [ChainId.MAINNET]: "https://ipfs.saddle.exchange/pool-stats.json",
   [ChainId.HARDHAT]:
     "https://YOUR_BUCKET_NAME_HERE.storage.fleek.co/pool-stats-dev.json",
 }
