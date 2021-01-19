@@ -67,7 +67,7 @@
   "riskLossOfPeg": "If one of the assets in a pool significantly depegs, it will effectively mean that pool liquidity providers will be left holding only that asset.",
   "shareOfPool": "Share of Pool",
   "slippage": "Slippage",
-  "stakeHere": "stake here",
+  "stakeHere": "Stake here",
   "standard": "Standard",
   "swap": "Swap",
   "to": "To",
