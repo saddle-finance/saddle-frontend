@@ -16,8 +16,6 @@ interface Props {
   data: {
     withdraw: Array<{ [key: string]: any }>
     rates: Array<{ [key: string]: any }>
-    share: number
-    keepToken: number
   }
   gas: GasPrices
 }
@@ -52,10 +50,6 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
           ))}
         </div>
         <div className="divider"></div>
-        <div className="withdrawInfoItem">
-          <span className="label">{t("shareOfPool")}</span>
-          <span className="value">{data.share}%</span>
-        </div>
         <div className="withdrawInfoItem">
           <span className="label">{t("gas")}</span>
           <span className="value">

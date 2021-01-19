@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
 import { AppState } from "../state"
-import { BigNumber } from "ethers"
+import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
 import GasField from "./GasField"
 import { HistoricalPoolDataType } from "../hooks/useHistoricalPoolData"
@@ -23,6 +23,7 @@ import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import classNames from "classnames"
+import { formatUnits } from "@ethersproject/units"
 import { logEvent } from "../utils/googleAnalytics"
 import { updatePoolAdvancedMode } from "../state/user"
 import { useTranslation } from "react-i18next"
@@ -39,12 +40,9 @@ export interface ReviewWithdrawData {
     rate: string
   }[]
   slippage: string
+  bonus: BigNumber
 }
 
-const testWithdrawData = {
-  share: 0.000024,
-  keepToken: 0.325496, // TODO: Calculate or pull from contract to get real value
-}
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   title: string
@@ -59,10 +57,6 @@ interface Props {
   poolData: PoolDataType | null
   historicalPoolData: HistoricalPoolDataType | null
   myShareData: UserShareType | null
-  transactionInfoData: {
-    isInfo: boolean
-    content: { [key: string]: any }
-  }
   formStateData: WithdrawFormState
   onFormChange: (action: any) => void
   onConfirmTransaction: () => Promise<void>
@@ -75,7 +69,6 @@ const WithdrawPage = (props: Props): ReactElement => {
     tokensData,
     poolData,
     historicalPoolData,
-    transactionInfoData,
     myShareData,
     onFormChange,
     formStateData,
@@ -173,15 +166,10 @@ const WithdrawPage = (props: Props): ReactElement => {
                   )}
                 </div>
               ))}
-              <div
-                className={
-                  "transactionInfoContainer " +
-                  classNames({ show: transactionInfoData.isInfo })
-                }
-              >
+              <div className={classNames("transactionInfoContainer", "show")}>
                 <div className="transactionInfo">
                   <div className="transactionInfoItem">
-                    {transactionInfoData.content.benefit > 0 ? (
+                    {reviewData.bonus.gte(0) ? (
                       <span className="bonus">{t("bonus")}: </span>
                     ) : (
                       <span className="slippage">{t("maxSlippage")}</span>
@@ -189,12 +177,12 @@ const WithdrawPage = (props: Props): ReactElement => {
                     <span
                       className={
                         "value " +
-                        (transactionInfoData.content.benefit > 0
-                          ? "bonus"
-                          : "slippage")
+                        (reviewData.bonus.gte(0) ? "bonus" : "slippage")
                       }
                     >
-                      {transactionInfoData.content.benefit}
+                      {" "}
+                      {parseFloat(formatUnits(reviewData.bonus, 18)).toFixed(4)}
+                      %
                     </span>
                   </div>
                 </div>
@@ -270,7 +258,7 @@ const WithdrawPage = (props: Props): ReactElement => {
           >
             {currentModal === "review" ? (
               <ReviewWithdraw
-                data={{ ...testWithdrawData, ...reviewData }}
+                data={reviewData}
                 gas={gasPriceSelected}
                 onConfirm={async (): Promise<void> => {
                   setCurrentModal("confirm")
