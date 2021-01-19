@@ -53,7 +53,7 @@ export default function SlippageField(): ReactElement {
             dispatch(updateSlippageCustom(e.target.value))
           }
         />
-        %
+        &nbsp;%
       </div>
     </div>
   )

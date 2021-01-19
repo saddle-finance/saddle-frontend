@@ -27,7 +27,6 @@
   .checkbox_input {
     display: grid;
     grid-template-areas: "checkbox";
-    margin-right: 4px;
 
     > * {
       grid-area: checkbox;
