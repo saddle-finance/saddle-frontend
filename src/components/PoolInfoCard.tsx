@@ -64,10 +64,10 @@ function PoolInfoCard({ data }: Props): ReactElement {
             <span className="label">{t("adminFee") + ": "}</span>
             <span className="value">{formattedData.adminFee}</span>
           </div>
-          <div className="infoItem">
+          {/* <div className="infoItem">
             <span className="label">{t("dailyVolume") + ": "}</span>
             <span className="value">{formattedData.volume}</span>
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="divider" />
