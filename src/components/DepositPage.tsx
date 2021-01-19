@@ -12,6 +12,7 @@ import GasField from "./GasField"
 import { HistoricalPoolDataType } from "../hooks/useHistoricalPoolData"
 import IneligibilityBanner from "./IneligibilityBanner"
 import InfiniteApprovalField from "./InfiniteApprovalField"
+import LPStakingBanner from "./LPStakingBanner"
 import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
 import { PayloadAction } from "@reduxjs/toolkit"
@@ -92,6 +93,7 @@ const DepositPage = (props: Props): ReactElement => {
     <div className="deposit">
       <TopMenu activeTab={"deposit"} />
       {!hasValidMerkleState && <IneligibilityBanner />}
+      {myShareData?.lpTokenBalance.gt(0) && <LPStakingBanner />}
 
       <div className="content">
         <div className="left">
