@@ -181,7 +181,9 @@ const WithdrawPage = (props: Props): ReactElement => {
                       }
                     >
                       {" "}
-                      {parseFloat(formatUnits(reviewData.bonus, 18)).toFixed(4)}
+                      {parseFloat(
+                        formatUnits(reviewData.bonus, 18 - 2),
+                      ).toFixed(4)}
                       %
                     </span>
                   </div>
