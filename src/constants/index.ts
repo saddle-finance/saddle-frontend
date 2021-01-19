@@ -49,12 +49,12 @@ export class Token {
 export const BLOCK_TIME = 15000
 
 export const STABLECOIN_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: "0xA449CbB5B1D4175B3D92487AC61A834fA4f25DA3",
+  [ChainId.MAINNET]: "0x4f6A43Ad7cba042606dECaCA730d4CE0A57ac62e",
   [ChainId.HARDHAT]: "0x1613beB3B2C4f22Ee086B2b38C1476A3cE7f78E8",
 }
 
 export const BTC_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: "0xA449CbB5B1D4175B3D92487AC61A834fA4f25DA3",
+  [ChainId.MAINNET]: "0x4f6A43Ad7cba042606dECaCA730d4CE0A57ac62e",
   [ChainId.HARDHAT]: "0x851356ae760d987E095750cCeb3bC6014560891C",
 }
 
@@ -66,7 +66,7 @@ export const MERKLETREE_DATA: { [chainId in ChainId]: string } = {
 export const BTC_SWAP_TOKEN_CONTRACT_ADDRESSES: {
   [chainId in ChainId]: string
 } = {
-  [ChainId.MAINNET]: "0x4D0224D6b03f00720F2D567dF2859b856c86AbD7",
+  [ChainId.MAINNET]: "0xC28DF698475dEC994BE00C9C9D8658A548e6304F",
   [ChainId.HARDHAT]: "0xB955b6c65Ff69bfe07A557aa385055282b8a5eA3",
 }
 
