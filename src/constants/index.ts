@@ -218,8 +218,7 @@ export const DEPLOYED_BLOCK: { [chainId in ChainId]: number } = {
 }
 
 export const POOL_STATS_URL: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]:
-    "https://alphast0rm-team-bucket.storage.fleek.co/pool-stats.json",
+  [ChainId.MAINNET]: "https://ipfs.saddle.exchange/pool-stats.json",
   [ChainId.HARDHAT]:
     "https://mehmeta-team-bucket.storage.fleek.co/pool-stats-dev.json",
 }
