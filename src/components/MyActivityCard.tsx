@@ -22,18 +22,18 @@ function MyActivityCard({ historicalPoolData }: Props): ReactElement | null {
         totalWithdrawalsBTC: parseFloat(
           formatUnits(historicalPoolData.totalWithdrawalsBTC, 36),
         ).toFixed(5),
+        totalProfitBTC: parseFloat(
+          formatUnits(historicalPoolData.totalProfitBTC, 36),
+        ).toFixed(5),
         totalDepositsUSD: parseFloat(
           formatUnits(historicalPoolData.totalDepositsUSD, 36),
         ).toFixed(),
         totalWithdrawalsUSD: parseFloat(
           formatUnits(historicalPoolData.totalWithdrawalsUSD, 36),
         ).toFixed(),
-        totalProfitBTC: parseFloat(
-          formatUnits(historicalPoolData.totalProfitBTC, 36),
-        ).toFixed(5),
         totalProfitUSD: parseFloat(
           formatUnits(historicalPoolData.totalProfitUSD, 36),
-        ).toFixed(),
+        ),
       }
     : null
 
@@ -64,7 +64,10 @@ function MyActivityCard({ historicalPoolData }: Props): ReactElement | null {
           </div>
           <div key="profit-usd">
             <span className="label">USD {t("profit")}</span>
-            <span>{`$${historicalFormattedData.totalProfitUSD}`}</span>
+            <span>
+              {historicalFormattedData.totalProfitUSD < 0 ? "-" : ""}
+              {`$${Math.abs(historicalFormattedData.totalProfitUSD).toFixed()}`}
+            </span>
           </div>
         </div>
       ) : null}
