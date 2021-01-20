@@ -48,24 +48,24 @@ function PoolInfoCard({ data }: Props): ReactElement {
       <h4>{formattedData.name}</h4>
       <div className="info">
         <div className="infoItem">
-          <span className="label">{t("fee") + ": "}</span>
+          <span className="label bold">{`${t("fee")}: `}</span>
           <span className="value">{formattedData.swapFee}%</span>
         </div>
         <div className="infoItem">
-          <span className="label">{t("virtualPrice") + ": "}</span>
+          <span className="label bold">{`${t("virtualPrice")}: `}</span>
           <span className="value">{formattedData.virtualPrice}</span>
         </div>
         <div className="infoItem">
-          <span className="label">{t("totalLocked") + " ($): "}</span>
-          <span className="value">{formattedData.reserve}</span>
+          <span className="label bold">{`${t("totalLocked")}: `}</span>
+          <span className="value">{`$${formattedData.reserve}`}</span>
         </div>
         <div className="twoColumn">
           <div className="infoItem">
-            <span className="label">{t("adminFee") + ": "}</span>
+            <span className="label bold">{`${t("adminFee")}: `}</span>
             <span className="value">{formattedData.adminFee}</span>
           </div>
           {/* <div className="infoItem">
-            <span className="label">{t("dailyVolume") + ": "}</span>
+            <span className="label bold">{t("dailyVolume") + ": "}</span>
             <span className="value">{formattedData.volume}</span>
           </div> */}
         </div>
@@ -78,8 +78,7 @@ function PoolInfoCard({ data }: Props): ReactElement {
           {formattedData.tokens.map((token, index) => (
             <div className="token" key={index}>
               <img alt="icon" src={token.icon} />
-              <span>{token.name}</span>
-              <span className="tokenPercent">{token.percent}%</span>
+              <span className="bold">{`${token.name} ${token.percent} %`}</span>
               <span className="tokenValue">{token.value}</span>
             </div>
           ))}

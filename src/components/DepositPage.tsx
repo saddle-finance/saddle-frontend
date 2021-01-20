@@ -14,6 +14,7 @@ import IneligibilityBanner from "./IneligibilityBanner"
 import InfiniteApprovalField from "./InfiniteApprovalField"
 import LPStakingBanner from "./LPStakingBanner"
 import Modal from "./Modal"
+import MyActivityCard from "./MyActivityCard"
 import MyShareCard from "./MyShareCard"
 import { PayloadAction } from "@reduxjs/toolkit"
 import PoolInfoCard from "./PoolInfoCard"
@@ -221,10 +222,14 @@ const DepositPage = (props: Props): ReactElement => {
           </button>
         </div>
         <div className="infoPanels">
-          <MyShareCard
-            data={myShareData}
-            historicalPoolData={historicalPoolData}
-          />
+          <MyShareCard data={myShareData} />
+          <div
+            style={{
+              display: myShareData ? "block" : "none",
+            }}
+            className="divider"
+          ></div>{" "}
+          <MyActivityCard historicalPoolData={historicalPoolData} />
           <div
             style={{
               display: myShareData ? "block" : "none",

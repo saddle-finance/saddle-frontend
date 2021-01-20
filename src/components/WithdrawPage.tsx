@@ -12,6 +12,7 @@ import GasField from "./GasField"
 import { HistoricalPoolDataType } from "../hooks/useHistoricalPoolData"
 import InfiniteApprovalField from "./InfiniteApprovalField"
 import Modal from "./Modal"
+import MyActivityCard from "./MyActivityCard"
 import MyShareCard from "./MyShareCard"
 import NoShareContent from "./NoShareContent"
 import { PayloadAction } from "@reduxjs/toolkit"
@@ -242,13 +243,17 @@ const WithdrawPage = (props: Props): ReactElement => {
             </button>
           </div>
           <div className="infoPanels">
-            <MyShareCard
-              data={myShareData}
-              historicalPoolData={historicalPoolData}
-            />
+            <MyShareCard data={myShareData} />
             <div
               style={{
                 display: myShareData ? "block" : "none",
+              }}
+              className="divider"
+            ></div>{" "}
+            <MyActivityCard historicalPoolData={historicalPoolData} />
+            <div
+              style={{
+                display: historicalPoolData ? "block" : "none",
               }}
               className="divider"
             ></div>{" "}

@@ -17,6 +17,8 @@ div.gasField {
     font-weight: $bold;
     font-size: 16px;
     letter-spacing: -0.04em;
+    display: block;
+    margin-bottom: 4px;
   }
 
   .options > button {
