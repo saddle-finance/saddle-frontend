@@ -27,6 +27,18 @@ div.poolInfoCard {
       margin-bottom: 4px;
     }
   }
+
+  .twoColumn {
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-between;
+
+    span {
+      display: block;
+      line-height: 20px;
+    }
+  }
+
   .tokenList {
     margin-top: 8px;
 

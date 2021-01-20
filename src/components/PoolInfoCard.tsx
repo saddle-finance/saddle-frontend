@@ -59,9 +59,15 @@ function PoolInfoCard({ data }: Props): ReactElement {
           <span className="label bold">{`${t("totalLocked")}: `}</span>
           <span className="value">{`$${formattedData.reserve}`}</span>
         </div>
-        <div className="infoItem">
-          <span className="label bold">{`${t("adminFee")}: `}</span>
-          <span className="value">{formattedData.adminFee}</span>
+        <div className="twoColumn">
+          <div className="infoItem">
+            <span className="label bold">{`${t("adminFee")}: `}</span>
+            <span className="value">{formattedData.adminFee}</span>
+          </div>
+          {/* <div className="infoItem">
+            <span className="label bold">{t("dailyVolume") + ": "}</span>
+            <span className="value">{formattedData.volume}</span>
+          </div> */}
         </div>
       </div>
       <div className="divider" />
