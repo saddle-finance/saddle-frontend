@@ -48,7 +48,7 @@ function MyActivityCard({ historicalPoolData }: Props): ReactElement | null {
           </div>
           <div key="deposits-usd">
             <span className="label">USD {t("deposit")}</span>
-            <span>{"$" + historicalFormattedData.totalDepositsUSD}</span>
+            <span>{`$${historicalFormattedData.totalDepositsUSD}`}</span>
           </div>
           <div key="withdrawals-btc">
             <span className="label">BTC {t("withdrawal")}</span>
@@ -56,7 +56,7 @@ function MyActivityCard({ historicalPoolData }: Props): ReactElement | null {
           </div>
           <div key="withdrawals-usd">
             <span className="label">USD {t("withdrawal")}</span>
-            <span>{"$" + historicalFormattedData.totalWithdrawalsUSD}</span>
+            <span>{`$${historicalFormattedData.totalWithdrawalsUSD}`}</span>
           </div>
           <div key="profit-btc">
             <span className="label">BTC {t("profit")}</span>
@@ -64,7 +64,7 @@ function MyActivityCard({ historicalPoolData }: Props): ReactElement | null {
           </div>
           <div key="profit-usd">
             <span className="label">USD {t("profit")}</span>
-            <span>{"$" + historicalFormattedData.totalProfitUSD}</span>
+            <span>{`$${historicalFormattedData.totalProfitUSD}`}</span>
           </div>
         </div>
       ) : null}
