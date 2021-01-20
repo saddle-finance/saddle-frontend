@@ -43,27 +43,27 @@ function MyActivityCard({ historicalPoolData }: Props): ReactElement | null {
       {historicalFormattedData ? (
         <div className="activityTable">
           <div key="deposits-btc">
-            <span className="label">BTC {t("deposit")}: </span>
+            <span className="label">BTC {t("deposit")}</span>
             <span>{historicalFormattedData.totalDepositsBTC}</span>
           </div>
           <div key="deposits-usd">
-            <span className="label">USD {t("deposit")}: </span>
+            <span className="label">USD {t("deposit")}</span>
             <span>{"$" + historicalFormattedData.totalDepositsUSD}</span>
           </div>
           <div key="withdrawals-btc">
-            <span className="label">BTC {t("withdrawal")}: </span>
+            <span className="label">BTC {t("withdrawal")}</span>
             <span>{historicalFormattedData.totalWithdrawalsBTC}</span>
           </div>
           <div key="withdrawals-usd">
-            <span className="label">USD {t("withdrawal")}: </span>
+            <span className="label">USD {t("withdrawal")}</span>
             <span>{"$" + historicalFormattedData.totalWithdrawalsUSD}</span>
           </div>
           <div key="profit-btc">
-            <span className="label">BTC {t("profit")}: </span>
+            <span className="label">BTC {t("profit")}</span>
             <span>{historicalFormattedData.totalProfitBTC}</span>
           </div>
           <div key="profit-usd">
-            <span className="label">USD {t("profit")}: </span>
+            <span className="label">USD {t("profit")}</span>
             <span>{"$" + historicalFormattedData.totalProfitUSD}</span>
           </div>
         </div>
