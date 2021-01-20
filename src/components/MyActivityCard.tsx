@@ -18,19 +18,19 @@ function MyActivityCard({ historicalPoolData }: Props): ReactElement | null {
     ? {
         totalDepositsBTC: parseFloat(
           formatUnits(historicalPoolData.totalDepositsBTC, 36),
-        ).toFixed(5),
+        ),
         totalWithdrawalsBTC: parseFloat(
           formatUnits(historicalPoolData.totalWithdrawalsBTC, 36),
-        ).toFixed(5),
+        ),
         totalProfitBTC: parseFloat(
           formatUnits(historicalPoolData.totalProfitBTC, 36),
-        ).toFixed(5),
+        ),
         totalDepositsUSD: parseFloat(
           formatUnits(historicalPoolData.totalDepositsUSD, 36),
-        ).toFixed(),
+        ),
         totalWithdrawalsUSD: parseFloat(
           formatUnits(historicalPoolData.totalWithdrawalsUSD, 36),
-        ).toFixed(),
+        ),
         totalProfitUSD: parseFloat(
           formatUnits(historicalPoolData.totalProfitUSD, 36),
         ),
@@ -44,23 +44,25 @@ function MyActivityCard({ historicalPoolData }: Props): ReactElement | null {
         <div className="activityTable">
           <div key="deposits-btc">
             <span className="label">BTC {t("deposit")}</span>
-            <span>{historicalFormattedData.totalDepositsBTC}</span>
+            <span>{historicalFormattedData.totalDepositsBTC.toFixed(5)}</span>
           </div>
           <div key="deposits-usd">
             <span className="label">USD {t("deposit")}</span>
-            <span>{`$${historicalFormattedData.totalDepositsUSD}`}</span>
+            <span>{`$${historicalFormattedData.totalDepositsUSD.toFixed()}`}</span>
           </div>
           <div key="withdrawals-btc">
             <span className="label">BTC {t("withdrawal")}</span>
-            <span>{historicalFormattedData.totalWithdrawalsBTC}</span>
+            <span>
+              {historicalFormattedData.totalWithdrawalsBTC.toFixed(5)}
+            </span>
           </div>
           <div key="withdrawals-usd">
             <span className="label">USD {t("withdrawal")}</span>
-            <span>{`$${historicalFormattedData.totalWithdrawalsUSD}`}</span>
+            <span>{`$${historicalFormattedData.totalWithdrawalsUSD.toFixed()}`}</span>
           </div>
           <div key="profit-btc">
             <span className="label">BTC {t("profit")}</span>
-            <span>{historicalFormattedData.totalProfitBTC}</span>
+            <span>{historicalFormattedData.totalProfitBTC.toFixed(5)}</span>
           </div>
           <div key="profit-usd">
             <span className="label">USD {t("profit")}</span>
