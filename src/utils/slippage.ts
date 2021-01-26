@@ -72,14 +72,14 @@ export function isHighSlippage(bonusOrSlippage: BigNumber): boolean {
 }
 
 export function calculateBonusOrSlippage(
-  tokenInputSum: BigNumber,
-  calculatedLPTokenAmount: BigNumber,
+  tokenInputAmount: BigNumber, // assumed to be 18d precision
+  tokenOutputAmount: BigNumber,
   virtualPrice: BigNumber,
 ): BigNumber {
-  return tokenInputSum.gt(0)
+  return tokenInputAmount.gt(0)
     ? virtualPrice
-        .mul(calculatedLPTokenAmount)
-        .div(tokenInputSum)
+        .mul(tokenOutputAmount)
+        .div(tokenInputAmount)
         .sub(BigNumber.from(10).pow(18))
     : BigNumber.from(0)
 }
