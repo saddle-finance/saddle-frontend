@@ -94,7 +94,7 @@ export function useApproveAndDeposit(
       )
     }
     try {
-      // For each token being desposited, check the allowance and approve it if necessary
+      // For each token being deposited, check the allowance and approve it if necessary
       await Promise.all(POOL_TOKENS.map((token) => approveSingleToken(token)))
 
       // "isFirstTransaction" check can be removed after launch
