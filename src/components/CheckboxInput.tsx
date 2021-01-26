@@ -14,7 +14,7 @@ export default function CheckboxInput({
   return (
     <label className="checkboxInput">
       <input type="checkbox" checked={checked} onChange={onChange} />
-      <span className="checkboxControl">
+      <div className="checkboxControl">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -27,7 +27,7 @@ export default function CheckboxInput({
             d="M1.73 12.91l6.37 6.37L22.79 4.59"
           />
         </svg>
-      </span>
+      </div>
     </label>
   )
 }
