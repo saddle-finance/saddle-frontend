@@ -27,6 +27,8 @@
   "from": "From",
   "gas": "Gas",
   "getWallet": "Get a wallet!",
+  "highSlippageConfirmation": "Warning: This transaction's slippage exceeds 10% which will result in a loss of funds. Please confirm that you understand before submitting your transaction.",
+  "iConfirm": "I CONFIRM",
   "inTotal": "in total",
   "infiniteApproval": "Infinite Approval",
   "infiniteApprovalTooltip": "Allow Saddle to spend all of the selected tokens now and in the future. You will not need to approve again.",

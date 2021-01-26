@@ -16,9 +16,7 @@ export default function HighSlippageConfirmation({
   const { t } = useTranslation()
   return (
     <div className="highSlippageConfirmation">
-      {t(
-        "Warning: This transaction's slippage exceeds 10% which will result in a loss of funds. Please confirm that you understand before submitting your transaction.",
-      )}
+      {t("highSlippageConfirmation")}
       <div className="confirmationBox">
         <span>{t("I CONFIRM")}</span>{" "}
         <CheckboxInput checked={checked} onChange={onCheck} />

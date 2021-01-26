@@ -27,6 +27,8 @@
   "from": "从",
   "gas": "Gas",
   "getWallet": "申请钱包！",
+  "highSlippageConfirmation": null,
+  "iConfirm": null,
   "inTotal": "总计",
   "infiniteApproval": "无限授权",
   "infiniteApprovalTooltip": "授权Saddle此次和以后都可使用所选代币，您以后无需重新授权。",
