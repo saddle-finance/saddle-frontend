@@ -2,6 +2,7 @@ import "./SwapForm.scss"
 
 import React, { ReactElement } from "react"
 
+import Button from "./Button"
 import classNames from "classnames"
 import { commify } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
@@ -52,17 +53,20 @@ function SwapForm({
             readOnly={!isSwapFrom}
           />
           {isSwapFrom ? (
-            <button
-              className="max"
-              onClick={(): void => {
-                const token = tokens.find((t) => t.symbol === selected)
-                if (token && onChangeAmount) {
-                  onChangeAmount(token.value)
-                }
-              }}
-            >
-              {t("max")}
-            </button>
+            <div className="buttonWrapper">
+              <Button
+                size="small"
+                kind="ternary"
+                onClick={(): void => {
+                  const token = tokens.find((t) => t.symbol === selected)
+                  if (token && onChangeAmount) {
+                    onChangeAmount(token.value)
+                  }
+                }}
+              >
+                {t("max")}
+              </Button>
+            </div>
           ) : (
             ""
           )}

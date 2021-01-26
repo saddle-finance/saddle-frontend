@@ -1,6 +1,8 @@
 import "./TokenInput.scss"
 
 import React, { ReactElement } from "react"
+
+import Button from "./Button"
 import classNames from "classnames"
 import { useTranslation } from "react-i18next"
 
@@ -45,9 +47,14 @@ function TokenInput({
         }
       />
       {max != null && (
-        <button className="max" onClick={onClickMax} disabled={disabled}>
+        <Button
+          onClick={onClickMax}
+          size="small"
+          kind="ternary"
+          disabled={disabled}
+        >
           {t("max")}
-        </button>
+        </Button>
       )}
     </div>
   )

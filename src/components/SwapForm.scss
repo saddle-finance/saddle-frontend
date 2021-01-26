@@ -21,44 +21,23 @@
 
     .inputField {
       position: relative;
-    }
+      display: flex;
 
-    input {
-      width: 252px;
-      height: 32px;
-      background: $white;
-      outline: none;
-      border: 0.1px solid var(--outline);
-      padding: 0 56px 0 8px;
-      margin-bottom: 24px;
-    }
-
-    input:focus {
-      outline: none;
-    }
-
-    input.hasMaxButton {
-      width: 204px;
-    }
-
-    button.max {
-      position: absolute;
-      right: 0px;
-      height: 32px;
-      color: $white;
-      background: $divider-red;
-      border: none;
-      border-radius: 6px;
-      font-weight: $medium;
-      font-size: 16px;
-      letter-spacing: -0.06em;
-      cursor: pointer;
-
-      &:hover {
-        font-weight: $bold;
+      .buttonWrapper {
+        display: inline-block;
+        margin-left: 8px;
       }
-
-      &:focus {
+      input {
+        flex: auto;
+        height: 32px;
+        background: $white;
+        outline: none;
+        border: 0.1px solid var(--outline);
+        padding: 0 8px;
+        margin-bottom: 24px;
+      }
+  
+      input:focus {
         outline: none;
       }
     }
