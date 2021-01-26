@@ -20,7 +20,7 @@
   "deposit": "Deposit",
   "depositLimitExceeded": "Deposit limit exceeded",
   "dontHaveWallet": "Don't have a wallet?",
-  "estimatedOutput": "Output is estimated. If the price changes by more than 0.1% your transaction will revert.",
+  "estimatedOutput": "Output is estimated. If the price changes by more than the max slippage your transaction will revert.",
   "estimatedTxCost": "Estimated TX Cost",
   "fast": "Fast",
   "fee": "Fee",

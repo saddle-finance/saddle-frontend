@@ -39,6 +39,7 @@ export interface UserShareType {
   avgBalance: BigNumber
   currentWithdrawFee: BigNumber
   lpTokenBalance: BigNumber
+  lpTokenMinted: BigNumber
   name: string // TODO: does this need to be on user share?
   share: BigNumber
   tokens: TokenShareType[]
@@ -101,12 +102,14 @@ export default function usePoolData(
       )
       const [
         userLpTokenBalance,
+        userLpTokenMinted,
         totalLpTokenBalance,
         poolAccountLimit,
         poolLPTokenCap,
         isAccountVerified,
       ] = await Promise.all([
         lpToken.balanceOf(account || AddressZero),
+        lpToken.mintedAmounts(account || AddressZero),
         lpToken.totalSupply(),
         allowlist.getPoolAccountLimit(swapContract.address),
         allowlist.getPoolCap(swapContract.address),
@@ -238,6 +241,7 @@ export default function usePoolData(
             tokens: userPoolTokens,
             currentWithdrawFee: userCurrentWithdrawFee,
             lpTokenBalance: userLpTokenBalance,
+            lpTokenMinted: userLpTokenMinted,
             isAccountVerified,
           }
         : null

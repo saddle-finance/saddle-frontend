@@ -20,7 +20,7 @@
   "deposit": "存款",
   "depositLimitExceeded": "超过存款限额",
   "dontHaveWallet": "没有钱包吗？",
-  "estimatedOutput": "输出量为预估值。若价格变动幅度超过0.1%，您的交易将不会进行。",
+  "estimatedOutput": "输出量为预估值。若价格变动幅度超过最高滑点，您的交易将不会进行。",
   "estimatedTxCost": "交易费用预估",
   "fast": "快速",
   "fee": "费用",

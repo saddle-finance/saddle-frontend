@@ -4,7 +4,7 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { MaxUint256 } from "@ethersproject/constants"
 
 /**
- *  Checks if a spender is allowed to spend some amount of a token.
+ * Checks if a spender is allowed to spend some amount of a token.
  * Approves them to spend if they're not already allowed.
  * Won't make requests if spendingValue eq 0
  * @param {Contract} srcTokenContract
