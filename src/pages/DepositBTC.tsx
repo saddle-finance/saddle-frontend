@@ -12,6 +12,7 @@ import { commify, formatUnits } from "@ethersproject/units"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
+import { calculateBonusOrSlippage } from "../utils/slippage"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
@@ -48,6 +49,7 @@ function DepositBTC(): ReactElement | null {
   )
   const [estDepositBonus, setEstDepositBonus] = useState(BigNumber.from(0))
   const [willExceedMaxDeposits, setWillExceedMaxDeposit] = useState(true)
+
   useEffect(() => {
     // evaluate if a new deposit will exceed the pool's per-user limit
     async function calculateMaxDeposits(): Promise<void> {
@@ -93,12 +95,11 @@ function DepositBTC(): ReactElement | null {
       }
 
       setEstDepositBonus(
-        tokenInputSum.gt(0)
-          ? poolData.virtualPrice
-              .mul(depositLPTokenAmount)
-              .div(tokenInputSum)
-              .sub(BigNumber.from(10).pow(18))
-          : BigNumber.from(0),
+        calculateBonusOrSlippage(
+          tokenInputSum,
+          depositLPTokenAmount,
+          poolData.virtualPrice,
+        ),
       )
     }
     calculateMaxDeposits()
@@ -194,6 +195,7 @@ function DepositBTC(): ReactElement | null {
             rate: commify(tokenPricesUSD[symbol]?.toFixed(2)),
           }))
         : [],
+    bonusOrSlippage: estDepositBonus,
   }
 
   return (

@@ -1,10 +1,13 @@
 import "./ReviewDeposit.scss"
 
-import React, { ReactElement } from "react"
+import React, { ReactElement, useState } from "react"
+import { formatSlippageToString, isHighSlippage } from "../utils/slippage"
 
 import { AppState } from "../state/index"
+import { BigNumber } from "@ethersproject/bignumber"
+import Button from "./Button"
+import HighSlippageConfirmation from "./HighSlippageConfirmation"
 import { formatGasToString } from "../utils/gas"
-import { formatSlippageToString } from "../utils/slippage"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
@@ -17,6 +20,7 @@ interface Props {
     rates: Array<{ [key: string]: any }>
     shareOfPool: string
     lpToken: string
+    bonusOrSlippage: BigNumber
   }
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -32,6 +36,10 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
+  const [hasConfirmedHighSlippage, setHasConfirmedHighSlippage] = useState(
+    false,
+  )
+  const isHighSlippageTxn = isHighSlippage(data.bonusOrSlippage)
 
   return (
     <div className="reviewDeposit">
@@ -83,16 +91,31 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
           </div>
         </div>
       </div>
+      {isHighSlippageTxn && (
+        <HighSlippageConfirmation
+          checked={hasConfirmedHighSlippage}
+          onCheck={(): void =>
+            setHasConfirmedHighSlippage((prevState) => !prevState)
+          }
+        />
+      )}
       <div className="bottom">
         <span>{`${t("youWillReceive")} ${data.lpToken} ${t("lpTokens")}`}</span>
         <div className="divider" style={{ height: "1px", width: "100%" }}></div>
         <p>{t("estimatedOutput")}</p>
-        <button onClick={onConfirm} className="confirm">
-          {t("confirmDeposit")}
-        </button>
-        <button onClick={onClose} className="cancel">
-          {t("cancel")}
-        </button>
+        <div className="buttonWrapper">
+          <Button
+            onClick={onConfirm}
+            kind="primary"
+            size="large"
+            disabled={isHighSlippageTxn && !hasConfirmedHighSlippage}
+          >
+            {t("confirmDeposit")}
+          </Button>
+          <Button onClick={onClose} kind="secondary" size="large">
+            {t("cancel")}
+          </Button>
+        </div>
       </div>
     </div>
   )

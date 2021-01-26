@@ -65,3 +65,21 @@ export function formatSlippageToString(
     return "N/A"
   }
 }
+
+export function isHighSlippage(bonusOrSlippage: BigNumber): boolean {
+  const negOneTenth = BigNumber.from(-10).pow(18 - 1)
+  return bonusOrSlippage.lte(negOneTenth)
+}
+
+export function calculateBonusOrSlippage(
+  tokenInputSum: BigNumber,
+  calculatedLPTokenAmount: BigNumber,
+  virtualPrice: BigNumber,
+): BigNumber {
+  return tokenInputSum.gt(0)
+    ? virtualPrice
+        .mul(calculatedLPTokenAmount)
+        .div(tokenInputSum)
+        .sub(BigNumber.from(10).pow(18))
+    : BigNumber.from(0)
+}
