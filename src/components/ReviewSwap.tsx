@@ -48,7 +48,9 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
   const formattedPriceImpact = `${parseFloat(
     formatUnits(data.exchangeRateInfo.priceImpact, 18 - 2),
   ).toFixed(2)}%`
-  const isHighPriceImpactTxn = isHighPriceImpact(data.exchangeRateInfo.priceImpact)
+  const isHighPriceImpactTxn = isHighPriceImpact(
+    data.exchangeRateInfo.priceImpact,
+  )
 
   return (
     <div className="reviewSwap">
