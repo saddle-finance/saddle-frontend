@@ -17,7 +17,7 @@ import SwapForm from "./SwapForm"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
 import { formatUnits } from "@ethersproject/units"
-import { isHighSlippage } from "../utils/slippage"
+import { isHighPriceImpact } from "../utils/priceImpact"
 import { logEvent } from "../utils/googleAnalytics"
 import { updateSwapAdvancedMode } from "../state/user"
 import { useActiveWeb3React } from "../hooks"
@@ -25,7 +25,7 @@ import { useTranslation } from "react-i18next"
 
 interface Props {
   tokens: Array<{ symbol: string; name: string; value: string; icon: string }>
-  exchangeRateInfo: { pair: string; bonusOrSlippage: BigNumber }
+  exchangeRateInfo: { pair: string; priceImpact: BigNumber }
   error: string | null
   info: { isInfo: boolean; message: string }
   fromState: { symbol: string; value: string }
@@ -60,8 +60,8 @@ const SwapPage = (props: Props): ReactElement => {
   const { userSwapAdvancedMode: advanced } = useSelector(
     (state: AppState) => state.user,
   )
-  const formattedBonusOrSlippage = `${parseFloat(
-    formatUnits(exchangeRateInfo.bonusOrSlippage, 18 - 2),
+  const formattedPriceImpact = `${parseFloat(
+    formatUnits(exchangeRateInfo.priceImpact, 18 - 2),
   ).toFixed(2)}%`
 
   return (
@@ -84,10 +84,10 @@ const SwapPage = (props: Props): ReactElement => {
           selected={toState.symbol}
           inputValue={toState.value}
         />
-        {account && isHighSlippage(exchangeRateInfo.bonusOrSlippage) ? (
+        {account && isHighPriceImpact(exchangeRateInfo.priceImpact) ? (
           <div className="exchangeWarning">
-            {t("lowExchangeRate", {
-              rate: formattedBonusOrSlippage,
+            {t("highPriceImpact", {
+              rate: formattedPriceImpact,
             })}
           </div>
         ) : null}
@@ -116,7 +116,7 @@ const SwapPage = (props: Props): ReactElement => {
                 />
               </svg>
             </button>
-            <span className="value">{formattedBonusOrSlippage}</span>
+            <span className="value">{formattedPriceImpact}</span>
           </div>
           <div className="cost">{info.isInfo ? info.message : "..."}</div>
           <div

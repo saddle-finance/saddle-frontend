@@ -1,68 +1,7 @@
-import {
-  _applySlippage,
-  calculateBonusOrSlippage,
-  isHighSlippage,
-} from "../slippage"
-
 import { BigNumber } from "@ethersproject/bignumber"
 import { Slippages } from "../../state/user"
+import { _applySlippage } from "../slippage"
 import { numberInputStateCreator } from "../numberInputState"
-import { parseUnits } from "@ethersproject/units"
-
-describe("calculateBonusOrSlippage", () => {
-  it("correctly calculates value for 0 input", () => {
-    expect(
-      calculateBonusOrSlippage(
-        BigNumber.from(0),
-        BigNumber.from(0),
-        BigNumber.from(10).pow(18),
-      ),
-    ).toEqual(BigNumber.from(0))
-  })
-
-  it("correctly calculates value for imbalanced / low liquidity pool", () => {
-    expect(
-      calculateBonusOrSlippage(
-        parseUnits("4", 18), // deposit 4 tokens
-        parseUnits("2", 18), // receieve 2 back
-        parseUnits("1", 18),
-      ),
-    ).toEqual(parseUnits("-0.5", 18)) // 4/2 == -.5 slippage
-  })
-
-  it("correctly calculates value for balanced pool", () => {
-    expect(
-      calculateBonusOrSlippage(
-        parseUnits("4", 18), // deposit 4 tokens
-        parseUnits("3.89", 18), // recieve 3.89 back
-        parseUnits("1.03", 18),
-      ),
-    ).toEqual(parseUnits("0.001675", 18))
-  })
-})
-
-describe("isHighSlippage", () => {
-  it("returns true for slippage >= 10%", () => {
-    const negTenPct = BigNumber.from(10)
-      .pow(18 - 2)
-      .mul(-10)
-    const negElevenPct = BigNumber.from(10)
-      .pow(18 - 2)
-      .mul(-11)
-    expect(isHighSlippage(negTenPct)).toBe(true)
-    expect(isHighSlippage(negElevenPct)).toBe(true)
-  })
-
-  it("returns false for slippage < 10%", () => {
-    const negNinePct = BigNumber.from(10)
-      .pow(18 - 2)
-      .mul(-9)
-    const posOnePct = BigNumber.from(10).pow(18 - 2)
-    expect(isHighSlippage(negNinePct)).toBe(false)
-    expect(isHighSlippage(posOnePct)).toBe(false)
-    expect(isHighSlippage(BigNumber.from(0))).toBe(false)
-  })
-})
 
 describe("_applySlippage", () => {
   const input = BigNumber.from(10).pow(8).mul(51)

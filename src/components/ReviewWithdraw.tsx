@@ -1,14 +1,15 @@
 import "./ReviewWithdraw.scss"
 
 import React, { ReactElement, useState } from "react"
-import { formatSlippageToString, isHighSlippage } from "../utils/slippage"
 
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
 import { GasPrices } from "../state/user"
-import HighSlippageConfirmation from "./HighSlippageConfirmation"
+import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { formatGasToString } from "../utils/gas"
+import { formatSlippageToString } from "../utils/slippage"
+import { isHighPriceImpact } from "../utils/priceImpact"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
@@ -19,7 +20,7 @@ interface Props {
   data: {
     withdraw: Array<{ [key: string]: any }>
     rates: Array<{ [key: string]: any }>
-    bonusOrSlippage: BigNumber
+    priceImpact: BigNumber
   }
   gas: GasPrices
 }
@@ -35,10 +36,11 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
-  const [hasConfirmedHighSlippage, setHasConfirmedHighSlippage] = useState(
-    false,
-  )
-  const isHighSlippageTxn = isHighSlippage(data.bonusOrSlippage)
+  const [
+    hasConfirmedHighPriceImpact,
+    setHasConfirmedHighPriceImpact,
+  ] = useState(false)
+  const isHighSlippageTxn = isHighPriceImpact(data.priceImpact)
 
   return (
     <div className="reviewWithdraw">
@@ -88,10 +90,10 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
       </div>
       {isHighSlippageTxn && (
         <div className="withdrawInfoItem">
-          <HighSlippageConfirmation
-            checked={hasConfirmedHighSlippage}
+          <HighPriceImpactConfirmation
+            checked={hasConfirmedHighPriceImpact}
             onCheck={(): void =>
-              setHasConfirmedHighSlippage((prevState) => !prevState)
+              setHasConfirmedHighPriceImpact((prevState) => !prevState)
             }
           />
         </div>
@@ -102,7 +104,7 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
           <Button
             onClick={onConfirm}
             kind="primary"
-            disabled={isHighSlippageTxn && !hasConfirmedHighSlippage}
+            disabled={isHighSlippageTxn && !hasConfirmedHighPriceImpact}
           >
             {t("confirmWithdraw")}
           </Button>

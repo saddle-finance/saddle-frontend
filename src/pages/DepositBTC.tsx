@@ -12,7 +12,7 @@ import { commify, formatUnits } from "@ethersproject/units"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
-import { calculateBonusOrSlippage } from "../utils/slippage"
+import { calculatePriceImpact } from "../utils/priceImpact"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
@@ -95,7 +95,7 @@ function DepositBTC(): ReactElement | null {
       }
 
       setEstDepositBonus(
-        calculateBonusOrSlippage(
+        calculatePriceImpact(
           tokenInputSum,
           depositLPTokenAmount,
           poolData.virtualPrice,
@@ -195,7 +195,7 @@ function DepositBTC(): ReactElement | null {
             rate: commify(tokenPricesUSD[symbol]?.toFixed(2)),
           }))
         : [],
-    bonusOrSlippage: estDepositBonus,
+    priceImpact: estDepositBonus,
   }
 
   return (

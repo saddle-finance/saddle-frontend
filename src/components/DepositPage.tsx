@@ -56,7 +56,7 @@ interface Props {
     rates: Array<{ [key: string]: any }>
     shareOfPool: string
     lpToken: string
-    bonusOrSlippage: BigNumber
+    priceImpact: BigNumber
   }
   hasValidMerkleState: boolean
 }
@@ -153,7 +153,7 @@ const DepositPage = (props: Props): ReactElement => {
                   {transactionInfoData.bonus.gte(0) ? (
                     <span className="bonus">{`${t("bonus")}: `}</span>
                   ) : (
-                    <span className="slippage">{t("maxSlippage")}</span>
+                    <span className="slippage">{t("priceImpact")}</span>
                   )}
                   <span
                     className={

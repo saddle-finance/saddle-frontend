@@ -1,4 +1,4 @@
-import "./HighSlippageConfirmation.scss"
+import "./HighPriceImpactConfirmation.scss"
 
 import React, { ReactElement } from "react"
 
@@ -9,14 +9,14 @@ interface Props {
   checked: boolean
   onCheck: () => void
 }
-export default function HighSlippageConfirmation({
+export default function HighPriceImpactConfirmation({
   checked,
   onCheck,
 }: Props): ReactElement {
   const { t } = useTranslation()
   return (
-    <div className="highSlippageConfirmation">
-      {t("highSlippageConfirmation")}
+    <div className="highPriceImpactConfirmation">
+      {t("highPriceImpactConfirmation")}
       <div className="confirmationBox">
         <span>{t("I CONFIRM")}</span>{" "}
         <CheckboxInput checked={checked} onChange={onCheck} />
