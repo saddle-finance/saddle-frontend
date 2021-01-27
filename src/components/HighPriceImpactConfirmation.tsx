@@ -18,7 +18,7 @@ export default function HighPriceImpactConfirmation({
     <div className="highPriceImpactConfirmation">
       {t("highPriceImpactConfirmation")}
       <div className="confirmationBox">
-        <span>{t("I CONFIRM")}</span>{" "}
+        <span>{t("iConfirm")}</span>{" "}
         <CheckboxInput checked={checked} onChange={onCheck} />
       </div>
     </div>

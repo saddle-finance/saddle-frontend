@@ -48,7 +48,7 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
   const formattedPriceImpact = `${parseFloat(
     formatUnits(data.exchangeRateInfo.priceImpact, 18 - 2),
   ).toFixed(2)}%`
-  const isHighSlippageTxn = isHighPriceImpact(data.exchangeRateInfo.priceImpact)
+  const isHighPriceImpactTxn = isHighPriceImpact(data.exchangeRateInfo.priceImpact)
 
   return (
     <div className="reviewSwap">
@@ -111,7 +111,7 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
               {formatSlippageToString(slippageSelected, slippageCustom)}%
             </span>
           </div>
-          {isHighSlippageTxn && (
+          {isHighPriceImpactTxn && (
             <div className="row">
               <HighPriceImpactConfirmation
                 checked={hasConfirmedHighPriceImpact}
@@ -129,7 +129,7 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
           <Button
             onClick={onConfirm}
             kind="primary"
-            disabled={isHighSlippageTxn && !hasConfirmedHighPriceImpact}
+            disabled={isHighPriceImpactTxn && !hasConfirmedHighPriceImpact}
           >
             {t("confirmSwap")}
           </Button>

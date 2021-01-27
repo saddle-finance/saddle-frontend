@@ -37,7 +37,6 @@ function SwapBTC(): ReactElement {
     gasCustom,
     infiniteApproval,
   } = useSelector((state: AppState) => state.user)
-  // const [exchangeRate, setExchangeRate] = useState(0)
   const tokenBalances = usePoolTokenBalances(BTC_POOL_NAME)
   const swapContract = useSwapContract(BTC_POOL_NAME)
   const [formState, setFormState] = useState<FormState>({

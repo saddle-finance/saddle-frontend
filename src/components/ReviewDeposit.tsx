@@ -41,7 +41,7 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
     hasConfirmedHighPriceImpact,
     setHasConfirmedHighPriceImpact,
   ] = useState(false)
-  const isHighSlippageTxn = isHighPriceImpact(data.priceImpact)
+  const isHighPriceImpactTxn = isHighPriceImpact(data.priceImpact)
 
   return (
     <div className="reviewDeposit">
@@ -93,7 +93,7 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
           </div>
         </div>
       </div>
-      {isHighSlippageTxn && (
+      {isHighPriceImpactTxn && (
         <HighPriceImpactConfirmation
           checked={hasConfirmedHighPriceImpact}
           onCheck={(): void =>
@@ -110,7 +110,7 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
             onClick={onConfirm}
             kind="primary"
             size="large"
-            disabled={isHighSlippageTxn && !hasConfirmedHighPriceImpact}
+            disabled={isHighPriceImpactTxn && !hasConfirmedHighPriceImpact}
           >
             {t("confirmDeposit")}
           </Button>
