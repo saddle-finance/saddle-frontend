@@ -5,19 +5,20 @@ div.tokenInput {
   position: relative;
   align-items: center;
 
+  > span {
+    margin-left: 8px;
+    flex: 0 0 60px;
+  }
+
   input {
-    position: absolute;
-    left: 78px;
-    width: 168px;
+    flex: 1 0 120px;
+    min-width: 0;
     height: 32px;
-    display: block;
     background: $white;
     border: 0.1px solid var(--outline);
     border-radius: 0;
-    margin-left: 16px;
-
-    padding-left: 16px;
-    padding-right: 72px;
+    margin: 0 8px;
+    padding: 0 8px;
     color: $text-black;
     font-size: 16px;
     font-family: $font-family;
@@ -34,38 +35,11 @@ div.tokenInput {
     }
   }
 
-  input.hasMaxButton {
-    width: 120px;
-  }
-
   span {
     line-height: 40px;
   }
 
   img {
-    margin-right: 8px;
     vertical-align: text-bottom;
-  }
-
-  button.max {
-    position: absolute;
-    right: 0px;
-    height: 32px;
-    color: $white;
-    background: $divider-red;
-    border: none;
-    border-radius: 6px;
-    font-weight: $medium;
-    letter-spacing: -0.06em;
-    cursor: pointer;
-
-    &:focus {
-      outline: none;
-    }
-
-    &:disabled {
-      background: $disabled;
-      cursor: not-allowed;
-    }
   }
 }

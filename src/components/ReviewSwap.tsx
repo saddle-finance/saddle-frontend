@@ -1,12 +1,17 @@
 import "./ReviewSwap.scss"
 
-import React, { ReactElement } from "react"
+import React, { ReactElement, useState } from "react"
 
 import { AppState } from "../state/index"
+import { BigNumber } from "@ethersproject/bignumber"
+import Button from "./Button"
+import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { TOKENS_MAP } from "../constants"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
+import { formatUnits } from "@ethersproject/units"
 import iconDown from "../assets/icons/icon_down.svg"
+import { isHighPriceImpact } from "../utils/priceImpact"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
@@ -18,7 +23,7 @@ interface Props {
     to: { symbol: string; value: string }
     exchangeRateInfo: {
       pair: string
-      value: number
+      priceImpact: BigNumber
     }
   }
 }
@@ -34,8 +39,18 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
+  const [
+    hasConfirmedHighPriceImpact,
+    setHasConfirmedHighPriceImpact,
+  ] = useState(false)
   const fromToken = TOKENS_MAP[data.from.symbol]
   const toToken = TOKENS_MAP[data.to.symbol]
+  const formattedPriceImpact = `${parseFloat(
+    formatUnits(data.exchangeRateInfo.priceImpact, 18 - 2),
+  ).toFixed(2)}%`
+  const isHighPriceImpactTxn = isHighPriceImpact(
+    data.exchangeRateInfo.priceImpact,
+  )
 
   return (
     <div className="reviewSwap">
@@ -79,11 +94,9 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
                 />
               </svg>
             </button>
-            <span className="value floatRight">
-              {data.exchangeRateInfo.value.toFixed(4)}
-            </span>
+            <span className="value floatRight">{formattedPriceImpact}</span>
           </div>
-          <div className="gas">
+          <div className="row">
             <span className="title">{t("gas")}</span>
             <span className="value floatRight">
               {formatGasToString(
@@ -94,22 +107,38 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
               GWEI
             </span>
           </div>
-          <div className="slippage">
+          <div className="row">
             <span className="title">{t("maxSlippage")}</span>
             <span className="value floatRight">
               {formatSlippageToString(slippageSelected, slippageCustom)}%
             </span>
           </div>
+          {isHighPriceImpactTxn && (
+            <div className="row">
+              <HighPriceImpactConfirmation
+                checked={hasConfirmedHighPriceImpact}
+                onCheck={(): void =>
+                  setHasConfirmedHighPriceImpact((prevState) => !prevState)
+                }
+              />
+            </div>
+          )}
         </div>
       </div>
       <div className="bottom">
         <p>{t("estimatedOutput")}</p>
-        <button onClick={onConfirm} className="confirm">
-          {t("confirmSwap")}
-        </button>
-        <button onClick={onClose} className="cancel">
-          {t("cancel")}
-        </button>
+        <div className="buttonWrapper">
+          <Button
+            onClick={onConfirm}
+            kind="primary"
+            disabled={isHighPriceImpactTxn && !hasConfirmedHighPriceImpact}
+          >
+            {t("confirmSwap")}
+          </Button>
+          <Button onClick={onClose} kind="secondary">
+            {t("cancel")}
+          </Button>
+        </div>
       </div>
     </div>
   )

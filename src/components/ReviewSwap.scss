@@ -17,7 +17,7 @@ div.reviewSwap {
   }
 
   .swapTable {
-    margin: 0;
+    margin-bottom: 36px;
 
     .floatRight {
       float: right;
@@ -53,15 +53,14 @@ div.reviewSwap {
       color: $text-black;
     }
 
-    .gas,
-    .slippage {
+    .row {
       margin-top: 8px;
     }
   }
 
   .bottom {
     background: $black;
-    margin: 40px -40px -40px -40px;
+    margin: 0 -40px -40px -40px;
     padding: 24px 40px 40px 40px;
     border-radius: 0px 0px 8px 8px;
 
@@ -71,47 +70,9 @@ div.reviewSwap {
       line-height: 20px;
     }
 
-    & > button {
-      width: 176px;
-      height: 44px;
-      border-radius: 4px;
-
-      &:hover,
-      &:active {
-        outline: none;
-      }
-    }
-
-    button.confirm {
-      border: none;
-      background: $primary;
-      color: $text-black;
-      font-weight: $bold;
-      font-size: 16px;
-      letter-spacing: 0.02em;
-      margin-right: 18px;
-
-      &:hover,
-      &:focus {
-        outline: none;
-        background-color: $primary-blue;
-        color: $text-white;
-        box-shadow: var(--shadow-hover);
-      }
-    }
-
-    button.cancel {
-      background: $white;
-      border: none;
-      color: $text-black;
-      font-weight: $bold;
-      font-size: 16px;
-      letter-spacing: 0.02em;
-
-      &:hover,
-      &:focus {
-        color: $primary-blue;
-      }
+    .buttonWrapper {
+      display: flex;
+      justify-content: space-between;
     }
   }
 }

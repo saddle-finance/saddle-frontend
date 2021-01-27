@@ -1,0 +1,59 @@
+@import "../styles/theme";
+
+button.button {
+  border-radius: 4px;
+  border: none;
+  color: $text-black;
+  font-weight: $bold;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+
+  &:disabled {
+    cursor: not-allowed;
+    color: rgba(0, 0, 0, 0.2);
+  }
+
+  &:hover,
+  &:active,
+  &:focus {
+    outline: none;
+  }
+
+  &.primary {
+    background: $primary;
+
+    &:enabled:hover,
+    &:enabled:focus {
+      background-color: $primary-blue;
+      color: $text-white;
+      box-shadow: var(--shadow-hover);
+    }
+  }
+
+  &.secondary {
+    background: $white;
+
+    &:enabled:hover,
+    &:enabled:focus {
+      color: $primary-blue;
+    }
+  }
+
+  &.ternary {
+    color: $white;
+    background: $divider-red;
+    font-weight: $medium;
+    letter-spacing: -0.06em;
+  }
+
+  &.large {
+    width: 176px;
+    height: 48px;
+  }
+
+  &.small {
+    height: 32px;
+  }
+}

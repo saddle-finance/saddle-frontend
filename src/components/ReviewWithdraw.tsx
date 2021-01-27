@@ -1,11 +1,15 @@
 import "./ReviewWithdraw.scss"
 
-import React, { ReactElement } from "react"
+import React, { ReactElement, useState } from "react"
 
 import { AppState } from "../state/index"
+import { BigNumber } from "@ethersproject/bignumber"
+import Button from "./Button"
 import { GasPrices } from "../state/user"
+import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
+import { isHighPriceImpact } from "../utils/priceImpact"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
@@ -16,6 +20,7 @@ interface Props {
   data: {
     withdraw: Array<{ [key: string]: any }>
     rates: Array<{ [key: string]: any }>
+    priceImpact: BigNumber
   }
   gas: GasPrices
 }
@@ -31,6 +36,11 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
+  const [
+    hasConfirmedHighPriceImpact,
+    setHasConfirmedHighPriceImpact,
+  ] = useState(false)
+  const isHighSlippageTxn = isHighPriceImpact(data.priceImpact)
 
   return (
     <div className="reviewWithdraw">
@@ -78,14 +88,30 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
           </div>
         </div>
       </div>
+      {isHighSlippageTxn && (
+        <div className="withdrawInfoItem">
+          <HighPriceImpactConfirmation
+            checked={hasConfirmedHighPriceImpact}
+            onCheck={(): void =>
+              setHasConfirmedHighPriceImpact((prevState) => !prevState)
+            }
+          />
+        </div>
+      )}
       <div className="bottom">
         <p>{t("estimatedOutput")}</p>
-        <button onClick={onConfirm} className="confirm">
-          {t("confirmWithdraw")}
-        </button>
-        <button onClick={onClose} className="cancel">
-          {t("cancel")}
-        </button>
+        <div className="buttonWrapper">
+          <Button
+            onClick={onConfirm}
+            kind="primary"
+            disabled={isHighSlippageTxn && !hasConfirmedHighPriceImpact}
+          >
+            {t("confirmWithdraw")}
+          </Button>
+          <Button onClick={onClose} kind="secondary">
+            {t("cancel")}
+          </Button>
+        </div>
       </div>
     </div>
   )
