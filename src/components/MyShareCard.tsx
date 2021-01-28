@@ -1,7 +1,7 @@
 import "./MyShareCard.scss"
 
 import React, { ReactElement } from "react"
-import { commify, formatUnits } from "@ethersproject/units"
+import { formatBNToPercentString, formatBNToString } from "../utils"
 
 import { TOKENS_MAP } from "../constants"
 import { UserShareType } from "../hooks/usePoolData"
@@ -17,17 +17,15 @@ function MyShareCard({ data }: Props): ReactElement | null {
   if (!data) return null
 
   const formattedData = {
-    share: (parseFloat(formatUnits(data.share, 18)) * 100).toFixed(2),
-    usdBalance: commify(
-      parseFloat(formatUnits(data.usdBalance, 18)).toFixed(2),
-    ),
-    value: commify(parseFloat(formatUnits(data.value, 18)).toFixed(5)),
+    share: formatBNToPercentString(data.share, 18),
+    usdBalance: formatBNToString(data.usdBalance, 18, 2),
+    value: formatBNToString(data.value, 18, 6),
     tokens: data.tokens.map((coin) => {
       const token = TOKENS_MAP[coin.symbol]
       return {
         symbol: token.symbol,
         name: token.name,
-        value: commify(parseFloat(formatUnits(coin.value, 18)).toFixed(3)),
+        value: formatBNToString(coin.value, 18, 6),
       }
     }),
   }
@@ -38,15 +36,15 @@ function MyShareCard({ data }: Props): ReactElement | null {
       <div className="info">
         <div className="poolShare">
           <span>
-            {formattedData.share}% {t("ofPool")}
+            {formattedData.share} {t("ofPool")}
           </span>
         </div>
         <div className="infoItem">
-          <span className="label bold">{`${t("usdBalance")}:`}</span>
+          <span className="label bold">{`${t("usdBalance")}: `}</span>
           <span className="value">{`$${formattedData.usdBalance}`}</span>
         </div>
         <div className="infoItem">
-          <span className="label bold">{`${t("totalAmount")}:`}</span>
+          <span className="label bold">{`${t("totalAmount")}: `}</span>
           <span className="value">{formattedData.value}</span>
         </div>
       </div>

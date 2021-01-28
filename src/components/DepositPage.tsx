@@ -24,7 +24,7 @@ import SlippageField from "./SlippageField"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
-import { formatUnits } from "@ethersproject/units"
+import { formatBNToPercentString } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
 import { updatePoolAdvancedMode } from "../state/user"
 import { useTranslation } from "react-i18next"
@@ -142,10 +142,7 @@ const DepositPage = (props: Props): ReactElement => {
                       <span>{`KEEP APR:`}</span>
                     </a>{" "}
                     <span className="value">
-                      {parseFloat(
-                        formatUnits(poolData.keepApr, 18 - 2),
-                      ).toFixed(2)}
-                      %
+                      {formatBNToPercentString(poolData.keepApr, 18)}
                     </span>
                   </div>
                 )}
@@ -162,10 +159,7 @@ const DepositPage = (props: Props): ReactElement => {
                     }
                   >
                     {" "}
-                    {parseFloat(
-                      formatUnits(transactionInfoData.bonus, 18 - 2),
-                    ).toFixed(4)}
-                    %
+                    {formatBNToPercentString(transactionInfoData.bonus, 18, 4)}
                   </span>
                 </div>
               </div>
