@@ -63,7 +63,7 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
         <div className="divider" style={{ height: "1px", width: "100%" }}></div>
         <div className="depositInfoItem">
           <span className="label">{t("shareOfPool")}</span>
-          <span className="value">{data.shareOfPool}%</span>
+          <span className="value">{data.shareOfPool}</span>
         </div>
         <div className="depositInfoItem">
           <span className="label">{t("gas")}</span>

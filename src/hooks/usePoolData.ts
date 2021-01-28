@@ -1,5 +1,5 @@
 import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
-import { formatUnits, parseUnits } from "@ethersproject/units"
+import { formatBNToPercentString, getContract } from "../utils"
 import { useAllContracts, useSwapContract } from "./useContract"
 import { useEffect, useState } from "react"
 
@@ -8,7 +8,7 @@ import { AddressZero } from "@ethersproject/constants"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import LPTOKEN_ABI from "../constants/abis/lpToken.json"
-import { getContract } from "../utils"
+import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import { useSelector } from "react-redux"
 
@@ -185,34 +185,30 @@ export default function usePoolData(
 
       const poolTokens = POOL_TOKENS.map((token, i) => ({
         symbol: token.symbol,
-        percent: parseFloat(
-          formatUnits(
-            tokenBalances[i]
-              .mul(10 ** 5)
-              .div(
-                totalLpTokenBalance.isZero()
-                  ? BigNumber.from("1")
-                  : tokenBalancesSum,
-              ),
-            3,
-          ),
-        ).toFixed(3),
+        percent: formatBNToPercentString(
+          tokenBalances[i]
+            .mul(10 ** 5)
+            .div(
+              totalLpTokenBalance.isZero()
+                ? BigNumber.from("1")
+                : tokenBalancesSum,
+            ),
+          5,
+        ),
         value: tokenBalances[i],
       }))
       const userPoolTokens = POOL_TOKENS.map((token, i) => ({
         symbol: token.symbol,
-        percent: parseFloat(
-          formatUnits(
-            userPoolTokenBalances[i]
-              .mul(10 ** 5)
-              .div(
-                totalLpTokenBalance.isZero()
-                  ? BigNumber.from("1")
-                  : totalLpTokenBalance,
-              ),
-            3,
-          ),
-        ).toFixed(3),
+        percent: formatBNToPercentString(
+          tokenBalances[i]
+            .mul(10 ** 5)
+            .div(
+              totalLpTokenBalance.isZero()
+                ? BigNumber.from("1")
+                : tokenBalancesSum,
+            ),
+          5,
+        ),
         value: userPoolTokenBalances[i],
       }))
       const poolData = {

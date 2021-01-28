@@ -24,7 +24,7 @@ import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import classNames from "classnames"
-import { formatUnits } from "@ethersproject/units"
+import { formatBNToPercentString } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
 import { updatePoolAdvancedMode } from "../state/user"
 import { useTranslation } from "react-i18next"
@@ -182,10 +182,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                       }
                     >
                       {" "}
-                      {parseFloat(
-                        formatUnits(reviewData.priceImpact, 18 - 2),
-                      ).toFixed(4)}
-                      %
+                      {formatBNToPercentString(reviewData.priceImpact, 18, 4)}
                     </span>
                   </div>
                 </div>

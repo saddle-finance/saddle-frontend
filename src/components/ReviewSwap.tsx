@@ -7,9 +7,9 @@ import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { TOKENS_MAP } from "../constants"
+import { formatBNToPercentString } from "../utils"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
-import { formatUnits } from "@ethersproject/units"
 import iconDown from "../assets/icons/icon_down.svg"
 import { isHighPriceImpact } from "../utils/priceImpact"
 import { useSelector } from "react-redux"
@@ -45,9 +45,6 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
   ] = useState(false)
   const fromToken = TOKENS_MAP[data.from.symbol]
   const toToken = TOKENS_MAP[data.to.symbol]
-  const formattedPriceImpact = `${parseFloat(
-    formatUnits(data.exchangeRateInfo.priceImpact, 18 - 2),
-  ).toFixed(2)}%`
   const isHighPriceImpactTxn = isHighPriceImpact(
     data.exchangeRateInfo.priceImpact,
   )
@@ -94,7 +91,13 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
                 />
               </svg>
             </button>
-            <span className="value floatRight">{formattedPriceImpact}</span>
+            <span className="value floatRight">
+              {formatBNToPercentString(
+                data.exchangeRateInfo.priceImpact,
+                18,
+                4,
+              )}
+            </span>
           </div>
           <div className="row">
             <span className="title">{t("gas")}</span>

@@ -16,7 +16,7 @@ import SlippageField from "./SlippageField"
 import SwapForm from "./SwapForm"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
-import { formatUnits } from "@ethersproject/units"
+import { formatBNToPercentString } from "../utils"
 import { isHighPriceImpact } from "../utils/priceImpact"
 import { logEvent } from "../utils/googleAnalytics"
 import { updateSwapAdvancedMode } from "../state/user"
@@ -60,9 +60,10 @@ const SwapPage = (props: Props): ReactElement => {
   const { userSwapAdvancedMode: advanced } = useSelector(
     (state: AppState) => state.user,
   )
-  const formattedPriceImpact = `${parseFloat(
-    formatUnits(exchangeRateInfo.priceImpact, 18 - 2),
-  ).toFixed(2)}%`
+  const formattedPriceImpact = formatBNToPercentString(
+    exchangeRateInfo.priceImpact,
+    18,
+  )
 
   return (
     <div className="swapPage">
