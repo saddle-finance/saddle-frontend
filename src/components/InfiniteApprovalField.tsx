@@ -15,10 +15,7 @@ export default function InfiniteApprovalField(): ReactElement {
   const { infiniteApproval } = useSelector((state: AppState) => state.user)
   return (
     <div className="infiniteApproval">
-      <div className="label">
-        {t("infiniteApproval")}
-        <span className="tooltipText">{t("infiniteApprovalTooltip")}</span>
-      </div>
+      
       <label className="checkbox_input">
         <input
           type="checkbox"
@@ -42,6 +39,10 @@ export default function InfiniteApprovalField(): ReactElement {
           </svg>
         </span>
       </label>
+      <div className="label">
+        {t("infiniteApproval")}
+        <span className="tooltipText">{t("infiniteApprovalTooltip")}</span>
+      </div>
     </div>
   )
 }

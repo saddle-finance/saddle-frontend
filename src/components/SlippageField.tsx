@@ -20,11 +20,11 @@ export default function SlippageField(): ReactElement {
   const { slippageCustom, slippageSelected } = useSelector(
     (state: AppState) => state.user,
   )
-  // console.log(state.transactionDeadline)
   return (
     <div className="slippageField">
-      <span className="label">{t("maxSlippage")}</span>
+      
       <div className="options">
+      <div className="label">{t("maxSlippage")}: </div>
         <button
           className={classNames({
             selected: slippageSelected === Slippages.OneTenth,

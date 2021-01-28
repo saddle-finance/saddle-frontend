@@ -17,11 +17,10 @@ export default function DeadlineField(): ReactElement {
   const dispatch = useDispatch<AppDispatch>()
 
   const { transactionDeadline } = useSelector((state: AppState) => state.user)
-  console.log(transactionDeadline)
   return (
     <div className="deadlineField">
-      <span className="label">{t("deadline")}</span>
       <div className="options">
+      <div className="label">{t("deadline")}: </div>
         <button
           className={classNames({
             selected: transactionDeadline === Deadlines.Ten,
@@ -30,7 +29,7 @@ export default function DeadlineField(): ReactElement {
             dispatch(updateTransactionDeadline(Deadlines.Ten))
           }}
         >
-          10
+          10 <span> {t("minutes")}</span>
         </button>
         <button
           className={classNames({
@@ -40,7 +39,7 @@ export default function DeadlineField(): ReactElement {
             dispatch(updateTransactionDeadline(Deadlines.Thirty))
           }}
         >
-          30
+          30 <span> {t("minutes")}</span>
         </button>
         <input
           type="text"
