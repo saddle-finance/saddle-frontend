@@ -1,6 +1,8 @@
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
+import { commify, formatUnits } from "@ethersproject/units"
 
 import { AddressZero } from "@ethersproject/constants"
+import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "@ethersproject/contracts"
 import { getAddress } from "@ethersproject/address"
 
@@ -46,4 +48,23 @@ export function getContract(
     ABI,
     getProviderOrSigner(library, account) as any, // eslint-disable-line @typescript-eslint/no-explicit-any
   )
+}
+
+export function formatBNToString(
+  bn: BigNumber,
+  nativePrecison: number,
+  decimalPlaces?: number,
+): string {
+  const float = parseFloat(formatUnits(bn, nativePrecison))
+  return commify(
+    decimalPlaces != null ? float.toFixed(decimalPlaces) : float.toString(),
+  )
+}
+
+export function formatBNToPercentString(
+  bn: BigNumber,
+  nativePrecison: number,
+  decimalPlaces = 2,
+): string {
+  return `${formatBNToString(bn, nativePrecison - 2, decimalPlaces)}%`
 }
