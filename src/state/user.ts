@@ -56,7 +56,6 @@ const slippageCustomStateCreator = numberInputStateCreator(
   BigNumber.from(10).pow(4).mul(1),
 )
 
-
 const userSlice = createSlice({
   name: "user",
   initialState,
