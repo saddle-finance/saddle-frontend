@@ -1,8 +1,11 @@
 import { BigNumber } from "@ethersproject/bignumber"
 
 export function isHighPriceImpact(priceImpact: BigNumber): boolean {
-  const negOneTenth = BigNumber.from(-10).pow(18 - 1)
-  return priceImpact.lte(negOneTenth)
+  // assumes that priceImpact has 18d precision
+  const negOne = BigNumber.from(10)
+    .pow(18 - 2)
+    .mul(-1)
+  return priceImpact.lte(negOne)
 }
 
 export function calculatePriceImpact(

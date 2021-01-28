@@ -36,23 +36,19 @@ describe("calculatePriceImpact", () => {
 })
 
 describe("isHighPriceImpact", () => {
-  it("returns true for impact >= 10%", () => {
-    const negTenPct = BigNumber.from(10)
+  it("returns true for impact >= 1%", () => {
+    const negOnePct = BigNumber.from(10)
       .pow(18 - 2)
-      .mul(-10)
-    const negElevenPct = BigNumber.from(10)
+      .mul(-1)
+    const negTwoPct = BigNumber.from(10)
       .pow(18 - 2)
-      .mul(-11)
-    expect(isHighPriceImpact(negTenPct)).toBe(true)
-    expect(isHighPriceImpact(negElevenPct)).toBe(true)
+      .mul(-2)
+    expect(isHighPriceImpact(negOnePct)).toBe(true)
+    expect(isHighPriceImpact(negTwoPct)).toBe(true)
   })
 
-  it("returns false for impact < 10%", () => {
-    const negNinePct = BigNumber.from(10)
-      .pow(18 - 2)
-      .mul(-9)
+  it("returns false for impact < 1%", () => {
     const posOnePct = BigNumber.from(10).pow(18 - 2)
-    expect(isHighPriceImpact(negNinePct)).toBe(false)
     expect(isHighPriceImpact(posOnePct)).toBe(false)
     expect(isHighPriceImpact(BigNumber.from(0))).toBe(false)
   })
