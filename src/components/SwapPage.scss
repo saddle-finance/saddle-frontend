@@ -115,11 +115,12 @@ div.swapPage {
       padding: 16px 24px;
 
       display: flex;
-      flex-direction: row;
+      flex-flow: row wrap;
       justify-content: space-between;
-
+      align-items: flex-start;
       .parameter .options {
         margin-top: 10px;
+        
       }
     }
   }

@@ -142,23 +142,18 @@ const SwapPage = (props: Props): ReactElement => {
           <div className="divider"></div>
           <div className={"tableContainer " + classNames({ show: advanced })}>
             <div className="table">
-              <div>
-                <div className="parameter">
-                  <GasField />
-                </div>
-                <div className="parameter">
-                  <InfiniteApprovalField />
-                </div>
+              <div className="parameter">
+                <GasField />
+              </div>
+              <div className="parameter">
+                <SlippageField />
               </div>
 
-              <div>
-                <div className="parameter">
-                  <SlippageField />
-                </div>
-
-                <div className="parameter">
-                  <DeadlineField />
-                </div>
+              <div className="parameter">
+                <DeadlineField />
+              </div>
+              <div className="parameter">
+                <InfiniteApprovalField />
               </div>
             </div>
           </div>
