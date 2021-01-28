@@ -20,6 +20,7 @@ export default function SlippageField(): ReactElement {
   const { slippageCustom, slippageSelected } = useSelector(
     (state: AppState) => state.user,
   )
+  // console.log(state.transactionDeadline)
   return (
     <div className="slippageField">
       <span className="label">{t("maxSlippage")}</span>

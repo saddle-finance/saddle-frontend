@@ -5,7 +5,9 @@ import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
 import { AppState } from "../state/index"
+
 import ConfirmTransaction from "./ConfirmTransaction"
+import DeadlineField from "./DeadlineField"
 import GasField from "./GasField"
 import InfiniteApprovalField from "./InfiniteApprovalField"
 import Modal from "./Modal"
@@ -57,7 +59,7 @@ const SwapPage = (props: Props): ReactElement => {
   const { userSwapAdvancedMode: advanced } = useSelector(
     (state: AppState) => state.user,
   )
-
+  // console.log(transactionDeadline);
   return (
     <div className="swapPage">
       <TopMenu activeTab={"swap"} />
@@ -140,14 +142,23 @@ const SwapPage = (props: Props): ReactElement => {
           <div className="divider"></div>
           <div className={"tableContainer " + classNames({ show: advanced })}>
             <div className="table">
-              <div className="parameter">
-                <GasField />
+              <div>
+                <div className="parameter">
+                  <GasField />
+                </div>
+                <div className="parameter">
+                  <InfiniteApprovalField />
+                </div>
               </div>
-              <div className="parameter">
-                <SlippageField />
-              </div>
-              <div className="parameter">
-                <InfiniteApprovalField />
+
+              <div>
+                <div className="parameter">
+                  <SlippageField />
+                </div>
+
+                <div className="parameter">
+                  <DeadlineField />
+                </div>
               </div>
             </div>
           </div>

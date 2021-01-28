@@ -32,6 +32,7 @@ function SwapBTC(): ReactElement {
     gasPriceSelected,
     gasCustom,
     infiniteApproval,
+    transactionDeadline,
   } = useSelector((state: AppState) => state.user)
   const [exchangeRate, setExchangeRate] = useState(0)
   const tokenBalances = usePoolTokenBalances(BTC_POOL_NAME)
@@ -47,6 +48,7 @@ function SwapBTC(): ReactElement {
       value: BigNumber.from("0"),
     },
   })
+  // console.debug("WUBADUBALUBLUB", transactionDeadline)
 
   useEffect(() => {
     // calculate exchange rate between selected tokens
@@ -212,6 +214,7 @@ function SwapBTC(): ReactElement {
       infiniteApproval,
       gasPriceSelected,
       gasCustom,
+      transactionDeadline,
     })
     // Clear input after deposit
     setFormState((prevState) => ({

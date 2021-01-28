@@ -17,6 +17,7 @@
   "connectWallet": "Connect Wallet",
   "currencyReserves": "Currency reserves",
   "dailyVolume": "Daily volume",
+  "deadline": "Transaction Deadline (minutes)",
   "deposit": "Deposit",
   "depositLimitExceeded": "Deposit limit exceeded",
   "dontHaveWallet": "Don't have a wallet?",
