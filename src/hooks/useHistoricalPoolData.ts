@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
-import { Erc20 } from "../../build/typechain/Erc20"
+import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { EventFilter } from "@ethersproject/contracts"
 import { Web3Provider } from "@ethersproject/providers"
 import { useActiveWeb3React } from "."
