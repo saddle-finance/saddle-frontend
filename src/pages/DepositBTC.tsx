@@ -124,7 +124,7 @@ function DepositBTC(): ReactElement | null {
     symbol,
     name,
     icon,
-    max: formatBNToString(tokenBalances[symbol], decimals, 6),
+    max: formatBNToString(tokenBalances[symbol], decimals),
     inputValue: tokenFormState[symbol].valueRaw,
   }))
 
