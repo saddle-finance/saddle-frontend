@@ -1,10 +1,14 @@
 import "./ReviewDeposit.scss"
 
-import React, { ReactElement } from "react"
+import React, { ReactElement, useState } from "react"
 
 import { AppState } from "../state/index"
+import { BigNumber } from "@ethersproject/bignumber"
+import Button from "./Button"
+import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
+import { isHighPriceImpact } from "../utils/priceImpact"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
@@ -17,6 +21,7 @@ interface Props {
     rates: Array<{ [key: string]: any }>
     shareOfPool: string
     lpToken: string
+    priceImpact: BigNumber
   }
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -32,6 +37,11 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
+  const [
+    hasConfirmedHighPriceImpact,
+    setHasConfirmedHighPriceImpact,
+  ] = useState(false)
+  const isHighPriceImpactTxn = isHighPriceImpact(data.priceImpact)
 
   return (
     <div className="reviewDeposit">
@@ -53,7 +63,7 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
         <div className="divider" style={{ height: "1px", width: "100%" }}></div>
         <div className="depositInfoItem">
           <span className="label">{t("shareOfPool")}</span>
-          <span className="value">{data.shareOfPool}%</span>
+          <span className="value">{data.shareOfPool}</span>
         </div>
         <div className="depositInfoItem">
           <span className="label">{t("gas")}</span>
@@ -83,16 +93,31 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
           </div>
         </div>
       </div>
+      {isHighPriceImpactTxn && (
+        <HighPriceImpactConfirmation
+          checked={hasConfirmedHighPriceImpact}
+          onCheck={(): void =>
+            setHasConfirmedHighPriceImpact((prevState) => !prevState)
+          }
+        />
+      )}
       <div className="bottom">
         <span>{`${t("youWillReceive")} ${data.lpToken} ${t("lpTokens")}`}</span>
         <div className="divider" style={{ height: "1px", width: "100%" }}></div>
         <p>{t("estimatedOutput")}</p>
-        <button onClick={onConfirm} className="confirm">
-          {t("confirmDeposit")}
-        </button>
-        <button onClick={onClose} className="cancel">
-          {t("cancel")}
-        </button>
+        <div className="buttonWrapper">
+          <Button
+            onClick={onConfirm}
+            kind="primary"
+            size="large"
+            disabled={isHighPriceImpactTxn && !hasConfirmedHighPriceImpact}
+          >
+            {t("confirmDeposit")}
+          </Button>
+          <Button onClick={onClose} kind="secondary" size="large">
+            {t("cancel")}
+          </Button>
+        </div>
       </div>
     </div>
   )

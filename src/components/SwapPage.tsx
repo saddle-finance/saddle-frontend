@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
 import { AppState } from "../state/index"
-
+import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
 import DeadlineField from "./DeadlineField"
 import GasField from "./GasField"
@@ -17,6 +17,8 @@ import SlippageField from "./SlippageField"
 import SwapForm from "./SwapForm"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
+import { formatBNToPercentString } from "../utils"
+import { isHighPriceImpact } from "../utils/priceImpact"
 import { logEvent } from "../utils/googleAnalytics"
 import { updateSwapAdvancedMode } from "../state/user"
 import { useActiveWeb3React } from "../hooks"
@@ -24,7 +26,7 @@ import { useTranslation } from "react-i18next"
 
 interface Props {
   tokens: Array<{ symbol: string; name: string; value: string; icon: string }>
-  exchangeRateInfo: { pair: string; value: number }
+  exchangeRateInfo: { pair: string; priceImpact: BigNumber }
   error: string | null
   info: { isInfo: boolean; message: string }
   fromState: { symbol: string; value: string }
@@ -59,6 +61,11 @@ const SwapPage = (props: Props): ReactElement => {
   const { userSwapAdvancedMode: advanced } = useSelector(
     (state: AppState) => state.user,
   )
+  const formattedPriceImpact = formatBNToPercentString(
+    exchangeRateInfo.priceImpact,
+    18,
+  )
+
   return (
     <div className="swapPage">
       <TopMenu activeTab={"swap"} />
@@ -79,9 +86,11 @@ const SwapPage = (props: Props): ReactElement => {
           selected={toState.symbol}
           inputValue={toState.value}
         />
-        {account && exchangeRateInfo.value <= 0.9 ? (
+        {account && isHighPriceImpact(exchangeRateInfo.priceImpact) ? (
           <div className="exchangeWarning">
-            {t("lowExchangeRate", { rate: exchangeRateInfo.value.toFixed(4) })}
+            {t("highPriceImpact", {
+              rate: formattedPriceImpact,
+            })}
           </div>
         ) : null}
         <div className="infoSection">
@@ -109,7 +118,7 @@ const SwapPage = (props: Props): ReactElement => {
                 />
               </svg>
             </button>
-            <span className="value">{exchangeRateInfo.value.toFixed(4)}</span>
+            <span className="value">{formattedPriceImpact}</span>
           </div>
           <div className="cost">{info.isInfo ? info.message : "..."}</div>
           <div

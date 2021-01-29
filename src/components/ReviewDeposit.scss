@@ -90,47 +90,9 @@ div.reviewDeposit {
       font-size: 14px;
     }
 
-    & > button {
-      width: 176px;
-      height: 44px;
-      border-radius: 4px;
-
-      &:hover,
-      &:active {
-        outline: none;
-      }
-    }
-
-    button.confirm {
-      border: none;
-      background: $primary;
-      color: $text-black;
-      font-weight: $bold;
-      font-size: 16px;
-      letter-spacing: 0.02em;
-      margin-right: 18px;
-
-      &:hover,
-      &:focus {
-        outline: none;
-        background-color: $primary-blue;
-        color: $text-white;
-        box-shadow: var(--shadow-hover);
-      }
-    }
-
-    button.cancel {
-      background: $white;
-      border: none;
-      color: $text-black;
-      font-weight: $bold;
-      font-size: 16px;
-      letter-spacing: 0.02em;
-
-      &:hover,
-      &:focus {
-        color: $primary-blue;
-      }
+    .buttonWrapper {
+      display: flex;
+      justify-content: space-between;
     }
   }
 

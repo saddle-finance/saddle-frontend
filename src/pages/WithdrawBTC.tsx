@@ -5,6 +5,7 @@ import { commify, formatUnits, parseUnits } from "@ethersproject/units"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
+import { calculatePriceImpact } from "../utils/priceImpact"
 import { formatSlippageToString } from "../utils/slippage"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndWithdraw } from "../hooks/useApproveAndWithdraw"
@@ -57,12 +58,11 @@ function WithdrawBTC(): ReactElement {
         withdrawLPTokenAmount = tokenInputSum
       }
       setEstWithdrawBonus(
-        tokenInputSum.gt(0)
-          ? tokenInputSum
-              .mul(BigNumber.from(10).pow(36))
-              .div(poolData.virtualPrice.mul(withdrawLPTokenAmount))
-              .sub(BigNumber.from(10).pow(18))
-          : BigNumber.from(0),
+        calculatePriceImpact(
+          withdrawLPTokenAmount,
+          tokenInputSum,
+          poolData.virtualPrice,
+        ),
       )
     }
     calculateWithdrawBonus()
@@ -97,7 +97,7 @@ function WithdrawBTC(): ReactElement {
     withdraw: [],
     rates: [],
     slippage: formatSlippageToString(slippageSelected, slippageCustom),
-    bonus: estWithdrawBonus,
+    priceImpact: estWithdrawBonus,
   }
   BTC_POOL_TOKENS.forEach(({ name, decimals, icon, symbol }) => {
     if (BigNumber.from(withdrawFormState.tokenInputs[symbol].valueSafe).gt(0)) {

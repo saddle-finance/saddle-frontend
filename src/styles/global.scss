@@ -6,6 +6,10 @@
 @import "fonts";
 @import "theme";
 
+* {
+  box-sizing: border-box;
+}
+
 p,
 span {
   font-family: $font-family;

@@ -1,0 +1,34 @@
+@import "../styles/theme";
+
+.checkboxInput {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+
+  .checkboxControl {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 0.25em;
+    border: 0.1em solid var(--outline);
+    background-color: $white;
+  }
+
+  .checkboxControl svg {
+    margin: 0;
+    stroke: var(--text-selected);
+    transition: transform 0.1s ease-in 25ms;
+    transform: scale(0);
+    transform-origin: bottom left;
+  }
+
+  & > input {
+    width: 24px;
+    height: 24px;
+
+    display: none;
+    &:checked + .checkboxControl svg {
+      transform: scale(1);
+    }
+  }
+}

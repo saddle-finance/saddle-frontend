@@ -7,11 +7,13 @@ import {
   WBTC,
 } from "../constants"
 import React, { ReactElement, useEffect, useState } from "react"
-import { commify, formatUnits } from "@ethersproject/units"
+import { formatBNToPercentString, formatBNToString } from "../utils"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
+import { calculatePriceImpact } from "../utils/priceImpact"
+import { commify } from "@ethersproject/units"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
@@ -48,6 +50,7 @@ function DepositBTC(): ReactElement | null {
   )
   const [estDepositBonus, setEstDepositBonus] = useState(BigNumber.from(0))
   const [willExceedMaxDeposits, setWillExceedMaxDeposit] = useState(true)
+
   useEffect(() => {
     // evaluate if a new deposit will exceed the pool's per-user limit
     async function calculateMaxDeposits(): Promise<void> {
@@ -93,12 +96,11 @@ function DepositBTC(): ReactElement | null {
       }
 
       setEstDepositBonus(
-        tokenInputSum.gt(0)
-          ? poolData.virtualPrice
-              .mul(depositLPTokenAmount)
-              .div(tokenInputSum)
-              .sub(BigNumber.from(10).pow(18))
-          : BigNumber.from(0),
+        calculatePriceImpact(
+          tokenInputSum,
+          depositLPTokenAmount,
+          poolData.virtualPrice,
+        ),
       )
     }
     calculateMaxDeposits()
@@ -122,9 +124,7 @@ function DepositBTC(): ReactElement | null {
     symbol,
     name,
     icon,
-    max: parseFloat(formatUnits(tokenBalances[symbol], decimals)).toFixed(
-      tokenPricesUSD ? tokenPricesUSD[symbol].toFixed(2).length - 2 : 6, // show enough token decimals to represent 0.01 USD
-    ),
+    max: formatBNToString(tokenBalances[symbol], decimals, 6),
     inputValue: tokenFormState[symbol].valueRaw,
   }))
 
@@ -160,26 +160,24 @@ function DepositBTC(): ReactElement | null {
   function updateTokenFormValue(symbol: string, value: string): void {
     updateTokenFormState({ [symbol]: value })
   }
-
   const depositData = {
-    shareOfPool: parseFloat(
-      formatUnits(
-        poolData?.totalLocked.gt(0)
-          ? estDepositLPTokenAmount
-              .mul(BigNumber.from(10).pow(18))
-              .div(poolData?.totalLocked)
-          : BigNumber.from(0),
-        18,
-      ),
-    ).toFixed(2),
-    lpToken: commify(
-      parseFloat(formatUnits(estDepositLPTokenAmount, 18)).toFixed(5),
+    shareOfPool: formatBNToPercentString(
+      poolData?.totalLocked.gt(0)
+        ? estDepositLPTokenAmount
+            .mul(BigNumber.from(10).pow(18))
+            .div(estDepositLPTokenAmount.add(poolData?.totalLocked))
+        : BigNumber.from(10).pow(18),
+      18,
     ),
+    lpToken: formatBNToString(estDepositLPTokenAmount, 18),
     deposit: BTC_POOL_TOKENS.filter(({ symbol }) =>
       BigNumber.from(tokenFormState[symbol].valueSafe).gt(0),
     ).map(({ symbol, name, icon, decimals }) => ({
       name: name,
-      value: commify(formatUnits(tokenFormState[symbol].valueSafe, decimals)),
+      value: formatBNToString(
+        BigNumber.from(tokenFormState[symbol].valueSafe),
+        decimals,
+      ),
       icon: icon,
     })),
     rates:
@@ -188,12 +186,14 @@ function DepositBTC(): ReactElement | null {
             BigNumber.from(tokenFormState[symbol].valueSafe).gt(0),
           ).map(({ symbol, name, decimals }) => ({
             name: name,
-            value: commify(
-              formatUnits(tokenFormState[symbol].valueSafe, decimals),
+            value: formatBNToString(
+              BigNumber.from(tokenFormState[symbol].valueSafe),
+              decimals,
             ),
             rate: commify(tokenPricesUSD[symbol]?.toFixed(2)),
           }))
         : [],
+    priceImpact: estDepositBonus,
   }
 
   return (

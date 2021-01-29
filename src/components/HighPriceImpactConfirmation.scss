@@ -1,0 +1,22 @@
+@import "../styles/theme.scss";
+
+.highPriceImpactConfirmation {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 16px;
+  background-color: $text-red;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  > .confirmationBox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-top: 8px;
+    > span {
+      font-weight: bold;
+      padding-right: 8px;
+    }
+  }
+}

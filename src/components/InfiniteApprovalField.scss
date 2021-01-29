@@ -10,48 +10,13 @@
   display: flex;
   align-items: center;
 
-  .checkbox_control {
-    display: inline-grid;
-    width: 20px;
-    height: 20px;
-    border-radius: 0.25em;
-    border: 0.1em solid var(--outline);
-  }
-  .checkbox_control svg {
-    margin: 0;
-    stroke: var(--text-selected);
-    transition: transform 0.1s ease-in 25ms;
-    transform: scale(0);
-    transform-origin: bottom left;
-  }
-  .checkbox_input {
-    display: grid;
-    grid-template-areas: "checkbox";
-    margin-right: 16px;
-
-    > * {
-      grid-area: checkbox;
-      cursor: pointer;
-    }
-
-    & > input {
-      width: 24px;
-      height: 24px;
-
-      opacity: 0;
-      &:checked + .checkbox_control svg {
-        transform: scale(1);
-      }
-    }
-  }
-
   .label {
     position: relative;
     border-bottom: 1px dotted var(--text);
     font-weight: $bold;
     font-size: 16px;
     letter-spacing: -0.04em;
-    margin-right: 16px;
+    margin-left: 16px;
 
     &:hover {
       cursor: help;

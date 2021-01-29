@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch } from "../state"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
+import Button from "./Button"
 import ConfirmTransaction from "./ConfirmTransaction"
 import GasField from "./GasField"
 import { HistoricalPoolDataType } from "../hooks/useHistoricalPoolData"
@@ -23,7 +24,7 @@ import SlippageField from "./SlippageField"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
-import { formatUnits } from "@ethersproject/units"
+import { formatBNToPercentString } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
 import { updatePoolAdvancedMode } from "../state/user"
 import { useTranslation } from "react-i18next"
@@ -55,6 +56,7 @@ interface Props {
     rates: Array<{ [key: string]: any }>
     shareOfPool: string
     lpToken: string
+    priceImpact: BigNumber
   }
   hasValidMerkleState: boolean
 }
@@ -140,10 +142,7 @@ const DepositPage = (props: Props): ReactElement => {
                       <span>{`KEEP APR:`}</span>
                     </a>{" "}
                     <span className="value">
-                      {parseFloat(
-                        formatUnits(poolData.keepApr, 18 - 2),
-                      ).toFixed(2)}
-                      %
+                      {formatBNToPercentString(poolData.keepApr, 18)}
                     </span>
                   </div>
                 )}
@@ -151,7 +150,7 @@ const DepositPage = (props: Props): ReactElement => {
                   {transactionInfoData.bonus.gte(0) ? (
                     <span className="bonus">{`${t("bonus")}: `}</span>
                   ) : (
-                    <span className="slippage">{t("maxSlippage")}</span>
+                    <span className="slippage">{t("priceImpact")}</span>
                   )}
                   <span
                     className={
@@ -160,10 +159,7 @@ const DepositPage = (props: Props): ReactElement => {
                     }
                   >
                     {" "}
-                    {parseFloat(
-                      formatUnits(transactionInfoData.bonus, 18 - 2),
-                    ).toFixed(4)}
-                    %
+                    {formatBNToPercentString(transactionInfoData.bonus, 18, 4)}
                   </span>
                 </div>
               </div>
@@ -206,20 +202,21 @@ const DepositPage = (props: Props): ReactElement => {
               </div>
             </div>
           </div>
-          <button
-            className="actionBtn"
-            onClick={(): void => {
-              setCurrentModal("review")
-            }}
-            disabled={
-              !hasValidMerkleState ||
-              willExceedMaxDeposits ||
-              !isAcceptingDeposits ||
-              !validDepositAmount
-            }
-          >
-            {t("deposit")}
-          </button>
+          <div className="buttonWrapper">
+            <Button
+              onClick={(): void => {
+                setCurrentModal("review")
+              }}
+              disabled={
+                !hasValidMerkleState ||
+                willExceedMaxDeposits ||
+                !isAcceptingDeposits ||
+                !validDepositAmount
+              }
+            >
+              {t("deposit")}
+            </Button>
+          </div>
         </div>
         <div className="infoPanels">
           <MyShareCard data={myShareData} />

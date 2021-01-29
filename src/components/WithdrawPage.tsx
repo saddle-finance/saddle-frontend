@@ -24,7 +24,7 @@ import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import classNames from "classnames"
-import { formatUnits } from "@ethersproject/units"
+import { formatBNToPercentString } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
 import { updatePoolAdvancedMode } from "../state/user"
 import { useTranslation } from "react-i18next"
@@ -41,7 +41,7 @@ export interface ReviewWithdrawData {
     rate: string
   }[]
   slippage: string
-  bonus: BigNumber
+  priceImpact: BigNumber
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -170,22 +170,19 @@ const WithdrawPage = (props: Props): ReactElement => {
               <div className={classNames("transactionInfoContainer", "show")}>
                 <div className="transactionInfo">
                   <div className="transactionInfoItem">
-                    {reviewData.bonus.gte(0) ? (
+                    {reviewData.priceImpact.gte(0) ? (
                       <span className="bonus">{t("bonus")}: </span>
                     ) : (
-                      <span className="slippage">{t("maxSlippage")}</span>
+                      <span className="slippage">{t("priceImpact")}</span>
                     )}
                     <span
                       className={
                         "value " +
-                        (reviewData.bonus.gte(0) ? "bonus" : "slippage")
+                        (reviewData.priceImpact.gte(0) ? "bonus" : "slippage")
                       }
                     >
                       {" "}
-                      {parseFloat(
-                        formatUnits(reviewData.bonus, 18 - 2),
-                      ).toFixed(4)}
-                      %
+                      {formatBNToPercentString(reviewData.priceImpact, 18, 4)}
                     </span>
                   </div>
                 </div>
