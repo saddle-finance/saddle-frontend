@@ -15,7 +15,6 @@ export default function InfiniteApprovalField(): ReactElement {
   const { infiniteApproval } = useSelector((state: AppState) => state.user)
   return (
     <div className="infiniteApproval">
-      
       <label className="checkbox_input">
         <input
           type="checkbox"

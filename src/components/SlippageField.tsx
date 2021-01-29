@@ -22,9 +22,8 @@ export default function SlippageField(): ReactElement {
   )
   return (
     <div className="slippageField">
-      
       <div className="options">
-      <div className="label">{t("maxSlippage")}: </div>
+        <div className="label">{t("maxSlippage")}: </div>
         <button
           className={classNames({
             selected: slippageSelected === Slippages.OneTenth,
@@ -33,7 +32,7 @@ export default function SlippageField(): ReactElement {
             dispatch(updateSlippageSelected(Slippages.OneTenth))
           }
         >
-          0.1%
+          <span>0.1%</span>
         </button>
         <button
           className={classNames({
@@ -43,7 +42,7 @@ export default function SlippageField(): ReactElement {
             dispatch(updateSlippageSelected(Slippages.One))
           }
         >
-          1%
+          <span>1%</span>
         </button>
         <input
           value={slippageCustom?.valueRaw}

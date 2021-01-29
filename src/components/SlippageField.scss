@@ -20,14 +20,22 @@ div.slippageField {
     font-size: 16px;
     letter-spacing: -0.04em;
     margin: auto 16px auto 0;
-    }
+  }
   .options {
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
   }
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
   .options > button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border: none;
     background: none;
     font-size: 16px;

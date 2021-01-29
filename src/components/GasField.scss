@@ -28,6 +28,9 @@ div.gasField {
   }
 
   .options > button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border: none;
     background: none;
     font-size: 12px;
