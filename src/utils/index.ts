@@ -1,9 +1,9 @@
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
-import { commify, formatUnits } from "@ethersproject/units"
 
 import { AddressZero } from "@ethersproject/constants"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "@ethersproject/contracts"
+import { formatUnits } from "@ethersproject/units"
 import { getAddress } from "@ethersproject/address"
 
 // returns the checksummed address if the address is valid, otherwise returns false
@@ -56,9 +56,7 @@ export function formatBNToString(
   decimalPlaces?: number,
 ): string {
   const float = parseFloat(formatUnits(bn, nativePrecison))
-  return commify(
-    decimalPlaces != null ? float.toFixed(decimalPlaces) : float.toString(),
-  )
+  return decimalPlaces != null ? float.toFixed(decimalPlaces) : float.toString()
 }
 
 export function formatBNToPercentString(

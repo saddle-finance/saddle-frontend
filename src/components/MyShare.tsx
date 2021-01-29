@@ -6,6 +6,7 @@ import { formatBNToPercentString, formatBNToString } from "../utils"
 import { Link } from "react-router-dom"
 import { TOKENS_MAP } from "../constants"
 import { UserShareType } from "../hooks/usePoolData"
+import { commify } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -19,14 +20,14 @@ function MyShare({ to, data }: Props): ReactElement | null {
   if (!data) return null
   const formattedData = {
     share: formatBNToPercentString(data.share, 18),
-    usdBalance: formatBNToString(data.usdBalance, 18, 2),
-    value: formatBNToString(data.value, 18, 6),
+    usdBalance: commify(formatBNToString(data.usdBalance, 18, 2)),
+    value: commify(formatBNToString(data.value, 18, 6)),
     tokens: data.tokens.map((coin) => {
       const token = TOKENS_MAP[coin.symbol]
       return {
         symbol: token.symbol,
         name: token.name,
-        value: formatBNToString(coin.value, token.decimals, 6),
+        value: commify(formatBNToString(coin.value, token.decimals, 6)),
       }
     }),
   }

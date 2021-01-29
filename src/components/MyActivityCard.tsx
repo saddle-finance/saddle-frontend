@@ -3,6 +3,7 @@ import "./MyActivityCard.scss"
 import React, { ReactElement } from "react"
 
 import { HistoricalPoolDataType } from "../hooks/useHistoricalPoolData"
+import { commify } from "@ethersproject/units"
 import { formatBNToString } from "../utils"
 import { useTranslation } from "react-i18next"
 
@@ -17,35 +18,23 @@ function MyActivityCard({ historicalPoolData }: Props): ReactElement | null {
 
   const historicalFormattedData = historicalPoolData
     ? {
-        totalDepositsBTC: formatBNToString(
-          historicalPoolData.totalDepositsBTC,
-          36,
-          6,
+        totalDepositsBTC: commify(
+          formatBNToString(historicalPoolData.totalDepositsBTC, 36, 6),
         ),
-        totalWithdrawalsBTC: formatBNToString(
-          historicalPoolData.totalWithdrawalsBTC,
-          36,
-          6,
+        totalWithdrawalsBTC: commify(
+          formatBNToString(historicalPoolData.totalWithdrawalsBTC, 36, 6),
         ),
-        totalProfitBTC: formatBNToString(
-          historicalPoolData.totalProfitBTC,
-          36,
-          6,
+        totalProfitBTC: commify(
+          formatBNToString(historicalPoolData.totalProfitBTC, 36, 6),
         ),
-        totalDepositsUSD: formatBNToString(
-          historicalPoolData.totalDepositsUSD,
-          36,
-          2,
+        totalDepositsUSD: commify(
+          formatBNToString(historicalPoolData.totalDepositsUSD, 36, 2),
         ),
-        totalWithdrawalsUSD: formatBNToString(
-          historicalPoolData.totalWithdrawalsUSD,
-          36,
-          2,
+        totalWithdrawalsUSD: commify(
+          formatBNToString(historicalPoolData.totalWithdrawalsUSD, 36, 2),
         ),
-        totalProfitUSD: formatBNToString(
-          historicalPoolData.totalProfitUSD,
-          36,
-          2,
+        totalProfitUSD: commify(
+          formatBNToString(historicalPoolData.totalProfitUSD, 36, 2),
         ),
       }
     : null

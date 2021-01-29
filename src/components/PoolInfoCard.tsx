@@ -5,6 +5,7 @@ import React, { ReactElement } from "react"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 
 import { PoolDataType } from "../hooks/usePoolData"
+import { commify } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -23,9 +24,11 @@ function PoolInfoCard({ data }: Props): ReactElement {
     name: data?.name,
     swapFee,
     virtualPrice: data?.virtualPrice
-      ? formatBNToString(data.virtualPrice, 18, 5)
+      ? commify(formatBNToString(data.virtualPrice, 18, 5))
       : null,
-    reserve: data?.reserve ? formatBNToString(data.reserve, 18, 2) : null,
+    reserve: data?.reserve
+      ? commify(formatBNToString(data.reserve, 18, 2))
+      : null,
     adminFee: swapFee && adminFee ? `${adminFee} of ${swapFee}` : null,
     volume: data?.volume,
     tokens:
@@ -36,7 +39,7 @@ function PoolInfoCard({ data }: Props): ReactElement {
           name: token.name,
           icon: token.icon,
           percent: coin.percent,
-          value: formatBNToString(coin.value, 18, 6),
+          value: commify(formatBNToString(coin.value, 18, 6)),
         }
       }) || [],
   }

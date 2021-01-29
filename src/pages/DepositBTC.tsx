@@ -169,7 +169,7 @@ function DepositBTC(): ReactElement | null {
         : BigNumber.from(10).pow(18),
       18,
     ),
-    lpToken: formatBNToString(estDepositLPTokenAmount, 18, 5),
+    lpToken: formatBNToString(estDepositLPTokenAmount, 18),
     deposit: BTC_POOL_TOKENS.filter(({ symbol }) =>
       BigNumber.from(tokenFormState[symbol].valueSafe).gt(0),
     ).map(({ symbol, name, icon, decimals }) => ({
