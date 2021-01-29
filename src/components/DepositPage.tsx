@@ -91,7 +91,6 @@ const DepositPage = (props: Props): ReactElement => {
     errorMessage = t("depositLimitExceeded")
   }
   const validDepositAmount = +depositDataFromParent.lpToken > 0
-  console.log("+depositDataFromParent.lpToken", +depositDataFromParent.lpToken)
 
   return (
     <div className="deposit">
@@ -203,11 +202,6 @@ const DepositPage = (props: Props): ReactElement => {
               </div>
             </div>
           </div>
-          {console.log(`hasValidMerkleState: ${hasValidMerkleState}`)}
-          {console.log(`willExceedMaxDeposits: ${willExceedMaxDeposits}`)}
-          {console.log(`isAcceptingDeposits: ${isAcceptingDeposits}`)}
-          {console.log(`validDepositAmount: ${validDepositAmount}`)}
-          {console.log(" ")}
           <div className="buttonWrapper">
             <Button
               onClick={(): void => {
