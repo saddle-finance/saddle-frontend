@@ -28,7 +28,7 @@ function PoolInfoCard({ data }: Props): ReactElement {
       : null,
     reserve: data?.reserve
       ? commify(formatBNToString(data.reserve, 18, 2))
-      : null,
+      : "0",
     adminFee: swapFee && adminFee ? `${adminFee} of ${swapFee}` : null,
     volume: data?.volume,
     tokens:

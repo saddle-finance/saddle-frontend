@@ -4,6 +4,7 @@ import { useAllContracts, useSwapContract } from "./useContract"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
+import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { NumberInputState } from "../utils/numberInputState"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { getFormattedTimeString } from "../utils/dateTime"
@@ -57,7 +58,7 @@ export function useApproveAndDeposit(
         state.tokenFormState[token.symbol].valueSafe,
       )
       if (spendingValue.isZero()) return
-      const tokenContract = tokenContracts?.[token.symbol]
+      const tokenContract = tokenContracts?.[token.symbol] as Erc20
       if (tokenContract == null) return
       await checkAndApproveTokenForTrade(
         tokenContract,

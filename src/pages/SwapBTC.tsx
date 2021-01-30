@@ -65,11 +65,11 @@ function SwapBTC(): ReactElement {
   }))
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const calculateSwapAmount = useCallback(
-    debounce(async (formStateArg) => {
+    debounce(async (formStateArg: FormState) => {
       if (swapContract == null || tokenBalances === null || poolData == null)
         return
       const cleanedFormFromValue = formStateArg.from.value.replace(/[$,]/g, "") // remove common copy/pasted financial characters
-      if (isNaN(cleanedFormFromValue) || cleanedFormFromValue === "") {
+      if (cleanedFormFromValue === "") {
         setFormState((prevState) => ({
           ...prevState,
           to: {
@@ -133,7 +133,7 @@ function SwapBTC(): ReactElement {
         },
         priceImpact: BigNumber.from("0"),
       }
-      calculateSwapAmount(nextState)
+      void calculateSwapAmount(nextState)
       return nextState
     })
   }
@@ -151,7 +151,7 @@ function SwapBTC(): ReactElement {
         },
         priceImpact: BigNumber.from("0"),
       }
-      calculateSwapAmount(nextState)
+      void calculateSwapAmount(nextState)
       return nextState
     })
   }
@@ -171,7 +171,7 @@ function SwapBTC(): ReactElement {
         },
         priceImpact: BigNumber.from("0"),
       }
-      calculateSwapAmount(nextState)
+      void calculateSwapAmount(nextState)
       return nextState
     })
   }
@@ -190,7 +190,7 @@ function SwapBTC(): ReactElement {
         },
         priceImpact: BigNumber.from("0"),
       }
-      calculateSwapAmount(nextState)
+      void calculateSwapAmount(nextState)
       return nextState
     })
   }

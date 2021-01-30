@@ -84,7 +84,7 @@ export function useSwapContract(poolName: PoolName): Swap | null {
 export function useLPTokenContract(poolName: PoolName): LpToken | null {
   const swapContract = useSwapContract(poolName)
   const [lpTokenAddress, setLPTokenAddress] = useState("")
-  swapContract
+  void swapContract
     ?.swapStorage()
     .then(({ lpToken }: { lpToken: string }) => setLPTokenAddress(lpToken))
   return useContract(lpTokenAddress, LPTOKEN_ABI) as LpToken

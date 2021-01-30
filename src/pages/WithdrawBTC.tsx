@@ -70,7 +70,7 @@ function WithdrawBTC(): ReactElement {
         ),
       )
     }
-    calculateWithdrawBonus()
+    void calculateWithdrawBonus()
   }, [poolData, withdrawFormState, swapContract, userShareData, account])
   async function onConfirmTransaction(): Promise<void> {
     const {

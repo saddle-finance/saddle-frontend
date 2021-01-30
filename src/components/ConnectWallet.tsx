@@ -46,7 +46,7 @@ function ConnectWallet({ onClose }: Props): ReactElement {
             onClick={(): void => {
               activate(wallet.connector, undefined, true).catch((error) => {
                 if (error instanceof UnsupportedChainIdError) {
-                  activate(wallet.connector) // a little janky...can't use setError because the connector isn't set
+                  void activate(wallet.connector) // a little janky...can't use setError because the connector isn't set
                 } else {
                   // TODO: handle error
                 }

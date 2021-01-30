@@ -12,19 +12,22 @@ import { isHighPriceImpact } from "../utils/priceImpact"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   onClose: () => void
   onConfirm: () => void
   data: {
-    deposit: Array<{ [key: string]: any }>
-    rates: Array<{ [key: string]: any }>
+    deposit: Array<{ [key: string]: string }>
+    rates: Array<{
+      [key: string]: {
+        name: string
+        rate: string
+      }
+    }>
     shareOfPool: string
     lpToken: string
     priceImpact: BigNumber
   }
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
   const { t } = useTranslation()

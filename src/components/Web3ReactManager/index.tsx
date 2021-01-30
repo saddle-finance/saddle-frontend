@@ -23,7 +23,7 @@ export default function Web3ReactManager({
   // after eagerly trying injected, if the network connect ever isn't active or in an error state, activate it
   useEffect(() => {
     if (triedEager && !networkActive && !networkError && !active) {
-      activateNetwork(network)
+      void activateNetwork(network)
     }
   }, [triedEager, networkActive, networkError, activateNetwork, active])
 

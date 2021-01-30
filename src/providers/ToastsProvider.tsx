@@ -18,7 +18,10 @@ export const ToastsContext = React.createContext<{
     throw new Error("To remove toasts, wrap the app in a ToastsProvider.")
   },
 })
-export type AddToast = (content: ToastContent, options?: {}) => () => void
+export type AddToast = (
+  content: ToastContent,
+  options?: Record<string, unknown>,
+) => () => void
 export type ClearToasts = () => void
 export interface ToastObject {
   id: string
@@ -32,35 +35,38 @@ interface ToastContent {
 }
 export default function ToastsProvider({
   children,
-}: React.PropsWithChildren<{}>): ReactElement {
+}: React.PropsWithChildren<unknown>): ReactElement {
   const [toasts, setToasts] = useState<ToastObject[]>([])
-  const addToast = useCallback((content, options = {}): (() => void) => {
-    const { autoDismiss = true } = options
-    const toastId = nanoid()
-    const removeToast = (): void => {
-      // O(n) is the best we can do here and is fine given the use case
-      setToasts((prevToasts) => prevToasts.filter(({ id }) => id !== toastId))
-    }
-    let timeoutHandle: ReturnType<typeof setTimeout>
-    if (autoDismiss) {
-      timeoutHandle = setTimeout(removeToast, autoDismissAfterMs)
-    }
+  const addToast = useCallback(
+    (content: ToastContent, options = {}): (() => void) => {
+      const { autoDismiss = true } = options as Record<string, boolean>
+      const toastId = nanoid()
+      const removeToast = (): void => {
+        // O(n) is the best we can do here and is fine given the use case
+        setToasts((prevToasts) => prevToasts.filter(({ id }) => id !== toastId))
+      }
+      let timeoutHandle: ReturnType<typeof setTimeout>
+      if (autoDismiss) {
+        timeoutHandle = setTimeout(removeToast, autoDismissAfterMs)
+      }
 
-    // create toast object
-    const toast = {
-      id: toastId,
-      content,
-      autoDismiss,
-      remove: (): void => {
-        removeToast()
-        timeoutHandle && clearTimeout(timeoutHandle)
-      },
-    }
-    // add toast to list
-    setToasts((prevToasts) => [...prevToasts, toast])
-    // return callback to kill toast
-    return removeToast
-  }, [])
+      // create toast object
+      const toast = {
+        id: toastId,
+        content,
+        autoDismiss,
+        remove: (): void => {
+          removeToast()
+          timeoutHandle && clearTimeout(timeoutHandle)
+        },
+      }
+      // add toast to list
+      setToasts((prevToasts) => [...prevToasts, toast])
+      // return callback to kill toast
+      return removeToast
+    },
+    [],
+  )
   const clearToasts = useCallback(() => {
     setToasts([])
   }, [])
