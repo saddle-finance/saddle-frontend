@@ -19,6 +19,7 @@ export const network = new NetworkConnector({
   urls: { [NETWORK_CHAIN_ID]: NETWORK_URL },
 })
 
+// eslint-disable-next-line @typescript-eslint/unbound-method
 const { getProvider } = network
 
 let networkLibrary: Web3Provider | undefined

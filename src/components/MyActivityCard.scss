@@ -1,0 +1,31 @@
+@import "../styles/theme";
+
+$margin-16: 16px;
+
+div.myActivityCard {
+  color: var(--text-darker);
+  font-size: 16px;
+
+  h4 {
+    width: 100%;
+    font-family: $font-family-title;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 24px;
+    font-size: 30px;
+    font-weight: $bold;
+    color: var(--text-title);
+  }
+
+  div.activityTable {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    row-gap: 24px;
+
+    .label {
+      font-weight: $bold;
+      display: block;
+    }
+  }
+}

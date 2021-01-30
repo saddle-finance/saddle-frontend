@@ -1,13 +1,14 @@
 import {
   BTC_POOL_NAME,
+  BTC_SWAP_ADDRESSES,
+  BTC_SWAP_TOKEN,
   DAI,
   PoolName,
   RENBTC,
   SBTC,
+  STABLECOIN_SWAP_ADDRESSES,
   SUSD,
   TBTC,
-  TEST_BTC_SWAP_ADDRESS,
-  TEST_STABLECOIN_SWAP_ADDRESS,
   Token,
   USDC,
   USDT,
@@ -17,8 +18,11 @@ import { useMemo, useState } from "react"
 
 import { Contract } from "@ethersproject/contracts"
 import ERC20_ABI from "../constants/abis/erc20.json"
+import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import LPTOKEN_ABI from "../constants/abis/lpToken.json"
+import { LpToken } from "../../types/ethers-contracts/LpToken"
 import SWAP_ABI from "../constants/abis/swap.json"
+import { Swap } from "../../types/ethers-contracts/Swap"
 import { getContract } from "../utils"
 import { useActiveWeb3React } from "./index"
 
@@ -55,48 +59,50 @@ export function useTokenContract(
   return useContract(tokenAddress, ERC20_ABI, withSignerIfPossible)
 }
 
-export function useSwapContract(poolName: PoolName): Contract | null {
+export function useSwapContract(poolName: PoolName): Swap | null {
   const withSignerIfPossible = true
+  const { chainId } = useActiveWeb3React()
   const stablecoinSwapContract = useContract(
-    TEST_STABLECOIN_SWAP_ADDRESS,
+    chainId ? STABLECOIN_SWAP_ADDRESSES[chainId] : undefined,
     SWAP_ABI,
     withSignerIfPossible,
   )
   const btcSwapContract = useContract(
-    TEST_BTC_SWAP_ADDRESS,
+    chainId ? BTC_SWAP_ADDRESSES[chainId] : undefined,
     SWAP_ABI,
     withSignerIfPossible,
   )
   return useMemo(() => {
     if (poolName === BTC_POOL_NAME) {
-      return btcSwapContract
+      return btcSwapContract as Swap
     } else {
-      return stablecoinSwapContract
+      return stablecoinSwapContract as Swap
     }
   }, [stablecoinSwapContract, btcSwapContract, poolName])
 }
 
-export function useLPTokenContract(poolName: PoolName): Contract | null {
+export function useLPTokenContract(poolName: PoolName): LpToken | null {
   const swapContract = useSwapContract(poolName)
   const [lpTokenAddress, setLPTokenAddress] = useState("")
-  swapContract
+  void swapContract
     ?.swapStorage()
     .then(({ lpToken }: { lpToken: string }) => setLPTokenAddress(lpToken))
-  return useContract(lpTokenAddress, LPTOKEN_ABI)
+  return useContract(lpTokenAddress, LPTOKEN_ABI) as LpToken
 }
 
 interface AllContractsObject {
-  [x: string]: Contract | null
+  [x: string]: Swap | Erc20 | null
 }
 export function useAllContracts(): AllContractsObject | null {
-  const tbtcContract = useTokenContract(TBTC)
-  const wbtcContract = useTokenContract(WBTC)
-  const renbtcContract = useTokenContract(RENBTC)
-  const sbtcContract = useTokenContract(SBTC)
-  const daiContract = useTokenContract(DAI)
-  const usdcContract = useTokenContract(USDC)
-  const usdtContract = useTokenContract(USDT)
-  const susdContract = useTokenContract(SUSD)
+  const tbtcContract = useTokenContract(TBTC) as Erc20
+  const wbtcContract = useTokenContract(WBTC) as Erc20
+  const renbtcContract = useTokenContract(RENBTC) as Erc20
+  const sbtcContract = useTokenContract(SBTC) as Erc20
+  const daiContract = useTokenContract(DAI) as Erc20
+  const usdcContract = useTokenContract(USDC) as Erc20
+  const usdtContract = useTokenContract(USDT) as Erc20
+  const susdContract = useTokenContract(SUSD) as Erc20
+  const btcSwapTokenContract = useTokenContract(BTC_SWAP_TOKEN) as Swap
 
   return useMemo(() => {
     if (
@@ -109,6 +115,7 @@ export function useAllContracts(): AllContractsObject | null {
         usdcContract,
         usdtContract,
         susdContract,
+        btcSwapTokenContract,
       ].some(Boolean)
     )
       return null
@@ -121,6 +128,7 @@ export function useAllContracts(): AllContractsObject | null {
       [USDC.symbol]: usdcContract,
       [USDT.symbol]: usdtContract,
       [SUSD.symbol]: susdContract,
+      [BTC_SWAP_TOKEN.symbol]: btcSwapTokenContract,
     }
   }, [
     tbtcContract,
@@ -131,5 +139,6 @@ export function useAllContracts(): AllContractsObject | null {
     usdcContract,
     usdtContract,
     susdContract,
+    btcSwapTokenContract,
   ])
 }

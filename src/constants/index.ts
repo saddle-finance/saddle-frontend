@@ -48,10 +48,36 @@ export class Token {
 
 export const BLOCK_TIME = 15000
 
-export const TEST_STABLECOIN_SWAP_ADDRESS =
-  "0x1613beB3B2C4f22Ee086B2b38C1476A3cE7f78E8"
-export const TEST_BTC_SWAP_ADDRESS =
-  "0x851356ae760d987E095750cCeb3bC6014560891C"
+export const STABLECOIN_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0x4f6A43Ad7cba042606dECaCA730d4CE0A57ac62e",
+  [ChainId.HARDHAT]: "0x1613beB3B2C4f22Ee086B2b38C1476A3cE7f78E8",
+}
+
+export const BTC_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0x4f6A43Ad7cba042606dECaCA730d4CE0A57ac62e",
+  [ChainId.HARDHAT]: "0x851356ae760d987E095750cCeb3bC6014560891C",
+}
+
+export const MERKLETREE_DATA: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "mainnetTestAccounts.json",
+  [ChainId.HARDHAT]: "hardhat.json",
+}
+
+export const BTC_SWAP_TOKEN_CONTRACT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "0xC28DF698475dEC994BE00C9C9D8658A548e6304F",
+  [ChainId.HARDHAT]: "0xB955b6c65Ff69bfe07A557aa385055282b8a5eA3",
+}
+
+export const BTC_SWAP_TOKEN = new Token(
+  BTC_SWAP_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "BLPT",
+  "blpt",
+  "Bitcoin Swap Token",
+  "", // TODO add logo
+)
 
 // Stablecoins
 const DAI_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
@@ -185,3 +211,14 @@ export const TRANSACTION_TYPES = {
 }
 
 export const POOL_FEE_PRECISION = 10
+
+export const DEPLOYED_BLOCK: { [chainId in ChainId]: number } = {
+  [ChainId.MAINNET]: 11656944,
+  [ChainId.HARDHAT]: 0,
+}
+
+export const POOL_STATS_URL: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "https://ipfs.saddle.exchange/pool-stats.json",
+  [ChainId.HARDHAT]:
+    "https://mehmeta-team-bucket.storage.fleek.co/pool-stats-dev.json",
+}

@@ -1,29 +1,32 @@
 import "./WithdrawPage.scss"
 
-import {
-  GasPrices,
-  updateGasPriceCustom,
-  updateGasPriceSelected,
-} from "../state/user"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
 import { AppState } from "../state"
-import { BigNumber } from "ethers"
+import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
-import InfiniteApproval from "../components/InfiniteApproval"
+import GasField from "./GasField"
+import { HistoricalPoolDataType } from "../hooks/useHistoricalPoolData"
+import InfiniteApprovalField from "./InfiniteApprovalField"
 import Modal from "./Modal"
+import MyActivityCard from "./MyActivityCard"
 import MyShareCard from "./MyShareCard"
 import NoShareContent from "./NoShareContent"
 import { PayloadAction } from "@reduxjs/toolkit"
 import PoolInfoCard from "./PoolInfoCard"
+import RadioButton from "./RadioButton"
 import ReviewWithdraw from "./ReviewWithdraw"
+import SlippageField from "./SlippageField"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import classNames from "classnames"
+import { formatBNToPercentString } from "../utils"
+import { logEvent } from "../utils/googleAnalytics"
+import { updatePoolAdvancedMode } from "../state/user"
 import { useTranslation } from "react-i18next"
 
 export interface ReviewWithdrawData {
@@ -38,12 +41,9 @@ export interface ReviewWithdrawData {
     rate: string
   }[]
   slippage: string
+  priceImpact: BigNumber
 }
 
-const testWithdrawData = {
-  share: 0.000024,
-  keepToken: 0.325496, // TODO: Calculate or pull from contract to get real value
-}
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   title: string
@@ -56,15 +56,10 @@ interface Props {
   reviewData: ReviewWithdrawData
   selected?: { [key: string]: any }
   poolData: PoolDataType | null
+  historicalPoolData: HistoricalPoolDataType | null
   myShareData: UserShareType | null
-  transactionInfoData: {
-    isInfo: boolean
-    content: { [key: string]: any }
-  }
   formStateData: WithdrawFormState
   onFormChange: (action: any) => void
-  onChangeInfiniteApproval: () => void
-  infiniteApproval: boolean
   onConfirmTransaction: () => Promise<void>
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -74,32 +69,23 @@ const WithdrawPage = (props: Props): ReactElement => {
   const {
     tokensData,
     poolData,
-    transactionInfoData,
+    historicalPoolData,
     myShareData,
     onFormChange,
     formStateData,
     reviewData,
-    infiniteApproval,
-    onChangeInfiniteApproval,
     onConfirmTransaction,
   } = props
-
-  const [modalOpen, setModalOpen] = useState(false)
-  const [popUp, setPopUp] = useState("")
-
   const dispatch = useDispatch<AppDispatch>()
-  const { gasCustom, gasPriceSelected } = useSelector(
+  const { userPoolAdvancedMode: advanced } = useSelector(
     (state: AppState) => state.user,
   )
-  const { gasStandard, gasFast, gasInstant } = useSelector(
-    (state: AppState) => state.application,
-  )
+  const { gasPriceSelected } = useSelector((state: AppState) => state.user)
+  const [currentModal, setCurrentModal] = useState<string | null>(null)
 
   const onSubmit = (): void => {
-    setModalOpen(true)
-    setPopUp("review")
+    setCurrentModal("review")
   }
-
   const noShare =
     !myShareData || myShareData.lpTokenBalance.eq(BigNumber.from(0))
 
@@ -134,6 +120,33 @@ const WithdrawPage = (props: Props): ReactElement => {
                   <div className="error">{formStateData.error.message}</div>
                 )}
               </div>
+              <div className="horizontalDisplay">
+                <RadioButton
+                  checked={formStateData.withdrawType === "ALL"}
+                  onChange={(): void =>
+                    onFormChange({
+                      fieldName: "withdrawType",
+                      value: "ALL",
+                    })
+                  }
+                  label="Combo"
+                />
+                {tokensData.map((t) => {
+                  return (
+                    <RadioButton
+                      key={t.symbol}
+                      checked={formStateData.withdrawType === t.symbol}
+                      onChange={(): void =>
+                        onFormChange({
+                          fieldName: "withdrawType",
+                          value: t.symbol,
+                        })
+                      }
+                      label={t.name}
+                    />
+                  )
+                })}
+              </div>
               {tokensData.map((token, index) => (
                 <div key={index}>
                   <TokenInput
@@ -154,147 +167,65 @@ const WithdrawPage = (props: Props): ReactElement => {
                   )}
                 </div>
               ))}
-              <div
-                className={
-                  "transactionInfoContainer " +
-                  classNames({ show: transactionInfoData.isInfo })
-                }
-              >
+              <div className={classNames("transactionInfoContainer", "show")}>
                 <div className="transactionInfo">
                   <div className="transactionInfoItem">
-                    {transactionInfoData.content.benefit > 0 ? (
+                    {reviewData.priceImpact.gte(0) ? (
                       <span className="bonus">{t("bonus")}: </span>
                     ) : (
-                      <span className="slippage">{t("maxSlippage")}</span>
+                      <span className="slippage">{t("priceImpact")}</span>
                     )}
                     <span
                       className={
                         "value " +
-                        (transactionInfoData.content.benefit > 0
-                          ? "bonus"
-                          : "slippage")
+                        (reviewData.priceImpact.gte(0) ? "bonus" : "slippage")
                       }
                     >
-                      {transactionInfoData.content.benefit}
+                      {" "}
+                      {formatBNToPercentString(reviewData.priceImpact, 18, 4)}
                     </span>
                   </div>
                 </div>
               </div>
             </div>
             <div className="advancedOptions">
-              <div>
-                <label>
-                  <input
-                    type="radio"
-                    value={"ALL"}
-                    checked={formStateData.withdrawType === "ALL"}
-                    onChange={(): void =>
-                      onFormChange({
-                        fieldName: "withdrawType",
-                        value: "ALL",
-                      })
-                    }
+              <span
+                className="title"
+                onClick={(): PayloadAction<boolean> =>
+                  dispatch(updatePoolAdvancedMode(!advanced))
+                }
+              >
+                {t("advancedOptions")}
+                <svg
+                  className={classNames("triangle", { upsideDown: advanced })}
+                  width="16"
+                  height="10"
+                  viewBox="0 0 16 10"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M14.8252 0C16.077 0 16.3783 0.827943 15.487 1.86207L8.80565 9.61494C8.35999 10.1321 7.63098 10.1246 7.19174 9.61494L0.510262 1.86207C-0.376016 0.833678 -0.0777447 0 1.17205 0L14.8252 0Z"
+                    fill="#00f4d7"
                   />
-                  {"All tokens"}
-                </label>
+                </svg>
+              </span>
+              <div className="divider"></div>
+              <div
+                className={"tableContainer" + classNames({ show: advanced })}
+              >
+                <div className="parameter">
+                  <GasField />
+                </div>
+                <div className="parameter">
+                  <SlippageField />
+                </div>
+                <div className="parameter">
+                  <InfiniteApprovalField />
+                </div>
               </div>
-              {tokensData.map((t) => {
-                return (
-                  <div key={t.symbol}>
-                    <label>
-                      <input
-                        type="radio"
-                        value={t.symbol}
-                        checked={formStateData.withdrawType === t.symbol}
-                        onChange={(): void =>
-                          onFormChange({
-                            fieldName: "withdrawType",
-                            value: t.symbol,
-                          })
-                        }
-                      />
-                      {t.name}
-                    </label>
-                  </div>
-                )
-              })}
-            </div>
-            {/* <label className="combination">
-              <span className="checkbox_input">
-                <input
-                  type="checkbox"
-                  checked={combination}
-                  onChange={(): void => setCombination(!combination)}
-                />
-                <span className="checkbox_control">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                    focusable="false"
-                  >
-                    <path
-                      fill="none"
-                      strokeWidth="4"
-                      d="M1.73 12.91l6.37 6.37L22.79 4.59"
-                    />
-                  </svg>
-                </span>
-              </span>
-              <span className="combLabel">{t("combinationOfAll")}</span>
-            </label> */}
-            <div className="paramater">
-              <InfiniteApproval
-                checked={infiniteApproval}
-                onChange={onChangeInfiniteApproval}
-              />
-            </div>
-            <div className="paramater">
-              {`${t("gas")}:`}
-              <span
-                className={classNames({
-                  selected: gasPriceSelected === GasPrices.Standard,
-                })}
-                onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateGasPriceSelected(GasPrices.Standard))
-                }
-              >
-                {gasStandard} {t("standard")}
-              </span>
-              <span
-                className={classNames({
-                  selected: gasPriceSelected === GasPrices.Fast,
-                })}
-                onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateGasPriceSelected(GasPrices.Fast))
-                }
-              >
-                {gasFast} {t("fast")}
-              </span>
-              <span
-                className={classNames({
-                  selected: gasPriceSelected === GasPrices.Instant,
-                })}
-                onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateGasPriceSelected(GasPrices.Instant))
-                }
-              >
-                {gasInstant} {t("instant")}
-              </span>
-              <input
-                className={classNames({
-                  selected: gasPriceSelected === GasPrices.Custom,
-                })}
-                value={gasCustom?.valueRaw}
-                onClick={(): PayloadAction<GasPrices> =>
-                  dispatch(updateGasPriceSelected(GasPrices.Custom))
-                }
-                onChange={(
-                  e: React.ChangeEvent<HTMLInputElement>,
-                ): PayloadAction<string> =>
-                  dispatch(updateGasPriceCustom(e.target.value))
-                }
-              />
             </div>
             <button
               className="actionBtn"
@@ -303,9 +234,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                 !!formStateData.error ||
                 formStateData.lpTokenAmountToSpend.isZero()
               }
-              onClick={(): void => {
-                onSubmit()
-              }}
+              onClick={onSubmit}
             >
               {t("withdraw")}
             </button>
@@ -318,21 +247,36 @@ const WithdrawPage = (props: Props): ReactElement => {
               }}
               className="divider"
             ></div>{" "}
+            <MyActivityCard historicalPoolData={historicalPoolData} />
+            <div
+              style={{
+                display: historicalPoolData ? "block" : "none",
+              }}
+              className="divider"
+            ></div>{" "}
             <PoolInfoCard data={poolData} />
           </div>
-          <Modal isOpen={modalOpen} onClose={(): void => setModalOpen(false)}>
-            {popUp === "review" ? (
+          <Modal
+            isOpen={!!currentModal}
+            onClose={(): void => setCurrentModal(null)}
+          >
+            {currentModal === "review" ? (
               <ReviewWithdraw
-                data={{ ...testWithdrawData, ...reviewData }}
+                data={reviewData}
                 gas={gasPriceSelected}
-                onConfirm={(): void => {
-                  onConfirmTransaction()
-                  setPopUp("confirm")
+                onConfirm={async (): Promise<void> => {
+                  setCurrentModal("confirm")
+                  logEvent(
+                    "withdraw",
+                    (poolData && { pool: poolData?.name }) || {},
+                  )
+                  await onConfirmTransaction?.()
+                  setCurrentModal(null)
                 }}
-                onClose={(): void => setModalOpen(false)}
+                onClose={(): void => setCurrentModal(null)}
               />
             ) : null}
-            {popUp === "confirm" ? <ConfirmTransaction /> : null}
+            {currentModal === "confirm" ? <ConfirmTransaction /> : null}
           </Modal>
         </div>
       )}

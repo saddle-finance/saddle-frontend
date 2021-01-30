@@ -10,9 +10,10 @@ div.deposit {
   .content {
     width: 888px;
     margin: 0 auto;
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: 20px;
+    align-items: start;
 
     .infoPanels {
       margin-top: 40px;
@@ -56,42 +57,12 @@ div.deposit {
       margin: 16px 0;
     }
 
-    .actionBtn {
+    .buttonWrapper {
       margin-top: 40px;
-      margin-left: auto;
-      margin-right: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       margin-bottom: 24px;
-      display: block;
-      width: 170px;
-      height: 48px;
-      border: none;
-      border-radius: 6px;
-      background: $primary;
-      font-size: 18px;
-      font-weight: $bold;
-      box-shadow: var(--shadow);
-      letter-spacing: 0.04em;
-
-      &:hover,
-      &:focus {
-        outline: none;
-        background-color: $primary-blue;
-        color: $text-white;
-        box-shadow: var(--shadow-hover);
-      }
-    }
-
-    .actionBtn:disabled {
-      cursor: not-allowed;
-      color: rgba(0, 0, 0, 0.2);
-
-      &:hover {
-        background-color: $primary;
-        color: rgba(0, 0, 0, 0.2);
-        transform: none;
-        opacity: 1;
-        box-shadow: var(--shadow);
-      }
     }
   }
 
@@ -101,9 +72,9 @@ div.deposit {
 
   div.transactionInfo {
     margin-top: 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    display: grid;
+    grid-template-rows: auto;
+    row-gap: 8px;
 
     span.value {
       color: var(--text-darker);
@@ -117,15 +88,19 @@ div.deposit {
     span.slippage {
       color: $error;
     }
+
+    a {
+      color: var(--text-selected);
+    }
   }
 
   .advancedOptions {
     margin-top: 24px;
-    svg {
+    svg.triangle {
       margin-left: 10px;
       transform: norotate(0deg);
     }
-    svg.upsideDown {
+    svg.upsideDown.triangle {
       transform: rotate(-180deg);
     }
 
@@ -140,32 +115,8 @@ div.deposit {
       display: none;
     }
 
-    div.paramater {
+    div.parameter {
       margin-top: 16px;
-
-      span {
-        margin-left: 8px;
-        cursor: pointer;
-        letter-spacing: -0.06em;
-      }
-      span.selected {
-        color: var(--text-selected);
-        font-weight: $medium;
-        text-decoration: underline;
-      }
-
-      input {
-        width: 52px;
-        height: 24px;
-        margin-left: 16px;
-        border: none;
-        border-radius: 0;
-        color: $text-black;
-
-        &:focus {
-          outline: 1px solid var(--outline);
-        }
-      }
     }
 
     .show {
@@ -175,5 +126,13 @@ div.deposit {
 
   div.show {
     display: block;
+  }
+
+  .error {
+    width: 100%;
+    color: $error;
+    font-weight: $normal;
+    text-align: center;
+    margin: 8px;
   }
 }

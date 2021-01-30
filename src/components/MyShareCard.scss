@@ -1,5 +1,7 @@
 @import "../styles/theme";
 
+$margin-top: 16px;
+
 div.myShareCard {
   color: var(--text-darker);
   font-size: 16px;
@@ -17,12 +19,9 @@ div.myShareCard {
 
   div.info {
     width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: flex-start;
-    justify-content: space-between;
-    align-content: space-between;
+    display: grid;
+    grid-template-rows: auto;
+    row-gap: 8px;
   }
 
   .poolShare {
@@ -35,7 +34,7 @@ div.myShareCard {
 
   div.currency {
     width: 100%;
-    margin-top: 16px;
+    margin-top: 24px;
     display: flex;
     justify-content: space-between;
 
@@ -43,5 +42,15 @@ div.myShareCard {
       font-weight: $bold;
       display: block;
     }
+  }
+  .historicalPoolData {
+    margin-top: $margin-top;
+    .label {
+      font-weight: $bold;
+    }
+  }
+
+  .bold {
+    font-weight: $bold;
   }
 }

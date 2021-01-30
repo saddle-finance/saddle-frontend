@@ -27,6 +27,7 @@ interface UserState {
   gasPriceSelected: GasPrices
   slippageCustom?: NumberInputState
   slippageSelected: Slippages
+  infiniteApproval: boolean
 }
 
 const initialState: UserState = {
@@ -35,6 +36,7 @@ const initialState: UserState = {
   userDarkMode: false,
   gasPriceSelected: GasPrices.Standard,
   slippageSelected: Slippages.OneTenth,
+  infiniteApproval: false,
 }
 
 const gasCustomStateCreator = numberInputStateCreator(
@@ -49,26 +51,58 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    updateSwapAdvancedMode(state, action: PayloadAction<boolean>): void {
+    updateSwapAdvancedMode(
+      state: UserState,
+      action: PayloadAction<boolean>,
+    ): void {
       state.userSwapAdvancedMode = action.payload
     },
-    updatePoolAdvancedMode(state, action: PayloadAction<boolean>): void {
+    updatePoolAdvancedMode(
+      state: UserState,
+      action: PayloadAction<boolean>,
+    ): void {
       state.userPoolAdvancedMode = action.payload
     },
-    updateDarkMode(state, action: PayloadAction<boolean>): void {
+    updateDarkMode(state: UserState, action: PayloadAction<boolean>): void {
       state.userDarkMode = action.payload
     },
-    updateGasPriceCustom(state, action: PayloadAction<string>): void {
+    updateGasPriceCustom(
+      state: UserState,
+      action: PayloadAction<string>,
+    ): void {
       state.gasCustom = gasCustomStateCreator(action.payload)
     },
-    updateGasPriceSelected(state, action: PayloadAction<GasPrices>): void {
+    updateGasPriceSelected(
+      state: UserState,
+      action: PayloadAction<GasPrices>,
+    ): void {
       state.gasPriceSelected = action.payload
+      if (action.payload !== GasPrices.Custom) {
+        // clear custom value when standard option selected
+        state.gasCustom = gasCustomStateCreator("")
+      }
     },
-    updateSlippageSelected(state, action: PayloadAction<Slippages>): void {
+    updateSlippageSelected(
+      state: UserState,
+      action: PayloadAction<Slippages>,
+    ): void {
       state.slippageSelected = action.payload
+      if (action.payload !== Slippages.Custom) {
+        // clear custom value when standard option selected
+        state.slippageCustom = slippageCustomStateCreator("")
+      }
     },
-    updateSlippageCustom(state, action: PayloadAction<string>): void {
+    updateSlippageCustom(
+      state: UserState,
+      action: PayloadAction<string>,
+    ): void {
       state.slippageCustom = slippageCustomStateCreator(action.payload)
+    },
+    updateInfiniteApproval(
+      state: UserState,
+      action: PayloadAction<boolean>,
+    ): void {
+      state.infiniteApproval = action.payload
     },
   },
 })
@@ -81,6 +115,7 @@ export const {
   updateGasPriceSelected,
   updateSlippageCustom,
   updateSlippageSelected,
+  updateInfiniteApproval,
 } = userSlice.actions
 
 export default userSlice.reducer

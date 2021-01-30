@@ -33,10 +33,10 @@ div.reviewWithdraw {
       }
 
       & > .value {
-        width: 48%;
+        width: 45%;
       }
       & > .token {
-        width: 52%;
+        width: 55%;
       }
     }
 
@@ -47,18 +47,18 @@ div.reviewWithdraw {
       flex-direction: row;
 
       & > .label {
-        width: 48%;
+        width: 45%;
       }
 
       & > .value {
-        width: 52%;
+        width: 55%;
       }
     }
 
     div.rates {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      display: grid;
+      grid-template-rows: auto;
+      row-gap: 8px;
 
       span {
         display: block;
@@ -80,48 +80,9 @@ div.reviewWithdraw {
       margin-bottom: 32px;
     }
 
-    & > button {
-      width: 176px;
-      height: 44px;
-      border-radius: 4px;
-
-      &:hover,
-      &:active {
-        outline: none;
-      }
-    }
-
-    button.confirm {
-      border: none;
-      background: $primary;
-      color: $text-black;
-      font-weight: $bold;
-      font-size: 16px;
-      letter-spacing: 0.02em;
-      margin-right: 18px;
-
-      &:hover,
-      &:focus {
-        opacity: 0.8;
-        outline: none;
-        background-color: $primary-blue;
-        color: $text-white;
-        box-shadow: var(--shadow-hover);
-      }
-    }
-
-    button.cancel {
-      background: $white;
-      border: none;
-      color: $text-black;
-      font-weight: $bold;
-      font-size: 16px;
-      letter-spacing: 0.02em;
-
-      &:hover,
-      &:focus {
-        color: $primary-blue;
-      }
+    .buttonWrapper {
+      display: flex;
+      justify-content: space-between;
     }
   }
 

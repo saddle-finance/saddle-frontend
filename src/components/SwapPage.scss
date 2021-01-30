@@ -20,6 +20,16 @@ div.swapPage {
     flex-wrap: wrap;
   }
 
+  .exchangeWarning {
+    color: $white;
+    background-color: $text-red;
+    padding: 8px;
+    width: 100%;
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+  }
+
   .infoSection {
     width: 100%;
     display: flex;
@@ -40,7 +50,7 @@ div.swapPage {
   }
 
   .priceTable {
-    width: 30%;
+    width: 40%;
     margin-right: auto;
     text-align: left;
     color: var(--text);
@@ -105,147 +115,11 @@ div.swapPage {
       padding: 16px 24px;
 
       display: flex;
-      flex-direction: row-reverse;
+      flex-direction: row;
       justify-content: space-between;
 
-      input {
-        width: 42px;
-        border: none;
-        border-radius: 0;
-        height: 20px;
-        font-size: 80%;
-        outline: 1px solid $black;
-      }
-
-      input:focus {
-        outline: 1px solid var(--outline);
-      }
-
-      .label {
-        font-weight: $bold;
-        font-size: 16px;
-        letter-spacing: -0.04em;
-      }
-
-      .tableOption .options {
+      .parameter .options {
         margin-top: 10px;
-      }
-    }
-
-    .infiniteApproval {
-      display: block;
-      position: relative;
-      font-size: 16px;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      align-items: center;
-
-      input {
-        width: 24px;
-        height: 24px;
-
-        opacity: 0;
-        &:checked + .checkbox_control svg {
-          transform: scale(1);
-        }
-      }
-      .checkbox_control {
-        display: inline-grid;
-        width: 20px;
-        height: 20px;
-        border-radius: 0.25em;
-        border: 0.1em solid #fff;
-      }
-      .checkbox_control svg {
-        margin: 0;
-        transition: transform 0.1s ease-in 25ms;
-        transform: scale(0);
-        transform-origin: bottom left;
-      }
-      .checkbox_input {
-        display: grid;
-        grid-template-areas: "checkbox";
-        margin-right: 8px;
-
-        > * {
-          grid-area: checkbox;
-          cursor: pointer;
-        }
-      }
-
-      .IAlabel {
-        position: relative;
-        border-bottom: 1px dotted var(--text);
-        font-weight: $bold;
-
-        &:hover {
-          cursor: help;
-        }
-      }
-
-      .IAlabel .tooltipText {
-        visibility: hidden;
-        width: 360px;
-        background-color: $primary;
-        color: $text-black;
-        border-radius: 8px;
-        padding: 6px 8px;
-
-        font-size: 14px;
-        line-height: 20px;
-        font-weight: $normal;
-        letter-spacing: -0.04em;
-
-        /* Position the tooltip */
-        position: absolute;
-        z-index: 1;
-        bottom: 200%;
-        left: 50%;
-        margin-left: -200px;
-      }
-
-      /* Tooltip arrow */
-      .IAlabel .tooltipText::after {
-        content: "";
-        position: absolute;
-        top: 100%;
-        left: 40%;
-        margin-left: -5px;
-        border-width: 10px;
-        border-style: solid;
-        border-color: $primary transparent transparent transparent;
-      }
-
-      .IAlabel:hover .tooltipText {
-        visibility: visible;
-      }
-    }
-
-    .options > button {
-      border: none;
-      background: none;
-      font-size: 16px;
-      font-weight: $normal;
-      color: var(--text);
-      letter-spacing: -0.04em;
-      padding: 0 16px 0 0;
-
-      &:hover {
-        transform: none;
-        font-weight: $bold;
-      }
-
-      &:focus {
-        outline: none;
-        border: none;
-      }
-
-      &.selected {
-        color: var(--text-selected);
-        font-weight: $medium;
-        text-decoration: underline;
       }
     }
   }

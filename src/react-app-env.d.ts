@@ -1,8 +1,14 @@
 // / <reference types="react-scripts" />
 
-declare module "*.svg"
+declare module "*.svg" {
+  const src: string
+  export default src
+}
 
-declare module "*.png"
+declare module "*.png" {
+  const src: string
+  export default src
+}
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Window {
@@ -10,6 +16,8 @@ interface Window {
     isMetaMask?: true
     on?: (...args: any[]) => void
     removeListener?: (...args: any[]) => void
+    autoRefreshOnNetworkChange?: bool
   }
-  web3?: {}
+  gtag?: (...args: any[]) => void
+  web3?: unknown
 }

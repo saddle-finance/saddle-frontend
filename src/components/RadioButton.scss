@@ -1,0 +1,52 @@
+@import "../styles/theme.scss";
+
+div.radio {
+  label.radio_wrapper {
+    position: relative;
+    font-size: 16px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer;
+
+    display: grid;
+    grid-template-columns: min-content auto;
+    grid-gap: 4px;
+
+    .radio_control {
+      display: block;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 0.1em solid var(--outline);
+    }
+    .radio_input {
+      display: grid;
+      grid-template-areas: "radio";
+
+      > * {
+        grid-area: radio;
+      }
+
+      > input {
+        width: 14px;
+        height: 14px;
+
+        opacity: 0;
+        &:checked + .radio_control {
+          background: radial-gradient(
+            circle at 48% 48%,
+            var(--text-selected) 42%,
+            rgba(0, 0, 0, 0) 42%
+          );
+        }
+      }
+    }
+
+    span.label {
+      position: relative;
+      letter-spacing: -0.02em;
+    }
+  }
+}

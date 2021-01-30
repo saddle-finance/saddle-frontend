@@ -1,9 +1,10 @@
 import "../styles/global.scss"
 
-import React, { ReactElement, Suspense, useEffect } from "react"
+import React, { ReactElement, Suspense, useCallback } from "react"
 import { Route, Switch } from "react-router-dom"
 
 import { AppDispatch } from "../state"
+import { BLOCK_TIME } from "../constants"
 import DepositBTC from "./DepositBTC"
 import Risk from "./Risk"
 import SwapBTC from "./SwapBTC"
@@ -13,15 +14,19 @@ import WithdrawBTC from "./WithdrawBTC"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import { useDispatch } from "react-redux"
+import usePoller from "../hooks/usePoller"
 
 export default function App(): ReactElement {
   const dispatch = useDispatch<AppDispatch>()
 
-  // TODO: figure out how frequently we want to update gas prices and where
-  useEffect(() => {
-    fetchGasPrices(dispatch)
+  const fetchAndUpdateGasPrice = useCallback(() => {
+    void fetchGasPrices(dispatch)
+  }, [dispatch])
+  const fetchAndUpdateTokensPrice = useCallback(() => {
     fetchTokenPricesUSD(dispatch)
   }, [dispatch])
+  usePoller(fetchAndUpdateGasPrice, BLOCK_TIME)
+  usePoller(fetchAndUpdateTokensPrice, BLOCK_TIME * 3)
 
   return (
     <Suspense fallback={null}>

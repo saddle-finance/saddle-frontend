@@ -2,9 +2,10 @@ import "./PoolInfoCard.scss"
 
 import { POOL_FEE_PRECISION, TOKENS_MAP } from "../constants"
 import React, { ReactElement } from "react"
+import { formatBNToPercentString, formatBNToString } from "../utils"
 
 import { PoolDataType } from "../hooks/usePoolData"
-import { formatUnits } from "@ethersproject/units"
+import { commify } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -13,20 +14,22 @@ interface Props {
 
 function PoolInfoCard({ data }: Props): ReactElement {
   const { t } = useTranslation()
+  const swapFee = data?.swapFee
+    ? formatBNToPercentString(data.swapFee, POOL_FEE_PRECISION)
+    : null
+  const adminFee = data?.adminFee
+    ? formatBNToPercentString(data.adminFee, POOL_FEE_PRECISION)
+    : null
   const formattedData = {
     name: data?.name,
-    swapFee: data?.swapFee
-      ? formatUnits(data.swapFee, POOL_FEE_PRECISION)
-      : null,
+    swapFee,
     virtualPrice: data?.virtualPrice
-      ? parseFloat(formatUnits(data.virtualPrice, 18)).toFixed(5)
+      ? commify(formatBNToString(data.virtualPrice, 18, 5))
       : null,
     reserve: data?.reserve
-      ? parseFloat(formatUnits(data.reserve, 18)).toFixed(3)
-      : null,
-    adminFee: data?.adminFee
-      ? formatUnits(data.adminFee, POOL_FEE_PRECISION)
-      : null,
+      ? commify(formatBNToString(data.reserve, 18, 2))
+      : "0",
+    adminFee: swapFee && adminFee ? `${adminFee} of ${swapFee}` : null,
     volume: data?.volume,
     tokens:
       data?.tokens.map((coin) => {
@@ -36,7 +39,7 @@ function PoolInfoCard({ data }: Props): ReactElement {
           name: token.name,
           icon: token.icon,
           percent: coin.percent,
-          value: parseFloat(formatUnits(coin.value, 18)).toFixed(3),
+          value: commify(formatBNToString(coin.value, 18, 6)),
         }
       }) || [],
   }
@@ -46,26 +49,26 @@ function PoolInfoCard({ data }: Props): ReactElement {
       <h4>{formattedData.name}</h4>
       <div className="info">
         <div className="infoItem">
-          <span className="label">{t("fee") + ": "}</span>
-          <span className="value">{formattedData.swapFee}%</span>
+          <span className="label bold">{`${t("fee")}: `}</span>
+          <span className="value">{formattedData.swapFee}</span>
         </div>
         <div className="infoItem">
-          <span className="label">{t("virtualPrice") + ": "}</span>
+          <span className="label bold">{`${t("virtualPrice")}: `}</span>
           <span className="value">{formattedData.virtualPrice}</span>
         </div>
         <div className="infoItem">
-          <span className="label">{t("totalLocked") + " ($): "}</span>
-          <span className="value">{formattedData.reserve}</span>
+          <span className="label bold">{`${t("totalLocked")}: `}</span>
+          <span className="value">{`$${formattedData.reserve}`}</span>
         </div>
         <div className="twoColumn">
           <div className="infoItem">
-            <span className="label">{t("adminFee") + ": "}</span>
-            <span className="value">{formattedData.adminFee}%</span>
+            <span className="label bold">{`${t("adminFee")}: `}</span>
+            <span className="value">{formattedData.adminFee}</span>
           </div>
-          <div className="infoItem">
-            <span className="label">{t("dailyVolume") + ": "}</span>
+          {/* <div className="infoItem">
+            <span className="label bold">{t("dailyVolume") + ": "}</span>
             <span className="value">{formattedData.volume}</span>
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="divider" />
@@ -76,8 +79,7 @@ function PoolInfoCard({ data }: Props): ReactElement {
           {formattedData.tokens.map((token, index) => (
             <div className="token" key={index}>
               <img alt="icon" src={token.icon} />
-              <span>{token.name}</span>
-              <span className="tokenPercent">{token.percent}%</span>
+              <span className="bold">{`${token.name} ${token.percent}`}</span>
               <span className="tokenValue">{token.value}</span>
             </div>
           ))}

@@ -31,7 +31,7 @@ export interface WithdrawFormState {
 }
 type FormFields = Exclude<keyof WithdrawFormState, "error">
 export type WithdrawFormAction = {
-  fieldName: FormFields
+  fieldName: FormFields | "reset"
   tokenSymbol?: string
   value: string
 }
@@ -67,19 +67,24 @@ export default function useWithdrawFormState(
       ),
     [POOL_TOKENS, tokenInputStateCreators],
   )
-  const [formState, setFormState] = useState<WithdrawFormState>({
-    percentage: "",
-    tokenInputs: tokenInputsEmptyState,
-    withdrawType: ALL,
-    error: null,
-    lpTokenAmountToSpend: BigNumber.from("0"),
-  })
+  const formEmptyState = useMemo(
+    () => ({
+      percentage: "",
+      tokenInputs: tokenInputsEmptyState,
+      withdrawType: ALL,
+      error: null,
+      lpTokenAmountToSpend: BigNumber.from("0"),
+    }),
+    [tokenInputsEmptyState],
+  )
+  const [formState, setFormState] = useState<WithdrawFormState>(formEmptyState)
 
   // TODO: resolve this, it's a little unsafe
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const calculateAndUpdateDynamicFields = useCallback(
     debounce(async (state: WithdrawFormState) => {
-      if (userShareData == null || swapContract == null) return
+      if (userShareData == null || swapContract == null || account == null)
+        return
 
       let percentageRaw
       if (state.percentage === "") {
@@ -96,7 +101,7 @@ export default function useWithdrawFormState(
         .div(10 ** 7)
 
       // Use state.withdrawType to figure out which swap functions to use to calcuate next state
-      let nextState: WithdrawFormState | {}
+      let nextState: WithdrawFormState | Record<string, unknown>
       if (state.withdrawType === IMBALANCE) {
         try {
           const inputCalculatedLPTokenAmount = await swapContract.calculateTokenAmount(
@@ -117,6 +122,7 @@ export default function useWithdrawFormState(
                 lpTokenAmountToSpend: BigNumber.from("0"),
               }
             : {
+                error: null,
                 lpTokenAmountToSpend: inputCalculatedLPTokenAmount,
               }
         } catch (e) {
@@ -145,6 +151,7 @@ export default function useWithdrawFormState(
               }),
               {},
             ),
+            error: null,
           }
         } catch {
           nextState = {
@@ -176,6 +183,7 @@ export default function useWithdrawFormState(
                 }),
                 {},
               ),
+              error: null,
             }
           } else {
             // This branch addresses a user manually inputting a value for one token
@@ -198,6 +206,7 @@ export default function useWithdrawFormState(
                 }
               : {
                   lpTokenAmountToSpend: inputCalculatedLPTokenAmount,
+                  error: null,
                 }
           }
         } catch {
@@ -211,7 +220,6 @@ export default function useWithdrawFormState(
       }
       setFormState((prevState) => ({
         ...prevState,
-        error: null,
         ...nextState,
       }))
     }, 250),
@@ -223,7 +231,7 @@ export default function useWithdrawFormState(
       // update the form with user input immediately
       // then call expensive debounced fn to update other fields
       setFormState((prevState) => {
-        let nextState: WithdrawFormState | {} = {}
+        let nextState: WithdrawFormState | Record<string, unknown> = {}
         if (action.fieldName === "tokenInputs") {
           const {
             tokenSymbol: tokenSymbolInput = "",
@@ -251,6 +259,7 @@ export default function useWithdrawFormState(
             lpTokenAmountToSpend: BigNumber.from("0"),
             percentage: null,
             tokenInputs: newTokenInputs,
+            error: null,
           }
         } else if (action.fieldName === "percentage") {
           const isInputInvalid =
@@ -268,17 +277,20 @@ export default function useWithdrawFormState(
                     ? ALL
                     : prevState.withdrawType,
                 percentage: action.value,
+                error: null,
               }
         } else if (action.fieldName === "withdrawType") {
           nextState = {
             tokenInputs: tokenInputsEmptyState,
             percentage: prevState.percentage || "100",
             withdrawType: action.value,
+            error: null,
           }
+        } else if (action.fieldName === "reset") {
+          nextState = formEmptyState
         }
         const finalState = {
           ...prevState,
-          error: null,
           ...nextState,
         }
         const pendingTokenInput =
@@ -288,7 +300,7 @@ export default function useWithdrawFormState(
             return isNaN(+stateValue) || +stateValue === 0
           })
         if (!finalState.error && !pendingTokenInput) {
-          calculateAndUpdateDynamicFields(finalState)
+          void calculateAndUpdateDynamicFields(finalState)
         }
         return finalState
       })
@@ -298,6 +310,7 @@ export default function useWithdrawFormState(
       calculateAndUpdateDynamicFields,
       tokenInputStateCreators,
       tokenInputsEmptyState,
+      formEmptyState,
     ],
   )
 

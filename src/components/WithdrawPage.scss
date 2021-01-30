@@ -10,9 +10,10 @@ div.withdraw {
   .content {
     width: 888px;
     margin: 0 auto;
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: 20px;
+    align-items: start;
 
     .infoPanels {
       margin-top: 40px;
@@ -53,7 +54,7 @@ div.withdraw {
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
 
       span {
         font-weight: $bold;
@@ -87,6 +88,12 @@ div.withdraw {
         text-align: right;
         width: 100%;
       }
+    }
+
+    div.horizontalDisplay {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
     }
 
     .actionBtn {
@@ -130,84 +137,59 @@ div.withdraw {
 
   .advancedOptions {
     margin-top: 24px;
-
-    .combination {
-      position: relative;
-      font-size: 16px;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-
-      display: grid;
-      grid-template-columns: min-content auto;
-      grid-gap: 8px;
-
-      input {
-        width: 20px;
-        height: 20px;
-
-        opacity: 0;
-        &:checked + .checkbox_control svg {
-          transform: scale(1);
-        }
-      }
-      .checkbox_control {
-        display: inline-grid;
-        width: 20px;
-        height: 20px;
-        border-radius: 0.25em;
-        border: 0.1em solid var(--outline);
-      }
-      .checkbox_control svg {
-        margin: 0;
-        stroke: var(--text-selected);
-        transition: transform 0.1s ease-in 25ms;
-        transform: scale(0);
-        transform-origin: bottom left;
-      }
-      .checkbox_input {
-        display: grid;
-        grid-template-areas: "checkbox";
-        margin-right: 8px;
-
-        > * {
-          grid-area: checkbox;
-          cursor: pointer;
-        }
-      }
+    svg.triangle {
+      margin-left: 10px;
+      transform: norotate(0deg);
+    }
+    svg.upsideDown.triangle {
+      transform: rotate(-180deg);
     }
 
-    div.paramater {
+    .divider {
+      width: 100%;
+      height: 1px;
+      margin: 10px 0 20px 0;
+      background: var(--outline);
+    }
+
+    .tableContainer {
+      display: none;
+    }
+
+    div.parameter {
       margin-top: 16px;
-
-      span {
-        margin-left: 8px;
-        cursor: pointer;
-        letter-spacing: -0.06em;
-      }
-
-      input {
-        width: 64px;
-        height: 24px;
-        margin-left: 16px;
-        border: none;
-        border-radius: 0;
-
-        &:focus {
-          outline: 1px solid var(--outline);
-        }
-      }
-
-      .selected {
-        color: var(--text-selected);
-        font-weight: $medium;
-        text-decoration: underline;
-      }
     }
 
     .show {
       display: block;
+    }
+  }
+  div.paramater {
+    margin-top: 16px;
+
+    & > span {
+      margin-left: 8px;
+      cursor: pointer;
+      letter-spacing: -0.06em;
+    }
+
+    .selected {
+      color: var(--text-selected);
+      font-weight: $medium;
+      text-decoration: underline;
+    }
+
+    > input {
+      width: 64px;
+      height: 24px;
+      margin-left: 16px;
+      border: none;
+      border-radius: 0;
+      outline: 1px solid var(--outline);
+    }
+
+    > input.selected {
+      color: $text-black;
     }
   }
 
@@ -217,9 +199,9 @@ div.withdraw {
 
   div.transactionInfo {
     margin-top: 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    display: grid;
+    grid-template-rows: auto;
+    row-gap: 8px;
 
     span.value {
       color: var(--text-darker);
@@ -227,7 +209,7 @@ div.withdraw {
     }
 
     span.bonus {
-      color: $primary;
+      color: var(--text-selected);
     }
 
     span.slippage {

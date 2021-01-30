@@ -1,9 +1,10 @@
 import { GasPrices, Slippages } from "../state/user"
-import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
+import { POOLS_MAP, PoolName, TRANSACTION_TYPES, Token } from "../constants"
 import { useAllContracts, useSwapContract } from "./useContract"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
+import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { NumberInputState } from "../utils/numberInputState"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { getFormattedTimeString } from "../utils/dateTime"
@@ -22,6 +23,10 @@ interface ApproveAndDepositStateArgument {
   slippageCustom?: NumberInputState
   gasPriceSelected: GasPrices
   gasCustom?: NumberInputState
+  merkleData: {
+    userMerkleProof: string[]
+    hasValidMerkleState: boolean
+  }
 }
 
 export function useApproveAndDeposit(
@@ -43,51 +48,56 @@ export function useApproveAndDeposit(
   return async function approveAndDeposit(
     state: ApproveAndDepositStateArgument,
   ): Promise<void> {
-    try {
-      if (!account) throw new Error("Wallet must be connected")
-      if (!swapContract) throw new Error("Swap contract is not loaded")
-      // For each token being desposited, check the allowance and approve it if necessary
-      for (const token of POOL_TOKENS) {
-        const spendingValue = BigNumber.from(
-          state.tokenFormState[token.symbol].valueSafe,
-        )
-        if (spendingValue.isZero()) continue
-        const tokenContract = tokenContracts?.[token.symbol]
-        if (tokenContract == null) continue
-        await checkAndApproveTokenForTrade(
-          tokenContract,
-          swapContract.address,
-          account,
-          spendingValue,
-          state.infiniteApproval,
-          {
-            onTransactionStart: () => {
-              return addToast(
-                {
-                  type: "pending",
-                  title: `${getFormattedTimeString()} Approving spend for ${
-                    token.name
-                  }`,
-                },
-                {
-                  autoDismiss: false, // TODO: be careful of orphan toasts on error
-                },
-              )
-            },
-            onTransactionSuccess: () => {
-              return addToast({
-                type: "success",
-                title: `${getFormattedTimeString()} Successfully approved spend for ${
+    if (!account) throw new Error("Wallet must be connected")
+    if (!swapContract) throw new Error("Swap contract is not loaded")
+    if (!state.merkleData.hasValidMerkleState)
+      throw new Error("User is not approved to deposit at this time")
+
+    const approveSingleToken = async (token: Token): Promise<void> => {
+      const spendingValue = BigNumber.from(
+        state.tokenFormState[token.symbol].valueSafe,
+      )
+      if (spendingValue.isZero()) return
+      const tokenContract = tokenContracts?.[token.symbol] as Erc20
+      if (tokenContract == null) return
+      await checkAndApproveTokenForTrade(
+        tokenContract,
+        swapContract.address,
+        account,
+        spendingValue,
+        state.infiniteApproval,
+        {
+          onTransactionStart: () => {
+            return addToast(
+              {
+                type: "pending",
+                title: `${getFormattedTimeString()} Approving spend for ${
                   token.name
                 }`,
-              })
-            },
-            onTransactionError: () => {
-              throw new Error("Your transaction could not be completed")
-            },
+              },
+              {
+                autoDismiss: false, // TODO: be careful of orphan toasts on error
+              },
+            )
           },
-        )
-      }
+          onTransactionSuccess: () => {
+            return addToast({
+              type: "success",
+              title: `${getFormattedTimeString()} Successfully approved spend for ${
+                token.name
+              }`,
+            })
+          },
+          onTransactionError: () => {
+            throw new Error("Your transaction could not be completed")
+          },
+        },
+      )
+    }
+    try {
+      // For each token being deposited, check the allowance and approve it if necessary
+      await Promise.all(POOL_TOKENS.map((token) => approveSingleToken(token)))
+
       // "isFirstTransaction" check can be removed after launch
       const poolTokenBalances: BigNumber[] = await Promise.all(
         POOL_TOKENS.map(async (token, i) => {
@@ -107,14 +117,12 @@ export function useApproveAndDeposit(
           true, // deposit boolean
         )
       }
-      console.debug(`MinToMint 1: ${minToMint.toString()}`)
 
       minToMint = subtractSlippage(
         minToMint,
         state.slippageSelected,
         state.slippageCustom,
       )
-      console.debug(`MinToMint 2: ${minToMint.toString()}`)
       const clearMessage = addToast({
         type: "pending",
         title: `${getFormattedTimeString()} Starting your deposit...`,
@@ -130,10 +138,12 @@ export function useApproveAndDeposit(
         gasPrice = gasStandard
       }
       gasPrice = parseUnits(String(gasPrice) || "45", 9)
+
       const spendTransaction = await swapContract.addLiquidity(
         POOL_TOKENS.map(({ symbol }) => state.tokenFormState[symbol].valueSafe),
         minToMint,
         Math.round(new Date().getTime() / 1000 + 60 * 10),
+        state.merkleData.userMerkleProof,
         {
           gasPrice,
         },

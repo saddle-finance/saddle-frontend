@@ -1,13 +1,16 @@
 import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
-import { formatUnits, parseUnits } from "@ethersproject/units"
+import { formatBNToPercentString, getContract } from "../utils"
 import { useAllContracts, useSwapContract } from "./useContract"
 import { useEffect, useState } from "react"
 
+import ALLOWLIST_ABI from "../constants/abis/allowList.json"
 import { AddressZero } from "@ethersproject/constants"
+import { AllowList } from "../../types/ethers-contracts/AllowList"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import LPTOKEN_ABI from "../constants/abis/lpToken.json"
-import { getContract } from "../utils"
+import { LpToken } from "../../types/ethers-contracts/LpToken"
+import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import { useSelector } from "react-redux"
 
@@ -17,16 +20,6 @@ interface TokenShareType {
   value: BigNumber
 }
 
-export interface UserShareType {
-  avgBalance: BigNumber
-  currentWithdrawFee: BigNumber
-  lpTokenBalance: BigNumber
-  name: string // TODO: does this need to be on user share?
-  share: BigNumber
-  tokens: TokenShareType[]
-  usdBalance: BigNumber
-  value: BigNumber
-}
 export interface PoolDataType {
   adminFee: BigNumber
   apy: string // TODO: calculate
@@ -34,10 +27,27 @@ export interface PoolDataType {
   reserve: BigNumber
   swapFee: BigNumber
   tokens: TokenShareType[]
-  totalLocked: string
+  totalLocked: BigNumber
   utilization: string // TODO: calculate
   virtualPrice: BigNumber
   volume: string // TODO: calculate
+  poolAccountLimit: BigNumber
+  isAcceptingDeposits: boolean
+  keepApr: BigNumber
+  poolLPTokenCap: BigNumber
+}
+
+export interface UserShareType {
+  avgBalance: BigNumber
+  currentWithdrawFee: BigNumber
+  lpTokenBalance: BigNumber
+  lpTokenMinted: BigNumber
+  name: string // TODO: does this need to be on user share?
+  share: BigNumber
+  tokens: TokenShareType[]
+  usdBalance: BigNumber
+  value: BigNumber
+  isAccountVerified: boolean
 }
 
 export type PoolDataHookReturnType = [PoolDataType | null, UserShareType | null]
@@ -63,16 +73,22 @@ export default function usePoolData(
         swapContract == null ||
         tokenContracts == null ||
         tokenPricesUSD == null ||
-        library == null
+        library == null ||
+        account == null
       )
         return
 
       const POOL_TOKENS = POOLS_MAP[poolName]
 
       // Swap fees, price, and LP Token data
-      const [userCurrentWithdrawFee, swapStorage] = await Promise.all([
+      const [
+        userCurrentWithdrawFee,
+        swapStorage,
+        allowlistAddress,
+      ] = await Promise.all([
         swapContract.calculateCurrentWithdrawFee(account || AddressZero),
         swapContract.swapStorage(),
+        swapContract.getAllowlist(),
       ])
       const { adminFee, lpToken: lpTokenAddress, swapFee } = swapStorage
       const lpToken = getContract(
@@ -80,11 +96,36 @@ export default function usePoolData(
         LPTOKEN_ABI,
         library,
         account ?? undefined,
-      )
-      const [userLpTokenBalance, totalLpTokenBalance] = await Promise.all([
+      ) as LpToken
+      const allowlist = getContract(
+        allowlistAddress,
+        ALLOWLIST_ABI,
+        library,
+        account ?? undefined,
+      ) as AllowList
+      const [
+        userLpTokenBalance,
+        userLpTokenMinted,
+        totalLpTokenBalance,
+        poolAccountLimit,
+        poolLPTokenCap,
+        isAccountVerified,
+      ] = await Promise.all([
         lpToken.balanceOf(account || AddressZero),
+        lpToken.mintedAmounts(account || AddressZero),
         lpToken.totalSupply(),
+        allowlist.getPoolAccountLimit(swapContract.address),
+        allowlist.getPoolCap(swapContract.address),
+        allowlist.isAccountVerified(account),
       ])
+      // Since we will never exactly hit the cap, subtract 0.5btc for some wiggle room
+      const isAcceptingDeposits = poolLPTokenCap
+        .sub(
+          BigNumber.from(10)
+            .pow(18 - 1)
+            .mul(5),
+        )
+        .gt(totalLpTokenBalance)
 
       const virtualPrice = totalLpTokenBalance.isZero()
         ? BigNumber.from(10).pow(18)
@@ -111,6 +152,18 @@ export default function usePoolData(
       const tokenBalancesUSDSum: BigNumber = tokenBalancesUSD.reduce((sum, b) =>
         sum.add(b),
       )
+      // (weeksPerYear * KEEPPerWeek * KEEPPrice) / (BTCPrice * BTCInPool)
+      const comparisonPoolToken = POOL_TOKENS[0]
+      const keepAPRNumerator = BigNumber.from(52 * 250000)
+        .mul(BigNumber.from(10).pow(18))
+        .mul(parseUnits(String(tokenPricesUSD.KEEP), 18))
+      const keepAPRDenominator = totalLpTokenBalance
+        .mul(parseUnits(String(tokenPricesUSD[comparisonPoolToken.symbol]), 6))
+        .div(1e6)
+
+      const keepApr = totalLpTokenBalance.isZero()
+        ? keepAPRNumerator
+        : keepAPRNumerator.div(keepAPRDenominator)
 
       // User share data
       const userShare = userLpTokenBalance
@@ -135,47 +188,47 @@ export default function usePoolData(
 
       const poolTokens = POOL_TOKENS.map((token, i) => ({
         symbol: token.symbol,
-        percent: parseFloat(
-          formatUnits(
-            tokenBalances[i]
-              .mul(10 ** 5)
-              .div(
-                totalLpTokenBalance.isZero()
-                  ? BigNumber.from("1")
-                  : tokenBalancesSum,
-              ),
-            3,
-          ),
-        ).toFixed(3),
+        percent: formatBNToPercentString(
+          tokenBalances[i]
+            .mul(10 ** 5)
+            .div(
+              totalLpTokenBalance.isZero()
+                ? BigNumber.from("1")
+                : tokenBalancesSum,
+            ),
+          5,
+        ),
         value: tokenBalances[i],
       }))
       const userPoolTokens = POOL_TOKENS.map((token, i) => ({
         symbol: token.symbol,
-        percent: parseFloat(
-          formatUnits(
-            userPoolTokenBalances[i]
-              .mul(10 ** 5)
-              .div(
-                totalLpTokenBalance.isZero()
-                  ? BigNumber.from("1")
-                  : totalLpTokenBalance,
-              ),
-            3,
-          ),
-        ).toFixed(3),
+        percent: formatBNToPercentString(
+          tokenBalances[i]
+            .mul(10 ** 5)
+            .div(
+              totalLpTokenBalance.isZero()
+                ? BigNumber.from("1")
+                : tokenBalancesSum,
+            ),
+          5,
+        ),
         value: userPoolTokenBalances[i],
       }))
       const poolData = {
         name: poolName,
         tokens: poolTokens,
         reserve: tokenBalancesUSDSum,
-        totalLocked: "XXX", // TODO
+        totalLocked: totalLpTokenBalance,
         virtualPrice: virtualPrice,
         adminFee: adminFee,
         swapFee: swapFee,
         volume: "XXX", // TODO
         utilization: "XXX", // TODO
         apy: "XXX", // TODO
+        poolAccountLimit,
+        poolLPTokenCap,
+        isAcceptingDeposits,
+        keepApr,
       }
       const userShareData = account
         ? {
@@ -187,11 +240,13 @@ export default function usePoolData(
             tokens: userPoolTokens,
             currentWithdrawFee: userCurrentWithdrawFee,
             lpTokenBalance: userLpTokenBalance,
+            lpTokenMinted: userLpTokenMinted,
+            isAccountVerified,
           }
         : null
       setPoolData([poolData, userShareData])
     }
-    getSwapData()
+    void getSwapData()
   }, [
     lastDepositTime,
     lastWithdrawTime,

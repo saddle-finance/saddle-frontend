@@ -10,7 +10,6 @@ import { Token } from "../constants"
 interface TokensStateType {
   [token: string]: NumberInputState
 }
-type UpdateTokenStateFnType = (tokenSymbol: string, value: string) => void
 type UpdateTokensStateType = (newState: {
   [token: string]: string | BigNumber
 }) => void
@@ -38,7 +37,7 @@ export function useTokenFormState(
     tokens.reduce(
       (acc, token) => ({
         ...acc,
-        [token.symbol]: tokenInputStateCreators[token.symbol]("0"),
+        [token.symbol]: tokenInputStateCreators[token.symbol](""),
       }),
       {},
     ),
