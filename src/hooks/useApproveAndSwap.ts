@@ -13,6 +13,7 @@ import { useAllContracts, useSwapContract } from "./useContract"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
+import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { NumberInputState } from "../utils/numberInputState"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { getFormattedTimeString } from "../utils/dateTime"
@@ -64,7 +65,7 @@ export function useApproveAndSwap(
       if (!swapContract) throw new Error("Swap contract is not loaded")
 
       // For each token being deposited, check the allowance and approve it if necessary
-      const tokenContract = tokenContracts?.[state.fromTokenSymbol]
+      const tokenContract = tokenContracts?.[state.fromTokenSymbol] as Erc20
       if (tokenContract == null) return
       const fromToken = TOKENS_MAP[state.fromTokenSymbol]
       await checkAndApproveTokenForTrade(

@@ -10,7 +10,6 @@ import { Token } from "../constants"
 interface TokensStateType {
   [token: string]: NumberInputState
 }
-type UpdateTokenStateFnType = (tokenSymbol: string, value: string) => void
 type UpdateTokensStateType = (newState: {
   [token: string]: string | BigNumber
 }) => void

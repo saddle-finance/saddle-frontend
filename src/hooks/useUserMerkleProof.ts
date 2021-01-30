@@ -1,7 +1,7 @@
 import { MERKLETREE_DATA, PoolName } from "../constants"
+import { MerkleTreeData, getMerkleProof } from "../utils/merkleTree"
 import { useEffect, useState } from "react"
 
-import { getMerkleProof } from "../utils/merkleTree"
 import { isProduction } from "../utils/environment"
 import { useActiveWeb3React } from "../hooks"
 import usePoolData from "./usePoolData"
@@ -22,12 +22,12 @@ export function useUserMerkleProof(
   const isAccountVerified = userShareData?.isAccountVerified
   useEffect(() => {
     async function computeMerkleState(): Promise<void> {
-      if (!account) {
+      if (!account || swapContract == null) {
         setUserMerkleProof([])
         setHasValidMerkleState(false)
         return
       }
-      const isGuarded = await swapContract?.isGuarded()
+      const isGuarded = await swapContract.isGuarded()
       if (!isGuarded) {
         // merkle valation only required for guarded pools
         setUserMerkleProof([])
@@ -52,7 +52,7 @@ export function useUserMerkleProof(
           return
         }
         if (res?.ok) {
-          res.json().then((proof) => {
+          void res.json().then((proof) => {
             setUserMerkleProof(proof)
             setHasValidMerkleState(true)
           })
@@ -63,16 +63,16 @@ export function useUserMerkleProof(
         }
       } else {
         if (chainId) {
-          const data = await import(
+          const data: MerkleTreeData = (await import(
             `../constants/merkleTreeData/${MERKLETREE_DATA[chainId]}`
-          )
+          )) as MerkleTreeData
           const proof = getMerkleProof(data, account)
           setUserMerkleProof(proof)
           setHasValidMerkleState(proof.length > 0)
         }
       }
     }
-    computeMerkleState()
+    void computeMerkleState()
   }, [account, chainId, isAccountVerified, swapContract])
   return {
     userMerkleProof,

@@ -48,7 +48,7 @@ function ToastMaker(): React.ReactElement | null {
   }, [addToast])
   return null
 }
-export const ManyToasts: Story<{}> = () => (
+export const ManyToasts: Story<unknown> = () => (
   <ToastsProvider>
     <ToastMaker />
   </ToastsProvider>

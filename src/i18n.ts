@@ -3,7 +3,7 @@ import LanguageDetector from "i18next-browser-languagedetector"
 import i18next from "i18next"
 import { initReactI18next } from "react-i18next"
 
-i18next
+void i18next
   .use(Fetch)
   .use(LanguageDetector)
   .use(initReactI18next)

@@ -16,7 +16,7 @@ export default function fetchTokenPricesUSD(dispatch: AppDispatch): void {
   const tokenIds = tokens
     .map(({ geckoId }) => geckoId)
     .concat(["ethereum", "bitcoin", "keep-network"])
-  retry(
+  void retry(
     () =>
       fetch(`${coinGeckoAPI}?ids=${encodeURIComponent(
         tokenIds.join(","),

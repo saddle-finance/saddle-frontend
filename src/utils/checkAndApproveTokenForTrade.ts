@@ -1,6 +1,8 @@
-import { Contract, ContractTransaction } from "@ethersproject/contracts"
-
 import { BigNumber } from "@ethersproject/bignumber"
+import { ContractReceipt } from "ethers"
+import { ContractTransaction } from "@ethersproject/contracts"
+import { Erc20 } from "../../types/ethers-contracts/Erc20"
+import { LpToken } from "../../types/ethers-contracts/LpToken"
 import { MaxUint256 } from "@ethersproject/constants"
 
 /**
@@ -16,7 +18,7 @@ import { MaxUint256 } from "@ethersproject/constants"
  * @return {Promise<void>}
  */
 export default async function checkAndApproveTokenForTrade(
-  srcTokenContract: Contract,
+  srcTokenContract: Erc20 | LpToken,
   swapAddress: string,
   spenderAddress: string,
   spendingValue: BigNumber, // max is MaxUint256
@@ -25,7 +27,7 @@ export default async function checkAndApproveTokenForTrade(
     onTransactionStart?: (
       transaction?: ContractTransaction,
     ) => (() => void) | undefined
-    onTransactionSuccess?: (transaction: ContractTransaction) => () => void
+    onTransactionSuccess?: (transaction: ContractReceipt) => () => void
     onTransactionError?: (error: Error | string) => () => void
   } = {},
 ): Promise<void> {
@@ -36,7 +38,9 @@ export default async function checkAndApproveTokenForTrade(
     spenderAddress,
     swapAddress,
   )
-  console.debug(`Existing ${tokenName} Allowance: ${existingAllowance}`)
+  console.debug(
+    `Existing ${tokenName} Allowance: ${existingAllowance.toString()}`,
+  )
   if (existingAllowance.gte(spendingValue)) return
   async function approve(amount: BigNumber): Promise<void> {
     try {
@@ -58,5 +62,5 @@ export default async function checkAndApproveTokenForTrade(
     await approve(BigNumber.from(0))
   }
   await approve(infiniteApproval ? MaxUint256 : spendingValue)
-  console.debug(`Approving ${tokenName} spend of ${spendingValue}`)
+  console.debug(`Approving ${tokenName} spend of ${spendingValue.toString()}`)
 }

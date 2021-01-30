@@ -101,7 +101,7 @@ export default function useWithdrawFormState(
         .div(10 ** 7)
 
       // Use state.withdrawType to figure out which swap functions to use to calcuate next state
-      let nextState: WithdrawFormState | {}
+      let nextState: WithdrawFormState | Record<string, unknown>
       if (state.withdrawType === IMBALANCE) {
         try {
           const inputCalculatedLPTokenAmount = await swapContract.calculateTokenAmount(
@@ -216,8 +216,8 @@ export default function useWithdrawFormState(
       }
       setFormState((prevState) => ({
         ...prevState,
-        error: null,
         ...nextState,
+        error: null,
       }))
     }, 250),
     [userShareData, swapContract, POOL_TOKENS, tokenInputStateCreators],
@@ -228,7 +228,7 @@ export default function useWithdrawFormState(
       // update the form with user input immediately
       // then call expensive debounced fn to update other fields
       setFormState((prevState) => {
-        let nextState: WithdrawFormState | {} = {}
+        let nextState: WithdrawFormState | Record<string, unknown> = {}
         if (action.fieldName === "tokenInputs") {
           const {
             tokenSymbol: tokenSymbolInput = "",
@@ -285,8 +285,8 @@ export default function useWithdrawFormState(
         }
         const finalState = {
           ...prevState,
-          error: null,
           ...nextState,
+          error: null,
         }
         const pendingTokenInput =
           action.fieldName === "tokenInputs" &&
@@ -295,7 +295,7 @@ export default function useWithdrawFormState(
             return isNaN(+stateValue) || +stateValue === 0
           })
         if (!finalState.error && !pendingTokenInput) {
-          calculateAndUpdateDynamicFields(finalState)
+          void calculateAndUpdateDynamicFields(finalState)
         }
         return finalState
       })

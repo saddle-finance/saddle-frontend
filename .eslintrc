@@ -30,6 +30,8 @@
   },
   "rules": {
     "no-invalid-this": 0,
-    "sort-imports": "error"
+    "sort-imports": "error",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["error"]
   }
 }
