@@ -122,6 +122,7 @@ export default function useWithdrawFormState(
                 lpTokenAmountToSpend: BigNumber.from("0"),
               }
             : {
+                error: null,
                 lpTokenAmountToSpend: inputCalculatedLPTokenAmount,
               }
         } catch (e) {
@@ -150,6 +151,7 @@ export default function useWithdrawFormState(
               }),
               {},
             ),
+            error: null,
           }
         } catch {
           nextState = {
@@ -181,6 +183,7 @@ export default function useWithdrawFormState(
                 }),
                 {},
               ),
+              error: null,
             }
           } else {
             // This branch addresses a user manually inputting a value for one token
@@ -203,6 +206,7 @@ export default function useWithdrawFormState(
                 }
               : {
                   lpTokenAmountToSpend: inputCalculatedLPTokenAmount,
+                  error: null,
                 }
           }
         } catch {
@@ -216,7 +220,6 @@ export default function useWithdrawFormState(
       }
       setFormState((prevState) => ({
         ...prevState,
-        error: null,
         ...nextState,
       }))
     }, 250),
@@ -256,6 +259,7 @@ export default function useWithdrawFormState(
             lpTokenAmountToSpend: BigNumber.from("0"),
             percentage: null,
             tokenInputs: newTokenInputs,
+            error: null,
           }
         } else if (action.fieldName === "percentage") {
           const isInputInvalid =
@@ -273,19 +277,20 @@ export default function useWithdrawFormState(
                     ? ALL
                     : prevState.withdrawType,
                 percentage: action.value,
+                error: null,
               }
         } else if (action.fieldName === "withdrawType") {
           nextState = {
             tokenInputs: tokenInputsEmptyState,
             percentage: prevState.percentage || "100",
             withdrawType: action.value,
+            error: null,
           }
         } else if (action.fieldName === "reset") {
           nextState = formEmptyState
         }
         const finalState = {
           ...prevState,
-          error: null,
           ...nextState,
         }
         const pendingTokenInput =
