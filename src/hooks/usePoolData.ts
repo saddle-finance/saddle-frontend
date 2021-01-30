@@ -151,7 +151,7 @@ export default function usePoolData(
       )
       // (weeksPerYear * KEEPPerWeek * KEEPPrice) / (BTCPrice * BTCInPool)
       const comparisonPoolToken = POOL_TOKENS[0]
-      const keepAPRNumerator = BigNumber.from(52 * 125000)
+      const keepAPRNumerator = BigNumber.from(52 * 250000)
         .mul(BigNumber.from(10).pow(18))
         .mul(parseUnits(String(tokenPricesUSD.KEEP), 18))
       const keepAPRDenominator = totalLpTokenBalance

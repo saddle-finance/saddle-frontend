@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
+import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { EventFilter } from "@ethersproject/contracts"
 import { Web3Provider } from "@ethersproject/providers"
 import { useActiveWeb3React } from "."
@@ -123,7 +124,7 @@ export default function useHistoricalPoolData(
         library,
         account,
         // eslint-disable-next-line new-cap
-        swapContract.filters.AddLiquidity(),
+        swapContract.filters.AddLiquidity(null, null, null, null, null),
         deployedBlock,
       )
 
@@ -131,7 +132,7 @@ export default function useHistoricalPoolData(
         library,
         account,
         // eslint-disable-next-line new-cap
-        swapContract.filters.RemoveLiquidity(),
+        swapContract.filters.RemoveLiquidity(null, null, null),
         deployedBlock,
       )
 
@@ -139,7 +140,7 @@ export default function useHistoricalPoolData(
         library,
         account,
         // eslint-disable-next-line new-cap
-        swapContract.filters.RemoveLiquidityOne(),
+        swapContract.filters.RemoveLiquidityOne(null, null, null, null, null),
         deployedBlock,
       )
 
@@ -147,7 +148,13 @@ export default function useHistoricalPoolData(
         library,
         account,
         // eslint-disable-next-line new-cap
-        swapContract.filters.RemoveLiquidityImbalance(),
+        swapContract.filters.RemoveLiquidityImbalance(
+          null,
+          null,
+          null,
+          null,
+          null,
+        ),
         deployedBlock,
       )
       const allLiquidityRemovalHashes = [
@@ -159,7 +166,11 @@ export default function useHistoricalPoolData(
       // Deposits
       // Get the LP token receipt txes
       // eslint-disable-next-line new-cap
-      const receiptTransferFilter = tokenContracts.BLPT.filters.Transfer()
+      const receiptTransferFilter = (tokenContracts.BLPT as Erc20).filters.Transfer(
+        null,
+        null,
+        null,
+      )
       Object.assign(receiptTransferFilter, blockFilter)
       if (receiptTransferFilter.topics) {
         // No filter on the from address
@@ -197,7 +208,11 @@ export default function useHistoricalPoolData(
 
       // Withdrawals
       // eslint-disable-next-line new-cap
-      const sentTransferFilter = tokenContracts.BLPT.filters.Transfer()
+      const sentTransferFilter = (tokenContracts.BLPT as Erc20).filters.Transfer(
+        null,
+        null,
+        null,
+      )
       Object.assign(sentTransferFilter, blockFilter)
       if (sentTransferFilter.topics) {
         // From address

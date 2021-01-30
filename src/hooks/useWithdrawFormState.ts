@@ -83,7 +83,8 @@ export default function useWithdrawFormState(
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const calculateAndUpdateDynamicFields = useCallback(
     debounce(async (state: WithdrawFormState) => {
-      if (userShareData == null || swapContract == null) return
+      if (userShareData == null || swapContract == null || account == null)
+        return
 
       let percentageRaw
       if (state.percentage === "") {

@@ -33,7 +33,12 @@ function WithdrawBTC(): ReactElement {
   useEffect(() => {
     // evaluate if a new withdraw will exceed the pool's per-user limit
     async function calculateWithdrawBonus(): Promise<void> {
-      if (swapContract == null || userShareData == null || poolData == null) {
+      if (
+        swapContract == null ||
+        userShareData == null ||
+        poolData == null ||
+        account == null
+      ) {
         return
       }
       const tokenInputSum = parseUnits(
