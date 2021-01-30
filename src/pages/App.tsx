@@ -20,7 +20,7 @@ export default function App(): ReactElement {
   const dispatch = useDispatch<AppDispatch>()
 
   const fetchAndUpdateGasPrice = useCallback(() => {
-    fetchGasPrices(dispatch)
+    void fetchGasPrices(dispatch)
   }, [dispatch])
   const fetchAndUpdateTokensPrice = useCallback(() => {
     fetchTokenPricesUSD(dispatch)

@@ -12,9 +12,9 @@ interface LastTransactionTimes {
   [transactionType: string]: number
 }
 
-type ApplicationState = {} & GasPrices & { tokenPricesUSD?: TokenPricesUSD } & {
-    lastTransactionTimes: LastTransactionTimes
-  }
+type ApplicationState = GasPrices & { tokenPricesUSD?: TokenPricesUSD } & {
+  lastTransactionTimes: LastTransactionTimes
+}
 
 const initialState: ApplicationState = {
   lastTransactionTimes: {},

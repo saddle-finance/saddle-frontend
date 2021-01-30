@@ -108,7 +108,7 @@ function DepositBTC(): ReactElement | null {
         ),
       )
     }
-    calculateMaxDeposits()
+    void calculateMaxDeposits()
   }, [
     poolData,
     tokenFormState,

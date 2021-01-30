@@ -3,28 +3,23 @@ import "./ReviewWithdraw.scss"
 import React, { ReactElement, useState } from "react"
 
 import { AppState } from "../state/index"
-import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
 import { GasPrices } from "../state/user"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
+import { ReviewWithdrawData } from "./WithdrawPage"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import { isHighPriceImpact } from "../utils/priceImpact"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   onClose: () => void
   onConfirm: () => void
-  data: {
-    withdraw: Array<{ [key: string]: any }>
-    rates: Array<{ [key: string]: any }>
-    priceImpact: BigNumber
-  }
+  data: ReviewWithdrawData
   gas: GasPrices
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
+
 function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
   const { t } = useTranslation()
   const {

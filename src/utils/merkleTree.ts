@@ -1,4 +1,4 @@
-interface MerkleTreeData {
+export interface MerkleTreeData {
   merkleRoot: string
   allowedAccounts: Record<string, Account>
 }

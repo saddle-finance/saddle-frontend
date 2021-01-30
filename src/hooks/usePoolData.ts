@@ -5,9 +5,11 @@ import { useEffect, useState } from "react"
 
 import ALLOWLIST_ABI from "../constants/abis/allowList.json"
 import { AddressZero } from "@ethersproject/constants"
+import { AllowList } from "../../types/ethers-contracts/AllowList"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import LPTOKEN_ABI from "../constants/abis/lpToken.json"
+import { LpToken } from "../../types/ethers-contracts/LpToken"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import { useSelector } from "react-redux"
@@ -71,7 +73,8 @@ export default function usePoolData(
         swapContract == null ||
         tokenContracts == null ||
         tokenPricesUSD == null ||
-        library == null
+        library == null ||
+        account == null
       )
         return
 
@@ -93,13 +96,13 @@ export default function usePoolData(
         LPTOKEN_ABI,
         library,
         account ?? undefined,
-      )
+      ) as LpToken
       const allowlist = getContract(
         allowlistAddress,
         ALLOWLIST_ABI,
         library,
         account ?? undefined,
-      )
+      ) as AllowList
       const [
         userLpTokenBalance,
         userLpTokenMinted,
@@ -243,7 +246,7 @@ export default function usePoolData(
         : null
       setPoolData([poolData, userShareData])
     }
-    getSwapData()
+    void getSwapData()
   }, [
     lastDepositTime,
     lastWithdrawTime,

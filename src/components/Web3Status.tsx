@@ -4,6 +4,7 @@ import React, { ReactElement, useState } from "react"
 
 import ConnectWallet from "./ConnectWallet"
 import Modal from "./Modal"
+import profile from "../assets/icons/profile.svg"
 import { useTranslation } from "react-i18next"
 import { useWeb3React } from "@web3-react/core"
 
@@ -25,7 +26,7 @@ const Web3Status = (): ReactElement => {
             </span>
 
             {/* Link real profile image here */}
-            <img alt="profile" src={require("../assets/icons/profile.svg")} />
+            <img alt="profile" src={profile} />
           </div>
         ) : (
           <div className="noAccount">{t("connectWallet")}</div>

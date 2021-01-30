@@ -70,21 +70,21 @@ export default function useHistoricalPoolData(
     historicalPoolData,
     setHistoricalPoolData,
   ] = useState<HistoricalPoolDataType | null>(null)
-  const [poolStats, setPoolStats] = useState()
+  const [poolStats, setPoolStats] = useState([])
   const deployedBlock = chainId ? DEPLOYED_BLOCK[chainId] : 0
-  const poolStatsURL = chainId ? POOL_STATS_URL[chainId] : null
+  const poolStatsURL = chainId ? POOL_STATS_URL[chainId] : ""
 
   useEffect(() => {
-    ;(async function (): Promise<void> {
+    void (async function (): Promise<void> {
       let res
       try {
         res = await fetch(`${poolStatsURL}?t=${+new Date()}`)
       } catch {
         return
       }
-      const data = await res.json()
-      if (data?.length) {
-        setPoolStats(data)
+      const data: unknown = await res.json()
+      if (Array.isArray(data)) {
+        setPoolStats(data as [])
       }
     })()
   }, [poolStatsURL])
@@ -197,7 +197,9 @@ export default function useHistoricalPoolData(
           const virtualPriceAtBlock = BigNumber.from(poolStatsDataPoint[1])
           const btcPriceAtBlock = BigNumber.from(poolStatsDataPoint[2])
           const parsedTxLog = tokenContracts.BLPT.interface.parseLog(txLog)
-          const depositBTC = parsedTxLog.args.value.mul(virtualPriceAtBlock)
+          const depositBTC = (parsedTxLog.args.value as BigNumber).mul(
+            virtualPriceAtBlock,
+          )
 
           totalDepositsBTC = totalDepositsBTC.add(depositBTC)
           totalDepositsUSD = totalDepositsUSD.add(
@@ -234,7 +236,9 @@ export default function useHistoricalPoolData(
           const virtualPriceAtBlock = BigNumber.from(poolStatsDataPoint[1])
           const btcPriceAtBlock = BigNumber.from(poolStatsDataPoint[2])
           const parsedTxLog = tokenContracts.BLPT.interface.parseLog(txLog)
-          const withdrawalBTC = parsedTxLog.args.value.mul(virtualPriceAtBlock)
+          const withdrawalBTC = (parsedTxLog.args.value as BigNumber).mul(
+            virtualPriceAtBlock,
+          )
 
           totalWithdrawalsBTC = totalWithdrawalsBTC.add(withdrawalBTC)
           totalWithdrawalsUSD = totalWithdrawalsUSD.add(
@@ -267,7 +271,7 @@ export default function useHistoricalPoolData(
         totalProfitBTC,
       })
     }
-    setData()
+    void setData()
   }, [
     poolName,
     swapContract,

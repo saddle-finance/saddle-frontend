@@ -11,11 +11,11 @@ interface Props {
   icon?: string
 }
 
-function AssetButton({ title, to, icon }: Props): ReactElement {
+function AssetButton({ title, to, icon = defaultIcon }: Props): ReactElement {
   return (
     <Link to={to}>
       <button className="asset">
-        <img src={icon ? icon : defaultIcon} alt="icon" />
+        <img src={icon} alt="icon" />
         <span>{title}</span>
       </button>
     </Link>
