@@ -54,7 +54,12 @@ function DepositBTC(): ReactElement | null {
   useEffect(() => {
     // evaluate if a new deposit will exceed the pool's per-user limit
     async function calculateMaxDeposits(): Promise<void> {
-      if (swapContract == null || userShareData == null || poolData == null) {
+      if (
+        swapContract == null ||
+        userShareData == null ||
+        poolData == null ||
+        account == null
+      ) {
         setEstDepositLPTokenAmount(BigNumber.from(0))
         return
       }
