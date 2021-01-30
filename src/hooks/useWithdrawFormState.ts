@@ -216,8 +216,8 @@ export default function useWithdrawFormState(
       }
       setFormState((prevState) => ({
         ...prevState,
-        ...nextState,
         error: null,
+        ...nextState,
       }))
     }, 250),
     [userShareData, swapContract, POOL_TOKENS, tokenInputStateCreators],
@@ -285,8 +285,8 @@ export default function useWithdrawFormState(
         }
         const finalState = {
           ...prevState,
-          ...nextState,
           error: null,
+          ...nextState,
         }
         const pendingTokenInput =
           action.fieldName === "tokenInputs" &&
