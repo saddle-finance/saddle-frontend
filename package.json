@@ -37,7 +37,6 @@
     "i18next-browser-languagedetector": "^6.0.1",
     "i18next-fetch-backend": "^3.0.0",
     "lodash": "^4.17.20",
-    "sass": "^1.32.5",
     "normalize.css": "^8.0.1",
     "prettier": "^2.1.2",
     "react": "^16.14.0",
@@ -50,7 +49,9 @@
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
     "redux-localstorage-simple": "^2.3.1",
-    "typescript": "^4.0.5"
+    "sass": "^1.32.5",
+    "typescript": "^4.0.5",
+    "web-vitals": "^1.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
