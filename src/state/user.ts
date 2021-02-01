@@ -5,6 +5,7 @@ import {
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
 import { BigNumber } from "@ethersproject/bignumber"
+import { PoolName } from "../constants"
 
 export enum GasPrices {
   Standard = "STANDARD",
@@ -19,6 +20,35 @@ export enum Slippages {
   Custom = "CUSTOM",
 }
 
+interface HistoricalPoolDataSerialized {
+  lastBlockSeen: number
+  name: string
+  totalDepositsUSD: string
+  totalWithdrawalsUSD: string
+  totalProfitUSD: string
+  totalDepositsBTC: string
+  totalWithdrawalsBTC: string
+  totalProfitBTC: string
+}
+
+interface HistoricalPoolDataDeserialized {
+  lastBlockSeen: number
+  name: string
+  totalDepositsUSD: BigNumber
+  totalWithdrawalsUSD: BigNumber
+  totalProfitUSD: BigNumber
+  totalDepositsBTC: BigNumber
+  totalWithdrawalsBTC: BigNumber
+  totalProfitBTC: BigNumber
+}
+
+type HistoricalPoolDataStateSerialized = {
+  [poolName in PoolName]?: HistoricalPoolDataSerialized
+}
+type HistoricalPoolDataStateDeserialized = {
+  [poolName in PoolName]?: HistoricalPoolDataDeserialized
+}
+
 interface UserState {
   userSwapAdvancedMode: boolean
   userPoolAdvancedMode: boolean
@@ -28,6 +58,7 @@ interface UserState {
   slippageCustom?: NumberInputState
   slippageSelected: Slippages
   infiniteApproval: boolean
+  historicalPoolData: HistoricalPoolDataStateSerialized
 }
 
 const initialState: UserState = {
@@ -37,6 +68,7 @@ const initialState: UserState = {
   gasPriceSelected: GasPrices.Standard,
   slippageSelected: Slippages.OneTenth,
   infiniteApproval: false,
+  historicalPoolData: {},
 }
 
 const gasCustomStateCreator = numberInputStateCreator(
@@ -104,8 +136,87 @@ const userSlice = createSlice({
     ): void {
       state.infiniteApproval = action.payload
     },
+    updateHistoricalPoolData(
+      state: UserState,
+      action: PayloadAction<HistoricalPoolDataDeserialized>,
+    ): void {
+      state.historicalPoolData = {
+        ...state.historicalPoolData,
+        ...serializeHistoricalPoolData({
+          [action.payload.name]: action.payload,
+        }),
+      }
+    },
   },
 })
+
+const historicalPoolDataBNKeys: Set<
+  keyof HistoricalPoolDataSerialized
+> = new Set([
+  "totalDepositsUSD",
+  "totalWithdrawalsUSD",
+  "totalProfitUSD",
+  "totalDepositsBTC",
+  "totalWithdrawalsBTC",
+  "totalProfitBTC",
+])
+
+export function deserializeHistoricalPoolData(
+  serializedData: HistoricalPoolDataStateSerialized,
+): HistoricalPoolDataStateDeserialized {
+  console.log("deserializeHistoricalPoolData", serializedData)
+  const deserializedData: HistoricalPoolDataStateDeserialized = (Object.keys(
+    serializedData,
+  ) as Array<keyof HistoricalPoolDataStateSerialized>).reduce(
+    (poolsAcc, poolName) => {
+      const poolData = serializedData[poolName]
+      if (poolData) {
+        poolsAcc[poolName] = (Object.keys(poolData) as Array<
+          keyof HistoricalPoolDataSerialized
+        >).reduce(
+          (acc, key) => ({
+            ...acc,
+            [key]: historicalPoolDataBNKeys.has(key)
+              ? BigNumber.from(poolData[key])
+              : poolData[key],
+          }),
+          {} as HistoricalPoolDataDeserialized,
+        )
+      }
+      return poolsAcc
+    },
+    {} as HistoricalPoolDataStateDeserialized,
+  )
+  return deserializedData
+}
+
+export function serializeHistoricalPoolData(
+  deserializedData: HistoricalPoolDataStateDeserialized,
+): HistoricalPoolDataStateSerialized {
+  const serializedData: HistoricalPoolDataStateSerialized = (Object.keys(
+    deserializedData,
+  ) as Array<keyof HistoricalPoolDataStateDeserialized>).reduce(
+    (poolsAcc, poolName) => {
+      const poolData = deserializedData[poolName]
+      if (poolData) {
+        poolsAcc[poolName] = (Object.keys(poolData) as Array<
+          keyof HistoricalPoolDataDeserialized
+        >).reduce(
+          (acc, key) => ({
+            ...acc,
+            [key]: historicalPoolDataBNKeys.has(key)
+              ? poolData[key].toString()
+              : poolData[key],
+          }),
+          {} as HistoricalPoolDataSerialized,
+        )
+      }
+      return poolsAcc
+    },
+    {} as HistoricalPoolDataStateSerialized,
+  )
+  return serializedData
+}
 
 export const {
   updateSwapAdvancedMode,
@@ -116,6 +227,7 @@ export const {
   updateSlippageCustom,
   updateSlippageSelected,
   updateInfiniteApproval,
+  updateHistoricalPoolData,
 } = userSlice.actions
 
 export default userSlice.reducer

@@ -1,13 +1,18 @@
+import { AppDispatch, AppState } from "../state"
 import { DEPLOYED_BLOCK, POOL_STATS_URL, PoolName } from "../constants"
+import {
+  deserializeHistoricalPoolData,
+  updateHistoricalPoolData,
+} from "../state/user"
 import { useAllContracts, useSwapContract } from "./useContract"
 import { useEffect, useState } from "react"
 
-import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { EventFilter } from "@ethersproject/contracts"
 import { Web3Provider } from "@ethersproject/providers"
 import { useActiveWeb3React } from "."
+import { useDispatch } from "react-redux"
 import usePoolData from "./usePoolData"
 import { useSelector } from "react-redux"
 
@@ -65,7 +70,11 @@ export default function useHistoricalPoolData(
   const swapContract = useSwapContract(poolName)
   const tokenContracts = useAllContracts()
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
-
+  const dispatch = useDispatch<AppDispatch>()
+  const cachedHistoricalData = useSelector((state: AppState) =>
+    deserializeHistoricalPoolData(state.user.historicalPoolData || {}),
+  )
+  console.log("cachedHistoricalData", cachedHistoricalData)
   const [
     historicalPoolData,
     setHistoricalPoolData,
@@ -107,56 +116,69 @@ export default function useHistoricalPoolData(
       )
         return
 
-      // const vp = await swapContract.getVirtualPrice()
-      let totalDepositsBTC = BigNumber.from(0)
-      let totalDepositsUSD = BigNumber.from(0)
-      let totalWithdrawalsBTC = BigNumber.from(0)
-      let totalWithdrawalsUSD = BigNumber.from(0)
-      let totalProfitBTC = BigNumber.from(0)
-      let totalProfitUSD = BigNumber.from(0)
+      let {
+        lastBlockSeen,
+        totalDepositsUSD = BigNumber.from(0),
+        totalWithdrawalsUSD = BigNumber.from(0),
+        totalProfitUSD = BigNumber.from(0),
+        totalDepositsBTC = BigNumber.from(0),
+        totalWithdrawalsBTC = BigNumber.from(0),
+        totalProfitBTC = BigNumber.from(0),
+      } = cachedHistoricalData[poolName] || {}
+
+      const latestBlockNumber = await library.getBlockNumber()
+      const searchStartBlockNumber = lastBlockSeen || deployedBlock
+
+      if (latestBlockNumber - (lastBlockSeen || latestBlockNumber - 11) < 10)
+        return
 
       const blockFilter = {
-        fromBlock: deployedBlock,
-        toBlock: "latest",
+        fromBlock: searchStartBlockNumber,
+        toBlock: latestBlockNumber,
       }
 
-      const addLiquidityHashes = await getEventHashes(
-        library,
-        account,
-        // eslint-disable-next-line new-cap
-        swapContract.filters.AddLiquidity(null, null, null, null, null),
-        deployedBlock,
-      )
-
-      const removeLiquidityHashes = await getEventHashes(
-        library,
-        account,
-        // eslint-disable-next-line new-cap
-        swapContract.filters.RemoveLiquidity(null, null, null),
-        deployedBlock,
-      )
-
-      const removeLiquidityOneHashes = await getEventHashes(
-        library,
-        account,
-        // eslint-disable-next-line new-cap
-        swapContract.filters.RemoveLiquidityOne(null, null, null, null, null),
-        deployedBlock,
-      )
-
-      const removeLiquidityImbalanceHashes = await getEventHashes(
-        library,
-        account,
-        // eslint-disable-next-line new-cap
-        swapContract.filters.RemoveLiquidityImbalance(
-          null,
-          null,
-          null,
-          null,
-          null,
+      const [
+        addLiquidityHashes,
+        removeLiquidityHashes,
+        removeLiquidityOneHashes,
+        removeLiquidityImbalanceHashes,
+      ] = await Promise.all([
+        getEventHashes(
+          library,
+          account,
+          // eslint-disable-next-line new-cap
+          swapContract.filters.AddLiquidity(null, null, null, null, null),
+          searchStartBlockNumber,
         ),
-        deployedBlock,
-      )
+        getEventHashes(
+          library,
+          account,
+          // eslint-disable-next-line new-cap
+          swapContract.filters.RemoveLiquidity(null, null, null),
+          searchStartBlockNumber,
+        ),
+        getEventHashes(
+          library,
+          account,
+          // eslint-disable-next-line new-cap
+          swapContract.filters.RemoveLiquidityOne(null, null, null, null, null),
+          searchStartBlockNumber,
+        ),
+        getEventHashes(
+          library,
+          account,
+          // eslint-disable-next-line new-cap
+          swapContract.filters.RemoveLiquidityImbalance(
+            null,
+            null,
+            null,
+            null,
+            null,
+          ),
+          searchStartBlockNumber,
+        ),
+      ])
+
       const allLiquidityRemovalHashes = [
         ...removeLiquidityHashes,
         ...removeLiquidityOneHashes,
@@ -261,6 +283,20 @@ export default function useHistoricalPoolData(
         .add(totalWithdrawalsUSD)
         .sub(totalDepositsUSD)
 
+      //  updating the cache will create an infinite loop
+      dispatch(
+        updateHistoricalPoolData({
+          lastBlockSeen: latestBlockNumber,
+          name: poolName,
+          totalDepositsUSD,
+          totalWithdrawalsUSD,
+          totalProfitUSD,
+          totalDepositsBTC,
+          totalWithdrawalsBTC,
+          totalProfitBTC,
+        }),
+      )
+
       setHistoricalPoolData({
         name: poolName,
         totalDepositsUSD,
@@ -284,6 +320,8 @@ export default function useHistoricalPoolData(
     tokenPricesUSD,
     deployedBlock,
     poolStatsURL,
+    cachedHistoricalData,
+    dispatch,
   ])
 
   return historicalPoolData
