@@ -14,6 +14,13 @@ The UI is deployed on IPFS and accessible at
 $ npm install
 ```
 
+Create a `.env.local` file with a valid `REACT_APP_NETWORK_URL` (e.g. Alchemy,
+Infura):
+
+```bash
+REACT_APP_NETWORK_URL="https://eth-mainnet.alchemyapi.io/v2/YOUR_KEY_HERE"
+```
+
 ### Pool Stats Setup
 
 Pool stats data is required to calculate lifetime deposits, withdrawals and
