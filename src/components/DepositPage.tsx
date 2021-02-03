@@ -9,6 +9,7 @@ import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
 import ConfirmTransaction from "./ConfirmTransaction"
+import { DepositTransaction } from "../interfaces"
 import GasField from "./GasField"
 import { HistoricalPoolDataType } from "../hooks/useHistoricalPoolData"
 import IneligibilityBanner from "./IneligibilityBanner"
@@ -51,13 +52,7 @@ interface Props {
   transactionInfoData: {
     bonus: BigNumber
   }
-  depositDataFromParent: {
-    deposit: Array<{ [key: string]: any }>
-    rates: Array<{ [key: string]: any }>
-    shareOfPool: string
-    lpToken: string
-    priceImpact: BigNumber
-  }
+  transactionData: DepositTransaction
   hasValidMerkleState: boolean
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -70,7 +65,7 @@ const DepositPage = (props: Props): ReactElement => {
     historicalPoolData,
     transactionInfoData,
     myShareData,
-    depositDataFromParent,
+    transactionData,
     willExceedMaxDeposits,
     isAcceptingDeposits,
     onChangeTokenInputValue,
@@ -90,7 +85,7 @@ const DepositPage = (props: Props): ReactElement => {
   } else if (willExceedMaxDeposits) {
     errorMessage = t("depositLimitExceeded")
   }
-  const validDepositAmount = +depositDataFromParent.lpToken > 0
+  const validDepositAmount = transactionData.to.amount.gt(0)
 
   return (
     <div className="deposit">
@@ -241,7 +236,7 @@ const DepositPage = (props: Props): ReactElement => {
         >
           {currentModal === "review" ? (
             <ReviewDeposit
-              data={depositDataFromParent}
+              transactionData={transactionData}
               onConfirm={async (): Promise<void> => {
                 setCurrentModal("confirm")
                 logEvent(

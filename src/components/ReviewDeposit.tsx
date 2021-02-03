@@ -1,11 +1,13 @@
 import "./ReviewDeposit.scss"
 
 import React, { ReactElement, useState } from "react"
+import { formatBNToPercentString, formatBNToString } from "../utils"
 
 import { AppState } from "../state/index"
-import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
+import { DepositTransaction } from "../interfaces"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
+import { commify } from "@ethersproject/units"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import { isHighPriceImpact } from "../utils/priceImpact"
@@ -15,21 +17,14 @@ import { useTranslation } from "react-i18next"
 interface Props {
   onClose: () => void
   onConfirm: () => void
-  data: {
-    deposit: Array<{ [key: string]: string }>
-    rates: Array<{
-      [key: string]: {
-        name: string
-        rate: string
-      }
-    }>
-    shareOfPool: string
-    lpToken: string
-    priceImpact: BigNumber
-  }
+  transactionData: DepositTransaction
 }
 
-function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
+function ReviewDeposit({
+  onClose,
+  onConfirm,
+  transactionData,
+}: Props): ReactElement {
   const { t } = useTranslation()
   const {
     slippageCustom,
@@ -44,17 +39,20 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
     hasConfirmedHighPriceImpact,
     setHasConfirmedHighPriceImpact,
   ] = useState(false)
-  const isHighPriceImpactTxn = isHighPriceImpact(data.priceImpact)
+  const isHighPriceImpactTxn = isHighPriceImpact(transactionData.priceImpact)
 
   return (
     <div className="reviewDeposit">
       <h3>{t("reviewDeposit")}</h3>
       <div className="table">
+        <h4>Depositing</h4>
         <div className="tokenList">
-          {data.deposit.map((token, index) => (
-            <div className="eachToken" key={index}>
+          {transactionData.from.map(({ token, amount }) => (
+            <div className="eachToken" key={token.symbol}>
               <div className="value">
-                <span className="value">{token.value}</span>
+                <span className="value">
+                  {commify(formatBNToString(amount, token.decimals))}
+                </span>
               </div>
               <div className="token">
                 <img src={token.icon} alt="icon" />
@@ -64,9 +62,31 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
           ))}
         </div>
         <div className="divider" style={{ height: "1px", width: "100%" }}></div>
+        <h4>Receiving</h4>
+        <div className="tokenList">
+          <div className="eachToken" key={transactionData.to.token.symbol}>
+            <div className="value">
+              <span className="value">
+                {commify(
+                  formatBNToString(
+                    transactionData.to.amount,
+                    transactionData.to.token.decimals,
+                  ),
+                )}
+              </span>
+            </div>
+            <div className="token">
+              <img src={transactionData.to.token.icon} alt="icon" />
+              <span>{transactionData.to.token.name}</span>
+            </div>
+          </div>
+        </div>
+        <div className="divider" style={{ height: "1px", width: "100%" }}></div>
         <div className="depositInfoItem">
           <span className="label">{t("shareOfPool")}</span>
-          <span className="value">{data.shareOfPool}</span>
+          <span className="value">
+            {formatBNToPercentString(transactionData.shareOfPool, 18)}
+          </span>
         </div>
         <div className="depositInfoItem">
           <span className="label">{t("gas")}</span>
@@ -88,9 +108,10 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
         <div className="depositInfoItem">
           <span className="label">{t("rates")}</span>
           <div className="rates value">
-            {data.rates.map((rate, index) => (
-              <span key={index}>
-                1 {rate.name} = ${rate.rate}
+            {transactionData.from.map(({ token, singleTokenPriceUSD }) => (
+              <span key={token.symbol}>
+                1 {token.name} = $
+                {commify(formatBNToString(singleTokenPriceUSD, 18, 2))}
               </span>
             ))}
           </div>
@@ -105,8 +126,6 @@ function ReviewDeposit({ onClose, onConfirm, data }: Props): ReactElement {
         />
       )}
       <div className="bottom">
-        <span>{`${t("youWillReceive")} ${data.lpToken} ${t("lpTokens")}`}</span>
-        <div className="divider" style={{ height: "1px", width: "100%" }}></div>
         <p>{t("estimatedOutput")}</p>
         <div className="buttonWrapper">
           <Button

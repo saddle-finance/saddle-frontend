@@ -44,6 +44,10 @@ div.reviewDeposit {
       }
       & > .token {
         width: 55%;
+        img {
+          height: 24px;
+          width: 24px;
+        }
         @include breakpoint(md) {
           width: 27%;
         }

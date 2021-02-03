@@ -1,19 +1,19 @@
 import {
   BTC_POOL_NAME,
   BTC_POOL_TOKENS,
+  BTC_SWAP_TOKEN,
   RENBTC,
   SBTC,
   TBTC,
   WBTC,
 } from "../constants"
 import React, { ReactElement, useEffect, useState } from "react"
-import { formatBNToPercentString, formatBNToString } from "../utils"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
 import { calculatePriceImpact } from "../utils/priceImpact"
-import { commify } from "@ethersproject/units"
+import { formatBNToString } from "../utils"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
@@ -165,39 +165,38 @@ function DepositBTC(): ReactElement | null {
   function updateTokenFormValue(symbol: string, value: string): void {
     updateTokenFormState({ [symbol]: value })
   }
-  const depositData = {
-    shareOfPool: formatBNToPercentString(
-      poolData?.totalLocked.gt(0)
-        ? estDepositLPTokenAmount
-            .mul(BigNumber.from(10).pow(18))
-            .div(estDepositLPTokenAmount.add(poolData?.totalLocked))
-        : BigNumber.from(10).pow(18),
-      18,
-    ),
-    lpToken: formatBNToString(estDepositLPTokenAmount, 18),
-    deposit: BTC_POOL_TOKENS.filter(({ symbol }) =>
+  const depositTransaction = {
+    from: BTC_POOL_TOKENS.filter(({ symbol }) =>
       BigNumber.from(tokenFormState[symbol].valueSafe).gt(0),
-    ).map(({ symbol, name, icon, decimals }) => ({
-      name: name,
-      value: formatBNToString(
-        BigNumber.from(tokenFormState[symbol].valueSafe),
-        decimals,
-      ),
-      icon: icon,
-    })),
-    rates:
-      tokenPricesUSD != null
-        ? BTC_POOL_TOKENS.filter(({ symbol }) =>
-            BigNumber.from(tokenFormState[symbol].valueSafe).gt(0),
-          ).map(({ symbol, name, decimals }) => ({
-            name: name,
-            value: formatBNToString(
-              BigNumber.from(tokenFormState[symbol].valueSafe),
-              decimals,
-            ),
-            rate: commify(tokenPricesUSD[symbol]?.toFixed(2)),
-          }))
-        : [],
+    ).map((token) => {
+      const { symbol, decimals } = token
+      const usdPriceBN = parseUnits(
+        (tokenPricesUSD?.[symbol] || 0).toFixed(2),
+        18,
+      )
+      const amount = BigNumber.from(tokenFormState[symbol].valueSafe)
+      return {
+        token,
+        amount,
+        singleTokenPriceUSD: usdPriceBN,
+        totalValueUSD: amount
+          .mul(usdPriceBN)
+          .div(BigNumber.from(10).pow(decimals)),
+      }
+    }),
+    to: {
+      token: BTC_SWAP_TOKEN,
+      amount: estDepositLPTokenAmount,
+      singleTokenPriceUSD: poolData?.lpTokenPriceUSD || BigNumber.from(0),
+      totalValueUSD: estDepositLPTokenAmount
+        .mul(poolData?.lpTokenPriceUSD || BigNumber.from(0))
+        ?.div(BigNumber.from(10).pow(BTC_SWAP_TOKEN.decimals)),
+    },
+    shareOfPool: poolData?.totalLocked.gt(0)
+      ? estDepositLPTokenAmount
+          .mul(BigNumber.from(10).pow(18))
+          .div(estDepositLPTokenAmount.add(poolData?.totalLocked))
+      : BigNumber.from(10).pow(18),
     priceImpact: estDepositBonus,
   }
 
@@ -213,7 +212,7 @@ function DepositBTC(): ReactElement | null {
       transactionInfoData={{
         bonus: estDepositBonus,
       }}
-      depositDataFromParent={depositData}
+      transactionData={depositTransaction}
       infiniteApproval={infiniteApproval}
       willExceedMaxDeposits={willExceedMaxDeposits}
       isAcceptingDeposits={!!poolData?.isAcceptingDeposits}

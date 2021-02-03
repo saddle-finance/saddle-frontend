@@ -1,5 +1,6 @@
 import daiLogo from "../assets/icons/dai.svg"
 import renbtcLogo from "../assets/icons/renbtc.svg"
+import saddleLogo from "../assets/icons/logo.svg"
 import sbtcLogo from "../assets/icons/sbtc.svg"
 import susdLogo from "../assets/icons/susd.svg"
 import tbtcLogo from "../assets/icons/tbtc.svg"
@@ -75,8 +76,8 @@ export const BTC_SWAP_TOKEN = new Token(
   18,
   "BLPT",
   "blpt",
-  "Bitcoin Swap Token",
-  "", // TODO add logo
+  "Saddle BTC Pool LP Token",
+  saddleLogo,
 )
 
 // Stablecoins
