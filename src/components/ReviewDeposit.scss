@@ -1,4 +1,5 @@
 @import "../styles/theme";
+@import "../styles/viewports";
 
 div.reviewDeposit {
   margin-top: 0;
@@ -19,6 +20,9 @@ div.reviewDeposit {
   .table {
     display: flex;
     flex-direction: column;
+    @include breakpoint(sm) {
+      font-size: 14px;
+    }
 
     .eachToken {
       margin-bottom: 16px;
@@ -34,9 +38,15 @@ div.reviewDeposit {
 
       & > .value {
         width: 45%;
+        @include breakpoint(md) {
+          width: 73%;
+        }
       }
       & > .token {
         width: 55%;
+        @include breakpoint(md) {
+          width: 27%;
+        }
       }
 
       &:last-of-type {
@@ -52,10 +62,16 @@ div.reviewDeposit {
 
       & > .label {
         width: 45%;
+        @include breakpoint(md) {
+          width: 73%;
+        }
       }
 
       & > .value {
         width: 55%;
+        @include breakpoint(md) {
+          width: 27%;
+        }
       }
     }
 

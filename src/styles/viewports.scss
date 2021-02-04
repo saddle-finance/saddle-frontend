@@ -1,0 +1,34 @@
+/* Breakpoint sizes */
+$screen-xs-max: 440px;
+$screen-sm-max: 544px;
+$screen-md-max: 768px;
+$screen-lg-max: 1024px;
+
+/* Create the mixin */
+@mixin breakpoint($media) {
+  @if $media == xs {
+    @media only screen and (max-width: $screen-xs-max) {
+      @content;
+    }
+  } @else if $media == sm {
+    @media only screen and (max-width: $screen-sm-max) {
+      @content;
+    }
+  } @else if $media == md {
+    @media only screen and (max-width: $screen-md-max) {
+      @content;
+    }
+  } @else if $media == lg {
+    @media only screen and (max-width: $screen-lg-max) {
+      @content;
+    }
+  }
+}
+
+/*
+utilize the mixin like this:
+
+@include breakpoint(<xs, sm, md, or lg>) {
+    <selector>: <value>;
+}
+*/
