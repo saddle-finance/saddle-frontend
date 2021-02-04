@@ -21,9 +21,7 @@ if (window && window.ethereum) {
   window.ethereum.autoRefreshOnNetworkChange = false
 }
 
-window.addEventListener("error", (error) => {
-  logError(error)
-})
+window.addEventListener("error", logError)
 
 ReactDOM.render(
   <React.StrictMode>
