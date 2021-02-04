@@ -52,7 +52,6 @@ function SwapBTC(): ReactElement {
     },
     priceImpact: BigNumber.from("0"),
   })
-
   // build a representation of pool tokens for the UI
   const tokens = BTC_POOL_TOKENS.map(({ symbol, name, icon, decimals }) => ({
     name,
