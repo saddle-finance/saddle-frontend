@@ -7,7 +7,7 @@ import { BigNumber } from "@ethersproject/bignumber"
 import React from "react"
 import { Token } from "../constants"
 
-interface TokensStateType {
+export interface TokensStateType {
   [token: string]: NumberInputState
 }
 type UpdateTokensStateType = (newState: {

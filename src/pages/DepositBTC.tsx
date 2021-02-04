@@ -7,22 +7,24 @@ import {
   TBTC,
   WBTC,
 } from "../constants"
+import { DepositTransaction, TransactionItem } from "../interfaces/transactions"
 import React, { ReactElement, useEffect, useState } from "react"
+import { TokensStateType, useTokenFormState } from "../hooks/useTokenFormState"
+import usePoolData, { PoolDataType } from "../hooks/usePoolData"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
+import { TokenPricesUSD } from "../state/application"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { formatBNToString } from "../utils"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
 import useHistoricalPoolData from "../hooks/useHistoricalPoolData"
-import usePoolData from "../hooks/usePoolData"
 import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
 import { useTokenBalance } from "../state/wallet/hooks"
-import { useTokenFormState } from "../hooks/useTokenFormState"
 import { useUserMerkleProof } from "../hooks/useUserMerkleProof"
 
 function DepositBTC(): ReactElement | null {
@@ -48,7 +50,7 @@ function DepositBTC(): ReactElement | null {
   const [estDepositLPTokenAmount, setEstDepositLPTokenAmount] = useState(
     BigNumber.from(0),
   )
-  const [estDepositBonus, setEstDepositBonus] = useState(BigNumber.from(0))
+  const [priceImpact, setPriceImpact] = useState(BigNumber.from(0))
   const [willExceedMaxDeposits, setWillExceedMaxDeposit] = useState(true)
 
   useEffect(() => {
@@ -100,7 +102,7 @@ function DepositBTC(): ReactElement | null {
         setWillExceedMaxDeposit(exceedsMaxDeposits)
       }
 
-      setEstDepositBonus(
+      setPriceImpact(
         calculatePriceImpact(
           tokenInputSum,
           depositLPTokenAmount,
@@ -165,40 +167,13 @@ function DepositBTC(): ReactElement | null {
   function updateTokenFormValue(symbol: string, value: string): void {
     updateTokenFormState({ [symbol]: value })
   }
-  const depositTransaction = {
-    from: BTC_POOL_TOKENS.filter(({ symbol }) =>
-      BigNumber.from(tokenFormState[symbol].valueSafe).gt(0),
-    ).map((token) => {
-      const { symbol, decimals } = token
-      const usdPriceBN = parseUnits(
-        (tokenPricesUSD?.[symbol] || 0).toFixed(2),
-        18,
-      )
-      const amount = BigNumber.from(tokenFormState[symbol].valueSafe)
-      return {
-        token,
-        amount,
-        singleTokenPriceUSD: usdPriceBN,
-        totalValueUSD: amount
-          .mul(usdPriceBN)
-          .div(BigNumber.from(10).pow(decimals)),
-      }
-    }),
-    to: {
-      token: BTC_SWAP_TOKEN,
-      amount: estDepositLPTokenAmount,
-      singleTokenPriceUSD: poolData?.lpTokenPriceUSD || BigNumber.from(0),
-      totalValueUSD: estDepositLPTokenAmount
-        .mul(poolData?.lpTokenPriceUSD || BigNumber.from(0))
-        ?.div(BigNumber.from(10).pow(BTC_SWAP_TOKEN.decimals)),
-    },
-    shareOfPool: poolData?.totalLocked.gt(0)
-      ? estDepositLPTokenAmount
-          .mul(BigNumber.from(10).pow(18))
-          .div(estDepositLPTokenAmount.add(poolData?.totalLocked))
-      : BigNumber.from(10).pow(18),
-    priceImpact: estDepositBonus,
-  }
+  const depositTransaction = buildTransactionData(
+    tokenFormState,
+    poolData,
+    priceImpact,
+    estDepositLPTokenAmount,
+    tokenPricesUSD,
+  )
 
   return (
     <DepositPage
@@ -209,9 +184,6 @@ function DepositBTC(): ReactElement | null {
       poolData={poolData}
       historicalPoolData={historicalPoolData}
       myShareData={userShareData}
-      transactionInfoData={{
-        bonus: estDepositBonus,
-      }}
       transactionData={depositTransaction}
       infiniteApproval={infiniteApproval}
       willExceedMaxDeposits={willExceedMaxDeposits}
@@ -220,4 +192,63 @@ function DepositBTC(): ReactElement | null {
     />
   )
 }
+
+function buildTransactionData(
+  tokenFormState: TokensStateType,
+  poolData: PoolDataType | null,
+  priceImpact: BigNumber,
+  estDepositLPTokenAmount: BigNumber,
+  tokenPricesUSD?: TokenPricesUSD,
+): DepositTransaction {
+  const from = {
+    items: [] as TransactionItem[],
+    totalAmount: BigNumber.from(0),
+    totalValueUSD: BigNumber.from(0),
+  }
+  BTC_POOL_TOKENS.forEach((token) => {
+    const { symbol, decimals } = token
+    const amount = BigNumber.from(tokenFormState[symbol].valueSafe)
+    const usdPriceBN = parseUnits(
+      (tokenPricesUSD?.[symbol] || 0).toFixed(2),
+      18,
+    )
+    if (amount.lte("0")) return
+    const item = {
+      token,
+      amount,
+      singleTokenPriceUSD: usdPriceBN,
+      valueUSD: amount.mul(usdPriceBN).div(BigNumber.from(10).pow(decimals)),
+    }
+    from.items.push(item)
+    from.totalAmount = from.totalAmount.add(amount)
+    from.totalValueUSD = from.totalValueUSD.add(usdPriceBN)
+  })
+
+  const lpTokenPriceUSD = poolData?.lpTokenPriceUSD || BigNumber.from(0)
+  const toTotalValueUSD = estDepositLPTokenAmount
+    .mul(lpTokenPriceUSD)
+    ?.div(BigNumber.from(10).pow(BTC_SWAP_TOKEN.decimals))
+  const to = {
+    item: {
+      token: BTC_SWAP_TOKEN,
+      amount: estDepositLPTokenAmount,
+      singleTokenPriceUSD: lpTokenPriceUSD,
+      valueUSD: toTotalValueUSD,
+    },
+    totalAmount: estDepositLPTokenAmount,
+    totalValueUSD: toTotalValueUSD,
+  }
+  const shareOfPool = poolData?.totalLocked.gt(0)
+    ? estDepositLPTokenAmount
+        .mul(BigNumber.from(10).pow(18))
+        .div(estDepositLPTokenAmount.add(poolData?.totalLocked))
+    : BigNumber.from(10).pow(18)
+  return {
+    from,
+    to,
+    priceImpact,
+    shareOfPool,
+  }
+}
+
 export default DepositBTC

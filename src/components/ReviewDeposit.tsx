@@ -5,7 +5,7 @@ import { formatBNToPercentString, formatBNToString } from "../utils"
 
 import { AppState } from "../state/index"
 import Button from "./Button"
-import { DepositTransaction } from "../interfaces"
+import { DepositTransaction } from "../interfaces/transactions"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { commify } from "@ethersproject/units"
 import { formatGasToString } from "../utils/gas"
@@ -47,7 +47,7 @@ function ReviewDeposit({
       <div className="table">
         <h4>Depositing</h4>
         <div className="tokenList">
-          {transactionData.from.map(({ token, amount }) => (
+          {transactionData.from.items.map(({ token, amount }) => (
             <div className="eachToken" key={token.symbol}>
               <div className="value">
                 <span className="value">
@@ -64,20 +64,20 @@ function ReviewDeposit({
         <div className="divider" style={{ height: "1px", width: "100%" }}></div>
         <h4>Receiving</h4>
         <div className="tokenList">
-          <div className="eachToken" key={transactionData.to.token.symbol}>
+          <div className="eachToken" key={transactionData.to.item.token.symbol}>
             <div className="value">
               <span className="value">
                 {commify(
                   formatBNToString(
-                    transactionData.to.amount,
-                    transactionData.to.token.decimals,
+                    transactionData.to.item.amount,
+                    transactionData.to.item.token.decimals,
                   ),
                 )}
               </span>
             </div>
             <div className="token">
-              <img src={transactionData.to.token.icon} alt="icon" />
-              <span>{transactionData.to.token.name}</span>
+              <img src={transactionData.to.item.token.icon} alt="icon" />
+              <span>{transactionData.to.item.token.name}</span>
             </div>
           </div>
         </div>
@@ -108,7 +108,15 @@ function ReviewDeposit({
         <div className="depositInfoItem">
           <span className="label">{t("rates")}</span>
           <div className="rates value">
-            {transactionData.from.map(({ token, singleTokenPriceUSD }) => (
+            {transactionData.from.items.map(
+              ({ token, singleTokenPriceUSD }) => (
+                <span key={token.symbol}>
+                  1 {token.name} = $
+                  {commify(formatBNToString(singleTokenPriceUSD, 18, 2))}
+                </span>
+              ),
+            )}
+            {[transactionData.to.item].map(({ token, singleTokenPriceUSD }) => (
               <span key={token.symbol}>
                 1 {token.name} = $
                 {commify(formatBNToString(singleTokenPriceUSD, 18, 2))}

@@ -3,6 +3,7 @@ import "./TokenInput.scss"
 import React, { ReactElement } from "react"
 
 import Button from "./Button"
+import { TOKENS_MAP } from "../constants"
 import classNames from "classnames"
 import { useTranslation } from "react-i18next"
 
@@ -29,7 +30,16 @@ function TokenInput({
     onChange(String(max))
   }
   function onChangeInput(e: React.ChangeEvent<HTMLInputElement>): void {
-    onChange(e.target.value)
+    const { decimals } = TOKENS_MAP[symbol]
+    const parsedValue = parseFloat(e.target.value)
+    const periodIndex = e.target.value.indexOf(".")
+    const isValidInput = e.target.value === "" || !isNaN(parsedValue)
+    const isValidPrecision =
+      periodIndex === -1 || e.target.value.length - 1 - periodIndex <= decimals
+    if (isValidInput && isValidPrecision) {
+      // don't allow input longer than the token allows
+      onChange(e.target.value)
+    }
   }
 
   return (
