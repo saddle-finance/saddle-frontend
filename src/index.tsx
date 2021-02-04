@@ -3,6 +3,7 @@ import "normalize.css"
 import "./i18n"
 
 import { Web3ReactProvider, createWeb3ReactRoot } from "@web3-react/core"
+import { logError, sendWebVitalsToGA } from "./utils/googleAnalytics"
 
 import App from "./pages/App"
 import { NetworkContextName } from "./constants"
@@ -12,7 +13,6 @@ import ReactDOM from "react-dom"
 import { HashRouter as Router } from "react-router-dom"
 import getLibrary from "./utils/getLibrary"
 import reportWebVitals from "./reportWebVitals"
-import { sendWebVitalsToGA } from "./utils/googleAnalytics"
 import store from "./state"
 
 const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName)
@@ -20,6 +20,10 @@ const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName)
 if (window && window.ethereum) {
   window.ethereum.autoRefreshOnNetworkChange = false
 }
+
+window.addEventListener("error", (error) => {
+  logError(error)
+})
 
 ReactDOM.render(
   <React.StrictMode>
