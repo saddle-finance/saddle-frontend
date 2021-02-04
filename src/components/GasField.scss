@@ -1,12 +1,13 @@
 @import "../styles/theme";
 div.gasField {
   input {
-    width: 42px;
-    border: none;
-    border-radius: 0;
-    height: 20px;
+    width: 48px;
+    height: 28px;
+    border: 1px solid $black;
+    border-radius: 8px;
     font-size: 80%;
-    outline: 1px solid $black;
+    margin: 4px auto 4px 6px;
+    outline: none !important;
   }
 
   input:focus {
@@ -14,21 +15,32 @@ div.gasField {
   }
 
   .label {
+    margin: 0 auto;
     font-weight: $bold;
     font-size: 16px;
     letter-spacing: -0.04em;
-    display: block;
-    margin-bottom: 4px;
+    margin: auto 16px auto 0;
+  }
+  .options {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
   }
 
   .options > button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border: none;
     background: none;
-    font-size: 16px;
+    font-size: 12px;
     font-weight: $normal;
     color: var(--text);
+    margin: 0 2px;
+    width: 80px;
+    height: 38px;
     letter-spacing: -0.04em;
-    padding: 0 16px 0 0;
+    padding: 4px 16px;
     cursor: pointer;
 
     &:hover {
@@ -44,7 +56,8 @@ div.gasField {
     &.selected {
       color: var(--text-selected);
       font-weight: $medium;
-      text-decoration: underline;
+      border: 1px solid var(--text-selected);
+      border-radius: 8px;
     }
   }
 }

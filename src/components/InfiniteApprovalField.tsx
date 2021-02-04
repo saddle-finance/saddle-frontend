@@ -16,16 +16,16 @@ export default function InfiniteApprovalField(): ReactElement {
   const { infiniteApproval } = useSelector((state: AppState) => state.user)
   return (
     <div className="infiniteApproval">
-      <div className="label">
-        {t("infiniteApproval")}
-        <span className="tooltipText">{t("infiniteApprovalTooltip")}</span>
-      </div>
       <CheckboxInput
         checked={infiniteApproval}
         onChange={(): PayloadAction<boolean> =>
           dispatch(updateInfiniteApproval(!infiniteApproval))
         }
       />
+      <div className="label">
+        {t("infiniteApproval")}
+        <span className="tooltipText">{t("infiniteApprovalTooltip")}</span>
+      </div>
     </div>
   )
 }

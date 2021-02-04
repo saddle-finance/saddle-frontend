@@ -36,6 +36,7 @@ function SwapBTC(): ReactElement {
     gasPriceSelected,
     gasCustom,
     infiniteApproval,
+    transactionDeadline,
   } = useSelector((state: AppState) => state.user)
   const tokenBalances = usePoolTokenBalances(BTC_POOL_NAME)
   const swapContract = useSwapContract(BTC_POOL_NAME)
@@ -51,7 +52,6 @@ function SwapBTC(): ReactElement {
     },
     priceImpact: BigNumber.from("0"),
   })
-
   // build a representation of pool tokens for the UI
   const tokens = BTC_POOL_TOKENS.map(({ symbol, name, icon, decimals }) => ({
     name,
@@ -205,6 +205,7 @@ function SwapBTC(): ReactElement {
       infiniteApproval,
       gasPriceSelected,
       gasCustom,
+      transactionDeadline,
     })
     // Clear input after deposit
     setFormState((prevState) => ({

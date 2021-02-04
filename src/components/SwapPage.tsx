@@ -7,6 +7,7 @@ import { AppDispatch } from "../state"
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
+import DeadlineField from "./DeadlineField"
 import GasField from "./GasField"
 import InfiniteApprovalField from "./InfiniteApprovalField"
 import Modal from "./Modal"
@@ -150,13 +151,16 @@ const SwapPage = (props: Props): ReactElement => {
           <div className={"tableContainer " + classNames({ show: advanced })}>
             <div className="table">
               <div className="parameter">
-                <GasField />
+                <InfiniteApprovalField />
               </div>
               <div className="parameter">
                 <SlippageField />
               </div>
               <div className="parameter">
-                <InfiniteApprovalField />
+                <DeadlineField />
+              </div>
+              <div className="parameter">
+                <GasField />
               </div>
             </div>
           </div>

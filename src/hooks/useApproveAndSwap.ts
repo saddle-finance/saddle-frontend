@@ -8,7 +8,7 @@ import {
   TRANSACTION_TYPES,
   Token,
 } from "../constants"
-import { GasPrices, Slippages } from "../state/user"
+import { Deadlines, GasPrices, Slippages } from "../state/user"
 import { useAllContracts, useSwapContract } from "./useContract"
 
 import { AppState } from "../state"
@@ -35,6 +35,7 @@ interface ApproveAndSwapStateArgument {
   slippageCustom?: NumberInputState
   gasPriceSelected: GasPrices
   gasCustom?: NumberInputState
+  transactionDeadline: Deadlines
 }
 
 export function useApproveAndSwap(
@@ -48,6 +49,7 @@ export function useApproveAndSwap(
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
+
   let POOL_TOKENS: Token[]
   if (poolName === BTC_POOL_NAME) {
     POOL_TOKENS = BTC_POOL_TOKENS
@@ -137,7 +139,9 @@ export function useApproveAndSwap(
         indexTo,
         state.fromAmount,
         minToMint,
-        Math.round(new Date().getTime() / 1000 + 60 * 10),
+        Math.round(
+          new Date().getTime() / 1000 + 60 * state.transactionDeadline,
+        ),
         {
           gasPrice,
         },

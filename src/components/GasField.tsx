@@ -22,8 +22,8 @@ export default function GasField(): ReactElement {
   )
   return (
     <div className="gasField">
-      <span className="label">{t("gas")}</span>
       <div className="options">
+        <div className="label">{t("gas")}:</div>
         {[GasPrices.Standard, GasPrices.Fast, GasPrices.Instant].map(
           (gasPriceConst) => {
             let priceValue
@@ -49,7 +49,10 @@ export default function GasField(): ReactElement {
                   dispatch(updateGasPriceSelected(gasPriceConst))
                 }
               >
-                {priceValue} {text}
+                <div>
+                  <div>{priceValue}</div>
+                  <div>{text}</div>
+                </div>
               </button>
             )
           },

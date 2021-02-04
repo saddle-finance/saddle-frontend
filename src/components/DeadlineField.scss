@@ -1,13 +1,12 @@
 @import "../styles/theme";
-div.slippageField {
+div.deadlineField {
   input {
     width: 48px;
-    height: 28px;
     border: 1px solid $black;
     border-radius: 8px;
     height: 28px;
     font-size: 80%;
-    margin: 4px -4px 4px 4px;
+    margin: 0 6px 0 8px;
     outline: none !important;
   }
 
@@ -25,11 +24,7 @@ div.slippageField {
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
-  }
-  button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: space-between;
   }
 
   .options > button {
@@ -37,14 +32,14 @@ div.slippageField {
     justify-content: center;
     align-items: center;
     border: none;
+    border-radius: 8px;
     background: none;
     font-size: 16px;
+    width: 80px;
+    height: 30px;
     font-weight: $normal;
     color: var(--text);
     letter-spacing: -0.04em;
-    width: 70px;
-    height: 30px;
-    margin: 0 2px;
     padding: 4px 10px;
     cursor: pointer;
 
