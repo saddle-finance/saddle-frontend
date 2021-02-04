@@ -51,12 +51,10 @@ export default function DeadlineField(): ReactElement {
             dispatch(updateTransactionDeadline(Deadlines.Custom))
           }
           onChange={(e): void => {
-            let deadlineNumber
-            e.target.value === "" || parseFloat(e.target.value) < 0
-              ? // if left blank, deadline defaults to 10
-                (deadlineNumber = Deadlines.Ten)
-              : (deadlineNumber = parseFloat(e.target.value))
-            dispatch(updateTransactionDeadline(deadlineNumber))
+            let deadlineNumber =
+              e.target.value === "" || parseFloat(e.target.value) < 0
+              ? Deadlines.Ten // if left blank, deadline defaults to 10
+              : parseFloat(e.target.value)
           }}
         />
         <span> {t("minutes")}</span>
