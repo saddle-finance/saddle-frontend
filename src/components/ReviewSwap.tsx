@@ -119,7 +119,9 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
           </div>
           <div className="row">
             <span className="title">{t("deadline")}</span>
-            <span className="value floatRight">{transactionDeadline} {t("minutes")}</span>
+            <span className="value floatRight">
+              {transactionDeadline} {t("minutes")}
+            </span>
           </div>
           {isHighPriceImpactTxn && (
             <div className="row">
