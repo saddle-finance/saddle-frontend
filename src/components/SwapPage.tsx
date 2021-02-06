@@ -78,7 +78,7 @@ const SwapPage = (props: Props): ReactElement => {
           selected={fromState.symbol}
           inputValue={fromState.value}
         />
-        <div style={{ width: "64px" }} />
+        <div className="spacer" />
         <SwapForm
           isSwapFrom={false}
           tokens={tokens}
