@@ -91,10 +91,10 @@ function SwapBTC(): ReactElement {
       )
       let error: string | null = null
       let amountToReceive: BigNumber
-      if (tokenAmount.isZero()) {
-        amountToReceive = BigNumber.from("0")
-      } else if (tokenAmount.gt(tokenBalances[formStateArg.from.symbol])) {
+      if (tokenAmount.gt(tokenBalances[formStateArg.from.symbol])) {
         error = t("insufficientBalance")
+      }
+      if (tokenAmount.isZero()) {
         amountToReceive = BigNumber.from("0")
       } else {
         amountToReceive = await swapContract.calculateSwap(
