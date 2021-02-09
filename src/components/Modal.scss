@@ -1,4 +1,5 @@
 @import "../styles/theme";
+@import "../styles/viewports";
 
 div.modal {
   display: block; /* Hidden by default */
@@ -23,6 +24,12 @@ div.modalContent {
 
   max-height: calc(100vh - 72px);
   overflow: auto;
+  @include breakpoint(sm) {
+    width: 90%;
+    position: relative;
+    right: 3%;
+    max-height: calc(100vh - 36px);
+  }
 
   .close {
     color: #aaa;
