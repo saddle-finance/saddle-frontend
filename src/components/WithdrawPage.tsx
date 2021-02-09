@@ -8,6 +8,7 @@ import { AppDispatch } from "../state"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
+import DeadlineField from "./DeadlineField"
 import GasField from "./GasField"
 import { HistoricalPoolDataType } from "../hooks/useHistoricalPoolData"
 import InfiniteApprovalField from "./InfiniteApprovalField"
@@ -217,13 +218,16 @@ const WithdrawPage = (props: Props): ReactElement => {
                 className={"tableContainer" + classNames({ show: advanced })}
               >
                 <div className="parameter">
-                  <GasField />
+                  <InfiniteApprovalField />
                 </div>
                 <div className="parameter">
                   <SlippageField />
                 </div>
                 <div className="parameter">
-                  <InfiniteApprovalField />
+                  <DeadlineField />
+                </div>
+                <div className="parameter">
+                  <GasField />
                 </div>
               </div>
             </div>

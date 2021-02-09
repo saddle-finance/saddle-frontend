@@ -43,6 +43,7 @@ function DepositBTC(): ReactElement | null {
     gasPriceSelected,
     gasCustom,
     infiniteApproval,
+    transactionDeadline,
   } = useSelector((state: AppState) => state.user)
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const [estDepositLPTokenAmount, setEstDepositLPTokenAmount] = useState(
@@ -146,6 +147,7 @@ function DepositBTC(): ReactElement | null {
       tokenFormState,
       gasPriceSelected,
       gasCustom,
+      transactionDeadline,
       merkleData: {
         userMerkleProof: userMerkleProof || [],
         hasValidMerkleState,
