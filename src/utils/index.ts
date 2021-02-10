@@ -52,7 +52,9 @@ export function formatBNToString(
   decimalPlaces?: number,
 ): string {
   const float = parseFloat(formatUnits(bn, nativePrecison))
-  return decimalPlaces != null ? float.toFixed(decimalPlaces) : float.toString()
+  return decimalPlaces != null
+    ? toFixed(float, decimalPlaces)
+    : float.toString()
 }
 
 export function formatBNToPercentString(
@@ -61,4 +63,22 @@ export function formatBNToPercentString(
   decimalPlaces = 2,
 ): string {
   return `${formatBNToString(bn, nativePrecison - 2, decimalPlaces)}%`
+}
+
+export function calculateExchangeRate(
+  amountFrom: BigNumber,
+  tokenPrecisionFrom: number,
+  amountTo: BigNumber,
+  tokenPrecisionTo: number,
+): BigNumber {
+  return amountFrom.gt("0")
+    ? amountTo
+        .mul(BigNumber.from(10).pow(36 - tokenPrecisionTo)) // convert to standard 1e18 precision
+        .div(amountFrom.mul(BigNumber.from(10).pow(18 - tokenPrecisionFrom)))
+    : BigNumber.from("0")
+}
+
+export function toFixed(value: number, precision: number): string {
+  const power = Math.pow(10, precision || 0)
+  return String(Math.round(value * power) / power)
 }

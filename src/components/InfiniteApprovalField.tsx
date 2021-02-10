@@ -7,6 +7,7 @@ import { AppDispatch } from "../state"
 import { AppState } from "../state/index"
 import CheckboxInput from "./CheckboxInput"
 import { PayloadAction } from "@reduxjs/toolkit"
+import ToolTip from "./ToolTip"
 import { updateInfiniteApproval } from "../state/user"
 import { useTranslation } from "react-i18next"
 
@@ -22,10 +23,9 @@ export default function InfiniteApprovalField(): ReactElement {
           dispatch(updateInfiniteApproval(!infiniteApproval))
         }
       />
-      <div className="label">
-        {t("infiniteApproval")}
-        <span className="tooltipText">{t("infiniteApprovalTooltip")}</span>
-      </div>
+      <ToolTip content={t("infiniteApprovalTooltip")}>
+        <span className="label">{t("infiniteApproval")}</span>
+      </ToolTip>
     </div>
   )
 }
