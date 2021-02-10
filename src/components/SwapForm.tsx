@@ -2,18 +2,22 @@ import "./SwapForm.scss"
 
 import React, { ReactElement } from "react"
 
+import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
+import ToolTip from "./ToolTip"
 import classNames from "classnames"
-import { commify } from "@ethersproject/units"
+import { formatBNToString } from "../utils"
+import { formatUnits } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
 interface Props {
   isSwapFrom: boolean
   tokens: Array<{
     name: string
-    value: string
+    value: BigNumber
     icon: string
     symbol: string
+    decimals: number
   }>
   selected: string
   inputValue: string
@@ -60,7 +64,7 @@ function SwapForm({
                 onClick={(): void => {
                   const token = tokens.find((t) => t.symbol === selected)
                   if (token && onChangeAmount) {
-                    onChangeAmount(token.value)
+                    onChangeAmount(formatUnits(token.value, token.decimals))
                   }
                 }}
               >
@@ -73,8 +77,9 @@ function SwapForm({
         </div>
       </div>
       <ul className="tokenList">
-        {tokens.map(({ symbol, value, icon, name }, i) => {
-          const formattedBalance = commify(parseFloat(value).toFixed(6))
+        {tokens.map(({ symbol, value, icon, name, decimals }, i) => {
+          const formattedShortBalance = formatBNToString(value, decimals, 6)
+          const formattedLongBalance = formatBNToString(value, decimals)
           return (
             <div
               className={classNames("tokenListItem", {
@@ -86,7 +91,11 @@ function SwapForm({
               <img className="tokenIcon" src={icon} alt="icon" />
               <span className="tokenName">{name}</span>
               {isSwapFrom ? (
-                <span className="tokenValue">{formattedBalance}</span>
+                <span className="tokenValue">
+                  <ToolTip content={formattedLongBalance}>
+                    {formattedShortBalance}
+                  </ToolTip>
+                </span>
               ) : null}
               {i === tokens.length - 1 ? "" : <div className="divider"></div>}
             </div>
