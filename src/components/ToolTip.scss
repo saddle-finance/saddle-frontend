@@ -1,0 +1,46 @@
+@import "../styles/theme.scss";
+
+.toolTip {
+  display: inline-block;
+  position: relative;
+
+  & > .tooltipText {
+    visibility: hidden;
+    display: block;
+    background-color: $primary;
+    color: $text-black;
+    border-radius: 8px;
+    width: max-content;
+    max-width: 360px;
+    padding: 6px 8px;
+
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: $normal;
+    letter-spacing: -0.04em;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 15px;
+  }
+
+  /* Tooltip arrow */
+  & > .tooltipText::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 40%;
+    margin-left: -5px;
+    border-width: 10px;
+    border-style: solid;
+    border-color: $primary transparent transparent transparent;
+  }
+
+  &:hover > .tooltipText {
+    visibility: visible;
+  }
+}

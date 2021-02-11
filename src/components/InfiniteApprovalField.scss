@@ -22,41 +22,4 @@
       cursor: help;
     }
   }
-
-  .label .tooltipText {
-    visibility: hidden;
-    width: 360px;
-    background-color: $primary;
-    color: $text-black;
-    border-radius: 8px;
-    padding: 6px 8px;
-
-    font-size: 14px;
-    line-height: 20px;
-    font-weight: $normal;
-    letter-spacing: -0.04em;
-
-    /* Position the tooltip */
-    position: absolute;
-    z-index: 1;
-    bottom: 200%;
-    left: 50%;
-    margin-left: -100px;
-  }
-
-  /* Tooltip arrow */
-  .label .tooltipText::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 40%;
-    margin-left: -5px;
-    border-width: 10px;
-    border-style: solid;
-    border-color: $primary transparent transparent transparent;
-  }
-
-  .label:hover .tooltipText {
-    visibility: visible;
-  }
 }
