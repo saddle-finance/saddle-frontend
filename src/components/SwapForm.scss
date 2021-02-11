@@ -1,4 +1,5 @@
 @import "../styles/theme";
+@import "../styles/viewports";
 
 .swapForm {
   width: 380px;
@@ -6,7 +7,9 @@
   border: 1px solid var(--outline);
   border-radius: 10px;
   padding-top: 24px;
-
+  @include breakpoint(xs) {
+    width: 350px;
+  }
   .head {
     padding: 0 32px;
 
@@ -63,6 +66,9 @@
       background-color: $divider-red;
       position: absolute;
       bottom: 0;
+      @include breakpoint(xs) {
+        width: 293px;
+      }
     }
 
     &:hover {

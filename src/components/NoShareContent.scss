@@ -1,10 +1,13 @@
 @import "../styles/theme.scss";
+@import "../styles/viewports";
 
 div.no-share {
   width: 888px;
   margin: 0 auto;
   text-align: center;
-
+  @include breakpoint(lg) {
+    width: 100%;
+  }
   h2 {
     font-size: 30px;
   }
