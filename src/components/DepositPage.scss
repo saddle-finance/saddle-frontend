@@ -1,4 +1,5 @@
 @import "../styles/theme.scss";
+@import "../styles/viewports";
 
 div.deposit {
   min-height: 100vh;
@@ -6,6 +7,7 @@ div.deposit {
   color: var(--text);
   padding-bottom: 40px;
   box-sizing: border-box; // Make the padding included in height calculation
+  width: 100vw;
 
   .content {
     width: 888px;
@@ -14,6 +16,14 @@ div.deposit {
     grid-template-columns: auto auto;
     column-gap: 20px;
     align-items: start;
+    @include breakpoint(lg) {
+      display: flex;
+      flex-flow: column nowrap;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      width: 100vw;
+    }
 
     .infoPanels {
       margin-top: 40px;
@@ -23,10 +33,20 @@ div.deposit {
       border-radius: 10px;
       background: var(--background-element);
       box-sizing: border-box;
+      @include breakpoint(lg) {
+        margin: 40px auto 0;
+      }
+      @include breakpoint(md) {
+        max-width: 90%;
+      }
     }
 
     .left {
       width: 434px;
+      @include breakpoint(lg) {
+        margin: 0 auto;
+        width: 100%;
+      }
     }
 
     .form {
@@ -37,6 +57,12 @@ div.deposit {
       padding: 40px;
       margin-top: 40px;
       box-sizing: border-box;
+      @include breakpoint(lg) {
+        margin: 40px auto 0;
+      }
+      @include breakpoint(md) {
+        max-width: 90%;
+      }
     }
 
     .form h3 {
@@ -96,6 +122,13 @@ div.deposit {
 
   .advancedOptions {
     margin-top: 24px;
+    @include breakpoint(lg) {
+      margin: 12px auto 20px;
+      width: 434px;
+    }
+    @include breakpoint(md) {
+      max-width: 90%;
+    }
     svg.triangle {
       margin-left: 10px;
       transform: norotate(0deg);

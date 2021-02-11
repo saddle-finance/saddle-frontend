@@ -5,6 +5,7 @@ import { formatUnits, parseUnits } from "@ethersproject/units"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import SwapPage from "../components/SwapPage"
+import { calculateExchangeRate } from "../utils"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { debounce } from "lodash"
 import { useApproveAndSwap } from "../hooks/useApproveAndSwap"
@@ -25,6 +26,7 @@ interface FormState {
     value: BigNumber
   }
   priceImpact: BigNumber
+  exchangeRate: BigNumber
 }
 function SwapBTC(): ReactElement {
   const { t } = useTranslation()
@@ -51,15 +53,15 @@ function SwapBTC(): ReactElement {
       value: BigNumber.from("0"),
     },
     priceImpact: BigNumber.from("0"),
+    exchangeRate: BigNumber.from("0"),
   })
   // build a representation of pool tokens for the UI
   const tokens = BTC_POOL_TOKENS.map(({ symbol, name, icon, decimals }) => ({
     name,
     icon,
     symbol,
-    value: tokenBalances
-      ? formatUnits(tokenBalances[symbol], decimals)
-      : "0.00",
+    decimals,
+    value: tokenBalances ? tokenBalances[symbol] : BigNumber.from("0"),
   }))
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const calculateSwapAmount = useCallback(
@@ -67,7 +69,7 @@ function SwapBTC(): ReactElement {
       if (swapContract == null || tokenBalances === null || poolData == null)
         return
       const cleanedFormFromValue = formStateArg.from.value.replace(/[$,]/g, "") // remove common copy/pasted financial characters
-      if (cleanedFormFromValue === "") {
+      if (cleanedFormFromValue === "" || isNaN(+cleanedFormFromValue)) {
         setFormState((prevState) => ({
           ...prevState,
           to: {
@@ -85,25 +87,26 @@ function SwapBTC(): ReactElement {
       const tokenIndexTo = BTC_POOL_TOKENS.findIndex(
         ({ symbol }) => symbol === formStateArg.to.symbol,
       )
-      const tokenAmount = parseUnits(
+      const amountToGive = parseUnits(
         cleanedFormFromValue,
         TOKENS_MAP[formStateArg.from.symbol].decimals,
       )
       let error: string | null = null
       let amountToReceive: BigNumber
-      if (tokenAmount.gt(tokenBalances[formStateArg.from.symbol])) {
+      if (amountToGive.gt(tokenBalances[formStateArg.from.symbol])) {
         error = t("insufficientBalance")
       }
-      if (tokenAmount.isZero()) {
+      if (amountToGive.isZero()) {
         amountToReceive = BigNumber.from("0")
       } else {
         amountToReceive = await swapContract.calculateSwap(
           tokenIndexFrom,
           tokenIndexTo,
-          tokenAmount,
+          amountToGive,
         )
       }
       const tokenTo = TOKENS_MAP[formStateArg.to.symbol]
+      const tokenFrom = TOKENS_MAP[formStateArg.from.symbol]
       setFormState((prevState) => ({
         ...prevState,
         error,
@@ -112,9 +115,15 @@ function SwapBTC(): ReactElement {
           value: amountToReceive,
         },
         priceImpact: calculatePriceImpact(
-          parseUnits(formStateArg.from.value, 18),
+          amountToGive.mul(BigNumber.from(10).pow(18 - tokenFrom.decimals)),
           amountToReceive.mul(BigNumber.from(10).pow(18 - tokenTo.decimals)),
           poolData?.virtualPrice,
+        ),
+        exchangeRate: calculateExchangeRate(
+          amountToGive,
+          tokenFrom.decimals,
+          amountToReceive,
+          tokenTo.decimals,
         ),
       }))
     }, 250),
@@ -130,6 +139,7 @@ function SwapBTC(): ReactElement {
           value,
         },
         priceImpact: BigNumber.from("0"),
+        exchangeRate: BigNumber.from("0"),
       }
       void calculateSwapAmount(nextState)
       return nextState
@@ -148,6 +158,7 @@ function SwapBTC(): ReactElement {
           value: BigNumber.from("0"),
         },
         priceImpact: BigNumber.from("0"),
+        exchangeRate: BigNumber.from("0"),
       }
       void calculateSwapAmount(nextState)
       return nextState
@@ -168,6 +179,7 @@ function SwapBTC(): ReactElement {
           value: BigNumber.from("0"),
         },
         priceImpact: BigNumber.from("0"),
+        exchangeRate: BigNumber.from("0"),
       }
       void calculateSwapAmount(nextState)
       return nextState
@@ -187,6 +199,7 @@ function SwapBTC(): ReactElement {
           symbol,
         },
         priceImpact: BigNumber.from("0"),
+        exchangeRate: BigNumber.from("0"),
       }
       void calculateSwapAmount(nextState)
       return nextState
@@ -219,18 +232,16 @@ function SwapBTC(): ReactElement {
         value: BigNumber.from("0"),
       },
       priceImpact: BigNumber.from("0"),
+      exchangeRate: BigNumber.from("0"),
     }))
   }
 
-  const info = {
-    isInfo: false,
-    message: `${t("estimatedTxCost")} $3.14`,
-  }
   return (
     <SwapPage
       tokens={tokens}
       exchangeRateInfo={{
         pair: `${formState.from.symbol}/${formState.to.symbol}`,
+        exchangeRate: formState.exchangeRate,
         priceImpact: formState.priceImpact,
       }}
       fromState={formState.from}
@@ -245,7 +256,6 @@ function SwapBTC(): ReactElement {
       onChangeFromToken={handleUpdateTokenFrom}
       onChangeToToken={handleUpdateTokenTo}
       error={formState.error}
-      info={info}
       onConfirmTransaction={handleConfirmTransaction}
       onClickReverseExchangeDirection={handleReverseExchangeDirection}
     />

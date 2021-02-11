@@ -1,4 +1,5 @@
 @import "../styles/theme";
+@import "../styles/viewports";
 
 div.riskpage {
   min-height: 100vh;
@@ -11,6 +12,14 @@ div.riskpage {
     margin: 0 auto;
     width: 888px;
     color: var(--text-darker);
+    @include breakpoint(lg) {
+      display: flex;
+      flex-flow: column nowrap;
+      align-items: flex-start;
+      justify-content: center;
+      margin: 0 auto;
+      width: 90%;
+    }
   }
 
   h3 {

@@ -1,4 +1,5 @@
 @import "../styles/theme";
+@import "../styles/viewports";
 
 $margin-top: 16px;
 
@@ -37,7 +38,10 @@ div.myShareCard {
     margin-top: 24px;
     display: flex;
     justify-content: space-between;
-
+    @include breakpoint(md) {
+      width: 200px;
+      flex-flow: row wrap;
+    }
     .tokenName {
       font-weight: $bold;
       display: block;

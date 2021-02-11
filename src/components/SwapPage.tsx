@@ -1,6 +1,7 @@
 import "./SwapPage.scss"
 
 import React, { ReactElement, useState } from "react"
+import { formatBNToPercentString, formatBNToString } from "../utils"
 import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
@@ -17,7 +18,6 @@ import SlippageField from "./SlippageField"
 import SwapForm from "./SwapForm"
 import TopMenu from "./TopMenu"
 import classNames from "classnames"
-import { formatBNToPercentString } from "../utils"
 import { isHighPriceImpact } from "../utils/priceImpact"
 import { logEvent } from "../utils/googleAnalytics"
 import { updateSwapAdvancedMode } from "../state/user"
@@ -25,10 +25,19 @@ import { useActiveWeb3React } from "../hooks"
 import { useTranslation } from "react-i18next"
 
 interface Props {
-  tokens: Array<{ symbol: string; name: string; value: string; icon: string }>
-  exchangeRateInfo: { pair: string; priceImpact: BigNumber }
+  tokens: Array<{
+    symbol: string
+    name: string
+    value: BigNumber
+    icon: string
+    decimals: number
+  }>
+  exchangeRateInfo: {
+    pair: string
+    exchangeRate: BigNumber
+    priceImpact: BigNumber
+  }
   error: string | null
-  info: { isInfo: boolean; message: string }
   fromState: { symbol: string; value: string }
   toState: { symbol: string; value: string }
   onChangeFromToken: (tokenSymbol: string) => void
@@ -45,7 +54,6 @@ const SwapPage = (props: Props): ReactElement => {
     tokens,
     exchangeRateInfo,
     error,
-    info,
     fromState,
     toState,
     onChangeFromToken,
@@ -65,6 +73,11 @@ const SwapPage = (props: Props): ReactElement => {
     exchangeRateInfo.priceImpact,
     18,
   )
+  const formattedExchangeRate = formatBNToString(
+    exchangeRateInfo.exchangeRate,
+    18,
+    4,
+  )
 
   return (
     <div className="swapPage">
@@ -78,7 +91,7 @@ const SwapPage = (props: Props): ReactElement => {
           selected={fromState.symbol}
           inputValue={fromState.value}
         />
-        <div style={{ width: "64px" }} />
+        <div className="spacer" />
         <SwapForm
           isSwapFrom={false}
           tokens={tokens}
@@ -118,9 +131,9 @@ const SwapPage = (props: Props): ReactElement => {
                 />
               </svg>
             </button>
-            <span className="value">{formattedPriceImpact}</span>
+            <span className="value">{formattedExchangeRate}</span>
           </div>
-          <div className="cost">{info.isInfo ? info.message : "..."}</div>
+          <div className="cost">{"..."}</div>
           <div
             className="title"
             onClick={(): PayloadAction<boolean> =>
