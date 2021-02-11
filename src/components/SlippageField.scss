@@ -1,4 +1,6 @@
 @import "../styles/theme";
+@import "../styles/viewports";
+
 div.slippageField {
   input {
     width: 48px;
@@ -20,11 +22,26 @@ div.slippageField {
     font-size: 16px;
     letter-spacing: -0.04em;
     margin: auto 16px auto 0;
+    @include breakpoint(lg) {
+      font-size: 13px;
+      margin-right: 0px;
+      width: 90px;
+    }
+    @include breakpoint(sm) {
+      font-size: 13px;
+      margin-right: 0px;
+    }
   }
   .options {
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
+    @include breakpoint(lg) {
+      font-size: 12px;
+    }
+    @include breakpoint(md) {
+      font-size: 11px;
+    }
   }
   button {
     display: flex;
@@ -63,6 +80,23 @@ div.slippageField {
       font-weight: $medium;
       border: 1px solid var(--text-selected);
       border-radius: 8px;
+    }
+    @include breakpoint(lg) {
+      font-size: 12px;
+      width: 72px;
+      height: 28px;
+    }
+    @include breakpoint(md) {
+      font-size: 11px;
+      width: 72px;
+      height: 28px;
+    }
+    @include breakpoint(xs) {
+      font-size: 11px;
+      width: 58px;
+      height: 28px;
+      padding: 0 2px;
+      margin-right: 2px;
     }
   }
 }
