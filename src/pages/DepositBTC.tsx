@@ -17,7 +17,6 @@ import { commify } from "@ethersproject/units"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
-import useHistoricalPoolData from "../hooks/useHistoricalPoolData"
 import usePoolData from "../hooks/usePoolData"
 import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
@@ -32,7 +31,6 @@ function DepositBTC(): ReactElement | null {
   )
   const approveAndDeposit = useApproveAndDeposit(BTC_POOL_NAME)
   const [poolData, userShareData] = usePoolData(BTC_POOL_NAME)
-  const historicalPoolData = useHistoricalPoolData(BTC_POOL_NAME)
   const swapContract = useSwapContract(BTC_POOL_NAME)
   const [tokenFormState, updateTokenFormState] = useTokenFormState(
     BTC_POOL_TOKENS,
@@ -208,7 +206,7 @@ function DepositBTC(): ReactElement | null {
       title="BTC Pool"
       tokens={tokens}
       poolData={poolData}
-      historicalPoolData={historicalPoolData}
+      historicalPoolData={null}
       myShareData={userShareData}
       transactionInfoData={{
         bonus: estDepositBonus,
