@@ -51,10 +51,14 @@ export function formatBNToString(
   nativePrecison: number,
   decimalPlaces?: number,
 ): string {
-  const float = parseFloat(formatUnits(bn, nativePrecison))
-  return decimalPlaces != null
-    ? toFixed(float, decimalPlaces)
-    : float.toString()
+  const fullPrecision = formatUnits(bn, nativePrecison)
+  const decimalIdx = fullPrecision.indexOf(".")
+  return decimalPlaces === undefined || decimalIdx === -1
+    ? fullPrecision
+    : fullPrecision.slice(
+        0,
+        decimalIdx + (decimalPlaces > 0 ? decimalPlaces + 1 : 0), // don't include decimal point if places = 0
+      )
 }
 
 export function formatBNToPercentString(
@@ -63,6 +67,11 @@ export function formatBNToPercentString(
   decimalPlaces = 2,
 ): string {
   return `${formatBNToString(bn, nativePrecison - 2, decimalPlaces)}%`
+}
+
+export function shiftBNDecimals(bn: BigNumber, shiftAmount: number): BigNumber {
+  if (shiftAmount < 0) throw new Error("shiftAmount must be positive")
+  return bn.mul(BigNumber.from(10).pow(shiftAmount))
 }
 
 export function calculateExchangeRate(
@@ -76,9 +85,4 @@ export function calculateExchangeRate(
         .mul(BigNumber.from(10).pow(36 - tokenPrecisionTo)) // convert to standard 1e18 precision
         .div(amountFrom.mul(BigNumber.from(10).pow(18 - tokenPrecisionFrom)))
     : BigNumber.from("0")
-}
-
-export function toFixed(value: number, precision: number): string {
-  const power = Math.pow(10, precision || 0)
-  return String(Math.round(value * power) / power)
 }
