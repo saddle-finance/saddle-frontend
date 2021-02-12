@@ -31,7 +31,7 @@ function TokenInput({
   }
   function onChangeInput(e: React.ChangeEvent<HTMLInputElement>): void {
     const { decimals } = TOKENS_MAP[symbol]
-    const parsedValue = parseFloat(e.target.value)
+    const parsedValue = parseFloat("0" + e.target.value)
     const periodIndex = e.target.value.indexOf(".")
     const isValidInput = e.target.value === "" || !isNaN(parsedValue)
     const isValidPrecision =

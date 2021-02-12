@@ -45,26 +45,42 @@ function ReviewDeposit({
     <div className="reviewDeposit">
       <h3>{t("reviewDeposit")}</h3>
       <div className="table">
-        <h4>Depositing</h4>
+        <h4>{t("depositing")}</h4>
         <div className="tokenList">
           {transactionData.from.items.map(({ token, amount }) => (
             <div className="eachToken" key={token.symbol}>
+              <div className="token">
+                <img src={token.icon} alt="icon" />
+                <span>{token.symbol}</span>
+              </div>
               <div className="value">
                 <span className="value">
                   {commify(formatBNToString(amount, token.decimals))}
                 </span>
               </div>
-              <div className="token">
-                <img src={token.icon} alt="icon" />
-                <span>{token.name}</span>
-              </div>
             </div>
           ))}
+          <div className="eachToken">
+            <div className="token">
+              <b>{t("total")}</b>
+            </div>
+            <div className="value">
+              <b className="value">
+                {commify(
+                  formatBNToString(transactionData.from.totalAmount, 18),
+                )}
+              </b>
+            </div>
+          </div>
         </div>
         <div className="divider" style={{ height: "1px", width: "100%" }}></div>
-        <h4>Receiving</h4>
+        <h4>{t("receiving")}</h4>
         <div className="tokenList">
           <div className="eachToken" key={transactionData.to.item.token.symbol}>
+            <div className="token">
+              <img src={transactionData.to.item.token.icon} alt="icon" />
+              <span>{transactionData.to.item.token.symbol}</span>
+            </div>
             <div className="value">
               <span className="value">
                 {commify(
@@ -74,10 +90,6 @@ function ReviewDeposit({
                   ),
                 )}
               </span>
-            </div>
-            <div className="token">
-              <img src={transactionData.to.item.token.icon} alt="icon" />
-              <span>{transactionData.to.item.token.name}</span>
             </div>
           </div>
         </div>
@@ -111,14 +123,14 @@ function ReviewDeposit({
             {transactionData.from.items.map(
               ({ token, singleTokenPriceUSD }) => (
                 <span key={token.symbol}>
-                  1 {token.name} = $
+                  1 {token.symbol} = $
                   {commify(formatBNToString(singleTokenPriceUSD, 18, 2))}
                 </span>
               ),
             )}
             {[transactionData.to.item].map(({ token, singleTokenPriceUSD }) => (
               <span key={token.symbol}>
-                1 {token.name} = $
+                1 {token.symbol} = $
                 {commify(formatBNToString(singleTokenPriceUSD, 18, 2))}
               </span>
             ))}

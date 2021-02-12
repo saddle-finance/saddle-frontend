@@ -9,61 +9,37 @@ export interface TransactionItem {
   valueUSD: BigNumber // amount * singleTokenPriceUSD / token.decimals
 }
 
-type SingleItem = { item: TransactionItem }
-
-type MultipleItems = { items: TransactionItem[] }
-
-type _BaseTransactionDirection = {
+type AggregateValues = {
   totalAmount: BigNumber
   totalValueUSD: BigNumber
-} & (SingleItem | MultipleItems)
+}
+
+type SingleItem = { item: TransactionItem } & AggregateValues
+
+type MultipleItems = { items: TransactionItem[] } & AggregateValues
 
 interface _BaseTransaction {
-  from: _BaseTransactionDirection
-  to: _BaseTransactionDirection
+  from: SingleItem | MultipleItems
+  to: SingleItem | MultipleItems
   priceImpact: BigNumber
+  txnFee?: BigNumber
 }
 
 export interface DepositTransaction extends _BaseTransaction {
-  from: {
-    items: TransactionItem[]
-    totalAmount: BigNumber
-    totalValueUSD: BigNumber
-  }
-  to: {
-    item: TransactionItem
-    totalAmount: BigNumber
-    totalValueUSD: BigNumber
-  }
+  from: MultipleItems
+  to: SingleItem
   shareOfPool: BigNumber
 }
 
 export interface WithdrawTransaction extends _BaseTransaction {
-  from: {
-    item: TransactionItem
-    totalAmount: BigNumber
-    totalValueUSD: BigNumber
-  }
-  to: {
-    items: TransactionItem[]
-    totalAmount: BigNumber
-    totalValueUSD: BigNumber
-  }
+  from: SingleItem
+  to: MultipleItems
   shareOfPool: BigNumber
 }
 
 export interface SwapTransaction extends _BaseTransaction {
-  from: {
-    item: TransactionItem
-    totalAmount: BigNumber
-    totalValueUSD: BigNumber
-  }
-  to: {
-    item: TransactionItem
-    totalAmount: BigNumber
-    totalValueUSD: BigNumber
-  }
-  shareOfPool: BigNumber
+  from: SingleItem
+  to: SingleItem
   exchangeRate: BigNumber
 }
 /** TRANSACTIONS END */

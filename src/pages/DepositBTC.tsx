@@ -10,14 +10,15 @@ import {
 import { DepositTransaction, TransactionItem } from "../interfaces/transactions"
 import React, { ReactElement, useEffect, useState } from "react"
 import { TokensStateType, useTokenFormState } from "../hooks/useTokenFormState"
+import { formatBNToString, shiftBNDecimals } from "../utils"
 import usePoolData, { PoolDataType } from "../hooks/usePoolData"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
 import { TokenPricesUSD } from "../state/application"
+import { Zero } from "@ethersproject/constants"
 import { calculatePriceImpact } from "../utils/priceImpact"
-import { formatBNToString } from "../utils"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
@@ -47,10 +48,8 @@ function DepositBTC(): ReactElement | null {
     infiniteApproval,
   } = useSelector((state: AppState) => state.user)
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
-  const [estDepositLPTokenAmount, setEstDepositLPTokenAmount] = useState(
-    BigNumber.from(0),
-  )
-  const [priceImpact, setPriceImpact] = useState(BigNumber.from(0))
+  const [estDepositLPTokenAmount, setEstDepositLPTokenAmount] = useState(Zero)
+  const [priceImpact, setPriceImpact] = useState(Zero)
   const [willExceedMaxDeposits, setWillExceedMaxDeposit] = useState(true)
 
   useEffect(() => {
@@ -62,7 +61,7 @@ function DepositBTC(): ReactElement | null {
         poolData == null ||
         account == null
       ) {
-        setEstDepositLPTokenAmount(BigNumber.from(0))
+        setEstDepositLPTokenAmount(Zero)
         return
       }
       const tokenInputSum = parseUnits(
@@ -88,7 +87,7 @@ function DepositBTC(): ReactElement | null {
       // check if the new deposit will violate the per-account level cap by comparing:
       // new deposit LP token amount + total LP token minted amount > poolAccountLimit
       const futureUserLPTokenMinted = depositLPTokenAmount.add(
-        userShareData?.lpTokenMinted || BigNumber.from("0"),
+        userShareData?.lpTokenMinted || Zero,
       )
       // check if the new deposit will violate the pool level cap by comparing:
       // new deposit LP token amount + total pool LP token amount > poolLPTokenCap
@@ -158,7 +157,7 @@ function DepositBTC(): ReactElement | null {
       BTC_POOL_TOKENS.reduce(
         (acc, t) => ({
           ...acc,
-          [t.symbol]: "0",
+          [t.symbol]: "",
         }),
         {},
       ),
@@ -202,9 +201,10 @@ function buildTransactionData(
 ): DepositTransaction {
   const from = {
     items: [] as TransactionItem[],
-    totalAmount: BigNumber.from(0),
-    totalValueUSD: BigNumber.from(0),
+    totalAmount: Zero,
+    totalValueUSD: Zero,
   }
+  const TOTAL_AMOUNT_DECIMALS = 18
   BTC_POOL_TOKENS.forEach((token) => {
     const { symbol, decimals } = token
     const amount = BigNumber.from(tokenFormState[symbol].valueSafe)
@@ -220,11 +220,13 @@ function buildTransactionData(
       valueUSD: amount.mul(usdPriceBN).div(BigNumber.from(10).pow(decimals)),
     }
     from.items.push(item)
-    from.totalAmount = from.totalAmount.add(amount)
+    from.totalAmount = from.totalAmount.add(
+      shiftBNDecimals(amount, TOTAL_AMOUNT_DECIMALS - decimals),
+    )
     from.totalValueUSD = from.totalValueUSD.add(usdPriceBN)
   })
 
-  const lpTokenPriceUSD = poolData?.lpTokenPriceUSD || BigNumber.from(0)
+  const lpTokenPriceUSD = poolData?.lpTokenPriceUSD || Zero
   const toTotalValueUSD = estDepositLPTokenAmount
     .mul(lpTokenPriceUSD)
     ?.div(BigNumber.from(10).pow(BTC_SWAP_TOKEN.decimals))
