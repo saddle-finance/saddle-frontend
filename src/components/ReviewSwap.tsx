@@ -7,7 +7,7 @@ import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { TOKENS_MAP } from "../constants"
-import { formatBNToPercentString } from "../utils"
+import { formatBNToString } from "../utils"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import iconDown from "../assets/icons/icon_down.svg"
@@ -24,6 +24,7 @@ interface Props {
     exchangeRateInfo: {
       pair: string
       priceImpact: BigNumber
+      exchangeRate: BigNumber
     }
   }
 }
@@ -93,11 +94,7 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
               </svg>
             </button>
             <span className="value floatRight">
-              {formatBNToPercentString(
-                data.exchangeRateInfo.priceImpact,
-                18,
-                4,
-              )}
+              {formatBNToString(data.exchangeRateInfo.exchangeRate, 18, 4)}
             </span>
           </div>
           <div className="row">

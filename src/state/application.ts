@@ -5,7 +5,7 @@ interface GasPrices {
   gasFast?: number
   gasInstant?: number
 }
-interface TokenPricesUSD {
+export interface TokenPricesUSD {
   [tokenSymbol: string]: number
 }
 interface LastTransactionTimes {
