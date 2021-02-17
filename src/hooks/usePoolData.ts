@@ -35,6 +35,7 @@ export interface PoolDataType {
   isAcceptingDeposits: boolean
   keepApr: BigNumber
   poolLPTokenCap: BigNumber
+  lpTokenPriceUSD: BigNumber
 }
 
 export interface UserShareType {
@@ -152,6 +153,12 @@ export default function usePoolData(
       const tokenBalancesUSDSum: BigNumber = tokenBalancesUSD.reduce((sum, b) =>
         sum.add(b),
       )
+      const lpTokenPriceUSD = tokenBalancesSum.isZero()
+        ? BigNumber.from(0)
+        : tokenBalancesUSDSum
+            .mul(BigNumber.from(10).pow(18))
+            .div(tokenBalancesSum)
+
       // (weeksPerYear * KEEPPerWeek * KEEPPrice) / (BTCPrice * BTCInPool)
       const comparisonPoolToken = POOL_TOKENS[0]
       const keepAPRNumerator = BigNumber.from(52 * 250000)
@@ -229,6 +236,7 @@ export default function usePoolData(
         poolLPTokenCap,
         isAcceptingDeposits,
         keepApr,
+        lpTokenPriceUSD,
       }
       const userShareData = account
         ? {

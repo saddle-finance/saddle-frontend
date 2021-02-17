@@ -6,10 +6,10 @@ import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
 import { AppState } from "../state"
-import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
 import ConfirmTransaction from "./ConfirmTransaction"
 import DeadlineField from "./DeadlineField"
+import { DepositTransaction } from "../interfaces/transactions"
 import GasField from "./GasField"
 import { HistoricalPoolDataType } from "../hooks/useHistoricalPoolData"
 import IneligibilityBanner from "./IneligibilityBanner"
@@ -49,16 +49,7 @@ interface Props {
   poolData: PoolDataType | null
   historicalPoolData: HistoricalPoolDataType | null
   myShareData: UserShareType | null
-  transactionInfoData: {
-    bonus: BigNumber
-  }
-  depositDataFromParent: {
-    deposit: Array<{ [key: string]: any }>
-    rates: Array<{ [key: string]: any }>
-    shareOfPool: string
-    lpToken: string
-    priceImpact: BigNumber
-  }
+  transactionData: DepositTransaction
   hasValidMerkleState: boolean
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -69,9 +60,8 @@ const DepositPage = (props: Props): ReactElement => {
     tokens,
     poolData,
     historicalPoolData,
-    transactionInfoData,
     myShareData,
-    depositDataFromParent,
+    transactionData,
     willExceedMaxDeposits,
     isAcceptingDeposits,
     onChangeTokenInputValue,
@@ -91,7 +81,7 @@ const DepositPage = (props: Props): ReactElement => {
   } else if (willExceedMaxDeposits) {
     errorMessage = t("depositLimitExceeded")
   }
-  const validDepositAmount = +depositDataFromParent.lpToken > 0
+  const validDepositAmount = transactionData.to.totalAmount.gt(0)
 
   return (
     <div className="deposit">
@@ -148,7 +138,7 @@ const DepositPage = (props: Props): ReactElement => {
                   </div>
                 )}
                 <div className="transactionInfoItem">
-                  {transactionInfoData.bonus.gte(0) ? (
+                  {transactionData.priceImpact.gte(0) ? (
                     <span className="bonus">{`${t("bonus")}: `}</span>
                   ) : (
                     <span className="slippage">{t("priceImpact")}</span>
@@ -156,11 +146,17 @@ const DepositPage = (props: Props): ReactElement => {
                   <span
                     className={
                       "value " +
-                      (transactionInfoData.bonus.gte(0) ? "bonus" : "slippage")
+                      (transactionData.priceImpact.gte(0)
+                        ? "bonus"
+                        : "slippage")
                     }
                   >
                     {" "}
-                    {formatBNToPercentString(transactionInfoData.bonus, 18, 4)}
+                    {formatBNToPercentString(
+                      transactionData.priceImpact,
+                      18,
+                      4,
+                    )}
                   </span>
                 </div>
               </div>
@@ -233,7 +229,7 @@ const DepositPage = (props: Props): ReactElement => {
           <MyActivityCard historicalPoolData={historicalPoolData} />
           <div
             style={{
-              display: myShareData ? "block" : "none",
+              display: historicalPoolData ? "block" : "none",
             }}
             className="divider"
           ></div>{" "}
@@ -245,7 +241,7 @@ const DepositPage = (props: Props): ReactElement => {
         >
           {currentModal === "review" ? (
             <ReviewDeposit
-              data={depositDataFromParent}
+              transactionData={transactionData}
               onConfirm={async (): Promise<void> => {
                 setCurrentModal("confirm")
                 logEvent(

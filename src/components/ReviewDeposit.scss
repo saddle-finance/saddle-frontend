@@ -9,12 +9,17 @@ div.reviewDeposit {
   border-radius: 8px;
 
   h3 {
-    font-family: $font-family-title;
     font-size: 30px;
     font-weight: $bold;
     color: $text-black;
     margin-top: 0;
     margin-bottom: 24px;
+  }
+
+  h4 {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 16px;
   }
 
   .table {
@@ -37,15 +42,19 @@ div.reviewDeposit {
       }
 
       & > .value {
-        width: 45%;
-        @include breakpoint(md) {
-          width: 73%;
-        }
-      }
-      & > .token {
         width: 55%;
         @include breakpoint(md) {
           width: 27%;
+        }
+      }
+      & > .token {
+        width: 45%;
+        img {
+          height: 24px;
+          width: 24px;
+        }
+        @include breakpoint(md) {
+          width: 73%;
         }
       }
 
