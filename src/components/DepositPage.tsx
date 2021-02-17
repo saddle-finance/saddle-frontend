@@ -225,7 +225,7 @@ const DepositPage = (props: Props): ReactElement => {
           <MyActivityCard historicalPoolData={historicalPoolData} />
           <div
             style={{
-              display: myShareData ? "block" : "none",
+              display: historicalPoolData ? "block" : "none",
             }}
             className="divider"
           ></div>{" "}

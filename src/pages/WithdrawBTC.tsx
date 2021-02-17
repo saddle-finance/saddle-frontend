@@ -9,7 +9,6 @@ import { calculatePriceImpact } from "../utils/priceImpact"
 import { formatSlippageToString } from "../utils/slippage"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndWithdraw } from "../hooks/useApproveAndWithdraw"
-import useHistoricalPoolData from "../hooks/useHistoricalPoolData"
 import usePoolData from "../hooks/usePoolData"
 import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
@@ -17,7 +16,6 @@ import useWithdrawFormState from "../hooks/useWithdrawFormState"
 
 function WithdrawBTC(): ReactElement {
   const [poolData, userShareData] = usePoolData(BTC_POOL_NAME)
-  const historicalPoolData = useHistoricalPoolData(BTC_POOL_NAME)
   const [withdrawFormState, updateWithdrawFormState] = useWithdrawFormState(
     BTC_POOL_NAME,
   )
@@ -135,7 +133,7 @@ function WithdrawBTC(): ReactElement {
       reviewData={reviewWithdrawData}
       tokensData={tokensData}
       poolData={poolData}
-      historicalPoolData={historicalPoolData}
+      historicalPoolData={null}
       myShareData={userShareData}
       formStateData={withdrawFormState}
       onConfirmTransaction={onConfirmTransaction}
