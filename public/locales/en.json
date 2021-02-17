@@ -20,6 +20,7 @@
   "deadline": "Transaction Deadline",
   "deposit": "Deposit",
   "depositing": "Depositing",
+  "depositBalanceExceeded": "Amount exceeds wallet balance",
   "depositLimitExceeded": "Deposit limit exceeded",
   "dontHaveWallet": "Don't have a wallet?",
   "estimatedOutput": "Output is estimated. If the price changes by more than the max slippage your transaction will revert.",

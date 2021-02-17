@@ -132,6 +132,13 @@ function DepositBTC(): ReactElement | null {
     inputValue: tokenFormState[symbol].valueRaw,
   }))
 
+  const exceedsWallet = BTC_POOL_TOKENS.some(({ symbol }) => {
+    const exceedsBoolean = tokenBalances[symbol].lt(
+      BigNumber.from(tokenFormState[symbol].valueSafe),
+    )
+    return exceedsBoolean
+  })
+
   if (userMerkleProof == null) {
     // TODO: replace with loader component
     return null
@@ -178,6 +185,7 @@ function DepositBTC(): ReactElement | null {
       onChangeTokenInputValue={updateTokenFormValue}
       title="BTC Pool"
       tokens={tokens}
+      exceedsWallet={exceedsWallet}
       poolData={poolData}
       historicalPoolData={null}
       myShareData={userShareData}
