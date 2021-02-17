@@ -27,5 +27,5 @@ yarn-error.log*
 types/ethers-contracts
 
 # vscode
-.vscode
-.vscode/settings.json
+# .vscode
+# .vscode/settings.json
