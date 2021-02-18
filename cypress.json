@@ -1,0 +1,9 @@
+{
+  "env": {
+    "NETWORK_ID": 31337,
+    "DAPP_HOST": "http://localhost:3000/",
+    "PROVIDER_HOST": "http://localhost:8545/",
+    "PRIVATE_TEST_WALLET_PK": "5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a",
+    "PRIVATE_TEST_WALLET_ADDRESS": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+  }
+}
