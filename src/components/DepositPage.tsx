@@ -11,7 +11,6 @@ import ConfirmTransaction from "./ConfirmTransaction"
 import { DepositTransaction } from "../interfaces/transactions"
 import GasField from "./GasField"
 import { HistoricalPoolDataType } from "../hooks/useHistoricalPoolData"
-import IneligibilityBanner from "./IneligibilityBanner"
 import InfiniteApprovalField from "./InfiniteApprovalField"
 import LPStakingBanner from "./LPStakingBanner"
 import Modal from "./Modal"
@@ -33,8 +32,6 @@ import { useTranslation } from "react-i18next"
 interface Props {
   title: string
   infiniteApproval: boolean
-  willExceedMaxDeposits: boolean
-  isAcceptingDeposits: boolean
   onConfirmTransaction: () => Promise<void>
   onChangeTokenInputValue: (tokenSymbol: string, value: string) => void
   tokens: Array<{
@@ -49,7 +46,6 @@ interface Props {
   historicalPoolData: HistoricalPoolDataType | null
   myShareData: UserShareType | null
   transactionData: DepositTransaction
-  hasValidMerkleState: boolean
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -61,11 +57,8 @@ const DepositPage = (props: Props): ReactElement => {
     historicalPoolData,
     myShareData,
     transactionData,
-    willExceedMaxDeposits,
-    isAcceptingDeposits,
     onChangeTokenInputValue,
     onConfirmTransaction,
-    hasValidMerkleState,
   } = props
 
   const [currentModal, setCurrentModal] = useState<string | null>(null)
@@ -74,41 +67,21 @@ const DepositPage = (props: Props): ReactElement => {
   const { userPoolAdvancedMode: advanced } = useSelector(
     (state: AppState) => state.user,
   )
-  let errorMessage = null
-  if (!isAcceptingDeposits) {
-    errorMessage = t("poolIsNotAcceptingDeposits")
-  } else if (willExceedMaxDeposits) {
-    errorMessage = t("depositLimitExceeded")
-  }
   const validDepositAmount = transactionData.to.totalAmount.gt(0)
 
   return (
     <div className="deposit">
       <TopMenu activeTab={"deposit"} />
-      {!hasValidMerkleState && <IneligibilityBanner />}
       {myShareData?.lpTokenBalance.gt(0) && <LPStakingBanner />}
 
       <div className="content">
         <div className="left">
           <div className="form">
             <h3>{t("addLiquidity")}</h3>
-            {errorMessage && (
-              <div className="error">
-                {errorMessage}{" "}
-                <a
-                  href="https://docs.saddle.finance/faq#what-is-saddles-guarded-launch-proof-of-governance-who-can-participate"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t("learnMore")}
-                </a>
-              </div>
-            )}
             {tokens.map((token, index) => (
               <div key={index}>
                 <TokenInput
                   {...token}
-                  disabled={!isAcceptingDeposits || !hasValidMerkleState}
                   onChange={(value): void =>
                     onChangeTokenInputValue(token.symbol, value)
                   }
@@ -203,12 +176,7 @@ const DepositPage = (props: Props): ReactElement => {
               onClick={(): void => {
                 setCurrentModal("review")
               }}
-              disabled={
-                !hasValidMerkleState ||
-                willExceedMaxDeposits ||
-                !isAcceptingDeposits ||
-                !validDepositAmount
-              }
+              disabled={!validDepositAmount}
             >
               {t("deposit")}
             </Button>
