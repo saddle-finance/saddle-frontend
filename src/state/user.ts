@@ -73,6 +73,7 @@ const userSlice = createSlice({
       state.userPoolAdvancedMode = action.payload
     },
     updateDarkMode(state: UserState, action: PayloadAction<boolean>): void {
+      // this will be phased out in favor of chakra's colorMode
       state.userDarkMode = action.payload
     },
     updateGasPriceCustom(

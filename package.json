@@ -60,6 +60,7 @@
   "devDependencies": {
     "@babel/core": "^7.12.3",
     "@ethersproject/experimental": "^5.0.9",
+    "@chakra-ui/cli": "^1.2.1",
     "@storybook/addon-actions": "^6.0.28",
     "@storybook/addon-essentials": "^6.0.28",
     "@storybook/addon-links": "^6.0.28",
@@ -84,9 +85,10 @@
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public --no-dll",
     "build-storybook": "build-storybook -s public --no-dll",
-    "postinstall": "typechain --target ethers-v5 'src/constants/abis/*.json'",
     "cy:run": "cypress run",
-    "cy:open": "cypress open"
+    "cy:open": "cypress open",
+    "postinstall": "typechain --target ethers-v5 'src/constants/abis/*.json' && npm run gen:theme-typings",
+    "gen:theme-typings": "chakra-cli tokens src/theme/index.ts"
   },
   "homepage": ".",
   "husky": {

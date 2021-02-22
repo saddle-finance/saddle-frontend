@@ -123,44 +123,6 @@ div.withdraw {
         flex-flow: row wrap;
       }
     }
-
-    .actionBtn {
-      margin-top: 40px;
-      margin-left: auto;
-      margin-right: auto;
-      margin-bottom: 24px;
-      display: block;
-      width: 170px;
-      height: 40px;
-      border: none;
-      border-radius: 6px;
-      background: $primary;
-      font-size: 16px;
-      font-weight: $bold;
-      box-shadow: var(--shadow);
-      letter-spacing: 0.04em;
-
-      &:hover,
-      &:focus {
-        outline: none;
-        background-color: $primary-blue;
-        color: $text-white;
-        box-shadow: var(--shadow-hover);
-      }
-    }
-
-    .actionBtn:disabled {
-      cursor: not-allowed;
-      color: rgba(0, 0, 0, 0.2);
-
-      &:hover {
-        background-color: $primary;
-        color: rgba(0, 0, 0, 0.2);
-        transform: none;
-        opacity: 1;
-        box-shadow: var(--shadow);
-      }
-    }
   }
 
   .advancedOptions {

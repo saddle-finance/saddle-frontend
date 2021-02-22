@@ -1,5 +1,6 @@
 import "./SwapPage.scss"
 
+import { Button, Center } from "@chakra-ui/react"
 import React, { ReactElement, useState } from "react"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 import { useDispatch, useSelector } from "react-redux"
@@ -178,7 +179,21 @@ const SwapPage = (props: Props): ReactElement => {
             </div>
           </div>
         </div>
-        <button
+        <Center width="100%" py={6}>
+          <Button
+            colorScheme="teal"
+            size="lg"
+            width="240px"
+            onClick={(): void => {
+              setCurrentModal("review")
+            }}
+            disabled={!!error || +toState.value <= 0}
+          >
+            {t("swap")}
+          </Button>
+        </Center>
+
+        {/* <button
           className={
             "swap " + classNames({ disabled: !!error || +toState.value <= 0 })
           }
@@ -188,7 +203,7 @@ const SwapPage = (props: Props): ReactElement => {
           disabled={!!error || +toState.value <= 0}
         >
           {t("swap")}
-        </button>
+        </button> */}
         <div className={"error " + classNames({ showError: !!error })}>
           {error}
         </div>
