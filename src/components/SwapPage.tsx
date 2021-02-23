@@ -181,7 +181,7 @@ const SwapPage = (props: Props): ReactElement => {
         </div>
         <Center width="100%" py={6}>
           <Button
-            colorScheme="teal"
+            variant="primary"
             size="lg"
             width="240px"
             onClick={(): void => {
@@ -192,18 +192,6 @@ const SwapPage = (props: Props): ReactElement => {
             {t("swap")}
           </Button>
         </Center>
-
-        {/* <button
-          className={
-            "swap " + classNames({ disabled: !!error || +toState.value <= 0 })
-          }
-          onClick={(): void => {
-            setCurrentModal("review")
-          }}
-          disabled={!!error || +toState.value <= 0}
-        >
-          {t("swap")}
-        </button> */}
         <div className={"error " + classNames({ showError: !!error })}>
           {error}
         </div>

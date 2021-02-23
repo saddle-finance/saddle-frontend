@@ -234,7 +234,7 @@ const WithdrawPage = (props: Props): ReactElement => {
             </div>
             <Center width="100%" py={6}>
               <Button
-                colorScheme="teal"
+                variant="primary"
                 size="lg"
                 width="240px"
                 disabled={

@@ -16,6 +16,8 @@
 
   .checkboxControl svg {
     margin: 0;
+    width: 20px;
+    height: 20px;
     stroke: var(--text-selected);
     transition: transform 0.1s ease-in 25ms;
     transform: scale(0);

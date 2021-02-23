@@ -165,42 +165,6 @@ div.swapPage {
     display: none;
   }
 
-  button.swap {
-    width: 240px;
-    height: 48px;
-    border: none;
-    border-radius: 6px;
-    background: $primary;
-    color: $text-black;
-    font-weight: $bold;
-    font-size: 20px;
-    letter-spacing: 0.04em;
-    box-shadow: var(--shadow);
-
-    margin: 0 auto;
-
-    &:hover,
-    &:focus {
-      outline: none;
-      background-color: $primary-blue;
-      color: $text-white;
-      box-shadow: var(--shadow-hover);
-    }
-  }
-
-  button.disabled {
-    cursor: not-allowed;
-    color: rgba(0, 0, 0, 0.2);
-
-    &:hover {
-      background-color: $primary;
-      color: rgba(0, 0, 0, 0.2);
-      transform: none;
-      opacity: 1;
-      box-shadow: var(--shadow);
-    }
-  }
-
   .info {
     width: 100%;
     text-align: center;
