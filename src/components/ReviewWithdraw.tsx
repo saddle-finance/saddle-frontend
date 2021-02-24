@@ -27,6 +27,7 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
     slippageSelected,
     gasPriceSelected,
     gasCustom,
+    transactionDeadline,
   } = useSelector((state: AppState) => state.user)
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
@@ -70,6 +71,12 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
           <span className="label">{t("maxSlippage")}</span>
           <span className="value">
             {formatSlippageToString(slippageSelected, slippageCustom)}%
+          </span>
+        </div>
+        <div className="withdrawInfoItem">
+          <span className="label">{t("deadline")}</span>
+          <span className="value">
+            {transactionDeadline} {t("minutes")}
           </span>
         </div>
         <div className="withdrawInfoItem">

@@ -8,6 +8,7 @@ import { AppDispatch } from "../state"
 import { AppState } from "../state"
 import Button from "./Button"
 import ConfirmTransaction from "./ConfirmTransaction"
+import DeadlineField from "./DeadlineField"
 import { DepositTransaction } from "../interfaces/transactions"
 import GasField from "./GasField"
 import { HistoricalPoolDataType } from "../hooks/useHistoricalPoolData"
@@ -166,13 +167,16 @@ const DepositPage = (props: Props): ReactElement => {
             <div className="divider"></div>
             <div className={"tableContainer" + classNames({ show: advanced })}>
               <div className="parameter">
-                <GasField />
+                <InfiniteApprovalField />
               </div>
               <div className="parameter">
                 <SlippageField />
               </div>
               <div className="parameter">
-                <InfiniteApprovalField />
+                <DeadlineField />
+              </div>
+              <div className="parameter">
+                <GasField />
               </div>
             </div>
           </div>

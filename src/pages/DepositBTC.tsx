@@ -40,6 +40,7 @@ function DepositBTC(): ReactElement | null {
     gasPriceSelected,
     gasCustom,
     infiniteApproval,
+    transactionDeadline,
   } = useSelector((state: AppState) => state.user)
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const [estDepositLPTokenAmount, setEstDepositLPTokenAmount] = useState(Zero)
@@ -118,6 +119,7 @@ function DepositBTC(): ReactElement | null {
       tokenFormState,
       gasPriceSelected,
       gasCustom,
+      transactionDeadline,
     })
     // Clear input after deposit
     updateTokenFormState(

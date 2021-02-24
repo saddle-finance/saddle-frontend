@@ -1,3 +1,4 @@
+import { Deadlines, GasPrices } from "../state/user"
 import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
 import { addSlippage, subtractSlippage } from "../utils/slippage"
 import { formatUnits, parseUnits } from "@ethersproject/units"
@@ -5,7 +6,6 @@ import { useLPTokenContract, useSwapContract } from "./useContract"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
-import { GasPrices } from "../state/user"
 import { NumberInputState } from "../utils/numberInputState"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { getFormattedTimeString } from "../utils/dateTime"
@@ -19,6 +19,7 @@ interface ApproveAndWithdrawStateArgument {
   tokenFormState: { [symbol: string]: NumberInputState }
   infiniteApproval: boolean
   withdrawType: string
+  transactionDeadline: Deadlines
   lpTokenAmountToSpend: BigNumber
 }
 
@@ -107,7 +108,9 @@ export function useApproveAndWithdraw(
       console.debug(
         `lpTokenAmountToSpend: ${formatUnits(state.lpTokenAmountToSpend, 18)}`,
       )
-      const inTenMinutes = Math.round(new Date().getTime() / 1000 + 60 * 10)
+      const deadline = Math.round(
+        new Date().getTime() / 1000 + 60 * state.transactionDeadline,
+      )
       let spendTransaction
       if (state.withdrawType === "ALL") {
         spendTransaction = await swapContract.removeLiquidity(
@@ -119,7 +122,7 @@ export function useApproveAndWithdraw(
               slippageCustom,
             ),
           ),
-          inTenMinutes,
+          deadline,
           {
             gasPrice,
           },
@@ -134,7 +137,7 @@ export function useApproveAndWithdraw(
             slippageSelected,
             slippageCustom,
           ),
-          inTenMinutes,
+          deadline,
           {
             gasPrice,
           },
@@ -151,7 +154,7 @@ export function useApproveAndWithdraw(
             slippageSelected,
             slippageCustom,
           ),
-          inTenMinutes,
+          deadline,
           {
             gasPrice,
           },
