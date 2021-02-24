@@ -1,5 +1,4 @@
 import "./index.css"
-import "normalize.css"
 import "./i18n"
 
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react"
