@@ -3,9 +3,7 @@ import { formatBNToPercentString, getContract } from "../utils"
 import { useAllContracts, useSwapContract } from "./useContract"
 import { useEffect, useState } from "react"
 
-import ALLOWLIST_ABI from "../constants/abis/allowList.json"
 import { AddressZero } from "@ethersproject/constants"
-import { AllowList } from "../../types/ethers-contracts/AllowList"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import LPTOKEN_ABI from "../constants/abis/lpToken.json"
@@ -31,10 +29,7 @@ export interface PoolDataType {
   utilization: string // TODO: calculate
   virtualPrice: BigNumber
   volume: string // TODO: calculate
-  poolAccountLimit: BigNumber
-  isAcceptingDeposits: boolean
   keepApr: BigNumber
-  poolLPTokenCap: BigNumber
   lpTokenPriceUSD: BigNumber
 }
 
@@ -48,7 +43,6 @@ export interface UserShareType {
   tokens: TokenShareType[]
   usdBalance: BigNumber
   value: BigNumber
-  isAccountVerified: boolean
 }
 
 export type PoolDataHookReturnType = [PoolDataType | null, UserShareType | null]
@@ -82,14 +76,9 @@ export default function usePoolData(
       const POOL_TOKENS = POOLS_MAP[poolName]
 
       // Swap fees, price, and LP Token data
-      const [
-        userCurrentWithdrawFee,
-        swapStorage,
-        allowlistAddress,
-      ] = await Promise.all([
+      const [userCurrentWithdrawFee, swapStorage] = await Promise.all([
         swapContract.calculateCurrentWithdrawFee(account || AddressZero),
         swapContract.swapStorage(),
-        swapContract.getAllowlist(),
       ])
       const { adminFee, lpToken: lpTokenAddress, swapFee } = swapStorage
       const lpToken = getContract(
@@ -98,35 +87,15 @@ export default function usePoolData(
         library,
         account ?? undefined,
       ) as LpToken
-      const allowlist = getContract(
-        allowlistAddress,
-        ALLOWLIST_ABI,
-        library,
-        account ?? undefined,
-      ) as AllowList
       const [
         userLpTokenBalance,
         userLpTokenMinted,
         totalLpTokenBalance,
-        poolAccountLimit,
-        poolLPTokenCap,
-        isAccountVerified,
       ] = await Promise.all([
         lpToken.balanceOf(account || AddressZero),
         lpToken.mintedAmounts(account || AddressZero),
         lpToken.totalSupply(),
-        allowlist.getPoolAccountLimit(swapContract.address),
-        allowlist.getPoolCap(swapContract.address),
-        allowlist.isAccountVerified(account),
       ])
-      // Since we will never exactly hit the cap, subtract 0.5btc for some wiggle room
-      const isAcceptingDeposits = poolLPTokenCap
-        .sub(
-          BigNumber.from(10)
-            .pow(18 - 1)
-            .mul(5),
-        )
-        .gt(totalLpTokenBalance)
 
       const virtualPrice = totalLpTokenBalance.isZero()
         ? BigNumber.from(10).pow(18)
@@ -232,9 +201,6 @@ export default function usePoolData(
         volume: "XXX", // TODO
         utilization: "XXX", // TODO
         apy: "XXX", // TODO
-        poolAccountLimit,
-        poolLPTokenCap,
-        isAcceptingDeposits,
         keepApr,
         lpTokenPriceUSD,
       }
@@ -249,7 +215,6 @@ export default function usePoolData(
             currentWithdrawFee: userCurrentWithdrawFee,
             lpTokenBalance: userLpTokenBalance,
             lpTokenMinted: userLpTokenMinted,
-            isAccountVerified,
           }
         : null
       setPoolData([poolData, userShareData])

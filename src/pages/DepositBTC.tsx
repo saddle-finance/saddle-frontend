@@ -25,13 +25,9 @@ import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
 import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
 import { useTokenBalance } from "../state/wallet/hooks"
-import { useUserMerkleProof } from "../hooks/useUserMerkleProof"
 
 function DepositBTC(): ReactElement | null {
   const { account } = useActiveWeb3React()
-  const { userMerkleProof, hasValidMerkleState } = useUserMerkleProof(
-    BTC_POOL_NAME,
-  )
   const approveAndDeposit = useApproveAndDeposit(BTC_POOL_NAME)
   const [poolData, userShareData] = usePoolData(BTC_POOL_NAME)
   const swapContract = useSwapContract(BTC_POOL_NAME)
@@ -49,7 +45,6 @@ function DepositBTC(): ReactElement | null {
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const [estDepositLPTokenAmount, setEstDepositLPTokenAmount] = useState(Zero)
   const [priceImpact, setPriceImpact] = useState(Zero)
-  const [willExceedMaxDeposits, setWillExceedMaxDeposit] = useState(true)
 
   useEffect(() => {
     // evaluate if a new deposit will exceed the pool's per-user limit
@@ -83,23 +78,6 @@ function DepositBTC(): ReactElement | null {
       }
       setEstDepositLPTokenAmount(depositLPTokenAmount)
 
-      // check if the new deposit will violate the per-account level cap by comparing:
-      // new deposit LP token amount + total LP token minted amount > poolAccountLimit
-      const futureUserLPTokenMinted = depositLPTokenAmount.add(
-        userShareData?.lpTokenMinted || Zero,
-      )
-      // check if the new deposit will violate the pool level cap by comparing:
-      // new deposit LP token amount + total pool LP token amount > poolLPTokenCap
-      const futurePoolLPTokenBalance = depositLPTokenAmount.add(
-        poolData.totalLocked,
-      )
-      const exceedsMaxDeposits =
-        futureUserLPTokenMinted.gt(poolData.poolAccountLimit) ||
-        futurePoolLPTokenBalance.gt(poolData.poolLPTokenCap)
-      if (willExceedMaxDeposits !== exceedsMaxDeposits) {
-        setWillExceedMaxDeposit(exceedsMaxDeposits)
-      }
-
       setPriceImpact(
         calculatePriceImpact(
           tokenInputSum,
@@ -109,14 +87,7 @@ function DepositBTC(): ReactElement | null {
       )
     }
     void calculateMaxDeposits()
-  }, [
-    poolData,
-    tokenFormState,
-    swapContract,
-    userShareData,
-    account,
-    willExceedMaxDeposits,
-  ])
+  }, [poolData, tokenFormState, swapContract, userShareData, account])
   // Account Token balances
   const tokenBalances = {
     [TBTC.symbol]: useTokenBalance(TBTC),
@@ -133,12 +104,7 @@ function DepositBTC(): ReactElement | null {
     inputValue: tokenFormState[symbol].valueRaw,
   }))
 
-  if (userMerkleProof == null) {
-    // TODO: replace with loader component
-    return null
-  }
   async function onConfirmTransaction(): Promise<void> {
-    if (willExceedMaxDeposits && !poolData?.isAcceptingDeposits) return
     await approveAndDeposit({
       slippageCustom,
       slippageSelected,
@@ -147,10 +113,6 @@ function DepositBTC(): ReactElement | null {
       gasPriceSelected,
       gasCustom,
       transactionDeadline,
-      merkleData: {
-        userMerkleProof: userMerkleProof || [],
-        hasValidMerkleState,
-      },
     })
     // Clear input after deposit
     updateTokenFormState(
@@ -185,9 +147,6 @@ function DepositBTC(): ReactElement | null {
       myShareData={userShareData}
       transactionData={depositTransaction}
       infiniteApproval={infiniteApproval}
-      willExceedMaxDeposits={willExceedMaxDeposits}
-      isAcceptingDeposits={!!poolData?.isAcceptingDeposits}
-      hasValidMerkleState={hasValidMerkleState}
     />
   )
 }

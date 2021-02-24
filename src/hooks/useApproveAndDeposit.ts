@@ -24,10 +24,6 @@ interface ApproveAndDepositStateArgument {
   gasPriceSelected: GasPrices
   gasCustom?: NumberInputState
   transactionDeadline: Deadlines
-  merkleData: {
-    userMerkleProof: string[]
-    hasValidMerkleState: boolean
-  }
 }
 
 export function useApproveAndDeposit(
@@ -51,8 +47,6 @@ export function useApproveAndDeposit(
   ): Promise<void> {
     if (!account) throw new Error("Wallet must be connected")
     if (!swapContract) throw new Error("Swap contract is not loaded")
-    if (!state.merkleData.hasValidMerkleState)
-      throw new Error("User is not approved to deposit at this time")
 
     const approveSingleToken = async (token: Token): Promise<void> => {
       const spendingValue = BigNumber.from(
@@ -149,7 +143,7 @@ export function useApproveAndDeposit(
         Math.round(
           new Date().getTime() / 1000 + 60 * state.transactionDeadline,
         ),
-        state.merkleData.userMerkleProof,
+        [],
         {
           gasPrice,
         },
