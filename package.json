@@ -82,7 +82,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "storybook": "start-storybook -p 6006 -s public --no-dll",
+    "storybook": "start-storybook -p 6008 -s public --no-dll",
     "build-storybook": "build-storybook -s public --no-dll",
     "cy:run": "cypress run",
     "cy:open": "cypress open",
