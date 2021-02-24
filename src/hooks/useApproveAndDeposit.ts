@@ -23,10 +23,6 @@ interface ApproveAndDepositStateArgument {
   slippageCustom?: NumberInputState
   gasPriceSelected: GasPrices
   gasCustom?: NumberInputState
-  merkleData: {
-    userMerkleProof: string[]
-    hasValidMerkleState: boolean
-  }
 }
 
 export function useApproveAndDeposit(
@@ -50,8 +46,6 @@ export function useApproveAndDeposit(
   ): Promise<void> {
     if (!account) throw new Error("Wallet must be connected")
     if (!swapContract) throw new Error("Swap contract is not loaded")
-    if (!state.merkleData.hasValidMerkleState)
-      throw new Error("User is not approved to deposit at this time")
 
     const approveSingleToken = async (token: Token): Promise<void> => {
       const spendingValue = BigNumber.from(
@@ -96,7 +90,10 @@ export function useApproveAndDeposit(
     }
     try {
       // For each token being deposited, check the allowance and approve it if necessary
-      await Promise.all(POOL_TOKENS.map((token) => approveSingleToken(token)))
+      // await Promise.all(POOL_TOKENS.map((token) => approveSingleToken(token)))
+      for (const token of POOL_TOKENS) {
+        await approveSingleToken(token)
+      }
 
       // "isFirstTransaction" check can be removed after launch
       const poolTokenBalances: BigNumber[] = await Promise.all(
@@ -143,7 +140,7 @@ export function useApproveAndDeposit(
         POOL_TOKENS.map(({ symbol }) => state.tokenFormState[symbol].valueSafe),
         minToMint,
         Math.round(new Date().getTime() / 1000 + 60 * 10),
-        state.merkleData.userMerkleProof,
+        [],
         {
           gasPrice,
         },
