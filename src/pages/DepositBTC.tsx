@@ -104,6 +104,13 @@ function DepositBTC(): ReactElement | null {
     inputValue: tokenFormState[symbol].valueRaw,
   }))
 
+  const exceedsWallet = BTC_POOL_TOKENS.some(({ symbol }) => {
+    const exceedsBoolean = tokenBalances[symbol].lt(
+      BigNumber.from(tokenFormState[symbol].valueSafe),
+    )
+    return exceedsBoolean
+  })
+
   async function onConfirmTransaction(): Promise<void> {
     await approveAndDeposit({
       slippageCustom,
@@ -142,6 +149,7 @@ function DepositBTC(): ReactElement | null {
       onChangeTokenInputValue={updateTokenFormValue}
       title="BTC Pool"
       tokens={tokens}
+      exceedsWallet={exceedsWallet}
       poolData={poolData}
       historicalPoolData={null}
       myShareData={userShareData}

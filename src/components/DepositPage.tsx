@@ -42,18 +42,20 @@ interface Props {
     max: string
     inputValue: string
   }>
+  exceedsWallet: boolean
   selected?: { [key: string]: any }
   poolData: PoolDataType | null
   historicalPoolData: HistoricalPoolDataType | null
   myShareData: UserShareType | null
   transactionData: DepositTransaction
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
+/* eslint-enable @typescript-eslint/no-explicit-any */
 const DepositPage = (props: Props): ReactElement => {
   const { t } = useTranslation()
   const {
     tokens,
+    exceedsWallet,
     poolData,
     historicalPoolData,
     myShareData,
@@ -79,6 +81,9 @@ const DepositPage = (props: Props): ReactElement => {
         <div className="left">
           <div className="form">
             <h3>{t("addLiquidity")}</h3>
+            {exceedsWallet ? (
+              <div className="error">{t("depositBalanceExceeded")}</div>
+            ) : null}
             {tokens.map((token, index) => (
               <div key={index}>
                 <TokenInput
