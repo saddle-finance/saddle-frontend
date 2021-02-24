@@ -31,6 +31,7 @@ function ReviewDeposit({
     slippageSelected,
     gasPriceSelected,
     gasCustom,
+    transactionDeadline,
   } = useSelector((state: AppState) => state.user)
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
@@ -115,6 +116,12 @@ function ReviewDeposit({
           <span className="label">{t("maxSlippage")}</span>
           <span className="value">
             {formatSlippageToString(slippageSelected, slippageCustom)}%
+          </span>
+        </div>
+        <div className="depositInfoItem">
+          <span className="label">{t("deadline")}</span>
+          <span className="value">
+            {transactionDeadline} {t("minutes")}
           </span>
         </div>
         <div className="depositInfoItem">

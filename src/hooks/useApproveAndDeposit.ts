@@ -1,4 +1,4 @@
-import { GasPrices, Slippages } from "../state/user"
+import { Deadlines, GasPrices, Slippages } from "../state/user"
 import { POOLS_MAP, PoolName, TRANSACTION_TYPES, Token } from "../constants"
 import { useAllContracts, useSwapContract } from "./useContract"
 
@@ -23,6 +23,7 @@ interface ApproveAndDepositStateArgument {
   slippageCustom?: NumberInputState
   gasPriceSelected: GasPrices
   gasCustom?: NumberInputState
+  transactionDeadline: Deadlines
 }
 
 export function useApproveAndDeposit(
@@ -139,7 +140,9 @@ export function useApproveAndDeposit(
       const spendTransaction = await swapContract.addLiquidity(
         POOL_TOKENS.map(({ symbol }) => state.tokenFormState[symbol].valueSafe),
         minToMint,
-        Math.round(new Date().getTime() / 1000 + 60 * 10),
+        Math.round(
+          new Date().getTime() / 1000 + 60 * state.transactionDeadline,
+        ),
         [],
         {
           gasPrice,

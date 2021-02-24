@@ -30,3 +30,4 @@ types/ethers-contracts
 
 # vscode
 .vscode
+.vscode/settings.json
