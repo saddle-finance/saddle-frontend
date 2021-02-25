@@ -55,13 +55,6 @@ export default function DeadlineField(): ReactElement {
           onClick={(): PayloadAction<Deadlines> =>
             dispatch(updateTransactionDeadlineSelected(Deadlines.Custom))
           }
-          // onChange={(e): void => {
-          //   const deadlineNumber =
-          //     e.target.value === "" || parseFloat(e.target.value) <= 0
-          //       ? Deadlines.Ten // if left blank, deadline defaults to 10
-          //       : parseFloat(e.target.value)
-          //   dispatch(updateTransactionDeadline(deadlineNumber))
-          // }}
           value={transactionDeadlineCustom}
           onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
             const value = e.target.value
