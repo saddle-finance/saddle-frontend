@@ -34,14 +34,6 @@ function DepositBTC(): ReactElement | null {
   const [tokenFormState, updateTokenFormState] = useTokenFormState(
     BTC_POOL_TOKENS,
   )
-  const {
-    slippageCustom,
-    slippageSelected,
-    gasPriceSelected,
-    gasCustom,
-    infiniteApproval,
-    transactionDeadline,
-  } = useSelector((state: AppState) => state.user)
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const [estDepositLPTokenAmount, setEstDepositLPTokenAmount] = useState(Zero)
   const [priceImpact, setPriceImpact] = useState(Zero)
@@ -112,15 +104,7 @@ function DepositBTC(): ReactElement | null {
   })
 
   async function onConfirmTransaction(): Promise<void> {
-    await approveAndDeposit({
-      slippageCustom,
-      slippageSelected,
-      infiniteApproval,
-      tokenFormState,
-      gasPriceSelected,
-      gasCustom,
-      transactionDeadline,
-    })
+    await approveAndDeposit(tokenFormState)
     // Clear input after deposit
     updateTokenFormState(
       BTC_POOL_TOKENS.reduce(
@@ -154,7 +138,6 @@ function DepositBTC(): ReactElement | null {
       historicalPoolData={null}
       myShareData={userShareData}
       transactionData={depositTransaction}
-      infiniteApproval={infiniteApproval}
     />
   )
 }

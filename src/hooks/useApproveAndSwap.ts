@@ -8,14 +8,14 @@ import {
   TRANSACTION_TYPES,
   Token,
 } from "../constants"
-import { Deadlines, GasPrices, Slippages } from "../state/user"
 import { useAllContracts, useSwapContract } from "./useContract"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
-import { NumberInputState } from "../utils/numberInputState"
+import { GasPrices } from "../state/user"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
+import { formatDeadlineToNumber } from "../utils"
 import { getFormattedTimeString } from "../utils/dateTime"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
@@ -30,12 +30,6 @@ interface ApproveAndSwapStateArgument {
   toTokenSymbol: string
   fromAmount: BigNumber
   toAmount: BigNumber
-  infiniteApproval: boolean
-  slippageSelected: Slippages
-  slippageCustom?: NumberInputState
-  gasPriceSelected: GasPrices
-  gasCustom?: NumberInputState
-  transactionDeadline: Deadlines
 }
 
 export function useApproveAndSwap(
@@ -49,7 +43,15 @@ export function useApproveAndSwap(
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
-
+  const {
+    slippageCustom,
+    slippageSelected,
+    gasPriceSelected,
+    gasCustom,
+    transactionDeadlineCustom,
+    transactionDeadlineSelected,
+    infiniteApproval,
+  } = useSelector((state: AppState) => state.user)
   let POOL_TOKENS: Token[]
   if (poolName === BTC_POOL_NAME) {
     POOL_TOKENS = BTC_POOL_TOKENS
@@ -75,7 +77,7 @@ export function useApproveAndSwap(
         swapContract.address,
         account,
         state.fromAmount,
-        state.infiniteApproval,
+        infiniteApproval,
         {
           onTransactionStart: () => {
             return addToast(
@@ -107,22 +109,18 @@ export function useApproveAndSwap(
       let minToMint = state.toAmount
       console.debug(`MinToMint 1: ${minToMint.toString()}`)
 
-      minToMint = subtractSlippage(
-        minToMint,
-        state.slippageSelected,
-        state.slippageCustom,
-      )
+      minToMint = subtractSlippage(minToMint, slippageSelected, slippageCustom)
       console.debug(`MinToMint 2: ${minToMint.toString()}`)
       const clearMessage = addToast({
         type: "pending",
         title: `${getFormattedTimeString()} Starting your Swap...`,
       })
       let gasPrice
-      if (state.gasPriceSelected === GasPrices.Custom) {
-        gasPrice = state.gasCustom?.valueSafe
-      } else if (state.gasPriceSelected === GasPrices.Fast) {
+      if (gasPriceSelected === GasPrices.Custom) {
+        gasPrice = gasCustom?.valueSafe
+      } else if (gasPriceSelected === GasPrices.Fast) {
         gasPrice = gasFast
-      } else if (state.gasPriceSelected === GasPrices.Instant) {
+      } else if (gasPriceSelected === GasPrices.Instant) {
         gasPrice = gasInstant
       } else {
         gasPrice = gasStandard
@@ -134,14 +132,16 @@ export function useApproveAndSwap(
       const indexTo = POOL_TOKENS.findIndex(
         ({ symbol }) => symbol === state.toTokenSymbol,
       )
+      const deadline = formatDeadlineToNumber(
+        transactionDeadlineSelected,
+        transactionDeadlineCustom,
+      )
       const swapTransaction = await swapContract.swap(
         indexFrom,
         indexTo,
         state.fromAmount,
         minToMint,
-        Math.round(
-          new Date().getTime() / 1000 + 60 * state.transactionDeadline,
-        ),
+        Math.round(new Date().getTime() / 1000 + 60 * deadline),
         {
           gasPrice,
         },

@@ -1,13 +1,13 @@
 import "./ReviewSwap.scss"
 
 import React, { ReactElement, useState } from "react"
+import { formatBNToString, formatDeadlineToNumber } from "../utils"
 
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { TOKENS_MAP } from "../constants"
-import { formatBNToString } from "../utils"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import iconDown from "../assets/icons/icon_down.svg"
@@ -36,7 +36,8 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
     slippageSelected,
     gasPriceSelected,
     gasCustom,
-    transactionDeadline,
+    transactionDeadlineSelected,
+    transactionDeadlineCustom,
   } = useSelector((state: AppState) => state.user)
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
@@ -49,6 +50,10 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
   const toToken = TOKENS_MAP[data.to.symbol]
   const isHighPriceImpactTxn = isHighPriceImpact(
     data.exchangeRateInfo.priceImpact,
+  )
+  const deadline = formatDeadlineToNumber(
+    transactionDeadlineSelected,
+    transactionDeadlineCustom,
   )
 
   return (
@@ -117,7 +122,7 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
           <div className="row">
             <span className="title">{t("deadline")}</span>
             <span className="value floatRight">
-              {transactionDeadline} {t("minutes")}
+              {deadline} {t("minutes")}
             </span>
           </div>
           {isHighPriceImpactTxn && (

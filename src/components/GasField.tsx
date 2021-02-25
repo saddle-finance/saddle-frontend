@@ -63,14 +63,17 @@ export default function GasField(): ReactElement {
             selected: gasPriceSelected === GasPrices.Custom,
           })}
           value={gasCustom?.valueRaw}
-          onClick={(): PayloadAction<GasPrices> =>
-            dispatch(updateGasPriceSelected(GasPrices.Custom))
-          }
-          onChange={(
-            e: React.ChangeEvent<HTMLInputElement>,
-          ): PayloadAction<string> =>
-            dispatch(updateGasPriceCustom(e.target.value))
-          }
+          onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
+            const value = e.target.value
+            if (value && !isNaN(+value)) {
+              dispatch(updateGasPriceCustom(value))
+              if (gasPriceSelected !== GasPrices.Custom) {
+                dispatch(updateGasPriceSelected(GasPrices.Custom))
+              }
+            } else {
+              dispatch(updateGasPriceSelected(GasPrices.Fast))
+            }
+          }}
         />
       </div>
     </div>

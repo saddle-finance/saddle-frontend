@@ -1,12 +1,13 @@
-import { Deadlines, GasPrices, Slippages } from "../state/user"
 import { POOLS_MAP, PoolName, TRANSACTION_TYPES, Token } from "../constants"
 import { useAllContracts, useSwapContract } from "./useContract"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
+import { GasPrices } from "../state/user"
 import { NumberInputState } from "../utils/numberInputState"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
+import { formatDeadlineToNumber } from "../utils"
 import { getFormattedTimeString } from "../utils/dateTime"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
@@ -17,13 +18,7 @@ import { useSelector } from "react-redux"
 import { useToast } from "./useToast"
 
 interface ApproveAndDepositStateArgument {
-  tokenFormState: { [tokenSymbol: string]: NumberInputState }
-  infiniteApproval: boolean
-  slippageSelected: Slippages
-  slippageCustom?: NumberInputState
-  gasPriceSelected: GasPrices
-  gasCustom?: NumberInputState
-  transactionDeadline: Deadlines
+  [tokenSymbol: string]: NumberInputState
 }
 
 export function useApproveAndDeposit(
@@ -37,7 +32,15 @@ export function useApproveAndDeposit(
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
-
+  const {
+    slippageCustom,
+    slippageSelected,
+    gasPriceSelected,
+    gasCustom,
+    transactionDeadlineCustom,
+    transactionDeadlineSelected,
+    infiniteApproval,
+  } = useSelector((state: AppState) => state.user)
   const POOL_TOKENS = POOLS_MAP[poolName]
   if (!POOL_TOKENS)
     throw new Error("useApproveAndDeposit requires a valid pool name")
@@ -49,9 +52,7 @@ export function useApproveAndDeposit(
     if (!swapContract) throw new Error("Swap contract is not loaded")
 
     const approveSingleToken = async (token: Token): Promise<void> => {
-      const spendingValue = BigNumber.from(
-        state.tokenFormState[token.symbol].valueSafe,
-      )
+      const spendingValue = BigNumber.from(state[token.symbol].valueSafe)
       if (spendingValue.isZero()) return
       const tokenContract = tokenContracts?.[token.symbol] as Erc20
       if (tokenContract == null) return
@@ -60,7 +61,7 @@ export function useApproveAndDeposit(
         swapContract.address,
         account,
         spendingValue,
-        state.infiniteApproval,
+        infiniteApproval,
         {
           onTransactionStart: () => {
             return addToast(
@@ -109,40 +110,36 @@ export function useApproveAndDeposit(
       } else {
         minToMint = await swapContract.calculateTokenAmount(
           account,
-          POOL_TOKENS.map(
-            ({ symbol }) => state.tokenFormState[symbol].valueSafe,
-          ),
+          POOL_TOKENS.map(({ symbol }) => state[symbol].valueSafe),
           true, // deposit boolean
         )
       }
 
-      minToMint = subtractSlippage(
-        minToMint,
-        state.slippageSelected,
-        state.slippageCustom,
-      )
+      minToMint = subtractSlippage(minToMint, slippageSelected, slippageCustom)
       const clearMessage = addToast({
         type: "pending",
         title: `${getFormattedTimeString()} Starting your deposit...`,
       })
       let gasPrice
-      if (state.gasPriceSelected === GasPrices.Custom) {
-        gasPrice = state.gasCustom?.valueSafe
-      } else if (state.gasPriceSelected === GasPrices.Fast) {
+      if (gasPriceSelected === GasPrices.Custom) {
+        gasPrice = gasCustom?.valueSafe
+      } else if (gasPriceSelected === GasPrices.Fast) {
         gasPrice = gasFast
-      } else if (state.gasPriceSelected === GasPrices.Instant) {
+      } else if (gasPriceSelected === GasPrices.Instant) {
         gasPrice = gasInstant
       } else {
         gasPrice = gasStandard
       }
       gasPrice = parseUnits(String(gasPrice) || "45", 9)
+      const deadline = formatDeadlineToNumber(
+        transactionDeadlineSelected,
+        transactionDeadlineCustom,
+      )
 
       const spendTransaction = await swapContract.addLiquidity(
-        POOL_TOKENS.map(({ symbol }) => state.tokenFormState[symbol].valueSafe),
+        POOL_TOKENS.map(({ symbol }) => state[symbol].valueSafe),
         minToMint,
-        Math.round(
-          new Date().getTime() / 1000 + 60 * state.transactionDeadline,
-        ),
+        Math.round(new Date().getTime() / 1000 + 60 * deadline),
         [],
         {
           gasPrice,

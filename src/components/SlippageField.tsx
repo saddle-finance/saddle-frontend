@@ -46,12 +46,17 @@ export default function SlippageField(): ReactElement {
         </button>
         <input
           value={slippageCustom?.valueRaw}
-          onClick={(): PayloadAction<Slippages> =>
-            dispatch(updateSlippageSelected(Slippages.Custom))
-          }
-          onChange={(e): PayloadAction<string> =>
-            dispatch(updateSlippageCustom(e.target.value))
-          }
+          onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
+            const value = e.target.value
+            if (value && !isNaN(+value)) {
+              dispatch(updateSlippageCustom(value))
+              if (slippageSelected !== Slippages.Custom) {
+                dispatch(updateSlippageSelected(Slippages.Custom))
+              }
+            } else {
+              dispatch(updateSlippageSelected(Slippages.OneTenth))
+            }
+          }}
         />
         &nbsp;%
       </div>

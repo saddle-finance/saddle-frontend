@@ -1,7 +1,11 @@
 import "./ReviewDeposit.scss"
 
 import React, { ReactElement, useState } from "react"
-import { formatBNToPercentString, formatBNToString } from "../utils"
+import {
+  formatBNToPercentString,
+  formatBNToString,
+  formatDeadlineToNumber,
+} from "../utils"
 
 import { AppState } from "../state/index"
 import Button from "./Button"
@@ -31,7 +35,8 @@ function ReviewDeposit({
     slippageSelected,
     gasPriceSelected,
     gasCustom,
-    transactionDeadline,
+    transactionDeadlineSelected,
+    transactionDeadlineCustom,
   } = useSelector((state: AppState) => state.user)
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
@@ -41,7 +46,10 @@ function ReviewDeposit({
     setHasConfirmedHighPriceImpact,
   ] = useState(false)
   const isHighPriceImpactTxn = isHighPriceImpact(transactionData.priceImpact)
-
+  const deadline = formatDeadlineToNumber(
+    transactionDeadlineSelected,
+    transactionDeadlineCustom,
+  )
   return (
     <div className="reviewDeposit">
       <h3>{t("reviewDeposit")}</h3>
@@ -121,7 +129,7 @@ function ReviewDeposit({
         <div className="depositInfoItem">
           <span className="label">{t("deadline")}</span>
           <span className="value">
-            {transactionDeadline} {t("minutes")}
+            {deadline} {t("minutes")}
           </span>
         </div>
         <div className="depositInfoItem">

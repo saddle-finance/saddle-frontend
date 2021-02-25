@@ -7,6 +7,7 @@ import Button from "./Button"
 import { GasPrices } from "../state/user"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { ReviewWithdrawData } from "./WithdrawPage"
+import { formatDeadlineToNumber } from "../utils"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import { isHighPriceImpact } from "../utils/priceImpact"
@@ -27,7 +28,8 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
     slippageSelected,
     gasPriceSelected,
     gasCustom,
-    transactionDeadline,
+    transactionDeadlineSelected,
+    transactionDeadlineCustom,
   } = useSelector((state: AppState) => state.user)
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
@@ -37,7 +39,10 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
     setHasConfirmedHighPriceImpact,
   ] = useState(false)
   const isHighSlippageTxn = isHighPriceImpact(data.priceImpact)
-
+  const deadline = formatDeadlineToNumber(
+    transactionDeadlineSelected,
+    transactionDeadlineCustom,
+  )
   return (
     <div className="reviewWithdraw">
       <h3>{t("youWillReceive")}</h3>
@@ -76,7 +81,7 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
         <div className="withdrawInfoItem">
           <span className="label">{t("deadline")}</span>
           <span className="value">
-            {transactionDeadline} {t("minutes")}
+            {deadline} {t("minutes")}
           </span>
         </div>
         <div className="withdrawInfoItem">

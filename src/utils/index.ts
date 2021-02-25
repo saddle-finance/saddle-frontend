@@ -4,6 +4,7 @@ import { AddressZero } from "@ethersproject/constants"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "@ethersproject/contracts"
 import { ContractInterface } from "ethers"
+import { Deadlines } from "../state/user"
 import { formatUnits } from "@ethersproject/units"
 import { getAddress } from "@ethersproject/address"
 
@@ -85,4 +86,19 @@ export function calculateExchangeRate(
         .mul(BigNumber.from(10).pow(36 - tokenPrecisionTo)) // convert to standard 1e18 precision
         .div(amountFrom.mul(BigNumber.from(10).pow(18 - tokenPrecisionFrom)))
     : BigNumber.from("0")
+}
+
+export function formatDeadlineToNumber(
+  deadlineSelected: Deadlines,
+  deadlineCustom?: string,
+): number {
+  let deadline
+  if (deadlineSelected === Deadlines.Thirty) {
+    deadline = 30
+  } else if (deadlineSelected === Deadlines.Custom) {
+    deadline = +(deadlineCustom || 10)
+  } else {
+    deadline = 10
+  }
+  return deadline
 }

@@ -1,11 +1,14 @@
 import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit"
 import { load, save } from "redux-localstorage-simple"
+import user, { initialState as userInitialState } from "./user"
 
 import application from "./application"
-import user from "./user"
+import { merge } from "lodash"
 
 const PERSISTED_KEYS: string[] = ["user"]
-
+const stateFromStorage = load({
+  states: PERSISTED_KEYS,
+})
 const store = configureStore({
   reducer: {
     application,
@@ -15,7 +18,7 @@ const store = configureStore({
     ...getDefaultMiddleware({ thunk: false }),
     save({ states: PERSISTED_KEYS }),
   ],
-  preloadedState: load({ states: PERSISTED_KEYS }),
+  preloadedState: merge({}, { user: userInitialState }, stateFromStorage),
 })
 
 export default store
