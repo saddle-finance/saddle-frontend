@@ -19,12 +19,9 @@ function WithdrawBTC(): ReactElement {
   const [withdrawFormState, updateWithdrawFormState] = useWithdrawFormState(
     BTC_POOL_NAME,
   )
-  const {
-    slippageCustom,
-    slippageSelected,
-    infiniteApproval,
-    transactionDeadline,
-  } = useSelector((state: AppState) => state.user)
+  const { slippageCustom, slippageSelected } = useSelector(
+    (state: AppState) => state.user,
+  )
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const approveAndWithdraw = useApproveAndWithdraw(BTC_POOL_NAME)
   const swapContract = useSwapContract(BTC_POOL_NAME)
@@ -81,9 +78,7 @@ function WithdrawBTC(): ReactElement {
     } = withdrawFormState
     await approveAndWithdraw({
       tokenFormState: tokenInputs,
-      infiniteApproval,
       withdrawType,
-      transactionDeadline,
       lpTokenAmountToSpend,
     })
     updateWithdrawFormState({ fieldName: "reset", value: "reset" })

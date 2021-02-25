@@ -1,4 +1,3 @@
-import { Deadlines, GasPrices } from "../state/user"
 import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
 import { addSlippage, subtractSlippage } from "../utils/slippage"
 import { formatUnits, parseUnits } from "@ethersproject/units"
@@ -6,8 +5,10 @@ import { useLPTokenContract, useSwapContract } from "./useContract"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
+import { GasPrices } from "../state/user"
 import { NumberInputState } from "../utils/numberInputState"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
+import { formatDeadlineToNumber } from "../utils"
 import { getFormattedTimeString } from "../utils/dateTime"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
@@ -17,9 +18,7 @@ import { useToast } from "./useToast"
 
 interface ApproveAndWithdrawStateArgument {
   tokenFormState: { [symbol: string]: NumberInputState }
-  infiniteApproval: boolean
   withdrawType: string
-  transactionDeadline: Deadlines
   lpTokenAmountToSpend: BigNumber
 }
 
@@ -38,6 +37,9 @@ export function useApproveAndWithdraw(
     slippageSelected,
     gasPriceSelected,
     gasCustom,
+    transactionDeadlineCustom,
+    transactionDeadlineSelected,
+    infiniteApproval,
   } = useSelector((state: AppState) => state.user)
   const lpTokenContract = useLPTokenContract(poolName)
   const POOL_TOKENS = POOLS_MAP[poolName]
@@ -65,7 +67,7 @@ export function useApproveAndWithdraw(
         swapContract.address,
         account,
         allowanceAmount,
-        state.infiniteApproval,
+        infiniteApproval,
         {
           onTransactionStart: () => {
             return addToast(
@@ -109,7 +111,12 @@ export function useApproveAndWithdraw(
         `lpTokenAmountToSpend: ${formatUnits(state.lpTokenAmountToSpend, 18)}`,
       )
       const deadline = Math.round(
-        new Date().getTime() / 1000 + 60 * state.transactionDeadline,
+        new Date().getTime() / 1000 +
+          60 *
+            formatDeadlineToNumber(
+              transactionDeadlineSelected,
+              transactionDeadlineCustom,
+            ),
       )
       let spendTransaction
       if (state.withdrawType === "ALL") {

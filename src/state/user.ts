@@ -20,9 +20,9 @@ export enum Slippages {
 }
 
 export enum Deadlines {
-  Ten = 10,
-  Thirty = 30,
-  Custom,
+  Ten = "TEN",
+  Thirty = "THIRTY",
+  Custom = "CUSTOM",
 }
 
 interface UserState {
@@ -34,17 +34,18 @@ interface UserState {
   slippageCustom?: NumberInputState
   slippageSelected: Slippages
   infiniteApproval: boolean
-  transactionDeadline: Deadlines
+  transactionDeadlineSelected: Deadlines
+  transactionDeadlineCustom?: string
 }
 
-const initialState: UserState = {
+export const initialState: UserState = {
   userSwapAdvancedMode: false,
   userPoolAdvancedMode: false,
   userDarkMode: false,
   gasPriceSelected: GasPrices.Standard,
   slippageSelected: Slippages.OneTenth,
   infiniteApproval: false,
-  transactionDeadline: Deadlines.Ten,
+  transactionDeadlineSelected: Deadlines.Ten,
 }
 
 const gasCustomStateCreator = numberInputStateCreator(
@@ -114,11 +115,21 @@ const userSlice = createSlice({
     ): void {
       state.infiniteApproval = action.payload
     },
-    updateTransactionDeadline(
+    updateTransactionDeadlineSelected(
       state: UserState,
       action: PayloadAction<Deadlines>,
     ): void {
-      state.transactionDeadline = action.payload
+      state.transactionDeadlineSelected = action.payload
+      // clear custom value when standard option selected
+      if (action.payload !== Deadlines.Custom) {
+        state.transactionDeadlineCustom = ""
+      }
+    },
+    updateTransactionDeadlineCustom(
+      state: UserState,
+      action: PayloadAction<string>,
+    ): void {
+      state.transactionDeadlineCustom = action.payload
     },
   },
 })
@@ -132,7 +143,8 @@ export const {
   updateSlippageCustom,
   updateSlippageSelected,
   updateInfiniteApproval,
-  updateTransactionDeadline,
+  updateTransactionDeadlineSelected,
+  updateTransactionDeadlineCustom,
 } = userSlice.actions
 
 export default userSlice.reducer

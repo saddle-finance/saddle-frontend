@@ -1,42 +1,47 @@
 import "./DeadlineField.scss"
 
 import React, { ReactElement } from "react"
+import {
+  updateTransactionDeadlineCustom,
+  updateTransactionDeadlineSelected,
+} from "../state/user"
 import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
 import { AppState } from "../state/index"
 import { Deadlines } from "../state/user"
 import { PayloadAction } from "@reduxjs/toolkit"
-
 import classNames from "classnames"
-import { updateTransactionDeadline } from "../state/user"
 import { useTranslation } from "react-i18next"
 
 export default function DeadlineField(): ReactElement {
   const { t } = useTranslation()
   const dispatch = useDispatch<AppDispatch>()
 
-  const { transactionDeadline } = useSelector((state: AppState) => state.user)
+  const {
+    transactionDeadlineSelected,
+    transactionDeadlineCustom,
+  } = useSelector((state: AppState) => state.user)
   return (
     <div className="deadlineField">
       <div className="options">
         <div className="label">{t("deadline")}: </div>
         <button
           className={classNames({
-            selected: transactionDeadline === Deadlines.Ten,
+            selected: transactionDeadlineSelected === Deadlines.Ten,
           })}
           onClick={(): void => {
-            dispatch(updateTransactionDeadline(Deadlines.Ten))
+            dispatch(updateTransactionDeadlineSelected(Deadlines.Ten))
           }}
         >
           <span>10 {t("minutes")}</span>
         </button>
         <button
           className={classNames({
-            selected: transactionDeadline === Deadlines.Thirty,
+            selected: transactionDeadlineSelected === Deadlines.Thirty,
           })}
           onClick={(): void => {
-            dispatch(updateTransactionDeadline(Deadlines.Thirty))
+            dispatch(updateTransactionDeadlineSelected(Deadlines.Thirty))
           }}
         >
           <span>30 {t("minutes")}</span>
@@ -44,21 +49,26 @@ export default function DeadlineField(): ReactElement {
         <input
           type="text"
           className={classNames({
-            selected: transactionDeadline === Deadlines.Custom,
+            selected: transactionDeadlineSelected === Deadlines.Custom,
           })}
           placeholder="10"
           onClick={(): PayloadAction<Deadlines> =>
-            dispatch(updateTransactionDeadline(Deadlines.Custom))
+            dispatch(updateTransactionDeadlineSelected(Deadlines.Custom))
           }
-          onChange={(e): void => {
-            const deadlineNumber =
-              e.target.value === "" || parseFloat(e.target.value) <= 0
-                ? Deadlines.Ten // if left blank, deadline defaults to 10
-                : parseFloat(e.target.value)
-            dispatch(updateTransactionDeadline(deadlineNumber))
+          value={transactionDeadlineCustom}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
+            const value = e.target.value
+            if (value && !isNaN(+value)) {
+              dispatch(updateTransactionDeadlineCustom(value))
+              if (transactionDeadlineSelected !== Deadlines.Custom) {
+                dispatch(updateTransactionDeadlineSelected(Deadlines.Custom))
+              }
+            } else {
+              dispatch(updateTransactionDeadlineSelected(Deadlines.Ten))
+            }
           }}
         />
-        <span> {t("minutes")}</span>
+        &nbsp;{t("minutes")}
       </div>
     </div>
   )

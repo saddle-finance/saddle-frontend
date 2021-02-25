@@ -2,7 +2,6 @@ import { BTC_POOL_NAME, BTC_POOL_TOKENS, TOKENS_MAP } from "../constants"
 import React, { ReactElement, useCallback, useState } from "react"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 
-import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import SwapPage from "../components/SwapPage"
 import { calculateExchangeRate } from "../utils"
@@ -11,7 +10,6 @@ import { debounce } from "lodash"
 import { useApproveAndSwap } from "../hooks/useApproveAndSwap"
 import usePoolData from "../hooks/usePoolData"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
-import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
 import { useTranslation } from "react-i18next"
 
@@ -32,14 +30,6 @@ function SwapBTC(): ReactElement {
   const { t } = useTranslation()
   const [poolData] = usePoolData(BTC_POOL_NAME)
   const approveAndSwap = useApproveAndSwap(BTC_POOL_NAME)
-  const {
-    slippageCustom,
-    slippageSelected,
-    gasPriceSelected,
-    gasCustom,
-    infiniteApproval,
-    transactionDeadline,
-  } = useSelector((state: AppState) => state.user)
   const tokenBalances = usePoolTokenBalances(BTC_POOL_NAME)
   const swapContract = useSwapContract(BTC_POOL_NAME)
   const [formState, setFormState] = useState<FormState>({
@@ -213,12 +203,6 @@ function SwapBTC(): ReactElement {
       fromTokenSymbol: formState.from.symbol,
       toAmount: formState.to.value,
       toTokenSymbol: formState.to.symbol,
-      slippageCustom,
-      slippageSelected,
-      infiniteApproval,
-      gasPriceSelected,
-      gasCustom,
-      transactionDeadline,
     })
     // Clear input after deposit
     setFormState((prevState) => ({
