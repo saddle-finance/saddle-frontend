@@ -14,12 +14,15 @@
     background-color: $white;
   }
 
-  .checkboxControl svg {
+  .checkboxControl > svg {
     margin: 0;
+    width: 20px;
+    height: 20px;
     stroke: var(--text-selected);
     transition: transform 0.1s ease-in 25ms;
     transform: scale(0);
     transform-origin: bottom left;
+    display: block !important;
   }
 
   & > input {

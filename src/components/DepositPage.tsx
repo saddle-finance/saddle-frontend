@@ -1,12 +1,12 @@
 import "./DepositPage.scss"
 
+import { Button, Center } from "@chakra-ui/react"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
 import { AppState } from "../state"
-import Button from "./Button"
 import ConfirmTransaction from "./ConfirmTransaction"
 import DeadlineField from "./DeadlineField"
 import { DepositTransaction } from "../interfaces/transactions"
@@ -180,8 +180,11 @@ const DepositPage = (props: Props): ReactElement => {
               </div>
             </div>
           </div>
-          <div className="buttonWrapper">
+          <Center width="100%" py={6}>
             <Button
+              variant="primary"
+              size="lg"
+              width="240px"
               onClick={(): void => {
                 setCurrentModal("review")
               }}
@@ -189,7 +192,7 @@ const DepositPage = (props: Props): ReactElement => {
             >
               {t("deposit")}
             </Button>
-          </div>
+          </Center>
         </div>
         <div className="infoPanels">
           <MyShareCard data={myShareData} />

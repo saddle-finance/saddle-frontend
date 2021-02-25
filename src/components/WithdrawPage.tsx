@@ -1,5 +1,6 @@
 import "./WithdrawPage.scss"
 
+import { Button, Center } from "@chakra-ui/react"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
@@ -231,17 +232,20 @@ const WithdrawPage = (props: Props): ReactElement => {
                 </div>
               </div>
             </div>
-            <button
-              className="actionBtn"
-              type="submit"
-              disabled={
-                !!formStateData.error ||
-                formStateData.lpTokenAmountToSpend.isZero()
-              }
-              onClick={onSubmit}
-            >
-              {t("withdraw")}
-            </button>
+            <Center width="100%" py={6}>
+              <Button
+                variant="primary"
+                size="lg"
+                width="240px"
+                disabled={
+                  !!formStateData.error ||
+                  formStateData.lpTokenAmountToSpend.isZero()
+                }
+                onClick={onSubmit}
+              >
+                {t("withdraw")}
+              </Button>
+            </Center>
           </div>
           <div className="infoPanels">
             <MyShareCard data={myShareData} />

@@ -4,11 +4,12 @@ import { AppDispatch, AppState } from "../state"
 import React, { ReactElement, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
-import { PayloadAction } from "@reduxjs/toolkit"
 import { updateDarkMode } from "../state/user"
+import { useColorMode } from "@chakra-ui/react"
 
 const ThemeChanger = (): ReactElement => {
   const dispatch = useDispatch<AppDispatch>()
+  const { colorMode, toggleColorMode } = useColorMode()
   const { userDarkMode } = useSelector((state: AppState) => state.user)
 
   useEffect(() => {
@@ -22,9 +23,15 @@ const ThemeChanger = (): ReactElement => {
   return (
     <div className="themeChanger">
       <button
-        onClick={(): PayloadAction<boolean> =>
+        onClick={(): void => {
           dispatch(updateDarkMode(!userDarkMode))
-        }
+          if (
+            (userDarkMode && colorMode === "dark") ||
+            (!userDarkMode && colorMode === "light")
+          ) {
+            toggleColorMode()
+          }
+        }}
       >
         {userDarkMode ? "☾" : "☀"}
       </button>

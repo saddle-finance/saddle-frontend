@@ -25,6 +25,12 @@ h5 {
   font-family: $font-family-title;
 }
 
+svg,
+img {
+  // TODO: get rid of this once chakra is more integrated
+  display: inline !important;
+}
+
 :root {
   --background: #ffffe9;
   --background-element: rgba(255, 255, 244, 0.6);

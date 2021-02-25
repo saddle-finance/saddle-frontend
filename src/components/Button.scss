@@ -9,6 +9,7 @@ button.button {
   letter-spacing: 0.02em;
   cursor: pointer;
   box-shadow: var(--shadow);
+  padding: 1px 6px;
 
   &:disabled {
     cursor: not-allowed;
