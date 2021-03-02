@@ -58,8 +58,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
-    "@ethersproject/experimental": "^5.0.9",
     "@chakra-ui/cli": "^1.2.1",
+    "@ethersproject/experimental": "^5.0.9",
     "@storybook/addon-actions": "^6.0.28",
     "@storybook/addon-essentials": "^6.0.28",
     "@storybook/addon-links": "^6.0.28",
