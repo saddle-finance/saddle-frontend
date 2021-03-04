@@ -1,17 +1,14 @@
 import { calculatePriceImpact, isHighPriceImpact } from "../priceImpact"
 
 import { BigNumber } from "@ethersproject/bignumber"
+import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
 
 describe("calculatePriceImpact", () => {
   it("correctly calculates value for 0 input", () => {
     expect(
-      calculatePriceImpact(
-        BigNumber.from(0),
-        BigNumber.from(0),
-        BigNumber.from(10).pow(18),
-      ),
-    ).toEqual(BigNumber.from(0))
+      calculatePriceImpact(Zero, Zero, BigNumber.from(10).pow(18)),
+    ).toEqual(Zero)
   })
 
   it("correctly calculates value for imbalanced / low liquidity pool", () => {
@@ -50,6 +47,6 @@ describe("isHighPriceImpact", () => {
   it("returns false for impact < 1%", () => {
     const posOnePct = BigNumber.from(10).pow(18 - 2)
     expect(isHighPriceImpact(posOnePct)).toBe(false)
-    expect(isHighPriceImpact(BigNumber.from(0))).toBe(false)
+    expect(isHighPriceImpact(Zero)).toBe(false)
   })
 })

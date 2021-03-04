@@ -8,6 +8,7 @@ import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import LPTOKEN_ABI from "../constants/abis/lpToken.json"
 import { LpToken } from "../../types/ethers-contracts/LpToken"
+import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import { useSelector } from "react-redux"
@@ -123,7 +124,7 @@ export default function usePoolData(
         sum.add(b),
       )
       const lpTokenPriceUSD = tokenBalancesSum.isZero()
-        ? BigNumber.from(0)
+        ? Zero
         : tokenBalancesUSDSum
             .mul(BigNumber.from(10).pow(18))
             .div(tokenBalancesSum)
