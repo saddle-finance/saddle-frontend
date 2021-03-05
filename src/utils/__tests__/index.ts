@@ -1,12 +1,9 @@
-import { BigNumber } from "@ethersproject/bignumber"
+import { Zero } from "@ethersproject/constants"
 import { calculateExchangeRate } from "../index"
 import { parseUnits } from "@ethersproject/units"
-
 describe("calculateExchangeRate", () => {
   it("correctly calculates value for 0 input", () => {
-    expect(
-      calculateExchangeRate(BigNumber.from(0), 18, BigNumber.from(0), 18),
-    ).toEqual(BigNumber.from(0))
+    expect(calculateExchangeRate(Zero, 18, Zero, 18)).toEqual(Zero)
   })
 
   it("correctly calculates value for inputs of same precision", () => {

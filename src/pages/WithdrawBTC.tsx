@@ -5,6 +5,7 @@ import { commify, formatUnits, parseUnits } from "@ethersproject/units"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
+import { Zero } from "@ethersproject/constants"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { formatSlippageToString } from "../utils/slippage"
 import { useActiveWeb3React } from "../hooks"
@@ -27,7 +28,7 @@ function WithdrawBTC(): ReactElement {
   const swapContract = useSwapContract(BTC_POOL_NAME)
   const { account } = useActiveWeb3React()
 
-  const [estWithdrawBonus, setEstWithdrawBonus] = useState(BigNumber.from(0))
+  const [estWithdrawBonus, setEstWithdrawBonus] = useState(Zero)
   useEffect(() => {
     // evaluate if a new withdraw will exceed the pool's per-user limit
     async function calculateWithdrawBonus(): Promise<void> {

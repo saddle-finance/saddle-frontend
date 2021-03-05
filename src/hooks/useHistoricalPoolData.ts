@@ -7,6 +7,7 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { EventFilter } from "@ethersproject/contracts"
 import { Web3Provider } from "@ethersproject/providers"
+import { Zero } from "@ethersproject/constants"
 import { useActiveWeb3React } from "."
 import usePoolData from "./usePoolData"
 import { useSelector } from "react-redux"
@@ -108,12 +109,12 @@ export default function useHistoricalPoolData(
         return
 
       // const vp = await swapContract.getVirtualPrice()
-      let totalDepositsBTC = BigNumber.from(0)
-      let totalDepositsUSD = BigNumber.from(0)
-      let totalWithdrawalsBTC = BigNumber.from(0)
-      let totalWithdrawalsUSD = BigNumber.from(0)
-      let totalProfitBTC = BigNumber.from(0)
-      let totalProfitUSD = BigNumber.from(0)
+      let totalDepositsBTC = Zero
+      let totalDepositsUSD = Zero
+      let totalWithdrawalsBTC = Zero
+      let totalWithdrawalsUSD = Zero
+      let totalProfitBTC = Zero
+      let totalProfitUSD = Zero
 
       const blockFilter = {
         fromBlock: deployedBlock,

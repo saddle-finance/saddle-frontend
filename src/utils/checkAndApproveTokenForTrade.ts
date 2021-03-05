@@ -4,7 +4,7 @@ import { ContractTransaction } from "@ethersproject/contracts"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { LpToken } from "../../types/ethers-contracts/LpToken"
 import { MaxUint256 } from "@ethersproject/constants"
-
+import { Zero } from "@ethersproject/constants"
 /**
  * Checks if a spender is allowed to spend some amount of a token.
  * Approves them to spend if they're not already allowed.
@@ -59,7 +59,7 @@ export default async function checkAndApproveTokenForTrade(
   }
   if (existingAllowance.gt("0")) {
     // Reset to 0 before updating approval
-    await approve(BigNumber.from(0))
+    await approve(Zero)
   }
   await approve(infiniteApproval ? MaxUint256 : spendingValue)
   console.debug(`Approving ${tokenName} spend of ${spendingValue.toString()}`)

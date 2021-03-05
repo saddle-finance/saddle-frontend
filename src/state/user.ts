@@ -5,6 +5,7 @@ import {
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
 import { BigNumber } from "@ethersproject/bignumber"
+import { Zero } from "@ethersproject/constants"
 
 export enum GasPrices {
   Standard = "STANDARD",
@@ -50,7 +51,7 @@ export const initialState: UserState = {
 
 const gasCustomStateCreator = numberInputStateCreator(
   0, // gas is in wei
-  BigNumber.from(0),
+  Zero,
 )
 const slippageCustomStateCreator = numberInputStateCreator(
   4,

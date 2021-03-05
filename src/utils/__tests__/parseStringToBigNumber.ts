@@ -4,6 +4,7 @@ import parseStringToBigNumber, {
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { WBTC } from "../../constants"
+import { Zero } from "@ethersproject/constants"
 
 describe("parseStringToBigNumber", () => {
   it("correctly parses a string", () => {
@@ -27,7 +28,7 @@ describe("parseStringToBigNumber", () => {
   it("falls back to 0 if no fallback param provided", () => {
     const input = "1.23.a"
     expect(parseStringToBigNumber(input.toString(), 8)).toEqual({
-      value: BigNumber.from(0),
+      value: Zero,
       isFallback: true,
     })
   })
@@ -53,7 +54,7 @@ describe("parseStringAndTokenToBigNumber", () => {
   it("returns 0 if the input cannot be parsed", () => {
     const input = "1.23.a"
     expect(parseStringAndTokenToBigNumber(input.toString())).toEqual({
-      value: BigNumber.from(0),
+      value: Zero,
       isFallback: true,
     })
   })
