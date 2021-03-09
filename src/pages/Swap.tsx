@@ -1,15 +1,18 @@
 import { POOLS_MAP, PoolName, TOKENS_MAP } from "../constants"
-import React, { ReactElement, useCallback, useState } from "react"
+import React, { ReactElement, useCallback, useMemo, useState } from "react"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 
+import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import SwapPage from "../components/SwapPage"
+import { Zero } from "@ethersproject/constants"
 import { calculateExchangeRate } from "../utils"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { debounce } from "lodash"
 import { useApproveAndSwap } from "../hooks/useApproveAndSwap"
 import usePoolData from "../hooks/usePoolData"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
+import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
 import { useTranslation } from "react-i18next"
 
@@ -18,10 +21,12 @@ interface FormState {
   from: {
     symbol: string
     value: string
+    valueUSD: BigNumber
   }
   to: {
     symbol: string
     value: BigNumber
+    valueUSD: BigNumber
   }
   priceImpact: BigNumber
   exchangeRate: BigNumber
@@ -36,34 +41,67 @@ function Swap({ poolName }: Props): ReactElement {
   const tokenBalances = usePoolTokenBalances(poolName)
   const swapContract = useSwapContract(poolName)
   const POOL = POOLS_MAP[poolName]
+  const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
+  function calculatePrice(
+    amount: BigNumber | string,
+    tokenPrice = 0,
+    decimals?: number,
+  ): BigNumber {
+    // returns amount * price as BN 18 precision
+    if (typeof amount === "string") {
+      if (isNaN(+amount)) return Zero
+      return parseUnits((+amount * tokenPrice).toFixed(2), 18)
+    } else if (decimals != null) {
+      return amount
+        .mul(parseUnits(tokenPrice.toFixed(2), 18))
+        .div(BigNumber.from(10).pow(decimals))
+    }
+    return Zero
+  }
+
   const [formState, setFormState] = useState<FormState>({
     error: null,
     from: {
       symbol: POOL.poolTokens[0].symbol,
       value: "0.0",
+      valueUSD: Zero,
     },
     to: {
-      symbol: POOL.poolTokens[1].symbol,
+      symbol: "",
       value: BigNumber.from("0"),
+      valueUSD: Zero,
     },
     priceImpact: BigNumber.from("0"),
     exchangeRate: BigNumber.from("0"),
   })
   // build a representation of pool tokens for the UI
-  const tokens = POOL.poolTokens.map(({ symbol, name, icon, decimals }) => ({
-    name,
-    icon,
-    symbol,
-    decimals,
-    value: tokenBalances ? tokenBalances[symbol] : BigNumber.from("0"),
-  }))
+  const tokens = useMemo(
+    () =>
+      POOL.poolTokens.map(({ symbol, name, icon, decimals }) => {
+        const amount = tokenBalances ? tokenBalances[symbol] : Zero
+        return {
+          name,
+          icon,
+          symbol,
+          decimals,
+          amount,
+          valueUSD: calculatePrice(amount, tokenPricesUSD?.[symbol], decimals),
+          isAvailable: true, // TODO: refine for multipool
+        }
+      }),
+    [tokenPricesUSD, tokenBalances, POOL.poolTokens],
+  )
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const calculateSwapAmount = useCallback(
     debounce(async (formStateArg: FormState) => {
       if (swapContract == null || tokenBalances === null || poolData == null)
         return
       const cleanedFormFromValue = formStateArg.from.value.replace(/[$,]/g, "") // remove common copy/pasted financial characters
-      if (cleanedFormFromValue === "" || isNaN(+cleanedFormFromValue)) {
+      if (
+        cleanedFormFromValue === "" ||
+        isNaN(+cleanedFormFromValue) ||
+        formStateArg.to.symbol === ""
+      ) {
         setFormState((prevState) => ({
           ...prevState,
           to: {
@@ -107,6 +145,11 @@ function Swap({ poolName }: Props): ReactElement {
         to: {
           ...prevState.to,
           value: amountToReceive,
+          valueUSD: calculatePrice(
+            amountToReceive,
+            tokenPricesUSD?.[tokenTo.symbol],
+            tokenTo.decimals,
+          ),
         },
         priceImpact: calculatePriceImpact(
           amountToGive.mul(BigNumber.from(10).pow(18 - tokenFrom.decimals)),
@@ -128,9 +171,17 @@ function Swap({ poolName }: Props): ReactElement {
     setFormState((prevState) => {
       const nextState = {
         ...prevState,
+        to: {
+          ...prevState.to,
+          valueUSD: Zero,
+        },
         from: {
           ...prevState.from,
           value,
+          valueUSD: calculatePrice(
+            value,
+            tokenPricesUSD?.[prevState.from.symbol],
+          ),
         },
         priceImpact: BigNumber.from("0"),
         exchangeRate: BigNumber.from("0"),
@@ -146,10 +197,15 @@ function Swap({ poolName }: Props): ReactElement {
         from: {
           symbol: prevState.to.symbol,
           value: prevState.from.value,
+          valueUSD: calculatePrice(
+            prevState.from.value,
+            tokenPricesUSD?.[prevState.to.symbol],
+          ),
         },
         to: {
           symbol: prevState.from.symbol,
           value: BigNumber.from("0"),
+          valueUSD: Zero,
         },
         priceImpact: BigNumber.from("0"),
         exchangeRate: BigNumber.from("0"),
@@ -167,10 +223,15 @@ function Swap({ poolName }: Props): ReactElement {
         from: {
           ...prevState.from,
           symbol,
+          valueUSD: calculatePrice(
+            prevState.from.value,
+            tokenPricesUSD?.[symbol],
+          ),
         },
         to: {
           ...prevState.to,
           value: BigNumber.from("0"),
+          valueUSD: Zero,
         },
         priceImpact: BigNumber.from("0"),
         exchangeRate: BigNumber.from("0"),
@@ -191,6 +252,7 @@ function Swap({ poolName }: Props): ReactElement {
           ...prevState.to,
           value: BigNumber.from("0"),
           symbol,
+          valueUSD: Zero,
         },
         priceImpact: BigNumber.from("0"),
         exchangeRate: BigNumber.from("0"),
@@ -235,10 +297,13 @@ function Swap({ poolName }: Props): ReactElement {
       fromState={formState.from}
       toState={{
         ...formState.to,
-        value: formatUnits(
-          formState.to.value,
-          TOKENS_MAP[formState.to.symbol].decimals,
-        ),
+        value:
+          formState.to.symbol === ""
+            ? "0"
+            : formatUnits(
+                formState.to.value,
+                TOKENS_MAP[formState.to.symbol].decimals,
+              ),
       }}
       onChangeFromAmount={handleUpdateAmountFrom}
       onChangeFromToken={handleUpdateTokenFrom}
