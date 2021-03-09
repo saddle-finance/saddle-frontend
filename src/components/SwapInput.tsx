@@ -100,6 +100,7 @@ export default function SwapInput({
             }
           }}
           readOnly={!isSwapFrom}
+          tabIndex={isSwapFrom ? 0 : -1}
         />
         <p className={styles.textMinor}>
           ≈${commify(formatBNToString(inputValueUSD, 18, 2))}

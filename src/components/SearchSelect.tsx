@@ -79,8 +79,10 @@ export default function SearchSelect({
         <input
           value={searchTerm}
           onChange={(e) => {
-            activeIndex != null && setActiveIndex(null)
-            setSearchTerm(e.target.value)
+            const inputValue = e.target.value
+            const nextActiveIndex = inputValue === "" ? null : 0
+            activeIndex !== nextActiveIndex && setActiveIndex(nextActiveIndex)
+            setSearchTerm(inputValue)
           }}
           ref={inputRef}
           onFocus={() => activeIndex != null && setActiveIndex(null)}
