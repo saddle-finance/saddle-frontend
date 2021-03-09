@@ -72,7 +72,8 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "^4.3.0",
     "react-is": "^17.0.1",
-    "typechain": "^4.0.1"
+    "typechain": "^4.0.1",
+    "typescript-plugin-css-modules": "^3.2.0"
   },
   "scripts": {
     "lint": "eslint --max-warnings=0 --ext ts,tsx src/ && prettier --list-different 'src/**/*.{ts,tsx,scss}'",
