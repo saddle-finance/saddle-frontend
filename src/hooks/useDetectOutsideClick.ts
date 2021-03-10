@@ -1,5 +1,5 @@
 import { RefObject, useEffect } from "react"
-// ElementType,
+
 export default function useDetectOutsideClick(
   elementRef: RefObject<HTMLElement>,
   callback: () => void,

@@ -42,12 +42,6 @@
   }
 }
 
-// ul.listContainer {
-//   &:hover {
-//     cursor: pointer;
-//   }
-// }
-
 .listItem {
   display: flex;
   flex-direction: row;
@@ -86,7 +80,7 @@
 }
 
 .textMinor {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-lighter);
 }
 

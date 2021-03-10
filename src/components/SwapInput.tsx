@@ -3,6 +3,7 @@ import React, { ReactElement, useCallback, useRef, useState } from "react"
 import { BigNumber } from "@ethersproject/bignumber"
 import SearchSelect from "./SearchSelect"
 import { TOKENS_MAP } from "../constants"
+import classnames from "classnames"
 import { commify } from "@ethersproject/units"
 import { formatBNToString } from "../utils"
 import styles from "./SwapInput.module.scss"
@@ -37,6 +38,7 @@ export default function SwapInput({
 }: Props): ReactElement {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const wrapperRef = useRef(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const { t } = useTranslation()
   useDetectOutsideClick(
     wrapperRef,
@@ -85,8 +87,17 @@ export default function SwapInput({
           )}
         </div>
       </div>
-      <div className={styles.inputGroup}>
+      <div
+        className={classnames(
+          { [styles.focusable]: isSwapFrom },
+          styles.inputGroup,
+        )}
+        onClick={() => {
+          inputRef.current?.focus()
+        }}
+      >
         <input
+          ref={inputRef}
           autoComplete="off"
           autoCorrect="off"
           type="text"

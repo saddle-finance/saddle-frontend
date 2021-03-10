@@ -38,7 +38,7 @@ div.swapPage {
       }
       a {
         font-weight: 700;
-        color: $primary-blue;
+        color: var(--text-selected);
         &:hover {
           cursor: pointer;
         }
