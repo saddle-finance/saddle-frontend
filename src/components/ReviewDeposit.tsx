@@ -121,6 +121,12 @@ function ReviewDeposit({
           </span>
         </div>
         <div className="depositInfoItem">
+          <span className="label">{t("gasEstimate")}</span>
+          <span className="value">
+            {/* {formatGasEstimateToString(calculateGasEstimate(depositMethod))} */}
+          </span>
+        </div>
+        <div className="depositInfoItem">
           <span className="label">{t("maxSlippage")}</span>
           <span className="value">
             {formatSlippageToString(slippageSelected, slippageCustom)}%
