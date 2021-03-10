@@ -6,7 +6,9 @@ import {
   PoolName,
   RENBTC,
   SBTC,
+  STABLECOIN_POOL_NAME,
   STABLECOIN_SWAP_ADDRESSES,
+  STABLECOIN_SWAP_TOKEN,
   SUSD,
   TBTC,
   Token,
@@ -75,9 +77,10 @@ export function useSwapContract(poolName: PoolName): Swap | null {
   return useMemo(() => {
     if (poolName === BTC_POOL_NAME) {
       return btcSwapContract as Swap
-    } else {
+    } else if (poolName === STABLECOIN_POOL_NAME) {
       return stablecoinSwapContract as Swap
     }
+    return null
   }, [stablecoinSwapContract, btcSwapContract, poolName])
 }
 
@@ -103,6 +106,9 @@ export function useAllContracts(): AllContractsObject | null {
   const usdtContract = useTokenContract(USDT) as Erc20
   const susdContract = useTokenContract(SUSD) as Erc20
   const btcSwapTokenContract = useTokenContract(BTC_SWAP_TOKEN) as Swap
+  const stablecoinSwapTokenContract = useTokenContract(
+    STABLECOIN_SWAP_TOKEN,
+  ) as Swap
 
   return useMemo(() => {
     if (
@@ -116,6 +122,7 @@ export function useAllContracts(): AllContractsObject | null {
         usdtContract,
         susdContract,
         btcSwapTokenContract,
+        // stablecoinSwapTokenContract, // TODO: add back when contract deployed
       ].some(Boolean)
     )
       return null
@@ -129,6 +136,7 @@ export function useAllContracts(): AllContractsObject | null {
       [USDT.symbol]: usdtContract,
       [SUSD.symbol]: susdContract,
       [BTC_SWAP_TOKEN.symbol]: btcSwapTokenContract,
+      [STABLECOIN_SWAP_TOKEN.symbol]: stablecoinSwapTokenContract,
     }
   }, [
     tbtcContract,
@@ -140,5 +148,6 @@ export function useAllContracts(): AllContractsObject | null {
     usdtContract,
     susdContract,
     btcSwapTokenContract,
+    stablecoinSwapTokenContract,
   ])
 }
