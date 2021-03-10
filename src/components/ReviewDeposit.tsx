@@ -2,6 +2,10 @@ import "./ReviewDeposit.scss"
 
 import React, { ReactElement, useState } from "react"
 import {
+  calculateGasEstimate,
+  formatGasEstimateToString,
+} from "../utils/gasEstimate"
+import {
   formatBNToPercentString,
   formatBNToString,
   formatDeadlineToNumber,
@@ -123,7 +127,7 @@ function ReviewDeposit({
         <div className="depositInfoItem">
           <span className="label">{t("gasEstimate")}</span>
           <span className="value">
-            {/* {formatGasEstimateToString(calculateGasEstimate(depositMethod))} */}
+            {formatGasEstimateToString(calculateGasEstimate("addLiquidity"))}
           </span>
         </div>
         <div className="depositInfoItem">
