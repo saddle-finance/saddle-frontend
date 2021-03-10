@@ -1,16 +1,16 @@
 import "../styles/global.scss"
 
+import { BLOCK_TIME, BTC_POOL_NAME } from "../constants"
 import React, { ReactElement, Suspense, useCallback } from "react"
 import { Route, Switch } from "react-router-dom"
 
 import { AppDispatch } from "../state"
-import { BLOCK_TIME } from "../constants"
-import DepositBTC from "./DepositBTC"
+import Deposit from "./Deposit"
 import Risk from "./Risk"
-import SwapBTC from "./SwapBTC"
+import Swap from "./Swap"
 import ToastsProvider from "../providers/ToastsProvider"
 import Web3ReactManager from "../components/Web3ReactManager"
-import WithdrawBTC from "./WithdrawBTC"
+import Withdraw from "./Withdraw"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import { useDispatch } from "react-redux"
@@ -33,9 +33,25 @@ export default function App(): ReactElement {
       <Web3ReactManager>
         <ToastsProvider>
           <Switch>
-            <Route exact path="/" component={SwapBTC} />
-            <Route exact path="/deposit" component={DepositBTC} />
-            <Route exact path="/withdraw" component={WithdrawBTC} />
+            <Route
+              exact
+              path="/"
+              render={(props) => <Swap {...props} poolName={BTC_POOL_NAME} />}
+            />
+            <Route
+              exact
+              path="/deposit"
+              render={(props) => (
+                <Deposit {...props} poolName={BTC_POOL_NAME} />
+              )}
+            />
+            <Route
+              exact
+              path="/withdraw"
+              render={(props) => (
+                <Withdraw {...props} poolName={BTC_POOL_NAME} />
+              )}
+            />
             <Route exact path="/risk" component={Risk} />
           </Switch>
         </ToastsProvider>

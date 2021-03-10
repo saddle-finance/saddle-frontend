@@ -1,4 +1,4 @@
-import { BTC_POOL_NAME, BTC_POOL_TOKENS, TOKENS_MAP } from "../constants"
+import { POOLS_MAP, PoolName, TOKENS_MAP } from "../constants"
 import React, { ReactElement, useCallback, useState } from "react"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 
@@ -26,27 +26,31 @@ interface FormState {
   priceImpact: BigNumber
   exchangeRate: BigNumber
 }
-function SwapBTC(): ReactElement {
+interface Props {
+  poolName: PoolName
+}
+function Swap({ poolName }: Props): ReactElement {
   const { t } = useTranslation()
-  const [poolData] = usePoolData(BTC_POOL_NAME)
-  const approveAndSwap = useApproveAndSwap(BTC_POOL_NAME)
-  const tokenBalances = usePoolTokenBalances(BTC_POOL_NAME)
-  const swapContract = useSwapContract(BTC_POOL_NAME)
+  const [poolData] = usePoolData(poolName)
+  const approveAndSwap = useApproveAndSwap(poolName)
+  const tokenBalances = usePoolTokenBalances(poolName)
+  const swapContract = useSwapContract(poolName)
+  const POOL = POOLS_MAP[poolName]
   const [formState, setFormState] = useState<FormState>({
     error: null,
     from: {
-      symbol: BTC_POOL_TOKENS[0].symbol,
+      symbol: POOL.poolTokens[0].symbol,
       value: "0.0",
     },
     to: {
-      symbol: BTC_POOL_TOKENS[1].symbol,
+      symbol: POOL.poolTokens[1].symbol,
       value: BigNumber.from("0"),
     },
     priceImpact: BigNumber.from("0"),
     exchangeRate: BigNumber.from("0"),
   })
   // build a representation of pool tokens for the UI
-  const tokens = BTC_POOL_TOKENS.map(({ symbol, name, icon, decimals }) => ({
+  const tokens = POOL.poolTokens.map(({ symbol, name, icon, decimals }) => ({
     name,
     icon,
     symbol,
@@ -71,10 +75,10 @@ function SwapBTC(): ReactElement {
         return
       }
       // TODO: improve the relationship between token / index
-      const tokenIndexFrom = BTC_POOL_TOKENS.findIndex(
+      const tokenIndexFrom = POOL.poolTokens.findIndex(
         ({ symbol }) => symbol === formStateArg.from.symbol,
       )
-      const tokenIndexTo = BTC_POOL_TOKENS.findIndex(
+      const tokenIndexTo = POOL.poolTokens.findIndex(
         ({ symbol }) => symbol === formStateArg.to.symbol,
       )
       const amountToGive = parseUnits(
@@ -246,4 +250,4 @@ function SwapBTC(): ReactElement {
   )
 }
 
-export default SwapBTC
+export default Swap

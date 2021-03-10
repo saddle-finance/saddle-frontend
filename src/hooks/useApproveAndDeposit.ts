@@ -41,9 +41,7 @@ export function useApproveAndDeposit(
     transactionDeadlineSelected,
     infiniteApproval,
   } = useSelector((state: AppState) => state.user)
-  const POOL_TOKENS = POOLS_MAP[poolName]
-  if (!POOL_TOKENS)
-    throw new Error("useApproveAndDeposit requires a valid pool name")
+  const POOL = POOLS_MAP[poolName]
 
   return async function approveAndDeposit(
     state: ApproveAndDepositStateArgument,
@@ -92,14 +90,13 @@ export function useApproveAndDeposit(
     }
     try {
       // For each token being deposited, check the allowance and approve it if necessary
-      // await Promise.all(POOL_TOKENS.map((token) => approveSingleToken(token)))
-      for (const token of POOL_TOKENS) {
-        await approveSingleToken(token)
-      }
+      await Promise.all(
+        POOL.poolTokens.map((token) => approveSingleToken(token)),
+      )
 
       // "isFirstTransaction" check can be removed after launch
       const poolTokenBalances: BigNumber[] = await Promise.all(
-        POOL_TOKENS.map(async (token, i) => {
+        POOL.poolTokens.map(async (token, i) => {
           return await swapContract.getTokenBalance(i)
         }),
       )
@@ -110,7 +107,7 @@ export function useApproveAndDeposit(
       } else {
         minToMint = await swapContract.calculateTokenAmount(
           account,
-          POOL_TOKENS.map(({ symbol }) => state[symbol].valueSafe),
+          POOL.poolTokens.map(({ symbol }) => state[symbol].valueSafe),
           true, // deposit boolean
         )
       }
@@ -137,7 +134,7 @@ export function useApproveAndDeposit(
       )
 
       const spendTransaction = await swapContract.addLiquidity(
-        POOL_TOKENS.map(({ symbol }) => state[symbol].valueSafe),
+        POOL.poolTokens.map(({ symbol }) => state[symbol].valueSafe),
         minToMint,
         Math.round(new Date().getTime() / 1000 + 60 * deadline),
         [],

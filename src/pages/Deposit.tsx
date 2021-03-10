@@ -1,13 +1,5 @@
-import {
-  BTC_POOL_NAME,
-  BTC_POOL_TOKENS,
-  BTC_SWAP_TOKEN,
-  RENBTC,
-  SBTC,
-  TBTC,
-  WBTC,
-} from "../constants"
 import { DepositTransaction, TransactionItem } from "../interfaces/transactions"
+import { POOLS_MAP, PoolName, Token } from "../constants"
 import React, { ReactElement, useEffect, useState } from "react"
 import { TokensStateType, useTokenFormState } from "../hooks/useTokenFormState"
 import { formatBNToString, shiftBNDecimals } from "../utils"
@@ -22,18 +14,24 @@ import { calculatePriceImpact } from "../utils/priceImpact"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
+import { usePoolTokenBalances } from "../state/wallet/hooks"
 import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
-import { useTokenBalance } from "../state/wallet/hooks"
 
-function DepositBTC(): ReactElement | null {
+interface Props {
+  poolName: PoolName
+}
+
+function Deposit({ poolName }: Props): ReactElement | null {
+  const POOL = POOLS_MAP[poolName]
   const { account } = useActiveWeb3React()
-  const approveAndDeposit = useApproveAndDeposit(BTC_POOL_NAME)
-  const [poolData, userShareData] = usePoolData(BTC_POOL_NAME)
-  const swapContract = useSwapContract(BTC_POOL_NAME)
+  const approveAndDeposit = useApproveAndDeposit(poolName)
+  const [poolData, userShareData] = usePoolData(poolName)
+  const swapContract = useSwapContract(poolName)
   const [tokenFormState, updateTokenFormState] = useTokenFormState(
-    BTC_POOL_TOKENS,
+    POOL.poolTokens,
   )
+  const tokenBalances = usePoolTokenBalances(poolName)
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const [estDepositLPTokenAmount, setEstDepositLPTokenAmount] = useState(Zero)
   const [priceImpact, setPriceImpact] = useState(Zero)
@@ -51,17 +49,19 @@ function DepositBTC(): ReactElement | null {
         return
       }
       const tokenInputSum = parseUnits(
-        BTC_POOL_TOKENS.reduce(
-          (sum, { symbol }) => sum + (+tokenFormState[symbol].valueRaw || 0),
-          0,
-        ).toFixed(18),
+        POOL.poolTokens
+          .reduce(
+            (sum, { symbol }) => sum + (+tokenFormState[symbol].valueRaw || 0),
+            0,
+          )
+          .toFixed(18),
         18,
       )
       let depositLPTokenAmount
       if (poolData.totalLocked.gt(0) && tokenInputSum.gt(0)) {
         depositLPTokenAmount = await swapContract.calculateTokenAmount(
           account,
-          BTC_POOL_TOKENS.map(({ symbol }) => tokenFormState[symbol].valueSafe),
+          POOL.poolTokens.map(({ symbol }) => tokenFormState[symbol].valueSafe),
           true, // deposit boolean
         )
       } else {
@@ -79,25 +79,26 @@ function DepositBTC(): ReactElement | null {
       )
     }
     void calculateMaxDeposits()
-  }, [poolData, tokenFormState, swapContract, userShareData, account])
-  // Account Token balances
-  const tokenBalances = {
-    [TBTC.symbol]: useTokenBalance(TBTC),
-    [WBTC.symbol]: useTokenBalance(WBTC),
-    [RENBTC.symbol]: useTokenBalance(RENBTC),
-    [SBTC.symbol]: useTokenBalance(SBTC),
-  }
+  }, [
+    poolData,
+    tokenFormState,
+    swapContract,
+    userShareData,
+    account,
+    POOL.poolTokens,
+  ])
+
   // A represention of tokens used for UI
-  const tokens = BTC_POOL_TOKENS.map(({ symbol, name, icon, decimals }) => ({
+  const tokens = POOL.poolTokens.map(({ symbol, name, icon, decimals }) => ({
     symbol,
     name,
     icon,
-    max: formatBNToString(tokenBalances[symbol], decimals),
+    max: formatBNToString(tokenBalances?.[symbol] || Zero, decimals),
     inputValue: tokenFormState[symbol].valueRaw,
   }))
 
-  const exceedsWallet = BTC_POOL_TOKENS.some(({ symbol }) => {
-    const exceedsBoolean = tokenBalances[symbol].lt(
+  const exceedsWallet = POOL.poolTokens.some(({ symbol }) => {
+    const exceedsBoolean = (tokenBalances?.[symbol] || Zero).lt(
       BigNumber.from(tokenFormState[symbol].valueSafe),
     )
     return exceedsBoolean
@@ -107,7 +108,7 @@ function DepositBTC(): ReactElement | null {
     await approveAndDeposit(tokenFormState)
     // Clear input after deposit
     updateTokenFormState(
-      BTC_POOL_TOKENS.reduce(
+      POOL.poolTokens.reduce(
         (acc, t) => ({
           ...acc,
           [t.symbol]: "",
@@ -122,6 +123,8 @@ function DepositBTC(): ReactElement | null {
   const depositTransaction = buildTransactionData(
     tokenFormState,
     poolData,
+    POOL.poolTokens,
+    POOL.lpToken,
     priceImpact,
     estDepositLPTokenAmount,
     tokenPricesUSD,
@@ -131,7 +134,7 @@ function DepositBTC(): ReactElement | null {
     <DepositPage
       onConfirmTransaction={onConfirmTransaction}
       onChangeTokenInputValue={updateTokenFormValue}
-      title="BTC Pool"
+      title={poolName}
       tokens={tokens}
       exceedsWallet={exceedsWallet}
       poolData={poolData}
@@ -145,6 +148,8 @@ function DepositBTC(): ReactElement | null {
 function buildTransactionData(
   tokenFormState: TokensStateType,
   poolData: PoolDataType | null,
+  poolTokens: Token[],
+  poolLpToken: Token,
   priceImpact: BigNumber,
   estDepositLPTokenAmount: BigNumber,
   tokenPricesUSD?: TokenPricesUSD,
@@ -155,7 +160,7 @@ function buildTransactionData(
     totalValueUSD: Zero,
   }
   const TOTAL_AMOUNT_DECIMALS = 18
-  BTC_POOL_TOKENS.forEach((token) => {
+  poolTokens.forEach((token) => {
     const { symbol, decimals } = token
     const amount = BigNumber.from(tokenFormState[symbol].valueSafe)
     const usdPriceBN = parseUnits(
@@ -179,10 +184,10 @@ function buildTransactionData(
   const lpTokenPriceUSD = poolData?.lpTokenPriceUSD || Zero
   const toTotalValueUSD = estDepositLPTokenAmount
     .mul(lpTokenPriceUSD)
-    ?.div(BigNumber.from(10).pow(BTC_SWAP_TOKEN.decimals))
+    ?.div(BigNumber.from(10).pow(poolLpToken.decimals))
   const to = {
     item: {
-      token: BTC_SWAP_TOKEN,
+      token: poolLpToken,
       amount: estDepositLPTokenAmount,
       singleTokenPriceUSD: lpTokenPriceUSD,
       valueUSD: toTotalValueUSD,
@@ -203,4 +208,4 @@ function buildTransactionData(
   }
 }
 
-export default DepositBTC
+export default Deposit

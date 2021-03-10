@@ -64,6 +64,13 @@ export const MERKLETREE_DATA: { [chainId in ChainId]: string } = {
   [ChainId.HARDHAT]: "hardhat.json",
 }
 
+export const STABLECOIN_SWAP_TOKEN_CONTRACT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "",
+  [ChainId.HARDHAT]: "0x6A358FD7B7700887b0cd974202CdF93208F793E2",
+}
+
 export const BTC_SWAP_TOKEN_CONTRACT_ADDRESSES: {
   [chainId in ChainId]: string
 } = {
@@ -74,9 +81,18 @@ export const BTC_SWAP_TOKEN_CONTRACT_ADDRESSES: {
 export const BTC_SWAP_TOKEN = new Token(
   BTC_SWAP_TOKEN_CONTRACT_ADDRESSES,
   18,
-  "BLPT",
-  "blpt",
-  "Saddle BTC Pool LP Token",
+  "saddleBTC",
+  "saddlebtc",
+  "Saddle TBTC/WBTC/RENBTC/SBTC",
+  saddleLogo,
+)
+
+export const STABLECOIN_SWAP_TOKEN = new Token(
+  STABLECOIN_SWAP_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "saddleUSD",
+  "saddleusd",
+  "Saddle DAI/USDC/USDT",
   saddleLogo,
 )
 
@@ -199,10 +215,19 @@ export const TOKENS_MAP: {
 )
 
 export const POOLS_MAP: {
-  [poolName: string]: Token[]
+  [poolName in PoolName]: {
+    lpToken: Token
+    poolTokens: Token[]
+  }
 } = {
-  [BTC_POOL_NAME]: BTC_POOL_TOKENS,
-  [STABLECOIN_POOL_NAME]: STABLECOIN_POOL_TOKENS,
+  [BTC_POOL_NAME]: {
+    lpToken: BTC_SWAP_TOKEN,
+    poolTokens: BTC_POOL_TOKENS,
+  },
+  [STABLECOIN_POOL_NAME]: {
+    lpToken: STABLECOIN_SWAP_TOKEN,
+    poolTokens: STABLECOIN_POOL_TOKENS,
+  },
 }
 
 export const TRANSACTION_TYPES = {

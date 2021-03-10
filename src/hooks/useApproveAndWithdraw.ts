@@ -42,9 +42,7 @@ export function useApproveAndWithdraw(
     infiniteApproval,
   } = useSelector((state: AppState) => state.user)
   const lpTokenContract = useLPTokenContract(poolName)
-  const POOL_TOKENS = POOLS_MAP[poolName]
-  if (!POOL_TOKENS)
-    throw new Error("useApproveAndWithdraw requires a valid pool name")
+  const POOL = POOLS_MAP[poolName]
 
   return async function approveAndWithdraw(
     state: ApproveAndWithdrawStateArgument,
@@ -122,7 +120,7 @@ export function useApproveAndWithdraw(
       if (state.withdrawType === "ALL") {
         spendTransaction = await swapContract.removeLiquidity(
           state.lpTokenAmountToSpend,
-          POOL_TOKENS.map(({ symbol }) =>
+          POOL.poolTokens.map(({ symbol }) =>
             subtractSlippage(
               BigNumber.from(state.tokenFormState[symbol].valueSafe),
               slippageSelected,
@@ -136,7 +134,7 @@ export function useApproveAndWithdraw(
         )
       } else if (state.withdrawType === "IMBALANCE") {
         spendTransaction = await swapContract.removeLiquidityImbalance(
-          POOL_TOKENS.map(
+          POOL.poolTokens.map(
             ({ symbol }) => state.tokenFormState[symbol].valueSafe,
           ),
           addSlippage(
@@ -153,7 +151,9 @@ export function useApproveAndWithdraw(
         // state.withdrawType === [TokenSymbol]
         spendTransaction = await swapContract.removeLiquidityOneToken(
           state.lpTokenAmountToSpend,
-          POOL_TOKENS.findIndex(({ symbol }) => symbol === state.withdrawType),
+          POOL.poolTokens.findIndex(
+            ({ symbol }) => symbol === state.withdrawType,
+          ),
           subtractSlippage(
             BigNumber.from(
               state.tokenFormState[state.withdrawType || ""].valueSafe,

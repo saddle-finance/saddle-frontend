@@ -1,4 +1,4 @@
-import { BTC_POOL_NAME, BTC_POOL_TOKENS } from "../constants"
+import { POOLS_MAP, PoolName } from "../constants"
 import React, { ReactElement, useEffect, useState } from "react"
 import WithdrawPage, { ReviewWithdrawData } from "../components/WithdrawPage"
 import { commify, formatUnits, parseUnits } from "@ethersproject/units"
@@ -15,18 +15,22 @@ import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
 import useWithdrawFormState from "../hooks/useWithdrawFormState"
 
-function WithdrawBTC(): ReactElement {
-  const [poolData, userShareData] = usePoolData(BTC_POOL_NAME)
+interface Props {
+  poolName: PoolName
+}
+function Withdraw({ poolName }: Props): ReactElement {
+  const [poolData, userShareData] = usePoolData(poolName)
   const [withdrawFormState, updateWithdrawFormState] = useWithdrawFormState(
-    BTC_POOL_NAME,
+    poolName,
   )
   const { slippageCustom, slippageSelected } = useSelector(
     (state: AppState) => state.user,
   )
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
-  const approveAndWithdraw = useApproveAndWithdraw(BTC_POOL_NAME)
-  const swapContract = useSwapContract(BTC_POOL_NAME)
+  const approveAndWithdraw = useApproveAndWithdraw(poolName)
+  const swapContract = useSwapContract(poolName)
   const { account } = useActiveWeb3React()
+  const POOL = POOLS_MAP[poolName]
 
   const [estWithdrawBonus, setEstWithdrawBonus] = useState(Zero)
   useEffect(() => {
@@ -41,18 +45,20 @@ function WithdrawBTC(): ReactElement {
         return
       }
       const tokenInputSum = parseUnits(
-        BTC_POOL_TOKENS.reduce(
-          (sum, { symbol }) =>
-            sum + (+withdrawFormState.tokenInputs[symbol].valueRaw || 0),
-          0,
-        ).toFixed(18),
+        POOL.poolTokens
+          .reduce(
+            (sum, { symbol }) =>
+              sum + (+withdrawFormState.tokenInputs[symbol].valueRaw || 0),
+            0,
+          )
+          .toFixed(18),
         18,
       )
       let withdrawLPTokenAmount
       if (poolData.totalLocked.gt(0) && tokenInputSum.gt(0)) {
         withdrawLPTokenAmount = await swapContract.calculateTokenAmount(
           account,
-          BTC_POOL_TOKENS.map(
+          POOL.poolTokens.map(
             ({ symbol }) => withdrawFormState.tokenInputs[symbol].valueSafe,
           ),
           false,
@@ -70,7 +76,14 @@ function WithdrawBTC(): ReactElement {
       )
     }
     void calculateWithdrawBonus()
-  }, [poolData, withdrawFormState, swapContract, userShareData, account])
+  }, [
+    poolData,
+    withdrawFormState,
+    swapContract,
+    userShareData,
+    account,
+    POOL.poolTokens,
+  ])
   async function onConfirmTransaction(): Promise<void> {
     const {
       withdrawType,
@@ -87,13 +100,13 @@ function WithdrawBTC(): ReactElement {
 
   const tokensData = React.useMemo(
     () =>
-      BTC_POOL_TOKENS.map(({ name, symbol, icon }) => ({
+      POOL.poolTokens.map(({ name, symbol, icon }) => ({
         name,
         symbol,
         icon,
         inputValue: withdrawFormState.tokenInputs[symbol].valueRaw,
       })),
-    [withdrawFormState],
+    [withdrawFormState, POOL.poolTokens],
   )
 
   const reviewWithdrawData: ReviewWithdrawData = {
@@ -102,7 +115,7 @@ function WithdrawBTC(): ReactElement {
     slippage: formatSlippageToString(slippageSelected, slippageCustom),
     priceImpact: estWithdrawBonus,
   }
-  BTC_POOL_TOKENS.forEach(({ name, decimals, icon, symbol }) => {
+  POOL.poolTokens.forEach(({ name, decimals, icon, symbol }) => {
     if (BigNumber.from(withdrawFormState.tokenInputs[symbol].valueSafe).gt(0)) {
       reviewWithdrawData.withdraw.push({
         name,
@@ -129,7 +142,7 @@ function WithdrawBTC(): ReactElement {
 
   return (
     <WithdrawPage
-      title="BTC Pool"
+      title={poolName}
       reviewData={reviewWithdrawData}
       tokensData={tokensData}
       poolData={poolData}
@@ -142,4 +155,4 @@ function WithdrawBTC(): ReactElement {
   )
 }
 
-export default WithdrawBTC
+export default Withdraw

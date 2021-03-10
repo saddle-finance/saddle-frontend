@@ -39,7 +39,7 @@ export type WithdrawFormAction = {
 export default function useWithdrawFormState(
   poolName: PoolName,
 ): [WithdrawFormState, (action: WithdrawFormAction) => void] {
-  const POOL_TOKENS = POOLS_MAP[poolName]
+  const POOL = POOLS_MAP[poolName]
   const swapContract = useSwapContract(poolName)
   const [, userShareData] = usePoolData(poolName)
   const { account } = useActiveWeb3React()
@@ -47,25 +47,25 @@ export default function useWithdrawFormState(
     [tokenSymbol: string]: ReturnType<typeof numberInputStateCreator>
   } = useMemo(
     () =>
-      POOL_TOKENS.reduce(
+      POOL.poolTokens.reduce(
         (acc, { symbol, decimals }) => ({
           ...acc,
           [symbol]: numberInputStateCreator(decimals, BigNumber.from("0")),
         }),
         {},
       ),
-    [POOL_TOKENS],
+    [POOL.poolTokens],
   )
   const tokenInputsEmptyState = useMemo(
     () =>
-      POOL_TOKENS.reduce(
+      POOL.poolTokens.reduce(
         (acc, { symbol }) => ({
           ...acc,
           [symbol]: tokenInputStateCreators[symbol]("0"),
         }),
         {},
       ),
-    [POOL_TOKENS, tokenInputStateCreators],
+    [POOL.poolTokens, tokenInputStateCreators],
   )
   const formEmptyState = useMemo(
     () => ({
@@ -106,7 +106,7 @@ export default function useWithdrawFormState(
         try {
           const inputCalculatedLPTokenAmount = await swapContract.calculateTokenAmount(
             account,
-            POOL_TOKENS.map(
+            POOL.poolTokens.map(
               ({ symbol }) => state.tokenInputs[symbol].valueSafe,
             ),
             false,
@@ -144,7 +144,7 @@ export default function useWithdrawFormState(
           )
           nextState = {
             lpTokenAmountToSpend: effectiveUserLPTokenBalance,
-            tokenInputs: POOL_TOKENS.reduce(
+            tokenInputs: POOL.poolTokens.reduce(
               (acc, { symbol }, i) => ({
                 ...acc,
                 [symbol]: tokenInputStateCreators[symbol](tokenAmounts[i]),
@@ -164,7 +164,7 @@ export default function useWithdrawFormState(
       } else {
         try {
           if (state.percentage) {
-            const tokenIndex = POOL_TOKENS.findIndex(
+            const tokenIndex = POOL.poolTokens.findIndex(
               ({ symbol }) => symbol === state.withdrawType,
             )
             const tokenAmount = await swapContract.calculateRemoveLiquidityOneToken(
@@ -174,7 +174,7 @@ export default function useWithdrawFormState(
             ) // actual coin amount to be returned
             nextState = {
               lpTokenAmountToSpend: effectiveUserLPTokenBalance,
-              tokenInputs: POOL_TOKENS.reduce(
+              tokenInputs: POOL.poolTokens.reduce(
                 (acc, { symbol }, i) => ({
                   ...acc,
                   [symbol]: tokenInputStateCreators[symbol](
@@ -189,7 +189,7 @@ export default function useWithdrawFormState(
             // This branch addresses a user manually inputting a value for one token
             const inputCalculatedLPTokenAmount = await swapContract.calculateTokenAmount(
               account,
-              POOL_TOKENS.map(
+              POOL.poolTokens.map(
                 ({ symbol }) => state.tokenInputs[symbol].valueSafe,
               ),
               false,
@@ -223,7 +223,7 @@ export default function useWithdrawFormState(
         ...nextState,
       }))
     }, 250),
-    [userShareData, swapContract, POOL_TOKENS, tokenInputStateCreators],
+    [userShareData, swapContract, POOL.poolTokens, tokenInputStateCreators],
   )
 
   const handleUpdateForm = useCallback(
@@ -243,7 +243,7 @@ export default function useWithdrawFormState(
               valueInput,
             ),
           }
-          const activeInputTokens = POOL_TOKENS.filter(
+          const activeInputTokens = POOL.poolTokens.filter(
             ({ symbol }) => +newTokenInputs[symbol].valueRaw !== 0,
           )
           let withdrawType
@@ -295,7 +295,7 @@ export default function useWithdrawFormState(
         }
         const pendingTokenInput =
           action.fieldName === "tokenInputs" &&
-          POOL_TOKENS.every(({ symbol }) => {
+          POOL.poolTokens.every(({ symbol }) => {
             const stateValue = finalState.tokenInputs[symbol].valueRaw
             return isNaN(+stateValue) || +stateValue === 0
           })
@@ -306,7 +306,7 @@ export default function useWithdrawFormState(
       })
     },
     [
-      POOL_TOKENS,
+      POOL.poolTokens,
       calculateAndUpdateDynamicFields,
       tokenInputStateCreators,
       tokenInputsEmptyState,
