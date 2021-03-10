@@ -1,3 +1,5 @@
+import { BigNumber } from "@ethersproject/bignumber"
+import { Zero } from "@ethersproject/constants"
 import daiLogo from "../assets/icons/dai.svg"
 import renbtcLogo from "../assets/icons/renbtc.svg"
 import saddleLogo from "../assets/icons/logo.svg"
@@ -233,4 +235,11 @@ export const POOL_STATS_URL: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "https://ipfs.saddle.exchange/pool-stats.json",
   [ChainId.HARDHAT]:
     "https://mehmeta-team-bucket.storage.fleek.co/pool-stats-dev.json",
+}
+
+export const SWAP_CONTRACT_GAS_ESTIMATES_MAP: Record<string, BigNumber> = {
+  swap: Zero,
+  addLiquidity: Zero,
+  removeLiquidityImbalance: Zero,
+  removeLiquidityOneToken: Zero,
 }
