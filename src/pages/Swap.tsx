@@ -68,11 +68,11 @@ function Swap({ poolName }: Props): ReactElement {
     },
     to: {
       symbol: "",
-      value: BigNumber.from("0"),
+      value: Zero,
       valueUSD: Zero,
     },
-    priceImpact: BigNumber.from("0"),
-    exchangeRate: BigNumber.from("0"),
+    priceImpact: Zero,
+    exchangeRate: Zero,
   })
   // build a representation of pool tokens for the UI
   const tokens = useMemo(
@@ -106,9 +106,9 @@ function Swap({ poolName }: Props): ReactElement {
           ...prevState,
           to: {
             ...prevState.to,
-            value: BigNumber.from("0"),
+            value: Zero,
           },
-          priceImpact: BigNumber.from("0"),
+          priceImpact: Zero,
         }))
         return
       }
@@ -129,7 +129,7 @@ function Swap({ poolName }: Props): ReactElement {
         error = t("insufficientBalance")
       }
       if (amountToGive.isZero()) {
-        amountToReceive = BigNumber.from("0")
+        amountToReceive = Zero
       } else {
         amountToReceive = await swapContract.calculateSwap(
           tokenIndexFrom,
@@ -183,8 +183,8 @@ function Swap({ poolName }: Props): ReactElement {
             tokenPricesUSD?.[prevState.from.symbol],
           ),
         },
-        priceImpact: BigNumber.from("0"),
-        exchangeRate: BigNumber.from("0"),
+        priceImpact: Zero,
+        exchangeRate: Zero,
       }
       void calculateSwapAmount(nextState)
       return nextState
@@ -204,11 +204,11 @@ function Swap({ poolName }: Props): ReactElement {
         },
         to: {
           symbol: prevState.from.symbol,
-          value: BigNumber.from("0"),
+          value: Zero,
           valueUSD: Zero,
         },
-        priceImpact: BigNumber.from("0"),
-        exchangeRate: BigNumber.from("0"),
+        priceImpact: Zero,
+        exchangeRate: Zero,
       }
       void calculateSwapAmount(nextState)
       return nextState
@@ -230,11 +230,11 @@ function Swap({ poolName }: Props): ReactElement {
         },
         to: {
           ...prevState.to,
-          value: BigNumber.from("0"),
+          value: Zero,
           valueUSD: Zero,
         },
-        priceImpact: BigNumber.from("0"),
-        exchangeRate: BigNumber.from("0"),
+        priceImpact: Zero,
+        exchangeRate: Zero,
       }
       void calculateSwapAmount(nextState)
       return nextState
@@ -250,12 +250,12 @@ function Swap({ poolName }: Props): ReactElement {
         error: null,
         to: {
           ...prevState.to,
-          value: BigNumber.from("0"),
+          value: Zero,
           symbol,
           valueUSD: Zero,
         },
-        priceImpact: BigNumber.from("0"),
-        exchangeRate: BigNumber.from("0"),
+        priceImpact: Zero,
+        exchangeRate: Zero,
       }
       void calculateSwapAmount(nextState)
       return nextState
@@ -276,13 +276,15 @@ function Swap({ poolName }: Props): ReactElement {
       from: {
         ...prevState.from,
         value: "0.0",
+        valueUSD: Zero,
       },
       to: {
         ...prevState.to,
-        value: BigNumber.from("0"),
+        value: Zero,
+        valueUSD: Zero,
       },
-      priceImpact: BigNumber.from("0"),
-      exchangeRate: BigNumber.from("0"),
+      priceImpact: Zero,
+      exchangeRate: Zero,
     }))
   }
 
