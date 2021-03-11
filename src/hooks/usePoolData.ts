@@ -1,13 +1,17 @@
-import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
+import { AddressZero, Zero } from "@ethersproject/constants"
+import {
+  BTC_POOL_NAME,
+  POOLS_MAP,
+  PoolName,
+  TRANSACTION_TYPES,
+} from "../constants"
 import { formatBNToPercentString, getContract } from "../utils"
 import { useEffect, useState } from "react"
 
-import { AddressZero } from "@ethersproject/constants"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import LPTOKEN_ABI from "../constants/abis/lpToken.json"
 import { LpToken } from "../../types/ethers-contracts/LpToken"
-import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import { useSelector } from "react-redux"
@@ -115,7 +119,7 @@ export default function usePoolData(
       const tokenBalancesUSD = POOL.poolTokens.map((token, i) => {
         const balance = tokenBalances[i]
         return balance
-          .mul(parseUnits(String(tokenPricesUSD[token.symbol]), 18))
+          .mul(parseUnits(String(tokenPricesUSD[token.symbol] || 0), 18))
           .div(BigNumber.from(10).pow(18))
       })
       const tokenBalancesUSDSum: BigNumber = tokenBalancesUSD.reduce((sum, b) =>
@@ -131,9 +135,14 @@ export default function usePoolData(
       const comparisonPoolToken = POOL.poolTokens[0]
       const keepAPRNumerator = BigNumber.from(52 * 250000)
         .mul(BigNumber.from(10).pow(18))
-        .mul(parseUnits(String(tokenPricesUSD.KEEP), 18))
+        .mul(parseUnits(String(tokenPricesUSD.KEEP || 0), 18))
       const keepAPRDenominator = totalLpTokenBalance
-        .mul(parseUnits(String(tokenPricesUSD[comparisonPoolToken.symbol]), 6))
+        .mul(
+          parseUnits(
+            String(tokenPricesUSD[comparisonPoolToken.symbol] || 0),
+            6,
+          ),
+        )
         .div(1e6)
 
       const keepApr = totalLpTokenBalance.isZero()
@@ -200,7 +209,7 @@ export default function usePoolData(
         volume: "XXX", // TODO
         utilization: "XXX", // TODO
         apy: "XXX", // TODO
-        keepApr,
+        keepApr: poolName === BTC_POOL_NAME ? keepApr : Zero,
         lpTokenPriceUSD,
       }
       const userShareData = account
