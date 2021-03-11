@@ -1,12 +1,18 @@
-import { POOLS_MAP, PoolName, TOKENS_MAP } from "../constants"
+import {
+  BTC_POOL_NAME,
+  BTC_POOL_TOKENS,
+  STABLECOIN_POOL_NAME,
+  STABLECOIN_POOL_TOKENS,
+  TOKENS_MAP,
+} from "../constants"
 import React, { ReactElement, useCallback, useMemo, useState } from "react"
+import { calculateExchangeRate, shiftBNDecimals } from "../utils"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import SwapPage from "../components/SwapPage"
 import { Zero } from "@ethersproject/constants"
-import { calculateExchangeRate } from "../utils"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { debounce } from "lodash"
 import { useApproveAndSwap } from "../hooks/useApproveAndSwap"
@@ -31,17 +37,27 @@ interface FormState {
   priceImpact: BigNumber
   exchangeRate: BigNumber
 }
-interface Props {
-  poolName: PoolName
+interface TokenOption {
+  symbol: string
+  name: string
+  valueUSD: BigNumber
+  amount: BigNumber
+  icon: string
+  decimals: number
+  isAvailable: boolean
 }
-function Swap({ poolName }: Props): ReactElement {
+
+function Swap(): ReactElement {
   const { t } = useTranslation()
-  const [poolData] = usePoolData(poolName)
-  const approveAndSwap = useApproveAndSwap(poolName)
-  const tokenBalances = usePoolTokenBalances(poolName)
-  const swapContract = useSwapContract(poolName)
-  const POOL = POOLS_MAP[poolName]
+  const approveAndSwap = useApproveAndSwap()
+  const [btcPoolData] = usePoolData(BTC_POOL_NAME)
+  const [usdPoolData] = usePoolData(STABLECOIN_POOL_NAME)
+  const btcTokenBalances = usePoolTokenBalances(BTC_POOL_NAME)
+  const usdTokenBalances = usePoolTokenBalances(STABLECOIN_POOL_NAME)
+  const btcSwapContract = useSwapContract(BTC_POOL_NAME)
+  const usdSwapContract = useSwapContract(STABLECOIN_POOL_NAME)
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
+  const ALL_POOLS_TOKENS = BTC_POOL_TOKENS.concat(STABLECOIN_POOL_TOKENS)
   function calculatePrice(
     amount: BigNumber | string,
     tokenPrice = 0,
@@ -62,7 +78,7 @@ function Swap({ poolName }: Props): ReactElement {
   const [formState, setFormState] = useState<FormState>({
     error: null,
     from: {
-      symbol: POOL.poolTokens[0].symbol,
+      symbol: "",
       value: "0.0",
       valueUSD: Zero,
     },
@@ -74,11 +90,57 @@ function Swap({ poolName }: Props): ReactElement {
     priceImpact: Zero,
     exchangeRate: Zero,
   })
+  const tokenBalances = useMemo(() => {
+    return {
+      ...(btcTokenBalances || {}),
+      ...(usdTokenBalances || {}),
+    }
+  }, [btcTokenBalances, usdTokenBalances])
+  const activePool = useMemo(() => {
+    const BTC_POOL_SET = new Set(BTC_POOL_TOKENS.map(({ symbol }) => symbol))
+    const USD_POOL_SET = new Set(
+      STABLECOIN_POOL_TOKENS.map(({ symbol }) => symbol),
+    )
+    const ALL_POOLS_SET = new Set(ALL_POOLS_TOKENS.map(({ symbol }) => symbol))
+    const One = BigNumber.from(10).pow(18)
+    if (BTC_POOL_SET.has(formState.from.symbol)) {
+      return {
+        name: BTC_POOL_NAME,
+        tokens: BTC_POOL_TOKENS,
+        tokensSet: BTC_POOL_SET,
+        contract: btcSwapContract,
+        virtualPrice: btcPoolData?.virtualPrice || One,
+      }
+    } else if (USD_POOL_SET.has(formState.from.symbol)) {
+      return {
+        name: STABLECOIN_POOL_NAME,
+        tokens: STABLECOIN_POOL_TOKENS,
+        tokensSet: USD_POOL_SET,
+        contract: usdSwapContract,
+        virtualPrice: usdPoolData?.virtualPrice || One,
+      }
+    } else {
+      return {
+        name: "ALL",
+        tokens: ALL_POOLS_TOKENS,
+        tokensSet: ALL_POOLS_SET,
+        contract: null,
+        virtualPrice: Zero,
+      }
+    }
+  }, [
+    formState.from.symbol,
+    ALL_POOLS_TOKENS,
+    usdSwapContract,
+    btcSwapContract,
+    usdPoolData,
+    btcPoolData,
+  ])
   // build a representation of pool tokens for the UI
-  const tokens = useMemo(
-    () =>
-      POOL.poolTokens.map(({ symbol, name, icon, decimals }) => {
-        const amount = tokenBalances ? tokenBalances[symbol] : Zero
+  const tokenOptions = useMemo(() => {
+    const allTokens = ALL_POOLS_TOKENS.map(
+      ({ symbol, name, icon, decimals }) => {
+        const amount = tokenBalances?.[symbol] || Zero
         return {
           name,
           icon,
@@ -86,16 +148,25 @@ function Swap({ poolName }: Props): ReactElement {
           decimals,
           amount,
           valueUSD: calculatePrice(amount, tokenPricesUSD?.[symbol], decimals),
-          isAvailable: true, // TODO: refine for multipool
+          isAvailable: true,
         }
-      }),
-    [tokenPricesUSD, tokenBalances, POOL.poolTokens],
-  )
+      },
+    )
+    // from: all tokens always available. to: limited by selected "from" token.
+    return {
+      from: allTokens.sort(sortTokenOptions),
+      to: allTokens
+        .map((t) => ({
+          ...t,
+          isAvailable: activePool.tokensSet.has(t.symbol),
+        }))
+        .sort(sortTokenOptions),
+    }
+  }, [tokenPricesUSD, tokenBalances, ALL_POOLS_TOKENS, activePool])
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const calculateSwapAmount = useCallback(
     debounce(async (formStateArg: FormState) => {
-      if (swapContract == null || tokenBalances === null || poolData == null)
-        return
+      if (activePool.contract == null || tokenBalances === null) return
       const cleanedFormFromValue = formStateArg.from.value.replace(/[$,]/g, "") // remove common copy/pasted financial characters
       if (
         cleanedFormFromValue === "" ||
@@ -113,10 +184,10 @@ function Swap({ poolName }: Props): ReactElement {
         return
       }
       // TODO: improve the relationship between token / index
-      const tokenIndexFrom = POOL.poolTokens.findIndex(
+      const tokenIndexFrom = activePool.tokens.findIndex(
         ({ symbol }) => symbol === formStateArg.from.symbol,
       )
-      const tokenIndexTo = POOL.poolTokens.findIndex(
+      const tokenIndexTo = activePool.tokens.findIndex(
         ({ symbol }) => symbol === formStateArg.to.symbol,
       )
       const amountToGive = parseUnits(
@@ -131,7 +202,7 @@ function Swap({ poolName }: Props): ReactElement {
       if (amountToGive.isZero()) {
         amountToReceive = Zero
       } else {
-        amountToReceive = await swapContract.calculateSwap(
+        amountToReceive = await activePool.contract.calculateSwap(
           tokenIndexFrom,
           tokenIndexTo,
           amountToGive,
@@ -154,7 +225,7 @@ function Swap({ poolName }: Props): ReactElement {
         priceImpact: calculatePriceImpact(
           amountToGive.mul(BigNumber.from(10).pow(18 - tokenFrom.decimals)),
           amountToReceive.mul(BigNumber.from(10).pow(18 - tokenTo.decimals)),
-          poolData?.virtualPrice,
+          activePool.virtualPrice,
         ),
         exchangeRate: calculateExchangeRate(
           amountToGive,
@@ -164,7 +235,7 @@ function Swap({ poolName }: Props): ReactElement {
         ),
       }))
     }, 250),
-    [setFormState, swapContract, tokenBalances, poolData],
+    [setFormState, activePool, tokenBalances, activePool],
   )
 
   function handleUpdateAmountFrom(value: string): void {
@@ -216,6 +287,7 @@ function Swap({ poolName }: Props): ReactElement {
   }
   function handleUpdateTokenFrom(symbol: string): void {
     if (symbol === formState.to.symbol) return handleReverseExchangeDirection()
+    const isChangingPools = !activePool.tokensSet.has(symbol)
     setFormState((prevState) => {
       const nextState = {
         ...prevState,
@@ -232,6 +304,7 @@ function Swap({ poolName }: Props): ReactElement {
           ...prevState.to,
           value: Zero,
           valueUSD: Zero,
+          symbol: isChangingPools ? "" : prevState.to.symbol,
         },
         priceImpact: Zero,
         exchangeRate: Zero,
@@ -269,6 +342,7 @@ function Swap({ poolName }: Props): ReactElement {
       fromTokenSymbol: formState.from.symbol,
       toAmount: formState.to.value,
       toTokenSymbol: formState.to.symbol,
+      swapContract: activePool.contract,
     })
     // Clear input after deposit
     setFormState((prevState) => ({
@@ -290,7 +364,7 @@ function Swap({ poolName }: Props): ReactElement {
 
   return (
     <SwapPage
-      tokens={tokens}
+      tokenOptions={tokenOptions}
       exchangeRateInfo={{
         pair: `${formState.from.symbol}/${formState.to.symbol}`,
         exchangeRate: formState.exchangeRate,
@@ -318,3 +392,17 @@ function Swap({ poolName }: Props): ReactElement {
 }
 
 export default Swap
+
+const sortTokenOptions = (a: TokenOption, b: TokenOption) => {
+  if (a.isAvailable !== b.isAvailable) {
+    return a.isAvailable ? -1 : 1
+  }
+  if (a.valueUSD.eq(b.valueUSD)) {
+    const amountA = shiftBNDecimals(a.amount, 18 - a.decimals)
+    const amountB = shiftBNDecimals(b.amount, 18 - b.decimals)
+    return amountA.gt(amountB) ? -1 : 1
+  } else if (a.valueUSD.gt(b.valueUSD)) {
+    return -1
+  }
+  return 1
+}

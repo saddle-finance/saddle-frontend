@@ -6,8 +6,9 @@
   background-color: var(--primary-background);
   border: 1px solid var(--outline-gray);
   border-radius: 8px;
-  max-height: 500px;
+  max-height: 350px;
   max-width: 500px;
+  overflow: scroll;
   @include breakpoint(sm) {
     max-width: 100%;
   }

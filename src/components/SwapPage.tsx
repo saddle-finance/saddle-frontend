@@ -2,11 +2,7 @@ import "./SwapPage.scss"
 
 import { Button, Center } from "@chakra-ui/react"
 import React, { ReactElement, useMemo, useState } from "react"
-import {
-  formatBNToPercentString,
-  formatBNToString,
-  shiftBNDecimals,
-} from "../utils"
+import { formatBNToPercentString, formatBNToString } from "../utils"
 import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
@@ -31,16 +27,20 @@ import { updateSwapAdvancedMode } from "../state/user"
 import { useActiveWeb3React } from "../hooks"
 import { useTranslation } from "react-i18next"
 
+interface TokenOption {
+  symbol: string
+  name: string
+  valueUSD: BigNumber
+  amount: BigNumber
+  icon: string
+  decimals: number
+  isAvailable: boolean
+}
 interface Props {
-  tokens: Array<{
-    symbol: string
-    name: string
-    valueUSD: BigNumber
-    amount: BigNumber
-    icon: string
-    decimals: number
-    isAvailable: boolean
-  }>
+  tokenOptions: {
+    from: TokenOption[]
+    to: TokenOption[]
+  }
   exchangeRateInfo: {
     pair: string
     exchangeRate: BigNumber
@@ -60,7 +60,7 @@ const SwapPage = (props: Props): ReactElement => {
   const { t } = useTranslation()
   const { account } = useActiveWeb3React()
   const {
-    tokens,
+    tokenOptions,
     exchangeRateInfo,
     error,
     fromState,
@@ -73,25 +73,10 @@ const SwapPage = (props: Props): ReactElement => {
   } = props
 
   const [currentModal, setCurrentModal] = useState<string | null>(null)
-  const sortedTokens = useMemo(() => {
-    // sort tokens in desc order by availability, usd value, then token amount
-    return tokens.sort((a, b) => {
-      if (a.isAvailable !== b.isAvailable) {
-        return a.isAvailable ? -1 : 1
-      }
-      if (a.valueUSD.eq(b.valueUSD)) {
-        const amountA = shiftBNDecimals(a.amount, 18 - a.decimals)
-        const amountB = shiftBNDecimals(b.amount, 18 - b.decimals)
-        return amountA.gt(amountB) ? -1 : 1
-      } else if (a.valueUSD.gt(b.valueUSD)) {
-        return -1
-      }
-      return 1
-    })
-  }, [tokens])
+
   const fromToken = useMemo(() => {
-    return tokens.find(({ symbol }) => symbol === fromState.symbol)
-  }, [tokens, fromState.symbol])
+    return tokenOptions.from.find(({ symbol }) => symbol === fromState.symbol)
+  }, [tokenOptions.from, fromState.symbol])
 
   const dispatch = useDispatch<AppDispatch>()
   const { userSwapAdvancedMode: advanced } = useSelector(
@@ -136,7 +121,7 @@ const SwapPage = (props: Props): ReactElement => {
           </div>
           <div className="row">
             <SwapInput
-              tokens={sortedTokens.filter(
+              tokens={tokenOptions.from.filter(
                 ({ symbol }) => symbol !== toState.symbol,
               )}
               onSelect={onChangeFromToken}
@@ -153,7 +138,7 @@ const SwapPage = (props: Props): ReactElement => {
           </div>
           <div className="row">
             <SwapInput
-              tokens={sortedTokens.filter(
+              tokens={tokenOptions.to.filter(
                 ({ symbol }) => symbol !== fromState.symbol,
               )}
               onSelect={onChangeToToken}

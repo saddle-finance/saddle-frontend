@@ -34,11 +34,7 @@ export default function App(): ReactElement {
       <Web3ReactManager>
         <ToastsProvider>
           <Switch>
-            <Route
-              exact
-              path="/"
-              render={(props) => <Swap {...props} poolName={BTC_POOL_NAME} />}
-            />
+            <Route exact path="/" component={Swap} />
             <Route
               exact
               path="/deposit"

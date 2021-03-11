@@ -88,7 +88,8 @@ export default function SearchSelect({
           onFocus={() => activeIndex != null && setActiveIndex(null)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && activeIndex != null) {
-              onSelect(filteredTokens[activeIndex].symbol)
+              const token = filteredTokens[activeIndex]
+              token.isAvailable && onSelect(token.symbol)
             } else if (e.key === "ArrowUp") {
               setActiveIndex((prev) =>
                 prev === null || prev === 0 ? null : Math.max(0, prev - 1),
