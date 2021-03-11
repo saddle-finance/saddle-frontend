@@ -1,5 +1,4 @@
 import { BigNumber } from "@ethersproject/bignumber"
-import { Zero } from "@ethersproject/constants"
 import daiLogo from "../assets/icons/dai.svg"
 import renbtcLogo from "../assets/icons/renbtc.svg"
 import saddleLogo from "../assets/icons/logo.svg"
@@ -238,8 +237,8 @@ export const POOL_STATS_URL: { [chainId in ChainId]: string } = {
 }
 
 export const SWAP_CONTRACT_GAS_ESTIMATES_MAP: Record<string, BigNumber> = {
-  swap: Zero,
-  addLiquidity: Zero,
-  removeLiquidityImbalance: Zero,
-  removeLiquidityOneToken: Zero,
+  swap: BigNumber.from("157807"),
+  addLiquidity: BigNumber.from("386555"),
+  removeLiquidityImbalance: BigNumber.from("318231"),
+  removeLiquidityOneToken: BigNumber.from("232947"),
 }

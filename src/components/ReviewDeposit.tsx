@@ -2,10 +2,6 @@ import "./ReviewDeposit.scss"
 
 import React, { ReactElement, useState } from "react"
 import {
-  calculateGasEstimate,
-  formatGasEstimateToString,
-} from "../utils/gasEstimate"
-import {
   formatBNToPercentString,
   formatBNToString,
   formatDeadlineToNumber,
@@ -15,6 +11,7 @@ import { AppState } from "../state/index"
 import Button from "./Button"
 import { DepositTransaction } from "../interfaces/transactions"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
+// import { calculateGasEstimate } from "../utils/gasEstimate"
 import { commify } from "@ethersproject/units"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
@@ -127,7 +124,7 @@ function ReviewDeposit({
         <div className="depositInfoItem">
           <span className="label">{t("gasEstimate")}</span>
           <span className="value">
-            {formatGasEstimateToString(calculateGasEstimate("addLiquidity"))}
+            {/* add $ in front {formatBNToString()} */}
           </span>
         </div>
         <div className="depositInfoItem">

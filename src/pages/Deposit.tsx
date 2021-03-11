@@ -35,7 +35,6 @@ function Deposit({ poolName }: Props): ReactElement | null {
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const [estDepositLPTokenAmount, setEstDepositLPTokenAmount] = useState(Zero)
   const [priceImpact, setPriceImpact] = useState(Zero)
-
   useEffect(() => {
     // evaluate if a new deposit will exceed the pool's per-user limit
     async function calculateMaxDeposits(): Promise<void> {
@@ -200,6 +199,13 @@ function buildTransactionData(
         .mul(BigNumber.from(10).pow(18))
         .div(estDepositLPTokenAmount.add(poolData?.totalLocked))
     : BigNumber.from(10).pow(18)
+  // const
+  // useApproveAndDeposit
+  // format gas to string takes gas selected and gas price does the logic and returns the value as a string
+  // take the string and convert to big number, then multiply by estimate, and then by eth price
+  // eth price lives in tokenPricesUSD in this func
+  // use parseunits from ethsjs library to go from string to big number
+
   return {
     from,
     to,
