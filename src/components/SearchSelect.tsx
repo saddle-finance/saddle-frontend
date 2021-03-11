@@ -149,7 +149,7 @@ function ListItem({
         <p className={styles.textMinor}>{name}</p>
       </div>
       <div>
-        <p>{formatBNToString(amount, decimals)}</p>
+        <p>{commify(formatBNToString(amount, decimals))}</p>
         <p className={styles.textMinor}>
           ≈${commify(formatBNToString(valueUSD, 18, 2))}
         </p>
