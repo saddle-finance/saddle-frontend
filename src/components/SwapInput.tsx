@@ -4,7 +4,7 @@ import { BigNumber } from "@ethersproject/bignumber"
 import SearchSelect from "./SearchSelect"
 import { TOKENS_MAP } from "../constants"
 import classnames from "classnames"
-import { commify } from "@ethersproject/units"
+import { commify } from "../utils"
 import { formatBNToString } from "../utils"
 import styles from "./SwapInput.module.scss"
 import useDetectOutsideClick from "../hooks/useDetectOutsideClick"
@@ -103,8 +103,14 @@ export default function SwapInput({
           type="text"
           placeholder="0.0"
           spellCheck="false"
-          value={inputValue}
-          onChange={(e) => onChangeAmount?.(e.target.value)}
+          value={commify(inputValue)}
+          onChange={(e) => {
+            // remove all chars that aren't a digit or a period
+            const newValue = e.target.value.replace(/[^\d|.]/g, "")
+            // disallow more than one period
+            if (newValue.indexOf(".") !== newValue.lastIndexOf(".")) return
+            onChangeAmount?.(newValue)
+          }}
           onFocus={(e: React.ChangeEvent<HTMLInputElement>): void => {
             if (isSwapFrom) {
               e.target.select()

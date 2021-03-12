@@ -9,7 +9,7 @@ import React, {
 import { BigNumber } from "@ethersproject/bignumber"
 import Divider from "./Divider"
 import classnames from "classnames"
-import { commify } from "@ethersproject/units"
+import { commify } from "../utils"
 import { formatBNToString } from "../utils"
 import styles from "./SearchSelect.module.scss"
 import { useTranslation } from "react-i18next"
@@ -36,11 +36,20 @@ export default function SearchSelect({
   const [searchTerm, setSearchTerm] = useState("")
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const focusedItemRef = useRef<HTMLLIElement>(null)
+  const { t } = useTranslation()
+
   useEffect(() => {
     if (inputRef?.current != null) {
       inputRef.current.focus()
     }
   }, [inputRef])
+  useEffect(() => {
+    // scroll active li into view if user got there via keyboard nav
+    if (focusedItemRef?.current != null) {
+      focusedItemRef.current.scrollIntoView()
+    }
+  }, [focusedItemRef, activeIndex])
   const filteredTokens = useMemo(() => {
     // filter tokens by user input
     return tokensData.filter(({ symbol, name }) => {
@@ -108,12 +117,16 @@ export default function SearchSelect({
             <li
               key={item.symbol}
               onClick={() => item.isAvailable && onSelect(item.symbol)}
+              ref={i === activeIndex ? focusedItemRef : null}
             >
               <Divider />
               <ListItem {...item} isActive={i === activeIndex} />
             </li>
           )
         })}
+        {filteredTokens.length === 0 ? (
+          <li className={styles.listItem}>{t("noTokensFound")}</li>
+        ) : null}
       </ul>
     </div>
   )

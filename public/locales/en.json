@@ -54,6 +54,7 @@
   "noDeposit2": "Deposit first to get started!",
   "noDepositTitle": "You don't have any funds",
   "noDepositTitle2": "to withdraw.",
+  "noTokensFound": "No tokens found.",
   "ofPool": "of pool",
   "pool": "Pool",
   "poolIsNotAcceptingDeposits": "Pool is not accepting additional deposits at this time",

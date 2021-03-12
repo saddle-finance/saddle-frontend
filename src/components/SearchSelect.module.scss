@@ -2,13 +2,13 @@
 @import "../styles/viewports";
 
 .searchSelect {
-  padding: 32px 8px 0 8px;
+  padding: 16px 8px 0 8px;
   background-color: var(--primary-background);
   border: 1px solid var(--outline-gray);
   border-radius: 8px;
   max-height: 350px;
   max-width: 500px;
-  overflow: scroll;
+  overflow-y: scroll;
   @include breakpoint(sm) {
     max-width: 100%;
   }

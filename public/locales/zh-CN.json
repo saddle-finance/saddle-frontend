@@ -54,6 +54,7 @@
   "noDeposit2": "从存款开始跨出第一步!",
   "noDepositTitle": "您没有任何资金",
   "noDepositTitle2": "可提取",
+  "noTokensFound": null,
   "ofPool": "资金池的",
   "pool": "资金池",
   "poolIsNotAcceptingDeposits": "此资金池目前不接受更多存款",
