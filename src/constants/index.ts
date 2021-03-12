@@ -149,7 +149,7 @@ export const SUSD = new Token(
   susdLogo,
 )
 
-export const STABLECOIN_POOL_TOKENS = [DAI, USDC, USDT, SUSD]
+export const STABLECOIN_POOL_TOKENS = [DAI, USDC, USDT]
 
 // Tokenized BTC
 const TBTC_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
