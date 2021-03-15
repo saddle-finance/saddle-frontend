@@ -42,7 +42,6 @@
   "inTotal": "in total",
   "liquidityUtilization": "Liquidity utilization",
   "lossOfPeg": "Permanent loss of a peg",
-  "lowExchangeRate": "Warning: Low exchange rate! {{rate}}",
   "lpMustStakeForRewards": "Liquidity Providers: You must stake your LP tokens to receive KEEP rewards",
   "lpTokens": "pool LP tokens",
   "max": "MAX",
