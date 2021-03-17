@@ -124,7 +124,7 @@ function ReviewDeposit({
         <div className="depositInfoItem">
           <span className="label">{t("gasEstimate")}</span>
           <span className="value">
-            {/* add $ in front {formatBNToString()} */}
+            {"$" + formatBNToString(transactionData?.txnGasCost?.valueUSD, 2)}
           </span>
         </div>
         <div className="depositInfoItem">

@@ -10,7 +10,9 @@ import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
 import { TokenPricesUSD } from "../state/application"
 import { Zero } from "@ethersproject/constants"
+import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
+import { formatGasToString } from "../utils/gas"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
@@ -32,7 +34,20 @@ function Deposit({ poolName }: Props): ReactElement | null {
     POOL.poolTokens,
   )
   const tokenBalances = usePoolTokenBalances(poolName)
-  const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
+  const { tokenPricesUSD, gasStandard, gasFast, gasInstant } = useSelector(
+    (state: AppState) => state.application,
+  )
+
+  const { gasPriceSelected, gasCustom } = useSelector(
+    (state: AppState) => state.user,
+  )
+  const gasPrice = BigNumber.from(
+    formatGasToString(
+      { gasStandard, gasFast, gasInstant },
+      gasPriceSelected,
+      gasCustom,
+    ),
+  )
   const [estDepositLPTokenAmount, setEstDepositLPTokenAmount] = useState(Zero)
   const [priceImpact, setPriceImpact] = useState(Zero)
   useEffect(() => {
@@ -127,6 +142,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
     priceImpact,
     estDepositLPTokenAmount,
     tokenPricesUSD,
+    gasPrice,
   )
 
   return (
@@ -152,6 +168,7 @@ function buildTransactionData(
   priceImpact: BigNumber,
   estDepositLPTokenAmount: BigNumber,
   tokenPricesUSD?: TokenPricesUSD,
+  gasPrice?: BigNumber,
 ): DepositTransaction {
   const from = {
     items: [] as TransactionItem[],
@@ -199,18 +216,21 @@ function buildTransactionData(
         .mul(BigNumber.from(10).pow(18))
         .div(estDepositLPTokenAmount.add(poolData?.totalLocked))
     : BigNumber.from(10).pow(18)
-  // const
-  // useApproveAndDeposit
-  // format gas to string takes gas selected and gas price does the logic and returns the value as a string
-  // take the string and convert to big number, then multiply by estimate, and then by eth price
-  // eth price lives in tokenPricesUSD in this func
-  // use parseunits from ethsjs library to go from string to big number
+
+  const gasAmount = calculateGasEstimate("addLiquidity").multipliedBy(gasPrice)
+  const txnGasCost = {
+    amount: gasAmount,
+    valueUSD: BigNumber.from(String(TokenPricesUSD.ETH)).multipliedBy(
+      gasAmount,
+    ),
+  }
 
   return {
     from,
     to,
     priceImpact,
     shareOfPool,
+    txnGasCost,
   }
 }
 
