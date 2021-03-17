@@ -9,7 +9,6 @@ import {
   STABLECOIN_POOL_NAME,
   STABLECOIN_SWAP_ADDRESSES,
   STABLECOIN_SWAP_TOKEN,
-  SUSD,
   TBTC,
   Token,
   USDC,
@@ -136,7 +135,7 @@ export function useLPTokenContract(
 }
 
 interface AllContractsObject {
-  [x: string]: SwapGuarded | SwapFlashLoan | Erc20 | null
+  [x: string]: LpTokenGuarded | LpTokenUnguarded | Erc20 | null
 }
 export function useAllContracts(): AllContractsObject | null {
   const tbtcContract = useTokenContract(TBTC) as Erc20
@@ -146,11 +145,12 @@ export function useAllContracts(): AllContractsObject | null {
   const daiContract = useTokenContract(DAI) as Erc20
   const usdcContract = useTokenContract(USDC) as Erc20
   const usdtContract = useTokenContract(USDT) as Erc20
-  const susdContract = useTokenContract(SUSD) as Erc20
-  const btcSwapTokenContract = useTokenContract(BTC_SWAP_TOKEN) as Erc20
+  const btcSwapTokenContract = useTokenContract(
+    BTC_SWAP_TOKEN,
+  ) as LpTokenGuarded
   const stablecoinSwapTokenContract = useTokenContract(
     STABLECOIN_SWAP_TOKEN,
-  ) as Erc20
+  ) as LpTokenUnguarded
 
   return useMemo(() => {
     if (
@@ -162,7 +162,6 @@ export function useAllContracts(): AllContractsObject | null {
         daiContract,
         usdcContract,
         usdtContract,
-        susdContract,
         btcSwapTokenContract,
         stablecoinSwapTokenContract,
       ].some(Boolean)
@@ -176,7 +175,6 @@ export function useAllContracts(): AllContractsObject | null {
       [DAI.symbol]: daiContract,
       [USDC.symbol]: usdcContract,
       [USDT.symbol]: usdtContract,
-      [SUSD.symbol]: susdContract,
       [BTC_SWAP_TOKEN.symbol]: btcSwapTokenContract,
       [STABLECOIN_SWAP_TOKEN.symbol]: stablecoinSwapTokenContract,
     }
@@ -188,7 +186,6 @@ export function useAllContracts(): AllContractsObject | null {
     daiContract,
     usdcContract,
     usdtContract,
-    susdContract,
     btcSwapTokenContract,
     stablecoinSwapTokenContract,
   ])

@@ -2,7 +2,6 @@ import daiLogo from "../assets/icons/dai.svg"
 import renbtcLogo from "../assets/icons/renbtc.svg"
 import saddleLogo from "../assets/icons/logo.svg"
 import sbtcLogo from "../assets/icons/sbtc.svg"
-import susdLogo from "../assets/icons/susd.svg"
 import tbtcLogo from "../assets/icons/tbtc.svg"
 import usdcLogo from "../assets/icons/usdc.svg"
 import usdtLogo from "../assets/icons/usdt.svg"
@@ -134,19 +133,6 @@ export const USDT = new Token(
   "tether",
   "Tether",
   usdtLogo,
-)
-
-const SUSD_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: "0x57ab1ec28d129707052df4df418d58a2d46d5f51",
-  [ChainId.HARDHAT]: "",
-}
-export const SUSD = new Token(
-  SUSD_CONTRACT_ADDRESSES,
-  18,
-  "SUSD",
-  "nusd",
-  "sUSD",
-  susdLogo,
 )
 
 export const STABLECOIN_POOL_TOKENS = [DAI, USDC, USDT]
