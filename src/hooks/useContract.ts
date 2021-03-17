@@ -76,7 +76,7 @@ export function useSwapUSDContract(): SwapFlashLoan | null {
   const { chainId } = useActiveWeb3React()
   return useContract(
     chainId ? STABLECOIN_SWAP_ADDRESSES[chainId] : undefined,
-    SWAP_GUARDED_ABI,
+    SWAP_FLASH_LOAN_ABI,
   ) as SwapFlashLoan
 }
 
@@ -86,26 +86,12 @@ export function useSwapContract<T extends PoolName>(
 export function useSwapContract(
   poolName: PoolName,
 ): SwapGuarded | SwapFlashLoan | null {
-  const { chainId } = useActiveWeb3React()
-  let address
+  const usdSwapContract = useSwapUSDContract()
+  const btcSwapContract = useSwapBTCContract()
   if (poolName === BTC_POOL_NAME) {
-    address = chainId ? BTC_SWAP_ADDRESSES[chainId] : undefined
+    return btcSwapContract
   } else if (poolName === STABLECOIN_POOL_NAME) {
-    address = chainId ? STABLECOIN_SWAP_ADDRESSES[chainId] : undefined
-  }
-  const guardedSwapContract = useContract(
-    address,
-    SWAP_GUARDED_ABI,
-  ) as SwapGuarded
-  const flashLoanSwapContract = useContract(
-    address,
-    SWAP_FLASH_LOAN_ABI,
-  ) as SwapFlashLoan
-
-  if (poolName === BTC_POOL_NAME) {
-    return guardedSwapContract
-  } else if (poolName === STABLECOIN_POOL_NAME) {
-    return flashLoanSwapContract
+    return usdSwapContract
   }
   return null
 }
