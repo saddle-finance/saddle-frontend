@@ -10,8 +10,10 @@ import { useEffect, useState } from "react"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
-import LPTOKEN_ABI from "../constants/abis/lpToken.json"
-import { LpToken } from "../../types/ethers-contracts/LpToken"
+import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
+import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
+import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
+import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import { useSelector } from "react-redux"
@@ -42,7 +44,6 @@ export interface UserShareType {
   avgBalance: BigNumber
   currentWithdrawFee: BigNumber
   lpTokenBalance: BigNumber
-  lpTokenMinted: BigNumber
   name: string // TODO: does this need to be on user share?
   share: BigNumber
   tokens: TokenShareType[]
@@ -84,19 +85,25 @@ export default function usePoolData(
         swapContract.swapStorage(),
       ])
       const { adminFee, lpToken: lpTokenAddress, swapFee } = swapStorage
-      const lpTokenContract = getContract(
-        lpTokenAddress,
-        LPTOKEN_ABI,
-        library,
-        account ?? undefined,
-      ) as LpToken
-      const [
-        userLpTokenBalance,
-        userLpTokenMinted,
-        totalLpTokenBalance,
-      ] = await Promise.all([
+      let lpTokenContract
+      if (poolName === BTC_POOL_NAME) {
+        lpTokenContract = getContract(
+          lpTokenAddress,
+          LPTOKEN_GUARDED_ABI,
+          library,
+          account ?? undefined,
+        ) as LpTokenGuarded
+      } else {
+        lpTokenContract = getContract(
+          lpTokenAddress,
+          LPTOKEN_UNGUARDED_ABI,
+          library,
+          account ?? undefined,
+        ) as LpTokenUnguarded
+      }
+
+      const [userLpTokenBalance, totalLpTokenBalance] = await Promise.all([
         lpTokenContract.balanceOf(account || AddressZero),
-        lpTokenContract.mintedAmounts(account || AddressZero),
         lpTokenContract.totalSupply(),
       ])
 
@@ -222,7 +229,6 @@ export default function usePoolData(
             tokens: userPoolTokens,
             currentWithdrawFee: userCurrentWithdrawFee,
             lpTokenBalance: userLpTokenBalance,
-            lpTokenMinted: userLpTokenMinted,
           }
         : null
       setPoolData([poolData, userShareData])

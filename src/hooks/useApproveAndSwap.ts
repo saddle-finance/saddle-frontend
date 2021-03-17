@@ -4,7 +4,8 @@ import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { GasPrices } from "../state/user"
-import { Swap } from "../../types/ethers-contracts/Swap"
+import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
+import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { formatDeadlineToNumber } from "../utils"
 import { getFormattedTimeString } from "../utils/dateTime"
@@ -22,7 +23,7 @@ interface ApproveAndSwapStateArgument {
   toTokenSymbol: string
   fromAmount: BigNumber
   toAmount: BigNumber
-  swapContract: Swap | null
+  swapContract: SwapFlashLoan | SwapGuarded | null
 }
 
 export function useApproveAndSwap(): (

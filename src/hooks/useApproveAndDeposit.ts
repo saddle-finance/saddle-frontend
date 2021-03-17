@@ -1,4 +1,10 @@
-import { POOLS_MAP, PoolName, TRANSACTION_TYPES, Token } from "../constants"
+import {
+  BTC_POOL_NAME,
+  POOLS_MAP,
+  PoolName,
+  TRANSACTION_TYPES,
+  Token,
+} from "../constants"
 import { useAllContracts, useSwapContract } from "./useContract"
 
 import { AppState } from "../state"
@@ -6,6 +12,8 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { GasPrices } from "../state/user"
 import { NumberInputState } from "../utils/numberInputState"
+import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
+import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { formatDeadlineToNumber } from "../utils"
 import { getFormattedTimeString } from "../utils/dateTime"
@@ -87,11 +95,12 @@ export function useApproveAndDeposit(
           },
         },
       )
+      return
     }
     try {
       // For each token being deposited, check the allowance and approve it if necessary
       await Promise.all(
-        POOL.poolTokens.map((token) => approveSingleToken(token)),
+        POOL.poolTokens.map(async (token) => await approveSingleToken(token)),
       )
 
       // "isFirstTransaction" check can be removed after launch
@@ -133,15 +142,35 @@ export function useApproveAndDeposit(
         transactionDeadlineCustom,
       )
 
-      const spendTransaction = await swapContract.addLiquidity(
-        POOL.poolTokens.map(({ symbol }) => state[symbol].valueSafe),
-        minToMint,
-        Math.round(new Date().getTime() / 1000 + 60 * deadline),
-        [],
-        {
-          gasPrice,
-        },
+      let spendTransaction
+      const txnAmounts = POOL.poolTokens.map(
+        ({ symbol }) => state[symbol].valueSafe,
       )
+      const txnDeadline = Math.round(
+        new Date().getTime() / 1000 + 60 * deadline,
+      )
+      if (poolName === BTC_POOL_NAME) {
+        const swapGuardedContract = swapContract as SwapGuarded
+        spendTransaction = await swapGuardedContract?.addLiquidity(
+          txnAmounts,
+          minToMint,
+          txnDeadline,
+          [],
+          {
+            gasPrice,
+          },
+        )
+      } else {
+        const swapFlashLoanContract = swapContract as SwapFlashLoan
+        spendTransaction = await swapFlashLoanContract?.addLiquidity(
+          txnAmounts,
+          minToMint,
+          txnDeadline,
+          {
+            gasPrice,
+          },
+        )
+      }
       await spendTransaction.wait()
       dispatch(
         updateLastTransactionTimes({

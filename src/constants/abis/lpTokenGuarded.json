@@ -328,7 +328,7 @@
     "name": "swap",
     "outputs": [
       {
-        "internalType": "contract ISwap",
+        "internalType": "contract ISwapGuarded",
         "name": "",
         "type": "address"
       }
