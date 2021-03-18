@@ -28,6 +28,7 @@ export function useTokenBalance(t: Token): BigNumber {
 
   usePoller((): void => {
     async function pollBalance(): Promise<void> {
+      console.log(tokenContract.address)
       const newBalance = account
         ? await tokenContract?.balanceOf(account)
         : Zero

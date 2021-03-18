@@ -76,7 +76,7 @@ export default function usePoolData(
 
       // Swap fees, price, and LP Token data
       const [userCurrentWithdrawFee, swapStorage] = await Promise.all([
-        swapContract.calculateCurrentWithdrawFee(account || AddressZero),
+        Promise.resolve(BigNumber.from(0)),
         swapContract.swapStorage(),
       ])
       const { adminFee, lpToken: lpTokenAddress, swapFee } = swapStorage

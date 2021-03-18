@@ -7,6 +7,7 @@ import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { GasPrices } from "../state/user"
 import { NumberInputState } from "../utils/numberInputState"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
+import { ethers } from "ethers"
 import { formatDeadlineToNumber } from "../utils"
 import { getFormattedTimeString } from "../utils/dateTime"
 import { parseUnits } from "@ethersproject/units"
@@ -27,7 +28,7 @@ export function useApproveAndDeposit(
   const dispatch = useDispatch()
   const swapContract = useSwapContract(poolName)
   const tokenContracts = useAllContracts()
-  const { account } = useActiveWeb3React()
+  const { account, library } = useActiveWeb3React()
   const { addToast, clearToasts } = useToast()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
@@ -128,12 +129,13 @@ export function useApproveAndDeposit(
         gasPrice = gasStandard
       }
       gasPrice = parseUnits(String(gasPrice) || "45", 9)
-      const deadline = formatDeadlineToNumber(
-        transactionDeadlineSelected,
-        transactionDeadlineCustom,
-      )
+      const deadline =
+        formatDeadlineToNumber(
+          transactionDeadlineSelected,
+          transactionDeadlineCustom,
+        ) + 60
 
-      const spendTransaction = await swapContract.addLiquidity(
+      const tx = await swapContract.addLiquidity(
         POOL.poolTokens.map(({ symbol }) => state[symbol].valueSafe),
         minToMint,
         Math.round(new Date().getTime() / 1000 + 60 * deadline),
@@ -142,7 +144,31 @@ export function useApproveAndDeposit(
           gasPrice,
         },
       )
-      await spendTransaction.wait()
+      // const txn = await spendTransaction.wait()
+      // console.log(txn)
+      await tx.wait()
+      // Try to get the revert reason when none is provided
+      try {
+        let code = await library?.getSigner(account).connectUnchecked().call(tx)
+        code = code?.substr(138)
+
+        /* eslint-disable */
+        // Try to parse the revert reason bytes.
+        if (code?.length === 64) {
+          console.log(ethers.utils.parseBytes32String(`0x${code}`))
+        } else {
+          const chunks = code?.match(/.{1,62}/g)
+          chunks?.map((chunk) => {
+            try {
+              const parsed = ethers.utils.toUtf8String(`0x${chunk}00`)
+              console.log(parsed)
+            } catch (error) { console.log(error) }
+          })
+        }
+      } catch (suberror) {
+        console.log("suberror detected")
+        console.log(suberror)
+      }
       dispatch(
         updateLastTransactionTimes({
           [TRANSACTION_TYPES.DEPOSIT]: Date.now(),
