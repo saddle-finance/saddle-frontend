@@ -1,5 +1,6 @@
+import { BTC_POOL_TOKENS, STABLECOIN_POOL_TOKENS } from "../constants"
+
 import { AppDispatch } from "../state"
-import { BTC_POOL_TOKENS } from "../constants"
 import retry from "async-retry"
 import { updateTokensPricesUSD } from "../state/application"
 
@@ -12,7 +13,7 @@ interface CoinGeckoReponse {
 }
 
 export default function fetchTokenPricesUSD(dispatch: AppDispatch): void {
-  const tokens = BTC_POOL_TOKENS
+  const tokens = BTC_POOL_TOKENS.concat(STABLECOIN_POOL_TOKENS)
   const tokenIds = tokens
     .map(({ geckoId }) => geckoId)
     .concat(["ethereum", "bitcoin", "keep-network"])

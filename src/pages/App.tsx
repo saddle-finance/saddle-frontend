@@ -1,11 +1,12 @@
 import "../styles/global.scss"
 
-import { BLOCK_TIME, BTC_POOL_NAME } from "../constants"
+import { BLOCK_TIME, BTC_POOL_NAME, STABLECOIN_POOL_NAME } from "../constants"
 import React, { ReactElement, Suspense, useCallback } from "react"
 import { Route, Switch } from "react-router-dom"
 
 import { AppDispatch } from "../state"
 import Deposit from "./Deposit"
+import Pools from "./Pools"
 import Risk from "./Risk"
 import Swap from "./Swap"
 import ToastsProvider from "../providers/ToastsProvider"
@@ -33,14 +34,22 @@ export default function App(): ReactElement {
       <Web3ReactManager>
         <ToastsProvider>
           <Switch>
-            <Route
-              exact
-              path="/"
-              render={(props) => <Swap {...props} poolName={BTC_POOL_NAME} />}
-            />
+            <Route exact path="/" component={Swap} />
             <Route
               exact
               path="/deposit"
+              render={(props) => <Pools {...props} action="deposit" />}
+            />
+            <Route
+              exact
+              path="/deposit/usd"
+              render={(props) => (
+                <Deposit {...props} poolName={STABLECOIN_POOL_NAME} />
+              )}
+            />
+            <Route
+              exact
+              path="/deposit/btc"
               render={(props) => (
                 <Deposit {...props} poolName={BTC_POOL_NAME} />
               )}
@@ -48,8 +57,20 @@ export default function App(): ReactElement {
             <Route
               exact
               path="/withdraw"
+              render={(props) => <Pools {...props} action="withdraw" />}
+            />
+            <Route
+              exact
+              path="/withdraw/btc"
               render={(props) => (
                 <Withdraw {...props} poolName={BTC_POOL_NAME} />
+              )}
+            />
+            <Route
+              exact
+              path="/withdraw/usd"
+              render={(props) => (
+                <Withdraw {...props} poolName={STABLECOIN_POOL_NAME} />
               )}
             />
             <Route exact path="/risk" component={Risk} />

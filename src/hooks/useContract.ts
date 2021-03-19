@@ -9,7 +9,6 @@ import {
   STABLECOIN_POOL_NAME,
   STABLECOIN_SWAP_ADDRESSES,
   STABLECOIN_SWAP_TOKEN,
-  SUSD,
   TBTC,
   Token,
   USDC,
@@ -21,10 +20,14 @@ import { useMemo, useState } from "react"
 import { Contract } from "@ethersproject/contracts"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
-import LPTOKEN_ABI from "../constants/abis/lpToken.json"
-import { LpToken } from "../../types/ethers-contracts/LpToken"
-import SWAP_ABI from "../constants/abis/swap.json"
-import { Swap } from "../../types/ethers-contracts/Swap"
+import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
+import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
+import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
+import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
+import SWAP_FLASH_LOAN_ABI from "../constants/abis/swapFlashLoan.json"
+import SWAP_GUARDED_ABI from "../constants/abis/swapGuarded.json"
+import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
+import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import { getContract } from "../utils"
 import { useActiveWeb3React } from "./index"
 
@@ -61,40 +64,64 @@ export function useTokenContract(
   return useContract(tokenAddress, ERC20_ABI, withSignerIfPossible)
 }
 
-export function useSwapContract(poolName: PoolName): Swap | null {
-  const withSignerIfPossible = true
+export function useSwapBTCContract(): SwapGuarded | null {
   const { chainId } = useActiveWeb3React()
-  const stablecoinSwapContract = useContract(
-    chainId ? STABLECOIN_SWAP_ADDRESSES[chainId] : undefined,
-    SWAP_ABI,
-    withSignerIfPossible,
-  )
-  const btcSwapContract = useContract(
+  return useContract(
     chainId ? BTC_SWAP_ADDRESSES[chainId] : undefined,
-    SWAP_ABI,
-    withSignerIfPossible,
-  )
-  return useMemo(() => {
-    if (poolName === BTC_POOL_NAME) {
-      return btcSwapContract as Swap
-    } else if (poolName === STABLECOIN_POOL_NAME) {
-      return stablecoinSwapContract as Swap
-    }
-    return null
-  }, [stablecoinSwapContract, btcSwapContract, poolName])
+    SWAP_GUARDED_ABI,
+  ) as SwapGuarded
 }
 
-export function useLPTokenContract(poolName: PoolName): LpToken | null {
+export function useSwapUSDContract(): SwapFlashLoan | null {
+  const { chainId } = useActiveWeb3React()
+  return useContract(
+    chainId ? STABLECOIN_SWAP_ADDRESSES[chainId] : undefined,
+    SWAP_FLASH_LOAN_ABI,
+  ) as SwapFlashLoan
+}
+
+export function useSwapContract<T extends PoolName>(
+  poolName: T,
+): T extends typeof BTC_POOL_NAME ? SwapGuarded | null : SwapFlashLoan | null
+export function useSwapContract(
+  poolName: PoolName,
+): SwapGuarded | SwapFlashLoan | null {
+  const usdSwapContract = useSwapUSDContract()
+  const btcSwapContract = useSwapBTCContract()
+  if (poolName === BTC_POOL_NAME) {
+    return btcSwapContract
+  } else if (poolName === STABLECOIN_POOL_NAME) {
+    return usdSwapContract
+  }
+  return null
+}
+
+export function useLPTokenContract<T extends PoolName>(
+  poolName: T,
+): T extends typeof BTC_POOL_NAME
+  ? LpTokenGuarded | null
+  : LpTokenUnguarded | null
+export function useLPTokenContract(
+  poolName: PoolName,
+): LpTokenUnguarded | LpTokenGuarded | null {
   const swapContract = useSwapContract(poolName)
   const [lpTokenAddress, setLPTokenAddress] = useState("")
   void swapContract
     ?.swapStorage()
     .then(({ lpToken }: { lpToken: string }) => setLPTokenAddress(lpToken))
-  return useContract(lpTokenAddress, LPTOKEN_ABI) as LpToken
+  const lpTokenGuarded = useContract(
+    lpTokenAddress,
+    LPTOKEN_GUARDED_ABI,
+  ) as LpTokenGuarded
+  const lpTokenUnguarded = useContract(
+    lpTokenAddress,
+    LPTOKEN_UNGUARDED_ABI,
+  ) as LpTokenUnguarded
+  return poolName === BTC_POOL_NAME ? lpTokenGuarded : lpTokenUnguarded
 }
 
 interface AllContractsObject {
-  [x: string]: Swap | Erc20 | null
+  [x: string]: LpTokenGuarded | LpTokenUnguarded | Erc20 | null
 }
 export function useAllContracts(): AllContractsObject | null {
   const tbtcContract = useTokenContract(TBTC) as Erc20
@@ -104,11 +131,12 @@ export function useAllContracts(): AllContractsObject | null {
   const daiContract = useTokenContract(DAI) as Erc20
   const usdcContract = useTokenContract(USDC) as Erc20
   const usdtContract = useTokenContract(USDT) as Erc20
-  const susdContract = useTokenContract(SUSD) as Erc20
-  const btcSwapTokenContract = useTokenContract(BTC_SWAP_TOKEN) as Swap
+  const btcSwapTokenContract = useTokenContract(
+    BTC_SWAP_TOKEN,
+  ) as LpTokenGuarded
   const stablecoinSwapTokenContract = useTokenContract(
     STABLECOIN_SWAP_TOKEN,
-  ) as Swap
+  ) as LpTokenUnguarded
 
   return useMemo(() => {
     if (
@@ -120,9 +148,8 @@ export function useAllContracts(): AllContractsObject | null {
         daiContract,
         usdcContract,
         usdtContract,
-        susdContract,
         btcSwapTokenContract,
-        // stablecoinSwapTokenContract, // TODO: add back when contract deployed
+        stablecoinSwapTokenContract,
       ].some(Boolean)
     )
       return null
@@ -134,7 +161,6 @@ export function useAllContracts(): AllContractsObject | null {
       [DAI.symbol]: daiContract,
       [USDC.symbol]: usdcContract,
       [USDT.symbol]: usdtContract,
-      [SUSD.symbol]: susdContract,
       [BTC_SWAP_TOKEN.symbol]: btcSwapTokenContract,
       [STABLECOIN_SWAP_TOKEN.symbol]: stablecoinSwapTokenContract,
     }
@@ -146,7 +172,6 @@ export function useAllContracts(): AllContractsObject | null {
     daiContract,
     usdcContract,
     usdtContract,
-    susdContract,
     btcSwapTokenContract,
     stablecoinSwapTokenContract,
   ])

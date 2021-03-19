@@ -1,19 +1,11 @@
-import {
-  BTC_POOL_NAME,
-  BTC_POOL_TOKENS,
-  PoolName,
-  STABLECOIN_POOL_NAME,
-  STABLECOIN_POOL_TOKENS,
-  TOKENS_MAP,
-  TRANSACTION_TYPES,
-  Token,
-} from "../constants"
-import { useAllContracts, useSwapContract } from "./useContract"
+import { TOKENS_MAP, TRANSACTION_TYPES } from "../constants"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { GasPrices } from "../state/user"
+import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
+import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { formatDeadlineToNumber } from "../utils"
 import { getFormattedTimeString } from "../utils/dateTime"
@@ -21,6 +13,7 @@ import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
+import { useAllContracts } from "./useContract"
 import { useDispatch } from "react-redux"
 import { useSelector } from "react-redux"
 import { useToast } from "./useToast"
@@ -30,15 +23,15 @@ interface ApproveAndSwapStateArgument {
   toTokenSymbol: string
   fromAmount: BigNumber
   toAmount: BigNumber
+  swapContract: SwapFlashLoan | SwapGuarded | null
 }
 
-export function useApproveAndSwap(
-  poolName: PoolName,
-): (state: ApproveAndSwapStateArgument) => Promise<void> {
+export function useApproveAndSwap(): (
+  state: ApproveAndSwapStateArgument,
+) => Promise<void> {
   const dispatch = useDispatch()
-  const swapContract = useSwapContract(poolName)
   const tokenContracts = useAllContracts()
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const { addToast, clearToasts } = useToast()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
@@ -52,29 +45,21 @@ export function useApproveAndSwap(
     transactionDeadlineSelected,
     infiniteApproval,
   } = useSelector((state: AppState) => state.user)
-  let POOL_TOKENS: Token[]
-  if (poolName === BTC_POOL_NAME) {
-    POOL_TOKENS = BTC_POOL_TOKENS
-  } else if (poolName === STABLECOIN_POOL_NAME) {
-    POOL_TOKENS = STABLECOIN_POOL_TOKENS
-  } else {
-    throw new Error("useApproveAndSwap requires a valid pool name")
-  }
-
   return async function approveAndSwap(
     state: ApproveAndSwapStateArgument,
   ): Promise<void> {
     try {
       if (!account) throw new Error("Wallet must be connected")
-      if (!swapContract) throw new Error("Swap contract is not loaded")
-
+      if (!state.swapContract) throw new Error("Swap contract is not loaded")
+      if (chainId === undefined) throw new Error("Unknown chain")
+      const tokenFrom = TOKENS_MAP[state.fromTokenSymbol]
+      const tokenTo = TOKENS_MAP[state.toTokenSymbol]
       // For each token being deposited, check the allowance and approve it if necessary
       const tokenContract = tokenContracts?.[state.fromTokenSymbol] as Erc20
       if (tokenContract == null) return
-      const fromToken = TOKENS_MAP[state.fromTokenSymbol]
       await checkAndApproveTokenForTrade(
         tokenContract,
-        swapContract.address,
+        state.swapContract.address,
         account,
         state.fromAmount,
         infiniteApproval,
@@ -84,7 +69,7 @@ export function useApproveAndSwap(
               {
                 type: "pending",
                 title: `${getFormattedTimeString()} Approving spend for ${
-                  fromToken.name
+                  tokenFrom.name
                 }`,
               },
               {
@@ -96,7 +81,7 @@ export function useApproveAndSwap(
             return addToast({
               type: "success",
               title: `${getFormattedTimeString()} Successfully approved spend for ${
-                fromToken.name
+                tokenFrom.name
               }`,
             })
           },
@@ -126,17 +111,15 @@ export function useApproveAndSwap(
         gasPrice = gasStandard
       }
       gasPrice = parseUnits(String(gasPrice) || "45", 9)
-      const indexFrom = POOL_TOKENS.findIndex(
-        ({ symbol }) => symbol === state.fromTokenSymbol,
-      )
-      const indexTo = POOL_TOKENS.findIndex(
-        ({ symbol }) => symbol === state.toTokenSymbol,
-      )
+      const [indexFrom, indexTo] = await Promise.all([
+        state.swapContract.getTokenIndex(tokenFrom.addresses[chainId]),
+        state.swapContract.getTokenIndex(tokenTo.addresses[chainId]),
+      ])
       const deadline = formatDeadlineToNumber(
         transactionDeadlineSelected,
         transactionDeadlineCustom,
       )
-      const swapTransaction = await swapContract.swap(
+      const swapTransaction = await state.swapContract.swap(
         indexFrom,
         indexTo,
         state.fromAmount,

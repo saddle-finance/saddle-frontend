@@ -1,0 +1,79 @@
+@import "../styles/theme";
+
+.swapInputContainer {
+  border: 1px solid var(--outline-gray);
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  width: 100%;
+  position: relative;
+  background-color: var(--primary-background);
+}
+
+.selectGroup {
+  display: flex;
+  align-items: center;
+  &:hover {
+    cursor: pointer;
+  }
+  > img {
+    height: 24px;
+    width: 24px;
+  }
+
+  .tokenNameContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    margin: 0 8px;
+  }
+  .symbolArrowContainer {
+    display: flex;
+    align-items: center;
+    svg path {
+      fill: var(--primary-foreground);
+    }
+  }
+}
+
+.inputGroup {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-end;
+  cursor: default;
+  input {
+    cursor: default;
+    outline: none;
+    text-align: right;
+    background-color: var(--primary-background);
+    color: var(--primary-foreground);
+    width: 100%;
+  }
+  &.focusable,
+  &.focusable input {
+    cursor: text;
+  }
+}
+
+.textBoldPurple {
+  outline: none;
+  color: var(--text-selected);
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.dropdownContainer {
+  width: 101%;
+  position: absolute;
+  top: 110%;
+  left: -1px;
+  z-index: 2;
+  box-shadow: var(--shadow);
+}
+
+.textMinor {
+  font-size: 12px;
+  color: var(--text-lighter);
+}

@@ -1,0 +1,103 @@
+@import "../styles/theme";
+@import "../styles/viewports";
+
+.searchSelect {
+  padding: 16px 8px 0 8px;
+  background-color: var(--primary-background);
+  border: 1px solid var(--outline-gray);
+  border-radius: 8px;
+  max-height: 350px;
+  max-width: 500px;
+  overflow-y: auto;
+  @include breakpoint(sm) {
+    max-width: 100%;
+  }
+}
+
+.inputContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 8px;
+
+  input {
+    flex: 1;
+    height: 32px;
+    background-color: var(--primary-background);
+    margin: 0 8px;
+    padding: 0 8px;
+    color: var(--primary-foreground);
+    font-size: 16px;
+    font-family: $font-family;
+    font-style: normal;
+    font-weight: $normal;
+
+    &:focus {
+      outline: none;
+    }
+
+    &:disabled {
+      background-color: $disabled;
+      border: none;
+    }
+  }
+}
+
+.listItem {
+  display: flex;
+  flex-direction: row;
+  padding: 8px;
+  margin: 8px 0;
+  user-select: none;
+
+  > :nth-child(2) {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 0 10px;
+  }
+  > :nth-child(3) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  &.isAvailable {
+    &:hover,
+    &.isActive {
+      background-color: var(--option-hover);
+      cursor: pointer;
+    }
+  }
+  &.isUnavailable {
+    b,
+    p,
+    span {
+      color: var(--text-lightest);
+    }
+    &:hover {
+      cursor: not-allowed;
+    }
+  }
+}
+
+.textMinor {
+  font-size: 12px;
+  color: var(--text-lighter);
+}
+
+.tagWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.unavailableTag {
+  color: var(--text-lightest);
+  border: 1px solid var(--text-lightest);
+  border-radius: 4px;
+  padding: 1px 2px;
+  font-weight: 700;
+  font-size: 11px;
+  display: inline-block;
+  margin-left: 8px;
+  line-height: 14px;
+}

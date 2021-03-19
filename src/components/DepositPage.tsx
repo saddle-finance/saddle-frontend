@@ -23,6 +23,7 @@ import ReviewDeposit from "./ReviewDeposit"
 import SlippageField from "./SlippageField"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
+import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
 import { formatBNToPercentString } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
@@ -100,7 +101,7 @@ const DepositPage = (props: Props): ReactElement => {
             ))}
             <div className={classNames("transactionInfoContainer", "show")}>
               <div className="transactionInfo">
-                {poolData?.keepApr && (
+                {poolData?.keepApr.gt(Zero) && (
                   <div className="transactionInfoItem">
                     <a
                       href="https://docs.saddle.finance/faq#what-are-saddles-liquidity-provider-rewards"

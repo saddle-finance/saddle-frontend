@@ -4,7 +4,6 @@ import {
   PoolName,
   RENBTC,
   SBTC,
-  SUSD,
   TBTC,
   USDC,
   USDT,
@@ -53,7 +52,6 @@ export function usePoolTokenBalances(
   const daiTokenBalance = useTokenBalance(DAI)
   const usdcTokenBalance = useTokenBalance(USDC)
   const usdtTokenBalance = useTokenBalance(USDT)
-  const susdTokenBalance = useTokenBalance(SUSD)
   const btcPoolTokenBalances = useMemo(
     () => ({
       [TBTC.symbol]: tbtcTokenBalance,
@@ -68,9 +66,8 @@ export function usePoolTokenBalances(
       [DAI.symbol]: daiTokenBalance,
       [USDC.symbol]: usdcTokenBalance,
       [USDT.symbol]: usdtTokenBalance,
-      [SUSD.symbol]: susdTokenBalance,
     }),
-    [daiTokenBalance, usdcTokenBalance, usdtTokenBalance, susdTokenBalance],
+    [daiTokenBalance, usdcTokenBalance, usdtTokenBalance],
   )
 
   if (poolName === BTC_POOL_NAME) {

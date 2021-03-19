@@ -1,13 +1,19 @@
-import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
+import { AddressZero, Zero } from "@ethersproject/constants"
+import {
+  BTC_POOL_NAME,
+  POOLS_MAP,
+  PoolName,
+  TRANSACTION_TYPES,
+} from "../constants"
 import { formatBNToPercentString, getContract } from "../utils"
 import { useEffect, useState } from "react"
 
-import { AddressZero } from "@ethersproject/constants"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
-import LPTOKEN_ABI from "../constants/abis/lpToken.json"
-import { LpToken } from "../../types/ethers-contracts/LpToken"
-import { Zero } from "@ethersproject/constants"
+import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
+import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
+import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
+import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import { useSelector } from "react-redux"
@@ -38,7 +44,6 @@ export interface UserShareType {
   avgBalance: BigNumber
   currentWithdrawFee: BigNumber
   lpTokenBalance: BigNumber
-  lpTokenMinted: BigNumber
   name: string // TODO: does this need to be on user share?
   share: BigNumber
   tokens: TokenShareType[]
@@ -80,19 +85,25 @@ export default function usePoolData(
         swapContract.swapStorage(),
       ])
       const { adminFee, lpToken: lpTokenAddress, swapFee } = swapStorage
-      const lpTokenContract = getContract(
-        lpTokenAddress,
-        LPTOKEN_ABI,
-        library,
-        account ?? undefined,
-      ) as LpToken
-      const [
-        userLpTokenBalance,
-        userLpTokenMinted,
-        totalLpTokenBalance,
-      ] = await Promise.all([
+      let lpTokenContract
+      if (poolName === BTC_POOL_NAME) {
+        lpTokenContract = getContract(
+          lpTokenAddress,
+          LPTOKEN_GUARDED_ABI,
+          library,
+          account ?? undefined,
+        ) as LpTokenGuarded
+      } else {
+        lpTokenContract = getContract(
+          lpTokenAddress,
+          LPTOKEN_UNGUARDED_ABI,
+          library,
+          account ?? undefined,
+        ) as LpTokenUnguarded
+      }
+
+      const [userLpTokenBalance, totalLpTokenBalance] = await Promise.all([
         lpTokenContract.balanceOf(account || AddressZero),
-        lpTokenContract.mintedAmounts(account || AddressZero),
         lpTokenContract.totalSupply(),
       ])
 
@@ -115,7 +126,7 @@ export default function usePoolData(
       const tokenBalancesUSD = POOL.poolTokens.map((token, i) => {
         const balance = tokenBalances[i]
         return balance
-          .mul(parseUnits(String(tokenPricesUSD[token.symbol]), 18))
+          .mul(parseUnits(String(tokenPricesUSD[token.symbol] || 0), 18))
           .div(BigNumber.from(10).pow(18))
       })
       const tokenBalancesUSDSum: BigNumber = tokenBalancesUSD.reduce((sum, b) =>
@@ -131,9 +142,14 @@ export default function usePoolData(
       const comparisonPoolToken = POOL.poolTokens[0]
       const keepAPRNumerator = BigNumber.from(52 * 250000)
         .mul(BigNumber.from(10).pow(18))
-        .mul(parseUnits(String(tokenPricesUSD.KEEP), 18))
+        .mul(parseUnits(String(tokenPricesUSD.KEEP || 0), 18))
       const keepAPRDenominator = totalLpTokenBalance
-        .mul(parseUnits(String(tokenPricesUSD[comparisonPoolToken.symbol]), 6))
+        .mul(
+          parseUnits(
+            String(tokenPricesUSD[comparisonPoolToken.symbol] || 0),
+            6,
+          ),
+        )
         .div(1e6)
 
       const keepApr = totalLpTokenBalance.isZero()
@@ -200,7 +216,7 @@ export default function usePoolData(
         volume: "XXX", // TODO
         utilization: "XXX", // TODO
         apy: "XXX", // TODO
-        keepApr,
+        keepApr: poolName === BTC_POOL_NAME ? keepApr : Zero,
         lpTokenPriceUSD,
       }
       const userShareData = account
@@ -213,7 +229,6 @@ export default function usePoolData(
             tokens: userPoolTokens,
             currentWithdrawFee: userCurrentWithdrawFee,
             lpTokenBalance: userLpTokenBalance,
-            lpTokenMinted: userLpTokenMinted,
           }
         : null
       setPoolData([poolData, userShareData])
