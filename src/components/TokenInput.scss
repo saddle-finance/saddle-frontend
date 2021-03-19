@@ -24,6 +24,9 @@ div.tokenInput {
     font-family: $font-family;
     font-style: normal;
     font-weight: $normal;
+    &::placeholder {
+      color: var(--text-lighter);
+    }
 
     &:focus {
       outline: none;

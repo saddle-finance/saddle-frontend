@@ -8,7 +8,7 @@
   border-radius: 8px;
   max-height: 350px;
   max-width: 500px;
-  overflow-y: scroll;
+  overflow-y: auto;
   @include breakpoint(sm) {
     max-width: 100%;
   }
