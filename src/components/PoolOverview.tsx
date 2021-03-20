@@ -27,7 +27,7 @@ function PoolOverview({
   const formattedData = {
     name: poolData.name,
     reserve: `$${commify(formatBNToString(poolData.reserve, 18, 2))}`,
-    apy: formatBNToPercentString(poolData.keepApr || Zero, 18),
+    apr: formatBNToPercentString(poolData.keepApr || Zero, 18),
     userBalanceUSD: `$${commify(
       formatBNToString(userShareData?.usdBalance || Zero, 18, 2),
     )}`,
@@ -60,15 +60,15 @@ function PoolOverview({
 
           <div className="right">
             {poolData.keepApr.gt(Zero) && (
-              <div className="Apy">
-                <span className="label">{t("apy")}</span>
+              <div className="Apr">
+                <span className="label">KEEP APR</span>
                 <span
                   className={
-                    classNames({ plus: formattedData.apy }) +
-                    classNames({ minus: !formattedData.apy })
+                    classNames({ plus: formattedData.apr }) +
+                    classNames({ minus: !formattedData.apr })
                   }
                 >
-                  {formattedData.apy}
+                  {formattedData.apr}
                 </span>
               </div>
             )}
