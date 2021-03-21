@@ -103,7 +103,13 @@ function Swap(): ReactElement {
     )
     const ALL_POOLS_SET = new Set(ALL_POOLS_TOKENS.map(({ symbol }) => symbol))
     const One = BigNumber.from(10).pow(18)
-    if (BTC_POOL_SET.has(formState.from.symbol)) {
+    let activeSymbol = ""
+    if (formState.from.symbol !== "") {
+      activeSymbol = formState.from.symbol
+    } else if (formState.to.symbol !== "") {
+      activeSymbol = formState.to.symbol
+    }
+    if (BTC_POOL_SET.has(activeSymbol)) {
       return {
         name: BTC_POOL_NAME,
         tokens: BTC_POOL_TOKENS,
@@ -111,7 +117,7 @@ function Swap(): ReactElement {
         contract: btcSwapContract,
         virtualPrice: btcPoolData?.virtualPrice || One,
       }
-    } else if (USD_POOL_SET.has(formState.from.symbol)) {
+    } else if (USD_POOL_SET.has(activeSymbol)) {
       return {
         name: STABLECOIN_POOL_NAME,
         tokens: STABLECOIN_POOL_TOKENS,
@@ -130,6 +136,7 @@ function Swap(): ReactElement {
     }
   }, [
     formState.from.symbol,
+    formState.to.symbol,
     ALL_POOLS_TOKENS,
     usdSwapContract,
     btcSwapContract,
