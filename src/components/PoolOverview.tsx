@@ -2,13 +2,13 @@ import "./PoolOverview.scss"
 
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement } from "react"
+import { formatBNToPercentString, formatBNToString } from "../utils"
 
 import { Link } from "react-router-dom"
 import { TOKENS_MAP } from "../constants"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
 import { commify } from "@ethersproject/units"
-import { formatBNToString } from "../utils"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -27,7 +27,7 @@ function PoolOverview({
   const formattedData = {
     name: poolData.name,
     reserve: `$${commify(formatBNToString(poolData.reserve, 18, 2))}`,
-    apy: `${commify(formatBNToString(poolData.keepApr || Zero, 18, 2))}%`,
+    apr: formatBNToPercentString(poolData.keepApr || Zero, 18),
     userBalanceUSD: `$${commify(
       formatBNToString(userShareData?.usdBalance || Zero, 18, 2),
     )}`,
@@ -60,15 +60,15 @@ function PoolOverview({
 
           <div className="right">
             {poolData.keepApr.gt(Zero) && (
-              <div className="Apy">
-                <span className="label">{t("apy")}</span>
+              <div className="Apr">
+                <span className="label">KEEP APR</span>
                 <span
                   className={
-                    classNames({ plus: formattedData.apy }) +
-                    classNames({ minus: !formattedData.apy })
+                    classNames({ plus: formattedData.apr }) +
+                    classNames({ minus: !formattedData.apr })
                   }
                 >
-                  {formattedData.apy}
+                  {formattedData.apr}
                 </span>
               </div>
             )}
