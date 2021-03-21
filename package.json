@@ -73,7 +73,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "^4.3.0",
     "react-is": "^17.0.1",
-    "typechain": "^4.0.1",
+    "typechain": "^4.0.3",
     "typescript-plugin-css-modules": "^3.2.0"
   },
   "scripts": {

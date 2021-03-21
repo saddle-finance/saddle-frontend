@@ -75,7 +75,9 @@ const DepositPage = (props: Props): ReactElement => {
   return (
     <div className="deposit">
       <TopMenu activeTab={"deposit"} />
-      {myShareData?.lpTokenBalance.gt(0) && <LPStakingBanner />}
+      {poolData?.keepApr.gt(Zero) && myShareData?.lpTokenBalance.gt(0) && (
+        <LPStakingBanner />
+      )}
 
       <div className="content">
         <div className="left">
