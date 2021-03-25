@@ -10,11 +10,15 @@ void i18next
   .init({
     backend: {
       loadPath: `./locales/{{lng}}.json`,
+      requestOptions: {
+        cache: "no-cache", // validate the freshness of the cache
+      },
     },
     react: {
       useSuspense: true,
     },
     fallbackLng: "en",
+    load: "languageOnly", // load zh.json for zh-CN
     preload: ["en"],
     keySeparator: false,
     interpolation: { escapeValue: false },
