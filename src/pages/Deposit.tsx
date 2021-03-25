@@ -141,8 +141,8 @@ function Deposit({ poolName }: Props): ReactElement | null {
     POOL.lpToken,
     priceImpact,
     estDepositLPTokenAmount,
-    tokenPricesUSD,
     gasPrice,
+    tokenPricesUSD,
   )
 
   return (
@@ -167,8 +167,8 @@ function buildTransactionData(
   poolLpToken: Token,
   priceImpact: BigNumber,
   estDepositLPTokenAmount: BigNumber,
+  gasPrice: BigNumber,
   tokenPricesUSD?: TokenPricesUSD,
-  gasPrice?: BigNumber,
 ): DepositTransaction {
   const from = {
     items: [] as TransactionItem[],
@@ -217,12 +217,12 @@ function buildTransactionData(
         .div(estDepositLPTokenAmount.add(poolData?.totalLocked))
     : BigNumber.from(10).pow(18)
 
-  const gasAmount = calculateGasEstimate("addLiquidity").multipliedBy(gasPrice)
+  const gasAmount = calculateGasEstimate("addLiquidity").mul(gasPrice)
   const txnGasCost = {
     amount: gasAmount,
-    valueUSD: BigNumber.from(String(TokenPricesUSD.ETH)).multipliedBy(
-      gasAmount,
-    ),
+    valueUSD: tokenPricesUSD?.ETH
+      ? BigNumber.from(String(tokenPricesUSD.ETH)).mul(gasAmount)
+      : null,
   }
 
   return {

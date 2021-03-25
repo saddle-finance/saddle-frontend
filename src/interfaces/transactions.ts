@@ -24,7 +24,7 @@ interface _BaseTransaction {
   priceImpact: BigNumber
   txnGasCost?: {
     amount: BigNumber
-    valueUSD: BigNumber // amount * ethPriceUSD
+    valueUSD: BigNumber | null // amount * ethPriceUSD
   }
 }
 

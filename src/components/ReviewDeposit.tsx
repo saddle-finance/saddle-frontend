@@ -121,12 +121,14 @@ function ReviewDeposit({
             GWEI
           </span>
         </div>
-        <div className="depositInfoItem">
-          <span className="label">{t("gasEstimate")}</span>
-          <span className="value">
-            {"$" + formatBNToString(transactionData?.txnGasCost?.valueUSD, 2)}
-          </span>
-        </div>
+        {transactionData.txnGasCost?.valueUSD && (
+          <div className="depositInfoItem">
+            <span className="label">{t("gasEstimate")}</span>
+            <span className="value">
+              {"$" + formatBNToString(transactionData.txnGasCost.valueUSD, 2)}
+            </span>
+          </div>
+        )}
         <div className="depositInfoItem">
           <span className="label">{t("maxSlippage")}</span>
           <span className="value">

@@ -236,9 +236,9 @@ export const POOL_STATS_URL: { [chainId in ChainId]: string } = {
     "https://mehmeta-team-bucket.storage.fleek.co/pool-stats-dev.json",
 }
 
-export const SWAP_CONTRACT_GAS_ESTIMATES_MAP: Record<string, BigNumber> = {
-  swap: BigNumber.from("157807"),
-  addLiquidity: BigNumber.from("386555"),
-  removeLiquidityImbalance: BigNumber.from("318231"),
-  removeLiquidityOneToken: BigNumber.from("232947"),
+export const SWAP_CONTRACT_GAS_ESTIMATES_MAP = {
+  swap: BigNumber.from("200000"), // 157807
+  addLiquidity: BigNumber.from("400000"), // 386555
+  removeLiquidityImbalance: BigNumber.from("350000"), // 318231
+  removeLiquidityOneToken: BigNumber.from("250000"), // 232947
 }
