@@ -6,7 +6,9 @@ import { commify, formatUnits, parseUnits } from "@ethersproject/units"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Zero } from "@ethersproject/constants"
+import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
+import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndWithdraw } from "../hooks/useApproveAndWithdraw"
@@ -23,9 +25,12 @@ function Withdraw({ poolName }: Props): ReactElement {
   const [withdrawFormState, updateWithdrawFormState] = useWithdrawFormState(
     poolName,
   )
-  const { slippageCustom, slippageSelected } = useSelector(
-    (state: AppState) => state.user,
-  )
+  const {
+    slippageCustom,
+    slippageSelected,
+    gasPriceSelected,
+    gasCustom,
+  } = useSelector((state: AppState) => state.user)
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const approveAndWithdraw = useApproveAndWithdraw(poolName)
   const swapContract = useSwapContract(poolName)
@@ -108,12 +113,26 @@ function Withdraw({ poolName }: Props): ReactElement {
       })),
     [withdrawFormState, POOL.poolTokens],
   )
-
+  const gasPrice = BigNumber.from(
+    formatGasToString(
+      { gasStandard, gasFast, gasInstant },
+      gasPriceSelected,
+      gasCustom,
+    ),
+  )
+  const gasAmount = calculateGasEstimate("addLiquidity").mul(gasPrice)
+  const txnGasCost = {
+    amount: gasAmount,
+    valueUSD: tokenPricesUSD?.ETH
+      ? BigNumber.from(String(tokenPricesUSD.ETH)).mul(gasAmount)
+      : null,
+  }
   const reviewWithdrawData: ReviewWithdrawData = {
     withdraw: [],
     rates: [],
     slippage: formatSlippageToString(slippageSelected, slippageCustom),
     priceImpact: estWithdrawBonus,
+    txnGasCost: txnGasCost,
   }
   POOL.poolTokens.forEach(({ name, decimals, icon, symbol }) => {
     if (BigNumber.from(withdrawFormState.tokenInputs[symbol].valueSafe).gt(0)) {
