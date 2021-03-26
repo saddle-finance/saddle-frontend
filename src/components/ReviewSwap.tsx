@@ -26,6 +26,10 @@ interface Props {
       priceImpact: BigNumber
       exchangeRate: BigNumber
     }
+    txnGasCost: {
+      amount: BigNumber
+      valueUSD: BigNumber | null // amount * ethPriceUSD
+    }
   }
 }
 
@@ -113,6 +117,14 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
               GWEI
             </span>
           </div>
+          {data.txnGasCost?.valueUSD && (
+            <div className="depositInfoItem">
+              <span className="label">{t("gasEstimate")}</span>
+              <span className="value">
+                {"$" + formatBNToString(data.txnGasCost.valueUSD, 2)}
+              </span>
+            </div>
+          )}
           <div className="row">
             <span className="title">{t("maxSlippage")}</span>
             <span className="value floatRight">

@@ -46,6 +46,10 @@ interface Props {
     exchangeRate: BigNumber
     priceImpact: BigNumber
   }
+  txnGasCost: {
+    amount: BigNumber
+    valueUSD: BigNumber | null // amount * ethPriceUSD
+  }
   error: string | null
   fromState: { symbol: string; value: string; valueUSD: BigNumber }
   toState: { symbol: string; value: string; valueUSD: BigNumber }
@@ -62,6 +66,7 @@ const SwapPage = (props: Props): ReactElement => {
   const {
     tokenOptions,
     exchangeRateInfo,
+    txnGasCost,
     error,
     fromState,
     toState,
@@ -273,6 +278,7 @@ const SwapPage = (props: Props): ReactElement => {
                 from: fromState,
                 to: toState,
                 exchangeRateInfo,
+                txnGasCost,
               }}
             />
           ) : null}
