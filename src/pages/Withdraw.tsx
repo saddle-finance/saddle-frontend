@@ -31,7 +31,9 @@ function Withdraw({ poolName }: Props): ReactElement {
     gasPriceSelected,
     gasCustom,
   } = useSelector((state: AppState) => state.user)
-  const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
+  const { tokenPricesUSD, gasStandard, gasFast, gasInstant } = useSelector(
+    (state: AppState) => state.application,
+  )
   const approveAndWithdraw = useApproveAndWithdraw(poolName)
   const swapContract = useSwapContract(poolName)
   const { account } = useActiveWeb3React()
