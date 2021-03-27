@@ -217,11 +217,17 @@ function buildTransactionData(
         .div(estDepositLPTokenAmount.add(poolData?.totalLocked))
     : BigNumber.from(10).pow(18)
 
-  const gasAmount = calculateGasEstimate("addLiquidity").mul(gasPrice)
+  const gasAmount = calculateGasEstimate("addLiquidity")
+    .mul(gasPrice)
+    .mul(BigNumber.from(10).pow(9)) // from GWEI to WEI
   const txnGasCost = {
     amount: gasAmount,
     valueUSD: tokenPricesUSD?.ETH
-      ? BigNumber.from(String(tokenPricesUSD.ETH)).mul(gasAmount)
+      ? parseUnits(tokenPricesUSD.ETH.toFixed(2), 18)
+          .div(BigNumber.from(10).pow(18)) // USD / ETH
+          .mul(gasAmount)
+          .div(BigNumber.from(10).pow(18)) // ETH per WEI
+          .mul(BigNumber.from(10).pow(2)) // the cents got eaten in parseUnits?
       : null,
   }
 
