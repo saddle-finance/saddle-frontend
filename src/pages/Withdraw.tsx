@@ -122,17 +122,14 @@ function Withdraw({ poolName }: Props): ReactElement {
       gasCustom,
     ),
   )
-  const gasAmount = calculateGasEstimate("addLiquidity")
-    .mul(gasPrice)
-    .mul(BigNumber.from(10).pow(9)) // from GWEI to WEI
+  const gasAmount = calculateGasEstimate("addLiquidity").mul(gasPrice) // units of gas * GWEI/Unit of gas
+
   const txnGasCost = {
     amount: gasAmount,
     valueUSD: tokenPricesUSD?.ETH
-      ? parseUnits(tokenPricesUSD.ETH.toFixed(2), 18)
-          .div(BigNumber.from(10).pow(18)) // USD / ETH
-          .mul(gasAmount)
-          .div(BigNumber.from(10).pow(18)) // ETH per WEI
-          .mul(BigNumber.from(10).pow(2)) // the cents got eaten in parseUnits?
+      ? parseUnits(tokenPricesUSD.ETH.toFixed(2), 18) // USD / ETH  * 10^18
+          .mul(gasAmount) // GWEI
+          .div(BigNumber.from(10).pow(27)) // USD / ETH * GWEI * ETH / GWEI = USD
       : null,
   }
 

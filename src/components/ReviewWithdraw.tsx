@@ -73,10 +73,10 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
           </span>
         </div>
         {data.txnGasCost?.valueUSD && (
-          <div className="depositInfoItem">
+          <div className="withdrawInfoItem">
             <span className="label">{t("gasEstimate")}</span>
             <span className="value">
-              {"$" + formatBNToString(data.txnGasCost.valueUSD, 2)}
+              {"$" + formatBNToString(data.txnGasCost.valueUSD, 0, 2)}
             </span>
           </div>
         )}
