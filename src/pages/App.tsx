@@ -30,15 +30,11 @@ export default function App(): ReactElement {
   const dispatch = useDispatch<AppDispatch>()
   const { pathname } = useLocation()
   const { account } = useActiveWeb3React()
-  // show ConnectWallet model if no account & not on risk page
-  const [isModalOpen, setIsModalOpen] = useState(
-    !account && pathname !== "/risk",
-  )
-  // show ConnectWallet on each new page if still not connected
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  // show ConnectWallet modal on each new page if not connected to wallet
   useEffect(() => {
-    if (!account && pathname !== "/risk") {
-      setIsModalOpen(true)
-    }
+    const shouldShowModal = !account && pathname !== "/risk"
+    setIsModalOpen(shouldShowModal)
   }, [pathname, account])
 
   const fetchAndUpdateGasPrice = useCallback(() => {
