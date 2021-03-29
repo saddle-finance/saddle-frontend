@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next"
 
 interface Props {
   to: string
-  poolData: PoolDataType | null
+  poolData: PoolDataType
   userShareData: UserShareType | null
 }
 
@@ -23,11 +23,10 @@ function PoolOverview({
   userShareData,
 }: Props): ReactElement | null {
   const { t } = useTranslation()
-  if (poolData == null) return null
   const formattedData = {
     name: poolData.name,
     reserve: `$${commify(formatBNToString(poolData.reserve, 18, 2))}`,
-    apr: formatBNToPercentString(poolData.keepApr || Zero, 18),
+    apr: formatBNToPercentString(poolData.keepApr, 18),
     userBalanceUSD: `$${commify(
       formatBNToString(userShareData?.usdBalance || Zero, 18, 2),
     )}`,
@@ -59,7 +58,7 @@ function PoolOverview({
           </div>
 
           <div className="right">
-            {poolData.keepApr.gt(Zero) && (
+            {poolData?.keepApr.gt(Zero) && (
               <div className="Apr">
                 <span className="label">KEEP APR</span>
                 <span

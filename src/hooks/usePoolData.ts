@@ -51,20 +51,48 @@ export interface UserShareType {
   value: BigNumber
 }
 
-export type PoolDataHookReturnType = [PoolDataType | null, UserShareType | null]
+export type PoolDataHookReturnType = [PoolDataType, UserShareType | null]
+
+const emptyPoolData = {
+  adminFee: Zero,
+  apy: "",
+  name: "",
+  reserve: Zero,
+  swapFee: Zero,
+  tokens: [],
+  totalLocked: Zero,
+  utilization: "",
+  virtualPrice: Zero,
+  volume: "",
+  keepApr: Zero,
+  lpTokenPriceUSD: Zero,
+} as PoolDataType
 
 export default function usePoolData(
   poolName: PoolName,
 ): PoolDataHookReturnType {
   const { account, library } = useActiveWeb3React()
   const swapContract = useSwapContract(poolName)
-  const [poolData, setPoolData] = useState<PoolDataHookReturnType>([null, null])
   const { tokenPricesUSD, lastTransactionTimes } = useSelector(
     (state: AppState) => state.application,
   )
   const lastDepositTime = lastTransactionTimes[TRANSACTION_TYPES.DEPOSIT]
   const lastWithdrawTime = lastTransactionTimes[TRANSACTION_TYPES.WITHDRAW]
   const lastSwapTime = lastTransactionTimes[TRANSACTION_TYPES.SWAP]
+  const POOL = POOLS_MAP[poolName]
+
+  const [poolData, setPoolData] = useState<PoolDataHookReturnType>([
+    {
+      ...emptyPoolData,
+      name: poolName,
+      tokens: POOL.poolTokens.map((token) => ({
+        symbol: token.symbol,
+        percent: "0",
+        value: Zero,
+      })),
+    },
+    null,
+  ])
 
   useEffect(() => {
     async function getSwapData(): Promise<void> {
@@ -77,12 +105,10 @@ export default function usePoolData(
       )
         return
 
-      const POOL = POOLS_MAP[poolName]
-
       // Swap fees, price, and LP Token data
       const [userCurrentWithdrawFee, swapStorage] = await Promise.all([
         swapContract.calculateCurrentWithdrawFee(account || AddressZero),
-        swapContract.swapStorage(),
+        swapContract.swapStorage(), // will fail without account
       ])
       const { adminFee, lpToken: lpTokenAddress, swapFee } = swapStorage
       let lpTokenContract
@@ -243,6 +269,7 @@ export default function usePoolData(
     tokenPricesUSD,
     account,
     library,
+    POOL.poolTokens,
   ])
 
   return poolData
