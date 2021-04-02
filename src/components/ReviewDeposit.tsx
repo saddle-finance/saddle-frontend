@@ -2,6 +2,7 @@ import "./ReviewDeposit.scss"
 
 import React, { ReactElement, useState } from "react"
 import {
+  commify,
   formatBNToPercentString,
   formatBNToString,
   formatDeadlineToNumber,
@@ -11,7 +12,6 @@ import { AppState } from "../state/index"
 import Button from "./Button"
 import { DepositTransaction } from "../interfaces/transactions"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
-import { commify } from "@ethersproject/units"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import { isHighPriceImpact } from "../utils/priceImpact"
@@ -122,10 +122,11 @@ function ReviewDeposit({
         </div>
         {transactionData.txnGasCost?.valueUSD && (
           <div className="depositInfoItem">
-            <span className="label">{t("gasEstimate")}</span>
+            <span className="label">{t("estimatedTxCost")}</span>
             <span className="value">
-              {"$" +
-                formatBNToString(transactionData.txnGasCost.valueUSD, 0, 2)}
+              {`≈$${commify(
+                formatBNToString(transactionData.txnGasCost.valueUSD, 2, 2),
+              )}`}
             </span>
           </div>
         )}

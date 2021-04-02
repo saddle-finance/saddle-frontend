@@ -1,7 +1,7 @@
 import "./ReviewSwap.scss"
 
 import React, { ReactElement, useState } from "react"
-import { formatBNToString, formatDeadlineToNumber } from "../utils"
+import { commify, formatBNToString, formatDeadlineToNumber } from "../utils"
 
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -119,9 +119,11 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
           </div>
           {data.txnGasCost?.valueUSD && (
             <div className="row">
-              <span className="title">{t("gasEstimate")}</span>
+              <span className="title">{t("estimatedTxCost")}</span>
               <span className="value floatRight">
-                {"$" + formatBNToString(data.txnGasCost.valueUSD, 0, 2)}
+                {`≈$${commify(
+                  formatBNToString(data.txnGasCost.valueUSD, 2, 2),
+                )}`}
               </span>
             </div>
           )}

@@ -1,7 +1,7 @@
 import "./ReviewWithdraw.scss"
 
 import React, { ReactElement, useState } from "react"
-import { formatBNToString, formatDeadlineToNumber } from "../utils"
+import { commify, formatBNToString, formatDeadlineToNumber } from "../utils"
 
 import { AppState } from "../state/index"
 import Button from "./Button"
@@ -74,9 +74,9 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
         </div>
         {data.txnGasCost?.valueUSD && (
           <div className="withdrawInfoItem">
-            <span className="label">{t("gasEstimate")}</span>
+            <span className="label">{t("estimatedTxCost")}</span>
             <span className="value">
-              {"$" + formatBNToString(data.txnGasCost.valueUSD, 0, 2)}
+              {`≈$${commify(formatBNToString(data.txnGasCost.valueUSD, 2, 2))}`}{" "}
             </span>
           </div>
         )}
