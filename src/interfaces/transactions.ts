@@ -22,7 +22,10 @@ interface _BaseTransaction {
   from: SingleItem | MultipleItems
   to: SingleItem | MultipleItems
   priceImpact: BigNumber
-  txnFee?: BigNumber
+  txnGasCost?: {
+    amount: BigNumber
+    valueUSD: BigNumber | null // amount * ethPriceUSD
+  }
 }
 
 export interface DepositTransaction extends _BaseTransaction {

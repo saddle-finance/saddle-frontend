@@ -45,6 +45,10 @@ export interface ReviewWithdrawData {
   }[]
   slippage: string
   priceImpact: BigNumber
+  txnGasCost: {
+    amount: BigNumber
+    valueUSD: BigNumber | null // amount * ethPriceUSD
+  }
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

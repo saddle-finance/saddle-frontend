@@ -13,8 +13,10 @@ import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import SwapPage from "../components/SwapPage"
 import { Zero } from "@ethersproject/constants"
+import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { debounce } from "lodash"
+import { formatGasToString } from "../utils/gas"
 import { useApproveAndSwap } from "../hooks/useApproveAndSwap"
 import usePoolData from "../hooks/usePoolData"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
@@ -56,7 +58,9 @@ function Swap(): ReactElement {
   const usdTokenBalances = usePoolTokenBalances(STABLECOIN_POOL_NAME)
   const btcSwapContract = useSwapContract(BTC_POOL_NAME)
   const usdSwapContract = useSwapContract(STABLECOIN_POOL_NAME)
-  const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
+  const { tokenPricesUSD, gasStandard, gasFast, gasInstant } = useSelector(
+    (state: AppState) => state.application,
+  )
   const ALL_POOLS_TOKENS = BTC_POOL_TOKENS.concat(STABLECOIN_POOL_TOKENS)
   function calculatePrice(
     amount: BigNumber | string,
@@ -368,6 +372,26 @@ function Swap(): ReactElement {
       exchangeRate: Zero,
     }))
   }
+  const { gasPriceSelected, gasCustom } = useSelector(
+    (state: AppState) => state.user,
+  )
+  const gasPrice = BigNumber.from(
+    formatGasToString(
+      { gasStandard, gasFast, gasInstant },
+      gasPriceSelected,
+      gasCustom,
+    ),
+  )
+  const gasAmount = calculateGasEstimate("swap").mul(gasPrice) // units of gas * GWEI/Unit of gas
+
+  const txnGasCost = {
+    amount: gasAmount,
+    valueUSD: tokenPricesUSD?.ETH
+      ? parseUnits(tokenPricesUSD.ETH.toFixed(2), 18) // USD / ETH  * 10^18
+          .mul(gasAmount) // GWEI
+          .div(BigNumber.from(10).pow(25)) // USD / ETH * GWEI * ETH / GWEI = USD
+      : null,
+  }
 
   return (
     <SwapPage
@@ -377,6 +401,7 @@ function Swap(): ReactElement {
         exchangeRate: formState.exchangeRate,
         priceImpact: formState.priceImpact,
       }}
+      txnGasCost={txnGasCost}
       fromState={formState.from}
       toState={{
         ...formState.to,

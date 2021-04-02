@@ -10,7 +10,9 @@ import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
 import { TokenPricesUSD } from "../state/application"
 import { Zero } from "@ethersproject/constants"
+import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
+import { formatGasToString } from "../utils/gas"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
@@ -32,10 +34,22 @@ function Deposit({ poolName }: Props): ReactElement | null {
     POOL.poolTokens,
   )
   const tokenBalances = usePoolTokenBalances(poolName)
-  const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
+  const { tokenPricesUSD, gasStandard, gasFast, gasInstant } = useSelector(
+    (state: AppState) => state.application,
+  )
+
+  const { gasPriceSelected, gasCustom } = useSelector(
+    (state: AppState) => state.user,
+  )
+  const gasPrice = BigNumber.from(
+    formatGasToString(
+      { gasStandard, gasFast, gasInstant },
+      gasPriceSelected,
+      gasCustom,
+    ),
+  )
   const [estDepositLPTokenAmount, setEstDepositLPTokenAmount] = useState(Zero)
   const [priceImpact, setPriceImpact] = useState(Zero)
-
   useEffect(() => {
     // evaluate if a new deposit will exceed the pool's per-user limit
     async function calculateMaxDeposits(): Promise<void> {
@@ -127,6 +141,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
     POOL.lpToken,
     priceImpact,
     estDepositLPTokenAmount,
+    gasPrice,
     tokenPricesUSD,
   )
 
@@ -152,6 +167,7 @@ function buildTransactionData(
   poolLpToken: Token,
   priceImpact: BigNumber,
   estDepositLPTokenAmount: BigNumber,
+  gasPrice: BigNumber,
   tokenPricesUSD?: TokenPricesUSD,
 ): DepositTransaction {
   const from = {
@@ -200,11 +216,23 @@ function buildTransactionData(
         .mul(BigNumber.from(10).pow(18))
         .div(estDepositLPTokenAmount.add(poolData?.totalLocked))
     : BigNumber.from(10).pow(18)
+  const gasAmount = calculateGasEstimate("addLiquidity").mul(gasPrice) // units of gas * GWEI/Unit of gas
+
+  const txnGasCost = {
+    amount: gasAmount,
+    valueUSD: tokenPricesUSD?.ETH
+      ? parseUnits(tokenPricesUSD.ETH.toFixed(2), 18) // USD / ETH  * 10^18
+          .mul(gasAmount) // GWEI
+          .div(BigNumber.from(10).pow(25)) // USD / ETH * GWEI * ETH / GWEI = USD
+      : null,
+  }
+
   return {
     from,
     to,
     priceImpact,
     shareOfPool,
+    txnGasCost,
   }
 }
 
