@@ -103,8 +103,7 @@ export default function usePoolData(
         poolName == null ||
         swapContract == null ||
         tokenPricesUSD == null ||
-        library == null ||
-        account == null
+        library == null
       )
         return
 
