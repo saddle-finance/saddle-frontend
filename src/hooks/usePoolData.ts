@@ -10,6 +10,7 @@ import { useEffect, useState } from "react"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
+import { IS_PRODUCTION } from "../utils/environment"
 import KEEP_LP_REWARDS_ABI from "../constants/abis/keepLPRewards.json"
 import { KeepLPRewards } from "../../types/ethers-contracts/KeepLPRewards"
 import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
@@ -129,14 +130,15 @@ export default function usePoolData(
           account ?? undefined,
         ) as LpTokenUnguarded
       }
-      const keepLPRewardsContract = process.env.production
-        ? (getContract(
-            "0x78aa83bd6c9de5de0a2231366900ab060a482edd",
-            KEEP_LP_REWARDS_ABI,
-            library,
-            account ?? undefined,
-          ) as KeepLPRewards)
-        : { balanceOf: () => Promise.resolve(Zero) }
+      const keepLPRewardsContract =
+        IS_PRODUCTION && poolName === BTC_POOL_NAME
+          ? (getContract(
+              "0x78aa83bd6c9de5de0a2231366900ab060a482edd",
+              KEEP_LP_REWARDS_ABI,
+              library,
+              account ?? undefined,
+            ) as KeepLPRewards)
+          : { balanceOf: () => Promise.resolve(Zero) }
       const lpTokenAmountStakedOnKeep =
         poolName === BTC_POOL_NAME
           ? await keepLPRewardsContract.balanceOf(account)
