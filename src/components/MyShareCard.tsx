@@ -53,7 +53,14 @@ function MyShareCard({ data }: Props): ReactElement | null {
           <span className="value">{formattedData.amount}</span>
           {data.amountStakedOnKeep.gt(Zero) ? (
             <span className="value">
-              &nbsp;({formattedData.amountStakedOnKeep} on KEEP)
+              &nbsp;
+              <a
+                href="https://dashboard.keep.network/liquidity"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                ({formattedData.amountStakedOnKeep} {t("staked")})
+              </a>
             </span>
           ) : null}
         </div>
