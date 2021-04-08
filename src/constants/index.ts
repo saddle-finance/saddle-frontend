@@ -6,12 +6,18 @@ import sbtcLogo from "../assets/icons/sbtc.svg"
 import tbtcLogo from "../assets/icons/tbtc.svg"
 import usdcLogo from "../assets/icons/usdc.svg"
 import usdtLogo from "../assets/icons/usdt.svg"
+import veth2Logo from "../assets/icons/veth2.svg"
 import wbtcLogo from "../assets/icons/wbtc.svg"
+import wethLogo from "../assets/icons/weth.svg"
 
 export const NetworkContextName = "NETWORK"
 export const BTC_POOL_NAME = "BTC Pool"
 export const STABLECOIN_POOL_NAME = "Stablecoin Pool"
-export type PoolName = typeof BTC_POOL_NAME | typeof STABLECOIN_POOL_NAME
+export const VETH2_POOL_NAME = "vETH2 Pool"
+export type PoolName =
+  | typeof BTC_POOL_NAME
+  | typeof STABLECOIN_POOL_NAME
+  | typeof VETH2_POOL_NAME
 
 export enum ChainId {
   MAINNET = 1,
@@ -59,6 +65,11 @@ export const BTC_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.HARDHAT]: "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
 }
 
+export const VETH2_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0xdec2157831D6ABC3Ec328291119cc91B337272b5",
+  [ChainId.HARDHAT]: "0xb0279Db6a2F1E01fbC8483FCCef0Be2bC6299cC3",
+}
+
 export const MERKLETREE_DATA: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "mainnetTestAccounts.json",
   [ChainId.HARDHAT]: "hardhat.json",
@@ -78,6 +89,13 @@ export const BTC_SWAP_TOKEN_CONTRACT_ADDRESSES: {
   [ChainId.HARDHAT]: "0x524F04724632eED237cbA3c37272e018b3A7967e",
 }
 
+export const VETH2_SWAP_TOKEN_CONTRACT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "0xe37E2a01feA778BC1717d72Bd9f018B6A6B241D5",
+  [ChainId.HARDHAT]: "0x8C1f1Ab0b323c4B4FCb9F85CE8beCbCD6F673d43",
+}
+
 export const BTC_SWAP_TOKEN = new Token(
   BTC_SWAP_TOKEN_CONTRACT_ADDRESSES,
   18,
@@ -93,6 +111,15 @@ export const STABLECOIN_SWAP_TOKEN = new Token(
   "saddleUSD",
   "saddleusd",
   "Saddle DAI/USDC/USDT",
+  saddleLogo,
+)
+
+export const VETH2_SWAP_TOKEN = new Token(
+  VETH2_SWAP_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "saddleVETH2",
+  "saddleveth2",
+  "Saddle WETH/vETH2",
   saddleLogo,
 )
 
@@ -193,13 +220,40 @@ export const SBTC = new Token(
 
 export const BTC_POOL_TOKENS = [TBTC, WBTC, RENBTC, SBTC]
 
+const WETH_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  [ChainId.HARDHAT]: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+}
+export const WETH = new Token(
+  WETH_CONTRACT_ADDRESSES,
+  18,
+  "WETH",
+  "ethereum",
+  "WETH",
+  wethLogo,
+)
+
+const VETH2_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0x898BAD2774EB97cF6b94605677F43b41871410B1",
+  [ChainId.HARDHAT]: "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F",
+}
+export const VETH2 = new Token(
+  VETH2_CONTRACT_ADDRESSES,
+  18,
+  "VETH2",
+  "ethereum",
+  "vETH2",
+  veth2Logo,
+)
+
+export const VETH2_POOL_TOKENS = [WETH, VETH2]
+
 // maps a symbol string to a token object
 export const TOKENS_MAP: {
   [symbol: string]: Token
-} = STABLECOIN_POOL_TOKENS.concat(BTC_POOL_TOKENS).reduce(
-  (acc, token) => ({ ...acc, [token.symbol]: token }),
-  {},
-)
+} = STABLECOIN_POOL_TOKENS.concat(BTC_POOL_TOKENS)
+  .concat(VETH2_POOL_TOKENS)
+  .reduce((acc, token) => ({ ...acc, [token.symbol]: token }), {})
 
 export const POOLS_MAP: {
   [poolName in PoolName]: {
@@ -214,6 +268,10 @@ export const POOLS_MAP: {
   [STABLECOIN_POOL_NAME]: {
     lpToken: STABLECOIN_SWAP_TOKEN,
     poolTokens: STABLECOIN_POOL_TOKENS,
+  },
+  [VETH2_POOL_NAME]: {
+    lpToken: VETH2_SWAP_TOKEN,
+    poolTokens: VETH2_POOL_TOKENS,
   },
 }
 

@@ -13,7 +13,12 @@ import {
   Token,
   USDC,
   USDT,
+  VETH2,
+  VETH2_POOL_NAME,
+  VETH2_SWAP_ADDRESSES,
+  VETH2_SWAP_TOKEN,
   WBTC,
+  WETH,
 } from "../constants"
 import { useMemo, useState } from "react"
 
@@ -80,6 +85,14 @@ export function useSwapUSDContract(): SwapFlashLoan | null {
   ) as SwapFlashLoan
 }
 
+export function useSwapVETH2Contract(): SwapFlashLoan | null {
+  const { chainId } = useActiveWeb3React()
+  return useContract(
+    chainId ? VETH2_SWAP_ADDRESSES[chainId] : undefined,
+    SWAP_FLASH_LOAN_ABI,
+  ) as SwapFlashLoan
+}
+
 export function useSwapContract<T extends PoolName>(
   poolName: T,
 ): T extends typeof BTC_POOL_NAME ? SwapGuarded | null : SwapFlashLoan | null
@@ -88,10 +101,13 @@ export function useSwapContract(
 ): SwapGuarded | SwapFlashLoan | null {
   const usdSwapContract = useSwapUSDContract()
   const btcSwapContract = useSwapBTCContract()
+  const veth2SwapContract = useSwapVETH2Contract()
   if (poolName === BTC_POOL_NAME) {
     return btcSwapContract
   } else if (poolName === STABLECOIN_POOL_NAME) {
     return usdSwapContract
+  } else if (poolName === VETH2_POOL_NAME) {
+    return veth2SwapContract
   }
   return null
 }
@@ -131,11 +147,16 @@ export function useAllContracts(): AllContractsObject | null {
   const daiContract = useTokenContract(DAI) as Erc20
   const usdcContract = useTokenContract(USDC) as Erc20
   const usdtContract = useTokenContract(USDT) as Erc20
+  const wethContract = useTokenContract(WETH) as Erc20
+  const veth2Contract = useTokenContract(VETH2) as Erc20
   const btcSwapTokenContract = useTokenContract(
     BTC_SWAP_TOKEN,
   ) as LpTokenGuarded
   const stablecoinSwapTokenContract = useTokenContract(
     STABLECOIN_SWAP_TOKEN,
+  ) as LpTokenUnguarded
+  const veth2SwapTokenContract = useTokenContract(
+    VETH2_SWAP_TOKEN,
   ) as LpTokenUnguarded
 
   return useMemo(() => {
@@ -148,8 +169,11 @@ export function useAllContracts(): AllContractsObject | null {
         daiContract,
         usdcContract,
         usdtContract,
+        wethContract,
+        veth2Contract,
         btcSwapTokenContract,
         stablecoinSwapTokenContract,
+        veth2SwapTokenContract,
       ].some(Boolean)
     )
       return null
@@ -161,8 +185,11 @@ export function useAllContracts(): AllContractsObject | null {
       [DAI.symbol]: daiContract,
       [USDC.symbol]: usdcContract,
       [USDT.symbol]: usdtContract,
+      [WETH.symbol]: wethContract,
+      [VETH2.symbol]: veth2Contract,
       [BTC_SWAP_TOKEN.symbol]: btcSwapTokenContract,
       [STABLECOIN_SWAP_TOKEN.symbol]: stablecoinSwapTokenContract,
+      [VETH2_SWAP_TOKEN.symbol]: veth2SwapTokenContract,
     }
   }, [
     tbtcContract,
@@ -172,7 +199,10 @@ export function useAllContracts(): AllContractsObject | null {
     daiContract,
     usdcContract,
     usdtContract,
+    wethContract,
+    veth2Contract,
     btcSwapTokenContract,
     stablecoinSwapTokenContract,
+    veth2SwapTokenContract,
   ])
 }

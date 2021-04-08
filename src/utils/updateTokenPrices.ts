@@ -33,6 +33,9 @@ export default function fetchTokenPricesUSD(dispatch: AppDispatch): void {
               ETH: body?.ethereum?.usd,
               BTC: body?.bitcoin?.usd,
               KEEP: body?.["keep-network"].usd,
+              WETH: body?.ethereum?.usd,
+              // TODO: pull vETH2 price once it's added to coingecko
+              VETH2: body?.ethereum?.usd,
             },
           )
           dispatch(updateTokensPricesUSD(result))
