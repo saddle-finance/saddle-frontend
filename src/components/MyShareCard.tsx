@@ -5,6 +5,7 @@ import { formatBNToPercentString, formatBNToString } from "../utils"
 
 import { TOKENS_MAP } from "../constants"
 import { UserShareType } from "../hooks/usePoolData"
+import { Zero } from "@ethersproject/constants"
 import { commify } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
@@ -20,7 +21,10 @@ function MyShareCard({ data }: Props): ReactElement | null {
   const formattedData = {
     share: formatBNToPercentString(data.share, 18),
     usdBalance: commify(formatBNToString(data.usdBalance, 18, 2)),
-    value: commify(formatBNToString(data.value, 18, 6)),
+    amount: commify(formatBNToString(data.underlyingTokensAmount, 18, 6)),
+    amountStakedOnKeep: commify(
+      formatBNToString(data.amountStakedOnKeep, 18, 6),
+    ),
     tokens: data.tokens.map((coin) => {
       const token = TOKENS_MAP[coin.symbol]
       return {
@@ -46,7 +50,19 @@ function MyShareCard({ data }: Props): ReactElement | null {
         </div>
         <div className="infoItem">
           <span className="label bold">{`${t("totalAmount")}: `}</span>
-          <span className="value">{formattedData.value}</span>
+          <span className="value">{formattedData.amount}</span>
+          {data.amountStakedOnKeep.gt(Zero) ? (
+            <span className="value">
+              &nbsp;
+              <a
+                href="https://dashboard.keep.network/liquidity"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                ({formattedData.amountStakedOnKeep} {t("staked")})
+              </a>
+            </span>
+          ) : null}
         </div>
       </div>
       <div className="currency">
