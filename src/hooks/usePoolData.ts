@@ -10,6 +10,9 @@ import { useEffect, useState } from "react"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
+import { IS_PRODUCTION } from "../utils/environment"
+import KEEP_LP_REWARDS_ABI from "../constants/abis/keepLPRewards.json"
+import { KeepLPRewards } from "../../types/ethers-contracts/KeepLPRewards"
 import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
@@ -41,14 +44,14 @@ export interface PoolDataType {
 }
 
 export interface UserShareType {
-  avgBalance: BigNumber
   currentWithdrawFee: BigNumber
   lpTokenBalance: BigNumber
   name: string // TODO: does this need to be on user share?
   share: BigNumber
   tokens: TokenShareType[]
   usdBalance: BigNumber
-  value: BigNumber
+  underlyingTokensAmount: BigNumber
+  amountStakedOnKeep: BigNumber
 }
 
 export type PoolDataHookReturnType = [PoolDataType, UserShareType | null]
@@ -127,6 +130,19 @@ export default function usePoolData(
           account ?? undefined,
         ) as LpTokenUnguarded
       }
+      const keepLPRewardsContract =
+        IS_PRODUCTION && poolName === BTC_POOL_NAME
+          ? (getContract(
+              "0x78aa83bd6c9de5de0a2231366900ab060a482edd",
+              KEEP_LP_REWARDS_ABI,
+              library,
+              account ?? undefined,
+            ) as KeepLPRewards)
+          : { balanceOf: () => Promise.resolve(Zero) }
+      const lpTokenAmountStakedOnKeep =
+        poolName === BTC_POOL_NAME
+          ? await keepLPRewardsContract.balanceOf(account)
+          : Zero
 
       const [userLpTokenBalance, totalLpTokenBalance] = await Promise.all([
         lpTokenContract.balanceOf(account || AddressZero),
@@ -182,17 +198,32 @@ export default function usePoolData(
         ? keepAPRNumerator
         : keepAPRNumerator.div(keepAPRDenominator)
 
+      function calculatePctOfTotalShare(lpTokenAmount: BigNumber): BigNumber {
+        // returns the % of total lpTokens
+        return lpTokenAmount
+          .mul(BigNumber.from(10).pow(18))
+          .div(
+            totalLpTokenBalance.isZero()
+              ? BigNumber.from("1")
+              : totalLpTokenBalance,
+          )
+      }
       // User share data
-      const userShare = userLpTokenBalance
-        .mul(BigNumber.from(10).pow(18))
-        .div(
-          totalLpTokenBalance.isZero()
-            ? BigNumber.from("1")
-            : totalLpTokenBalance,
-        )
+      let userShare = calculatePctOfTotalShare(userLpTokenBalance)
+      const userTokensAmountStakedOnKeep = calculatePctOfTotalShare(
+        lpTokenAmountStakedOnKeep,
+      )
+      userShare = userShare.add(userTokensAmountStakedOnKeep)
       const userPoolTokenBalances = tokenBalances.map((balance) => {
         return userShare.mul(balance).div(BigNumber.from(10).pow(18))
       })
+      const userStakedPoolTokenBalancesSum = tokenBalances
+        .map((balance) => {
+          return userTokensAmountStakedOnKeep
+            .mul(balance)
+            .div(BigNumber.from(10).pow(18))
+        })
+        .reduce((sum, b) => sum.add(b))
       const userPoolTokenBalancesSum: BigNumber = userPoolTokenBalances.reduce(
         (sum, b) => sum.add(b),
       )
@@ -249,12 +280,12 @@ export default function usePoolData(
         ? {
             name: poolName,
             share: userShare,
-            value: userPoolTokenBalancesSum,
+            underlyingTokensAmount: userPoolTokenBalancesSum,
             usdBalance: userPoolTokenBalancesUSDSum,
-            avgBalance: userPoolTokenBalancesSum,
             tokens: userPoolTokens,
             currentWithdrawFee: userCurrentWithdrawFee,
             lpTokenBalance: userLpTokenBalance,
+            amountStakedOnKeep: userStakedPoolTokenBalancesSum, // this is # of underlying tokens (eg btc), not lpTokens
           }
         : null
       setPoolData([poolData, userShareData])
