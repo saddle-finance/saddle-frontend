@@ -5,7 +5,6 @@ import React, { ReactElement, useState } from "react"
 import ConnectWallet from "./ConnectWallet"
 import Identicon from "./Identicon"
 import Modal from "./Modal"
-// import profile from "../assets/icons/profile.svg"
 import { useTranslation } from "react-i18next"
 import { useWeb3React } from "@web3-react/core"
 
