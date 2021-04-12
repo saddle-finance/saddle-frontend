@@ -139,7 +139,7 @@ export default function usePoolData(
             ) as KeepLPRewards)
           : { balanceOf: () => Promise.resolve(Zero) }
       const lpTokenAmountStakedOnKeep =
-        poolName === BTC_POOL_NAME
+        poolName === BTC_POOL_NAME && account != null
           ? await keepLPRewardsContract.balanceOf(account)
           : Zero
 
