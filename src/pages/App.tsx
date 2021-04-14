@@ -1,6 +1,11 @@
 import "../styles/global.scss"
 
-import { BLOCK_TIME, BTC_POOL_NAME, STABLECOIN_POOL_NAME } from "../constants"
+import {
+  BLOCK_TIME,
+  BTC_POOL_NAME,
+  STABLECOIN_POOL_NAME,
+  VETH2_POOL_NAME,
+} from "../constants"
 import React, { ReactElement, Suspense, useCallback } from "react"
 import { Route, Switch } from "react-router-dom"
 
