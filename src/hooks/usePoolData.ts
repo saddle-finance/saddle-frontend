@@ -103,8 +103,7 @@ export default function usePoolData(
         poolName == null ||
         swapContract == null ||
         tokenPricesUSD == null ||
-        library == null ||
-        account == null
+        library == null
       )
         return
 
@@ -140,7 +139,7 @@ export default function usePoolData(
             ) as KeepLPRewards)
           : { balanceOf: () => Promise.resolve(Zero) }
       const lpTokenAmountStakedOnKeep =
-        poolName === BTC_POOL_NAME
+        poolName === BTC_POOL_NAME && account != null
           ? await keepLPRewardsContract.balanceOf(account)
           : Zero
 
