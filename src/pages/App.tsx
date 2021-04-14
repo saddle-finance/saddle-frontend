@@ -1,6 +1,11 @@
 import "../styles/global.scss"
 
-import { BLOCK_TIME, BTC_POOL_NAME, STABLECOIN_POOL_NAME } from "../constants"
+import {
+  BLOCK_TIME,
+  BTC_POOL_NAME,
+  STABLECOIN_POOL_NAME,
+  VETH2_POOL_NAME,
+} from "../constants"
 import React, { ReactElement, Suspense, useCallback } from "react"
 import { Route, Switch } from "react-router-dom"
 
@@ -56,6 +61,13 @@ export default function App(): ReactElement {
             />
             <Route
               exact
+              path="/deposit/veth2"
+              render={(props) => (
+                <Deposit {...props} poolName={VETH2_POOL_NAME} />
+              )}
+            />
+            <Route
+              exact
               path="/withdraw"
               render={(props) => <Pools {...props} action="withdraw" />}
             />
@@ -71,6 +83,13 @@ export default function App(): ReactElement {
               path="/withdraw/usd"
               render={(props) => (
                 <Withdraw {...props} poolName={STABLECOIN_POOL_NAME} />
+              )}
+            />
+            <Route
+              exact
+              path="/withdraw/veth2"
+              render={(props) => (
+                <Withdraw {...props} poolName={VETH2_POOL_NAME} />
               )}
             />
             <Route exact path="/risk" component={Risk} />

@@ -4,6 +4,8 @@ import {
   STABLECOIN_POOL_NAME,
   STABLECOIN_POOL_TOKENS,
   TOKENS_MAP,
+  VETH2_POOL_NAME,
+  VETH2_POOL_TOKENS,
 } from "../constants"
 import React, { ReactElement, useCallback, useMemo, useState } from "react"
 import { calculateExchangeRate, shiftBNDecimals } from "../utils"
@@ -54,14 +56,19 @@ function Swap(): ReactElement {
   const approveAndSwap = useApproveAndSwap()
   const [btcPoolData] = usePoolData(BTC_POOL_NAME)
   const [usdPoolData] = usePoolData(STABLECOIN_POOL_NAME)
+  const [veth2PoolData] = usePoolData(VETH2_POOL_NAME)
   const btcTokenBalances = usePoolTokenBalances(BTC_POOL_NAME)
   const usdTokenBalances = usePoolTokenBalances(STABLECOIN_POOL_NAME)
+  const veth2TokenBalances = usePoolTokenBalances(VETH2_POOL_NAME)
   const btcSwapContract = useSwapContract(BTC_POOL_NAME)
   const usdSwapContract = useSwapContract(STABLECOIN_POOL_NAME)
+  const veth2SwapContract = useSwapContract(VETH2_POOL_NAME)
   const { tokenPricesUSD, gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
-  const ALL_POOLS_TOKENS = BTC_POOL_TOKENS.concat(STABLECOIN_POOL_TOKENS)
+  const ALL_POOLS_TOKENS = BTC_POOL_TOKENS.concat(
+    STABLECOIN_POOL_TOKENS,
+  ).concat(VETH2_POOL_TOKENS)
   function calculatePrice(
     amount: BigNumber | string,
     tokenPrice = 0,
@@ -98,12 +105,16 @@ function Swap(): ReactElement {
     return {
       ...(btcTokenBalances || {}),
       ...(usdTokenBalances || {}),
+      ...(veth2TokenBalances || {}),
     }
-  }, [btcTokenBalances, usdTokenBalances])
+  }, [btcTokenBalances, usdTokenBalances, veth2TokenBalances])
   const activePool = useMemo(() => {
     const BTC_POOL_SET = new Set(BTC_POOL_TOKENS.map(({ symbol }) => symbol))
     const USD_POOL_SET = new Set(
       STABLECOIN_POOL_TOKENS.map(({ symbol }) => symbol),
+    )
+    const VETH2_POOL_SET = new Set(
+      VETH2_POOL_TOKENS.map(({ symbol }) => symbol),
     )
     const ALL_POOLS_SET = new Set(ALL_POOLS_TOKENS.map(({ symbol }) => symbol))
     const One = BigNumber.from(10).pow(18)
@@ -129,6 +140,14 @@ function Swap(): ReactElement {
         contract: usdSwapContract,
         virtualPrice: usdPoolData?.virtualPrice || One,
       }
+    } else if (VETH2_POOL_SET.has(activeSymbol)) {
+      return {
+        name: VETH2_POOL_NAME,
+        tokens: VETH2_POOL_TOKENS,
+        tokensSet: VETH2_POOL_SET,
+        contract: veth2SwapContract,
+        virtualPrice: veth2PoolData?.virtualPrice || One,
+      }
     } else {
       return {
         name: "ALL",
@@ -144,8 +163,10 @@ function Swap(): ReactElement {
     ALL_POOLS_TOKENS,
     usdSwapContract,
     btcSwapContract,
+    veth2SwapContract,
     usdPoolData,
     btcPoolData,
+    veth2PoolData,
   ])
   // build a representation of pool tokens for the UI
   const tokenOptions = useMemo(() => {

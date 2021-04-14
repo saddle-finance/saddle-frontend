@@ -23,6 +23,7 @@ import ReviewDeposit from "./ReviewDeposit"
 import SlippageField from "./SlippageField"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
+import { VETH2_POOL_NAME } from "../constants"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
 import { formatBNToPercentString } from "../utils"
@@ -76,8 +77,14 @@ const DepositPage = (props: Props): ReactElement => {
     <div className="deposit">
       <TopMenu activeTab={"deposit"} />
       {poolData?.keepApr.gt(Zero) && myShareData?.lpTokenBalance.gt(0) && (
-        <LPStakingBanner />
+        <LPStakingBanner
+          stakingLink={"https://dashboard.keep.network/liquidity"}
+        />
       )}
+      {poolData?.name === VETH2_POOL_NAME &&
+        myShareData?.lpTokenBalance.gt(0) && (
+          <LPStakingBanner stakingLink={"https://www.sharedstake.org/earn"} />
+        )}
 
       <div className="content">
         <div className="left">

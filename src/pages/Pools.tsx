@@ -1,4 +1,8 @@
-import { BTC_POOL_NAME, STABLECOIN_POOL_NAME } from "../constants"
+import {
+  BTC_POOL_NAME,
+  STABLECOIN_POOL_NAME,
+  VETH2_POOL_NAME,
+} from "../constants"
 import React, { ReactElement } from "react"
 
 import PoolOverview from "../components/PoolOverview"
@@ -14,6 +18,7 @@ function Pools({
 }): ReactElement | null {
   const [btcPoolData, btcUserShareData] = usePoolData(BTC_POOL_NAME)
   const [usdPoolData, usdUserShareData] = usePoolData(STABLECOIN_POOL_NAME)
+  const [veth2PoolData, veth2UserShareData] = usePoolData(VETH2_POOL_NAME)
   const { t } = useTranslation()
 
   return (
@@ -30,6 +35,11 @@ function Pools({
           poolData={usdPoolData}
           to={`/${action}/usd`}
           userShareData={usdUserShareData}
+        />
+        <PoolOverview
+          poolData={veth2PoolData}
+          to={`/${action}/veth2`}
+          userShareData={veth2UserShareData}
         />
       </div>
     </div>

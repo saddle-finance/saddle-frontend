@@ -1,4 +1,12 @@
-import { BLOCK_TIME, DAI, STABLECOIN_POOL_NAME, Token } from "../../constants"
+import {
+  BLOCK_TIME,
+  DAI,
+  STABLECOIN_POOL_NAME,
+  Token,
+  VETH2,
+  VETH2_POOL_NAME,
+  WETH,
+} from "../../constants"
 import {
   BTC_POOL_NAME,
   PoolName,
@@ -52,6 +60,8 @@ export function usePoolTokenBalances(
   const daiTokenBalance = useTokenBalance(DAI)
   const usdcTokenBalance = useTokenBalance(USDC)
   const usdtTokenBalance = useTokenBalance(USDT)
+  const wethTokenBalance = useTokenBalance(WETH)
+  const veth2TokenBalance = useTokenBalance(VETH2)
   const btcPoolTokenBalances = useMemo(
     () => ({
       [TBTC.symbol]: tbtcTokenBalance,
@@ -69,11 +79,20 @@ export function usePoolTokenBalances(
     }),
     [daiTokenBalance, usdcTokenBalance, usdtTokenBalance],
   )
+  const veth2PoolTokenBalances = useMemo(
+    () => ({
+      [WETH.symbol]: wethTokenBalance,
+      [VETH2.symbol]: veth2TokenBalance,
+    }),
+    [wethTokenBalance, veth2TokenBalance],
+  )
 
   if (poolName === BTC_POOL_NAME) {
     return btcPoolTokenBalances
   } else if (poolName === STABLECOIN_POOL_NAME) {
     return stablecoinPoolTokenBalances
+  } else if (poolName === VETH2_POOL_NAME) {
+    return veth2PoolTokenBalances
   }
   return null
 }
