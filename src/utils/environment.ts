@@ -1,4 +1,2 @@
 const PRODUCTION = "production"
-export function isProduction(): boolean {
-  return process.env.NODE_ENV === PRODUCTION
-}
+export const IS_PRODUCTION = process.env.NODE_ENV === PRODUCTION
