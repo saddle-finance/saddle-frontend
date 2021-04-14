@@ -1,8 +1,9 @@
+import { BaseProvider, getDefaultProvider } from "@ethersproject/providers"
+
 import { InjectedConnector } from "@web3-react/injected-connector"
 import { NetworkConnector } from "@web3-react/network-connector"
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
 import { WalletLinkConnector } from "@web3-react/walletlink-connector"
-import { Web3Provider } from "@ethersproject/providers"
 
 const NETWORK_URL = process.env.REACT_APP_NETWORK_URL
 export const NETWORK_CHAIN_ID: number = parseInt(
@@ -19,12 +20,10 @@ export const network = new NetworkConnector({
   urls: { [NETWORK_CHAIN_ID]: NETWORK_URL },
 })
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const { getProvider } = network
-
-let networkLibrary: Web3Provider | undefined
-export function getNetworkLibrary(): Web3Provider {
-  return (networkLibrary = networkLibrary ?? new Web3Provider(getProvider))
+let networkLibrary: BaseProvider | undefined
+export function getNetworkLibrary(): BaseProvider {
+  const provider = getDefaultProvider(NETWORK_URL)
+  return (networkLibrary = networkLibrary ?? provider)
 }
 
 export const injected = new InjectedConnector({
