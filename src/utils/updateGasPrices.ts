@@ -22,7 +22,6 @@ interface GasNowGasResponse {
     standard: number
   }
 }
-// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const fetchGasPricePOA = (): Promise<GenericGasReponse> =>
   fetch("https://gasprice.poa.network/")
     .then((res) => res.json())
@@ -59,11 +58,14 @@ const fetchGasPriceGasNow = (): Promise<GenericGasReponse> =>
 export default async function fetchGasPrices(
   dispatch: AppDispatch,
 ): Promise<void> {
+  const dispatchUpdate = (gasPrices: GenericGasReponse) => {
+    dispatch(updateGasPrices(gasPrices))
+  }
   await retry(
     () =>
-      fetchGasPriceGasNow().then((gasPrices) => {
-        dispatch(updateGasPrices(gasPrices))
-      }),
+      fetchGasPriceGasNow() // try gaspricenow first
+        .then(dispatchUpdate)
+        .catch(() => fetchGasPricePOA().then(dispatchUpdate)), // else fall back to poa before retrying
     {
       retries: 3,
     },
