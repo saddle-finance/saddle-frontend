@@ -1,98 +1,76 @@
 import {
   BLOCK_TIME,
   DAI,
-  STABLECOIN_POOL_NAME,
-  Token,
-  VETH2,
-  VETH2_POOL_NAME,
-  WETH,
-} from "../../constants"
-import {
-  BTC_POOL_NAME,
-  PoolName,
   RENBTC,
   SBTC,
   TBTC,
   USDC,
   USDT,
+  VETH2,
   WBTC,
+  WETH,
 } from "../../constants"
+import { Contract, Provider } from "ethcall"
 
 import { BigNumber } from "@ethersproject/bignumber"
-import { Erc20 } from "../../../types/ethers-contracts/Erc20"
-import { Zero } from "@ethersproject/constants"
+import { Call } from "ethcall/lib/call"
+import ERC20_ABI from "../../constants/abis/erc20.json"
+import { IS_DEVELOPMENT } from "../../utils/environment"
+import { getNetworkLibrary } from "../../connectors"
 import { useActiveWeb3React } from "../../hooks"
-import { useMemo } from "react"
 import usePoller from "../../hooks/usePoller"
 import { useState } from "react"
-import { useTokenContract } from "../../hooks/useContract"
 
-export function useTokenBalance(t: Token): BigNumber {
+export function usePoolTokenBalances(): { [token: string]: BigNumber } | null {
   const { account, chainId } = useActiveWeb3React()
-  const [balance, setBalance] = useState<BigNumber>(Zero)
+  const [balances, setBalances] = useState<{ [token: string]: BigNumber }>({})
 
-  const tokenContract = useTokenContract(t) as Erc20
+  const ethcallProvider = new Provider()
 
   usePoller((): void => {
-    async function pollBalance(): Promise<void> {
-      const newBalance = account
-        ? await tokenContract?.balanceOf(account)
-        : Zero
-      if (newBalance !== balance) {
-        setBalance(newBalance)
+    async function pollBalances(): Promise<void> {
+      if (!chainId) return
+
+      await ethcallProvider.init(getNetworkLibrary())
+      // override the contract address when using hardhat
+      if (IS_DEVELOPMENT) {
+        ethcallProvider.multicallAddress =
+          "0x67d269191c92Caf3cD7723F116c85e6E9bf55933"
       }
+
+      const balanceCalls: Call[] = [
+        new Contract(TBTC.addresses[chainId], ERC20_ABI),
+        new Contract(WBTC.addresses[chainId], ERC20_ABI),
+        new Contract(RENBTC.addresses[chainId], ERC20_ABI),
+        new Contract(SBTC.addresses[chainId], ERC20_ABI),
+        new Contract(DAI.addresses[chainId], ERC20_ABI),
+        new Contract(USDC.addresses[chainId], ERC20_ABI),
+        new Contract(USDT.addresses[chainId], ERC20_ABI),
+        new Contract(WETH.addresses[chainId], ERC20_ABI),
+        new Contract(VETH2.addresses[chainId], ERC20_ABI),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      ].map((c): Call => c.balanceOf(account) as Call)
+      const balances: BigNumber[] = (await ethcallProvider.all(
+        [...balanceCalls],
+        {},
+      )) as BigNumber[]
+
+      setBalances({
+        [TBTC.symbol]: balances[0],
+        [WBTC.symbol]: balances[1],
+        [RENBTC.symbol]: balances[2],
+        [SBTC.symbol]: balances[3],
+        [DAI.symbol]: balances[4],
+        [USDC.symbol]: balances[5],
+        [USDT.symbol]: balances[6],
+        [WETH.symbol]: balances[7],
+        [VETH2.symbol]: balances[8],
+      })
     }
-    if (account && chainId) {
-      void pollBalance()
+    if (account) {
+      void pollBalances()
     }
   }, BLOCK_TIME)
 
-  return balance
-}
-
-export function usePoolTokenBalances(
-  poolName: PoolName,
-): { [token: string]: BigNumber } | null {
-  const tbtcTokenBalance = useTokenBalance(TBTC)
-  const wbtcTokenBalance = useTokenBalance(WBTC)
-  const renbtcTokenBalance = useTokenBalance(RENBTC)
-  const sbtcTokenBalance = useTokenBalance(SBTC)
-  const daiTokenBalance = useTokenBalance(DAI)
-  const usdcTokenBalance = useTokenBalance(USDC)
-  const usdtTokenBalance = useTokenBalance(USDT)
-  const wethTokenBalance = useTokenBalance(WETH)
-  const veth2TokenBalance = useTokenBalance(VETH2)
-  const btcPoolTokenBalances = useMemo(
-    () => ({
-      [TBTC.symbol]: tbtcTokenBalance,
-      [WBTC.symbol]: wbtcTokenBalance,
-      [RENBTC.symbol]: renbtcTokenBalance,
-      [SBTC.symbol]: sbtcTokenBalance,
-    }),
-    [tbtcTokenBalance, wbtcTokenBalance, renbtcTokenBalance, sbtcTokenBalance],
-  )
-  const stablecoinPoolTokenBalances = useMemo(
-    () => ({
-      [DAI.symbol]: daiTokenBalance,
-      [USDC.symbol]: usdcTokenBalance,
-      [USDT.symbol]: usdtTokenBalance,
-    }),
-    [daiTokenBalance, usdcTokenBalance, usdtTokenBalance],
-  )
-  const veth2PoolTokenBalances = useMemo(
-    () => ({
-      [WETH.symbol]: wethTokenBalance,
-      [VETH2.symbol]: veth2TokenBalance,
-    }),
-    [wethTokenBalance, veth2TokenBalance],
-  )
-
-  if (poolName === BTC_POOL_NAME) {
-    return btcPoolTokenBalances
-  } else if (poolName === STABLECOIN_POOL_NAME) {
-    return stablecoinPoolTokenBalances
-  } else if (poolName === VETH2_POOL_NAME) {
-    return veth2PoolTokenBalances
-  }
-  return null
+  return balances
 }
