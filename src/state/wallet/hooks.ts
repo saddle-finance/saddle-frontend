@@ -35,7 +35,7 @@ export function usePoolTokenBalances(): { [token: string]: BigNumber } | null {
       // override the contract address when using hardhat
       if (IS_DEVELOPMENT) {
         ethcallProvider.multicallAddress =
-          "0x67d269191c92Caf3cD7723F116c85e6E9bf55933"
+          "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f"
       }
 
       const balanceCalls: Call[] = [
