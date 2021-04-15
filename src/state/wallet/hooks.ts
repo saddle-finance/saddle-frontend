@@ -51,7 +51,7 @@ export function usePoolTokenBalances(): { [token: string]: BigNumber } | null {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       ].map((c): Call => c.balanceOf(account) as Call)
       const balances: BigNumber[] = (await ethcallProvider.all(
-        [...balanceCalls],
+        balanceCalls,
         {},
       )) as BigNumber[]
 
