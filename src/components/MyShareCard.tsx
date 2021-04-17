@@ -22,9 +22,13 @@ function MyShareCard({ data }: Props): ReactElement | null {
     share: formatBNToPercentString(data.share, 18),
     usdBalance: commify(formatBNToString(data.usdBalance, 18, 2)),
     amount: commify(formatBNToString(data.underlyingTokensAmount, 18, 6)),
-    amountStakedOnKeep: commify(
-      formatBNToString(data.amountStakedOnKeep, 18, 6),
-    ),
+    amountsStaked: Object.keys(data.amountsStaked).reduce((acc, key) => {
+      const value = data.amountsStaked[key as keyof typeof data.amountsStaked]
+      return {
+        ...acc,
+        [key]: commify(formatBNToString(value, 18, 6)),
+      }
+    }, {} as typeof data.amountsStaked),
     tokens: data.tokens.map((coin) => {
       const token = TOKENS_MAP[coin.symbol]
       return {
@@ -51,7 +55,7 @@ function MyShareCard({ data }: Props): ReactElement | null {
         <div className="infoItem">
           <span className="label bold">{`${t("totalAmount")}: `}</span>
           <span className="value">{formattedData.amount}</span>
-          {data.amountStakedOnKeep.gt(Zero) ? (
+          {data.amountsStaked.keep.gt(Zero) ? (
             <span className="value">
               &nbsp;
               <a
@@ -59,7 +63,19 @@ function MyShareCard({ data }: Props): ReactElement | null {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                ({formattedData.amountStakedOnKeep} {t("staked")})
+                ({formattedData.amountsStaked.keep} {t("staked")})
+              </a>
+            </span>
+          ) : null}
+          {data.amountsStaked.sharedStake.gt(Zero) ? (
+            <span className="value">
+              &nbsp;
+              <a
+                href="https://www.sharedstake.org/earn"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                ({formattedData.amountsStaked.sharedStake} {t("staked")})
               </a>
             </span>
           ) : null}
