@@ -90,14 +90,10 @@
     "cy:run": "cypress run",
     "cy:open": "cypress open",
     "postinstall": "typechain --target ethers-v5 'src/constants/abis/*.json' && npm run gen:theme-typings",
-    "gen:theme-typings": "chakra-cli tokens src/theme/index.ts"
+    "gen:theme-typings": "chakra-cli tokens src/theme/index.ts",
+    "prepare": "husky install"
   },
   "homepage": ".",
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint:fix"
-    }
-  },
   "browserslist": {
     "production": [
       ">0.2%",
