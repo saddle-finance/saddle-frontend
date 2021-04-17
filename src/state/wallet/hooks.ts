@@ -1,98 +1,55 @@
-import {
-  BLOCK_TIME,
-  DAI,
-  STABLECOIN_POOL_NAME,
-  Token,
-  VETH2,
-  VETH2_POOL_NAME,
-  WETH,
-} from "../../constants"
-import {
-  BTC_POOL_NAME,
-  PoolName,
-  RENBTC,
-  SBTC,
-  TBTC,
-  USDC,
-  USDT,
-  WBTC,
-} from "../../constants"
+import { BLOCK_TIME, TOKENS_MAP } from "../../constants"
+import { Contract, Provider } from "ethcall"
 
 import { BigNumber } from "@ethersproject/bignumber"
-import { Erc20 } from "../../../types/ethers-contracts/Erc20"
-import { Zero } from "@ethersproject/constants"
+import { Call } from "ethcall/lib/call"
+import ERC20_ABI from "../../constants/abis/erc20.json"
+import { IS_DEVELOPMENT } from "../../utils/environment"
 import { useActiveWeb3React } from "../../hooks"
-import { useMemo } from "react"
 import usePoller from "../../hooks/usePoller"
 import { useState } from "react"
-import { useTokenContract } from "../../hooks/useContract"
 
-export function useTokenBalance(t: Token): BigNumber {
-  const { account, chainId } = useActiveWeb3React()
-  const [balance, setBalance] = useState<BigNumber>(Zero)
+export function usePoolTokenBalances(): { [token: string]: BigNumber } | null {
+  const { account, chainId, library } = useActiveWeb3React()
+  const [balances, setBalances] = useState<{ [token: string]: BigNumber }>({})
 
-  const tokenContract = useTokenContract(t) as Erc20
+  const ethcallProvider = new Provider()
 
   usePoller((): void => {
-    async function pollBalance(): Promise<void> {
-      const newBalance = account
-        ? await tokenContract?.balanceOf(account)
-        : Zero
-      if (newBalance !== balance) {
-        setBalance(newBalance)
+    async function pollBalances(): Promise<void> {
+      if (!library || !chainId) return
+
+      await ethcallProvider.init(library)
+      // override the contract address when using hardhat
+      if (IS_DEVELOPMENT) {
+        ethcallProvider.multicallAddress =
+          "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f"
       }
+
+      const tokens = Object.values(TOKENS_MAP)
+      const balanceCalls = tokens
+        .map((t) => new Contract(t.addresses[chainId], ERC20_ABI))
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        .map((c): Call => c.balanceOf(account) as Call)
+      const balances = (await ethcallProvider.all(
+        balanceCalls,
+        {},
+      )) as BigNumber[]
+
+      setBalances(
+        tokens.reduce(
+          (acc, t, i) => ({
+            ...acc,
+            [t.symbol]: balances[i],
+          }),
+          {},
+        ),
+      )
     }
-    if (account && chainId) {
-      void pollBalance()
+    if (account) {
+      void pollBalances()
     }
   }, BLOCK_TIME)
 
-  return balance
-}
-
-export function usePoolTokenBalances(
-  poolName: PoolName,
-): { [token: string]: BigNumber } | null {
-  const tbtcTokenBalance = useTokenBalance(TBTC)
-  const wbtcTokenBalance = useTokenBalance(WBTC)
-  const renbtcTokenBalance = useTokenBalance(RENBTC)
-  const sbtcTokenBalance = useTokenBalance(SBTC)
-  const daiTokenBalance = useTokenBalance(DAI)
-  const usdcTokenBalance = useTokenBalance(USDC)
-  const usdtTokenBalance = useTokenBalance(USDT)
-  const wethTokenBalance = useTokenBalance(WETH)
-  const veth2TokenBalance = useTokenBalance(VETH2)
-  const btcPoolTokenBalances = useMemo(
-    () => ({
-      [TBTC.symbol]: tbtcTokenBalance,
-      [WBTC.symbol]: wbtcTokenBalance,
-      [RENBTC.symbol]: renbtcTokenBalance,
-      [SBTC.symbol]: sbtcTokenBalance,
-    }),
-    [tbtcTokenBalance, wbtcTokenBalance, renbtcTokenBalance, sbtcTokenBalance],
-  )
-  const stablecoinPoolTokenBalances = useMemo(
-    () => ({
-      [DAI.symbol]: daiTokenBalance,
-      [USDC.symbol]: usdcTokenBalance,
-      [USDT.symbol]: usdtTokenBalance,
-    }),
-    [daiTokenBalance, usdcTokenBalance, usdtTokenBalance],
-  )
-  const veth2PoolTokenBalances = useMemo(
-    () => ({
-      [WETH.symbol]: wethTokenBalance,
-      [VETH2.symbol]: veth2TokenBalance,
-    }),
-    [wethTokenBalance, veth2TokenBalance],
-  )
-
-  if (poolName === BTC_POOL_NAME) {
-    return btcPoolTokenBalances
-  } else if (poolName === STABLECOIN_POOL_NAME) {
-    return stablecoinPoolTokenBalances
-  } else if (poolName === VETH2_POOL_NAME) {
-    return veth2PoolTokenBalances
-  }
-  return null
+  return balances
 }
