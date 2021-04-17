@@ -33,7 +33,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
   const [tokenFormState, updateTokenFormState] = useTokenFormState(
     POOL.poolTokens,
   )
-  const tokenBalances = usePoolTokenBalances(poolName)
+  const tokenBalances = usePoolTokenBalances()
   const { tokenPricesUSD, gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )

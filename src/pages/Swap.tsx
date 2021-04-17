@@ -57,9 +57,7 @@ function Swap(): ReactElement {
   const [btcPoolData] = usePoolData(BTC_POOL_NAME)
   const [usdPoolData] = usePoolData(STABLECOIN_POOL_NAME)
   const [veth2PoolData] = usePoolData(VETH2_POOL_NAME)
-  const btcTokenBalances = usePoolTokenBalances(BTC_POOL_NAME)
-  const usdTokenBalances = usePoolTokenBalances(STABLECOIN_POOL_NAME)
-  const veth2TokenBalances = usePoolTokenBalances(VETH2_POOL_NAME)
+  const tokenBalances = usePoolTokenBalances()
   const btcSwapContract = useSwapContract(BTC_POOL_NAME)
   const usdSwapContract = useSwapContract(STABLECOIN_POOL_NAME)
   const veth2SwapContract = useSwapContract(VETH2_POOL_NAME)
@@ -101,13 +99,6 @@ function Swap(): ReactElement {
     priceImpact: Zero,
     exchangeRate: Zero,
   })
-  const tokenBalances = useMemo(() => {
-    return {
-      ...(btcTokenBalances || {}),
-      ...(usdTokenBalances || {}),
-      ...(veth2TokenBalances || {}),
-    }
-  }, [btcTokenBalances, usdTokenBalances, veth2TokenBalances])
   const activePool = useMemo(() => {
     const BTC_POOL_SET = new Set(BTC_POOL_TOKENS.map(({ symbol }) => symbol))
     const USD_POOL_SET = new Set(
