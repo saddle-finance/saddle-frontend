@@ -4,19 +4,20 @@ import {
   POOLS_MAP,
   PoolName,
   TRANSACTION_TYPES,
+  VETH2_POOL_NAME,
 } from "../constants"
 import { formatBNToPercentString, getContract } from "../utils"
 import { useEffect, useState } from "react"
 
 import { AppState } from "../state"
+import BALANCE_OF_ABI from "../constants/abis/simpleBalanceOf.json"
 import { BigNumber } from "@ethersproject/bignumber"
 import { IS_PRODUCTION } from "../utils/environment"
-import KEEP_LP_REWARDS_ABI from "../constants/abis/keepLPRewards.json"
-import { KeepLPRewards } from "../../types/ethers-contracts/KeepLPRewards"
 import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
+import { SimpleBalanceOf } from "../../types/ethers-contracts/SimpleBalanceOf"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import { useSelector } from "react-redux"
@@ -51,7 +52,7 @@ export interface UserShareType {
   tokens: TokenShareType[]
   usdBalance: BigNumber
   underlyingTokensAmount: BigNumber
-  amountStakedOnKeep: BigNumber
+  amountsStaked: Record<"keep" | "sharedStake", BigNumber>
 }
 
 export type PoolDataHookReturnType = [PoolDataType, UserShareType | null]
@@ -133,14 +134,27 @@ export default function usePoolData(
         IS_PRODUCTION && poolName === BTC_POOL_NAME
           ? (getContract(
               "0x78aa83bd6c9de5de0a2231366900ab060a482edd",
-              KEEP_LP_REWARDS_ABI,
+              BALANCE_OF_ABI,
               library,
               account ?? undefined,
-            ) as KeepLPRewards)
+            ) as SimpleBalanceOf)
           : { balanceOf: () => Promise.resolve(Zero) }
       const lpTokenAmountStakedOnKeep =
         poolName === BTC_POOL_NAME && account != null
           ? await keepLPRewardsContract.balanceOf(account)
+          : Zero
+      const sharedStakeLPRewardsContract =
+        IS_PRODUCTION && poolName === VETH2_POOL_NAME
+          ? (getContract(
+              "0xcf91812631e37c01c443a4fa02dfb59ee2ddba7c",
+              BALANCE_OF_ABI,
+              library,
+              account ?? undefined,
+            ) as SimpleBalanceOf)
+          : { balanceOf: () => Promise.resolve(Zero) }
+      const lpTokenAmountStakedOnSharedStake =
+        poolName === VETH2_POOL_NAME && account != null
+          ? await sharedStakeLPRewardsContract.balanceOf(account)
           : Zero
 
       const [userLpTokenBalance, totalLpTokenBalance] = await Promise.all([
@@ -209,20 +223,35 @@ export default function usePoolData(
       }
       // User share data
       let userShare = calculatePctOfTotalShare(userLpTokenBalance)
-      const userTokensAmountStakedOnKeep = calculatePctOfTotalShare(
+      const percentOfAllLPTokensUserStakedInKeep = calculatePctOfTotalShare(
         lpTokenAmountStakedOnKeep,
       )
-      userShare = userShare.add(userTokensAmountStakedOnKeep)
+      const percentOfAllLPTokensUserStakedInSharedStake = calculatePctOfTotalShare(
+        lpTokenAmountStakedOnSharedStake,
+      )
+      // lpToken balance in wallet as a % of total lpTokens, plus lpTokens staked elsewhere
+      userShare = userShare
+        .add(percentOfAllLPTokensUserStakedInKeep)
+        .add(percentOfAllLPTokensUserStakedInSharedStake)
       const userPoolTokenBalances = tokenBalances.map((balance) => {
         return userShare.mul(balance).div(BigNumber.from(10).pow(18))
       })
-      const userStakedPoolTokenBalancesSum = tokenBalances
-        .map((balance) => {
-          return userTokensAmountStakedOnKeep
-            .mul(balance)
-            .div(BigNumber.from(10).pow(18))
-        })
-        .reduce((sum, b) => sum.add(b))
+      // sum the amount of tokens represented by user's lpTokens staked elsewhere
+      const amountsStaked = tokenBalances.reduce(
+        (acc, balance) => {
+          const [balanceAmountInKeep, balanceAmountInSharedStake] = [
+            percentOfAllLPTokensUserStakedInKeep,
+            percentOfAllLPTokensUserStakedInSharedStake,
+          ].map((percentStaked) => {
+            return percentStaked.mul(balance).div(BigNumber.from(10).pow(18))
+          })
+          return {
+            keep: acc.keep.add(balanceAmountInKeep),
+            sharedStake: acc.sharedStake.add(balanceAmountInSharedStake),
+          }
+        },
+        { keep: Zero, sharedStake: Zero },
+      )
       const userPoolTokenBalancesSum: BigNumber = userPoolTokenBalances.reduce(
         (sum, b) => sum.add(b),
       )
@@ -284,7 +313,7 @@ export default function usePoolData(
             tokens: userPoolTokens,
             currentWithdrawFee: userCurrentWithdrawFee,
             lpTokenBalance: userLpTokenBalance,
-            amountStakedOnKeep: userStakedPoolTokenBalancesSum, // this is # of underlying tokens (eg btc), not lpTokens
+            amountsStaked, // this is # of underlying tokens (eg btc), not lpTokens
           }
         : null
       setPoolData([poolData, userShareData])
