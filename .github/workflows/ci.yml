@@ -73,6 +73,7 @@ jobs:
     services:
       saddle-contract:
         image: alphast0rm/saddle-contract:v1
+        ports: 8545:8545
 
     steps:
     - uses: actions/checkout@v2
@@ -86,7 +87,6 @@ jobs:
       with:
         node-version: '12'
     - run: npm ci
-    - run: npm run build --if-present
     - run: npm run cy:coverage
     - run: npx nyc report --reporter=text
     - uses: codecov/codecov-action@v1
