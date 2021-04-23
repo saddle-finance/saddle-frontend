@@ -48,6 +48,8 @@
   "devDependencies": {
     "@babel/core": "^7.12.3",
     "@chakra-ui/cli": "^1.2.1",
+    "@cypress/code-coverage": "^3.9.4",
+    "@cypress/instrument-cra": "^1.4.0",
     "@ethersproject/experimental": "^5.0.9",
     "@storybook/addon-actions": "^6.0.28",
     "@storybook/addon-essentials": "^6.1.21",
@@ -75,13 +77,14 @@
     "react-is": "^17.0.1",
     "redux-devtools-extension": "^2.13.8",
     "sass": "^1.32.5",
+    "start-server-and-test": "^1.12.1",
     "typechain": "^4.0.3",
     "typescript-plugin-css-modules": "^3.2.0"
   },
   "scripts": {
     "lint": "eslint --max-warnings=0 --ext ts,tsx src/ && prettier --list-different 'src/**/*.{ts,tsx,scss}'",
     "lint:fix": "eslint --max-warnings=0 --ext ts,tsx --fix src/ && prettier --write 'src/**/*.{ts,tsx,scss}'",
-    "start": "react-scripts start",
+    "start": "react-scripts -r @cypress/instrument-cra start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
@@ -89,6 +92,7 @@
     "build-storybook": "build-storybook -s public --no-dll",
     "cy:run": "cypress run",
     "cy:open": "cypress open",
+    "cy:coverage": "start-test 3000 cy:run",
     "postinstall": "typechain --target ethers-v5 'src/constants/abis/*.json' && npm run gen:theme-typings",
     "gen:theme-typings": "chakra-cli tokens src/theme/index.ts",
     "prepare": "husky install"
