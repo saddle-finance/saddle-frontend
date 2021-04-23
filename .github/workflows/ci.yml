@@ -73,7 +73,8 @@ jobs:
     services:
       saddle-contract:
         image: alphast0rm/saddle-contract:v1
-        ports: 8545:8545
+        ports:
+          - 8545:8545
 
     steps:
     - uses: actions/checkout@v2
