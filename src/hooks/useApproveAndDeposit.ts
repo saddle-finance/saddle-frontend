@@ -11,6 +11,7 @@ import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { GasPrices } from "../state/user"
+import { IS_PRODUCTION } from "../utils/environment"
 import { NumberInputState } from "../utils/numberInputState"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
@@ -99,9 +100,15 @@ export function useApproveAndDeposit(
     }
     try {
       // For each token being deposited, check the allowance and approve it if necessary
-      await Promise.all(
-        POOL.poolTokens.map((token) => approveSingleToken(token)),
-      )
+      if (!IS_PRODUCTION) {
+        for (const token of POOL.poolTokens) {
+          await approveSingleToken(token)
+        }
+      } else {
+        await Promise.all(
+          POOL.poolTokens.map((token) => approveSingleToken(token)),
+        )
+      }
 
       // "isFirstTransaction" check can be removed after launch
       const poolTokenBalances: BigNumber[] = await Promise.all(
