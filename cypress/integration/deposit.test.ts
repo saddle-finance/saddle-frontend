@@ -21,6 +21,7 @@ context("Deposit Flow", () => {
       // TODO: assert review data
       // click "confirm" to initiate the actual transactions
       cy.get("button").contains("Confirm Deposit").click()
+      cy.wait(7000)
       // const tokenNames = ["tBTC", "WBTC", "renBTC", "sBTC"]
       // tokenNames.forEach((tokenName) => {
       //   cy.get(".toast")
@@ -28,6 +29,7 @@ context("Deposit Flow", () => {
       //     .should("exist")
       // })
       cy.get("div.toast")
+        .last()
         .contains("giddyup", { timeout: 10000 })
         .should("exist")
     })
