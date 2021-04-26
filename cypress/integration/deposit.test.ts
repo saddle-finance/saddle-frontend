@@ -1,7 +1,6 @@
 context("Deposit Flow", () => {
   beforeEach(() => {
     const host = Cypress.env("DAPP_HOST") as string
-    console.log(host)
     cy.visit(`${host}#/deposit`)
     cy.wait(3000)
   })
