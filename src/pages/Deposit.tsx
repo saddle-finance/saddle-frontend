@@ -153,7 +153,6 @@ function Deposit({ poolName }: Props): ReactElement | null {
       tokens={tokens}
       exceedsWallet={exceedsWallet}
       poolData={poolData}
-      historicalPoolData={null}
       myShareData={userShareData}
       transactionData={depositTransaction}
     />

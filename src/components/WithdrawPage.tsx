@@ -11,10 +11,8 @@ import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
 import DeadlineField from "./DeadlineField"
 import GasField from "./GasField"
-import { HistoricalPoolDataType } from "../hooks/useHistoricalPoolData"
 import InfiniteApprovalField from "./InfiniteApprovalField"
 import Modal from "./Modal"
-import MyActivityCard from "./MyActivityCard"
 import MyShareCard from "./MyShareCard"
 import NoShareContent from "./NoShareContent"
 import { PayloadAction } from "@reduxjs/toolkit"
@@ -63,7 +61,6 @@ interface Props {
   reviewData: ReviewWithdrawData
   selected?: { [key: string]: any }
   poolData: PoolDataType | null
-  historicalPoolData: HistoricalPoolDataType | null
   myShareData: UserShareType | null
   formStateData: WithdrawFormState
   onFormChange: (action: any) => void
@@ -76,7 +73,6 @@ const WithdrawPage = (props: Props): ReactElement => {
   const {
     tokensData,
     poolData,
-    historicalPoolData,
     myShareData,
     onFormChange,
     formStateData,
@@ -256,13 +252,6 @@ const WithdrawPage = (props: Props): ReactElement => {
             <div
               style={{
                 display: myShareData ? "block" : "none",
-              }}
-              className="divider"
-            ></div>{" "}
-            <MyActivityCard historicalPoolData={historicalPoolData} />
-            <div
-              style={{
-                display: historicalPoolData ? "block" : "none",
               }}
               className="divider"
             ></div>{" "}
