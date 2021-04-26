@@ -283,17 +283,6 @@ export const TRANSACTION_TYPES = {
 
 export const POOL_FEE_PRECISION = 10
 
-export const DEPLOYED_BLOCK: { [chainId in ChainId]: number } = {
-  [ChainId.MAINNET]: 11656944,
-  [ChainId.HARDHAT]: 0,
-}
-
-export const POOL_STATS_URL: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: "https://ipfs.saddle.exchange/pool-stats.json",
-  [ChainId.HARDHAT]:
-    "https://mehmeta-team-bucket.storage.fleek.co/pool-stats-dev.json",
-}
-
 export const SWAP_CONTRACT_GAS_ESTIMATES_MAP = {
   swap: BigNumber.from("200000"), // 157807
   addLiquidity: BigNumber.from("400000"), // 386555
