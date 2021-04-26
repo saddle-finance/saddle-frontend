@@ -14,8 +14,9 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import "cypress-react-selector"
 import "./commands"
+import "cypress-react-selector"
+import "@cypress/code-coverage/support"
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
