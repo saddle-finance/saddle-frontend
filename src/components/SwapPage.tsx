@@ -14,6 +14,7 @@ import GasField from "./GasField"
 import InfiniteApprovalField from "./InfiniteApprovalField"
 import Modal from "./Modal"
 import { PayloadAction } from "@reduxjs/toolkit"
+import { PendingSwap } from "../hooks/usePendingSwapData"
 import ReviewSwap from "./ReviewSwap"
 import SlippageField from "./SlippageField"
 import SwapInput from "./SwapInput"
@@ -46,6 +47,7 @@ interface Props {
   error: string | null
   fromState: { symbol: string; value: string; valueUSD: BigNumber }
   toState: { symbol: string; value: string; valueUSD: BigNumber }
+  pendingSwapData: PendingSwap[]
   onChangeFromToken: (tokenSymbol: string) => void
   onChangeFromAmount: (amount: string) => void
   onChangeToToken: (tokenSymbol: string) => void

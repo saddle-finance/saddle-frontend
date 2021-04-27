@@ -31,6 +31,7 @@ import { debounce } from "lodash"
 import { formatGasToString } from "../utils/gas"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndSwap } from "../hooks/useApproveAndSwap"
+import usePendingSwapData from "../hooks/usePendingSwapData"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
@@ -91,6 +92,7 @@ function Swap(): ReactElement {
   const tokenBalances = usePoolTokenBalances()
   const bridgeContract = useBridgeContract()
   const calculateSwapPairs = useCalculateSwapPairs()
+  const pendingSwapData = usePendingSwapData()
   const { tokenPricesUSD, gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -526,6 +528,7 @@ function Swap(): ReactElement {
 
   return (
     <SwapPage
+      pendingSwapData={pendingSwapData}
       tokenOptions={tokenOptions}
       exchangeRateInfo={{
         pair: `${formState.from.symbol}/${formState.to.symbol}`,
