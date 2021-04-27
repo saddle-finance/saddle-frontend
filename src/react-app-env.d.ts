@@ -10,6 +10,11 @@ declare module "*.png" {
   export default src
 }
 
+declare module "*.gif" {
+  const src: string
+  export default src
+}
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Window {
   ethereum?: {
