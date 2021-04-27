@@ -1,6 +1,7 @@
 import "./ConfirmTransaction.scss"
 
 import React, { ReactElement } from "react"
+import loadingGif from "../assets/loading.gif"
 import { useTranslation } from "react-i18next"
 
 function ConfirmTransaction(): ReactElement {
@@ -24,17 +25,8 @@ function ConfirmTransaction(): ReactElement {
           fill="#none"
         />
       </svg>
-
-      <h3>
-        {t("confirmTransaction")
-          .split("\n")
-          .map((line, key) => (
-            <span key={key}>
-              {line}
-              <br />
-            </span>
-          ))}
-      </h3>
+      <h3>{t("confirmTransaction")}</h3>
+      <img src={loadingGif} alt="loading..." className="loadingGif" />
     </div>
   )
 }
