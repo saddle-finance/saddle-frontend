@@ -1,6 +1,7 @@
 import { AddressZero, Zero } from "@ethersproject/constants"
 import {
   BTC_POOL_NAME,
+  ChainId,
   POOLS_MAP,
   PoolName,
   TRANSACTION_TYPES,
@@ -12,7 +13,6 @@ import { useEffect, useState } from "react"
 import { AppState } from "../state"
 import BALANCE_OF_ABI from "../constants/abis/simpleBalanceOf.json"
 import { BigNumber } from "@ethersproject/bignumber"
-import { IS_PRODUCTION } from "../utils/environment"
 import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
@@ -75,7 +75,7 @@ const emptyPoolData = {
 export default function usePoolData(
   poolName: PoolName,
 ): PoolDataHookReturnType {
-  const { account, library } = useActiveWeb3React()
+  const { account, library, chainId } = useActiveWeb3React()
   const swapContract = useSwapContract(poolName)
   const { tokenPricesUSD, lastTransactionTimes } = useSelector(
     (state: AppState) => state.application,
@@ -131,7 +131,7 @@ export default function usePoolData(
         ) as LpTokenUnguarded
       }
       const keepLPRewardsContract =
-        IS_PRODUCTION && poolName === BTC_POOL_NAME
+        chainId === ChainId.MAINNET && poolName === BTC_POOL_NAME
           ? (getContract(
               "0x78aa83bd6c9de5de0a2231366900ab060a482edd",
               BALANCE_OF_ABI,
@@ -144,7 +144,7 @@ export default function usePoolData(
           ? await keepLPRewardsContract.balanceOf(account)
           : Zero
       const sharedStakeLPRewardsContract =
-        IS_PRODUCTION && poolName === VETH2_POOL_NAME
+        chainId === ChainId.MAINNET && poolName === VETH2_POOL_NAME
           ? (getContract(
               "0xcf91812631e37c01c443a4fa02dfb59ee2ddba7c",
               BALANCE_OF_ABI,
@@ -328,6 +328,7 @@ export default function usePoolData(
     tokenPricesUSD,
     account,
     library,
+    chainId,
     POOL.poolTokens,
   ])
 
