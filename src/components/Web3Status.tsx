@@ -1,14 +1,12 @@
 import "./Web3Status.scss"
 
 import React, { ReactElement, useState } from "react"
-
+import AccountDetails from "./AccountDetails"
 import ConnectWallet from "./ConnectWallet"
 import Identicon from "./Identicon"
 import Modal from "./Modal"
 import { useTranslation } from "react-i18next"
 import { useWeb3React } from "@web3-react/core"
-
-// Todo: Link profile image to real account image
 
 const Web3Status = (): ReactElement => {
   const { account } = useWeb3React()
@@ -20,7 +18,7 @@ const Web3Status = (): ReactElement => {
       <button type="button" onClick={(): void => setModalOpen(true)}>
         {account ? (
           <div className="hasAccount">
-            <span>
+            <span className="address">
               {account.substring(0, 6)}...
               {account.substring(account.length - 4, account.length)}
             </span>
@@ -32,7 +30,11 @@ const Web3Status = (): ReactElement => {
         )}
       </button>
       <Modal isOpen={modalOpen} onClose={(): void => setModalOpen(false)}>
-        <ConnectWallet onClose={(): void => setModalOpen(false)} />
+        {account ? (
+          <AccountDetails />
+        ) : (
+          <ConnectWallet onClose={(): void => setModalOpen(false)} />
+        )}
       </Modal>
     </div>
   )
