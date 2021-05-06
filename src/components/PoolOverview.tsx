@@ -58,6 +58,11 @@ function PoolOverview({
           </div>
 
           <div className="right">
+            <div className="Apy">
+              <span className="label">APY</span>
+              <span>0</span>
+              {/* <span>{formattedData.apy}</span> */}
+            </div>
             {poolData?.keepApr.gt(Zero) && (
               <div className="Apr">
                 <span className="label">KEEP APR</span>
@@ -71,9 +76,14 @@ function PoolOverview({
                 </span>
               </div>
             )}
-            <div className="volume">
+            <div className="reserves">
               <span className="label">{t("currencyReserves")}</span>
               <span>{formattedData.reserve}</span>
+            </div>
+            <div className="volume">
+              <span className="label">24H Volume</span>
+              {/* <span>{formattedData.24HrVolume}</span> */}
+              <span>0</span>
             </div>
           </div>
         </div>
