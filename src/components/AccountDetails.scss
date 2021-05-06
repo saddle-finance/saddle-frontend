@@ -27,12 +27,13 @@ div.accountControl {
   grid-row: 3/4;
   font-weight: $bold;
 }
-.accountControl > button {
+.buttonGroup {
   grid-row: 5/6;
 }
 .textStyle {
   color: var(--text-primary);
   font-weight: $medium;
+  outline: none;
 }
 span.address {
   margin-left: 8px;

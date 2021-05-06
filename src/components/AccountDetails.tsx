@@ -1,11 +1,15 @@
 import "./AccountDetails.scss"
 
 import React, { ReactElement } from "react"
+import Copy from "./Copy"
 import Identicon from "./Identicon"
+import link from "../assets/icons/link.svg"
+import { useActiveWeb3React } from "../hooks"
 import { useTranslation } from "react-i18next"
 
 export default function AccountDetail(): ReactElement {
   const { t } = useTranslation()
+  const { account } = useActiveWeb3React()
 
   return (
     <div className="accountDetail">
@@ -17,10 +21,19 @@ export default function AccountDetail(): ReactElement {
           <div className="data">
             <Identicon />
             <span className="address">0x1234...abcd</span>
+            <img src={link} />
           </div>
           <span className="data">0.123456&#926;</span>
-          <button className="textStyle">Copy Address</button>
-          <button className="textStyle">Change Account</button>
+          <div className="buttonGroup">
+            {account && (
+              <Copy toCopy={account}>
+                <span className="textStyle">Copy Address</span>
+              </Copy>
+            )}
+          </div>
+          <div className="buttonGroup">
+            <button className="textStyle">Change Account</button>
+          </div>
         </div>
       </div>
 
