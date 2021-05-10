@@ -138,12 +138,13 @@ function getTradingPairsForToken(
       const middleSynth = destinationPool.poolTokens.find(
         ({ isSynthetic }) => isSynthetic,
       )
-      if (!middleSynth) return swapData
-      swapData = {
-        type: SWAP_TYPES.SYNTH_TO_TOKEN,
-        from: buildSwapSideData(originToken, originPool),
-        to: buildSwapSideData(token, destinationPool),
-        route: [originToken.symbol, middleSynth.symbol, token.symbol],
+      if (middleSynth) {
+        swapData = {
+          type: SWAP_TYPES.SYNTH_TO_TOKEN,
+          from: buildSwapSideData(originToken, originPool),
+          to: buildSwapSideData(token, destinationPool),
+          route: [originToken.symbol, middleSynth.symbol, token.symbol],
+        }
       }
     }
 
