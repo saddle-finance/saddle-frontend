@@ -1,23 +1,37 @@
 import "./AccountDetails.scss"
 
 import React, { ReactElement } from "react"
+import { commify, formatBNToString } from "../utils"
 import Copy from "./Copy"
 import Identicon from "./Identicon"
+import { SUPPORTED_WALLETS } from "../constants"
+import { Zero } from "@ethersproject/constants"
 import { getEtherscanLink } from "../utils/getEtherscanLink"
 import { shortenAddress } from "../utils/shortenAddress"
 import { useActiveWeb3React } from "../hooks"
+import { usePoolTokenBalances } from "../state/wallet/hooks"
 import { useTranslation } from "react-i18next"
 
 export default function AccountDetail(): ReactElement {
   const { t } = useTranslation()
-  const { account } = useActiveWeb3React()
+  const { account, connector } = useActiveWeb3React()
+  const tokenBalances = usePoolTokenBalances()
+  const ethBalanceFormatted = commify(
+    formatBNToString(tokenBalances?.ETH || Zero, 18, 6),
+  )
+
+  const connectorName = Object.keys(SUPPORTED_WALLETS)
+    .filter((k) => SUPPORTED_WALLETS[k].connector === connector)
+    .map((k) => SUPPORTED_WALLETS[k].name)[0]
+
+  console.log(connectorName)
 
   return (
     <div className="accountDetail">
       <div className="upperSection">
         <h3 className="accountTitle">{t("account")}</h3>
         <div className="accountControl">
-          <span className="label">Connected with Metamask</span>
+          <span className="label">Connected with {connectorName}</span>
           <span className="label">Balance</span>
           <div className="data">
             <Identicon />
@@ -42,7 +56,7 @@ export default function AccountDetail(): ReactElement {
               </a>
             )}
           </div>
-          <span className="data">0.123456&#926;</span>
+          <span className="data">{ethBalanceFormatted}&#926;</span>
           <div className="buttonGroup">
             {account && (
               <Copy toCopy={account}>

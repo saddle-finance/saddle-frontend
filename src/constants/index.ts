@@ -1,3 +1,5 @@
+import { injected, walletconnect, walletlink } from "../connectors"
+import { AbstractConnector } from "@web3-react/abstract-connector"
 import { BigNumber } from "@ethersproject/bignumber"
 import daiLogo from "../assets/icons/dai.svg"
 import renbtcLogo from "../assets/icons/renbtc.svg"
@@ -288,4 +290,24 @@ export const SWAP_CONTRACT_GAS_ESTIMATES_MAP = {
   addLiquidity: BigNumber.from("400000"), // 386555
   removeLiquidityImbalance: BigNumber.from("350000"), // 318231
   removeLiquidityOneToken: BigNumber.from("250000"), // 232947
+}
+
+export interface WalletInfo {
+  connector?: AbstractConnector
+  name: string
+}
+
+export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
+  METAMASK: {
+    connector: injected,
+    name: "MetaMask",
+  },
+  WALLET_CONNECT: {
+    connector: walletconnect,
+    name: "WalletConnect",
+  },
+  WALLET_LINK: {
+    connector: walletlink,
+    name: "Coinbase Wallet",
+  },
 }

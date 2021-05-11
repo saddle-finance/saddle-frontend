@@ -37,13 +37,14 @@ export function usePoolTokenBalances(): { [token: string]: BigNumber } | null {
         .map((c) => c.balanceOf(account))
       const balances = await ethcallProvider.all(balanceCalls, {})
 
+      const ethBalance = await library.getBalance(account)
       setBalances(
         tokens.reduce(
           (acc, t, i) => ({
             ...acc,
             [t.symbol]: balances[i],
           }),
-          {},
+          { ETH: ethBalance },
         ),
       )
     }
