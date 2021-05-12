@@ -18,6 +18,7 @@ export default function CopyHelper(props: {
             viewBox="0 0 16 16"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            className="buttonGroupIcon"
           >
             <path d="M13.4063 4L12.7 4.7125C10.7532 6.66354 8.67606 8.87808 6.73125 10.8563L4.04375 8.64376L3.26875 8.00625L2 9.55L2.76875 10.1875L6.16875 12.9875L6.875 13.5687L7.5125 12.925C9.6663 10.7666 11.9996 8.24244 14.1125 6.125L14.8188 5.4125L13.4063 4V4Z" />
           </svg>
