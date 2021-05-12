@@ -1,7 +1,15 @@
-import { calculateExchangeRate, commify } from "../index"
+import { calculateExchangeRate, commify, intersection } from "../index"
 
 import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
+
+describe("intersection", () => {
+  it("correctly intersects two sets", () => {
+    const setA = new Set([1, 2, 3, 4])
+    const setB = new Set([3, 4, 5, 6])
+    expect(intersection(setA, setB)).toEqual(new Set([3, 4]))
+  })
+})
 
 describe("calculateExchangeRate", () => {
   it("correctly calculates value for 0 input", () => {
