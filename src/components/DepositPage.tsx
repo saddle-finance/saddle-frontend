@@ -72,7 +72,7 @@ const DepositPage = (props: Props): ReactElement => {
   return (
     <div className="deposit">
       <TopMenu activeTab={"deposit"} />
-      {poolData?.keepApr.gt(Zero) && myShareData?.lpTokenBalance.gt(0) && (
+      {poolData?.aprs?.keep.gt(Zero) && myShareData?.lpTokenBalance.gt(0) && (
         <LPStakingBanner
           stakingLink={"https://dashboard.keep.network/liquidity"}
         />
@@ -106,7 +106,7 @@ const DepositPage = (props: Props): ReactElement => {
             ))}
             <div className={classNames("transactionInfoContainer", "show")}>
               <div className="transactionInfo">
-                {poolData?.keepApr.gt(Zero) && (
+                {poolData?.aprs?.keep.gt(Zero) && (
                   <div className="transactionInfoItem">
                     <a
                       href="https://docs.saddle.finance/faq#what-are-saddles-liquidity-provider-rewards"
@@ -116,7 +116,21 @@ const DepositPage = (props: Props): ReactElement => {
                       <span>{`KEEP APR:`}</span>
                     </a>{" "}
                     <span className="value">
-                      {formatBNToPercentString(poolData.keepApr, 18)}
+                      {formatBNToPercentString(poolData.aprs.keep, 18)}
+                    </span>
+                  </div>
+                )}
+                {poolData?.aprs?.sharedStake.gt(Zero) && (
+                  <div className="transactionInfoItem">
+                    <a
+                      href="https://docs.saddle.finance/faq#what-are-saddles-liquidity-provider-rewards"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span>{`SGT APR:`}</span>
+                    </a>{" "}
+                    <span className="value">
+                      {formatBNToPercentString(poolData.aprs.sharedStake, 18)}
                     </span>
                   </div>
                 )}

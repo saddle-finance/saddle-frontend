@@ -1,6 +1,16 @@
-import { BTC_POOL_TOKENS, STABLECOIN_POOL_TOKENS } from "../constants"
+import {
+  BTC_POOL_TOKENS,
+  STABLECOIN_POOL_TOKENS,
+  VETH2_SWAP_ADDRESSES,
+} from "../constants"
+import { formatUnits, parseUnits } from "@ethersproject/units"
 
 import { AppDispatch } from "../state"
+import { BigNumber } from "@ethersproject/bignumber"
+import SWAP_ABI from "../constants/abis/swapFlashLoan.json"
+import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
+import { Web3Provider } from "@ethersproject/providers"
+import { getContract } from "./index"
 import retry from "async-retry"
 import { updateTokensPricesUSD } from "../state/application"
 
@@ -11,12 +21,25 @@ interface CoinGeckoReponse {
     usd: number
   }
 }
+const otherTokens = {
+  ETH: "ethereum",
+  WETH: "ethereum",
+  VETH2: "ethereum", // TODO: pull vETH2 price once it's added to coingecko
+  BTC: "bitcoin",
+  KEEP: "keep-network",
+  SGT: "sharedstake-governance-token",
+}
 
-export default function fetchTokenPricesUSD(dispatch: AppDispatch): void {
+export default function fetchTokenPricesUSD(
+  dispatch: AppDispatch,
+  library?: Web3Provider,
+): void {
   const tokens = BTC_POOL_TOKENS.concat(STABLECOIN_POOL_TOKENS)
-  const tokenIds = tokens
-    .map(({ geckoId }) => geckoId)
-    .concat(["ethereum", "bitcoin", "keep-network"])
+  const tokenIds = Array.from(
+    new Set(
+      tokens.map(({ geckoId }) => geckoId).concat(Object.values(otherTokens)),
+    ),
+  )
   void retry(
     () =>
       fetch(`${coinGeckoAPI}?ids=${encodeURIComponent(
@@ -24,22 +47,50 @@ export default function fetchTokenPricesUSD(dispatch: AppDispatch): void {
       )}&vs_currencies=usd
     `)
         .then((res) => res.json())
-        .then((body: CoinGeckoReponse) => {
-          const result = tokens.reduce(
-            (acc, token) => {
-              return { ...acc, [token.symbol]: body?.[token.geckoId]?.usd }
+        .then(async (body: CoinGeckoReponse) => {
+          const otherTokensResult = Object.keys(otherTokens).reduce(
+            (acc, key) => {
+              return {
+                ...acc,
+                [key]: body?.[otherTokens[key as keyof typeof otherTokens]].usd,
+              }
             },
-            {
-              ETH: body?.ethereum?.usd,
-              BTC: body?.bitcoin?.usd,
-              KEEP: body?.["keep-network"].usd,
-              WETH: body?.ethereum?.usd,
-              // TODO: pull vETH2 price once it's added to coingecko
-              VETH2: body?.ethereum?.usd,
-            },
+            {} as { [symbol: string]: number },
           )
+          const result = tokens.reduce((acc, token) => {
+            return { ...acc, [token.symbol]: body?.[token.geckoId]?.usd }
+          }, otherTokensResult)
+          const vEth2Price = await getVeth2Price(result?.ETH, library)
+          if (vEth2Price) {
+            result.VETH2 = vEth2Price
+          }
           dispatch(updateTokensPricesUSD(result))
         }),
     { retries: 3 },
   )
+}
+
+async function getVeth2Price(
+  etherPrice: number,
+  library?: Web3Provider,
+): Promise<number> {
+  if (!etherPrice || !library) return 0
+  try {
+    const swapContract = getContract(
+      VETH2_SWAP_ADDRESSES[1],
+      SWAP_ABI,
+      library,
+    ) as SwapFlashLoan
+    const veth2ToEthRate = await swapContract.calculateSwap(
+      1,
+      0,
+      BigNumber.from(10).pow(18),
+    )
+    const eth = parseUnits(etherPrice.toString(), 18)
+    const vEth2Price = parseFloat(formatUnits(veth2ToEthRate.mul(eth), 36))
+    return vEth2Price
+  } catch (e) {
+    console.error(e)
+    return etherPrice
+  }
 }
