@@ -20,9 +20,9 @@ export class MulticallProvider extends Provider {
   /**
    *  TODO: TS can't infer tuple types
    *  so this huge type supports either arrays of calls with the same return type (eg BigNumber[])
-   *  Or a tuple of up to 4 ditinct calls *as const* (meaning you can use map or push)
+   *  Or a tuple of up to 4 distinct calls *as const* (meaning you can use map or push)
    *  eg `const calls = [getNum(), getStr(), getBN()] as const; await p.all(calls)`
-   *  Want do build a larger tuple of calls? Just add more to this definition.
+   *  Want to build a larger tuple of calls? Just add more to this definition.
    *  */
   all<A extends MulticallCall>(
     calls: readonly [A],
