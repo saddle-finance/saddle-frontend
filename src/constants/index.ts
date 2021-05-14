@@ -37,6 +37,7 @@ export class Token {
   readonly name: string
   readonly icon: string
   readonly geckoId: string
+  readonly isSynthetic: boolean
 
   constructor(
     addresses: { [chainId in ChainId]: string },
@@ -45,6 +46,7 @@ export class Token {
     geckoId: string,
     name: string,
     icon: string,
+    isSynthetic = false,
   ) {
     this.addresses = addresses
     this.decimals = decimals
@@ -52,6 +54,7 @@ export class Token {
     this.geckoId = geckoId
     this.name = name
     this.icon = icon
+    this.isSynthetic = isSynthetic
   }
 }
 
@@ -218,6 +221,7 @@ export const SBTC = new Token(
   "sbtc",
   "sBTC",
   sbtcLogo,
+  true,
 )
 
 export const BTC_POOL_TOKENS = [TBTC, WBTC, RENBTC, SBTC]
@@ -250,32 +254,65 @@ export const VETH2 = new Token(
 
 export const VETH2_POOL_TOKENS = [WETH, VETH2]
 
-// maps a symbol string to a token object
-export const TOKENS_MAP: {
-  [symbol: string]: Token
-} = STABLECOIN_POOL_TOKENS.concat(BTC_POOL_TOKENS)
-  .concat(VETH2_POOL_TOKENS)
-  .reduce((acc, token) => ({ ...acc, [token.symbol]: token }), {})
-
-export const POOLS_MAP: {
-  [poolName in PoolName]: {
-    lpToken: Token
-    poolTokens: Token[]
-  }
-} = {
+export type Pool = {
+  name: string
+  lpToken: Token
+  poolTokens: Token[]
+  isSynthetic: boolean
+}
+export type PoolsMap = {
+  [poolName: string]: Pool
+}
+export const POOLS_MAP: PoolsMap = {
   [BTC_POOL_NAME]: {
+    name: BTC_POOL_NAME,
     lpToken: BTC_SWAP_TOKEN,
     poolTokens: BTC_POOL_TOKENS,
+    isSynthetic: true,
   },
   [STABLECOIN_POOL_NAME]: {
+    name: STABLECOIN_POOL_NAME,
     lpToken: STABLECOIN_SWAP_TOKEN,
     poolTokens: STABLECOIN_POOL_TOKENS,
+    isSynthetic: false,
   },
   [VETH2_POOL_NAME]: {
+    name: VETH2_POOL_NAME,
     lpToken: VETH2_SWAP_TOKEN,
     poolTokens: VETH2_POOL_TOKENS,
+    isSynthetic: false,
   },
 }
+
+// maps a symbol string to a token object
+export type TokensMap = {
+  [symbol: string]: Token
+}
+export const TOKENS_MAP = Object.keys(POOLS_MAP).reduce((acc, poolName) => {
+  const pool = POOLS_MAP[poolName as PoolName]
+  const newAcc = { ...acc }
+  pool.poolTokens.forEach((token) => {
+    newAcc[token.symbol] = token
+  })
+  return newAcc
+}, {} as TokensMap)
+
+export type TokenToPoolsMap = {
+  [tokenSymbol: string]: string[]
+}
+export const TOKEN_TO_POOLS_MAP = Object.keys(POOLS_MAP).reduce(
+  (acc, poolName) => {
+    const pool = POOLS_MAP[poolName as PoolName]
+    const newAcc = { ...acc }
+    pool.poolTokens.forEach((token) => {
+      newAcc[token.symbol] = (newAcc[token.symbol] || []).concat(
+        poolName as PoolName,
+      )
+    })
+    return newAcc
+  },
+  {} as TokenToPoolsMap,
+)
 
 export const TRANSACTION_TYPES = {
   DEPOSIT: "DEPOSIT",
@@ -310,4 +347,13 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     connector: walletlink,
     name: "Coinbase Wallet",
   },
+}
+
+export enum SWAP_TYPES {
+  DIRECT, // route length 2
+  SYNTH_TO_SYNTH, // route length 2
+  SYNTH_TO_TOKEN, // route length 3
+  TOKEN_TO_SYNTH, // route length 3
+  TOKEN_TO_TOKEN, // route length 4
+  INVALID,
 }
