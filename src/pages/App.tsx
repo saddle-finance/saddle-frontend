@@ -19,83 +19,92 @@ import Web3ReactManager from "../components/Web3ReactManager"
 import Withdraw from "./Withdraw"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
+import { useActiveWeb3React } from "../hooks"
 import { useDispatch } from "react-redux"
 import usePoller from "../hooks/usePoller"
 
 export default function App(): ReactElement {
+  return (
+    <Suspense fallback={null}>
+      <Web3ReactManager>
+        <GasAndTokenPrices>
+          <ToastsProvider>
+            <Switch>
+              <Route exact path="/" component={Swap} />
+              <Route
+                exact
+                path="/deposit"
+                render={(props) => <Pools {...props} action="deposit" />}
+              />
+              <Route
+                exact
+                path="/deposit/usd"
+                render={(props) => (
+                  <Deposit {...props} poolName={STABLECOIN_POOL_NAME} />
+                )}
+              />
+              <Route
+                exact
+                path="/deposit/btc"
+                render={(props) => (
+                  <Deposit {...props} poolName={BTC_POOL_NAME} />
+                )}
+              />
+              <Route
+                exact
+                path="/deposit/veth2"
+                render={(props) => (
+                  <Deposit {...props} poolName={VETH2_POOL_NAME} />
+                )}
+              />
+              <Route
+                exact
+                path="/withdraw"
+                render={(props) => <Pools {...props} action="withdraw" />}
+              />
+              <Route
+                exact
+                path="/withdraw/btc"
+                render={(props) => (
+                  <Withdraw {...props} poolName={BTC_POOL_NAME} />
+                )}
+              />
+              <Route
+                exact
+                path="/withdraw/usd"
+                render={(props) => (
+                  <Withdraw {...props} poolName={STABLECOIN_POOL_NAME} />
+                )}
+              />
+              <Route
+                exact
+                path="/withdraw/veth2"
+                render={(props) => (
+                  <Withdraw {...props} poolName={VETH2_POOL_NAME} />
+                )}
+              />
+              <Route exact path="/risk" component={Risk} />
+            </Switch>
+          </ToastsProvider>
+        </GasAndTokenPrices>
+      </Web3ReactManager>
+    </Suspense>
+  )
+}
+
+function GasAndTokenPrices({
+  children,
+}: React.PropsWithChildren<unknown>): ReactElement {
   const dispatch = useDispatch<AppDispatch>()
+  const { library } = useActiveWeb3React()
 
   const fetchAndUpdateGasPrice = useCallback(() => {
     void fetchGasPrices(dispatch)
   }, [dispatch])
   const fetchAndUpdateTokensPrice = useCallback(() => {
-    fetchTokenPricesUSD(dispatch)
-  }, [dispatch])
+    fetchTokenPricesUSD(dispatch, library)
+  }, [dispatch, library])
   usePoller(fetchAndUpdateGasPrice, BLOCK_TIME)
   usePoller(fetchAndUpdateTokensPrice, BLOCK_TIME * 3)
-
-  return (
-    <Suspense fallback={null}>
-      <Web3ReactManager>
-        <ToastsProvider>
-          <Switch>
-            <Route exact path="/" component={Swap} />
-            <Route
-              exact
-              path="/deposit"
-              render={(props) => <Pools {...props} action="deposit" />}
-            />
-            <Route
-              exact
-              path="/deposit/usd"
-              render={(props) => (
-                <Deposit {...props} poolName={STABLECOIN_POOL_NAME} />
-              )}
-            />
-            <Route
-              exact
-              path="/deposit/btc"
-              render={(props) => (
-                <Deposit {...props} poolName={BTC_POOL_NAME} />
-              )}
-            />
-            <Route
-              exact
-              path="/deposit/veth2"
-              render={(props) => (
-                <Deposit {...props} poolName={VETH2_POOL_NAME} />
-              )}
-            />
-            <Route
-              exact
-              path="/withdraw"
-              render={(props) => <Pools {...props} action="withdraw" />}
-            />
-            <Route
-              exact
-              path="/withdraw/btc"
-              render={(props) => (
-                <Withdraw {...props} poolName={BTC_POOL_NAME} />
-              )}
-            />
-            <Route
-              exact
-              path="/withdraw/usd"
-              render={(props) => (
-                <Withdraw {...props} poolName={STABLECOIN_POOL_NAME} />
-              )}
-            />
-            <Route
-              exact
-              path="/withdraw/veth2"
-              render={(props) => (
-                <Withdraw {...props} poolName={VETH2_POOL_NAME} />
-              )}
-            />
-            <Route exact path="/risk" component={Risk} />
-          </Switch>
-        </ToastsProvider>
-      </Web3ReactManager>
-    </Suspense>
-  )
+  return <>{children}</>
 }
