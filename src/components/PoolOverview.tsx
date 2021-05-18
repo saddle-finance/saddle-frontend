@@ -26,7 +26,10 @@ function PoolOverview({
   const formattedData = {
     name: poolData.name,
     reserve: `$${commify(formatBNToString(poolData.reserve, 18, 2))}`,
-    apr: formatBNToPercentString(poolData.keepApr, 18),
+    aprs: {
+      keep: formatBNToPercentString(poolData.aprs.keep, 18),
+      sharedStake: formatBNToPercentString(poolData.aprs.sharedStake, 18),
+    },
     userBalanceUSD: `$${commify(
       formatBNToString(userShareData?.usdBalance || Zero, 18, 2),
     )}`,
@@ -58,16 +61,29 @@ function PoolOverview({
           </div>
 
           <div className="right">
-            {poolData?.keepApr.gt(Zero) && (
+            {poolData?.aprs.keep.gt(Zero) && (
               <div className="Apr">
                 <span className="label">KEEP APR</span>
                 <span
                   className={
-                    classNames({ plus: formattedData.apr }) +
-                    classNames({ minus: !formattedData.apr })
+                    classNames({ plus: formattedData.aprs.keep }) +
+                    classNames({ minus: !formattedData.aprs.keep })
                   }
                 >
-                  {formattedData.apr}
+                  {formattedData.aprs.keep}
+                </span>
+              </div>
+            )}
+            {poolData?.aprs.sharedStake.gt(Zero) && (
+              <div className="Apr">
+                <span className="label">SGT APR</span>
+                <span
+                  className={
+                    classNames({ plus: formattedData.aprs.sharedStake }) +
+                    classNames({ minus: !formattedData.aprs.sharedStake })
+                  }
+                >
+                  {formattedData.aprs.sharedStake}
                 </span>
               </div>
             )}
