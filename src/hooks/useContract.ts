@@ -1,4 +1,5 @@
 import {
+  BRIDGE_CONTRACT_ADDRESSES,
   BTC_POOL_NAME,
   BTC_SWAP_ADDRESSES,
   BTC_SWAP_TOKEN,
@@ -22,6 +23,8 @@ import {
 } from "../constants"
 import { useMemo, useState } from "react"
 
+import BRIDGE_CONTRACT_ABI from "../constants/abis/bridge.json"
+import { Bridge } from "../../types/ethers-contracts/Bridge"
 import { Contract } from "@ethersproject/contracts"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
@@ -58,6 +61,14 @@ function useContract(
       return null
     }
   }, [address, ABI, library, withSignerIfPossible, account])
+}
+
+export function useBridgeContract(): Bridge | null {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress = chainId
+    ? BRIDGE_CONTRACT_ADDRESSES[chainId]
+    : undefined
+  return useContract(contractAddress, BRIDGE_CONTRACT_ABI) as Bridge
 }
 
 export function useTokenContract(
