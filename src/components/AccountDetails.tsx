@@ -5,6 +5,7 @@ import { commify, formatBNToString } from "../utils"
 import Copy from "./Copy"
 import Identicon from "./Identicon"
 import { SUPPORTED_WALLETS } from "../constants"
+import Transactions from "./Transactions"
 import { Zero } from "@ethersproject/constants"
 import { getEtherscanLink } from "../utils/getEtherscanLink"
 import { shortenAddress } from "../utils/shortenAddress"
@@ -27,8 +28,6 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
   const connectorName = Object.keys(SUPPORTED_WALLETS)
     .filter((k) => SUPPORTED_WALLETS[k].connector === connector)
     .map((k) => SUPPORTED_WALLETS[k].name)[0]
-
-  console.log(connectorName)
 
   return (
     <div className="accountDetail">
@@ -105,6 +104,7 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
           <button className="textStyle clear">Clear</button>
         </div>
         <span>Your pending transactions will be here.</span>
+        {account ? <Transactions account={account} /> : null}
       </div>
     </div>
   )
