@@ -106,7 +106,7 @@ const SwapPage = (props: Props): ReactElement => {
       <div className="content">
         <div className="swapForm">
           <div className="row">
-            <h3>{t("from")}</h3>
+            <h3 className="swapTitle">{t("from")}</h3>
             <div className="balanceContainer">
               <span>{t("balance")}:</span>
               &nbsp;
@@ -139,7 +139,7 @@ const SwapPage = (props: Props): ReactElement => {
           </div>
           <div style={{ height: "48px" }}></div>
           <div className="row">
-            <h3>{t("to")}</h3>
+            <h3 className="swapTitle">{t("to")}</h3>
           </div>
           <div className="row">
             <SwapInput

@@ -40,6 +40,7 @@ ul {
   --primary-foreground: #000;
   --primary-background: #fff;
   --background: #ffffe9;
+  --background-lightgrey: #dfdde3;
   --background-element: rgba(255, 255, 244, 0.6);
   --background-element-hover: rgba(255, 255, 255, 0.88);
   --background-main: #ffffe9 url("../assets/bg_light.svg") center/auto 60%
@@ -54,6 +55,7 @@ ul {
   --text-lighter: #686868;
   --text-lightest: #a5a5a5;
   --text-title: #{text-black};
+  --text-primary: #{$primary-blue};
   --text-selected: #{$primary-blue};
   --header-text: #1f2023;
   --sign-graph: #000;
@@ -67,6 +69,7 @@ body.dark {
   --primary-foreground: #fff;
   --primary-background: #000;
   --background: #000;
+  --background-lightgrey: #{$black80};
   --background-element: rgba(0, 0, 0, 0.56);
   --background-element-hover: rgba(0, 0, 0, 0.8);
   --background-main: #000 url("../assets/bg.svg") center/auto 60% no-repeat
@@ -81,6 +84,7 @@ body.dark {
   --text-lighter: #bbbbbb;
   --text-lightest: #888888;
   --text-title: #ffffe9;
+  --text-primary: #{$primary};
   --text-selected: #{$primary};
   --header-text: #{$primary};
   --sign-graph: #{$primary-blue};

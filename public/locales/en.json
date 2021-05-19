@@ -1,4 +1,5 @@
 {
+  "account": "Account",
   "addLiquidity": "Add Liquidity",
   "adminFee": "Admin fee",
   "adminKeys": "Admin keys",
@@ -9,13 +10,17 @@
   "balance": "Balance",
   "bonus": "Bonus",
   "cancel": "Cancel",
+  "changeAccount": "Change Account",
   "chooseToken": "Choose Token",
+  "clear": "Clear",
   "combinationOfAll": "Combination of all",
   "confirmDeposit": "Confirm Deposit",
   "confirmSwap": "Confirm Swap",
   "confirmTransaction": "Confirm this transaction in your wallet",
   "confirmWithdraw": "Confirm Withdraw",
   "connectWallet": "Connect Wallet",
+  "connectedWith": "Connected with",
+  "copyAddress": "Copy Address",
   "currencyReserves": "Currency reserves",
   "dailyVolume": "Daily volume",
   "deadline": "Txn Deadline",
@@ -64,6 +69,7 @@
   "rate": "Rate",
   "rates": "Rates",
   "receiving": "Receiving",
+  "recentTransactions": "Recent Transactions",
   "reviewDeposit": "Review Deposit",
   "reviewSwap": "Review Swap",
   "risk": "Risk",
@@ -98,5 +104,6 @@
   "withdrawal": "Withdrawal",
   "withdrawPercentage": "Withdraw percentage",
   "yes": "Yes",
-  "youWillReceive": "You will receive"
+  "youWillReceive": "You will receive",
+  "yourRecentTransactions": "Your recent transactions will be here."
 }

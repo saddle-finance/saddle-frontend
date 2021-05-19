@@ -22,7 +22,8 @@ div.walletStatus {
     }
   }
   .hasAccount {
-    span {
+    span.address {
+      margin-right: 8px;
       @include breakpoint(md) {
         display: none;
       }

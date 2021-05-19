@@ -1,0 +1,71 @@
+@import "../styles/theme";
+
+div.upperSection {
+  background: var(--primary-background);
+  padding: 16px 24px 24px 24px;
+}
+
+div.lowerSection {
+  background: var(--background-lightgrey);
+  padding: 24px;
+  min-height: 136px;
+}
+
+h3.accountTitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+div.accountControl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 8px auto 24px auto;
+  align-items: center;
+  justify-items: start;
+}
+.data {
+  grid-row: 3/4;
+  font-weight: $bold;
+}
+.buttonGroup {
+  grid-row: 5/6;
+}
+.textStyle {
+  color: var(--text-primary);
+  font-weight: $medium;
+  outline: none;
+}
+span.address {
+  margin-left: 8px;
+  margin-right: 4px;
+}
+span.label {
+  font-size: $smallFont;
+  color: var(--text-lighter);
+}
+
+div.titleRow {
+  margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+}
+
+h4.txn {
+  font-family: $font-family;
+  display: inline-block;
+}
+button.clear {
+  font-size: $smallFont;
+  justify-self: end;
+}
+
+div.accountDetail {
+  svg {
+    fill: var(--text-primary);
+  }
+}
+
+.buttonGroupIcon {
+  margin-right: 4px;
+}
