@@ -58,6 +58,11 @@ export class Token {
 
 export const BLOCK_TIME = 15000
 
+export const BRIDGE_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "",
+  [ChainId.HARDHAT]: "0xf5059a5D33d5853360D16C683c16e67980206f36",
+}
+
 export const STABLECOIN_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0x3911F80530595fBd01Ab1516Ab61255d75AEb066",
   [ChainId.HARDHAT]: "0xCafac3dD18aC6c6e92c921884f9E4176737C052c",
