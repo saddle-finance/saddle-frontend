@@ -9,7 +9,6 @@ const StyledIdenticonContainer = styled.div`
   width: 24px;
   border-radius: 1.125rem;
   display: inline-block;
-  margin-left: 8px;
   vertical-align: text-bottom;
 `
 

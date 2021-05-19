@@ -1,5 +1,9 @@
+import { injected, walletconnect, walletlink } from "../connectors"
+import { AbstractConnector } from "@web3-react/abstract-connector"
 import { BigNumber } from "@ethersproject/bignumber"
+import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
 import daiLogo from "../assets/icons/dai.svg"
+import metamaskIcon from "../assets/icons/metamask.svg"
 import renbtcLogo from "../assets/icons/renbtc.svg"
 import saddleLogo from "../assets/icons/logo.svg"
 import sbtcLogo from "../assets/icons/sbtc.svg"
@@ -7,6 +11,7 @@ import tbtcLogo from "../assets/icons/tbtc.svg"
 import usdcLogo from "../assets/icons/usdc.svg"
 import usdtLogo from "../assets/icons/usdt.svg"
 import veth2Logo from "../assets/icons/veth2.svg"
+import walletconnectIcon from "../assets/icons/walletconnect.svg"
 import wbtcLogo from "../assets/icons/wbtc.svg"
 import wethLogo from "../assets/icons/weth.svg"
 
@@ -325,6 +330,30 @@ export const SWAP_CONTRACT_GAS_ESTIMATES_MAP = {
   addLiquidity: BigNumber.from("400000"), // 386555
   removeLiquidityImbalance: BigNumber.from("350000"), // 318231
   removeLiquidityOneToken: BigNumber.from("250000"), // 232947
+}
+
+export interface WalletInfo {
+  name: string
+  icon: string
+  connector: AbstractConnector
+}
+
+export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
+  METAMASK: {
+    name: "MetaMask",
+    icon: metamaskIcon,
+    connector: injected,
+  },
+  WALLET_CONNECT: {
+    name: "WalletConnect",
+    icon: walletconnectIcon,
+    connector: walletconnect,
+  },
+  WALLET_LINK: {
+    name: "Coinbase Wallet",
+    icon: coinbasewalletIcon,
+    connector: walletlink,
+  },
 }
 
 export enum SWAP_TYPES {
