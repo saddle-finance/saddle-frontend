@@ -1,7 +1,9 @@
 import { injected, walletconnect, walletlink } from "../connectors"
 import { AbstractConnector } from "@web3-react/abstract-connector"
 import { BigNumber } from "@ethersproject/bignumber"
+import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
 import daiLogo from "../assets/icons/dai.svg"
+import metamaskIcon from "../assets/icons/metamask.svg"
 import renbtcLogo from "../assets/icons/renbtc.svg"
 import saddleLogo from "../assets/icons/logo.svg"
 import sbtcLogo from "../assets/icons/sbtc.svg"
@@ -9,6 +11,7 @@ import tbtcLogo from "../assets/icons/tbtc.svg"
 import usdcLogo from "../assets/icons/usdc.svg"
 import usdtLogo from "../assets/icons/usdt.svg"
 import veth2Logo from "../assets/icons/veth2.svg"
+import walletconnectIcon from "../assets/icons/walletconnect.svg"
 import wbtcLogo from "../assets/icons/wbtc.svg"
 import wethLogo from "../assets/icons/weth.svg"
 
@@ -59,6 +62,11 @@ export class Token {
 }
 
 export const BLOCK_TIME = 15000
+
+export const BRIDGE_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "",
+  [ChainId.HARDHAT]: "0xf5059a5D33d5853360D16C683c16e67980206f36",
+}
 
 export const STABLECOIN_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0x3911F80530595fBd01Ab1516Ab61255d75AEb066",
@@ -334,22 +342,26 @@ export const SWAP_CONTRACT_GAS_ESTIMATES_MAP = {
 }
 
 export interface WalletInfo {
-  connector?: AbstractConnector
   name: string
+  icon: string
+  connector: AbstractConnector
 }
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   METAMASK: {
-    connector: injected,
     name: "MetaMask",
+    icon: metamaskIcon,
+    connector: injected,
   },
   WALLET_CONNECT: {
-    connector: walletconnect,
     name: "WalletConnect",
+    icon: walletconnectIcon,
+    connector: walletconnect,
   },
   WALLET_LINK: {
-    connector: walletlink,
     name: "Coinbase Wallet",
+    icon: coinbasewalletIcon,
+    connector: walletlink,
   },
 }
 

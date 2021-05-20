@@ -7,6 +7,8 @@ import {
   TRANSACTION_TYPES,
   VETH2_POOL_NAME,
 } from "../constants"
+import { Contract, Provider } from "ethcall"
+import { MulticallContract, MulticallProvider } from "../types/ethcall"
 import { formatBNToPercentString, getContract } from "../utils"
 import { useEffect, useState } from "react"
 
@@ -17,7 +19,10 @@ import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
+import SGT_REWARDS_ABI from "../constants/abis/sharedStakeStakingRewards.json"
+import { SharedStakeStakingRewards } from "../../types/ethers-contracts/SharedStakeStakingRewards"
 import { SimpleBalanceOf } from "../../types/ethers-contracts/SimpleBalanceOf"
+import { Web3Provider } from "@ethersproject/providers"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import { useSelector } from "react-redux"
@@ -40,7 +45,10 @@ export interface PoolDataType {
   utilization: string // TODO: calculate
   virtualPrice: BigNumber
   volume: string // TODO: calculate
-  keepApr: BigNumber
+  aprs: {
+    keep: BigNumber
+    sharedStake: BigNumber
+  }
   lpTokenPriceUSD: BigNumber
 }
 
@@ -68,7 +76,10 @@ const emptyPoolData = {
   utilization: "",
   virtualPrice: Zero,
   volume: "",
-  keepApr: Zero,
+  aprs: {
+    keep: Zero,
+    sharedStake: Zero,
+  },
   lpTokenPriceUSD: Zero,
 } as PoolDataType
 
@@ -147,13 +158,15 @@ export default function usePoolData(
         chainId === ChainId.MAINNET && poolName === VETH2_POOL_NAME
           ? (getContract(
               "0xcf91812631e37c01c443a4fa02dfb59ee2ddba7c",
-              BALANCE_OF_ABI,
+              SGT_REWARDS_ABI,
               library,
               account ?? undefined,
-            ) as SimpleBalanceOf)
-          : { balanceOf: () => Promise.resolve(Zero) }
+            ) as SharedStakeStakingRewards)
+          : null
       const lpTokenAmountStakedOnSharedStake =
-        poolName === VETH2_POOL_NAME && account != null
+        poolName === VETH2_POOL_NAME &&
+        account != null &&
+        sharedStakeLPRewardsContract != null
           ? await sharedStakeLPRewardsContract.balanceOf(account)
           : Zero
 
@@ -210,6 +223,15 @@ export default function usePoolData(
       const keepApr = totalLpTokenBalance.isZero()
         ? keepAPRNumerator
         : keepAPRNumerator.div(keepAPRDenominator)
+      const sgtApr =
+        poolName === VETH2_POOL_NAME
+          ? await getSgtApr(
+              library,
+              tokenBalancesUSDSum,
+              chainId,
+              tokenPricesUSD.SGT,
+            )
+          : Zero
 
       function calculatePctOfTotalShare(lpTokenAmount: BigNumber): BigNumber {
         // returns the % of total lpTokens
@@ -301,7 +323,10 @@ export default function usePoolData(
         volume: "XXX", // TODO
         utilization: "XXX", // TODO
         apy: "XXX", // TODO
-        keepApr: poolName === BTC_POOL_NAME ? keepApr : Zero,
+        aprs: {
+          keep: poolName === BTC_POOL_NAME ? keepApr : Zero,
+          sharedStake: poolName === VETH2_POOL_NAME ? sgtApr : Zero,
+        },
         lpTokenPriceUSD,
       }
       const userShareData = account
@@ -333,4 +358,51 @@ export default function usePoolData(
   ])
 
   return poolData
+}
+
+async function getSgtApr(
+  library: Web3Provider,
+  tvlUsd: BigNumber,
+  chainId?: ChainId,
+  sgtPrice = 0,
+): Promise<BigNumber> {
+  // https://github.com/SharedStake/SharedStake-ui/blob/main/src/components/Earn/geyser.vue#L336
+  if (library == null || tvlUsd.eq(Zero) || chainId != 1) return Zero
+  const ethcallProvider = new Provider() as MulticallProvider
+  await ethcallProvider.init(library)
+  // override the contract address when using hardhat
+  if (chainId == ChainId.HARDHAT) {
+    ethcallProvider.multicallAddress =
+      "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f"
+  }
+  const rewardsContract = new Contract(
+    "0xcf91812631e37c01c443a4fa02dfb59ee2ddba7c", // prod address
+    SGT_REWARDS_ABI,
+  ) as MulticallContract<SharedStakeStakingRewards>
+  const multicalls = [
+    rewardsContract.periodFinish(), // 1e0 timestamp in seconds
+    rewardsContract.rewardsDuration(), // 1e0 seconds
+    rewardsContract.getRewardForDuration(), // 1e18
+  ]
+  const [
+    until,
+    rewardsDuration,
+    sgtRewardsPerPeriod,
+  ] = await ethcallProvider.all(multicalls, {})
+
+  const now = BigNumber.from(Math.floor(Date.now() / 1000))
+  const remainingDays = until.sub(now).div(60 * 60 * 24) // 1e0
+  const rewardsDurationDays = rewardsDuration.div(60 * 60 * 24) // 1e0
+  const remainingRewards = remainingDays.mul(
+    sgtRewardsPerPeriod.div(rewardsDurationDays),
+  ) // 1e18
+
+  const remainingRewardsValueUSD = parseUnits(sgtPrice.toFixed(2), 4).mul(
+    remainingRewards,
+  ) // 1e22
+  const annualCoefficient = BigNumber.from(365)
+    .mul(BigNumber.from(10).pow(18))
+    .div(remainingDays) // 1e18
+  const pctYieldForPool = remainingRewardsValueUSD.div(tvlUsd) // 1e4
+  return pctYieldForPool.mul(annualCoefficient).div(BigNumber.from(10).pow(4)) // 1e18
 }

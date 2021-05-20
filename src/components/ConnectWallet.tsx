@@ -2,31 +2,10 @@ import "./ConnectWallet.scss"
 
 import React, { ReactElement } from "react"
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
-import { injected, walletconnect, walletlink } from "../connectors"
-
-import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
+import { SUPPORTED_WALLETS } from "../constants"
 import { logEvent } from "../utils/googleAnalytics"
-import metamaskIcon from "../assets/icons/metamask.svg"
+import { map } from "lodash"
 import { useTranslation } from "react-i18next"
-import walletconnectIcon from "../assets/icons/walletconnect.svg"
-
-const wallets = [
-  {
-    name: "MetaMask",
-    icon: metamaskIcon,
-    connector: injected,
-  },
-  {
-    name: "Wallet Connect",
-    icon: walletconnectIcon,
-    connector: walletconnect,
-  },
-  {
-    name: "Coinbase Wallet",
-    icon: coinbasewalletIcon,
-    connector: walletlink,
-  },
-]
 
 interface Props {
   onClose: () => void
@@ -40,7 +19,7 @@ function ConnectWallet({ onClose }: Props): ReactElement {
     <div className="connectWallet">
       <h3>{t("connectWallet")}</h3>
       <div className="walletList">
-        {wallets.map((wallet, index) => (
+        {map(SUPPORTED_WALLETS, (wallet, index) => (
           <button
             key={index}
             onClick={(): void => {

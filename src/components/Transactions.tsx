@@ -202,7 +202,7 @@ export default function Transactions({ account }: Props): ReactElement {
         <div key={index} className="transactionItem">
           <span className="transactionObject">{txn.object}</span>
           <a
-            href={getEtherscanLink(txn.transaction, "transaction")}
+            href={getEtherscanLink(txn.transaction, "tx")}
             target="_blank"
             rel="noreferrer"
             className="transactionLink"

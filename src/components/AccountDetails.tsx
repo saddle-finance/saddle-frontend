@@ -7,6 +7,7 @@ import Identicon from "./Identicon"
 import { SUPPORTED_WALLETS } from "../constants"
 import Transactions from "./Transactions"
 import { Zero } from "@ethersproject/constants"
+import { find } from "lodash"
 import { getEtherscanLink } from "../utils/getEtherscanLink"
 import { shortenAddress } from "../utils/shortenAddress"
 import { useActiveWeb3React } from "../hooks"
@@ -25,17 +26,18 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
     formatBNToString(tokenBalances?.ETH || Zero, 18, 6),
   )
 
-  const connectorName = Object.keys(SUPPORTED_WALLETS)
-    .filter((k) => SUPPORTED_WALLETS[k].connector === connector)
-    .map((k) => SUPPORTED_WALLETS[k].name)[0]
+  const connectorName = find(SUPPORTED_WALLETS, ["connector", connector])?.name
 
   return (
     <div className="accountDetail">
       <div className="upperSection">
         <h3 className="accountTitle">{t("account")}</h3>
         <div className="accountControl">
-          <span className="label">Connected with {connectorName}</span>
-          <span className="label">Balance</span>
+          <span className="label">
+            {t("connectedWith")}&nbsp;
+            {connectorName}
+          </span>
+          <span className="label">{t("balance")}</span>
           <div className="data">
             <Identicon />
             <span className="address">
@@ -47,6 +49,7 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
                 target="_blank"
                 rel="noreferrer"
               >
+                {/* link icon */}
                 <svg
                   width="16"
                   height="16"
@@ -63,7 +66,7 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
           <div className="buttonGroup">
             {account && (
               <Copy toCopy={account}>
-                <span className="textStyle">Copy Address</span>
+                <span className="textStyle">{t("copyAddress")}</span>
               </Copy>
             )}
           </div>
@@ -74,7 +77,7 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
                 openOptions()
               }}
             >
-              {/* Change Icon */}
+              {/* change Icon */}
               <svg
                 width="16"
                 height="16"
@@ -92,7 +95,7 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
                   </clipPath>
                 </defs>
               </svg>
-              Change Account
+              {t("changeAccount")}
             </button>
           </div>
         </div>
@@ -100,10 +103,10 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
 
       <div className="lowerSection">
         <div className="titleRow">
-          <h4 className="txn">Pending Transactions</h4>
-          <button className="textStyle clear">Clear</button>
+          <h4 className="txn">{t("recentTransactions")}</h4>
+          <button className="textStyle clear">{t("clear")}</button>
         </div>
-        {/* <span>Your pending transactions will be here.</span> */}
+        <span>{t("yourRecentTransactions")}</span>
         {account ? <Transactions account={account} /> : null}
       </div>
     </div>
