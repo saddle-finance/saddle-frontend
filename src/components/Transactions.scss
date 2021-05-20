@@ -1,0 +1,26 @@
+div.transactionList {
+  display: grid;
+  grid-template-rows: auto;
+  row-gap: 16px;
+
+  span {
+    font-size: 12px;
+  }
+}
+
+div.transactionItem {
+  display: grid;
+  grid-template-columns: max-content 8px 16px auto;
+  align-items: center;
+
+  .object {
+    grid-column: 1/2;
+  }
+  .transactionLink {
+    grid-column: 3/4;
+  }
+  .transactionTime {
+    grid-column: 4/5;
+    justify-self: end;
+  }
+}

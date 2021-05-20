@@ -103,7 +103,7 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
           <h4 className="txn">Pending Transactions</h4>
           <button className="textStyle clear">Clear</button>
         </div>
-        <span>Your pending transactions will be here.</span>
+        {/* <span>Your pending transactions will be here.</span> */}
         {account ? <Transactions account={account} /> : null}
       </div>
     </div>

@@ -256,6 +256,7 @@ export const VETH2_POOL_TOKENS = [WETH, VETH2]
 
 export type Pool = {
   name: string
+  addresses: { [key: number]: string }
   lpToken: Token
   poolTokens: Token[]
   isSynthetic: boolean
@@ -266,18 +267,21 @@ export type PoolsMap = {
 export const POOLS_MAP: PoolsMap = {
   [BTC_POOL_NAME]: {
     name: BTC_POOL_NAME,
+    addresses: BTC_SWAP_ADDRESSES,
     lpToken: BTC_SWAP_TOKEN,
     poolTokens: BTC_POOL_TOKENS,
     isSynthetic: true,
   },
   [STABLECOIN_POOL_NAME]: {
     name: STABLECOIN_POOL_NAME,
+    addresses: STABLECOIN_SWAP_ADDRESSES,
     lpToken: STABLECOIN_SWAP_TOKEN,
     poolTokens: STABLECOIN_POOL_TOKENS,
     isSynthetic: false,
   },
   [VETH2_POOL_NAME]: {
     name: VETH2_POOL_NAME,
+    addresses: VETH2_SWAP_ADDRESSES,
     lpToken: VETH2_SWAP_TOKEN,
     poolTokens: VETH2_POOL_TOKENS,
     isSynthetic: false,
