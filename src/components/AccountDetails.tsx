@@ -102,11 +102,6 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
       </div>
 
       <div className="lowerSection">
-        <div className="titleRow">
-          <h4 className="txn">{t("recentTransactions")}</h4>
-          <button className="textStyle clear">{t("clear")}</button>
-        </div>
-        <span>{t("yourRecentTransactions")}</span>
         {account ? <Transactions account={account} /> : null}
       </div>
     </div>
