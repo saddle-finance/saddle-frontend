@@ -4,7 +4,6 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { Bridge } from "../../types/ethers-contracts/Bridge"
 import { DEPLOYED_BLOCK } from "../constants"
 import { Event } from "ethers"
-import { hexZeroPad } from "@ethersproject/bytes"
 import { useActiveWeb3React } from "./"
 import { useBridgeContract } from "./useContract"
 
@@ -26,7 +25,7 @@ const usePendingSwapData = (): PendingSwap[] => {
   const { account, library, chainId } = useActiveWeb3React()
   const bridgeContract = useBridgeContract()
   const [pendingSwaps, setPendingSwaps] = useState<PendingSwap[]>([])
-  const deployedBlock = chainId ? DEPLOYED_BLOCK[chainId] : 0
+  const deployedBlock = chainId ? DEPLOYED_BLOCK[chainId] : "0"
 
   useEffect(() => {
     async function fetchExistingPendingSwaps() {
@@ -86,7 +85,7 @@ const usePendingSwapData = (): PendingSwap[] => {
  * Create filters for each PendingSwap type
  */
 function buildEventFilters(bridgeContract: Bridge, account: string) {
-  const args = [hexZeroPad(account, 32), null, null, null, null, null] as const
+  const args = [account, null, null, null, null, null] as const
   return VIRTUAL_SWAP_TOPICS.map((topic) =>
     bridgeContract.filters[topic](...args),
   )

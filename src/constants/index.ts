@@ -63,6 +63,10 @@ export class Token {
 }
 
 export const BLOCK_TIME = 15000
+export const DEPLOYED_BLOCK: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "latest",
+  [ChainId.HARDHAT]: "0",
+}
 
 export const BRIDGE_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0xf5059a5D33d5853360D16C683c16e67980206f36", // TODO replace once mainnet deploy goes out
