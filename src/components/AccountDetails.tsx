@@ -102,7 +102,7 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
       </div>
 
       <div className="lowerSection">
-        {account ? <Transactions account={account} /> : null}
+        <Transactions />
       </div>
     </div>
   )

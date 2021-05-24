@@ -5,10 +5,6 @@ import { getPoolByAddress } from "../utils/getPoolByAddress"
 import { useActiveWeb3React } from "../hooks"
 import { useTranslation } from "react-i18next"
 
-type timeOption = {
-  [key: string]: "numeric" | "2-digit" | "long" | "short" | "narrow" | undefined
-}
-
 interface Response {
   data: {
     addLiquidityEvents: [
@@ -47,10 +43,6 @@ interface Response {
   }
 }
 
-interface Props {
-  account: string
-}
-
 interface Transaction {
   object: string
   transaction: string
@@ -59,18 +51,18 @@ interface Transaction {
   status?: string
 }
 
-export default function Transactions({ account }: Props): ReactElement {
+export default function Transactions(): ReactElement {
   const { t } = useTranslation()
-  const { chainId } = useActiveWeb3React()
+  const { chainId, account } = useActiveWeb3React()
   const [transactionList, setTransactionList] = useState<Transaction[]>([])
 
   function formatTime(timestamp: string) {
-    const timeoptions: timeOption = {
+    const timeoptions = {
       month: "numeric",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    }
+    } as const
     return new Date(parseInt(timestamp) * 1000).toLocaleTimeString(
       [],
       timeoptions,
@@ -80,7 +72,8 @@ export default function Transactions({ account }: Props): ReactElement {
   const fetchTxn = useCallback(async () => {
     const url = "https://api.thegraph.com/subgraphs/name/saddle-finance/saddle"
     const time24Hrs = Math.floor(Date.now() / 1000) - 60 * 60 * 24 // 24hrs
-    const query = `
+    const query = account
+      ? `
       {
         addLiquidityEvents(where:{provider: "${account}", timestamp_gte: ${time24Hrs}}) {
           swap {
@@ -107,6 +100,7 @@ export default function Transactions({ account }: Props): ReactElement {
         }
       }
     `
+      : null
 
     await fetch(url, {
       method: "POST",
@@ -223,7 +217,9 @@ export default function Transactions({ account }: Props): ReactElement {
               </div>
             ))
         ) : (
-          <span>{t("yourRecentTransactions")}</span>
+          <span style={{ fontSize: "16px" }}>
+            {t("yourRecentTransactions")}
+          </span>
         )}
       </div>
     </>
