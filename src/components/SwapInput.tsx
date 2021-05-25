@@ -3,6 +3,7 @@ import React, { ReactElement, useCallback, useRef, useState } from "react"
 import { BigNumber } from "@ethersproject/bignumber"
 import SearchSelect from "./SearchSelect"
 import { TOKENS_MAP } from "../constants"
+import type { TokenOption } from "../pages/Swap"
 import classnames from "classnames"
 import { commify } from "../utils"
 import { formatBNToString } from "../utils"
@@ -11,15 +12,7 @@ import useDetectOutsideClick from "../hooks/useDetectOutsideClick"
 import { useTranslation } from "react-i18next"
 
 interface Props {
-  tokens: Array<{
-    name: string
-    valueUSD: BigNumber
-    amount: BigNumber
-    icon: string
-    symbol: string
-    decimals: number
-    isAvailable: boolean
-  }>
+  tokens: TokenOption[]
   selected: string
   inputValue: string
   inputValueUSD: BigNumber

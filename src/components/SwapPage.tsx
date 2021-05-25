@@ -17,6 +17,7 @@ import { PayloadAction } from "@reduxjs/toolkit"
 import ReviewSwap from "./ReviewSwap"
 import SlippageField from "./SlippageField"
 import SwapInput from "./SwapInput"
+import type { TokenOption } from "../pages/Swap"
 import TopMenu from "./TopMenu"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
@@ -27,15 +28,6 @@ import { updateSwapAdvancedMode } from "../state/user"
 import { useActiveWeb3React } from "../hooks"
 import { useTranslation } from "react-i18next"
 
-interface TokenOption {
-  symbol: string
-  name: string
-  valueUSD: BigNumber
-  amount: BigNumber
-  icon: string
-  decimals: number
-  isAvailable: boolean
-}
 interface Props {
   tokenOptions: {
     from: TokenOption[]
@@ -45,6 +37,7 @@ interface Props {
     pair: string
     exchangeRate: BigNumber
     priceImpact: BigNumber
+    route: string[]
   }
   txnGasCost: {
     amount: BigNumber
@@ -87,15 +80,15 @@ const SwapPage = (props: Props): ReactElement => {
   const { userSwapAdvancedMode: advanced } = useSelector(
     (state: AppState) => state.user,
   )
-  const formattedPriceImpact = formatBNToPercentString(
-    exchangeRateInfo.priceImpact,
-    18,
+  const formattedPriceImpact = commify(
+    formatBNToPercentString(exchangeRateInfo.priceImpact, 18),
   )
   const formattedExchangeRate = formatBNToString(
     exchangeRateInfo.exchangeRate,
     18,
     4,
   )
+  const formattedRoute = exchangeRateInfo.route.join(" > ")
   const formattedBalance = commify(
     formatBNToString(fromToken?.amount || Zero, fromToken?.decimals || 0, 6),
   )
@@ -190,6 +183,12 @@ const SwapPage = (props: Props): ReactElement => {
             <span>{t("priceImpact")}</span>
             <span>{formattedPriceImpact}</span>
           </div>
+          {formattedRoute && (
+            <div className="row">
+              <span>{t("route")}</span>
+              <span>{formattedRoute}</span>
+            </div>
+          )}
         </div>
         {account && isHighPriceImpact(exchangeRateInfo.priceImpact) ? (
           <div className="exchangeWarning">
