@@ -14,10 +14,11 @@ import { intersection } from "../utils/index"
 import { useState } from "react"
 
 type TokenToSwapDataMap = { [symbol: string]: SwapData[] }
-export function useCalculateSwapPairs(): (token: Token) => SwapData[] {
+export function useCalculateSwapPairs(): (token?: Token) => SwapData[] {
   const [pairCache, setPairCache] = useState<TokenToSwapDataMap>({})
 
-  return function calculateSwapPairs(token: Token): SwapData[] {
+  return function calculateSwapPairs(token?: Token): SwapData[] {
+    if (!token) return []
     const cacheHit = pairCache[token.symbol]
     if (cacheHit) return cacheHit
     const swapPairs = getTradingPairsForToken(
@@ -44,13 +45,13 @@ function buildSwapSideData(
   }
 }
 
-type SwapSide = {
+export type SwapSide = {
   symbol: string
   poolName?: string
   tokenIndex?: number
 }
 
-type SwapData =
+export type SwapData =
   | {
       from: Required<SwapSide>
       to: Required<SwapSide>
