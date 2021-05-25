@@ -88,8 +88,7 @@
 .tagWrapper {
   display: flex;
   align-items: center;
-  > .unavailableTag,
-  .virtualSwapTag {
+  > .unavailableTag, .virtualSwapTag {
     border: 1px solid var(--text-lightest);
     border-radius: 4px;
     padding: 1px 2px;
