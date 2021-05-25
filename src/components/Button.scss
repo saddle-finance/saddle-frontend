@@ -38,6 +38,11 @@ button.button {
     color: var(--text-secondary-button);
     font-weight: $normal;
 
+    &:disabled {
+      cursor: not-allowed;
+      color: var(--text-secondary-button-disabled);
+    }
+
     &:enabled:hover,
     &:enabled:focus {
       background-color: $primary-blue;

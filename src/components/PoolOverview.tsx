@@ -25,14 +25,14 @@ function PoolOverview({
   const { t } = useTranslation()
   const formattedData = {
     name: poolData.name,
-    reserve: `$${commify(formatBNToString(poolData.reserve, 18, 2))}`,
+    reserve: commify(formatBNToString(poolData.reserve, 18, 2)),
     aprs: {
       keep: formatBNToPercentString(poolData.aprs.keep, 18),
       sharedStake: formatBNToPercentString(poolData.aprs.sharedStake, 18),
     },
-    userBalanceUSD: `$${commify(
+    userBalanceUSD: commify(
       formatBNToString(userShareData?.usdBalance || Zero, 18, 2),
-    )}`,
+    ),
     tokens: poolData.tokens.map((coin) => {
       const token = TOKENS_MAP[coin.symbol]
       return {
@@ -44,14 +44,18 @@ function PoolOverview({
     }),
   }
 
+  const hasShare = parseFloat(formattedData.userBalanceUSD) ? true : false
+
   return (
     <div className="poolOverview">
       <div className="left">
         <h4 className="title">{formattedData.name}</h4>
-        <div className="balance">
-          <span>Balance: </span>
-          <span>$2000.11</span>
-        </div>
+        {hasShare && (
+          <div className="balance">
+            <span>{t("balance")}: </span>
+            <span>{`$${formattedData.userBalanceUSD}`}</span>
+          </div>
+        )}
         <div className="tokens">
           <span style={{ marginRight: "8px" }}>[</span>
           {formattedData.tokens.map((token) => (
@@ -94,12 +98,12 @@ function PoolOverview({
           )}
           <div className="volume">
             <span className="label">{t("currencyReserves")}</span>
-            <span>{formattedData.reserve}</span>
+            <span>{`$${formattedData.reserve}`}</span>
           </div>
         </div>
         <div className="buttons">
           <Link to={`${poolRoute}/withdraw`}>
-            <Button kind="secondary" size="large">
+            <Button kind="secondary" size="large" disabled={!hasShare}>
               {t("withdraw")}
             </Button>
           </Link>

@@ -59,6 +59,7 @@ ul {
   --text-primary: #{$primary-blue};
   --text-selected: #{$primary-blue};
   --text-secondary-button: #{$primary-blue};
+  --text-secondary-button-disabled: #{$indigo20T};
   --header-text: #1f2023;
   --sign-graph: #000;
 
@@ -90,6 +91,7 @@ body.dark {
   --text-primary: #{$primary};
   --text-selected: #{$primary};
   --text-secondary-button: #{$blue};
+  --text-secondary-button-disabled: #{$blue40T};
   --header-text: #{$primary};
   --sign-graph: #{$primary-blue};
 
