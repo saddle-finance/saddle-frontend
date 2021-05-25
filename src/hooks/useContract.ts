@@ -105,10 +105,10 @@ export function useSwapVETH2Contract(): SwapFlashLoan | null {
 }
 
 export function useSwapContract<T extends PoolName>(
-  poolName: T,
+  poolName?: T,
 ): T extends typeof BTC_POOL_NAME ? SwapGuarded | null : SwapFlashLoan | null
 export function useSwapContract(
-  poolName: PoolName,
+  poolName?: PoolName,
 ): SwapGuarded | SwapFlashLoan | null {
   const usdSwapContract = useSwapUSDContract()
   const btcSwapContract = useSwapBTCContract()

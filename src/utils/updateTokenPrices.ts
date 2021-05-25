@@ -1,8 +1,4 @@
-import {
-  BTC_POOL_TOKENS,
-  STABLECOIN_POOL_TOKENS,
-  VETH2_SWAP_ADDRESSES,
-} from "../constants"
+import { TOKENS_MAP, VETH2_SWAP_ADDRESSES } from "../constants"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 
 import { AppDispatch } from "../state"
@@ -34,7 +30,7 @@ export default function fetchTokenPricesUSD(
   dispatch: AppDispatch,
   library?: Web3Provider,
 ): void {
-  const tokens = BTC_POOL_TOKENS.concat(STABLECOIN_POOL_TOKENS)
+  const tokens = Object.values(TOKENS_MAP)
   const tokenIds = Array.from(
     new Set(
       tokens.map(({ geckoId }) => geckoId).concat(Object.values(otherTokens)),
