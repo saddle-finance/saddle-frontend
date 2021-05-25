@@ -84,7 +84,7 @@ const emptyPoolData = {
 } as PoolDataType
 
 export default function usePoolData(
-  poolName: PoolName,
+  poolName?: PoolName,
 ): PoolDataHookReturnType {
   const { account, library, chainId } = useActiveWeb3React()
   const swapContract = useSwapContract(poolName)
@@ -94,17 +94,11 @@ export default function usePoolData(
   const lastDepositTime = lastTransactionTimes[TRANSACTION_TYPES.DEPOSIT]
   const lastWithdrawTime = lastTransactionTimes[TRANSACTION_TYPES.WITHDRAW]
   const lastSwapTime = lastTransactionTimes[TRANSACTION_TYPES.SWAP]
-  const POOL = POOLS_MAP[poolName]
 
   const [poolData, setPoolData] = useState<PoolDataHookReturnType>([
     {
       ...emptyPoolData,
-      name: poolName,
-      tokens: POOL.poolTokens.map((token) => ({
-        symbol: token.symbol,
-        percent: "0",
-        value: Zero,
-      })),
+      name: poolName || "",
     },
     null,
   ])
@@ -118,6 +112,7 @@ export default function usePoolData(
         library == null
       )
         return
+      const POOL = POOLS_MAP[poolName]
 
       // Swap fees, price, and LP Token data
       const [userCurrentWithdrawFee, swapStorage] = await Promise.all([
@@ -354,7 +349,6 @@ export default function usePoolData(
     account,
     library,
     chainId,
-    POOL.poolTokens,
   ])
 
   return poolData
@@ -367,7 +361,7 @@ async function getSgtApr(
   sgtPrice = 0,
 ): Promise<BigNumber> {
   // https://github.com/SharedStake/SharedStake-ui/blob/main/src/components/Earn/geyser.vue#L336
-  if (library == null || tvlUsd.eq(Zero) || chainId != null) return Zero
+  if (library == null || tvlUsd.eq(Zero) || chainId !== 1) return Zero
   const ethcallProvider = new Provider() as MulticallProvider
   await ethcallProvider.init(library)
   // override the contract address when using hardhat
@@ -383,7 +377,7 @@ async function getSgtApr(
     rewardsContract.periodFinish(), // 1e0 timestamp in seconds
     rewardsContract.rewardsDuration(), // 1e0 seconds
     rewardsContract.getRewardForDuration(), // 1e18
-  ] as const
+  ]
   const [
     until,
     rewardsDuration,

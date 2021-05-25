@@ -1,4 +1,5 @@
 import { injected, walletconnect, walletlink } from "../connectors"
+
 import { AbstractConnector } from "@web3-react/abstract-connector"
 import { BigNumber } from "@ethersproject/bignumber"
 import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
@@ -64,7 +65,7 @@ export class Token {
 export const BLOCK_TIME = 15000
 
 export const BRIDGE_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: "",
+  [ChainId.MAINNET]: "0xf5059a5D33d5853360D16C683c16e67980206f36", // TODO replace once mainnet deploy goes out
   [ChainId.HARDHAT]: "0xf5059a5D33d5853360D16C683c16e67980206f36",
 }
 
@@ -225,7 +226,7 @@ const SBTC_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
 export const SBTC = new Token(
   SBTC_CONTRACT_ADDRESSES,
   18,
-  "SBTC",
+  "sBTC",
   "sbtc",
   "sBTC",
   sbtcLogo,
@@ -267,6 +268,7 @@ export type Pool = {
   lpToken: Token
   poolTokens: Token[]
   isSynthetic: boolean
+  addresses: { [chainId in ChainId]: string }
 }
 export type PoolsMap = {
   [poolName: string]: Pool
@@ -276,18 +278,21 @@ export const POOLS_MAP: PoolsMap = {
     name: BTC_POOL_NAME,
     lpToken: BTC_SWAP_TOKEN,
     poolTokens: BTC_POOL_TOKENS,
+    addresses: BTC_SWAP_ADDRESSES,
     isSynthetic: true,
   },
   [STABLECOIN_POOL_NAME]: {
     name: STABLECOIN_POOL_NAME,
     lpToken: STABLECOIN_SWAP_TOKEN,
     poolTokens: STABLECOIN_POOL_TOKENS,
+    addresses: STABLECOIN_SWAP_ADDRESSES,
     isSynthetic: false,
   },
   [VETH2_POOL_NAME]: {
     name: VETH2_POOL_NAME,
     lpToken: VETH2_SWAP_TOKEN,
     poolTokens: VETH2_POOL_TOKENS,
+    addresses: VETH2_SWAP_ADDRESSES,
     isSynthetic: false,
   },
 }
@@ -362,10 +367,14 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
 }
 
 export enum SWAP_TYPES {
-  DIRECT, // route length 2
-  SYNTH_TO_SYNTH, // route length 2
-  SYNTH_TO_TOKEN, // route length 3
-  TOKEN_TO_SYNTH, // route length 3
-  TOKEN_TO_TOKEN, // route length 4
-  INVALID,
+  DIRECT = 1, // route length 2
+  SYNTH_TO_SYNTH = 2, // route length 2
+  SYNTH_TO_TOKEN = 3, // route length 3
+  TOKEN_TO_SYNTH = 4, // route length 3
+  TOKEN_TO_TOKEN = 5, // route length 4
+  INVALID = 7,
 }
+
+// FLAGS
+export const IS_VIRTUAL_SWAP_ACTIVE = false
+// FLAGS END

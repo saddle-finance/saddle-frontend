@@ -88,16 +88,25 @@
 .tagWrapper {
   display: flex;
   align-items: center;
+  > .unavailableTag,
+  .virtualSwapTag {
+    border: 1px solid var(--text-lightest);
+    border-radius: 4px;
+    padding: 1px 2px;
+    font-weight: 700;
+    font-size: 11px;
+    display: inline-block;
+    margin-left: 8px;
+    line-height: 14px;
+  }
 }
 
 .unavailableTag {
   color: var(--text-lightest);
   border: 1px solid var(--text-lightest);
-  border-radius: 4px;
-  padding: 1px 2px;
-  font-weight: 700;
-  font-size: 11px;
-  display: inline-block;
-  margin-left: 8px;
-  line-height: 14px;
+}
+
+.virtualSwapTag {
+  color: $primary;
+  border: 1px solid var(--outline);
 }
