@@ -30,6 +30,15 @@ describe("calculatePriceImpact", () => {
       ),
     ).toEqual(parseUnits("0.001675", 18))
   })
+
+  it("correctly uses a default virtualPrice of 1", () => {
+    expect(
+      calculatePriceImpact(
+        parseUnits("4", 18), // deposit 4 tokens
+        parseUnits("2", 18), // recieve 2 back
+      ),
+    ).toEqual(parseUnits("-.5", 18))
+  })
 })
 
 describe("isHighPriceImpact", () => {
