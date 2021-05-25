@@ -34,11 +34,16 @@ button.button {
   }
 
   &.secondary {
-    background: $white;
+    background-color: var(--secondary-button);
+    color: var(--text-secondary-button);
+    font-weight: $normal;
 
     &:enabled:hover,
     &:enabled:focus {
-      color: $primary-blue;
+      background-color: $primary-blue;
+      color: $text-white;
+      font-weight: $bold;
+      box-shadow: var(--shadow-hover);
     }
   }
 
@@ -49,9 +54,18 @@ button.button {
     letter-spacing: -0.06em;
   }
 
+  &.cancel {
+    background: $white;
+
+    &:enabled:hover,
+    &:enabled:focus {
+      color: $primary-blue;
+    }
+  }
+
   &.large {
     width: 176px;
-    height: 48px;
+    height: 40px;
   }
 
   &.small {

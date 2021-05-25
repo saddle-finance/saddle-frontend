@@ -3,7 +3,7 @@ import "./PoolOverview.scss"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement } from "react"
 import { formatBNToPercentString, formatBNToString } from "../utils"
-
+import Button from "./Button"
 import { Link } from "react-router-dom"
 import { TOKENS_MAP } from "../constants"
 import { Zero } from "@ethersproject/constants"
@@ -46,54 +46,70 @@ function PoolOverview({
 
   return (
     <div className="poolOverview">
-      <Link to={to}>
-        <div className="table">
-          <h4 className="title">{formattedData.name}</h4>
-          <div className="left">
-            <span style={{ marginRight: "8px" }}>[</span>
-            {formattedData.tokens.map((token) => (
-              <div className="token" key={token.symbol}>
-                <img alt="icon" src={token.icon} />
-                <span>{token.name}</span>
-              </div>
-            ))}
-            <span style={{ marginLeft: "-8px" }}>]</span>
-          </div>
-
-          <div className="right">
-            {poolData?.aprs.keep.gt(Zero) && (
-              <div className="Apr">
-                <span className="label">KEEP APR</span>
-                <span
-                  className={
-                    classNames({ plus: formattedData.aprs.keep }) +
-                    classNames({ minus: !formattedData.aprs.keep })
-                  }
-                >
-                  {formattedData.aprs.keep}
-                </span>
-              </div>
-            )}
-            {poolData?.aprs.sharedStake.gt(Zero) && (
-              <div className="Apr">
-                <span className="label">SGT APR</span>
-                <span
-                  className={
-                    classNames({ plus: formattedData.aprs.sharedStake }) +
-                    classNames({ minus: !formattedData.aprs.sharedStake })
-                  }
-                >
-                  {formattedData.aprs.sharedStake}
-                </span>
-              </div>
-            )}
-            <div className="volume">
-              <span className="label">{t("currencyReserves")}</span>
-              <span>{formattedData.reserve}</span>
+      {/* <div className="table"> */}
+      <div className="left">
+        <h4 className="title">{formattedData.name}</h4>
+        <div className="balance">
+          <span>Balance: </span>
+          <span>$2000.11</span>
+        </div>
+        <div className="tokens">
+          <span style={{ marginRight: "8px" }}>[</span>
+          {formattedData.tokens.map((token) => (
+            <div className="token" key={token.symbol}>
+              <img alt="icon" src={token.icon} />
+              <span>{token.name}</span>
             </div>
+          ))}
+          <span style={{ marginLeft: "-8px" }}>]</span>
+        </div>
+      </div>
+
+      <div className="right">
+        <div className="poolInfo">
+          {poolData?.aprs.keep.gt(Zero) && (
+            <div className="margin Apr">
+              <span className="label">KEEP APR</span>
+              <span
+                className={
+                  classNames({ plus: formattedData.aprs.keep }) +
+                  classNames({ minus: !formattedData.aprs.keep })
+                }
+              >
+                {formattedData.aprs.keep}
+              </span>
+            </div>
+          )}
+          {poolData?.aprs.sharedStake.gt(Zero) && (
+            <div className="margin Apr">
+              <span className="label">SGT APR</span>
+              <span
+                className={
+                  classNames({ plus: formattedData.aprs.sharedStake }) +
+                  classNames({ minus: !formattedData.aprs.sharedStake })
+                }
+              >
+                {formattedData.aprs.sharedStake}
+              </span>
+            </div>
+          )}
+          <div className="volume">
+            <span className="label">{t("currencyReserves")}</span>
+            <span>{formattedData.reserve}</span>
           </div>
         </div>
-      </Link>
+        <div className="buttons">
+          <Link to={to}>
+            <Button kind="secondary" size="large">
+              Withdraw
+            </Button>
+          </Link>
+          <Button kind="primary" size="large">
+            Deposit
+          </Button>
+        </div>
+      </div>
+      {/* </div> */}
     </div>
   )
 }
