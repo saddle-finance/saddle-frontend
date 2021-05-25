@@ -12,14 +12,14 @@ import { commify } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
 interface Props {
-  to: string
+  poolRoute: string
   poolData: PoolDataType
   userShareData: UserShareType | null
 }
 
 function PoolOverview({
   poolData,
-  to,
+  poolRoute,
   userShareData,
 }: Props): ReactElement | null {
   const { t } = useTranslation()
@@ -46,7 +46,6 @@ function PoolOverview({
 
   return (
     <div className="poolOverview">
-      {/* <div className="table"> */}
       <div className="left">
         <h4 className="title">{formattedData.name}</h4>
         <div className="balance">
@@ -99,17 +98,18 @@ function PoolOverview({
           </div>
         </div>
         <div className="buttons">
-          <Link to={to}>
+          <Link to={`${poolRoute}/withdraw`}>
             <Button kind="secondary" size="large">
-              Withdraw
+              {t("withdraw")}
             </Button>
           </Link>
-          <Button kind="primary" size="large">
-            Deposit
-          </Button>
+          <Link to={`${poolRoute}/deposit`}>
+            <Button kind="primary" size="large">
+              {t("deposit")}
+            </Button>
+          </Link>
         </div>
       </div>
-      {/* </div> */}
     </div>
   )
 }

@@ -31,54 +31,45 @@ export default function App(): ReactElement {
           <ToastsProvider>
             <Switch>
               <Route exact path="/" component={Swap} />
+              <Route exact path="/pools" component={Pools} />
               <Route
                 exact
-                path="/deposit"
-                render={(props) => <Pools {...props} action="deposit" />}
-              />
-              <Route
-                exact
-                path="/deposit/usd"
+                path="/pools/usd/deposit"
                 render={(props) => (
                   <Deposit {...props} poolName={STABLECOIN_POOL_NAME} />
                 )}
               />
               <Route
                 exact
-                path="/deposit/btc"
+                path="/pools/btc/deposit"
                 render={(props) => (
                   <Deposit {...props} poolName={BTC_POOL_NAME} />
                 )}
               />
               <Route
                 exact
-                path="/deposit/veth2"
+                path="/pools/veth2/deposit"
                 render={(props) => (
                   <Deposit {...props} poolName={VETH2_POOL_NAME} />
                 )}
               />
               <Route
                 exact
-                path="/withdraw"
-                render={(props) => <Pools {...props} action="withdraw" />}
-              />
-              <Route
-                exact
-                path="/withdraw/btc"
+                path="/pools/btc/withdraw"
                 render={(props) => (
                   <Withdraw {...props} poolName={BTC_POOL_NAME} />
                 )}
               />
               <Route
                 exact
-                path="/withdraw/usd"
+                path="/pools/usd/withdraw"
                 render={(props) => (
                   <Withdraw {...props} poolName={STABLECOIN_POOL_NAME} />
                 )}
               />
               <Route
                 exact
-                path="/withdraw/veth2"
+                path="/pools/veth2/withdraw"
                 render={(props) => (
                   <Withdraw {...props} poolName={VETH2_POOL_NAME} />
                 )}
