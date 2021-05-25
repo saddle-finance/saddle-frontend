@@ -20,10 +20,12 @@ export const NetworkContextName = "NETWORK"
 export const BTC_POOL_NAME = "BTC Pool"
 export const STABLECOIN_POOL_NAME = "Stablecoin Pool"
 export const VETH2_POOL_NAME = "vETH2 Pool"
+export const SUSD_POOL_NAME = "sUSD Pool" // TODO: REMOVE
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof STABLECOIN_POOL_NAME
   | typeof VETH2_POOL_NAME
+  | typeof SUSD_POOL_NAME
 
 export enum ChainId {
   MAINNET = 1,
@@ -84,6 +86,12 @@ export const VETH2_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.HARDHAT]: "0x9f1ac54BEF0DD2f6f3462EA0fa94fC62300d3a8e",
 }
 
+export const SUSD_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
+  // TODO: REMOVE
+  [ChainId.MAINNET]: "0xa82fF9aFd8f496c3d6ac40E2a0F282E47488CFc9",
+  [ChainId.HARDHAT]: "",
+}
+
 export const MERKLETREE_DATA: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "mainnetTestAccounts.json",
   [ChainId.HARDHAT]: "hardhat.json",
@@ -108,6 +116,14 @@ export const VETH2_SWAP_TOKEN_CONTRACT_ADDRESSES: {
 } = {
   [ChainId.MAINNET]: "0xe37E2a01feA778BC1717d72Bd9f018B6A6B241D5",
   [ChainId.HARDHAT]: "0x2d2c18F63D2144161B38844dCd529124Fbb93cA2",
+}
+
+export const SUSD_SWAP_TOKEN_CONTRACT_ADDRESSES: {
+  // TODO: REMOVE
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "0x212fdfCfCC22db97DeB3AC3260414909282BB4EE",
+  [ChainId.HARDHAT]: "",
 }
 
 export const BTC_SWAP_TOKEN = new Token(
@@ -137,7 +153,31 @@ export const VETH2_SWAP_TOKEN = new Token(
   saddleLogo,
 )
 
+export const SUSD_SWAP_TOKEN = new Token( // TODO: REMOVE
+  SUSD_SWAP_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "saddleSUSD",
+  "saddlesusd",
+  "Saddle SUSD/Meta",
+  saddleLogo,
+)
+
 // Stablecoins
+const SUSD_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  // TODO: REMOVE
+  [ChainId.MAINNET]: "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51",
+  [ChainId.HARDHAT]: "",
+}
+export const SUSD = new Token( // TODO: REMOVE
+  SUSD_CONTRACT_ADDRESSES,
+  18,
+  "sUSD",
+  "nusd",
+  "sUSD",
+  daiLogo,
+  true,
+)
+
 const DAI_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
   [ChainId.HARDHAT]: "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
@@ -262,6 +302,7 @@ export const VETH2 = new Token(
 )
 
 export const VETH2_POOL_TOKENS = [WETH, VETH2]
+export const SUSD_POOL_TOKENS = [SUSD, DAI, USDC, USDT] // TODO: REMOVE
 
 export type Pool = {
   name: string
@@ -294,6 +335,14 @@ export const POOLS_MAP: PoolsMap = {
     poolTokens: VETH2_POOL_TOKENS,
     addresses: VETH2_SWAP_ADDRESSES,
     isSynthetic: false,
+  },
+  [SUSD_POOL_NAME]: {
+    // TODO: REMOVE
+    name: SUSD_POOL_NAME,
+    lpToken: SUSD_SWAP_TOKEN,
+    poolTokens: SUSD_POOL_TOKENS,
+    addresses: SUSD_SWAP_ADDRESSES,
+    isSynthetic: true,
   },
 }
 
