@@ -252,18 +252,10 @@ function Swap(): ReactElement {
         tokenPricesUSD?.[tokenTo.symbol],
         tokenTo.decimals,
       )
-      let priceImpact: BigNumber
-      if (formStateArg.swapType === SWAP_TYPES.DIRECT) {
-        priceImpact = calculatePriceImpact(
-          shiftBNDecimals(amountToGive, 18 - tokenFrom.decimals),
-          shiftBNDecimals(amountToReceive, 18 - tokenTo.decimals),
-        )
-      } else {
-        priceImpact = calculatePriceImpact(
-          formStateArg.from.valueUSD,
-          toValueUSD,
-        )
-      }
+      const priceImpact = calculatePriceImpact(
+        formStateArg.from.valueUSD,
+        toValueUSD,
+      )
       setFormState((prevState) => ({
         ...prevState,
         error,
