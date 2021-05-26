@@ -53,6 +53,7 @@ div.poolOverview {
 
   div.right {
     display: grid;
+    justify-content: end;
 
     .margin {
       margin-right: 24px;
@@ -61,6 +62,7 @@ div.poolOverview {
       display: flex;
       flex-flow: row wrap;
       align-items: flex-start;
+      justify-self: end;
     }
     span.label {
       display: block;
@@ -81,7 +83,7 @@ div.poolOverview {
       align-self: end;
       display: grid;
       grid-template-columns: 176px 176px;
-      column-gap: 32px;
+      column-gap: 16px;
     }
   }
 }
