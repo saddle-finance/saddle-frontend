@@ -13,6 +13,16 @@ import {
 import { intersection } from "../utils/index"
 import { useState } from "react"
 
+// swaptypes in order of least to most preferred (aka expensive)
+const SWAP_TYPES_ORDERED_ASC = [
+  SWAP_TYPES.INVALID,
+  SWAP_TYPES.TOKEN_TO_TOKEN,
+  SWAP_TYPES.TOKEN_TO_SYNTH,
+  SWAP_TYPES.SYNTH_TO_TOKEN,
+  SWAP_TYPES.SYNTH_TO_SYNTH,
+  SWAP_TYPES.DIRECT,
+]
+
 type TokenToSwapDataMap = { [symbol: string]: SwapData[] }
 export function useCalculateSwapPairs(): (token?: Token) => SwapData[] {
   const [pairCache, setPairCache] = useState<TokenToSwapDataMap>({})
@@ -201,8 +211,13 @@ function getTradingPairsForToken(
     }
 
     // use this swap only if we haven't already calculated a better swap for the pair
-    const existingTokenSwapData = tokenToSwapDataMap[token.symbol]
-    if (!existingTokenSwapData || existingTokenSwapData.type > swapData.type) {
+    const existingTokenSwapData: SwapData | undefined =
+      tokenToSwapDataMap[token.symbol]
+    const existingSwapIdx = SWAP_TYPES_ORDERED_ASC.indexOf(
+      existingTokenSwapData?.type,
+    )
+    const newSwapIdx = SWAP_TYPES_ORDERED_ASC.indexOf(swapData.type)
+    if (!existingTokenSwapData || newSwapIdx > existingSwapIdx) {
       tokenToSwapDataMap[token.symbol] = swapData
     }
   })

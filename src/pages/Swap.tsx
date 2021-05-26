@@ -499,7 +499,7 @@ function Swap(): ReactElement {
       gasCustom,
     ),
   )
-  const gasAmount = calculateGasEstimate("swap").mul(gasPrice) // units of gas * GWEI/Unit of gas
+  const gasAmount = calculateGasEstimate(formState.swapType).mul(gasPrice) // units of gas * GWEI/Unit of gas
 
   const txnGasCost = {
     amount: gasAmount,
