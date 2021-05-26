@@ -25,7 +25,6 @@ import { debounce } from "lodash"
 import { formatGasToString } from "../utils/gas"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndSwap } from "../hooks/useApproveAndSwap"
-import usePoolData from "../hooks/usePoolData"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
@@ -113,9 +112,7 @@ function Swap(): ReactElement {
   const swapContract = useSwapContract(
     formState.to.poolName as PoolName | undefined,
   )
-  const [poolData] = usePoolData(formState.to.poolName as PoolName | undefined)
   // build a representation of pool tokens for the UI
-
   const tokenOptions = useMemo(() => {
     const allTokens = Object.values(TOKENS_MAP)
       .map(({ symbol, name, icon, decimals }) => {
@@ -260,7 +257,6 @@ function Swap(): ReactElement {
         priceImpact = calculatePriceImpact(
           shiftBNDecimals(amountToGive, 18 - tokenFrom.decimals),
           shiftBNDecimals(amountToReceive, 18 - tokenTo.decimals),
-          poolData ? poolData.virtualPrice : BigNumber.from(10).pow(18),
         )
       } else {
         priceImpact = calculatePriceImpact(
@@ -291,7 +287,6 @@ function Swap(): ReactElement {
       tokenBalances,
       swapContract,
       bridgeContract,
-      poolData,
       chainId,
       tokenPricesUSD,
     ],
