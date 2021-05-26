@@ -218,13 +218,14 @@ function Swap(): ReactElement {
           formStateArg.to.tokenIndex,
           amountToGive,
         )
-        estGas = await bridgeContract.estimateGas.calcTokenToToken(
+        estGas = await bridgeContract.estimateGas.tokenToToken(
           [originPool.addresses[chainId], destinationPool.addresses[chainId]],
           formStateArg.from.tokenIndex,
           formStateArg.to.tokenIndex,
           amountToGive,
+          1,
         )
-        console.log("calcTokenToToken", estGas.toString())
+        console.log("TokenToToken", estGas.toString())
         amountToReceive = amountOutToken
         amountMediumSynth = amountOutSynth
       } else if (formStateArg.swapType === SWAP_TYPES.SYNTH_TO_TOKEN) {
@@ -238,13 +239,14 @@ function Swap(): ReactElement {
           formStateArg.to.tokenIndex,
           amountToGive,
         )
-        estGas = await bridgeContract.estimateGas.calcSynthToToken(
+        estGas = await bridgeContract.estimateGas.synthToToken(
           destinationPool.addresses[chainId],
           utils.formatBytes32String(formStateArg.from.symbol),
           formStateArg.to.tokenIndex,
           amountToGive,
+          1,
         )
-        console.log("calcSynthToToken", estGas.toString())
+        console.log("SynthToToken", estGas.toString())
         amountToReceive = amountOutToken
         amountMediumSynth = amountOutSynth
       } else if (formStateArg.swapType === SWAP_TYPES.TOKEN_TO_SYNTH) {
@@ -255,13 +257,14 @@ function Swap(): ReactElement {
           utils.formatBytes32String(formStateArg.to.symbol),
           amountToGive,
         )
-        estGas = await bridgeContract.estimateGas.calcTokenToSynth(
+        estGas = await bridgeContract.estimateGas.tokenToSynth(
           originPool.addresses[chainId],
           formStateArg.from.tokenIndex,
           utils.formatBytes32String(formStateArg.to.symbol),
           amountToGive,
+          1,
         )
-        console.log("calcTokenToSynth", estGas.toString())
+        console.log("TokenToSynth", estGas.toString())
       } else if (swapContract != null) {
         amountToReceive = await swapContract.calculateSwap(
           formStateArg.from.tokenIndex,
