@@ -83,10 +83,8 @@ const SwapPage = (props: Props): ReactElement => {
   const formattedPriceImpact = commify(
     formatBNToPercentString(exchangeRateInfo.priceImpact, 18),
   )
-  const formattedExchangeRate = formatBNToString(
-    exchangeRateInfo.exchangeRate,
-    18,
-    4,
+  const formattedExchangeRate = commify(
+    formatBNToString(exchangeRateInfo.exchangeRate, 18, 6),
   )
   const formattedRoute = exchangeRateInfo.route.join(" > ")
   const formattedBalance = commify(
