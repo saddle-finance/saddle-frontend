@@ -384,9 +384,16 @@ async function getSgtApr(
     sgtRewardsPerPeriod,
   ] = await ethcallProvider.all(multicalls, {})
 
-  const now = BigNumber.from(Math.floor(Date.now() / 1000))
-  const remainingDays = until.sub(now).div(60 * 60 * 24) // 1e0
+  const nowSeconds = BigNumber.from(Math.floor(Date.now() / 1000))
+  const remainingDays = until.sub(nowSeconds).div(60 * 60 * 24) // 1e0
   const rewardsDurationDays = rewardsDuration.div(60 * 60 * 24) // 1e0
+  if (
+    remainingDays.eq(Zero) ||
+    rewardsDurationDays.eq(Zero) ||
+    sgtRewardsPerPeriod.eq(Zero)
+  ) {
+    return Zero
+  }
   const remainingRewards = remainingDays.mul(
     sgtRewardsPerPeriod.div(rewardsDurationDays),
   ) // 1e18
