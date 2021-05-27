@@ -46,7 +46,7 @@ ul {
   --background-main: #ffffe9 url("../assets/bg_light.svg") center/auto 60%
     no-repeat fixed;
   --background-logo: #{$primary};
-  --secondary-button: #{$lightBlue};
+  --secondary-button: #{$light-blue};
   --outline: #000;
   --outline-gray: #8c8c94;
   --option-hover: #{$primary-blue-light};
@@ -78,7 +78,7 @@ body.dark {
   --background-main: #000 url("../assets/bg.svg") center/auto 60% no-repeat
     fixed;
   --background-logo: #ffffe9;
-  --secondary-button: #{$darkPurple};
+  --secondary-button: #{$dark-purple};
   --outline: #fff;
   --option-hover: #{$primary-blue-dark};
   --outline-gray: #8c8c94;

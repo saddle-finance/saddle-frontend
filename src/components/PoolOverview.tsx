@@ -44,7 +44,7 @@ function PoolOverview({
     }),
   }
 
-  const hasShare = parseFloat(formattedData.userBalanceUSD) ? true : false
+  const hasShare = !!userShareData?.usdBalance.gt("0")
 
   return (
     <div className="poolOverview">
@@ -58,10 +58,10 @@ function PoolOverview({
         )}
         <div className="tokens">
           <span style={{ marginRight: "8px" }}>[</span>
-          {formattedData.tokens.map((token) => (
-            <div className="token" key={token.symbol}>
-              <img alt="icon" src={token.icon} />
-              <span>{token.name}</span>
+          {formattedData.tokens.map(({ symbol, icon, name }) => (
+            <div className="token" key={symbol}>
+              <img alt="icon" src={icon} />
+              <span>{name}</span>
             </div>
           ))}
           <span style={{ marginLeft: "-8px" }}>]</span>
