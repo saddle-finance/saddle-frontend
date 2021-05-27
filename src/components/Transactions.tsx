@@ -1,6 +1,7 @@
 import "./Transactions.scss"
 import React, { ReactElement, useCallback, useEffect, useState } from "react"
 import { getEtherscanLink } from "../utils/getEtherscanLink"
+import { getFormattedShortTime } from "../utils/dateTime"
 import { getPoolByAddress } from "../utils/getPoolByAddress"
 import { useActiveWeb3React } from "../hooks"
 import { useTranslation } from "react-i18next"
@@ -52,28 +53,18 @@ interface Transaction {
 }
 
 export default function Transactions(): ReactElement {
+  const SADDLE_SUBGRAPH_URL =
+    "https://api.thegraph.com/subgraphs/name/saddle-finance/saddle"
   const { t } = useTranslation()
   const { chainId, account } = useActiveWeb3React()
   const [transactionList, setTransactionList] = useState<Transaction[]>([])
 
-  function formatTime(timestamp: string) {
-    const timeoptions = {
-      month: "numeric",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    } as const
-    return new Date(parseInt(timestamp) * 1000).toLocaleTimeString(
-      [],
-      timeoptions,
-    )
-  }
-
   const fetchTxn = useCallback(async () => {
-    const url = "https://api.thegraph.com/subgraphs/name/saddle-finance/saddle"
+    if (!account || !chainId) return
+
+    const newTransactionList: Transaction[] = []
     const time24Hrs = Math.floor(Date.now() / 1000) - 60 * 60 * 24 // 24hrs
-    const query = account
-      ? `
+    const query = `
       {
         addLiquidityEvents(where:{provider: "${account}", timestamp_gte: ${time24Hrs}}) {
           swap {
@@ -100,74 +91,62 @@ export default function Transactions(): ReactElement {
         }
       }
     `
-      : null
 
-    await fetch(url, {
+    await fetch(SADDLE_SUBGRAPH_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query }),
     })
       .then((res) => res.json())
       .then((result: Response) => {
-        const addLiquidityEvents = result.data.addLiquidityEvents
+        const { addLiquidityEvents } = result.data
         addLiquidityEvents.map((event) => {
-          const poolName = chainId
-            ? getPoolByAddress(event.swap.id, chainId)?.name
-            : null
+          const poolName = getPoolByAddress(event.swap.id, chainId)?.name
           poolName &&
-            setTransactionList((prevState) => [
-              ...prevState,
-              {
-                object: `${t("depositIn")} ${poolName}`,
-                transaction: event.transaction,
-                time: formatTime(event.timestamp),
-                timestamp: parseInt(event.timestamp),
-              },
-            ])
+            newTransactionList.push({
+              object: `${t("depositIn")} ${poolName}`,
+              transaction: event.transaction,
+              time: getFormattedShortTime(event.timestamp),
+              timestamp: parseInt(event.timestamp),
+            })
         })
 
-        const removeLiquidityEvents = result.data.removeLiquidityEvents
+        const { removeLiquidityEvents } = result.data
         removeLiquidityEvents.map((event) => {
-          const poolName = chainId
-            ? getPoolByAddress(event.swap.id, chainId)?.name
-            : null
+          const poolName = getPoolByAddress(event.swap.id, chainId)?.name
           poolName &&
-            setTransactionList((prevState) => [
-              ...prevState,
-              {
-                object: `${t("withdrawFrom")} ${poolName}`,
-                transaction: event.transaction,
-                time: formatTime(event.timestamp),
-                timestamp: parseInt(event.timestamp),
-              },
-            ])
+            newTransactionList.push({
+              object: `${t("withdrawFrom")} ${poolName}`,
+              transaction: event.transaction,
+              time: getFormattedShortTime(event.timestamp),
+              timestamp: parseInt(event.timestamp),
+            })
         })
 
-        const swaps = result.data.swaps
+        const { swaps } = result.data
         swaps.map((event) => {
           if (event.exchanges) {
-            const poolTokens = chainId
-              ? getPoolByAddress(event.address, chainId)?.poolTokens
-              : null
+            const poolTokens = getPoolByAddress(event.address, chainId)
+              ?.poolTokens
             poolTokens &&
               event.exchanges.map((swap) => {
                 const soldToken = poolTokens[parseInt(swap.soldId)].name
                 const boughtToken = poolTokens[parseInt(swap.boughtId)].name
 
-                setTransactionList((prevState) => [
-                  ...prevState,
-                  {
-                    object: `${t("swap")} ${soldToken} ${t(
-                      "toBe",
-                    )} ${boughtToken}`,
-                    transaction: swap.transaction,
-                    time: formatTime(swap.timestamp),
-                    timestamp: parseInt(swap.timestamp),
-                  },
-                ])
+                newTransactionList.push({
+                  object: `${t("swap")} ${soldToken} ${t(
+                    "toBe",
+                  )} ${boughtToken}`,
+                  transaction: swap.transaction,
+                  time: getFormattedShortTime(swap.timestamp),
+                  timestamp: parseInt(swap.timestamp),
+                })
               })
           }
         })
+        setTransactionList(
+          newTransactionList.sort((a, b) => b.timestamp - a.timestamp),
+        )
       })
       .catch(console.error)
   }, [chainId, t, account])
@@ -191,31 +170,29 @@ export default function Transactions(): ReactElement {
       </div>
       <div className="transactionList">
         {transactionList.length !== 0 ? (
-          transactionList
-            .sort((a, b) => b.timestamp - a.timestamp)
-            .map((txn, index) => (
-              <div key={index} className="transactionItem">
-                <span className="transactionObject">{txn.object}</span>
-                <a
-                  href={getEtherscanLink(txn.transaction, "tx")}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="transactionLink"
+          transactionList.map((txn, index) => (
+            <div key={index} className="transactionItem">
+              <span className="transactionObject">{txn.object}</span>
+              <a
+                href={getEtherscanLink(txn.transaction, "tx")}
+                target="_blank"
+                rel="noreferrer"
+                className="transactionLink"
+              >
+                {/* link icon */}
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  {/* link icon */}
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M11.6667 11.6667H4.33333V4.33333H8V3H4.33333C3.59333 3 3 3.6 3 4.33333V11.6667C3 12.4 3.59333 13 4.33333 13H11.6667C12.4 13 13 12.4 13 11.6667V8H11.6667V11.6667ZM9.33333 2V3.33333H11.7267L6.17333 8.88667L7.11333 9.82667L12.6667 4.27333V6.66667H14V2H9.33333Z" />
-                  </svg>
-                </a>
-                <span className="transactionTime">{txn.time}</span>
-              </div>
-            ))
+                  <path d="M11.6667 11.6667H4.33333V4.33333H8V3H4.33333C3.59333 3 3 3.6 3 4.33333V11.6667C3 12.4 3.59333 13 4.33333 13H11.6667C12.4 13 13 12.4 13 11.6667V8H11.6667V11.6667ZM9.33333 2V3.33333H11.7267L6.17333 8.88667L7.11333 9.82667L12.6667 4.27333V6.66667H14V2H9.33333Z" />
+                </svg>
+              </a>
+              <span className="transactionTime">{txn.time}</span>
+            </div>
+          ))
         ) : (
           <span style={{ fontSize: "16px" }}>
             {t("yourRecentTransactions")}
