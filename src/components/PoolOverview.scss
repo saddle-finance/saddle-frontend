@@ -1,13 +1,20 @@
 @import "../styles/theme";
 
-a {
-  text-decoration: none;
-  color: var(--text-darker);
-}
-
 div.poolOverview {
   margin-top: 40px;
   width: 100%;
+  background: var(--background-element);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--outline);
+  border-radius: 10px;
+  padding: 24px 32px;
+  display: grid;
+  grid-template-columns: 45% 55%;
+
+  .left {
+    display: grid;
+    grid-template-rows: 40px 24px 22px 10px 20px;
+  }
 
   h4.title {
     width: 100%;
@@ -17,34 +24,18 @@ div.poolOverview {
     font-size: 30px;
     font-weight: $bold;
     color: var(--text-title);
-  }
-
-  .table {
-    background: var(--background-element);
-    box-shadow: var(--shadow);
-    border: 1px solid var(--outline);
-    border-radius: 10px;
-    padding: 32px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-
-    &:hover {
-      box-shadow: var(--shadow-hover);
-      padding: 30px;
-      border: 3px solid var(--outline);
-    }
-  }
-
-  .left,
-  .right {
-    display: flex;
-    align-items: center;
-    margin-top: 24px;
-  }
-
-  .title {
     margin-right: 16px;
+    grid-row: 1/2;
+  }
+
+  .balance {
+    grid-row: 3/4;
+  }
+  .tokens {
+    grid-row: 5/6;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
 
   div.token {
@@ -56,32 +47,43 @@ div.poolOverview {
 
     & > img {
       margin-right: 4px;
-      vertical-align: text-top;
+      vertical-align: text-bottom;
     }
   }
 
   div.right {
-    & > div {
-      margin-right: 40px;
+    display: grid;
+    justify-content: end;
 
-      &.volume {
-        margin-right: 0;
-      }
+    .margin {
+      margin-right: 24px;
+    }
+    .poolInfo {
+      display: flex;
+      flex-flow: row wrap;
+      align-items: flex-start;
+      justify-self: end;
+    }
+    span.label {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: $bold;
+    }
 
-      span.label {
-        display: block;
-        margin-bottom: 4px;
-        font-weight: $bold;
-      }
+    .plus {
+      font-weight: $medium;
+      color: var(--text-selected);
+    }
+    .minus {
+      font-weight: $medium;
+      color: $error;
+    }
 
-      .plus {
-        font-weight: $medium;
-        color: var(--text-selected);
-      }
-      .minus {
-        font-weight: $medium;
-        color: $error;
-      }
+    .buttons {
+      align-self: end;
+      display: grid;
+      grid-template-columns: 176px 176px;
+      column-gap: 16px;
     }
   }
 }

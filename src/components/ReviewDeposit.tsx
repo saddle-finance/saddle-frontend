@@ -181,7 +181,7 @@ function ReviewDeposit({
           >
             {t("confirmDeposit")}
           </Button>
-          <Button onClick={onClose} kind="secondary" size="large">
+          <Button onClick={onClose} kind="cancel" size="large">
             {t("cancel")}
           </Button>
         </div>
