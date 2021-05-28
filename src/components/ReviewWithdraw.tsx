@@ -123,7 +123,7 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
           >
             {t("confirmWithdraw")}
           </Button>
-          <Button onClick={onClose} kind="secondary">
+          <Button onClick={onClose} kind="cancel">
             {t("cancel")}
           </Button>
         </div>
