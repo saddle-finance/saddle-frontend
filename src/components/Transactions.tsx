@@ -99,49 +99,45 @@ export default function Transactions(): ReactElement {
     })
       .then((res) => res.json())
       .then((result: Response) => {
-        const { addLiquidityEvents } = result.data
+        const { addLiquidityEvents, removeLiquidityEvents, swaps } = result.data
         addLiquidityEvents.map((event) => {
           const poolName = getPoolByAddress(event.swap.id, chainId)?.name
-          poolName &&
+          if (poolName) {
             newTransactionList.push({
               object: `${t("depositIn")} ${poolName}`,
               transaction: event.transaction,
               time: getFormattedShortTime(event.timestamp),
               timestamp: parseInt(event.timestamp),
             })
+          }
         })
 
-        const { removeLiquidityEvents } = result.data
         removeLiquidityEvents.map((event) => {
           const poolName = getPoolByAddress(event.swap.id, chainId)?.name
-          poolName &&
+          if (poolName) {
             newTransactionList.push({
               object: `${t("withdrawFrom")} ${poolName}`,
               transaction: event.transaction,
               time: getFormattedShortTime(event.timestamp),
               timestamp: parseInt(event.timestamp),
             })
+          }
         })
 
-        const { swaps } = result.data
-        swaps.map((event) => {
-          if (event.exchanges) {
-            const poolTokens = getPoolByAddress(event.address, chainId)
-              ?.poolTokens
-            poolTokens &&
-              event.exchanges.map((swap) => {
-                const soldToken = poolTokens[parseInt(swap.soldId)].name
-                const boughtToken = poolTokens[parseInt(swap.boughtId)].name
+        swaps.map(({ address, exchanges }) => {
+          const poolTokens = getPoolByAddress(address, chainId)?.poolTokens
+          if (exchanges && poolTokens) {
+            exchanges.map(({ soldId, boughtId, transaction, timestamp }) => {
+              const soldToken = poolTokens[parseInt(soldId)].symbol
+              const boughtToken = poolTokens[parseInt(boughtId)].symbol
 
-                newTransactionList.push({
-                  object: `${t("swap")} ${soldToken} ${t(
-                    "toBe",
-                  )} ${boughtToken}`,
-                  transaction: swap.transaction,
-                  time: getFormattedShortTime(swap.timestamp),
-                  timestamp: parseInt(swap.timestamp),
-                })
+              newTransactionList.push({
+                object: `${t("swap")} ${soldToken} ${t("toBe")} ${boughtToken}`,
+                transaction: transaction,
+                time: getFormattedShortTime(timestamp),
+                timestamp: parseInt(timestamp),
               })
+            })
           }
         })
         setTransactionList(
