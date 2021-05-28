@@ -1,3 +1,4 @@
+import { ChainId, TOKENS_MAP, Token } from "../constants"
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
 
 import { AddressZero } from "@ethersproject/constants"
@@ -132,4 +133,15 @@ export function commify(str: string): string {
 
 export function intersection<T>(set1: Set<T>, set2: Set<T>): Set<T> {
   return new Set([...set1].filter((item) => set2.has(item)))
+}
+
+export function getTokenByAddress(
+  address: string,
+  chainId: ChainId,
+): Token | null {
+  return (
+    Object.values(TOKENS_MAP).find(
+      ({ addresses }) => address === addresses[chainId],
+    ) || null
+  )
 }

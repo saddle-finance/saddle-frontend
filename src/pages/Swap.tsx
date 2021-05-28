@@ -528,7 +528,7 @@ function Swap(): ReactElement {
 
   return (
     <SwapPage
-      pendingSwapData={pendingSwapData}
+      pendingSwaps={pendingSwapData}
       tokenOptions={tokenOptions}
       exchangeRateInfo={{
         pair: `${formState.from.symbol}/${formState.to.symbol}`,

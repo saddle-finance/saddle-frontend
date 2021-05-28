@@ -23,6 +23,7 @@ import TopMenu from "./TopMenu"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
 import { commify } from "../utils"
+import { formatUnits } from "@ethersproject/units"
 import { isHighPriceImpact } from "../utils/priceImpact"
 import { logEvent } from "../utils/googleAnalytics"
 import { updateSwapAdvancedMode } from "../state/user"
@@ -47,7 +48,7 @@ interface Props {
   error: string | null
   fromState: { symbol: string; value: string; valueUSD: BigNumber }
   toState: { symbol: string; value: string; valueUSD: BigNumber }
-  pendingSwapData: PendingSwap[]
+  pendingSwaps: PendingSwap[]
   onChangeFromToken: (tokenSymbol: string) => void
   onChangeFromAmount: (amount: string) => void
   onChangeToToken: (tokenSymbol: string) => void
@@ -65,6 +66,7 @@ const SwapPage = (props: Props): ReactElement => {
     error,
     fromState,
     toState,
+    pendingSwaps,
     onChangeFromToken,
     onChangeFromAmount,
     onChangeToToken,
@@ -240,6 +242,55 @@ const SwapPage = (props: Props): ReactElement => {
               </div>
             </div>
           </div>
+        </div>
+        <div className="pendingSwaps">
+          {pendingSwaps.map((pendingSwap) => {
+            const formattedSynthBalance = commify(
+              formatUnits(
+                pendingSwap.synthBalance,
+                pendingSwap.synthTokenFrom.decimals,
+              ),
+            )
+            return (
+              <div
+                className="pendingSwapItem"
+                key={pendingSwap.itemId?.toString()}
+              >
+                <span className="swapDetails">
+                  {formattedSynthBalance} {pendingSwap.synthTokenFrom.symbol}{" "}
+                  {"->"} {pendingSwap.tokenTo.symbol}
+                </span>
+                <div className="swapTimeContainer">
+                  <svg
+                    width="11"
+                    height="11"
+                    viewBox="0 0 11 11"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M5.23467 1H5.5C7.98605 1 10 3.01525 10 5.49924C10 7.98311 7.98618 10 5.5 10C3.01388 10 1 7.98469 1 5.49924C1 4.30732 1.46423 3.22282 2.21973 2.41912L2.60641 2.78249C1.93974 3.49169 1.53066 4.4476 1.53066 5.49924C1.53066 7.69191 3.30721 9.46943 5.5 9.46943C7.69273 9.46943 9.46934 7.69046 9.46934 5.49924C9.46934 3.39724 7.83438 1.67581 5.76533 1.5393V2.96008H5.23467V1Z"
+                      fill="black"
+                      stroke="black"
+                      strokeWidth="0.3"
+                      strokeMiterlimit="10"
+                    />
+                    <path
+                      d="M5.76204 5.52774L5.76861 5.53328L5.77577 5.53804C5.82206 5.5688 5.85082 5.61957 5.84998 5.67802L5.84997 5.67802V5.68017C5.84997 5.77327 5.77431 5.85 5.67911 5.85C5.62153 5.85 5.56861 5.81994 5.53676 5.77321L5.53241 5.76682L5.52742 5.76091L4.26017 4.26001L5.76204 5.52774Z"
+                      fill="black"
+                      stroke="black"
+                      strokeWidth="0.3"
+                    />
+                  </svg>
+                  <span className="swapTime">
+                    {Math.ceil(pendingSwap.secondsRemaining / 60)} min.
+                  </span>
+                </div>
+              </div>
+            )
+          })}
         </div>
         <Center width="100%" py={6}>
           <Button
