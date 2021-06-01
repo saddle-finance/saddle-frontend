@@ -8,6 +8,7 @@ import {
 import React, {
   ReactElement,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useState,
@@ -23,6 +24,7 @@ import { useBridgeContract, useSwapContract } from "../hooks/useContract"
 
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
+import { PendingSwapsContext } from "../providers/PendingSwapsProvider"
 import SwapPage from "../components/SwapPage"
 import { Zero } from "@ethersproject/constants"
 import { calculateGasEstimate } from "../utils/gasEstimate"
@@ -31,7 +33,6 @@ import { debounce } from "lodash"
 import { formatGasToString } from "../utils/gas"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndSwap } from "../hooks/useApproveAndSwap"
-import usePendingSwapData from "../hooks/usePendingSwapData"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
@@ -92,7 +93,7 @@ function Swap(): ReactElement {
   const tokenBalances = usePoolTokenBalances()
   const bridgeContract = useBridgeContract()
   const calculateSwapPairs = useCalculateSwapPairs()
-  const pendingSwapData = usePendingSwapData()
+  const pendingSwapData = useContext(PendingSwapsContext)
   const { tokenPricesUSD, gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )

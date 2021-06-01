@@ -16,23 +16,48 @@ import { useBridgeContract } from "./useContract"
 
 export interface PendingSwap {
   swapType: SWAP_TYPES
-  settleableAtTimestamp: Date
+  settleableAtTimestamp: number
   secondsRemaining: number
   synthTokenFrom: Token
   synthBalance: BigNumber
   tokenTo: Token
-  itemId: BigNumber
+  itemId: string
+  settlements: Settlement[]
 }
+export interface Settlement {
+  fromToken: Token
+  fromAmount: BigNumber
+  toToken: Token
+  toAmount: BigNumber
+  timestamp: number
+}
+
+type BridgeEventSettle = {
+  requester: string
+  itemId: BigNumber
+  settleFrom: string
+  settleFromAmount: BigNumber
+  settleTo: string
+  settleToAmount: BigNumber
+  isFinal: boolean
+}
+
 const VIRTUAL_SWAP_TOPICS = [
   "TokenToSynth",
   "SynthToToken",
   "TokenToToken",
 ] as const
+const SETTLE = "Settle"
 
 const usePendingSwapData = (): PendingSwap[] => {
   const { account, library, chainId } = useActiveWeb3React()
   const bridgeContract = useBridgeContract()
-  const [pendingSwaps, setPendingSwaps] = useState<PendingSwap[]>([])
+  const [pendingSwaps, setPendingSwaps] = useState<
+    Omit<PendingSwap, "settlements">[]
+  >([])
+  const [settlements, setSettlements] = useState<{
+    [itemId: string]: Settlement[]
+  }>({})
   const queryStartBlock =
     chainId === ChainId.HARDHAT
       ? 0
@@ -44,9 +69,9 @@ const usePendingSwapData = (): PendingSwap[] => {
       setPendingSwaps((swaps) =>
         swaps.map((swap) => {
           let secondsRemaining = Math.floor(
-            (swap.settleableAtTimestamp.getTime() - Date.now()) / 1000,
+            (swap.settleableAtTimestamp - Date.now()) / 1000,
           )
-          secondsRemaining = secondsRemaining > 0 ? secondsRemaining : 0
+          secondsRemaining = Math.max(secondsRemaining, 0)
           return { ...swap, secondsRemaining }
         }),
       )
@@ -55,6 +80,7 @@ const usePendingSwapData = (): PendingSwap[] => {
       clearInterval(timer)
     }
   }, [])
+  // initial fetch + attach listener for events
   useEffect(() => {
     async function fetchExistingPendingSwaps() {
       if (
@@ -91,7 +117,7 @@ const usePendingSwapData = (): PendingSwap[] => {
         pendingSwapItemIdsAndTimestamps.map(([itemId, timestampInSeconds]) =>
           fetchPendingSwapInfo(
             bridgeContract,
-            itemId,
+            itemId.toString(),
             timestampInSeconds,
             chainId,
           ),
@@ -111,13 +137,14 @@ const usePendingSwapData = (): PendingSwap[] => {
       )
         return
 
-      const eventListener = (event: Event) => {
-        const newItemId = event.args?.itemId as BigNumber | null
-        if (newItemId == null) return
+      const pendingSwapEventListener = (event: Event) => {
+        const itemIdArg = event.args?.itemId as BigNumber | null
+        if (itemIdArg == null) return
+        const itemId = itemIdArg.toString()
         void event.getBlock().then((block) => {
           void fetchPendingSwapInfo(
             bridgeContract,
-            newItemId,
+            itemId,
             block.timestamp,
             chainId,
           ).then((fetchedPendingSwap) => {
@@ -125,26 +152,60 @@ const usePendingSwapData = (): PendingSwap[] => {
             setPendingSwaps((existingState) => {
               return [
                 fetchedPendingSwap,
-                ...existingState.filter(({ itemId }) => itemId !== newItemId),
+                ...existingState.filter(
+                  ({ itemId: existingItemId }) => itemId !== existingItemId,
+                ),
               ]
             })
           })
         })
       }
+      const settleEventListener = (event: Event) => {
+        const settlement = (event.args as unknown) as BridgeEventSettle // TODO would love to set this from the typechain type
+        const fromToken = getTokenByAddress(settlement.settleFrom, chainId)
+        const toToken = getTokenByAddress(settlement.settleTo, chainId)
+        if (fromToken == null || toToken == null) return
+        void event.getBlock().then(({ timestamp }) => {
+          setSettlements((existingState) => {
+            const newSettlement = {
+              fromToken,
+              fromAmount: settlement.settleFromAmount,
+              toToken,
+              toAmount: settlement.settleToAmount,
+              timestamp,
+            }
+            const key = settlement.itemId.toString()
+            return {
+              ...existingState,
+              [key]: (existingState[key] || []).concat(newSettlement),
+            }
+          })
+        })
+      }
 
       VIRTUAL_SWAP_TOPICS.forEach((topic) => {
-        void bridgeContract.on(topic, eventListener)
+        void bridgeContract.on(topic, pendingSwapEventListener)
       })
+      bridgeContract.on(SETTLE, settleEventListener)
       return () => {
         VIRTUAL_SWAP_TOPICS.forEach((topic) => {
-          bridgeContract.off(topic, eventListener)
+          bridgeContract.off(topic, pendingSwapEventListener)
         })
+        bridgeContract.off(SETTLE, settleEventListener)
       }
     }
     void attachPendingSwapEventListeners()
     void fetchExistingPendingSwaps()
   }, [account, library, chainId, bridgeContract, queryStartBlock])
-  return pendingSwaps
+  return pendingSwaps.map((swap) => {
+    // merge swaps + settlements state
+    return {
+      ...swap,
+      settlements: (settlements[swap.itemId] || []).sort(
+        (a, b) => a.timestamp - b.timestamp,
+      ),
+    }
+  })
 }
 
 /**
@@ -164,7 +225,7 @@ enum BridgePendingSwapTypes {
 }
 async function fetchPendingSwapInfo(
   bridgeContract: Bridge,
-  itemId: BigNumber,
+  itemId: string,
   timestampInSeconds: number, // in seconds
   chainId: ChainId,
 ) {
@@ -190,16 +251,13 @@ async function fetchPendingSwapInfo(
       chainId,
     ) as Token
     const tokenTo = getTokenByAddress(pendingSwapInfo.tokenTo, chainId) as Token
-    const settleableAtTimestamp = new Date(
+    const settleableAtTimestamp =
       (timestampInSeconds + parseInt(pendingSwapInfo.secsLeft.toString())) * // add event block timestamp + secsLeft
-        1000, // convert to ms
-    )
+      1000 // convert to ms
     result = {
       swapType,
       settleableAtTimestamp,
-      secondsRemaining: Math.ceil(
-        (Date.now() - settleableAtTimestamp.getTime()) / 1000,
-      ),
+      secondsRemaining: Math.ceil((Date.now() - settleableAtTimestamp) / 1000),
       synthBalance: pendingSwapInfo.synthBalance,
       itemId,
       synthTokenFrom: synthTokenFrom,
