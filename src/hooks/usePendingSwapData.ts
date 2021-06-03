@@ -80,7 +80,7 @@ const SETTLE = "Settle"
 const WITHDRAW = "Withdraw"
 
 const usePendingSwapData = (): PendingSwap[] => {
-  const { account, chainId } = useActiveWeb3React()
+  const { account, chainId, library } = useActiveWeb3React()
   const bridgeContract = useBridgeContract()
   const [state, setState] = useState<State>({
     pendingSwaps: [],
@@ -95,21 +95,24 @@ const usePendingSwapData = (): PendingSwap[] => {
   // update the secondsRemaining every 15s
   useEffect(() => {
     const timer = setInterval(() => {
-      setState((prevState) => {
-        const shouldUpdateState = prevState.pendingSwaps.some(
-          ({ secondsRemaining }) => secondsRemaining > 0,
-        )
-        if (!shouldUpdateState) return prevState
-        return {
-          ...prevState,
-          pendingSwaps: prevState.pendingSwaps.map((swap) => {
-            let secondsRemaining = Math.ceil(
-              (swap.settleableAtTimestamp - Date.now()) / 1000,
-            )
-            secondsRemaining = Math.max(secondsRemaining, 0)
-            return { ...swap, secondsRemaining }
-          }),
-        }
+      void library?.getBlock("latest").then(({ timestamp }) => {
+        // block timestamp in secs
+        setState((prevState) => {
+          const shouldUpdateState = prevState.pendingSwaps.some(
+            ({ secondsRemaining }) => secondsRemaining > 0,
+          )
+          if (!shouldUpdateState) return prevState
+          return {
+            ...prevState,
+            pendingSwaps: prevState.pendingSwaps.map((swap) => {
+              let secondsRemaining = Math.ceil(
+                swap.settleableAtTimestamp / 1000 - timestamp,
+              )
+              secondsRemaining = Math.max(secondsRemaining, 0)
+              return { ...swap, secondsRemaining }
+            }),
+          }
+        })
       })
     }, 15 * 1000)
     return () => {
