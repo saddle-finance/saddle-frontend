@@ -118,7 +118,7 @@ const usePendingSwapData = (): PendingSwap[] => {
     return () => {
       clearInterval(timer)
     }
-  }, [])
+  }, [library])
   const pendingSwapEventListener = useCallback(
     (...listenerArgs) => {
       const event = listenerArgs[listenerArgs.length - 1] as Event
