@@ -141,7 +141,9 @@ export function getTokenByAddress(
 ): Token | null {
   return (
     Object.values(TOKENS_MAP).find(
-      ({ addresses }) => address === addresses[chainId],
+      ({ addresses }) =>
+        addresses[chainId] &&
+        address.toLowerCase() === addresses[chainId].toLowerCase(),
     ) || null
   )
 }
