@@ -5,6 +5,13 @@ interface GasPrices {
   gasFast?: number
   gasInstant?: number
 }
+interface SwapStats {
+  [swapAddress: string]: {
+    oneDayVolume: string
+    APY: string
+    TVL: string
+  }
+}
 export interface TokenPricesUSD {
   [tokenSymbol: string]: number
 }
@@ -14,7 +21,7 @@ interface LastTransactionTimes {
 
 type ApplicationState = GasPrices & { tokenPricesUSD?: TokenPricesUSD } & {
   lastTransactionTimes: LastTransactionTimes
-}
+} & { swapStats?: SwapStats }
 
 const initialState: ApplicationState = {
   lastTransactionTimes: {},
@@ -42,6 +49,9 @@ const applicationSlice = createSlice({
         ...action.payload,
       }
     },
+    updateSwapStats(state, action: PayloadAction<SwapStats>): void {
+      state.swapStats = action.payload
+    },
   },
 })
 
@@ -49,6 +59,7 @@ export const {
   updateGasPrices,
   updateTokensPricesUSD,
   updateLastTransactionTimes,
+  updateSwapStats,
 } = applicationSlice.actions
 
 export default applicationSlice.reducer

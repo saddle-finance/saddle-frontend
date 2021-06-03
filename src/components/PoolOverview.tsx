@@ -35,6 +35,15 @@ function PoolOverview({
           }
         : acc
     }, {} as Partial<Record<Partners, string>>),
+    apy: poolData.apy
+      ? String((100 * parseFloat(poolData.apy)).toFixed(1)) + "%"
+      : "",
+    volume: poolData.volume
+      ? "$" + commify(parseFloat(poolData.volume).toFixed(0))
+      : "",
+    utilization: poolData.utilization
+      ? String((100 * parseFloat(poolData.utilization)).toFixed(0) + "%")
+      : "",
     userBalanceUSD: commify(
       formatBNToString(userShareData?.usdBalance || Zero, 18, 2),
     ),
@@ -48,7 +57,6 @@ function PoolOverview({
       }
     }),
   }
-
   const hasShare = !!userShareData?.usdBalance.gt("0")
 
   return (
@@ -91,6 +99,24 @@ function PoolOverview({
             <span className="label">{t("currencyReserves")}</span>
             <span>{`$${formattedData.reserve}`}</span>
           </div>
+          {formattedData.utilization && (
+            <div className="volume">
+              <span className="label">Utilization</span>
+              <span>{formattedData.utilization}</span>
+            </div>
+          )}
+          {formattedData.apy && (
+            <div className="volume">
+              <span className="label">APY</span>
+              <span>{formattedData.apy}</span>
+            </div>
+          )}
+          {formattedData.volume && (
+            <div className="volume">
+              <span className="label">24h Volume</span>
+              <span>{formattedData.volume}</span>
+            </div>
+          )}
         </div>
         <div className="buttons">
           <Link to={`${poolRoute}/withdraw`}>

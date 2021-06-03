@@ -1,6 +1,7 @@
 import {
   ALETH_POOL_NAME,
   BTC_POOL_NAME,
+  ChainId,
   POOLS_MAP,
   PoolName,
   TRANSACTION_TYPES,
@@ -33,7 +34,7 @@ export type Partners = "keep" | "sharedStake" | "alchemix"
 export interface PoolDataType {
   adminFee: BigNumber
   aParameter: BigNumber
-  apy: string // TODO: calculate
+  apy: string
   name: string
   reserve: BigNumber
   swapFee: BigNumber
@@ -41,7 +42,7 @@ export interface PoolDataType {
   totalLocked: BigNumber
   utilization: string // TODO: calculate
   virtualPrice: BigNumber
-  volume: string // TODO: calculate
+  volume: string
   aprs: Partial<
     Record<
       Partners,
@@ -88,7 +89,7 @@ export default function usePoolData(
 ): PoolDataHookReturnType {
   const { account, library, chainId } = useActiveWeb3React()
   const swapContract = useSwapContract(poolName)
-  const { tokenPricesUSD, lastTransactionTimes } = useSelector(
+  const { tokenPricesUSD, lastTransactionTimes, swapStats } = useSelector(
     (state: AppState) => state.application,
   )
   const lastDepositTime = lastTransactionTimes[TRANSACTION_TYPES.DEPOSIT]
@@ -267,6 +268,14 @@ export default function usePoolData(
         ),
         value: userPoolTokenBalances[i],
       }))
+      const { oneDayVolume, TVL, APY } =
+        swapStats && POOL.addresses[ChainId.MAINNET].toLowerCase() in swapStats
+          ? swapStats[POOL.addresses[ChainId.MAINNET].toLowerCase()]
+          : { oneDayVolume: "", TVL: "", APY: "" }
+      const utilization =
+        oneDayVolume && TVL
+          ? String(parseFloat(oneDayVolume) / parseFloat(TVL))
+          : ""
       const poolData = {
         name: poolName,
         tokens: poolTokens,
@@ -276,9 +285,9 @@ export default function usePoolData(
         adminFee: adminFee as BigNumber,
         swapFee: swapFee as BigNumber,
         aParameter: aParameter as BigNumber,
-        volume: "XXX", // TODO
-        utilization: "XXX", // TODO
-        apy: "XXX", // TODO
+        volume: oneDayVolume,
+        utilization: utilization,
+        apy: APY,
         aprs,
         lpTokenPriceUSD,
       }
@@ -317,6 +326,7 @@ export default function usePoolData(
     account,
     library,
     chainId,
+    swapStats,
   ])
 
   return poolData
