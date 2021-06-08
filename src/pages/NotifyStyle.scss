@@ -1,0 +1,24 @@
+@import "../styles/theme";
+
+.bn-notify-custom.bn-notify-notification-info-message {
+  font-family: $font-family;
+  font-weight: $medium;
+}
+
+.bn-notify-custom.bn-notify-notification-close-icon > svg {
+  height: 12px;
+  width: 12px;
+}
+
+.bn-notify-custom.bn-notify-notification-info-meta-duration {
+  display: none;
+}
+
+li.bn-notify-custom.bn-notify-notification-pending.bn-notify-dark-mode{
+  border: 1px solid $white;
+}
+
+
+.bn-notify-custom .bn-notify-notification-status-icon g{
+  animation-iteration-count: 0 !important;
+}

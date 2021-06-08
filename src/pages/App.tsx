@@ -1,4 +1,5 @@
 import "../styles/global.scss"
+import "./NotifyStyle.scss"
 
 import {
   BLOCK_TIME,

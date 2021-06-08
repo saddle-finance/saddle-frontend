@@ -12,14 +12,13 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { GasPrices } from "../state/user"
 import { IS_PRODUCTION } from "../utils/environment"
-import Notify from "bnc-notify"
 import { NumberInputState } from "../utils/numberInputState"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { formatDeadlineToNumber } from "../utils"
-import { getEtherscanLink } from "../utils/getEtherscanLink"
 import { getFormattedTimeString } from "../utils/dateTime"
+import { notifyHandler } from "../utils/notifyHandler"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
@@ -53,10 +52,6 @@ export function useApproveAndDeposit(
     infiniteApproval,
   } = useSelector((state: AppState) => state.user)
   const POOL = POOLS_MAP[poolName]
-  const notify = Notify({
-    dappId: "3f1ffee0-a39b-4f4e-8371-f0e157e4172e",
-    networkId: 1,
-  })
 
   return async function approveAndDeposit(
     state: ApproveAndDepositStateArgument,
@@ -184,22 +179,8 @@ export function useApproveAndDeposit(
           },
         )
       }
-      const { emitter } = notify.hash(spendTransaction.hash)
 
-      emitter.on("txPool", (transaction) => {
-        console.log("txn: ")
-        console.log(transaction)
-        console.log(`\n hash:`)
-        console.log(transaction.hash)
-        return {
-          message: `Your transaction is pending, click for more info.`,
-          onclick: () => {
-            if (transaction.hash) {
-              window.open(getEtherscanLink(transaction.hash, "tx"))
-            }
-          },
-        }
-      })
+      notifyHandler(spendTransaction.hash)
 
       await spendTransaction.wait()
       dispatch(

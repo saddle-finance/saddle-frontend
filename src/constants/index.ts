@@ -378,3 +378,10 @@ export enum SWAP_TYPES {
 // FLAGS
 export const IS_VIRTUAL_SWAP_ACTIVE = false
 // FLAGS END
+
+export const NOTIFY_OPTIONS = {
+  dappId: process.env.REACT_APP_NOTIFY_DAPP_ID,
+  networkId: 1,
+  desktopPosition: "topRight" as const,
+  darkMode: true,
+}
