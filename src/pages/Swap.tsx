@@ -5,7 +5,13 @@ import {
   SWAP_TYPES,
   TOKENS_MAP,
 } from "../constants"
-import React, { ReactElement, useCallback, useMemo, useState } from "react"
+import React, {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
 import {
   SwapData,
   SwapSide,
@@ -109,6 +115,10 @@ function Swap(): ReactElement {
   }
 
   const [formState, setFormState] = useState<FormState>(EMPTY_FORM_STATE)
+  const [prevFormState, setPrevFormState] = useState<FormState>(
+    EMPTY_FORM_STATE,
+  )
+
   const swapContract = useSwapContract(
     formState.to.poolName as PoolName | undefined,
   )
@@ -166,7 +176,8 @@ function Swap(): ReactElement {
   const calculateSwapAmount = useCallback(
     debounce(async (formStateArg: FormState) => {
       if (formStateArg.swapType === SWAP_TYPES.INVALID) return
-      if (bridgeContract == null || tokenBalances === null || chainId == null)
+      if (tokenBalances === null || chainId == null)
+        // || bridgeContract == null
         return
       if (
         formStateArg.from.tokenIndex === undefined ||
@@ -205,7 +216,10 @@ function Swap(): ReactElement {
       }
       if (amountToGive.isZero()) {
         amountToReceive = Zero
-      } else if (formStateArg.swapType === SWAP_TYPES.TOKEN_TO_TOKEN) {
+      } else if (
+        formStateArg.swapType === SWAP_TYPES.TOKEN_TO_TOKEN &&
+        bridgeContract != null
+      ) {
         const originPool = POOLS_MAP[formStateArg.from.poolName]
         const destinationPool = POOLS_MAP[formStateArg.to.poolName]
         const [
@@ -219,7 +233,10 @@ function Swap(): ReactElement {
         )
         amountToReceive = amountOutToken
         amountMediumSynth = amountOutSynth
-      } else if (formStateArg.swapType === SWAP_TYPES.SYNTH_TO_TOKEN) {
+      } else if (
+        formStateArg.swapType === SWAP_TYPES.SYNTH_TO_TOKEN &&
+        bridgeContract != null
+      ) {
         const destinationPool = POOLS_MAP[formStateArg.to.poolName]
         const [
           amountOutSynth,
@@ -232,7 +249,10 @@ function Swap(): ReactElement {
         )
         amountToReceive = amountOutToken
         amountMediumSynth = amountOutSynth
-      } else if (formStateArg.swapType === SWAP_TYPES.TOKEN_TO_SYNTH) {
+      } else if (
+        formStateArg.swapType === SWAP_TYPES.TOKEN_TO_SYNTH &&
+        bridgeContract != null
+      ) {
         const originPool = POOLS_MAP[formStateArg.from.poolName]
         amountToReceive = await bridgeContract.calcTokenToSynth(
           originPool.addresses[chainId],
@@ -240,7 +260,10 @@ function Swap(): ReactElement {
           utils.formatBytes32String(formStateArg.to.symbol),
           amountToGive,
         )
-      } else if (swapContract != null) {
+      } else if (
+        formStateArg.swapType === SWAP_TYPES.DIRECT &&
+        swapContract != null
+      ) {
         amountToReceive = await swapContract.calculateSwap(
           formStateArg.from.tokenIndex,
           formStateArg.to.tokenIndex,
@@ -256,33 +279,41 @@ function Swap(): ReactElement {
         formStateArg.from.valueUSD,
         toValueUSD,
       )
-      setFormState((prevState) => ({
-        ...prevState,
-        error,
-        to: {
-          ...prevState.to,
-          value: amountToReceive,
-          valueUSD: toValueUSD,
-          valueSynth: amountMediumSynth,
-        },
-        priceImpact,
-        exchangeRate: calculateExchangeRate(
-          amountToGive,
-          tokenFrom.decimals,
-          amountToReceive,
-          tokenTo.decimals,
-        ),
-      }))
+      setFormState((prevState) => {
+        const newState = {
+          ...prevState,
+          error,
+          to: {
+            ...prevState.to,
+            value: amountToReceive,
+            valueUSD: toValueUSD,
+            valueSynth: amountMediumSynth,
+          },
+          priceImpact,
+          exchangeRate: calculateExchangeRate(
+            amountToGive,
+            tokenFrom.decimals,
+            amountToReceive,
+            tokenTo.decimals,
+          ),
+        }
+        setPrevFormState(newState)
+        return newState
+      })
     }, 250),
-    [
-      setFormState,
-      tokenBalances,
-      swapContract,
-      bridgeContract,
-      chainId,
-      tokenPricesUSD,
-    ],
+    [tokenBalances, swapContract, bridgeContract, chainId, tokenPricesUSD],
   )
+
+  useEffect(() => {
+    // watch user input fields and calculate other fields if necessary
+    if (
+      prevFormState.from.symbol !== formState.from.symbol ||
+      prevFormState.from.value !== formState.from.value ||
+      prevFormState.to.symbol !== formState.to.symbol
+    ) {
+      void calculateSwapAmount(formState)
+    }
+  }, [prevFormState, formState, calculateSwapAmount])
 
   function handleUpdateAmountFrom(value: string): void {
     setFormState((prevState) => {
@@ -304,7 +335,6 @@ function Swap(): ReactElement {
         priceImpact: Zero,
         exchangeRate: Zero,
       }
-      void calculateSwapAmount(nextState)
       return nextState
     })
   }
@@ -340,7 +370,6 @@ function Swap(): ReactElement {
         currentSwapPairs: swapPairs,
         swapType: activeSwapPair?.type || SWAP_TYPES.INVALID,
       }
-      void calculateSwapAmount(nextState)
       return nextState
     })
   }
@@ -381,7 +410,6 @@ function Swap(): ReactElement {
         currentSwapPairs: swapPairs,
         swapType: activeSwapPair?.type || SWAP_TYPES.INVALID,
       }
-      void calculateSwapAmount(nextState)
       return nextState
     })
   }
@@ -414,7 +442,6 @@ function Swap(): ReactElement {
         route: activeSwapPair.route || [],
         swapType: activeSwapPair.type || SWAP_TYPES.INVALID,
       }
-      void calculateSwapAmount(nextState)
       return nextState
     })
   }
