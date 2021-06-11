@@ -96,7 +96,7 @@ export default function SwapInput({
           type="text"
           placeholder="0.0"
           spellCheck="false"
-          value={commify(inputValue)}
+          value={isSwapFrom ? inputValue : commify(inputValue)}
           onChange={(e) => {
             // remove all chars that aren't a digit or a period
             const newValue = e.target.value.replace(/[^\d|.]/g, "")
