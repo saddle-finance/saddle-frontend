@@ -6,25 +6,17 @@ import React, {
   useState,
 } from "react"
 
-import { BigNumber } from "@ethersproject/bignumber"
 import Divider from "./Divider"
+import { SWAP_TYPES } from "../constants"
+import type { TokenOption } from "../pages/Swap"
 import classnames from "classnames"
 import { commify } from "../utils"
 import { formatBNToString } from "../utils"
 import styles from "./SearchSelect.module.scss"
 import { useTranslation } from "react-i18next"
 
-interface TokenData {
-  name: string
-  valueUSD: BigNumber
-  amount: BigNumber
-  icon: string
-  symbol: string
-  decimals: number
-  isAvailable: boolean
-}
 interface Props {
-  tokensData: TokenData[]
+  tokensData: TokenOption[]
   onSelect: (symbol: string) => void
   value?: string
 }
@@ -141,8 +133,15 @@ function ListItem({
   decimals,
   isActive,
   isAvailable,
-}: TokenData & { isActive: boolean }) {
+  swapType,
+}: TokenOption & { isActive: boolean }) {
   const { t } = useTranslation()
+  const isVirtualSwap = ([
+    SWAP_TYPES.SYNTH_TO_SYNTH,
+    SWAP_TYPES.SYNTH_TO_TOKEN,
+    SWAP_TYPES.TOKEN_TO_SYNTH,
+    SWAP_TYPES.TOKEN_TO_TOKEN,
+  ] as Array<SWAP_TYPES | null>).includes(swapType)
   return (
     <div
       className={classnames(styles.listItem, {
@@ -157,6 +156,9 @@ function ListItem({
           <b>{symbol}</b>
           {!isAvailable && (
             <span className={styles.unavailableTag}>{t("unavailable")}</span>
+          )}
+          {isAvailable && isVirtualSwap && (
+            <span className={styles.virtualSwapTag}>{t("virtualSwap")}</span>
           )}
         </div>
         <p className={styles.textMinor}>{name}</p>
