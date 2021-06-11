@@ -11,6 +11,7 @@ import { Route, Switch } from "react-router-dom"
 
 import { AppDispatch } from "../state"
 import Deposit from "./Deposit"
+import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
 import Risk from "./Risk"
 import Swap from "./Swap"
@@ -29,53 +30,55 @@ export default function App(): ReactElement {
       <Web3ReactManager>
         <GasAndTokenPrices>
           <ToastsProvider>
-            <Switch>
-              <Route exact path="/" component={Swap} />
-              <Route exact path="/pools" component={Pools} />
-              <Route
-                exact
-                path="/pools/usd/deposit"
-                render={(props) => (
-                  <Deposit {...props} poolName={STABLECOIN_POOL_NAME} />
-                )}
-              />
-              <Route
-                exact
-                path="/pools/btc/deposit"
-                render={(props) => (
-                  <Deposit {...props} poolName={BTC_POOL_NAME} />
-                )}
-              />
-              <Route
-                exact
-                path="/pools/veth2/deposit"
-                render={(props) => (
-                  <Deposit {...props} poolName={VETH2_POOL_NAME} />
-                )}
-              />
-              <Route
-                exact
-                path="/pools/btc/withdraw"
-                render={(props) => (
-                  <Withdraw {...props} poolName={BTC_POOL_NAME} />
-                )}
-              />
-              <Route
-                exact
-                path="/pools/usd/withdraw"
-                render={(props) => (
-                  <Withdraw {...props} poolName={STABLECOIN_POOL_NAME} />
-                )}
-              />
-              <Route
-                exact
-                path="/pools/veth2/withdraw"
-                render={(props) => (
-                  <Withdraw {...props} poolName={VETH2_POOL_NAME} />
-                )}
-              />
-              <Route exact path="/risk" component={Risk} />
-            </Switch>
+            <PendingSwapsProvider>
+              <Switch>
+                <Route exact path="/" component={Swap} />
+                <Route exact path="/pools" component={Pools} />
+                <Route
+                  exact
+                  path="/pools/usd/deposit"
+                  render={(props) => (
+                    <Deposit {...props} poolName={STABLECOIN_POOL_NAME} />
+                  )}
+                />
+                <Route
+                  exact
+                  path="/pools/btc/deposit"
+                  render={(props) => (
+                    <Deposit {...props} poolName={BTC_POOL_NAME} />
+                  )}
+                />
+                <Route
+                  exact
+                  path="/pools/veth2/deposit"
+                  render={(props) => (
+                    <Deposit {...props} poolName={VETH2_POOL_NAME} />
+                  )}
+                />
+                <Route
+                  exact
+                  path="/pools/btc/withdraw"
+                  render={(props) => (
+                    <Withdraw {...props} poolName={BTC_POOL_NAME} />
+                  )}
+                />
+                <Route
+                  exact
+                  path="/pools/usd/withdraw"
+                  render={(props) => (
+                    <Withdraw {...props} poolName={STABLECOIN_POOL_NAME} />
+                  )}
+                />
+                <Route
+                  exact
+                  path="/pools/veth2/withdraw"
+                  render={(props) => (
+                    <Withdraw {...props} poolName={VETH2_POOL_NAME} />
+                  )}
+                />
+                <Route exact path="/risk" component={Risk} />
+              </Switch>
+            </PendingSwapsProvider>
           </ToastsProvider>
         </GasAndTokenPrices>
       </Web3ReactManager>

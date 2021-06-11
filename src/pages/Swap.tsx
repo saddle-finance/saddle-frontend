@@ -8,6 +8,7 @@ import {
 import React, {
   ReactElement,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useState,
@@ -23,6 +24,7 @@ import { useBridgeContract, useSwapContract } from "../hooks/useContract"
 
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
+import { PendingSwapsContext } from "../providers/PendingSwapsProvider"
 import SwapPage from "../components/SwapPage"
 import { Zero } from "@ethersproject/constants"
 import { calculateGasEstimate } from "../utils/gasEstimate"
@@ -91,6 +93,7 @@ function Swap(): ReactElement {
   const tokenBalances = usePoolTokenBalances()
   const bridgeContract = useBridgeContract()
   const calculateSwapPairs = useCalculateSwapPairs()
+  const pendingSwapData = useContext(PendingSwapsContext)
   const { tokenPricesUSD, gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -526,6 +529,7 @@ function Swap(): ReactElement {
 
   return (
     <SwapPage
+      pendingSwaps={pendingSwapData}
       tokenOptions={tokenOptions}
       exchangeRateInfo={{
         pair: `${formState.from.symbol}/${formState.to.symbol}`,
