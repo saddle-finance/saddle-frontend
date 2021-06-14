@@ -22,6 +22,11 @@ function Pools(): ReactElement | null {
       <TopMenu activeTab="pools" />
       <div className={styles.content}>
         <PoolOverview
+          poolData={alethPoolData}
+          poolRoute={`/pools/aleth`}
+          userShareData={alethUserShareData}
+        />
+        <PoolOverview
           poolData={btcPoolData}
           poolRoute={`/pools/btc`}
           userShareData={btcUserShareData}
@@ -35,11 +40,6 @@ function Pools(): ReactElement | null {
           poolData={veth2PoolData}
           poolRoute={`/pools/veth2`}
           userShareData={veth2UserShareData}
-        />
-        <PoolOverview
-          poolData={alethPoolData}
-          poolRoute={`/pools/aleth`}
-          userShareData={alethUserShareData}
         />
       </div>
     </div>

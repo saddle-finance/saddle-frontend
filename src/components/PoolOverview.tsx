@@ -3,6 +3,7 @@ import "./PoolOverview.scss"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement } from "react"
 import { formatBNToPercentString, formatBNToString } from "../utils"
+
 import Button from "./Button"
 import { Link } from "react-router-dom"
 import { TOKENS_MAP } from "../constants"
@@ -58,10 +59,10 @@ function PoolOverview({
         )}
         <div className="tokens">
           <span style={{ marginRight: "8px" }}>[</span>
-          {formattedData.tokens.map(({ symbol, icon, name }) => (
+          {formattedData.tokens.map(({ symbol, icon }) => (
             <div className="token" key={symbol}>
               <img alt="icon" src={icon} />
-              <span>{name}</span>
+              <span>{symbol}</span>
             </div>
           ))}
           <span style={{ marginLeft: "-8px" }}>]</span>
