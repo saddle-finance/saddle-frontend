@@ -79,7 +79,7 @@ function PoolInfoCard({ data }: Props): ReactElement {
           {formattedData.tokens.map((token, index) => (
             <div className="token" key={index}>
               <img alt="icon" src={token.icon} />
-              <span className="bold">{`${token.name} ${token.percent}`}</span>
+              <span className="bold">{`${token.symbol} ${token.percent}`}</span>
               <span className="tokenValue">{token.value}</span>
             </div>
           ))}
