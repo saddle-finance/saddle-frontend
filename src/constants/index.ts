@@ -90,7 +90,7 @@ export const VETH2_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
 
 export const ALETH_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0xa6018520EAACC06C30fF2e1B3ee2c7c22e64196a",
-  [ChainId.HARDHAT]: "0xbf9fBFf01664500A33080Da5d437028b07DFcC55",
+  [ChainId.HARDHAT]: "0xCafac3dD18aC6c6e92c921884f9E4176737C052c",
 }
 
 export const MERKLETREE_DATA: { [chainId in ChainId]: string } = {
@@ -123,7 +123,7 @@ export const ALETH_SWAP_TOKEN_CONTRACT_ADDRESSES: {
   [chainId in ChainId]: string
 } = {
   [ChainId.MAINNET]: "0xc9da65931ABf0Ed1b74Ce5ad8c041C4220940368",
-  [ChainId.HARDHAT]: "0xC863F1F636fddce400E7515eCBDAbbEc4d1E0390",
+  [ChainId.HARDHAT]: "0xAe367415f4BDe0aDEE3e59C35221d259f517413E",
 }
 
 export const BTC_SWAP_TOKEN = new Token(
@@ -290,7 +290,7 @@ export const VETH2_POOL_TOKENS = [WETH, VETH2]
 
 const ALETH_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6",
-  [ChainId.HARDHAT]: "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F",
+  [ChainId.HARDHAT]: "0x09635F643e140090A9A8Dcd712eD6285858ceBef",
 }
 export const ALETH = new Token(
   ALETH_CONTRACT_ADDRESSES,
@@ -303,7 +303,7 @@ export const ALETH = new Token(
 
 const SETH_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb",
-  [ChainId.HARDHAT]: "0xc5a5C42992dECbae36851359345FE25997F5C42d",
+  [ChainId.HARDHAT]: "0x67d269191c92Caf3cD7723F116c85e6E9bf55933",
 }
 export const SETH = new Token(
   SETH_CONTRACT_ADDRESSES,
