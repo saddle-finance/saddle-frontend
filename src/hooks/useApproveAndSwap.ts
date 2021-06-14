@@ -9,6 +9,7 @@ import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { formatDeadlineToNumber } from "../utils"
 import { getFormattedTimeString } from "../utils/dateTime"
+import { notifyHandler } from "../utils/notifyHandler"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
@@ -129,6 +130,9 @@ export function useApproveAndSwap(): (
           gasPrice,
         },
       )
+
+      notifyHandler(swapTransaction.hash)
+
       await swapTransaction.wait()
       dispatch(
         updateLastTransactionTimes({
