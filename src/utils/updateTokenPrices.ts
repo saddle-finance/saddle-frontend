@@ -24,6 +24,8 @@ const otherTokens = {
   BTC: "bitcoin",
   KEEP: "keep-network",
   SGT: "sharedstake-governance-token",
+  ALETH: "ethereum", // TODO: pull alETH price once it's added to coingecko
+  SETH: "seth",
 }
 
 export default function fetchTokenPricesUSD(

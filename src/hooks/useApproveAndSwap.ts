@@ -11,6 +11,7 @@ import { Bridge } from "../../types/ethers-contracts/Bridge"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { GasPrices } from "../state/user"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
+import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { formatDeadlineToNumber } from "../utils"
@@ -26,7 +27,7 @@ import { useToast } from "./useToast"
 import { utils } from "ethers"
 
 type Contracts = {
-  swapContract: SwapFlashLoan | SwapGuarded | null
+  swapContract: SwapFlashLoan | SwapFlashLoanNoWithdrawFee | SwapGuarded | null
   bridgeContract: Bridge | null
 }
 type SwapSide = {

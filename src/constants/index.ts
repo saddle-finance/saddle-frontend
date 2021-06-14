@@ -2,12 +2,14 @@ import { injected, walletconnect, walletlink } from "../connectors"
 
 import { AbstractConnector } from "@web3-react/abstract-connector"
 import { BigNumber } from "@ethersproject/bignumber"
+import alethLogo from "../assets/icons/aleth.svg"
 import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
 import daiLogo from "../assets/icons/dai.svg"
 import metamaskIcon from "../assets/icons/metamask.svg"
 import renbtcLogo from "../assets/icons/renbtc.svg"
 import saddleLogo from "../assets/icons/logo.svg"
 import sbtcLogo from "../assets/icons/sbtc.svg"
+import sethLogo from "../assets/icons/seth.svg"
 import tbtcLogo from "../assets/icons/tbtc.svg"
 import usdcLogo from "../assets/icons/usdc.svg"
 import usdtLogo from "../assets/icons/usdt.svg"
@@ -20,10 +22,12 @@ export const NetworkContextName = "NETWORK"
 export const BTC_POOL_NAME = "BTC Pool"
 export const STABLECOIN_POOL_NAME = "Stablecoin Pool"
 export const VETH2_POOL_NAME = "vETH2 Pool"
+export const ALETH_POOL_NAME = "alETH Pool"
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof STABLECOIN_POOL_NAME
   | typeof VETH2_POOL_NAME
+  | typeof ALETH_POOL_NAME
 
 export enum ChainId {
   MAINNET = 1,
@@ -84,6 +88,11 @@ export const VETH2_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.HARDHAT]: "0x6F62d12568c81Dc0fb38426B7Cdba2d265f89B29",
 }
 
+export const ALETH_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0xa6018520EAACC06C30fF2e1B3ee2c7c22e64196a",
+  [ChainId.HARDHAT]: "0xbf9fBFf01664500A33080Da5d437028b07DFcC55",
+}
+
 export const MERKLETREE_DATA: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "mainnetTestAccounts.json",
   [ChainId.HARDHAT]: "hardhat.json",
@@ -110,6 +119,13 @@ export const VETH2_SWAP_TOKEN_CONTRACT_ADDRESSES: {
   [ChainId.HARDHAT]: "0xd44a47B19a7862709588D574f39480f9C4DED1A6",
 }
 
+export const ALETH_SWAP_TOKEN_CONTRACT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "0xc9da65931ABf0Ed1b74Ce5ad8c041C4220940368",
+  [ChainId.HARDHAT]: "0xC863F1F636fddce400E7515eCBDAbbEc4d1E0390",
+}
+
 export const BTC_SWAP_TOKEN = new Token(
   BTC_SWAP_TOKEN_CONTRACT_ADDRESSES,
   18,
@@ -134,6 +150,15 @@ export const VETH2_SWAP_TOKEN = new Token(
   "saddleVETH2",
   "saddleveth2",
   "Saddle WETH/vETH2",
+  saddleLogo,
+)
+
+export const ALETH_SWAP_TOKEN = new Token(
+  ALETH_SWAP_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "saddleALETH",
+  "saddlealeth",
+  "Saddle WETH/alETH/sETH",
   saddleLogo,
 )
 
@@ -263,6 +288,34 @@ export const VETH2 = new Token(
 
 export const VETH2_POOL_TOKENS = [WETH, VETH2]
 
+const ALETH_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6",
+  [ChainId.HARDHAT]: "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F",
+}
+export const ALETH = new Token(
+  ALETH_CONTRACT_ADDRESSES,
+  18,
+  "alETH",
+  "aleth",
+  "Alchemix ETH",
+  alethLogo,
+)
+
+const SETH_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb",
+  [ChainId.HARDHAT]: "0xc5a5C42992dECbae36851359345FE25997F5C42d",
+}
+export const SETH = new Token(
+  SETH_CONTRACT_ADDRESSES,
+  18,
+  "sETH",
+  "seth",
+  "Synth sETH",
+  sethLogo,
+)
+
+export const ALETH_POOL_TOKENS = [WETH, ALETH, SETH]
+
 export type Pool = {
   name: string
   lpToken: Token
@@ -294,6 +347,13 @@ export const POOLS_MAP: PoolsMap = {
     lpToken: VETH2_SWAP_TOKEN,
     poolTokens: VETH2_POOL_TOKENS,
     isSynthetic: false,
+  },
+  [ALETH_POOL_NAME]: {
+    name: ALETH_POOL_NAME,
+    addresses: ALETH_SWAP_ADDRESSES,
+    lpToken: ALETH_SWAP_TOKEN,
+    poolTokens: ALETH_POOL_TOKENS,
+    isSynthetic: true,
   },
 }
 
