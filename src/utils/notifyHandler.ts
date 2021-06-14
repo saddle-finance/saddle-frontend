@@ -9,45 +9,26 @@ export function notifyHandler(hash: string): void {
 
   emitter.on("txPool", (transaction) => {
     if (transaction.hash) {
-      console.log(transaction)
       return {
-        message: `Your transaction is pending, <a href="${getEtherscanLink(
+        message: `Transaction is pending, check it <a href="${getEtherscanLink(
           transaction.hash,
           "tx",
-        )}" rel="noopener noreferrer" target="_blank">click here</a> for more info.`,
+        )}" rel="noopener noreferrer" target="_blank">on Etherscan</a>.`,
       }
     }
   })
-
-  emitter.on("all", (transaction) => ({
-    onclick: () => {
-      console.log(transaction)
-      if (transaction.hash) {
-        window.open(
-          getEtherscanLink(transaction.hash, "tx"),
-          "_blank",
-          "noopener norefferer",
-        )
-      }
-    },
-  }))
+  emitter.on("txSent", () => {
+    return {
+      message: `Transaction has been sent to the network`,
+    }
+  })
+  emitter.on("txConfirmed", console.log)
+  emitter.on("txSpeedUp", console.log)
+  emitter.on("txCancel", (transaction) => {
+    console.log("txCancel", transaction)
+    return {
+      message: `Transaction is canceled.`,
+    }
+  })
+  emitter.on("txFailed", console.log)
 }
-
-/*
-const { emitter } = notify.hash(spendTransaction.hash)
-
-emitter.on("txPool", (transaction) => {
-  return {
-    message: `Your transaction is pending, click for more info.`,
-    onclick: () => {
-      if (transaction.hash) {
-        window.open(
-          getEtherscanLink(transaction.hash, "tx"),
-          "_blank",
-          "noopener norefferer",
-        )
-      }
-    },
-  }
-})
-*/

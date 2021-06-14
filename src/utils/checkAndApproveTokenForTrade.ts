@@ -5,9 +5,8 @@ import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import { MaxUint256 } from "@ethersproject/constants"
-import Notify from "bnc-notify"
 import { Zero } from "@ethersproject/constants"
-import { getEtherscanLink } from "../utils/getEtherscanLink"
+import { notifyHandler } from "../utils/notifyHandler"
 
 /**
  * Checks if a spender is allowed to spend some amount of a token.
@@ -42,10 +41,6 @@ export default async function checkAndApproveTokenForTrade(
     spenderAddress,
     swapAddress,
   )
-  const notify = Notify({
-    dappId: "3f1ffee0-a39b-4f4e-8371-f0e157e4172e",
-    networkId: 1,
-  })
 
   console.debug(
     `Existing ${tokenName} Allowance: ${existingAllowance.toString()}`,
@@ -58,23 +53,8 @@ export default async function checkAndApproveTokenForTrade(
         swapAddress,
         amount,
       )
-
-      const { emitter } = notify.hash(approvalTransaction.hash)
-
-      emitter.on("txPool", (transaction) => {
-        console.log("txn: ")
-        console.log(transaction)
-        console.log(`\n hash:`)
-        console.log(transaction.hash)
-        return {
-          message: `Your transaction is pending, click for more info.`,
-          onclick: () => {
-            if (transaction.hash) {
-              window.open(getEtherscanLink(transaction.hash, "tx"))
-            }
-          },
-        }
-      })
+      // Add notification
+      notifyHandler(approvalTransaction.hash)
       const confirmedTransaction = await approvalTransaction.wait()
       cleanupOnStart?.()
       callbacks.onTransactionSuccess?.(confirmedTransaction)

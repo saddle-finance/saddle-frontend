@@ -1,8 +1,19 @@
 @import "../styles/theme";
 
+
+ul.bn-notify-custom.bn-notify-notifications {
+  width: 320px;
+}
+
 .bn-notify-custom.bn-notify-notification-info-message {
   font-family: $font-family;
   font-weight: $medium;
+
+  a {
+    text-decoration: underline;
+    color: $primary;
+    font-weight: $medium;
+  }
 }
 
 .bn-notify-custom.bn-notify-notification-close-icon > svg {
@@ -16,9 +27,14 @@
 
 li.bn-notify-custom.bn-notify-notification-pending.bn-notify-dark-mode{
   border: 1px solid $white;
-}
 
+  .bn-notify-custom.bn-notify-notification-status-icon{
+    #el_PHAWgO26lN, #el_A4XF5QQwhp {
+      stroke: $white;
+    }
 
-.bn-notify-custom .bn-notify-notification-status-icon g{
-  animation-iteration-count: 0 !important;
+    g {
+      animation-iteration-count: 0 !important;
+    }
+  }
 }

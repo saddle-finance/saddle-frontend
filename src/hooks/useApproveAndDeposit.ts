@@ -17,7 +17,7 @@ import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { formatDeadlineToNumber } from "../utils"
-import { getFormattedTimeString } from "../utils/dateTime"
+// import { getFormattedTimeString } from "../utils/dateTime"
 import { notifyHandler } from "../utils/notifyHandler"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
@@ -25,7 +25,7 @@ import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
 import { useDispatch } from "react-redux"
 import { useSelector } from "react-redux"
-import { useToast } from "./useToast"
+// import { useToast } from "./useToast"
 
 interface ApproveAndDepositStateArgument {
   [tokenSymbol: string]: NumberInputState
@@ -38,7 +38,7 @@ export function useApproveAndDeposit(
   const swapContract = useSwapContract(poolName)
   const tokenContracts = useAllContracts()
   const { account } = useActiveWeb3React()
-  const { addToast, clearToasts } = useToast()
+  // const { addToast, clearToasts } = useToast()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -71,27 +71,27 @@ export function useApproveAndDeposit(
         spendingValue,
         infiniteApproval,
         {
-          onTransactionStart: () => {
-            return addToast(
-              {
-                type: "pending",
-                title: `${getFormattedTimeString()} Approving spend for ${
-                  token.name
-                }`,
-              },
-              {
-                autoDismiss: false, // TODO: be careful of orphan toasts on error
-              },
-            )
-          },
-          onTransactionSuccess: () => {
-            return addToast({
-              type: "success",
-              title: `${getFormattedTimeString()} Successfully approved spend for ${
-                token.name
-              }`,
-            })
-          },
+          // onTransactionStart: () => {
+          //   return addToast(
+          //     {
+          //       type: "pending",
+          //       title: `${getFormattedTimeString()} Approving spend for ${
+          //         token.name
+          //       }`,
+          //     },
+          //     {
+          //       autoDismiss: false, // TODO: be careful of orphan toasts on error
+          //     },
+          //   )
+          // },
+          // onTransactionSuccess: () => {
+          //   return addToast({
+          //     type: "success",
+          //     title: `${getFormattedTimeString()} Successfully approved spend for ${
+          //       token.name
+          //     }`,
+          //   })
+          // },
           onTransactionError: () => {
             throw new Error("Your transaction could not be completed")
           },
@@ -130,10 +130,10 @@ export function useApproveAndDeposit(
       }
 
       minToMint = subtractSlippage(minToMint, slippageSelected, slippageCustom)
-      const clearMessage = addToast({
-        type: "pending",
-        title: `${getFormattedTimeString()} Starting your deposit...`,
-      })
+      // const clearMessage = addToast({
+      //   type: "pending",
+      //   title: `${getFormattedTimeString()} Starting your deposit...`,
+      // })
       let gasPrice
       if (gasPriceSelected === GasPrices.Custom) {
         gasPrice = gasCustom?.valueSafe
@@ -188,19 +188,19 @@ export function useApproveAndDeposit(
           [TRANSACTION_TYPES.DEPOSIT]: Date.now(),
         }),
       )
-      clearMessage()
-      addToast({
-        type: "success",
-        title: `${getFormattedTimeString()} Liquidity added, giddyup! 🤠`,
-      })
+      // clearMessage()
+      // addToast({
+      //   type: "success",
+      //   title: `${getFormattedTimeString()} Liquidity added, giddyup! 🤠`,
+      // })
       return Promise.resolve()
     } catch (e) {
       console.error(e)
-      clearToasts()
-      addToast({
-        type: "error",
-        title: `${getFormattedTimeString()} Unable to complete your transaction`,
-      })
+      // clearToasts()
+      // addToast({
+      //   type: "error",
+      //   title: `${getFormattedTimeString()} Unable to complete your transaction`,
+      // })
     }
   }
 }
