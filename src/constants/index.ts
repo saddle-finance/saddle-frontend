@@ -296,7 +296,7 @@ export const ALETH = new Token(
   ALETH_CONTRACT_ADDRESSES,
   18,
   "alETH",
-  "aleth",
+  "alchemix-eth",
   "Alchemix ETH",
   alethLogo,
 )
