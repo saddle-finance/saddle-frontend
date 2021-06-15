@@ -1,5 +1,5 @@
-import { AddressZero, Zero } from "@ethersproject/constants"
 import {
+  ALETH_POOL_NAME,
   BTC_POOL_NAME,
   ChainId,
   POOLS_MAP,
@@ -7,6 +7,7 @@ import {
   TRANSACTION_TYPES,
   VETH2_POOL_NAME,
 } from "../constants"
+import { AddressZero, Zero } from "@ethersproject/constants"
 import { Contract, Provider } from "ethcall"
 import { MulticallContract, MulticallProvider } from "../types/ethcall"
 import { formatBNToPercentString, getContract } from "../utils"
@@ -22,6 +23,8 @@ import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import SGT_REWARDS_ABI from "../constants/abis/sharedStakeStakingRewards.json"
 import { SharedStakeStakingRewards } from "../../types/ethers-contracts/SharedStakeStakingRewards"
 import { SimpleBalanceOf } from "../../types/ethers-contracts/SimpleBalanceOf"
+import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
+import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { Web3Provider } from "@ethersproject/providers"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
@@ -114,12 +117,31 @@ export default function usePoolData(
         return
       const POOL = POOLS_MAP[poolName]
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let withdrawPromises: any
+      if (POOL.name === ALETH_POOL_NAME) {
+        withdrawPromises = [
+          Promise.resolve(BigNumber.from(0)),
+          (swapContract as SwapFlashLoanNoWithdrawFee).swapStorage(),
+        ]
+      } else {
+        withdrawPromises = [
+          (swapContract as SwapFlashLoan).calculateCurrentWithdrawFee(
+            account || AddressZero,
+          ),
+          (swapContract as SwapFlashLoan).swapStorage(), // will fail without account
+        ]
+      }
+
       // Swap fees, price, and LP Token data
-      const [userCurrentWithdrawFee, swapStorage] = await Promise.all([
-        swapContract.calculateCurrentWithdrawFee(account || AddressZero),
-        swapContract.swapStorage(), // will fail without account
-      ])
-      const { adminFee, lpToken: lpTokenAddress, swapFee } = swapStorage
+      const [userCurrentWithdrawFee, swapStorage] = await Promise.all(
+        withdrawPromises,
+      )
+      const {
+        adminFee,
+        lpToken: lpTokenAddress,
+        swapFee,
+      } = swapStorage as SwapFlashLoan
       let lpTokenContract
       if (poolName === BTC_POOL_NAME) {
         lpTokenContract = getContract(
@@ -313,8 +335,8 @@ export default function usePoolData(
         reserve: tokenBalancesUSDSum,
         totalLocked: totalLpTokenBalance,
         virtualPrice: virtualPrice,
-        adminFee: adminFee,
-        swapFee: swapFee,
+        adminFee: adminFee as BigNumber,
+        swapFee: swapFee as BigNumber,
         volume: "XXX", // TODO
         utilization: "XXX", // TODO
         apy: "XXX", // TODO
@@ -331,7 +353,7 @@ export default function usePoolData(
             underlyingTokensAmount: userPoolTokenBalancesSum,
             usdBalance: userPoolTokenBalancesUSDSum,
             tokens: userPoolTokens,
-            currentWithdrawFee: userCurrentWithdrawFee,
+            currentWithdrawFee: userCurrentWithdrawFee as BigNumber,
             lpTokenBalance: userLpTokenBalance,
             amountsStaked, // this is # of underlying tokens (eg btc), not lpTokens
           }

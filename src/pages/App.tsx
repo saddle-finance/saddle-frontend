@@ -1,6 +1,7 @@
 import "../styles/global.scss"
 
 import {
+  ALETH_POOL_NAME,
   BLOCK_TIME,
   BTC_POOL_NAME,
   STABLECOIN_POOL_NAME,
@@ -57,6 +58,13 @@ export default function App(): ReactElement {
                 />
                 <Route
                   exact
+                  path="/pools/aleth/deposit"
+                  render={(props) => (
+                    <Deposit {...props} poolName={ALETH_POOL_NAME} />
+                  )}
+                />
+                <Route
+                  exact
                   path="/pools/btc/withdraw"
                   render={(props) => (
                     <Withdraw {...props} poolName={BTC_POOL_NAME} />
@@ -76,6 +84,13 @@ export default function App(): ReactElement {
                     <Withdraw {...props} poolName={VETH2_POOL_NAME} />
                   )}
                 />
+                <Route
+                  exact
+                  path="/pools/aleth/withdraw"
+                  render={(props) => (
+                    <Withdraw {...props} poolName={ALETH_POOL_NAME} />
+                  )}
+                />
                 <Route exact path="/risk" component={Risk} />
               </Switch>
             </PendingSwapsProvider>
@@ -90,14 +105,14 @@ function GasAndTokenPrices({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
   const dispatch = useDispatch<AppDispatch>()
-  const { library } = useActiveWeb3React()
+  const { chainId, library } = useActiveWeb3React()
 
   const fetchAndUpdateGasPrice = useCallback(() => {
     void fetchGasPrices(dispatch)
   }, [dispatch])
   const fetchAndUpdateTokensPrice = useCallback(() => {
-    fetchTokenPricesUSD(dispatch, library)
-  }, [dispatch, library])
+    fetchTokenPricesUSD(dispatch, chainId, library)
+  }, [dispatch, chainId, library])
   usePoller(fetchAndUpdateGasPrice, BLOCK_TIME)
   usePoller(fetchAndUpdateTokensPrice, BLOCK_TIME * 3)
   return <>{children}</>
