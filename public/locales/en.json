@@ -4,6 +4,8 @@
   "adminFee": "Admin fee",
   "adminKeys": "Admin keys",
   "advancedOptions": "Advanced Options",
+  "aParameter": "A parameter",
+  "aParameterTooltip": "Amplification coefficient. Higher values widen the range of low-slippages swaps, while lower values help keep the pool's composition balanced.",
   "apy": "APY",
   "audits": "Audits",
   "averagedBalance": "Averaged balance",
