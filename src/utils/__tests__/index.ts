@@ -1,7 +1,23 @@
-import { calculateExchangeRate, commify, intersection } from "../index"
+import {
+  calculateExchangeRate,
+  commify,
+  getTokenByAddress,
+  intersection,
+} from "../index"
 
+import { TOKENS_MAP } from "../../constants/index"
 import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
+
+describe("getTokenByAddress", () => {
+  it("correctly fetches a token", () => {
+    const chainId = 1
+    const target = TOKENS_MAP["sBTC"]
+    expect(getTokenByAddress(target.addresses[chainId], chainId)).toEqual(
+      target,
+    )
+  })
+})
 
 describe("intersection", () => {
   it("correctly intersects two sets", () => {

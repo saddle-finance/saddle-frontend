@@ -1,4 +1,5 @@
 import {
+  ALETH_POOL_NAME,
   BTC_POOL_NAME,
   POOLS_MAP,
   PoolName,
@@ -14,6 +15,7 @@ import { GasPrices } from "../state/user"
 import { IS_PRODUCTION } from "../utils/environment"
 import { NumberInputState } from "../utils/numberInputState"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
+import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { formatDeadlineToNumber } from "../utils"
@@ -121,11 +123,18 @@ export function useApproveAndDeposit(
       if (isFirstTransaction) {
         minToMint = BigNumber.from("0")
       } else {
-        minToMint = await swapContract.calculateTokenAmount(
-          account,
-          POOL.poolTokens.map(({ symbol }) => state[symbol].valueSafe),
-          true, // deposit boolean
-        )
+        if (poolName === ALETH_POOL_NAME) {
+          minToMint = await (swapContract as SwapFlashLoanNoWithdrawFee).calculateTokenAmount(
+            POOL.poolTokens.map(({ symbol }) => state[symbol].valueSafe),
+            true, // deposit boolean
+          )
+        } else {
+          minToMint = await (swapContract as SwapFlashLoan).calculateTokenAmount(
+            account,
+            POOL.poolTokens.map(({ symbol }) => state[symbol].valueSafe),
+            true, // deposit boolean
+          )
+        }
       }
 
       minToMint = subtractSlippage(minToMint, slippageSelected, slippageCustom)

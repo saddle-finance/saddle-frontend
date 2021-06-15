@@ -5,6 +5,7 @@ import { commify, formatBNToString } from "../utils"
 import Copy from "./Copy"
 import Identicon from "./Identicon"
 import { SUPPORTED_WALLETS } from "../constants"
+import Transactions from "./Transactions"
 import { Zero } from "@ethersproject/constants"
 import { find } from "lodash"
 import { getEtherscanLink } from "../utils/getEtherscanLink"
@@ -101,11 +102,7 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
       </div>
 
       <div className="lowerSection">
-        <div className="titleRow">
-          <h4 className="txn">{t("recentTransactions")}</h4>
-          <button className="textStyle clear">{t("clear")}</button>
-        </div>
-        <span>{t("yourRecentTransactions")}</span>
+        <Transactions />
       </div>
     </div>
   )

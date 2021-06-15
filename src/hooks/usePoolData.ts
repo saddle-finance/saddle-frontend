@@ -1,5 +1,5 @@
-import { AddressZero, Zero } from "@ethersproject/constants"
 import {
+  ALETH_POOL_NAME,
   BTC_POOL_NAME,
   ChainId,
   POOLS_MAP,
@@ -7,6 +7,7 @@ import {
   TRANSACTION_TYPES,
   VETH2_POOL_NAME,
 } from "../constants"
+import { AddressZero, Zero } from "@ethersproject/constants"
 import { Contract, Provider } from "ethcall"
 import { MulticallContract, MulticallProvider } from "../types/ethcall"
 import { formatBNToPercentString, getContract } from "../utils"
@@ -22,6 +23,8 @@ import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import SGT_REWARDS_ABI from "../constants/abis/sharedStakeStakingRewards.json"
 import { SharedStakeStakingRewards } from "../../types/ethers-contracts/SharedStakeStakingRewards"
 import { SimpleBalanceOf } from "../../types/ethers-contracts/SimpleBalanceOf"
+import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
+import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { Web3Provider } from "@ethersproject/providers"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
@@ -84,7 +87,7 @@ const emptyPoolData = {
 } as PoolDataType
 
 export default function usePoolData(
-  poolName: PoolName,
+  poolName?: PoolName,
 ): PoolDataHookReturnType {
   const { account, library, chainId } = useActiveWeb3React()
   const swapContract = useSwapContract(poolName)
@@ -94,17 +97,11 @@ export default function usePoolData(
   const lastDepositTime = lastTransactionTimes[TRANSACTION_TYPES.DEPOSIT]
   const lastWithdrawTime = lastTransactionTimes[TRANSACTION_TYPES.WITHDRAW]
   const lastSwapTime = lastTransactionTimes[TRANSACTION_TYPES.SWAP]
-  const POOL = POOLS_MAP[poolName]
 
   const [poolData, setPoolData] = useState<PoolDataHookReturnType>([
     {
       ...emptyPoolData,
-      name: poolName,
-      tokens: POOL.poolTokens.map((token) => ({
-        symbol: token.symbol,
-        percent: "0",
-        value: Zero,
-      })),
+      name: poolName || "",
     },
     null,
   ])
@@ -118,13 +115,33 @@ export default function usePoolData(
         library == null
       )
         return
+      const POOL = POOLS_MAP[poolName]
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let withdrawPromises: any
+      if (POOL.name === ALETH_POOL_NAME) {
+        withdrawPromises = [
+          Promise.resolve(BigNumber.from(0)),
+          (swapContract as SwapFlashLoanNoWithdrawFee).swapStorage(),
+        ]
+      } else {
+        withdrawPromises = [
+          (swapContract as SwapFlashLoan).calculateCurrentWithdrawFee(
+            account || AddressZero,
+          ),
+          (swapContract as SwapFlashLoan).swapStorage(), // will fail without account
+        ]
+      }
 
       // Swap fees, price, and LP Token data
-      const [userCurrentWithdrawFee, swapStorage] = await Promise.all([
-        swapContract.calculateCurrentWithdrawFee(account || AddressZero),
-        swapContract.swapStorage(), // will fail without account
-      ])
-      const { adminFee, lpToken: lpTokenAddress, swapFee } = swapStorage
+      const [userCurrentWithdrawFee, swapStorage] = await Promise.all(
+        withdrawPromises,
+      )
+      const {
+        adminFee,
+        lpToken: lpTokenAddress,
+        swapFee,
+      } = swapStorage as SwapFlashLoan
       let lpTokenContract
       if (poolName === BTC_POOL_NAME) {
         lpTokenContract = getContract(
@@ -318,8 +335,8 @@ export default function usePoolData(
         reserve: tokenBalancesUSDSum,
         totalLocked: totalLpTokenBalance,
         virtualPrice: virtualPrice,
-        adminFee: adminFee,
-        swapFee: swapFee,
+        adminFee: adminFee as BigNumber,
+        swapFee: swapFee as BigNumber,
         volume: "XXX", // TODO
         utilization: "XXX", // TODO
         apy: "XXX", // TODO
@@ -336,7 +353,7 @@ export default function usePoolData(
             underlyingTokensAmount: userPoolTokenBalancesSum,
             usdBalance: userPoolTokenBalancesUSDSum,
             tokens: userPoolTokens,
-            currentWithdrawFee: userCurrentWithdrawFee,
+            currentWithdrawFee: userCurrentWithdrawFee as BigNumber,
             lpTokenBalance: userLpTokenBalance,
             amountsStaked, // this is # of underlying tokens (eg btc), not lpTokens
           }
@@ -354,7 +371,6 @@ export default function usePoolData(
     account,
     library,
     chainId,
-    POOL.poolTokens,
   ])
 
   return poolData
@@ -367,7 +383,7 @@ async function getSgtApr(
   sgtPrice = 0,
 ): Promise<BigNumber> {
   // https://github.com/SharedStake/SharedStake-ui/blob/main/src/components/Earn/geyser.vue#L336
-  if (library == null || tvlUsd.eq(Zero) || chainId != null) return Zero
+  if (library == null || tvlUsd.eq(Zero) || chainId !== 1) return Zero
   const ethcallProvider = new Provider() as MulticallProvider
   await ethcallProvider.init(library)
   // override the contract address when using hardhat
@@ -383,16 +399,23 @@ async function getSgtApr(
     rewardsContract.periodFinish(), // 1e0 timestamp in seconds
     rewardsContract.rewardsDuration(), // 1e0 seconds
     rewardsContract.getRewardForDuration(), // 1e18
-  ] as const
+  ]
   const [
     until,
     rewardsDuration,
     sgtRewardsPerPeriod,
   ] = await ethcallProvider.all(multicalls, {})
 
-  const now = BigNumber.from(Math.floor(Date.now() / 1000))
-  const remainingDays = until.sub(now).div(60 * 60 * 24) // 1e0
+  const nowSeconds = BigNumber.from(Math.floor(Date.now() / 1000))
+  const remainingDays = until.sub(nowSeconds).div(60 * 60 * 24) // 1e0
   const rewardsDurationDays = rewardsDuration.div(60 * 60 * 24) // 1e0
+  if (
+    remainingDays.eq(Zero) ||
+    rewardsDurationDays.eq(Zero) ||
+    sgtRewardsPerPeriod.eq(Zero)
+  ) {
+    return Zero
+  }
   const remainingRewards = remainingDays.mul(
     sgtRewardsPerPeriod.div(rewardsDurationDays),
   ) // 1e18

@@ -1,5 +1,5 @@
+import { ALETH_POOL_NAME, POOLS_MAP, PoolName, Token } from "../constants"
 import { DepositTransaction, TransactionItem } from "../interfaces/transactions"
-import { POOLS_MAP, PoolName, Token } from "../constants"
 import React, { ReactElement, useEffect, useState } from "react"
 import { TokensStateType, useTokenFormState } from "../hooks/useTokenFormState"
 import { formatBNToString, shiftBNDecimals } from "../utils"
@@ -8,6 +8,8 @@ import usePoolData, { PoolDataType } from "../hooks/usePoolData"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
+import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
+import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { TokenPricesUSD } from "../state/application"
 import { Zero } from "@ethersproject/constants"
 import { calculateGasEstimate } from "../utils/gasEstimate"
@@ -73,11 +75,22 @@ function Deposit({ poolName }: Props): ReactElement | null {
       )
       let depositLPTokenAmount
       if (poolData.totalLocked.gt(0) && tokenInputSum.gt(0)) {
-        depositLPTokenAmount = await swapContract.calculateTokenAmount(
-          account,
-          POOL.poolTokens.map(({ symbol }) => tokenFormState[symbol].valueSafe),
-          true, // deposit boolean
-        )
+        if (poolData.name === ALETH_POOL_NAME) {
+          depositLPTokenAmount = await (swapContract as SwapFlashLoanNoWithdrawFee).calculateTokenAmount(
+            POOL.poolTokens.map(
+              ({ symbol }) => tokenFormState[symbol].valueSafe,
+            ),
+            true, // deposit boolean
+          )
+        } else {
+          depositLPTokenAmount = await (swapContract as SwapFlashLoan).calculateTokenAmount(
+            account,
+            POOL.poolTokens.map(
+              ({ symbol }) => tokenFormState[symbol].valueSafe,
+            ),
+            true, // deposit boolean
+          )
+        }
       } else {
         // when pool is empty, estimate the lptokens by just summing the input instead of calling contract
         depositLPTokenAmount = tokenInputSum

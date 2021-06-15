@@ -1,8 +1,4 @@
-import {
-  BTC_POOL_TOKENS,
-  STABLECOIN_POOL_TOKENS,
-  VETH2_SWAP_ADDRESSES,
-} from "../constants"
+import { ChainId, TOKENS_MAP, VETH2_SWAP_ADDRESSES } from "../constants"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 
 import { AppDispatch } from "../state"
@@ -32,9 +28,10 @@ const otherTokens = {
 
 export default function fetchTokenPricesUSD(
   dispatch: AppDispatch,
+  chainId?: ChainId,
   library?: Web3Provider,
 ): void {
-  const tokens = BTC_POOL_TOKENS.concat(STABLECOIN_POOL_TOKENS)
+  const tokens = Object.values(TOKENS_MAP)
   const tokenIds = Array.from(
     new Set(
       tokens.map(({ geckoId }) => geckoId).concat(Object.values(otherTokens)),
@@ -60,7 +57,7 @@ export default function fetchTokenPricesUSD(
           const result = tokens.reduce((acc, token) => {
             return { ...acc, [token.symbol]: body?.[token.geckoId]?.usd }
           }, otherTokensResult)
-          const vEth2Price = await getVeth2Price(result?.ETH, library)
+          const vEth2Price = await getVeth2Price(result?.ETH, chainId, library)
           if (vEth2Price) {
             result.VETH2 = vEth2Price
           }
@@ -72,12 +69,13 @@ export default function fetchTokenPricesUSD(
 
 async function getVeth2Price(
   etherPrice: number,
+  chainId?: ChainId,
   library?: Web3Provider,
 ): Promise<number> {
   if (!etherPrice || !library) return 0
   try {
     const swapContract = getContract(
-      VETH2_SWAP_ADDRESSES[1],
+      chainId ? VETH2_SWAP_ADDRESSES[chainId] : "",
       SWAP_ABI,
       library,
     ) as SwapFlashLoan

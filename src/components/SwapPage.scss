@@ -149,4 +149,33 @@ div.swapPage {
   .showError {
     display: block;
   }
+
+  .pendingSwaps {
+    width: 100%;
+    > .pendingSwapItem {
+      width: 100%;
+      border: 1px solid $primary-blue;
+      border-radius: 10px;
+      background: var(--primary-background);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      .swapDetails {
+        color: $primary-blue;
+        font-weight: 700;
+        font-size: 16px;
+      }
+      .swapTimeContainer {
+        display: flex;
+        align-items: center;
+        > svg {
+          margin-right: 10px;
+        }
+        span.time {
+          font-size: 16px;
+        }
+      }
+    }
+  }
 }
