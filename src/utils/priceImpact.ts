@@ -11,7 +11,7 @@ export function isHighPriceImpact(priceImpact: BigNumber): boolean {
 export function calculatePriceImpact(
   tokenInputAmount: BigNumber, // assumed to be 18d precision
   tokenOutputAmount: BigNumber,
-  virtualPrice: BigNumber,
+  virtualPrice = BigNumber.from(10).pow(18),
 ): BigNumber {
   return tokenInputAmount.gt(0)
     ? virtualPrice

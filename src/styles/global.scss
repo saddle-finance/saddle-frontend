@@ -41,11 +41,12 @@ ul {
   --primary-background: #fff;
   --background: #ffffe9;
   --background-lightgrey: #dfdde3;
-  --background-element: rgba(255, 255, 244, 0.6);
+  --background-element: rgba(255, 255, 244, 0.7);
   --background-element-hover: rgba(255, 255, 255, 0.88);
   --background-main: #ffffe9 url("../assets/bg_light.svg") center/auto 60%
     no-repeat fixed;
   --background-logo: #{$primary};
+  --secondary-button: #{$light-blue};
   --outline: #000;
   --outline-gray: #8c8c94;
   --option-hover: #{$primary-blue-light};
@@ -57,6 +58,8 @@ ul {
   --text-title: #{text-black};
   --text-primary: #{$primary-blue};
   --text-selected: #{$primary-blue};
+  --text-secondary-button: #{$primary-blue};
+  --text-secondary-button-disabled: #{$indigo20T};
   --header-text: #1f2023;
   --sign-graph: #000;
 
@@ -75,6 +78,7 @@ body.dark {
   --background-main: #000 url("../assets/bg.svg") center/auto 60% no-repeat
     fixed;
   --background-logo: #ffffe9;
+  --secondary-button: #{$dark-purple};
   --outline: #fff;
   --option-hover: #{$primary-blue-dark};
   --outline-gray: #8c8c94;
@@ -86,6 +90,8 @@ body.dark {
   --text-title: #ffffe9;
   --text-primary: #{$primary};
   --text-selected: #{$primary};
+  --text-secondary-button: #{$blue};
+  --text-secondary-button-disabled: #{$blue40T};
   --header-text: #{$primary};
   --sign-graph: #{$primary-blue};
 

@@ -1,4 +1,5 @@
 import {
+  ALETH_POOL_NAME,
   BTC_POOL_NAME,
   STABLECOIN_POOL_NAME,
   VETH2_POOL_NAME,
@@ -9,36 +10,35 @@ import PoolOverview from "../components/PoolOverview"
 import TopMenu from "../components/TopMenu"
 import styles from "./Pools.module.scss"
 import usePoolData from "../hooks/usePoolData"
-import { useTranslation } from "react-i18next"
 
-function Pools({
-  action,
-}: {
-  action: "deposit" | "withdraw"
-}): ReactElement | null {
+function Pools(): ReactElement | null {
   const [btcPoolData, btcUserShareData] = usePoolData(BTC_POOL_NAME)
   const [usdPoolData, usdUserShareData] = usePoolData(STABLECOIN_POOL_NAME)
   const [veth2PoolData, veth2UserShareData] = usePoolData(VETH2_POOL_NAME)
-  const { t } = useTranslation()
+  const [alethPoolData, alethUserShareData] = usePoolData(ALETH_POOL_NAME)
 
   return (
     <div className={styles.poolsPage}>
-      <TopMenu activeTab={action} />
+      <TopMenu activeTab="pools" />
       <div className={styles.content}>
-        <h3 className={styles.title}>{t("selectAPool")}</h3>
+        <PoolOverview
+          poolData={alethPoolData}
+          poolRoute={`/pools/aleth`}
+          userShareData={alethUserShareData}
+        />
         <PoolOverview
           poolData={btcPoolData}
-          to={`/${action}/btc`}
+          poolRoute={`/pools/btc`}
           userShareData={btcUserShareData}
         />
         <PoolOverview
           poolData={usdPoolData}
-          to={`/${action}/usd`}
+          poolRoute={`/pools/usd`}
           userShareData={usdUserShareData}
         />
         <PoolOverview
           poolData={veth2PoolData}
-          to={`/${action}/veth2`}
+          poolRoute={`/pools/veth2`}
           userShareData={veth2UserShareData}
         />
       </div>

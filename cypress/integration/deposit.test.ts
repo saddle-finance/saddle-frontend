@@ -1,12 +1,16 @@
 context("Deposit Flow", () => {
   beforeEach(() => {
     const host = Cypress.env("DAPP_HOST") as string
-    cy.visit(`${host}#/deposit`)
+    cy.visit(`${host}#/pools`)
     cy.wait(3000)
   })
   function testPoolDeposit(poolName: string) {
-    it("successfully completes a deposit of all assets", () => {
-      cy.contains(poolName).click()
+    it(`successfully completes a deposit of all ${poolName} assets`, () => {
+      cy.contains(poolName)
+        .parents(".poolOverview")
+        .within(() => {
+          cy.get("button").contains("Deposit").click()
+        })
       // attempt to wait for pool data to load
       cy.get("input").first({ timeout: 10000 }).should("be.enabled")
       // TODO: assert default state of the page
@@ -27,10 +31,7 @@ context("Deposit Flow", () => {
       //     .contains(`Successfully approved spend for ${tokenName}`)
       //     .should("exist")
       // })
-      cy.get("div.toast")
-        .last()
-        .contains("giddyup", { timeout: 10000 })
-        .should("exist")
+      cy.contains("giddyup", { timeout: 10000 }).should("exist")
     })
   }
   ;["BTC", "Stablecoin"].forEach(testPoolDeposit)
