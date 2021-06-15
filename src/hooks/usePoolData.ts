@@ -39,6 +39,7 @@ interface TokenShareType {
 
 export interface PoolDataType {
   adminFee: BigNumber
+  aParameter: BigNumber
   apy: string // TODO: calculate
   name: string
   reserve: BigNumber
@@ -70,6 +71,7 @@ export type PoolDataHookReturnType = [PoolDataType, UserShareType | null]
 
 const emptyPoolData = {
   adminFee: Zero,
+  aParameter: Zero,
   apy: "",
   name: "",
   reserve: Zero,
@@ -123,6 +125,7 @@ export default function usePoolData(
         withdrawPromises = [
           Promise.resolve(BigNumber.from(0)),
           (swapContract as SwapFlashLoanNoWithdrawFee).swapStorage(),
+          (swapContract as SwapFlashLoanNoWithdrawFee).getA(),
         ]
       } else {
         withdrawPromises = [
@@ -130,13 +133,16 @@ export default function usePoolData(
             account || AddressZero,
           ),
           (swapContract as SwapFlashLoan).swapStorage(), // will fail without account
+          (swapContract as SwapFlashLoanNoWithdrawFee).getA(),
         ]
       }
 
       // Swap fees, price, and LP Token data
-      const [userCurrentWithdrawFee, swapStorage] = await Promise.all(
-        withdrawPromises,
-      )
+      const [
+        userCurrentWithdrawFee,
+        swapStorage,
+        aParameter,
+      ] = await Promise.all(withdrawPromises)
       const {
         adminFee,
         lpToken: lpTokenAddress,
@@ -337,6 +343,7 @@ export default function usePoolData(
         virtualPrice: virtualPrice,
         adminFee: adminFee as BigNumber,
         swapFee: swapFee as BigNumber,
+        aParameter: aParameter as BigNumber,
         volume: "XXX", // TODO
         utilization: "XXX", // TODO
         apy: "XXX", // TODO

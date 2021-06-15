@@ -4,6 +4,8 @@
   "adminFee": "管理费",
   "adminKeys": "管理密钥",
   "advancedOptions": "高级选项",
+  "aParameter": null,
+  "aParameterTooltip": null,
   "apy": "年化率",
   "audits": "审计",
   "averagedBalance": "平均余额",
