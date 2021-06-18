@@ -1,5 +1,6 @@
 import "./DepositPage.scss"
 
+import { ALETH_POOL_NAME, VETH2_POOL_NAME } from "../constants"
 import { Button, Center } from "@chakra-ui/react"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
@@ -21,7 +22,6 @@ import ReviewDeposit from "./ReviewDeposit"
 import SlippageField from "./SlippageField"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
-import { VETH2_POOL_NAME } from "../constants"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
 import { formatBNToPercentString } from "../utils"
@@ -81,6 +81,10 @@ const DepositPage = (props: Props): ReactElement => {
       {poolData?.name === VETH2_POOL_NAME &&
         myShareData?.lpTokenBalance.gt(0) && (
           <LPStakingBanner stakingLink={"https://www.sharedstake.org/earn"} />
+        )}
+      {poolData?.name === ALETH_POOL_NAME &&
+        myShareData?.lpTokenBalance.gt(0) && (
+          <LPStakingBanner stakingLink={"https://app.alchemix.fi/farms"} />
         )}
 
       <div className="content">
