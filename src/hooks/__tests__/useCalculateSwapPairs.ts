@@ -5,7 +5,15 @@ import { __test__ } from "../useCalculateSwapPairs"
 const { getTradingPairsForToken } = __test__
 
 const createTestToken = (name: string, isSynth?: boolean) => {
-  return new Token({ 1: "", 31337: "" }, 0, name, "", name, "", !!isSynth)
+  return new Token(
+    { 1: "", 3: "", 31337: "" },
+    0,
+    name,
+    "",
+    name,
+    "",
+    !!isSynth,
+  )
 }
 const createTestPool = (name: string, tokens: Token[]) => {
   return {

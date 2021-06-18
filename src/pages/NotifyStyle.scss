@@ -1,6 +1,5 @@
 @import "../styles/theme";
 
-
 ul.bn-notify-custom.bn-notify-notifications {
   width: 320px;
 }
@@ -25,11 +24,12 @@ ul.bn-notify-custom.bn-notify-notifications {
   display: none;
 }
 
-li.bn-notify-custom.bn-notify-notification-pending.bn-notify-dark-mode{
+li.bn-notify-custom.bn-notify-notification-pending.bn-notify-dark-mode {
   border: 1px solid $white;
 
-  .bn-notify-custom.bn-notify-notification-status-icon{
-    #el_PHAWgO26lN, #el_A4XF5QQwhp {
+  .bn-notify-custom.bn-notify-notification-status-icon {
+    #el_PHAWgO26lN,
+    #el_A4XF5QQwhp {
       stroke: $white;
     }
 
