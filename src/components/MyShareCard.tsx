@@ -1,10 +1,10 @@
 import "./MyShareCard.scss"
 
+import { Partners, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement } from "react"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 
 import { TOKENS_MAP } from "../constants"
-import { UserShareType } from "../hooks/usePoolData"
 import { Zero } from "@ethersproject/constants"
 import { commify } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
@@ -24,10 +24,12 @@ function MyShareCard({ data }: Props): ReactElement | null {
     amount: commify(formatBNToString(data.underlyingTokensAmount, 18, 6)),
     amountsStaked: Object.keys(data.amountsStaked).reduce((acc, key) => {
       const value = data.amountsStaked[key as keyof typeof data.amountsStaked]
-      return {
-        ...acc,
-        [key]: commify(formatBNToString(value, 18, 6)),
-      }
+      return value
+        ? {
+            ...acc,
+            [key]: commify(formatBNToString(value, 18, 6)),
+          }
+        : acc
     }, {} as typeof data.amountsStaked),
     tokens: data.tokens.map((coin) => {
       const token = TOKENS_MAP[coin.symbol]
@@ -37,6 +39,11 @@ function MyShareCard({ data }: Props): ReactElement | null {
         value: commify(formatBNToString(coin.value, 18, 6)),
       }
     }),
+  }
+  const stakingUrls = {
+    keep: "https://dashboard.keep.network/liquidity",
+    sharedStake: "https://dashboard.keep.network/liquidity",
+    alchemix: "https://app.alchemix.fi/farms",
   }
 
   return (
@@ -55,30 +62,20 @@ function MyShareCard({ data }: Props): ReactElement | null {
         <div className="infoItem">
           <span className="label bold">{`${t("totalAmount")}: `}</span>
           <span className="value">{formattedData.amount}</span>
-          {data.amountsStaked.keep.gt(Zero) ? (
-            <span className="value">
-              &nbsp;
-              <a
-                href="https://dashboard.keep.network/liquidity"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                ({formattedData.amountsStaked.keep} {t("staked")})
-              </a>
-            </span>
-          ) : null}
-          {data.amountsStaked.sharedStake.gt(Zero) ? (
-            <span className="value">
-              &nbsp;
-              <a
-                href="https://www.sharedstake.org/earn"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                ({formattedData.amountsStaked.sharedStake} {t("staked")})
-              </a>
-            </span>
-          ) : null}
+          {Object.keys(data.amountsStaked).map((key) => {
+            return data.amountsStaked[key as Partners]?.gt(Zero) ? (
+              <span className="value">
+                &nbsp;
+                <a
+                  href={stakingUrls[key as Partners]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  ({formattedData.amountsStaked[key as Partners]} {t("staked")})
+                </a>
+              </span>
+            ) : null
+          })}
         </div>
       </div>
       <div className="currency">
