@@ -398,7 +398,7 @@ export const IS_VIRTUAL_SWAP_ACTIVE = false
 
 export const NOTIFY_OPTIONS = {
   dappId: process.env.REACT_APP_NOTIFY_DAPP_ID,
-  networkId: 3,
+  networkId: parseInt(process.env.REACT_APP_CHAIN_ID ?? "1"),
   desktopPosition: "topRight" as const,
   darkMode: true,
 }

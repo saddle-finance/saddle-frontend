@@ -38,3 +38,33 @@ li.bn-notify-custom.bn-notify-notification-pending.bn-notify-dark-mode {
     }
   }
 }
+
+li.bn-notify-custom.bn-notify-dark-mode.bn-notify-notification-error {
+  border: 1px solid $error;
+
+  .bn-notify-custom.bn-notify-notification-status-icon {
+    #el_bYTVKD04y * {
+      animation-duration: 0s;
+    }
+    #el_5BNAI_PBsn, #el_IAuv9ut-2- {
+      stroke: $error;
+    }
+
+    #el_q_eIK0z3HI {
+      fill: $error;
+    }
+
+  }
+}
+
+li.bn-notify-custom.bn-notify-dark-mode.bn-notify-notification-success {
+  border: 1px solid $primary;
+
+  #el_RzYtw9rUyN {
+    stroke: $primary;
+  }
+
+  #el_3OA8Szq_A * {
+    animation-duration: 0s;
+  }
+}

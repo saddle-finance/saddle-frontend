@@ -10,7 +10,7 @@ export function notifyHandler(hash: string): void {
   emitter.on("txPool", (transaction) => {
     if (transaction.hash) {
       return {
-        message: `Transaction is pending, check it <a href="${getEtherscanLink(
+        message: `Transaction is pending, view it <a href="${getEtherscanLink(
           transaction.hash,
           "tx",
         )}" rel="noopener noreferrer" target="_blank">on Etherscan</a>.`,
@@ -23,7 +23,17 @@ export function notifyHandler(hash: string): void {
     }
   })
   emitter.on("txConfirmed", console.log)
-  emitter.on("txSpeedUp", console.log)
+  emitter.on("txSpeedUp", (transaction) => {
+    console.log("txSpeedUp", transaction)
+    if (transaction.hash) {
+      return {
+        message: `Transaction is speeding up. View it <a href="${getEtherscanLink(
+          transaction.hash,
+          "tx",
+        )}" rel="noopener noreferrer" target="_blank">on Etherscan</a>.`,
+      }
+    }
+  })
   emitter.on("txCancel", (transaction) => {
     console.log("txCancel", transaction)
     return {
