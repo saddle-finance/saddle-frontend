@@ -180,7 +180,7 @@ export function useApproveAndDeposit(
         )
       }
 
-      notifyHandler(spendTransaction.hash)
+      notifyHandler(spendTransaction.hash, "Deposit")
 
       await spendTransaction.wait()
       dispatch(

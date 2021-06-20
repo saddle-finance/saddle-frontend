@@ -4,13 +4,16 @@ import { getEtherscanLink } from "../utils/getEtherscanLink"
 
 export const notify = Notify(NOTIFY_OPTIONS)
 
-export function notifyHandler(hash: string): void {
+export function notifyHandler(
+  hash: string,
+  type: "Deposit" | "Withdraw" | "Swap" | "Token approval",
+): void {
   const { emitter } = notify.hash(hash)
 
   emitter.on("txPool", (transaction) => {
     if (transaction.hash) {
       return {
-        message: `Transaction is pending, view it <a href="${getEtherscanLink(
+        message: `${type} transaction is pending, view it <a href="${getEtherscanLink(
           transaction.hash,
           "tx",
         )}" rel="noopener noreferrer" target="_blank">on Etherscan</a>.`,
@@ -19,26 +22,37 @@ export function notifyHandler(hash: string): void {
   })
   emitter.on("txSent", () => {
     return {
-      message: `Transaction has been sent to the network`,
+      message: `${type} transaction was sent to the network`,
     }
   })
-  emitter.on("txConfirmed", console.log)
+  emitter.on("txConfirmed", () => {
+    return {
+      message: `${type} transaction is confirmed.`,
+    }
+  })
   emitter.on("txSpeedUp", (transaction) => {
-    console.log("txSpeedUp", transaction)
     if (transaction.hash) {
       return {
-        message: `Transaction is speeding up. View it <a href="${getEtherscanLink(
+        message: `${type} transaction is speeding up. View it <a href="${getEtherscanLink(
           transaction.hash,
           "tx",
         )}" rel="noopener noreferrer" target="_blank">on Etherscan</a>.`,
       }
     }
   })
-  emitter.on("txCancel", (transaction) => {
-    console.log("txCancel", transaction)
+  emitter.on("txCancel", () => {
     return {
-      message: `Transaction is canceled.`,
+      message: `${type} transaction is canceled.`,
     }
   })
-  emitter.on("txFailed", console.log)
+  emitter.on("txFailed", (transaction) => {
+    if (transaction.hash) {
+      return {
+        message: `${type} transaction is failed. View it <a href="${getEtherscanLink(
+          transaction.hash,
+          "tx",
+        )}" rel="noopener noreferrer" target="_blank">on Etherscan</a>.`,
+      }
+    }
+  })
 }

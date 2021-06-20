@@ -54,7 +54,7 @@ export default async function checkAndApproveTokenForTrade(
         amount,
       )
       // Add notification
-      notifyHandler(approvalTransaction.hash)
+      notifyHandler(approvalTransaction.hash, "Token approval")
       const confirmedTransaction = await approvalTransaction.wait()
       cleanupOnStart?.()
       callbacks.onTransactionSuccess?.(confirmedTransaction)

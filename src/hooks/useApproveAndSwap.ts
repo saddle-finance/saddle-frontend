@@ -131,7 +131,7 @@ export function useApproveAndSwap(): (
         },
       )
 
-      notifyHandler(swapTransaction.hash)
+      notifyHandler(swapTransaction.hash, "Swap")
 
       await swapTransaction.wait()
       dispatch(

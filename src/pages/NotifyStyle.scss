@@ -55,6 +55,12 @@ li.bn-notify-custom.bn-notify-dark-mode.bn-notify-notification-error {
     }
 
   }
+
+  .bn-notify-custom.bn-notify-notification-info-message {
+    a {
+      color: $error;
+    }
+  }
 }
 
 li.bn-notify-custom.bn-notify-dark-mode.bn-notify-notification-success {
