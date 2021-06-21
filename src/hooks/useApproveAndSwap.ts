@@ -8,7 +8,6 @@ import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { formatDeadlineToNumber } from "../utils"
-import { getFormattedTimeString } from "../utils/dateTime"
 import { notifyHandler } from "../utils/notifyHandler"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
@@ -17,7 +16,6 @@ import { useActiveWeb3React } from "."
 import { useAllContracts } from "./useContract"
 import { useDispatch } from "react-redux"
 import { useSelector } from "react-redux"
-import { useToast } from "./useToast"
 
 interface ApproveAndSwapStateArgument {
   fromTokenSymbol: string
@@ -33,7 +31,6 @@ export function useApproveAndSwap(): (
   const dispatch = useDispatch()
   const tokenContracts = useAllContracts()
   const { account, chainId } = useActiveWeb3React()
-  const { addToast, clearToasts } = useToast()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -65,27 +62,6 @@ export function useApproveAndSwap(): (
         state.fromAmount,
         infiniteApproval,
         {
-          onTransactionStart: () => {
-            return addToast(
-              {
-                type: "pending",
-                title: `${getFormattedTimeString()} Approving spend for ${
-                  tokenFrom.name
-                }`,
-              },
-              {
-                autoDismiss: false, // TODO: be careful of orphan toasts on error
-              },
-            )
-          },
-          onTransactionSuccess: () => {
-            return addToast({
-              type: "success",
-              title: `${getFormattedTimeString()} Successfully approved spend for ${
-                tokenFrom.name
-              }`,
-            })
-          },
           onTransactionError: () => {
             throw new Error("Your transaction could not be completed")
           },
@@ -97,10 +73,6 @@ export function useApproveAndSwap(): (
 
       minToMint = subtractSlippage(minToMint, slippageSelected, slippageCustom)
       console.debug(`MinToMint 2: ${minToMint.toString()}`)
-      const clearMessage = addToast({
-        type: "pending",
-        title: `${getFormattedTimeString()} Starting your Swap...`,
-      })
       let gasPrice
       if (gasPriceSelected === GasPrices.Custom) {
         gasPrice = gasCustom?.valueSafe
@@ -139,19 +111,9 @@ export function useApproveAndSwap(): (
           [TRANSACTION_TYPES.SWAP]: Date.now(),
         }),
       )
-      clearMessage()
-      addToast({
-        type: "success",
-        title: `${getFormattedTimeString()} Swap completed, giddyup! 🤠`,
-      })
       return Promise.resolve()
     } catch (e) {
       console.error(e)
-      clearToasts()
-      addToast({
-        type: "error",
-        title: `${getFormattedTimeString()} Unable to complete your transaction`,
-      })
     }
   }
 }

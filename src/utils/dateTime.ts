@@ -1,8 +1,3 @@
-export function getFormattedTimeString(): string {
-  const now = new Date()
-  return now.toLocaleTimeString()
-}
-
 export function getFormattedShortTime(timestamp: string): string {
   const timeoptions = {
     month: "numeric",
