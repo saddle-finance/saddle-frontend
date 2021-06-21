@@ -1,13 +1,13 @@
 import "./PoolOverview.scss"
 
-import { PoolDataType, UserShareType } from "../hooks/usePoolData"
+import { Partners, PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement } from "react"
 import { formatBNToPercentString, formatBNToString } from "../utils"
+
 import Button from "./Button"
 import { Link } from "react-router-dom"
 import { TOKENS_MAP } from "../constants"
 import { Zero } from "@ethersproject/constants"
-import classNames from "classnames"
 import { commify } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
@@ -26,10 +26,15 @@ function PoolOverview({
   const formattedData = {
     name: poolData.name,
     reserve: commify(formatBNToString(poolData.reserve, 18, 2)),
-    aprs: {
-      keep: formatBNToPercentString(poolData.aprs.keep, 18),
-      sharedStake: formatBNToPercentString(poolData.aprs.sharedStake, 18),
-    },
+    aprs: Object.keys(poolData.aprs).reduce((acc, key) => {
+      const apr = poolData.aprs[key as Partners]?.apr
+      return apr
+        ? {
+            ...acc,
+            [key]: formatBNToPercentString(apr, 18),
+          }
+        : acc
+    }, {} as Partial<Record<Partners, string>>),
     userBalanceUSD: commify(
       formatBNToString(userShareData?.usdBalance || Zero, 18, 2),
     ),
@@ -58,10 +63,10 @@ function PoolOverview({
         )}
         <div className="tokens">
           <span style={{ marginRight: "8px" }}>[</span>
-          {formattedData.tokens.map(({ symbol, icon, name }) => (
+          {formattedData.tokens.map(({ symbol, icon }) => (
             <div className="token" key={symbol}>
               <img alt="icon" src={icon} />
-              <span>{name}</span>
+              <span>{symbol}</span>
             </div>
           ))}
           <span style={{ marginLeft: "-8px" }}>]</span>
@@ -70,32 +75,18 @@ function PoolOverview({
 
       <div className="right">
         <div className="poolInfo">
-          {poolData?.aprs.keep.gt(Zero) && (
-            <div className="margin Apr">
-              <span className="label">KEEP APR</span>
-              <span
-                className={
-                  classNames({ plus: formattedData.aprs.keep }) +
-                  classNames({ minus: !formattedData.aprs.keep })
-                }
-              >
-                {formattedData.aprs.keep}
-              </span>
-            </div>
-          )}
-          {poolData?.aprs.sharedStake.gt(Zero) && (
-            <div className="margin Apr">
-              <span className="label">SGT APR</span>
-              <span
-                className={
-                  classNames({ plus: formattedData.aprs.sharedStake }) +
-                  classNames({ minus: !formattedData.aprs.sharedStake })
-                }
-              >
-                {formattedData.aprs.sharedStake}
-              </span>
-            </div>
-          )}
+          {Object.keys(poolData.aprs).map((key) => {
+            const symbol = poolData.aprs[key as Partners]?.symbol as string
+            return poolData.aprs[key as Partners]?.apr.gt(Zero) ? (
+              <div className="margin Apr" key={symbol}>
+                <span className="label">{symbol} APR</span>
+                <span className="plus">
+                  {formattedData.aprs[key as Partners] as string}
+                </span>
+              </div>
+            ) : null
+          })}
+
           <div className="volume">
             <span className="label">{t("currencyReserves")}</span>
             <span>{`$${formattedData.reserve}`}</span>

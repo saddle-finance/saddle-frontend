@@ -31,10 +31,7 @@ context("Deposit Flow", () => {
       //     .contains(`Successfully approved spend for ${tokenName}`)
       //     .should("exist")
       // })
-      cy.get("div.toast")
-        .last()
-        .contains("giddyup", { timeout: 10000 })
-        .should("exist")
+      cy.contains("giddyup", { timeout: 10000 }).should("exist")
     })
   }
   ;["BTC", "Stablecoin"].forEach(testPoolDeposit)

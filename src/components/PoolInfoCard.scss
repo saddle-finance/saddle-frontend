@@ -20,6 +20,16 @@ div.poolInfoCard {
     display: grid;
     grid-template-rows: auto;
     row-gap: 10px;
+    .label {
+      margin-right: 8px;
+    }
+    .underline {
+      border-bottom: 1px dotted var(--text);
+
+      &:hover {
+        cursor: help;
+      }
+    }
   }
 
   .bottom {

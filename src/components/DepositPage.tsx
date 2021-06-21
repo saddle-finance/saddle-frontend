@@ -1,5 +1,6 @@
 import "./DepositPage.scss"
 
+import { ALETH_POOL_NAME, VETH2_POOL_NAME } from "../constants"
 import { Button, Center } from "@chakra-ui/react"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
@@ -21,7 +22,6 @@ import ReviewDeposit from "./ReviewDeposit"
 import SlippageField from "./SlippageField"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
-import { VETH2_POOL_NAME } from "../constants"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
 import { formatBNToPercentString } from "../utils"
@@ -72,14 +72,19 @@ const DepositPage = (props: Props): ReactElement => {
   return (
     <div className="deposit">
       <TopMenu activeTab={"deposit"} />
-      {poolData?.aprs?.keep.gt(Zero) && myShareData?.lpTokenBalance.gt(0) && (
-        <LPStakingBanner
-          stakingLink={"https://dashboard.keep.network/liquidity"}
-        />
-      )}
+      {poolData?.aprs?.keep?.apr.gt(Zero) &&
+        myShareData?.lpTokenBalance.gt(0) && (
+          <LPStakingBanner
+            stakingLink={"https://dashboard.keep.network/liquidity"}
+          />
+        )}
       {poolData?.name === VETH2_POOL_NAME &&
         myShareData?.lpTokenBalance.gt(0) && (
           <LPStakingBanner stakingLink={"https://www.sharedstake.org/earn"} />
+        )}
+      {poolData?.name === ALETH_POOL_NAME &&
+        myShareData?.lpTokenBalance.gt(0) && (
+          <LPStakingBanner stakingLink={"https://app.alchemix.fi/farms"} />
         )}
 
       <div className="content">
@@ -106,7 +111,7 @@ const DepositPage = (props: Props): ReactElement => {
             ))}
             <div className={classNames("transactionInfoContainer", "show")}>
               <div className="transactionInfo">
-                {poolData?.aprs?.keep.gt(Zero) && (
+                {poolData?.aprs?.keep?.apr.gt(Zero) && (
                   <div className="transactionInfoItem">
                     <a
                       href="https://docs.saddle.finance/faq#what-are-saddles-liquidity-provider-rewards"
@@ -116,11 +121,11 @@ const DepositPage = (props: Props): ReactElement => {
                       <span>{`KEEP APR:`}</span>
                     </a>{" "}
                     <span className="value">
-                      {formatBNToPercentString(poolData.aprs.keep, 18)}
+                      {formatBNToPercentString(poolData.aprs.keep.apr, 18)}
                     </span>
                   </div>
                 )}
-                {poolData?.aprs?.sharedStake.gt(Zero) && (
+                {poolData?.aprs?.sharedStake?.apr.gt(Zero) && (
                   <div className="transactionInfoItem">
                     <a
                       href="https://docs.saddle.finance/faq#what-are-saddles-liquidity-provider-rewards"
@@ -130,7 +135,10 @@ const DepositPage = (props: Props): ReactElement => {
                       <span>{`SGT APR:`}</span>
                     </a>{" "}
                     <span className="value">
-                      {formatBNToPercentString(poolData.aprs.sharedStake, 18)}
+                      {formatBNToPercentString(
+                        poolData.aprs.sharedStake.apr,
+                        18,
+                      )}
                     </span>
                   </div>
                 )}

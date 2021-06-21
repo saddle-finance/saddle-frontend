@@ -2,12 +2,14 @@ import { injected, walletconnect, walletlink } from "../connectors"
 
 import { AbstractConnector } from "@web3-react/abstract-connector"
 import { BigNumber } from "@ethersproject/bignumber"
+import alethLogo from "../assets/icons/aleth.svg"
 import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
 import daiLogo from "../assets/icons/dai.svg"
 import metamaskIcon from "../assets/icons/metamask.svg"
 import renbtcLogo from "../assets/icons/renbtc.svg"
 import saddleLogo from "../assets/icons/logo.svg"
 import sbtcLogo from "../assets/icons/sbtc.svg"
+import sethLogo from "../assets/icons/seth.svg"
 import tbtcLogo from "../assets/icons/tbtc.svg"
 import usdcLogo from "../assets/icons/usdc.svg"
 import usdtLogo from "../assets/icons/usdt.svg"
@@ -20,10 +22,12 @@ export const NetworkContextName = "NETWORK"
 export const BTC_POOL_NAME = "BTC Pool"
 export const STABLECOIN_POOL_NAME = "Stablecoin Pool"
 export const VETH2_POOL_NAME = "vETH2 Pool"
+export const ALETH_POOL_NAME = "alETH Pool"
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof STABLECOIN_POOL_NAME
   | typeof VETH2_POOL_NAME
+  | typeof ALETH_POOL_NAME
 
 export enum ChainId {
   MAINNET = 1,
@@ -62,7 +66,7 @@ export class Token {
   }
 }
 
-export const BLOCK_TIME = 15000
+export const BLOCK_TIME = 13000 // ms
 
 export const BRIDGE_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0xf5059a5D33d5853360D16C683c16e67980206f36", // TODO replace once mainnet deploy goes out
@@ -73,7 +77,7 @@ export const BRIDGE_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
 export const STABLECOIN_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0x3911F80530595fBd01Ab1516Ab61255d75AEb066",
   [ChainId.ROPSTEN]: "0xbCED0cB1e8022869678d40b3c71FA7A443CA8090",
-  [ChainId.HARDHAT]: "0xCafac3dD18aC6c6e92c921884f9E4176737C052c",
+  [ChainId.HARDHAT]: "0x98A0Bc3f9FdAD482CB2e40dE1291f8b0A6FE1860",
 }
 
 export const BTC_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
@@ -85,7 +89,13 @@ export const BTC_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
 export const VETH2_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0xdec2157831D6ABC3Ec328291119cc91B337272b5",
   [ChainId.ROPSTEN]: "0x2C019509326485AE234c6CA8a51c9F4A0F94f5fA",
-  [ChainId.HARDHAT]: "0x9f1ac54BEF0DD2f6f3462EA0fa94fC62300d3a8e",
+  [ChainId.HARDHAT]: "0x6F62d12568c81Dc0fb38426B7Cdba2d265f89B29",
+}
+
+export const ALETH_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0xa6018520EAACC06C30fF2e1B3ee2c7c22e64196a",
+  [ChainId.ROPSTEN]: "0x53434526fCB7a5FF358AB74C13C1c582BBE6Ab9e",
+  [ChainId.HARDHAT]: "0xCafac3dD18aC6c6e92c921884f9E4176737C052c",
 }
 
 export const MERKLETREE_DATA: { [chainId in ChainId]: string } = {
@@ -99,7 +109,7 @@ export const STABLECOIN_SWAP_TOKEN_CONTRACT_ADDRESSES: {
 } = {
   [ChainId.MAINNET]: "0x76204f8CFE8B95191A3d1CfA59E267EA65e06FAC",
   [ChainId.ROPSTEN]: "0x09f0e9d602c9989B2C03983cA37E7fa18084C44B",
-  [ChainId.HARDHAT]: "0xAe367415f4BDe0aDEE3e59C35221d259f517413E",
+  [ChainId.HARDHAT]: "0x6D1c89F08bbB35d80B6E6b6d58D2bEFE021eFE8d",
 }
 
 export const BTC_SWAP_TOKEN_CONTRACT_ADDRESSES: {
@@ -115,7 +125,15 @@ export const VETH2_SWAP_TOKEN_CONTRACT_ADDRESSES: {
 } = {
   [ChainId.MAINNET]: "0xe37E2a01feA778BC1717d72Bd9f018B6A6B241D5",
   [ChainId.ROPSTEN]: "0x28B465383ab829adFf02794917cD2FB8d04b0902",
-  [ChainId.HARDHAT]: "0x2d2c18F63D2144161B38844dCd529124Fbb93cA2",
+  [ChainId.HARDHAT]: "0xd44a47B19a7862709588D574f39480f9C4DED1A6",
+}
+
+export const ALETH_SWAP_TOKEN_CONTRACT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "0xc9da65931ABf0Ed1b74Ce5ad8c041C4220940368",
+  [ChainId.ROPSTEN]: "0x13e0d50308C01cf5BdA4b64CcBCceF0C6B9710DF",
+  [ChainId.HARDHAT]: "0xAe367415f4BDe0aDEE3e59C35221d259f517413E",
 }
 
 export const BTC_SWAP_TOKEN = new Token(
@@ -142,6 +160,15 @@ export const VETH2_SWAP_TOKEN = new Token(
   "saddleVETH2",
   "saddleveth2",
   "Saddle WETH/vETH2",
+  saddleLogo,
+)
+
+export const ALETH_SWAP_TOKEN = new Token(
+  ALETH_SWAP_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "saddleALETH",
+  "saddlealeth",
+  "Saddle WETH/alETH/sETH",
   saddleLogo,
 )
 
@@ -280,6 +307,36 @@ export const VETH2 = new Token(
 
 export const VETH2_POOL_TOKENS = [WETH, VETH2]
 
+const ALETH_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6",
+  [ChainId.ROPSTEN]: "0xaA91d3f2C53BDBEdd45FaB0308d0b51315Dc32E7",
+  [ChainId.HARDHAT]: "0x09635F643e140090A9A8Dcd712eD6285858ceBef",
+}
+export const ALETH = new Token(
+  ALETH_CONTRACT_ADDRESSES,
+  18,
+  "alETH",
+  "alchemix-eth",
+  "Alchemix ETH",
+  alethLogo,
+)
+
+const SETH_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb",
+  [ChainId.ROPSTEN]: "0x82BD6d2A185ed1C48e01830853fEf7f4D02fF1cC",
+  [ChainId.HARDHAT]: "0x67d269191c92Caf3cD7723F116c85e6E9bf55933",
+}
+export const SETH = new Token(
+  SETH_CONTRACT_ADDRESSES,
+  18,
+  "sETH",
+  "seth",
+  "Synth sETH",
+  sethLogo,
+)
+
+export const ALETH_POOL_TOKENS = [WETH, ALETH, SETH]
+
 export type Pool = {
   name: string
   lpToken: Token
@@ -311,6 +368,13 @@ export const POOLS_MAP: PoolsMap = {
     lpToken: VETH2_SWAP_TOKEN,
     poolTokens: VETH2_POOL_TOKENS,
     isSynthetic: false,
+  },
+  [ALETH_POOL_NAME]: {
+    name: ALETH_POOL_NAME,
+    addresses: ALETH_SWAP_ADDRESSES,
+    lpToken: ALETH_SWAP_TOKEN,
+    poolTokens: ALETH_POOL_TOKENS,
+    isSynthetic: true,
   },
 }
 
@@ -352,11 +416,25 @@ export const TRANSACTION_TYPES = {
 
 export const POOL_FEE_PRECISION = 10
 
+export enum SWAP_TYPES {
+  DIRECT = "swapDirect", // route length 2
+  SYNTH_TO_SYNTH = "swapSynthToSynth", // route length 2
+  SYNTH_TO_TOKEN = "swapSynthToToken", // route length 3
+  TOKEN_TO_SYNTH = "swapTokenToSynth", // route length 3
+  TOKEN_TO_TOKEN = "swapTokenToToken", // route length 4
+  INVALID = "invalid",
+}
+
 export const SWAP_CONTRACT_GAS_ESTIMATES_MAP = {
-  swap: BigNumber.from("200000"), // 157807
-  addLiquidity: BigNumber.from("400000"), // 386555
-  removeLiquidityImbalance: BigNumber.from("350000"), // 318231
-  removeLiquidityOneToken: BigNumber.from("250000"), // 232947
+  [SWAP_TYPES.INVALID]: BigNumber.from("999999999"), // 999,999,999
+  [SWAP_TYPES.DIRECT]: BigNumber.from("200000"), // 157,807
+  [SWAP_TYPES.TOKEN_TO_TOKEN]: BigNumber.from("2000000"), // 1,676,837
+  [SWAP_TYPES.TOKEN_TO_SYNTH]: BigNumber.from("2000000"), // 1,655,502
+  [SWAP_TYPES.SYNTH_TO_TOKEN]: BigNumber.from("1500000"), // 1,153,654
+  [SWAP_TYPES.SYNTH_TO_SYNTH]: BigNumber.from("999999999"), // 999,999,999 // TODO: https://github.com/saddle-finance/saddle-frontend/issues/471
+  addLiquidity: BigNumber.from("400000"), // 386,555
+  removeLiquidityImbalance: BigNumber.from("350000"), // 318,231
+  removeLiquidityOneToken: BigNumber.from("250000"), // 232,947
 }
 
 export interface WalletInfo {
@@ -381,15 +459,6 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     icon: coinbasewalletIcon,
     connector: walletlink,
   },
-}
-
-export enum SWAP_TYPES {
-  DIRECT = 1, // route length 2
-  SYNTH_TO_SYNTH = 2, // route length 2
-  SYNTH_TO_TOKEN = 3, // route length 3
-  TOKEN_TO_SYNTH = 4, // route length 3
-  TOKEN_TO_TOKEN = 5, // route length 4
-  INVALID = 7,
 }
 
 // FLAGS
