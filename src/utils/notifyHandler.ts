@@ -1,8 +1,12 @@
-import { NOTIFY_OPTIONS } from "../constants"
 import Notify from "bnc-notify"
 import { getEtherscanLink } from "../utils/getEtherscanLink"
 
-export const notify = Notify(NOTIFY_OPTIONS)
+const notify = Notify({
+  dappId: process.env.REACT_APP_NOTIFY_DAPP_ID,
+  networkId: parseInt(process.env.REACT_APP_CHAIN_ID ?? "1"),
+  desktopPosition: "topRight" as const,
+  darkMode: true,
+})
 
 export function notifyHandler(
   hash: string,
