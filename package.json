@@ -27,7 +27,7 @@
     "bnc-notify": "^1.6.1",
     "classnames": "^2.2.6",
     "copy-to-clipboard": "^3.3.1",
-    "ethcall": "^3.4.1",
+    "ethcall": "^3.2.0",
     "ethers": "^5.1.0",
     "framer-motion": "^4.0.3",
     "history": "^5.0.0",

@@ -37,7 +37,7 @@ export function notifyHandler(
   emitter.on("txSpeedUp", (transaction) => {
     if (transaction.hash) {
       return {
-        message: `${type} transaction is speeding up. View it <a href="${getEtherscanLink(
+        message: `${type} transaction was sped up. View it <a href="${getEtherscanLink(
           transaction.hash,
           "tx",
         )}" rel="noopener noreferrer" target="_blank">on Etherscan</a>.`,
@@ -46,13 +46,13 @@ export function notifyHandler(
   })
   emitter.on("txCancel", () => {
     return {
-      message: `${type} transaction is canceled.`,
+      message: `${type} transaction was canceled.`,
     }
   })
   emitter.on("txFailed", (transaction) => {
     if (transaction.hash) {
       return {
-        message: `${type} transaction is failed. View it <a href="${getEtherscanLink(
+        message: `${type} transaction failed. View it <a href="${getEtherscanLink(
           transaction.hash,
           "tx",
         )}" rel="noopener noreferrer" target="_blank">on Etherscan</a>.`,
