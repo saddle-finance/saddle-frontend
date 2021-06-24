@@ -1,12 +1,12 @@
+import { AddressZero, Zero } from "@ethersproject/constants"
 import { ChainId, TOKENS_MAP, Token } from "../constants"
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
+import { formatUnits, parseUnits } from "@ethersproject/units"
 
-import { AddressZero } from "@ethersproject/constants"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "@ethersproject/contracts"
 import { ContractInterface } from "ethers"
 import { Deadlines } from "../state/user"
-import { formatUnits } from "@ethersproject/units"
 import { getAddress } from "@ethersproject/address"
 
 // returns the checksummed address if the address is valid, otherwise returns false
@@ -146,4 +146,21 @@ export function getTokenByAddress(
         address.toLowerCase() === addresses[chainId].toLowerCase(),
     ) || null
   )
+}
+
+export function calculatePrice(
+  amount: BigNumber | string,
+  tokenPrice = 0,
+  decimals?: number,
+): BigNumber {
+  // returns amount * price as BN 18 precision
+  if (typeof amount === "string") {
+    if (isNaN(+amount)) return Zero
+    return parseUnits((+amount * tokenPrice).toFixed(2), 18)
+  } else if (decimals != null) {
+    return amount
+      .mul(parseUnits(tokenPrice.toFixed(2), 18))
+      .div(BigNumber.from(10).pow(decimals))
+  }
+  return Zero
 }

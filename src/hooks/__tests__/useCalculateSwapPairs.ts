@@ -1,4 +1,4 @@
-import { Pool, SWAP_TYPES, Token } from "../../constants/index"
+import { ChainId, Pool, SWAP_TYPES, Token } from "../../constants/index"
 
 import { __test__ } from "../useCalculateSwapPairs"
 
@@ -13,6 +13,7 @@ const createTestPool = (name: string, tokens: Token[]) => {
     lpToken: createTestToken(`${name} LPToken`),
     poolTokens: tokens,
     isSynthetic: tokens.some(({ isSynthetic }) => isSynthetic),
+    addresses: {} as { [chainId in ChainId]: string },
   }
 }
 describe("getTradingPairsForToken", () => {
