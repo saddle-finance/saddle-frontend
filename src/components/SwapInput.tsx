@@ -17,7 +17,7 @@ interface Props {
   inputValue: string
   inputValueUSD: BigNumber
   isSwapFrom: boolean
-  onSelect: (tokenSymbol: string) => void
+  onSelect?: (tokenSymbol: string) => void
   onChangeAmount?: (value: string) => void
 }
 export default function SwapInput({
@@ -40,7 +40,7 @@ export default function SwapInput({
   )
   const handleSelect = useCallback(
     (value: string) => {
-      onSelect(value)
+      onSelect?.(value)
       setIsDropdownOpen(false)
     },
     [onSelect],
@@ -49,11 +49,14 @@ export default function SwapInput({
   return (
     <div className={styles.swapInputContainer}>
       <div
-        className={styles.selectGroup}
-        onClick={() => setIsDropdownOpen((prev) => !prev)}
+        className={classnames(
+          styles.selectGroup,
+          onSelect && styles.hoverPointer,
+        )}
+        onClick={() => onSelect && setIsDropdownOpen((prev) => !prev)}
         tabIndex={0}
         onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
+          if (onSelect && (e.key === "Enter" || e.key === " ")) {
             setIsDropdownOpen((prev) => !prev)
           }
         }}
@@ -65,15 +68,17 @@ export default function SwapInput({
               {selectedToken ? selectedToken.symbol : t("chooseToken")}
             </b>
             &nbsp;
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 12 12"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M10.0163 3L6 7.17206L1.98375 3L0.75 4.28441L6 9.75L11.25 4.28441L10.0163 3Z" />
-            </svg>
+            {onSelect && (
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M10.0163 3L6 7.17206L1.98375 3L0.75 4.28441L6 9.75L11.25 4.28441L10.0163 3Z" />
+              </svg>
+            )}
           </div>
           {selectedToken && (
             <p className={styles.textMinor}>{selectedToken.name}</p>

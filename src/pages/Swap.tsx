@@ -18,7 +18,11 @@ import {
   SwapSide,
   useCalculateSwapPairs,
 } from "../hooks/useCalculateSwapPairs"
-import { calculateExchangeRate, shiftBNDecimals } from "../utils"
+import {
+  calculateExchangeRate,
+  calculatePrice,
+  shiftBNDecimals,
+} from "../utils"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 import { useBridgeContract, useSwapContract } from "../hooks/useContract"
 
@@ -100,22 +104,6 @@ function Swap(): ReactElement {
   const { gasPriceSelected, gasCustom } = useSelector(
     (state: AppState) => state.user,
   )
-  function calculatePrice(
-    amount: BigNumber | string,
-    tokenPrice = 0,
-    decimals?: number,
-  ): BigNumber {
-    // returns amount * price as BN 18 precision
-    if (typeof amount === "string") {
-      if (isNaN(+amount)) return Zero
-      return parseUnits((+amount * tokenPrice).toFixed(2), 18)
-    } else if (decimals != null) {
-      return amount
-        .mul(parseUnits(tokenPrice.toFixed(2), 18))
-        .div(BigNumber.from(10).pow(decimals))
-    }
-    return Zero
-  }
 
   const [formState, setFormState] = useState<FormState>(EMPTY_FORM_STATE)
   const [prevFormState, setPrevFormState] = useState<FormState>(
