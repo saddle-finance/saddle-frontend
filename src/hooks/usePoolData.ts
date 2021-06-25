@@ -1,7 +1,6 @@
 import {
   ALETH_POOL_NAME,
   BTC_POOL_NAME,
-  ChainId,
   POOLS_MAP,
   PoolName,
   TRANSACTION_TYPES,
@@ -269,8 +268,8 @@ export default function usePoolData(
         value: userPoolTokenBalances[i],
       }))
       const { oneDayVolume, TVL, APY } =
-        swapStats && POOL.addresses[ChainId.MAINNET].toLowerCase() in swapStats
-          ? swapStats[POOL.addresses[ChainId.MAINNET].toLowerCase()]
+        swapStats && POOL.addresses[chainId].toLowerCase() in swapStats
+          ? swapStats[POOL.addresses[chainId].toLowerCase()]
           : { oneDayVolume: "", TVL: "", APY: "" }
       const utilization =
         oneDayVolume && TVL
