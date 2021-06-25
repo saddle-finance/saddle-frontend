@@ -1,11 +1,10 @@
+import { AddressZero, Zero } from "@ethersproject/constants"
 import {
-  ALETH_POOL_NAME,
   BTC_POOL_NAME,
   POOLS_MAP,
   PoolName,
   TRANSACTION_TYPES,
 } from "../constants"
-import { AddressZero, Zero } from "@ethersproject/constants"
 import { formatBNToPercentString, getContract } from "../utils"
 import { useEffect, useState } from "react"
 
@@ -15,7 +14,6 @@ import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
-import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { getThirdPartyDataForPool } from "../utils/thirdPartyIntegrations"
 import { parseUnits } from "@ethersproject/units"
@@ -42,6 +40,7 @@ export interface PoolDataType {
   utilization: string // TODO: calculate
   virtualPrice: BigNumber
   volume: string // TODO: calculate
+  isPaused: boolean
   aprs: Partial<
     Record<
       Partners,
@@ -55,7 +54,6 @@ export interface PoolDataType {
 }
 
 export interface UserShareType {
-  currentWithdrawFee: BigNumber
   lpTokenBalance: BigNumber
   name: string // TODO: does this need to be on user share?
   share: BigNumber
@@ -81,6 +79,7 @@ const emptyPoolData = {
   volume: "",
   aprs: {},
   lpTokenPriceUSD: Zero,
+  isPaused: true,
 } as PoolDataType
 
 export default function usePoolData(
@@ -115,35 +114,13 @@ export default function usePoolData(
         return
       const POOL = POOLS_MAP[poolName]
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let withdrawPromises: any
-      if (POOL.name === ALETH_POOL_NAME) {
-        withdrawPromises = [
-          Promise.resolve(BigNumber.from(0)),
-          (swapContract as SwapFlashLoanNoWithdrawFee).swapStorage(),
-          (swapContract as SwapFlashLoanNoWithdrawFee).getA(),
-        ]
-      } else {
-        withdrawPromises = [
-          (swapContract as SwapFlashLoan).calculateCurrentWithdrawFee(
-            account || AddressZero,
-          ),
-          (swapContract as SwapFlashLoan).swapStorage(), // will fail without account
-          (swapContract as SwapFlashLoanNoWithdrawFee).getA(),
-        ]
-      }
-
       // Swap fees, price, and LP Token data
-      const [
-        userCurrentWithdrawFee,
-        swapStorage,
-        aParameter,
-      ] = await Promise.all(withdrawPromises)
-      const {
-        adminFee,
-        lpToken: lpTokenAddress,
-        swapFee,
-      } = swapStorage as SwapFlashLoan
+      const [swapStorage, aParameter, isPaused] = await Promise.all([
+        (swapContract as SwapFlashLoanNoWithdrawFee).swapStorage(),
+        (swapContract as SwapFlashLoanNoWithdrawFee).getA(),
+        (swapContract as SwapFlashLoanNoWithdrawFee).paused(),
+      ])
+      const { adminFee, lpToken: lpTokenAddress, swapFee } = swapStorage
       let lpTokenContract
       if (poolName === BTC_POOL_NAME) {
         lpTokenContract = getContract(
@@ -273,14 +250,15 @@ export default function usePoolData(
         reserve: tokenBalancesUSDSum,
         totalLocked: totalLpTokenBalance,
         virtualPrice: virtualPrice,
-        adminFee: adminFee as BigNumber,
-        swapFee: swapFee as BigNumber,
-        aParameter: aParameter as BigNumber,
+        adminFee: adminFee,
+        swapFee: swapFee,
+        aParameter: aParameter,
         volume: "XXX", // TODO
         utilization: "XXX", // TODO
         apy: "XXX", // TODO
         aprs,
         lpTokenPriceUSD,
+        isPaused,
       }
       const userShareData = account
         ? {
@@ -289,7 +267,6 @@ export default function usePoolData(
             underlyingTokensAmount: userPoolTokenBalancesSum,
             usdBalance: userPoolTokenBalancesUSDSum,
             tokens: userPoolTokens,
-            currentWithdrawFee: userCurrentWithdrawFee as BigNumber,
             lpTokenBalance: userLpTokenBalance,
             amountsStaked: Object.keys(amountsStaked).reduce((acc, key) => {
               const amount = amountsStaked[key as Partners]

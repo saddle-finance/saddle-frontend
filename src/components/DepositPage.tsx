@@ -4,6 +4,7 @@ import { ALETH_POOL_NAME, VETH2_POOL_NAME } from "../constants"
 import { Button, Center } from "@chakra-ui/react"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
+import { Trans, useTranslation } from "react-i18next"
 import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
@@ -27,7 +28,6 @@ import classNames from "classnames"
 import { formatBNToPercentString } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
 import { updatePoolAdvancedMode } from "../state/user"
-import { useTranslation } from "react-i18next"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
@@ -94,10 +94,27 @@ const DepositPage = (props: Props): ReactElement => {
             {exceedsWallet ? (
               <div className="error">{t("depositBalanceExceeded")}</div>
             ) : null}
+            {poolData?.isPaused && poolData?.name === VETH2_POOL_NAME ? (
+              <div className="error">
+                <Trans i18nKey="sgtPoolPaused" t={t}>
+                  This pool is paused, please see{" "}
+                  <a
+                    href="https://medium.com/immunefi/sharedstake-insider-exploit-postmortem-17fa93d5c90e"
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ textDecoration: "underline" }}
+                  >
+                    this postmortem
+                  </a>{" "}
+                  for more information.
+                </Trans>
+              </div>
+            ) : null}
             {tokens.map((token, index) => (
               <div key={index}>
                 <TokenInput
                   {...token}
+                  disabled={poolData?.isPaused}
                   onChange={(value): void =>
                     onChangeTokenInputValue(token.symbol, value)
                   }
@@ -215,7 +232,7 @@ const DepositPage = (props: Props): ReactElement => {
               onClick={(): void => {
                 setCurrentModal("review")
               }}
-              disabled={!validDepositAmount}
+              disabled={!validDepositAmount || poolData?.isPaused}
             >
               {t("deposit")}
             </Button>
