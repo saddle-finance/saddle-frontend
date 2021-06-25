@@ -9,8 +9,17 @@ exports[`renders a basic swap correctly 1`] = `
       class="timelineStep inactive"
       data-testid="PendingSwapTimeline:step1Of2"
     >
-      <svg>
-        check.svg
+      <svg
+        fill="none"
+        height="8"
+        viewBox="0 0 10 8"
+        width="10"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M3.50008 6.08492L1.41508 3.99992L0.705078 4.70492L3.50008 7.49992L9.50008 1.49992L8.79508 0.794922L3.50008 6.08492Z"
+          fill="#A5A5A5"
+        />
       </svg>
        2/1 12:00 AM stepAOfB confirmTheSwap 
       <a
@@ -26,8 +35,23 @@ exports[`renders a basic swap correctly 1`] = `
       <div
         class="timelineLine"
       />
-      <svg>
-        clock.svg
+      <svg
+        fill="none"
+        height="11"
+        viewBox="0 0 11 11"
+        width="11"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M5.23467 1H5.5C7.98605 1 10 3.01525 10 5.49924C10 7.98311 7.98618 10 5.5 10C3.01388 10 1 7.98469 1 5.49924C1 4.30732 1.46423 3.22282 2.21973 2.41912L2.60641 2.78249C1.93974 3.49169 1.53066 4.4476 1.53066 5.49924C1.53066 7.69191 3.30721 9.46943 5.5 9.46943C7.69273 9.46943 9.46934 7.69046 9.46934 5.49924C9.46934 3.39724 7.83438 1.67581 5.76533 1.5393V2.96008H5.23467V1Z"
+          fill-rule="evenodd"
+          stroke-miterlimit="10"
+          stroke-width="0.3"
+        />
+        <path
+          d="M5.85879 5.41311L3 3L5.41281 5.85768C5.47056 5.94243 5.56842 6 5.67911 6C5.85719 6 5.99997 5.85608 5.99997 5.68017C6.00157 5.56823 5.94542 5.47068 5.85879 5.41311Z"
+        />
       </svg>
        5 minutesLeft
     </div>
@@ -38,8 +62,21 @@ exports[`renders a basic swap correctly 1`] = `
       <div
         class="timelineLine"
       />
-      <svg>
-        arrowDown.svg
+      <svg
+        fill="none"
+        height="10"
+        viewBox="0 0 11 10"
+        width="11"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M1 4L5.5 8L10 4"
+          stroke-width="1.5"
+        />
+        <path
+          d="M5.5 8V0"
+          stroke-width="1.5"
+        />
       </svg>
        stepAOfB settleToken 
     </div>
@@ -56,8 +93,17 @@ exports[`renders a swap after the waiting period correctly 1`] = `
       class="timelineStep inactive"
       data-testid="PendingSwapTimeline:step1Of2"
     >
-      <svg>
-        check.svg
+      <svg
+        fill="none"
+        height="8"
+        viewBox="0 0 10 8"
+        width="10"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M3.50008 6.08492L1.41508 3.99992L0.705078 4.70492L3.50008 7.49992L9.50008 1.49992L8.79508 0.794922L3.50008 6.08492Z"
+          fill="#A5A5A5"
+        />
       </svg>
        2/1 12:00 AM stepAOfB confirmTheSwap 
       <a
@@ -73,8 +119,17 @@ exports[`renders a swap after the waiting period correctly 1`] = `
       <div
         class="timelineLine"
       />
-      <svg>
-        check.svg
+      <svg
+        fill="none"
+        height="8"
+        viewBox="0 0 10 8"
+        width="10"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M3.50008 6.08492L1.41508 3.99992L0.705078 4.70492L3.50008 7.49992L9.50008 1.49992L8.79508 0.794922L3.50008 6.08492Z"
+          fill="#A5A5A5"
+        />
       </svg>
        2/1 12:00 AM swappedForAmount sETH
     </div>
@@ -85,8 +140,21 @@ exports[`renders a swap after the waiting period correctly 1`] = `
       <div
         class="timelineLine"
       />
-      <svg>
-        arrowDown.svg
+      <svg
+        fill="none"
+        height="10"
+        viewBox="0 0 11 10"
+        width="11"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M1 4L5.5 8L10 4"
+          stroke-width="1.5"
+        />
+        <path
+          d="M5.5 8V0"
+          stroke-width="1.5"
+        />
       </svg>
        stepAOfB settleToken 
     </div>
@@ -103,8 +171,17 @@ exports[`renders a swap with events correctly 1`] = `
       class="timelineStep inactive"
       data-testid="PendingSwapTimeline:step1Of2"
     >
-      <svg>
-        check.svg
+      <svg
+        fill="none"
+        height="8"
+        viewBox="0 0 10 8"
+        width="10"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M3.50008 6.08492L1.41508 3.99992L0.705078 4.70492L3.50008 7.49992L9.50008 1.49992L8.79508 0.794922L3.50008 6.08492Z"
+          fill="#A5A5A5"
+        />
       </svg>
        2/1 12:00 AM stepAOfB confirmTheSwap 
       <a
@@ -120,8 +197,23 @@ exports[`renders a swap with events correctly 1`] = `
       <div
         class="timelineLine"
       />
-      <svg>
-        clock.svg
+      <svg
+        fill="none"
+        height="11"
+        viewBox="0 0 11 11"
+        width="11"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M5.23467 1H5.5C7.98605 1 10 3.01525 10 5.49924C10 7.98311 7.98618 10 5.5 10C3.01388 10 1 7.98469 1 5.49924C1 4.30732 1.46423 3.22282 2.21973 2.41912L2.60641 2.78249C1.93974 3.49169 1.53066 4.4476 1.53066 5.49924C1.53066 7.69191 3.30721 9.46943 5.5 9.46943C7.69273 9.46943 9.46934 7.69046 9.46934 5.49924C9.46934 3.39724 7.83438 1.67581 5.76533 1.5393V2.96008H5.23467V1Z"
+          fill-rule="evenodd"
+          stroke-miterlimit="10"
+          stroke-width="0.3"
+        />
+        <path
+          d="M5.85879 5.41311L3 3L5.41281 5.85768C5.47056 5.94243 5.56842 6 5.67911 6C5.85719 6 5.99997 5.85608 5.99997 5.68017C6.00157 5.56823 5.94542 5.47068 5.85879 5.41311Z"
+        />
       </svg>
        5 minutesLeft
     </div>
@@ -132,8 +224,17 @@ exports[`renders a swap with events correctly 1`] = `
       <div
         class="timelineLine"
       />
-      <svg>
-        check.svg
+      <svg
+        fill="none"
+        height="8"
+        viewBox="0 0 10 8"
+        width="10"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M3.50008 6.08492L1.41508 3.99992L0.705078 4.70492L3.50008 7.49992L9.50008 1.49992L8.79508 0.794922L3.50008 6.08492Z"
+          fill="#A5A5A5"
+        />
       </svg>
        2/1 12:10 AM settledXTokenForYToken
     </div>
@@ -144,8 +245,17 @@ exports[`renders a swap with events correctly 1`] = `
       <div
         class="timelineLine"
       />
-      <svg>
-        check.svg
+      <svg
+        fill="none"
+        height="8"
+        viewBox="0 0 10 8"
+        width="10"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M3.50008 6.08492L1.41508 3.99992L0.705078 4.70492L3.50008 7.49992L9.50008 1.49992L8.79508 0.794922L3.50008 6.08492Z"
+          fill="#A5A5A5"
+        />
       </svg>
        2/1 12:11 AM withdrewNToken
     </div>
