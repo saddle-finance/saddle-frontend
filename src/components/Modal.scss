@@ -17,11 +17,11 @@ div.modal {
 div.modalContent {
   width: 565px;
   min-height: 332px;
-  border: 1px solid $white;
+  border: 1px solid $black;
   margin: auto;
   box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.3);
   border-radius: 8px;
-
+  position: relative;
   max-height: calc(100vh - 72px);
   overflow: auto;
   @include breakpoint(sm) {
@@ -32,8 +32,9 @@ div.modalContent {
   }
 
   .close {
+    position: absolute;
+    right: 0;
     color: #aaa;
-    float: right;
     font-size: 32px;
     font-weight: bold;
     line-height: 24px;

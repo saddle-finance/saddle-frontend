@@ -69,7 +69,7 @@ button.button {
 
   &.large {
     width: 176px;
-    height: 40px;
+    min-height: 40px;
   }
 
   &.small {

@@ -69,7 +69,7 @@ export class Token {
 export const BLOCK_TIME = 13000 // ms
 
 export const BRIDGE_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: "0xf5059a5D33d5853360D16C683c16e67980206f36", // TODO replace once mainnet deploy goes out
+  [ChainId.MAINNET]: "0x9d4454B023096f34B160D6B654540c56A1F81688", // TODO replace once mainnet deploy goes out
   [ChainId.ROPSTEN]: "0xf5059a5D33d5853360D16C683c16e67980206f36", // TODO couldn't find this
   [ChainId.HARDHAT]: "0xf5059a5D33d5853360D16C683c16e67980206f36",
 }
@@ -333,6 +333,7 @@ export const SETH = new Token(
   "seth",
   "Synth sETH",
   sethLogo,
+  true,
 )
 
 export const ALETH_POOL_TOKENS = [WETH, ALETH, SETH]
