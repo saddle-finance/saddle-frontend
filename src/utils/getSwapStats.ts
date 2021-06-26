@@ -6,9 +6,9 @@ const swapStatsURI = "https://ipfs.saddle.exchange/swap-stats.json"
 
 interface SwapStatsReponse {
   [swapAddress: string]: {
-    oneDayVolume: string
-    APY: string
-    TVL: string
+    oneDayVolume: number
+    APY: number
+    TVL: number
   }
 }
 

@@ -25,7 +25,7 @@ function PoolOverview({
   const { t } = useTranslation()
   const formattedData = {
     name: poolData.name,
-    reserve: commify(formatBNToString(poolData.reserve, 18, 2)),
+    reserve: commify(formatBNToString(poolData.reserve, 18, 0)),
     aprs: Object.keys(poolData.aprs).reduce((acc, key) => {
       const apr = poolData.aprs[key as Partners]?.apr
       return apr
@@ -35,14 +35,9 @@ function PoolOverview({
           }
         : acc
     }, {} as Partial<Record<Partners, string>>),
-    apy: poolData.apy
-      ? String((100 * parseFloat(poolData.apy)).toFixed(1)) + "%"
-      : "",
+    apy: poolData.APY ? `${formatBNToPercentString(poolData.APY, 18, 2)}` : "",
     volume: poolData.volume
-      ? "$" + commify(parseFloat(poolData.volume).toFixed(0))
-      : "",
-    utilization: poolData.utilization
-      ? String((100 * parseFloat(poolData.utilization)).toFixed(0) + "%")
+      ? `$${commify(formatBNToString(poolData.volume, 18, 2))}`
       : "",
     userBalanceUSD: commify(
       formatBNToString(userShareData?.usdBalance || Zero, 18, 2),
@@ -83,6 +78,12 @@ function PoolOverview({
 
       <div className="right">
         <div className="poolInfo">
+          {formattedData.apy && (
+            <div className="margin">
+              <span className="label">{`${t("apy")}`}</span>
+              <span>{formattedData.apy}</span>
+            </div>
+          )}
           {Object.keys(poolData.aprs).map((key) => {
             const symbol = poolData.aprs[key as Partners]?.symbol as string
             return poolData.aprs[key as Partners]?.apr.gt(Zero) ? (
@@ -94,26 +95,13 @@ function PoolOverview({
               </div>
             ) : null
           })}
-
-          <div className="volume">
+          <div className="margin">
             <span className="label">{t("currencyReserves")}</span>
             <span>{`$${formattedData.reserve}`}</span>
           </div>
-          {formattedData.utilization && (
-            <div className="volume">
-              <span className="label">Utilization</span>
-              <span>{formattedData.utilization}</span>
-            </div>
-          )}
-          {formattedData.apy && (
-            <div className="volume">
-              <span className="label">APY</span>
-              <span>{formattedData.apy}</span>
-            </div>
-          )}
           {formattedData.volume && (
-            <div className="volume">
-              <span className="label">24h Volume</span>
+            <div className="margin">
+              <span className="label">{`${t("24HrVolume")}`}</span>
               <span>{formattedData.volume}</span>
             </div>
           )}

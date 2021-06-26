@@ -33,15 +33,15 @@ export type Partners = "keep" | "sharedStake" | "alchemix"
 export interface PoolDataType {
   adminFee: BigNumber
   aParameter: BigNumber
-  apy: string
+  APY: BigNumber
   name: string
   reserve: BigNumber
   swapFee: BigNumber
   tokens: TokenShareType[]
   totalLocked: BigNumber
-  utilization: string // TODO: calculate
+  utilization: BigNumber
   virtualPrice: BigNumber
-  volume: string
+  volume: BigNumber
   aprs: Partial<
     Record<
       Partners,
@@ -70,15 +70,15 @@ export type PoolDataHookReturnType = [PoolDataType, UserShareType | null]
 const emptyPoolData = {
   adminFee: Zero,
   aParameter: Zero,
-  apy: "",
+  APY: Zero,
   name: "",
   reserve: Zero,
   swapFee: Zero,
   tokens: [],
   totalLocked: Zero,
-  utilization: "",
+  utilization: Zero,
   virtualPrice: Zero,
-  volume: "",
+  volume: Zero,
   aprs: {},
   lpTokenPriceUSD: Zero,
 } as PoolDataType
@@ -270,11 +270,8 @@ export default function usePoolData(
       const { oneDayVolume, TVL, APY } =
         swapStats && POOL.addresses[chainId].toLowerCase() in swapStats
           ? swapStats[POOL.addresses[chainId].toLowerCase()]
-          : { oneDayVolume: "", TVL: "", APY: "" }
-      const utilization =
-        oneDayVolume && TVL
-          ? String(parseFloat(oneDayVolume) / parseFloat(TVL))
-          : ""
+          : { oneDayVolume: 0, TVL: 0, APY: 0 }
+      const utilization = oneDayVolume && TVL ? oneDayVolume / TVL : 0
       const poolData = {
         name: poolName,
         tokens: poolTokens,
@@ -284,9 +281,9 @@ export default function usePoolData(
         adminFee: adminFee as BigNumber,
         swapFee: swapFee as BigNumber,
         aParameter: aParameter as BigNumber,
-        volume: oneDayVolume,
-        utilization: utilization,
-        apy: APY,
+        volume: parseUnits(oneDayVolume.toFixed(18), 18),
+        utilization: parseUnits(utilization.toFixed(18), 18),
+        APY: parseUnits(APY.toFixed(18), 18),
         aprs,
         lpTokenPriceUSD,
       }
