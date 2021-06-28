@@ -119,6 +119,6 @@ function GasAndTokenPrices({
   }, [dispatch])
   usePoller(fetchAndUpdateGasPrice, BLOCK_TIME)
   usePoller(fetchAndUpdateTokensPrice, BLOCK_TIME * 3)
-  usePoller(fetchAndUpdateSwapStats, BLOCK_TIME * 3)
+  usePoller(fetchAndUpdateSwapStats, BLOCK_TIME * 280) // ~ 1hr
   return <>{children}</>
 }

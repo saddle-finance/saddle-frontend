@@ -4,7 +4,7 @@ import { updateSwapStats } from "../state/application"
 
 const swapStatsURI = "https://ipfs.saddle.exchange/swap-stats.json"
 
-interface SwapStatsReponse {
+export interface SwapStatsReponse {
   [swapAddress: string]: {
     oneDayVolume: number
     APY: number

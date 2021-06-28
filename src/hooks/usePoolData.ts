@@ -33,15 +33,15 @@ export type Partners = "keep" | "sharedStake" | "alchemix"
 export interface PoolDataType {
   adminFee: BigNumber
   aParameter: BigNumber
-  APY: BigNumber
+  apy: BigNumber | null
   name: string
-  reserve: BigNumber
+  reserve: BigNumber | null
   swapFee: BigNumber
   tokens: TokenShareType[]
   totalLocked: BigNumber
-  utilization: BigNumber
+  utilization: BigNumber | null
   virtualPrice: BigNumber
-  volume: BigNumber
+  volume: BigNumber | null
   aprs: Partial<
     Record<
       Partners,
@@ -70,15 +70,15 @@ export type PoolDataHookReturnType = [PoolDataType, UserShareType | null]
 const emptyPoolData = {
   adminFee: Zero,
   aParameter: Zero,
-  APY: Zero,
+  apy: null,
   name: "",
-  reserve: Zero,
+  reserve: null,
   swapFee: Zero,
   tokens: [],
   totalLocked: Zero,
-  utilization: Zero,
+  utilization: null,
   virtualPrice: Zero,
-  volume: Zero,
+  volume: null,
   aprs: {},
   lpTokenPriceUSD: Zero,
 } as PoolDataType
@@ -267,11 +267,10 @@ export default function usePoolData(
         ),
         value: userPoolTokenBalances[i],
       }))
-      const { oneDayVolume, TVL, APY } =
+      const { oneDayVolume, apy, utilization } =
         swapStats && POOL.addresses[chainId].toLowerCase() in swapStats
           ? swapStats[POOL.addresses[chainId].toLowerCase()]
-          : { oneDayVolume: 0, TVL: 0, APY: 0 }
-      const utilization = oneDayVolume && TVL ? oneDayVolume / TVL : 0
+          : { oneDayVolume: null, apy: null, utilization: null }
       const poolData = {
         name: poolName,
         tokens: poolTokens,
@@ -281,9 +280,9 @@ export default function usePoolData(
         adminFee: adminFee as BigNumber,
         swapFee: swapFee as BigNumber,
         aParameter: aParameter as BigNumber,
-        volume: parseUnits(oneDayVolume.toFixed(18), 18),
-        utilization: parseUnits(utilization.toFixed(18), 18),
-        APY: parseUnits(APY.toFixed(18), 18),
+        volume: oneDayVolume,
+        utilization: utilization,
+        apy: apy,
         aprs,
         lpTokenPriceUSD,
       }

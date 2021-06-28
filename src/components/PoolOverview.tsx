@@ -25,7 +25,9 @@ function PoolOverview({
   const { t } = useTranslation()
   const formattedData = {
     name: poolData.name,
-    reserve: commify(formatBNToString(poolData.reserve, 18, 0)),
+    reserve: poolData.reserve
+      ? commify(formatBNToString(poolData.reserve, 18, 0))
+      : "-",
     aprs: Object.keys(poolData.aprs).reduce((acc, key) => {
       const apr = poolData.aprs[key as Partners]?.apr
       return apr
@@ -35,10 +37,10 @@ function PoolOverview({
           }
         : acc
     }, {} as Partial<Record<Partners, string>>),
-    apy: poolData.APY ? `${formatBNToPercentString(poolData.APY, 18, 2)}` : "",
+    apy: poolData.apy ? `${formatBNToPercentString(poolData.apy, 18, 2)}` : "-",
     volume: poolData.volume
       ? `$${commify(formatBNToString(poolData.volume, 18, 2))}`
-      : "",
+      : "-",
     userBalanceUSD: commify(
       formatBNToString(userShareData?.usdBalance || Zero, 18, 2),
     ),
