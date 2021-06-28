@@ -55,7 +55,7 @@ export interface PoolDataType {
 
 export interface UserShareType {
   lpTokenBalance: BigNumber
-  name: string // TODO: does this need to be on user share?
+  name: PoolName // TODO: does this need to be on user share?
   share: BigNumber
   tokens: TokenShareType[]
   usdBalance: BigNumber
