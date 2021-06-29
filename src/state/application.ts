@@ -2,6 +2,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { SwapStatsReponse } from "../utils/getSwapStats"
+import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
 
 interface GasPrices {
@@ -70,9 +71,9 @@ const applicationSlice = createSlice({
               apy,
               tvl,
               oneDayVolume,
-              utilization: oneDayVolume
-                .mul(BigNumber.from(10).pow(18))
-                .div(tvl), // 1e18
+              utilization: tvl.gt("0")
+                ? oneDayVolume.mul(BigNumber.from(10).pow(18)).div(tvl) // 1e18
+                : Zero,
             },
           }
         },

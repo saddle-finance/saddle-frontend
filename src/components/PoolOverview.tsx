@@ -12,7 +12,6 @@ import {
 import Button from "./Button"
 import { Link } from "react-router-dom"
 import { Zero } from "@ethersproject/constants"
-import { commify } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -47,8 +46,9 @@ function PoolOverview({
     volume: poolData.volume
       ? `$${formatBNToShortString(poolData.volume, 18)}`
       : "-",
-    userBalanceUSD: commify(
-      formatBNToShortString(userShareData?.usdBalance || Zero, 18),
+    userBalanceUSD: formatBNToShortString(
+      userShareData?.usdBalance || Zero,
+      18,
     ),
     tokens: poolData.tokens.map((coin) => {
       const token = TOKENS_MAP[coin.symbol]

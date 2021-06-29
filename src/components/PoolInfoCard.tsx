@@ -39,7 +39,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
       ? commify(formatBNToString(data.virtualPrice, 18, 5))
       : "-",
     utilization: data?.utilization
-      ? commify(formatBNToPercentString(data.utilization, 18, 0))
+      ? formatBNToPercentString(data.utilization, 18, 0)
       : "-",
     reserve: data?.reserve
       ? commify(formatBNToString(data.reserve, 18, 2))
@@ -81,7 +81,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
         </div>
         <div className="infoItem">
           <span className="label bold">{`${t("utilization")}:`}</span>
-          <span className="value">{`$${formattedData.utilization}`}</span>
+          <span className="value">{formattedData.utilization}</span>
         </div>
         <div className="infoItem">
           <span className="label bold">{`${t("totalLocked")}:`}</span>
