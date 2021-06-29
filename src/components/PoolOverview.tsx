@@ -1,14 +1,17 @@
 import "./PoolOverview.scss"
 
+import { POOLS_MAP, PoolTypes, TOKENS_MAP } from "../constants"
 import { Partners, PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement } from "react"
-import { formatBNToPercentString, formatBNToString } from "../utils"
+import {
+  formatBNToPercentString,
+  formatBNToShortString,
+  formatBNToString,
+} from "../utils"
 
 import Button from "./Button"
 import { Link } from "react-router-dom"
-import { TOKENS_MAP } from "../constants"
 import { Zero } from "@ethersproject/constants"
-import { commify } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -23,9 +26,13 @@ function PoolOverview({
   userShareData,
 }: Props): ReactElement | null {
   const { t } = useTranslation()
+  const { type: poolType } = POOLS_MAP[poolData.name]
+  const formattedDecimals = poolType === PoolTypes.USD ? 2 : 4
   const formattedData = {
     name: poolData.name,
-    reserve: commify(formatBNToString(poolData.reserve, 18, 2)),
+    reserve: poolData.reserve
+      ? formatBNToShortString(poolData.reserve, 18)
+      : "-",
     aprs: Object.keys(poolData.aprs).reduce((acc, key) => {
       const apr = poolData.aprs[key as Partners]?.apr
       return apr
@@ -35,8 +42,13 @@ function PoolOverview({
           }
         : acc
     }, {} as Partial<Record<Partners, string>>),
-    userBalanceUSD: commify(
-      formatBNToString(userShareData?.usdBalance || Zero, 18, 2),
+    apy: poolData.apy ? `${formatBNToPercentString(poolData.apy, 18, 2)}` : "-",
+    volume: poolData.volume
+      ? `$${formatBNToShortString(poolData.volume, 18)}`
+      : "-",
+    userBalanceUSD: formatBNToShortString(
+      userShareData?.usdBalance || Zero,
+      18,
     ),
     tokens: poolData.tokens.map((coin) => {
       const token = TOKENS_MAP[coin.symbol]
@@ -44,11 +56,10 @@ function PoolOverview({
         symbol: token.symbol,
         name: token.name,
         icon: token.icon,
-        value: formatBNToString(coin.value, token.decimals, 4),
+        value: formatBNToString(coin.value, token.decimals, formattedDecimals),
       }
     }),
   }
-
   const hasShare = !!userShareData?.usdBalance.gt("0")
 
   return (
@@ -75,6 +86,12 @@ function PoolOverview({
 
       <div className="right">
         <div className="poolInfo">
+          {formattedData.apy && (
+            <div className="margin">
+              <span className="label">{`${t("apy")}`}</span>
+              <span>{formattedData.apy}</span>
+            </div>
+          )}
           {Object.keys(poolData.aprs).map((key) => {
             const symbol = poolData.aprs[key as Partners]?.symbol as string
             return poolData.aprs[key as Partners]?.apr.gt(Zero) ? (
@@ -86,11 +103,16 @@ function PoolOverview({
               </div>
             ) : null
           })}
-
-          <div className="volume">
+          <div className="margin">
             <span className="label">{t("currencyReserves")}</span>
             <span>{`$${formattedData.reserve}`}</span>
           </div>
+          {formattedData.volume && (
+            <div>
+              <span className="label">{`${t("24HrVolume")}`}</span>
+              <span>{formattedData.volume}</span>
+            </div>
+          )}
         </div>
         <div className="buttons">
           <Link to={`${poolRoute}/withdraw`}>

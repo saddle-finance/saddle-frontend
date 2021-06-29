@@ -43,6 +43,12 @@ export enum ChainId {
   // KOVAN = 42,
   HARDHAT = 31337,
 }
+export enum PoolTypes {
+  BTC,
+  ETH,
+  USD,
+  OTHER,
+}
 
 export class Token {
   readonly addresses: { [chainId in ChainId]: string }
@@ -404,6 +410,7 @@ export type Pool = {
   poolTokens: Token[]
   isSynthetic: boolean
   addresses: { [chainId in ChainId]: string }
+  type: PoolTypes
 }
 export type PoolsMap = {
   [poolName: string]: Pool
@@ -415,6 +422,7 @@ export const POOLS_MAP: PoolsMap = {
     lpToken: BTC_SWAP_TOKEN,
     poolTokens: BTC_POOL_TOKENS,
     isSynthetic: true,
+    type: PoolTypes.BTC,
   },
   [STABLECOIN_POOL_NAME]: {
     name: STABLECOIN_POOL_NAME,
@@ -422,6 +430,7 @@ export const POOLS_MAP: PoolsMap = {
     lpToken: STABLECOIN_SWAP_TOKEN,
     poolTokens: STABLECOIN_POOL_TOKENS,
     isSynthetic: false,
+    type: PoolTypes.USD,
   },
   [VETH2_POOL_NAME]: {
     name: VETH2_POOL_NAME,
@@ -429,6 +438,7 @@ export const POOLS_MAP: PoolsMap = {
     lpToken: VETH2_SWAP_TOKEN,
     poolTokens: VETH2_POOL_TOKENS,
     isSynthetic: false,
+    type: PoolTypes.ETH,
   },
   [ALETH_POOL_NAME]: {
     name: ALETH_POOL_NAME,
@@ -436,6 +446,7 @@ export const POOLS_MAP: PoolsMap = {
     lpToken: ALETH_SWAP_TOKEN,
     poolTokens: ALETH_POOL_TOKENS,
     isSynthetic: true,
+    type: PoolTypes.ETH,
   },
   [D4_POOL_NAME]: {
     name: D4_POOL_NAME,

@@ -101,6 +101,7 @@
   "totalAmount": "Total amount",
   "totalLocked": "Total locked",
   "unavailable": "Unavailable",
+  "utilization": "Utilization",
   "usdBalance": "USD balance",
   "virtualPrice": "Virtual price",
   "virtualSwap": "Virtual Swap",
@@ -113,5 +114,6 @@
   "withdrawPercentage": "Withdraw percentage",
   "yes": "Yes",
   "youWillReceive": "You will receive",
-  "yourRecentTransactions": "Your recent transactions will be here."
+  "yourRecentTransactions": "Your recent transactions will be here.",
+  "24HrVolume": "24h Volume"
 }
