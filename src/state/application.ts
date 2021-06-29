@@ -1,9 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
-import { BigNumber } from "@ethersproject/bignumber"
 import { SwapStatsReponse } from "../utils/getSwapStats"
-import { Zero } from "@ethersproject/constants"
-import { parseUnits } from "@ethersproject/units"
 
 interface GasPrices {
   gasStandard?: number
@@ -12,10 +9,10 @@ interface GasPrices {
 }
 interface SwapStats {
   [swapAddress: string]: {
-    oneDayVolume: BigNumber
-    apy: BigNumber
-    tvl: BigNumber
-    utilization: BigNumber
+    oneDayVolume: string
+    apy: string
+    tvl: string
+    utilization: string
   }
 }
 export interface TokenPricesUSD {
@@ -62,18 +59,17 @@ const applicationSlice = createSlice({
           if (isNaN(APY) || isNaN(TVL) || isNaN(ODV)) {
             return acc
           }
-          const apy = parseUnits(APY.toFixed(18), 18)
-          const tvl = parseUnits(TVL.toFixed(18), 18)
-          const oneDayVolume = parseUnits(ODV.toFixed(18), 18)
+          const apy = APY.toFixed(18)
+          const tvl = TVL.toFixed(18)
+          const oneDayVolume = ODV.toFixed(18)
+          const utilization = (TVL > 0 ? ODV / TVL : 0).toFixed(18)
           return {
             ...acc,
             [key]: {
               apy,
               tvl,
               oneDayVolume,
-              utilization: tvl.gt("0")
-                ? oneDayVolume.mul(BigNumber.from(10).pow(18)).div(tvl) // 1e18
-                : Zero,
+              utilization,
             },
           }
         },
