@@ -107,12 +107,12 @@ export function formatDeadlineToNumber(
   deadlineCustom?: string,
 ): number {
   let deadline
-  if (deadlineSelected === Deadlines.Thirty) {
-    deadline = 30
+  if (deadlineSelected === Deadlines.Forty) {
+    deadline = 40
   } else if (deadlineSelected === Deadlines.Custom) {
-    deadline = +(deadlineCustom || 10)
+    deadline = +(deadlineCustom || 20)
   } else {
-    deadline = 10
+    deadline = 20
   }
   return deadline
 }
