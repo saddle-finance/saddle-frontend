@@ -1,12 +1,12 @@
 import "./PoolOverview.scss"
 
+import { POOLS_MAP, PoolTypes, TOKENS_MAP } from "../constants"
 import { Partners, PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement } from "react"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 
 import Button from "./Button"
 import { Link } from "react-router-dom"
-import { TOKENS_MAP } from "../constants"
 import { Zero } from "@ethersproject/constants"
 import { commify } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
@@ -23,6 +23,8 @@ function PoolOverview({
   userShareData,
 }: Props): ReactElement | null {
   const { t } = useTranslation()
+  const { type: poolType } = POOLS_MAP[poolData.name]
+  const formattedDecimals = poolType === PoolTypes.USD ? 2 : 4
   const formattedData = {
     name: poolData.name,
     reserve: poolData.reserve
@@ -50,7 +52,7 @@ function PoolOverview({
         symbol: token.symbol,
         name: token.name,
         icon: token.icon,
-        value: formatBNToString(coin.value, token.decimals, 4),
+        value: formatBNToString(coin.value, token.decimals, formattedDecimals),
       }
     }),
   }

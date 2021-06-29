@@ -86,6 +86,7 @@
   "riskIntro3": "，并了解作为一名流动性提供者（LP）和/或使用AMM进行固定价值加密资产交易所涉及的风险。",
   "riskLossOfPeg": "如果池内的其中一项资产崩盘，其他存放的资产也会一起崩盘。",
   "route": null,
+  "sgtPoolPaused": null,
   "shareOfPool": "资金池份额",
   "slippage": "滑点",
   "staked": "已质押",

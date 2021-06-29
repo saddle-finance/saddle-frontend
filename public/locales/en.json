@@ -86,6 +86,7 @@
   "riskIntro3": "and understanding the risks involved with being a Liquidity Provider (LP) and/or using the AMM to trade pegged value crypto assets.",
   "riskLossOfPeg": "If one of the assets in a pool significantly depegs, it will effectively mean that pool liquidity providers will be left holding only that asset.",
   "route": "Route",
+  "sgtPoolPaused": "This pool is paused, please see <2>this postmortem</2> for more information.",
   "shareOfPool": "Share of Pool",
   "slippage": "Slippage",
   "staked": "staked",

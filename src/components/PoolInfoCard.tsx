@@ -1,6 +1,11 @@
 import "./PoolInfoCard.scss"
 
-import { POOL_FEE_PRECISION, TOKENS_MAP } from "../constants"
+import {
+  POOLS_MAP,
+  POOL_FEE_PRECISION,
+  PoolTypes,
+  TOKENS_MAP,
+} from "../constants"
 import React, { ReactElement } from "react"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 
@@ -13,8 +18,11 @@ interface Props {
   data: PoolDataType | null
 }
 
-function PoolInfoCard({ data }: Props): ReactElement {
+function PoolInfoCard({ data }: Props): ReactElement | null {
   const { t } = useTranslation()
+  if (data == null) return null
+  const { type: poolType } = POOLS_MAP[data?.name]
+  const formattedDecimals = poolType === PoolTypes.USD ? 2 : 4
   const swapFee = data?.swapFee
     ? formatBNToPercentString(data.swapFee, POOL_FEE_PRECISION)
     : null
@@ -46,7 +54,7 @@ function PoolInfoCard({ data }: Props): ReactElement {
           name: token.name,
           icon: token.icon,
           percent: coin.percent,
-          value: commify(formatBNToString(coin.value, 18, 6)),
+          value: commify(formatBNToString(coin.value, 18, formattedDecimals)),
         }
       }) || [],
   }
