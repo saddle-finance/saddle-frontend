@@ -3,8 +3,12 @@ import { injected, walletconnect, walletlink } from "../connectors"
 import { AbstractConnector } from "@web3-react/abstract-connector"
 import { BigNumber } from "@ethersproject/bignumber"
 import alethLogo from "../assets/icons/aleth.svg"
+import alusdLogo from "../assets/icons/alusd.svg"
 import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
 import daiLogo from "../assets/icons/dai.svg"
+import feiLogo from "../assets/icons/fei.svg"
+import fraxLogo from "../assets/icons/frax.svg"
+import lusdLogo from "../assets/icons/lusd.svg"
 import metamaskIcon from "../assets/icons/metamask.svg"
 import renbtcLogo from "../assets/icons/renbtc.svg"
 import saddleLogo from "../assets/icons/logo.svg"
@@ -23,11 +27,13 @@ export const BTC_POOL_NAME = "BTC Pool"
 export const STABLECOIN_POOL_NAME = "Stablecoin Pool"
 export const VETH2_POOL_NAME = "vETH2 Pool"
 export const ALETH_POOL_NAME = "alETH Pool"
+export const D4_POOL_NAME = "D4 Pool"
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof STABLECOIN_POOL_NAME
   | typeof VETH2_POOL_NAME
   | typeof ALETH_POOL_NAME
+  | typeof D4_POOL_NAME
 
 export enum ChainId {
   MAINNET = 1,
@@ -99,6 +105,11 @@ export const ALETH_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.HARDHAT]: "0xCafac3dD18aC6c6e92c921884f9E4176737C052c",
 }
 
+export const D4_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0xC69DDcd4DFeF25D8a793241834d4cc4b3668EAD6",
+  [ChainId.HARDHAT]: "0x9f1ac54BEF0DD2f6f3462EA0fa94fC62300d3a8e",
+}
+
 export const MERKLETREE_DATA: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "mainnetTestAccounts.json",
   [ChainId.HARDHAT]: "hardhat.json",
@@ -130,6 +141,13 @@ export const ALETH_SWAP_TOKEN_CONTRACT_ADDRESSES: {
 } = {
   [ChainId.MAINNET]: "0xc9da65931ABf0Ed1b74Ce5ad8c041C4220940368",
   [ChainId.HARDHAT]: "0xAe367415f4BDe0aDEE3e59C35221d259f517413E",
+}
+
+export const D4_SWAP_TOKEN_CONTRACT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "0xd48cF4D7FB0824CC8bAe055dF3092584d0a1726A",
+  [ChainId.HARDHAT]: "0x2d2c18F63D2144161B38844dCd529124Fbb93cA2",
 }
 
 export const BTC_SWAP_TOKEN = new Token(
@@ -165,6 +183,15 @@ export const ALETH_SWAP_TOKEN = new Token(
   "saddleALETH",
   "saddlealeth",
   "Saddle WETH/alETH/sETH",
+  saddleLogo,
+)
+
+export const D4_SWAP_TOKEN = new Token(
+  D4_SWAP_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "saddleD4",
+  "saddled4",
+  "Saddle alUSD/FEI/FRAX/LUSD",
   saddleLogo,
 )
 
@@ -323,6 +350,60 @@ export const SETH = new Token(
 
 export const ALETH_POOL_TOKENS = [WETH, ALETH, SETH]
 
+const ALUSD_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9",
+  [ChainId.HARDHAT]: "0x84eA74d481Ee0A5332c457a4d796187F6Ba67fEB",
+}
+export const ALUSD = new Token(
+  ALUSD_CONTRACT_ADDRESSES,
+  18,
+  "alUSD",
+  "alchemix-usd",
+  "Alchemix USD",
+  alusdLogo,
+)
+
+const FEI_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0x956F47F50A910163D8BF957Cf5846D573E7f87CA",
+  [ChainId.HARDHAT]: "0xa82fF9aFd8f496c3d6ac40E2a0F282E47488CFc9",
+}
+export const FEI = new Token(
+  FEI_CONTRACT_ADDRESSES,
+  18,
+  "FEI",
+  "fei-protocol",
+  "Fei Protocol",
+  feiLogo,
+)
+
+const FRAX_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+  [ChainId.HARDHAT]: "0x851356ae760d987E095750cCeb3bC6014560891C",
+}
+export const FRAX = new Token(
+  FRAX_CONTRACT_ADDRESSES,
+  18,
+  "FRAX",
+  "frax",
+  "Frax",
+  fraxLogo,
+)
+
+const LUSD_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+  [ChainId.HARDHAT]: "0x95401dc811bb5740090279Ba06cfA8fcF6113778",
+}
+export const LUSD = new Token(
+  LUSD_CONTRACT_ADDRESSES,
+  18,
+  "LUSD",
+  "liquity-usd",
+  "Liquity USD",
+  lusdLogo,
+)
+
+export const D4_POOL_TOKENS = [ALUSD, FEI, FRAX, LUSD]
+
 export type Pool = {
   name: string
   lpToken: Token
@@ -367,6 +448,19 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: true,
     type: PoolTypes.ETH,
   },
+  [D4_POOL_NAME]: {
+    name: D4_POOL_NAME,
+    addresses: D4_SWAP_ADDRESSES,
+    lpToken: D4_SWAP_TOKEN,
+    poolTokens: D4_POOL_TOKENS,
+    isSynthetic: false,
+    type: PoolTypes.USD,
+  },
+}
+export function isLegacySwapABIPool(poolName: string): boolean {
+  return [BTC_POOL_NAME, STABLECOIN_POOL_NAME, VETH2_POOL_NAME].includes(
+    poolName,
+  )
 }
 
 // maps a symbol string to a token object
