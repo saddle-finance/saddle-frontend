@@ -1,10 +1,10 @@
 import {
-  ALETH_POOL_NAME,
   BTC_POOL_NAME,
   POOLS_MAP,
   PoolName,
   TRANSACTION_TYPES,
   Token,
+  isLegacySwapABIPool,
 } from "../constants"
 import { useAllContracts, useSwapContract } from "./useContract"
 
@@ -123,14 +123,14 @@ export function useApproveAndDeposit(
       if (isFirstTransaction) {
         minToMint = BigNumber.from("0")
       } else {
-        if (poolName === ALETH_POOL_NAME) {
-          minToMint = await (swapContract as SwapFlashLoanNoWithdrawFee).calculateTokenAmount(
+        if (isLegacySwapABIPool(poolName)) {
+          minToMint = await (swapContract as SwapFlashLoan).calculateTokenAmount(
+            account,
             POOL.poolTokens.map(({ symbol }) => state[symbol].valueSafe),
             true, // deposit boolean
           )
         } else {
-          minToMint = await (swapContract as SwapFlashLoan).calculateTokenAmount(
-            account,
+          minToMint = await (swapContract as SwapFlashLoanNoWithdrawFee).calculateTokenAmount(
             POOL.poolTokens.map(({ symbol }) => state[symbol].valueSafe),
             true, // deposit boolean
           )

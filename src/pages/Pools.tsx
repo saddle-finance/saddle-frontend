@@ -1,6 +1,7 @@
 import {
   ALETH_POOL_NAME,
   BTC_POOL_NAME,
+  D4_POOL_NAME,
   STABLECOIN_POOL_NAME,
   VETH2_POOL_NAME,
 } from "../constants"
@@ -16,11 +17,17 @@ function Pools(): ReactElement | null {
   const [usdPoolData, usdUserShareData] = usePoolData(STABLECOIN_POOL_NAME)
   const [veth2PoolData, veth2UserShareData] = usePoolData(VETH2_POOL_NAME)
   const [alethPoolData, alethUserShareData] = usePoolData(ALETH_POOL_NAME)
+  const [d4PoolData, d4UserShareData] = usePoolData(D4_POOL_NAME)
 
   return (
     <div className={styles.poolsPage}>
       <TopMenu activeTab="pools" />
       <div className={styles.content}>
+        <PoolOverview
+          poolData={d4PoolData}
+          poolRoute={`/pools/d4`}
+          userShareData={d4UserShareData}
+        />
         <PoolOverview
           poolData={alethPoolData}
           poolRoute={`/pools/aleth`}

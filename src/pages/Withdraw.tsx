@@ -1,4 +1,4 @@
-import { ALETH_POOL_NAME, POOLS_MAP, PoolName } from "../constants"
+import { POOLS_MAP, PoolName, isLegacySwapABIPool } from "../constants"
 import React, { ReactElement, useEffect, useState } from "react"
 import WithdrawPage, { ReviewWithdrawData } from "../components/WithdrawPage"
 import { commify, formatUnits, parseUnits } from "@ethersproject/units"
@@ -65,16 +65,16 @@ function Withdraw({ poolName }: Props): ReactElement {
       )
       let withdrawLPTokenAmount
       if (poolData.totalLocked.gt(0) && tokenInputSum.gt(0)) {
-        if (poolData.name === ALETH_POOL_NAME) {
-          withdrawLPTokenAmount = await (swapContract as SwapFlashLoanNoWithdrawFee).calculateTokenAmount(
+        if (isLegacySwapABIPool(poolData.name)) {
+          withdrawLPTokenAmount = await (swapContract as SwapFlashLoan).calculateTokenAmount(
+            account,
             POOL.poolTokens.map(
               ({ symbol }) => withdrawFormState.tokenInputs[symbol].valueSafe,
             ),
             false,
           )
         } else {
-          withdrawLPTokenAmount = await (swapContract as SwapFlashLoan).calculateTokenAmount(
-            account,
+          withdrawLPTokenAmount = await (swapContract as SwapFlashLoanNoWithdrawFee).calculateTokenAmount(
             POOL.poolTokens.map(
               ({ symbol }) => withdrawFormState.tokenInputs[symbol].valueSafe,
             ),
