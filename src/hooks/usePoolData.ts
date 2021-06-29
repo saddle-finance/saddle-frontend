@@ -244,9 +244,10 @@ export default function usePoolData(
         ),
         value: userPoolTokenBalances[i],
       }))
+      const poolAddress = POOL.addresses[chainId].toLowerCase()
       const { oneDayVolume, apy, utilization } =
-        swapStats && POOL.addresses[chainId].toLowerCase() in swapStats
-          ? swapStats[POOL.addresses[chainId].toLowerCase()]
+        swapStats && poolAddress in swapStats
+          ? swapStats[poolAddress]
           : { oneDayVolume: null, apy: null, utilization: null }
       const poolData = {
         name: poolName,

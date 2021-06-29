@@ -3,7 +3,11 @@ import "./PoolOverview.scss"
 import { POOLS_MAP, PoolTypes, TOKENS_MAP } from "../constants"
 import { Partners, PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement } from "react"
-import { formatBNToPercentString, formatBNToString } from "../utils"
+import {
+  formatBNToPercentString,
+  formatBNToShortString,
+  formatBNToString,
+} from "../utils"
 
 import Button from "./Button"
 import { Link } from "react-router-dom"
@@ -28,7 +32,7 @@ function PoolOverview({
   const formattedData = {
     name: poolData.name,
     reserve: poolData.reserve
-      ? commify(formatBNToString(poolData.reserve, 18, 0))
+      ? formatBNToShortString(poolData.reserve, 18)
       : "-",
     aprs: Object.keys(poolData.aprs).reduce((acc, key) => {
       const apr = poolData.aprs[key as Partners]?.apr
@@ -41,10 +45,10 @@ function PoolOverview({
     }, {} as Partial<Record<Partners, string>>),
     apy: poolData.apy ? `${formatBNToPercentString(poolData.apy, 18, 2)}` : "-",
     volume: poolData.volume
-      ? `$${commify(formatBNToString(poolData.volume, 18, 2))}`
+      ? `$${formatBNToShortString(poolData.volume, 18)}`
       : "-",
     userBalanceUSD: commify(
-      formatBNToString(userShareData?.usdBalance || Zero, 18, 2),
+      formatBNToShortString(userShareData?.usdBalance || Zero, 18),
     ),
     tokens: poolData.tokens.map((coin) => {
       const token = TOKENS_MAP[coin.symbol]
@@ -104,7 +108,7 @@ function PoolOverview({
             <span>{`$${formattedData.reserve}`}</span>
           </div>
           {formattedData.volume && (
-            <div className="margin">
+            <div>
               <span className="label">{`${t("24HrVolume")}`}</span>
               <span>{formattedData.volume}</span>
             </div>

@@ -48,6 +48,19 @@ export function getContract(
   return new Contract(address, ABI, getProviderOrSigner(library, account))
 }
 
+export function formatBNToShortString(
+  bn: BigNumber,
+  nativePrecision: number,
+): string {
+  const bnStr = bn.toString()
+  const numLen = bnStr.length - nativePrecision
+  if (numLen <= 0) return "0.0"
+  const div = Math.floor((numLen - 1) / 3)
+  const mod = numLen % 3
+  const suffixes = ["", "k", "m", "b", "t"]
+  return `${bnStr.substr(0, mod || 3)}.${bnStr[mod || 3]}${suffixes[div]}`
+}
+
 export function formatBNToString(
   bn: BigNumber,
   nativePrecison: number,
