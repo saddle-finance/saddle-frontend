@@ -101,6 +101,7 @@
   "totalLocked": "总锁定值",
   "unavailable": "不可兑换",
   "usdBalance": "美元余额",
+  "utilization": null,
   "virtualPrice": "虚拟价格",
   "virtualSwap": null,
   "volume": "量",
@@ -112,5 +113,6 @@
   "withdrawPercentage": "提取的百分比",
   "yes": "是",
   "youWillReceive": "您会收到",
-  "yourRecentTransactions": "您近期的交易记录会在此显示。"
+  "yourRecentTransactions": "您近期的交易记录会在此显示。",
+  "24HrVolume": null
 }

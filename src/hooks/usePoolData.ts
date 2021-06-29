@@ -31,15 +31,15 @@ export type Partners = "keep" | "sharedStake" | "alchemix"
 export interface PoolDataType {
   adminFee: BigNumber
   aParameter: BigNumber
-  apy: string // TODO: calculate
+  apy: BigNumber | null
   name: string
-  reserve: BigNumber
+  reserve: BigNumber | null
   swapFee: BigNumber
   tokens: TokenShareType[]
   totalLocked: BigNumber
-  utilization: string // TODO: calculate
+  utilization: BigNumber | null
   virtualPrice: BigNumber
-  volume: string // TODO: calculate
+  volume: BigNumber | null
   isPaused: boolean
   aprs: Partial<
     Record<
@@ -68,15 +68,15 @@ export type PoolDataHookReturnType = [PoolDataType, UserShareType | null]
 const emptyPoolData = {
   adminFee: Zero,
   aParameter: Zero,
-  apy: "",
+  apy: null,
   name: "",
-  reserve: Zero,
+  reserve: null,
   swapFee: Zero,
   tokens: [],
   totalLocked: Zero,
-  utilization: "",
+  utilization: null,
   virtualPrice: Zero,
-  volume: "",
+  volume: null,
   aprs: {},
   lpTokenPriceUSD: Zero,
   isPaused: true,
@@ -87,7 +87,7 @@ export default function usePoolData(
 ): PoolDataHookReturnType {
   const { account, library, chainId } = useActiveWeb3React()
   const swapContract = useSwapContract(poolName)
-  const { tokenPricesUSD, lastTransactionTimes } = useSelector(
+  const { tokenPricesUSD, lastTransactionTimes, swapStats } = useSelector(
     (state: AppState) => state.application,
   )
   const lastDepositTime = lastTransactionTimes[TRANSACTION_TYPES.DEPOSIT]
@@ -244,6 +244,11 @@ export default function usePoolData(
         ),
         value: userPoolTokenBalances[i],
       }))
+      const poolAddress = POOL.addresses[chainId].toLowerCase()
+      const { oneDayVolume, apy, utilization } =
+        swapStats && poolAddress in swapStats
+          ? swapStats[poolAddress]
+          : { oneDayVolume: null, apy: null, utilization: null }
       const poolData = {
         name: poolName,
         tokens: poolTokens,
@@ -253,9 +258,9 @@ export default function usePoolData(
         adminFee: adminFee,
         swapFee: swapFee,
         aParameter: aParameter,
-        volume: "XXX", // TODO
-        utilization: "XXX", // TODO
-        apy: "XXX", // TODO
+        volume: oneDayVolume,
+        utilization: utilization,
+        apy: apy,
         aprs,
         lpTokenPriceUSD,
         isPaused,
@@ -294,6 +299,7 @@ export default function usePoolData(
     account,
     library,
     chainId,
+    swapStats,
   ])
 
   return poolData

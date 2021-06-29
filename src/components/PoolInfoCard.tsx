@@ -34,15 +34,18 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
     swapFee,
     aParameter: data?.aParameter
       ? commify(formatBNToString(data.aParameter, 0, 0))
-      : null,
+      : "-",
     virtualPrice: data?.virtualPrice
       ? commify(formatBNToString(data.virtualPrice, 18, 5))
-      : null,
+      : "-",
+    utilization: data?.utilization
+      ? formatBNToPercentString(data.utilization, 18, 0)
+      : "-",
     reserve: data?.reserve
       ? commify(formatBNToString(data.reserve, 18, 2))
-      : "0",
+      : "-",
     adminFee: swapFee && adminFee ? `${adminFee} of ${swapFee}` : null,
-    volume: data?.volume,
+    volume: data?.volume ? commify(formatBNToString(data.volume, 0, 0)) : "-",
     tokens:
       data?.tokens.map((coin) => {
         const token = TOKENS_MAP[coin.symbol]
@@ -75,6 +78,10 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
         <div className="infoItem">
           <span className="label bold">{`${t("virtualPrice")}:`}</span>
           <span className="value">{formattedData.virtualPrice}</span>
+        </div>
+        <div className="infoItem">
+          <span className="label bold">{`${t("utilization")}:`}</span>
+          <span className="value">{formattedData.utilization}</span>
         </div>
         <div className="infoItem">
           <span className="label bold">{`${t("totalLocked")}:`}</span>
