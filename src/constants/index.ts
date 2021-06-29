@@ -454,6 +454,7 @@ export const POOLS_MAP: PoolsMap = {
     lpToken: D4_SWAP_TOKEN,
     poolTokens: D4_POOL_TOKENS,
     isSynthetic: false,
+    type: PoolTypes.USD,
   },
 }
 export function isLegacySwapABIPool(poolName: string): boolean {
