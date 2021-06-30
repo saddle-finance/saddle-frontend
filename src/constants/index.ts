@@ -465,10 +465,3 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
 // FLAGS
 export const IS_VIRTUAL_SWAP_ACTIVE = false
 // FLAGS END
-
-export const NOTIFY_OPTIONS = {
-  dappId: process.env.REACT_APP_NOTIFY_DAPP_ID,
-  networkId: parseInt(process.env.REACT_APP_CHAIN_ID ?? "1"),
-  desktopPosition: "topRight" as const,
-  darkMode: true,
-}

@@ -1,5 +1,7 @@
+import * as helpers from "../../src/utils/testHelpers"
 context("Deposit Flow", () => {
   beforeEach(() => {
+    cy.spy(helpers, "testLogger").as("testLogger")
     const host = Cypress.env("DAPP_HOST") as string
     cy.visit(`${host}#/pools`)
     cy.wait(3000)
@@ -31,7 +33,9 @@ context("Deposit Flow", () => {
       //     .contains(`Successfully approved spend for ${tokenName}`)
       //     .should("exist")
       // })
-      // cy.contains("giddyup", { timeout: 10000 }).should("exist")
+      cy.get("@testLogger").should((s) => {
+        expect(s).to.be.calledWith("deposit success")
+      })
     })
   }
   ;["BTC", "Stablecoin"].forEach(testPoolDeposit)

@@ -1,9 +1,13 @@
 import Notify from "bnc-notify"
 import { getEtherscanLink } from "../utils/getEtherscanLink"
 
+const notifyNetworks = new Set([1, 3, 4, 5, 42, 56, 100])
+const networkId = parseInt(process.env.REACT_APP_CHAIN_ID ?? "1")
 const notify = Notify({
-  dappId: process.env.REACT_APP_NOTIFY_DAPP_ID,
-  networkId: parseInt(process.env.REACT_APP_CHAIN_ID ?? "1"),
+  ...(notifyNetworks.has(networkId)
+    ? { dappId: process.env.REACT_APP_NOTIFY_DAPP_ID }
+    : {}), // trigger "UI Only Mode" when on a testnet https://docs.blocknative.com/notify#ui-only-mode
+  networkId,
   desktopPosition: "topRight" as const,
   darkMode: true,
 })
