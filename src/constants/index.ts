@@ -112,7 +112,7 @@ export const ALETH_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
 
 export const D4_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0xC69DDcd4DFeF25D8a793241834d4cc4b3668EAD6",
-  [ChainId.ROPSTEN]: "0xC69DDcd4DFeF25D8a793241834d4cc4b3668EAD6", // TODO: replace once deploy
+  [ChainId.ROPSTEN]: "0xa5da0cB57830011c67Cb89e73582e7Bf0f49f81e",
   [ChainId.HARDHAT]: "0x9f1ac54BEF0DD2f6f3462EA0fa94fC62300d3a8e",
 }
 
@@ -158,7 +158,7 @@ export const D4_SWAP_TOKEN_CONTRACT_ADDRESSES: {
   [chainId in ChainId]: string
 } = {
   [ChainId.MAINNET]: "0xd48cF4D7FB0824CC8bAe055dF3092584d0a1726A",
-  [ChainId.ROPSTEN]: "0xd48cF4D7FB0824CC8bAe055dF3092584d0a1726A", // TODO: Replace once deploy
+  [ChainId.ROPSTEN]: "0xA2b37a2c1F5E523f867137D2394Da1AC2283f473",
   [ChainId.HARDHAT]: "0x2d2c18F63D2144161B38844dCd529124Fbb93cA2",
 }
 
@@ -375,7 +375,7 @@ export const ALETH_POOL_TOKENS = [WETH, ALETH, SETH]
 
 const ALUSD_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9",
-  [ChainId.ROPSTEN]: "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9", // TODO: replace once deploy
+  [ChainId.ROPSTEN]: "0x8b7a92FdbC77c6d8c61644D118c37D813B2069C4",
   [ChainId.HARDHAT]: "0x84eA74d481Ee0A5332c457a4d796187F6Ba67fEB",
 }
 export const ALUSD = new Token(
@@ -389,7 +389,7 @@ export const ALUSD = new Token(
 
 const FEI_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0x956F47F50A910163D8BF957Cf5846D573E7f87CA",
-  [ChainId.ROPSTEN]: "0x956F47F50A910163D8BF957Cf5846D573E7f87CA", // TODO: replace once deploy
+  [ChainId.ROPSTEN]: "0x02020a3006587080a00d6675AFfACC99344521AC",
   [ChainId.HARDHAT]: "0xa82fF9aFd8f496c3d6ac40E2a0F282E47488CFc9",
 }
 export const FEI = new Token(
@@ -403,7 +403,7 @@ export const FEI = new Token(
 
 const FRAX_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0x853d955aCEf822Db058eb8505911ED77F175b99e",
-  [ChainId.ROPSTEN]: "0x853d955aCEf822Db058eb8505911ED77F175b99e", // TODO: replace once deploy
+  [ChainId.ROPSTEN]: "0xb295E36469C8Aef7d76b661aD5af02cdB258D662",
   [ChainId.HARDHAT]: "0x851356ae760d987E095750cCeb3bC6014560891C",
 }
 export const FRAX = new Token(
@@ -417,7 +417,7 @@ export const FRAX = new Token(
 
 const LUSD_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
-  [ChainId.ROPSTEN]: "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0", // TODO: replace once deploy
+  [ChainId.ROPSTEN]: "0x440d96e36f1A087deFdB5206b5e53DD2e526840B",
   [ChainId.HARDHAT]: "0x95401dc811bb5740090279Ba06cfA8fcF6113778",
 }
 export const LUSD = new Token(
