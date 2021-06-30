@@ -106,12 +106,11 @@ export function formatDeadlineToNumber(
   deadlineSelected: Deadlines,
   deadlineCustom?: string,
 ): number {
-  let deadline
+  let deadline = 20
   switch (deadlineSelected) {
     case Deadlines.Ten:
       deadline = 10
       break
-    default:
     case Deadlines.Twenty:
       deadline = 20
       break
