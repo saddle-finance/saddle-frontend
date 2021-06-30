@@ -21,7 +21,9 @@ export enum Slippages {
 }
 
 export enum Deadlines {
+  Ten = "TEN",
   Twenty = "TWENTY",
+  Thirty = "THIRTY",
   Forty = "FORTY",
   Custom = "CUSTOM",
 }
