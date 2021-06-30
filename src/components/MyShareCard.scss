@@ -38,6 +38,7 @@ div.myShareCard {
     margin-top: 24px;
     display: flex;
     justify-content: space-between;
+    flex-flow: row wrap;
     @include breakpoint(md) {
       width: 200px;
       flex-flow: row wrap;

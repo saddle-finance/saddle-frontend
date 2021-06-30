@@ -5,6 +5,7 @@ import {
   ALETH_POOL_NAME,
   BLOCK_TIME,
   BTC_POOL_NAME,
+  D4_POOL_NAME,
   STABLECOIN_POOL_NAME,
   VETH2_POOL_NAME,
 } from "../constants"
@@ -20,6 +21,7 @@ import Swap from "./Swap"
 import Web3ReactManager from "../components/Web3ReactManager"
 import Withdraw from "./Withdraw"
 import fetchGasPrices from "../utils/updateGasPrices"
+import fetchSwapStats from "../utils/getSwapStats"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import { useActiveWeb3React } from "../hooks"
 import { useDispatch } from "react-redux"
@@ -64,6 +66,13 @@ export default function App(): ReactElement {
               />
               <Route
                 exact
+                path="/pools/d4/deposit"
+                render={(props) => (
+                  <Deposit {...props} poolName={D4_POOL_NAME} />
+                )}
+              />
+              <Route
+                exact
                 path="/pools/btc/withdraw"
                 render={(props) => (
                   <Withdraw {...props} poolName={BTC_POOL_NAME} />
@@ -90,6 +99,13 @@ export default function App(): ReactElement {
                   <Withdraw {...props} poolName={ALETH_POOL_NAME} />
                 )}
               />
+              <Route
+                exact
+                path="/pools/d4/withdraw"
+                render={(props) => (
+                  <Withdraw {...props} poolName={D4_POOL_NAME} />
+                )}
+              />
               <Route exact path="/risk" component={Risk} />
             </Switch>
           </PendingSwapsProvider>
@@ -111,7 +127,11 @@ function GasAndTokenPrices({
   const fetchAndUpdateTokensPrice = useCallback(() => {
     fetchTokenPricesUSD(dispatch, chainId, library)
   }, [dispatch, chainId, library])
+  const fetchAndUpdateSwapStats = useCallback(() => {
+    void fetchSwapStats(dispatch)
+  }, [dispatch])
   usePoller(fetchAndUpdateGasPrice, BLOCK_TIME)
   usePoller(fetchAndUpdateTokensPrice, BLOCK_TIME * 3)
+  usePoller(fetchAndUpdateSwapStats, BLOCK_TIME * 280) // ~ 1hr
   return <>{children}</>
 }

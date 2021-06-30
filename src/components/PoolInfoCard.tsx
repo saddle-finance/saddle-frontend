@@ -1,6 +1,11 @@
 import "./PoolInfoCard.scss"
 
-import { POOL_FEE_PRECISION, TOKENS_MAP } from "../constants"
+import {
+  POOLS_MAP,
+  POOL_FEE_PRECISION,
+  PoolTypes,
+  TOKENS_MAP,
+} from "../constants"
 import React, { ReactElement } from "react"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 
@@ -13,8 +18,11 @@ interface Props {
   data: PoolDataType | null
 }
 
-function PoolInfoCard({ data }: Props): ReactElement {
+function PoolInfoCard({ data }: Props): ReactElement | null {
   const { t } = useTranslation()
+  if (data == null) return null
+  const { type: poolType } = POOLS_MAP[data?.name]
+  const formattedDecimals = poolType === PoolTypes.USD ? 2 : 4
   const swapFee = data?.swapFee
     ? formatBNToPercentString(data.swapFee, POOL_FEE_PRECISION)
     : null
@@ -26,15 +34,18 @@ function PoolInfoCard({ data }: Props): ReactElement {
     swapFee,
     aParameter: data?.aParameter
       ? commify(formatBNToString(data.aParameter, 0, 0))
-      : null,
+      : "-",
     virtualPrice: data?.virtualPrice
       ? commify(formatBNToString(data.virtualPrice, 18, 5))
-      : null,
+      : "-",
+    utilization: data?.utilization
+      ? formatBNToPercentString(data.utilization, 18, 0)
+      : "-",
     reserve: data?.reserve
       ? commify(formatBNToString(data.reserve, 18, 2))
-      : "0",
+      : "-",
     adminFee: swapFee && adminFee ? `${adminFee} of ${swapFee}` : null,
-    volume: data?.volume,
+    volume: data?.volume ? commify(formatBNToString(data.volume, 0, 0)) : "-",
     tokens:
       data?.tokens.map((coin) => {
         const token = TOKENS_MAP[coin.symbol]
@@ -43,7 +54,7 @@ function PoolInfoCard({ data }: Props): ReactElement {
           name: token.name,
           icon: token.icon,
           percent: coin.percent,
-          value: commify(formatBNToString(coin.value, 18, 6)),
+          value: commify(formatBNToString(coin.value, 18, formattedDecimals)),
         }
       }) || [],
   }
@@ -67,6 +78,10 @@ function PoolInfoCard({ data }: Props): ReactElement {
         <div className="infoItem">
           <span className="label bold">{`${t("virtualPrice")}:`}</span>
           <span className="value">{formattedData.virtualPrice}</span>
+        </div>
+        <div className="infoItem">
+          <span className="label bold">{`${t("utilization")}:`}</span>
+          <span className="value">{formattedData.utilization}</span>
         </div>
         <div className="infoItem">
           <span className="label bold">{`${t("totalLocked")}:`}</span>

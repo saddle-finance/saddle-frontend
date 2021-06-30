@@ -1,6 +1,7 @@
 import {
   calculateExchangeRate,
   commify,
+  formatBNToShortString,
   getTokenByAddress,
   intersection,
 } from "../index"
@@ -8,6 +9,22 @@ import {
 import { TOKENS_MAP } from "../../constants/index"
 import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
+
+describe("formatBNToShortString", () => {
+  const testCases = [
+    ["decimals", parseUnits("1234", 0), 5, "0.0"],
+    ["hundreds", parseUnits("123", 1), 1, "123.0"],
+    ["thousands", parseUnits("5432", 0), 0, "5.4k"],
+    ["millions", parseUnits("66711111", 3), 3, "66.7m"],
+    ["billions", parseUnits("999311111111", 5), 5, "999.3b"],
+    ["trillions", parseUnits("1911111111111", 8), 8, "1.9t"],
+  ] as const
+  testCases.forEach(([type, input, decimals, expected]) => {
+    it(`correctly formats ${type}`, () => {
+      expect(formatBNToShortString(input, decimals)).toEqual(expected)
+    })
+  })
+})
 
 describe("getTokenByAddress", () => {
   it("correctly fetches a token", () => {

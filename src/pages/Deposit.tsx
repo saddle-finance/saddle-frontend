@@ -1,5 +1,5 @@
-import { ALETH_POOL_NAME, POOLS_MAP, PoolName, Token } from "../constants"
 import { DepositTransaction, TransactionItem } from "../interfaces/transactions"
+import { POOLS_MAP, PoolName, Token, isLegacySwapABIPool } from "../constants"
 import React, { ReactElement, useEffect, useState } from "react"
 import { TokensStateType, useTokenFormState } from "../hooks/useTokenFormState"
 import { formatBNToString, shiftBNDecimals } from "../utils"
@@ -75,16 +75,16 @@ function Deposit({ poolName }: Props): ReactElement | null {
       )
       let depositLPTokenAmount
       if (poolData.totalLocked.gt(0) && tokenInputSum.gt(0)) {
-        if (poolData.name === ALETH_POOL_NAME) {
-          depositLPTokenAmount = await (swapContract as SwapFlashLoanNoWithdrawFee).calculateTokenAmount(
+        if (isLegacySwapABIPool(poolData.name)) {
+          depositLPTokenAmount = await (swapContract as SwapFlashLoan).calculateTokenAmount(
+            account,
             POOL.poolTokens.map(
               ({ symbol }) => tokenFormState[symbol].valueSafe,
             ),
             true, // deposit boolean
           )
         } else {
-          depositLPTokenAmount = await (swapContract as SwapFlashLoan).calculateTokenAmount(
-            account,
+          depositLPTokenAmount = await (swapContract as SwapFlashLoanNoWithdrawFee).calculateTokenAmount(
             POOL.poolTokens.map(
               ({ symbol }) => tokenFormState[symbol].valueSafe,
             ),
