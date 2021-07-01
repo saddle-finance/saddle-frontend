@@ -166,8 +166,9 @@ export function useApproveAndDeposit(
 
       await spendTransaction.wait()
       if (!IS_PRODUCTION) {
-        testLogger("deposit success")
+        testLogger("deposit success not production")
       }
+      testLogger("deposit success")
       dispatch(
         updateLastTransactionTimes({
           [TRANSACTION_TYPES.DEPOSIT]: Date.now(),
