@@ -53,7 +53,7 @@
     "@cypress/instrument-cra": "^1.4.0",
     "@ethersproject/experimental": "^5.0.9",
     "@storybook/addon-actions": "^6.0.28",
-    "@storybook/addon-essentials": "^6.1.21",
+    "@storybook/addon-essentials": "^6.3.2",
     "@storybook/addon-links": "^6.0.28",
     "@storybook/node-logger": "^6.1.21",
     "@storybook/preset-create-react-app": "^3.1.7",
