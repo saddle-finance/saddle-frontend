@@ -10,6 +10,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
 
+    env:
+      REACT_APP_NOTIFY_DAPP_ID: ${{ secrets.REACT_APP_NOTIFY_DAPP_ID }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions/cache@v2
@@ -28,6 +30,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      REACT_APP_NOTIFY_DAPP_ID: ${{ secrets.REACT_APP_NOTIFY_DAPP_ID }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions/cache@v2
@@ -48,6 +52,8 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
 
+    env:
+      REACT_APP_NOTIFY_DAPP_ID: ${{ secrets.REACT_APP_NOTIFY_DAPP_ID }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions/cache@v2
@@ -76,6 +82,8 @@ jobs:
         ports:
           - 8545:8545
 
+    env:
+      REACT_APP_NOTIFY_DAPP_ID: ${{ secrets.REACT_APP_NOTIFY_DAPP_ID }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions/cache@v2
