@@ -22,7 +22,6 @@ import { formatDeadlineToNumber } from "../utils"
 import { notifyHandler } from "../utils/notifyHandler"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
-import { testLogger } from "../utils/testHelpers"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
 import { useDispatch } from "react-redux"
@@ -165,10 +164,6 @@ export function useApproveAndDeposit(
       notifyHandler(spendTransaction.hash, "Deposit")
 
       await spendTransaction.wait()
-      if (!IS_PRODUCTION) {
-        testLogger("deposit success not production")
-      }
-      testLogger("deposit success")
       dispatch(
         updateLastTransactionTimes({
           [TRANSACTION_TYPES.DEPOSIT]: Date.now(),
