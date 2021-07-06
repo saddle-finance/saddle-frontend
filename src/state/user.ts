@@ -22,7 +22,9 @@ export enum Slippages {
 
 export enum Deadlines {
   Ten = "TEN",
+  Twenty = "TWENTY",
   Thirty = "THIRTY",
+  Forty = "FORTY",
   Custom = "CUSTOM",
 }
 
@@ -46,7 +48,7 @@ export const initialState: UserState = {
   gasPriceSelected: GasPrices.Standard,
   slippageSelected: Slippages.OneTenth,
   infiniteApproval: false,
-  transactionDeadlineSelected: Deadlines.Ten,
+  transactionDeadlineSelected: Deadlines.Twenty,
 }
 
 const gasCustomStateCreator = numberInputStateCreator(
