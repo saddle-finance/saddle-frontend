@@ -63,14 +63,15 @@ li.bn-notify-custom.bn-notify-dark-mode.bn-notify-notification-error {
   }
 }
 
-li.bn-notify-custom.bn-notify-dark-mode.bn-notify-notification-success {
-  border: 1px solid $primary;
-
-  #el_RzYtw9rUyN {
-    stroke: $primary;
-  }
-
+li.bn-notify-custom.bn-notify-notification-success {
   #el_3OA8Szq_A * {
     animation-duration: 0s;
+  }
+  &.bn-notify-dark-mode {
+    border: 1px solid $primary;
+
+    #el_RzYtw9rUyN {
+      stroke: $primary;
+    }
   }
 }

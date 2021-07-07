@@ -3,13 +3,13 @@ import { getEtherscanLink } from "../utils/getEtherscanLink"
 
 const notifyNetworks = new Set([1, 3, 4, 5, 42, 56, 100])
 const networkId = parseInt(process.env.REACT_APP_CHAIN_ID ?? "1")
-const notify = Notify({
+export const notify = Notify({
   ...(notifyNetworks.has(networkId)
     ? { dappId: process.env.REACT_APP_NOTIFY_DAPP_ID }
     : {}), // trigger "UI Only Mode" when on a testnet https://docs.blocknative.com/notify#ui-only-mode
   networkId,
   desktopPosition: "topRight" as const,
-  darkMode: true,
+  darkMode: false,
 })
 
 export function notifyHandler(
@@ -21,10 +21,8 @@ export function notifyHandler(
   emitter.on("txPool", (transaction) => {
     if (transaction.hash) {
       return {
-        message: `${type} transaction is pending, view it <a href="${getEtherscanLink(
-          transaction.hash,
-          "tx",
-        )}" rel="noopener noreferrer" target="_blank">on Etherscan</a>.`,
+        message: `${type} transaction is pending. View it on Etherscan.`,
+        link: getEtherscanLink(transaction.hash, "tx"),
       }
     }
   })
@@ -41,10 +39,8 @@ export function notifyHandler(
   emitter.on("txSpeedUp", (transaction) => {
     if (transaction.hash) {
       return {
-        message: `${type} transaction was sped up. View it <a href="${getEtherscanLink(
-          transaction.hash,
-          "tx",
-        )}" rel="noopener noreferrer" target="_blank">on Etherscan</a>.`,
+        message: `${type} transaction was sped up. View it on Etherscan.`,
+        link: getEtherscanLink(transaction.hash, "tx"),
       }
     }
   })
@@ -56,10 +52,8 @@ export function notifyHandler(
   emitter.on("txFailed", (transaction) => {
     if (transaction.hash) {
       return {
-        message: `${type} transaction failed. View it <a href="${getEtherscanLink(
-          transaction.hash,
-          "tx",
-        )}" rel="noopener noreferrer" target="_blank">on Etherscan</a>.`,
+        message: `${type} transaction failed. View it on Etherscan.`,
+        link: getEtherscanLink(transaction.hash, "tx"),
       }
     }
   })

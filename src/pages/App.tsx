@@ -9,10 +9,11 @@ import {
   STABLECOIN_POOL_NAME,
   VETH2_POOL_NAME,
 } from "../constants"
+import { AppDispatch, AppState } from "../state"
 import React, { ReactElement, Suspense, useCallback } from "react"
 import { Route, Switch } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
 
-import { AppDispatch } from "../state"
 import Deposit from "./Deposit"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
@@ -23,11 +24,21 @@ import Withdraw from "./Withdraw"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchSwapStats from "../utils/getSwapStats"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
+import { notify } from "../utils/notifyHandler"
 import { useActiveWeb3React } from "../hooks"
-import { useDispatch } from "react-redux"
+import { useEffect } from "react"
 import usePoller from "../hooks/usePoller"
 
 export default function App(): ReactElement {
+  const { chainId } = useActiveWeb3React()
+  const { userDarkMode } = useSelector((state: AppState) => state.user)
+
+  useEffect(() => {
+    notify?.config({
+      networkId: chainId ?? 1,
+      darkMode: userDarkMode,
+    })
+  }, [chainId, userDarkMode])
   return (
     <Suspense fallback={null}>
       <Web3ReactManager>
