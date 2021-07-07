@@ -4,17 +4,20 @@ import { __test__ } from "../useCalculateSwapPairs"
 
 const { getTradingPairsForToken } = __test__
 
-const createTestToken = (name: string, isSynth?: boolean) => {
-  return new Token(
-    { 1: "", 3: "", 31337: "" },
-    0,
-    name,
-    "",
-    name,
-    "",
-    !!isSynth,
+const chainObject = Object.keys(ChainId)
+  .filter((k) => parseInt(k) > 0)
+  .reduce(
+    (acc, chainId) => ({
+      ...acc,
+      [chainId]: "",
+    }),
+    {} as { [chainId in ChainId]: string },
   )
+
+const createTestToken = (name: string, isSynth?: boolean) => {
+  return new Token(chainObject, 0, name, "", name, "", !!isSynth)
 }
+
 const createTestPool = (name: string, tokens: Token[]) => {
   return {
     name: name,

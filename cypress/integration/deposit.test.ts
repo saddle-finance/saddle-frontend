@@ -13,7 +13,6 @@ context("Deposit Flow", () => {
   })
   function testPoolDeposit(poolName: PoolName) {
     it(`successfully completes a deposit of all ${poolName} assets`, () => {
-      // const tokens = getTokensInPool(poolName)
       let beforeValue: { [key: string]: number } = {}
       cy.contains(poolName)
         .parents(".poolOverview")
