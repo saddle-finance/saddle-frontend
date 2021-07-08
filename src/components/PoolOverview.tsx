@@ -18,12 +18,16 @@ interface Props {
   poolRoute: string
   poolData: PoolDataType
   userShareData: UserShareType | null
+  outdated?: boolean
+  onMigrate?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
 function PoolOverview({
   poolData,
   poolRoute,
   userShareData,
+  outdated,
+  onMigrate,
 }: Props): ReactElement | null {
   const { t } = useTranslation()
   const { type: poolType } = POOLS_MAP[poolData.name]
@@ -120,11 +124,17 @@ function PoolOverview({
               {t("withdraw")}
             </Button>
           </Link>
-          <Link to={`${poolRoute}/deposit`}>
-            <Button kind="primary" size="large">
-              {t("deposit")}
+          {outdated && onMigrate ? (
+            <Button kind="temporary" onClick={onMigrate}>
+              Migrate
             </Button>
-          </Link>
+          ) : (
+            <Link to={`${poolRoute}/deposit`}>
+              <Button kind="primary" size="large">
+                {t("deposit")}
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </div>

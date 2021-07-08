@@ -1,0 +1,8 @@
+@import "../styles/theme";
+
+div.warning {
+  background-color: $yellow55;
+  border: solid 1px $yellow2;
+  border-radius: 6px;
+  padding: 8px 16px;
+}

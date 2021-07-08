@@ -58,6 +58,18 @@ button.button {
     letter-spacing: -0.06em;
   }
 
+  &.temporary {
+    background: $yellow;
+    color: $black;
+
+    &:enabled:hover,
+    &:enabled:focus {
+      background-color: $primary-blue;
+      color: $text-white;
+      box-shadow: var(--shadow-hover);
+    }
+  }
+
   &.cancel {
     background: $white;
 
