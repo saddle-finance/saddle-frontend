@@ -6,6 +6,8 @@ import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import { MaxUint256 } from "@ethersproject/constants"
 import { Zero } from "@ethersproject/constants"
+import { notifyHandler } from "../utils/notifyHandler"
+
 /**
  * Checks if a spender is allowed to spend some amount of a token.
  * Approves them to spend if they're not already allowed.
@@ -39,6 +41,7 @@ export default async function checkAndApproveTokenForTrade(
     spenderAddress,
     swapAddress,
   )
+
   console.debug(
     `Existing ${tokenName} Allowance: ${existingAllowance.toString()}`,
   )
@@ -50,6 +53,8 @@ export default async function checkAndApproveTokenForTrade(
         swapAddress,
         amount,
       )
+      // Add notification
+      notifyHandler(approvalTransaction.hash, "Token approval")
       const confirmedTransaction = await approvalTransaction.wait()
       cleanupOnStart?.()
       callbacks.onTransactionSuccess?.(confirmedTransaction)
