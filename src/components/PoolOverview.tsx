@@ -12,6 +12,7 @@ import {
 import Button from "./Button"
 import { Link } from "react-router-dom"
 import { Zero } from "@ethersproject/constants"
+import classNames from "classnames"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -22,7 +23,7 @@ interface Props {
   onMigrate?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
-function PoolOverview({
+export default function PoolOverview({
   poolData,
   poolRoute,
   userShareData,
@@ -67,9 +68,12 @@ function PoolOverview({
   const hasShare = !!userShareData?.usdBalance.gt("0")
 
   return (
-    <div className="poolOverview">
+    <div className={classNames("poolOverview", { outdated: outdated })}>
       <div className="left">
-        <h4 className="title">{formattedData.name}</h4>
+        <div className="titleAndTag">
+          <h4 className="title">{formattedData.name}</h4>
+          {outdated && <Tag>OUTDATED</Tag>}
+        </div>
         {hasShare && (
           <div className="balance">
             <span>{t("balance")}: </span>
@@ -126,7 +130,7 @@ function PoolOverview({
           </Link>
           {outdated && onMigrate ? (
             <Button kind="temporary" onClick={onMigrate}>
-              Migrate
+              {t("migrate")}
             </Button>
           ) : (
             <Link to={`${poolRoute}/deposit`}>
@@ -141,4 +145,6 @@ function PoolOverview({
   )
 }
 
-export default PoolOverview
+function Tag(props: { children?: React.ReactNode }) {
+  return <span className="tag" {...props} />
+}

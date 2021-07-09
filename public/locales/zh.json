@@ -58,6 +58,7 @@
   "minutes": "分钟",
   "migrate": null,
   "migrationAmount": null,
+  "migrationExplain": null,
   "myActivity": "活动记录（总计）",
   "myShare": "我的份额",
   "no": "否",

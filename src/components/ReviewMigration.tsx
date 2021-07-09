@@ -42,10 +42,7 @@ function ReviewMigration({ onClose, onConfirm, data }: Props): ReactElement {
     <div className="reviewMigration">
       <h3>{t("reviewMigration")}</h3>
       <div className="migrateTop">
-        <Warning>
-          This pool is outdated. We recommend migrating to the new gas optimized
-          version to earn better returns.
-        </Warning>
+        <Warning>{t("migrationExplain")}</Warning>
         <div className="info">
           <div className="row">
             <span className="title">{t("migrationAmount")}</span>

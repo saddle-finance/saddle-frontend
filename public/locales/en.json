@@ -57,6 +57,7 @@
   "maxSlippage": "Max Slippage",
   "migrate": "Migrate",
   "migrationAmount": "Migration Amount",
+  "migrationExplain": "This pool is outdated. We recommend migrating to the new gas optimized version to earn better returns.",
   "minutes": "min",
   "myActivity": "My Activity (Total)",
   "myShare": "My Share",
