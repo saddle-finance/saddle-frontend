@@ -1,0 +1,77 @@
+@import "../styles/theme";
+
+ul.bn-notify-custom.bn-notify-notifications {
+  width: 320px;
+}
+
+.bn-notify-custom.bn-notify-notification-info-message {
+  font-family: $font-family;
+  font-weight: $medium;
+
+  a {
+    text-decoration: underline;
+    color: $primary;
+    font-weight: $medium;
+  }
+}
+
+.bn-notify-custom.bn-notify-notification-close-icon > svg {
+  height: 12px;
+  width: 12px;
+}
+
+.bn-notify-custom.bn-notify-notification-info-meta-duration {
+  display: none;
+}
+
+li.bn-notify-custom.bn-notify-notification-pending.bn-notify-dark-mode {
+  border: 1px solid $white;
+
+  .bn-notify-custom.bn-notify-notification-status-icon {
+    #el_PHAWgO26lN,
+    #el_A4XF5QQwhp {
+      stroke: $white;
+    }
+
+    g {
+      animation-iteration-count: 0 !important;
+    }
+  }
+}
+
+li.bn-notify-custom.bn-notify-dark-mode.bn-notify-notification-error {
+  border: 1px solid $error;
+
+  .bn-notify-custom.bn-notify-notification-status-icon {
+    #el_bYTVKD04y * {
+      animation-duration: 0s;
+    }
+    #el_5BNAI_PBsn,
+    #el_IAuv9ut-2- {
+      stroke: $error;
+    }
+
+    #el_q_eIK0z3HI {
+      fill: $error;
+    }
+  }
+
+  .bn-notify-custom.bn-notify-notification-info-message {
+    a {
+      color: $error;
+    }
+  }
+}
+
+li.bn-notify-custom.bn-notify-notification-success {
+  #el_3OA8Szq_A * {
+    animation-duration: 0s;
+  }
+  &.bn-notify-dark-mode {
+    border: 1px solid $primary;
+
+    #el_RzYtw9rUyN {
+      stroke: $primary;
+    }
+  }
+}

@@ -1,8 +1,3 @@
-export function getFormattedTimeString(): string {
-  const now = new Date()
-  return now.toLocaleTimeString()
-}
-
 export function getFormattedShortTime(timestamp: string | number): string {
   const timestampNumber =
     typeof timestamp === "string" ? parseInt(timestamp) : timestamp

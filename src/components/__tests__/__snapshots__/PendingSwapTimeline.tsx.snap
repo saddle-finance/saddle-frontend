@@ -1,0 +1,154 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders a basic swap correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="timeline"
+  >
+    <div
+      class="timelineStep inactive"
+      data-testid="PendingSwapTimeline:step1Of2"
+    >
+      <svg>
+        check.svg
+      </svg>
+       2/1 12:00 AM stepAOfB confirmTheSwap 
+      <a
+        href="https://etherscan.io/tx/0x0"
+      >
+        0x0
+      </a>
+    </div>
+    <div
+      class="timelineStep active"
+      data-testid="PendingSwapTimeline:minutesLeft"
+    >
+      <div
+        class="timelineLine"
+      />
+      <svg>
+        clock.svg
+      </svg>
+       5 minutesLeft
+    </div>
+    <div
+      class="timelineStep inactive"
+      data-testid="PendingSwapTimeline:step2Of2"
+    >
+      <div
+        class="timelineLine"
+      />
+      <svg>
+        arrowDown.svg
+      </svg>
+       stepAOfB settleToken 
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`renders a swap after the waiting period correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="timeline"
+  >
+    <div
+      class="timelineStep inactive"
+      data-testid="PendingSwapTimeline:step1Of2"
+    >
+      <svg>
+        check.svg
+      </svg>
+       2/1 12:00 AM stepAOfB confirmTheSwap 
+      <a
+        href="https://etherscan.io/tx/0x0"
+      >
+        0x0
+      </a>
+    </div>
+    <div
+      class="timelineStep active"
+      data-testid="PendingSwapTimeline:swappedForAmount"
+    >
+      <div
+        class="timelineLine"
+      />
+      <svg>
+        check.svg
+      </svg>
+       2/1 12:00 AM swappedForAmount sETH
+    </div>
+    <div
+      class="timelineStep inactive"
+      data-testid="PendingSwapTimeline:step2Of2"
+    >
+      <div
+        class="timelineLine"
+      />
+      <svg>
+        arrowDown.svg
+      </svg>
+       stepAOfB settleToken 
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`renders a swap with events correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="timeline"
+  >
+    <div
+      class="timelineStep inactive"
+      data-testid="PendingSwapTimeline:step1Of2"
+    >
+      <svg>
+        check.svg
+      </svg>
+       2/1 12:00 AM stepAOfB confirmTheSwap 
+      <a
+        href="https://etherscan.io/tx/0x0"
+      >
+        0x0
+      </a>
+    </div>
+    <div
+      class="timelineStep active"
+      data-testid="PendingSwapTimeline:minutesLeft"
+    >
+      <div
+        class="timelineLine"
+      />
+      <svg>
+        clock.svg
+      </svg>
+       5 minutesLeft
+    </div>
+    <div
+      class="timelineStep inactive"
+      data-testid="PendingSwapTimeline:event-1"
+    >
+      <div
+        class="timelineLine"
+      />
+      <svg>
+        check.svg
+      </svg>
+       2/1 12:10 AM settledXTokenForYToken
+    </div>
+    <div
+      class="timelineStep inactive"
+      data-testid="PendingSwapTimeline:event-2"
+    >
+      <div
+        class="timelineLine"
+      />
+      <svg>
+        check.svg
+      </svg>
+       2/1 12:11 AM withdrewNToken
+    </div>
+  </div>
+</DocumentFragment>
+`;
