@@ -405,7 +405,7 @@ export const LUSD = new Token(
 export const D4_POOL_TOKENS = [ALUSD, FEI, FRAX, LUSD]
 
 export type Pool = {
-  name: string
+  name: PoolName
   lpToken: Token
   poolTokens: Token[]
   isSynthetic: boolean

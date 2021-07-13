@@ -87,3 +87,7 @@ div.poolOverview {
     }
   }
 }
+
+div.poolOverview:first-child {
+  margin-top: 0;
+}
