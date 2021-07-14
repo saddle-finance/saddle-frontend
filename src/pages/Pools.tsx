@@ -15,8 +15,10 @@ import usePoolData from "../hooks/usePoolData"
 
 function Pools(): ReactElement | null {
   const [btcPoolData, btcUserShareData] = usePoolData(BTC_POOL_NAME)
-  const [usdPoolV2Data, usdV2UserShareData] = usePoolData(STABLECOIN_POOL_NAME)
-  const [usdPoolData, usdUserShareData] = usePoolData(STABLECOIN_POOL_V2_NAME)
+  const [usdPoolV2Data, usdV2UserShareData] = usePoolData(
+    STABLECOIN_POOL_V2_NAME,
+  )
+  const [usdPoolData, usdUserShareData] = usePoolData(STABLECOIN_POOL_NAME)
   const [veth2PoolData, veth2UserShareData] = usePoolData(VETH2_POOL_NAME)
   const [alethPoolData, alethUserShareData] = usePoolData(ALETH_POOL_NAME)
   const [d4PoolData, d4UserShareData] = usePoolData(D4_POOL_NAME)
