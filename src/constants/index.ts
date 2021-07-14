@@ -438,6 +438,7 @@ export type Pool = {
   isSynthetic: boolean
   addresses: { [chainId in ChainId]: string }
   type: PoolTypes
+  migration?: null | PoolName
 }
 export type PoolsMap = {
   [poolName: string]: Pool

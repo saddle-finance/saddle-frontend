@@ -20,7 +20,7 @@ function Pools(): ReactElement | null {
   const [btcPoolData, btcUserShareData] = usePoolData(BTC_POOL_NAME)
   const [usdPoolData, usdUserShareData] = usePoolData(STABLECOIN_POOL_NAME)
   const [veth2PoolData, veth2UserShareData] = usePoolData(VETH2_POOL_NAME)
-  const [filter, setFilter] = useState<PoolTypes | "all">("all")
+  const [filter, setFilter] = useState<PoolTypes | "all" | "outdated">("all")
 
   function getPropsForPool(poolName: PoolName) {
     if (poolName === D4_POOL_NAME) {
@@ -91,19 +91,24 @@ function Pools(): ReactElement | null {
         >
           ETH
         </li>
-        {/* <li
+        <li
           className={classNames(styles.outdated, styles.filterTab, {
             [styles.selected]: filter === "outdated",
           })}
           onClick={(): void => setFilter("outdated")}
         >
           OUTDATED
-        </li> */}
+        </li>
       </ul>
 
       <div className={styles.content}>
         {Object.values(POOLS_MAP)
-          .filter(({ type }) => filter === "all" || type === filter)
+          .filter(
+            ({ type, migration }) =>
+              filter === "all" ||
+              type === filter ||
+              (filter === "outdated" && migration),
+          )
           .map(({ name }, index) => (
             <PoolOverview key={index} {...getPropsForPool(name)} />
           ))}
