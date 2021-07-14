@@ -112,7 +112,7 @@ export default function PoolOverview({
             ) : null
           })}
           <div className="margin">
-            <span className="label">{t("currencyReserves")}</span>
+            <span className="label">TVL</span>
             <span>{`$${formattedData.reserve}`}</span>
           </div>
           {formattedData.volume && (

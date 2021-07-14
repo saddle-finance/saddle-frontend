@@ -1,9 +1,4 @@
-import {
-  POOLS_MAP,
-  SWAP_TYPES,
-  TOKENS_MAP,
-  TRANSACTION_TYPES,
-} from "../constants"
+import { POOLS_MAP, SWAP_TYPES, TRANSACTION_TYPES } from "../constants"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -15,7 +10,7 @@ import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFla
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { formatDeadlineToNumber } from "../utils"
-import { getFormattedTimeString } from "../utils/dateTime"
+import { notifyHandler } from "../utils/notifyHandler"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
@@ -23,7 +18,6 @@ import { useActiveWeb3React } from "."
 import { useAllContracts } from "./useContract"
 import { useDispatch } from "react-redux"
 import { useSelector } from "react-redux"
-import { useToast } from "./useToast"
 import { utils } from "ethers"
 
 type Contracts = {
@@ -49,7 +43,6 @@ export function useApproveAndSwap(): (
   const dispatch = useDispatch()
   const tokenContracts = useAllContracts()
   const { account, chainId } = useActiveWeb3React()
-  const { addToast, clearToasts } = useToast()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -72,7 +65,6 @@ export function useApproveAndSwap(): (
       if (state.swapType !== SWAP_TYPES.DIRECT && !state.bridgeContract)
         throw new Error("Bridge contract is not loaded")
       if (chainId === undefined) throw new Error("Unknown chain")
-      const tokenFrom = TOKENS_MAP[state.from.symbol]
       // For each token being deposited, check the allowance and approve it if necessary
       const tokenContract = tokenContracts?.[state.from.symbol] as Erc20
       if (tokenContract == null) return
@@ -85,36 +77,11 @@ export function useApproveAndSwap(): (
         state.from.amount,
         infiniteApproval,
         {
-          onTransactionStart: () => {
-            return addToast(
-              {
-                type: "pending",
-                title: `${getFormattedTimeString()} Approving spend for ${
-                  tokenFrom.name
-                }`,
-              },
-              {
-                autoDismiss: false, // TODO: be careful of orphan toasts on error
-              },
-            )
-          },
-          onTransactionSuccess: () => {
-            return addToast({
-              type: "success",
-              title: `${getFormattedTimeString()} Successfully approved spend for ${
-                tokenFrom.name
-              }`,
-            })
-          },
           onTransactionError: () => {
             throw new Error("Your transaction could not be completed")
           },
         },
       )
-      const clearMessage = addToast({
-        type: "pending",
-        title: `${getFormattedTimeString()} Starting your Swap...`,
-      })
       let gasPrice
       if (gasPriceSelected === GasPrices.Custom) {
         gasPrice = gasCustom?.valueSafe
@@ -205,25 +172,18 @@ export function useApproveAndSwap(): (
       } else {
         throw new Error("Invalid Swap Type, or contract not loaded")
       }
+
+      notifyHandler(swapTransaction.hash, "Swap")
+
       await swapTransaction?.wait()
       dispatch(
         updateLastTransactionTimes({
           [TRANSACTION_TYPES.SWAP]: Date.now(),
         }),
       )
-      clearMessage()
-      addToast({
-        type: "success",
-        title: `${getFormattedTimeString()} Swap completed, giddyup! 🤠`,
-      })
       return Promise.resolve()
     } catch (e) {
       console.error(e)
-      clearToasts()
-      addToast({
-        type: "error",
-        title: `${getFormattedTimeString()} Unable to complete your transaction`,
-      })
     }
   }
 }

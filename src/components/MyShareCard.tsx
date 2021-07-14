@@ -86,7 +86,7 @@ function MyShareCard({ data }: Props): ReactElement | null {
         {formattedData.tokens.map((coin) => (
           <div key={coin.symbol}>
             <span className="tokenName">{coin.symbol}</span>
-            <span>{coin.value}</span>
+            <span className="tokenValue">{coin.value}</span>
           </div>
         ))}
       </div>

@@ -22,23 +22,28 @@ export interface PendingSwap {
   synthBalance: BigNumber
   tokenTo: Token
   itemId: string
-  settlements: Settlement
-  withdraws: Withdraw[]
+  transactionHash: string
+  timestamp: number
+  events: Array<SettlementEvent | WithdrawEvent>
 }
-export interface Settlement {
+
+interface SwapEvent {
+  timestamp: number
+  itemId: string
+  transactionHash: string // used for deduping
+  type: "settlement" | "withdraw"
+}
+export interface SettlementEvent extends SwapEvent {
   fromToken: Token
   fromAmount: BigNumber
   toToken: Token
   toAmount: BigNumber
-  timestamp: number
-  itemId: string
+  type: "settlement"
 }
-export interface Withdraw {
+export interface WithdrawEvent extends SwapEvent {
   synthToken: Token
   amount: BigNumber
-  timestamp: number
-  itemId: string
-  transactionHash: string // used for deduping
+  type: "withdraw"
 }
 
 type BridgeEventSettle = {
@@ -66,9 +71,9 @@ type BridgeEventGenericSwap = {
 }
 
 type State = {
-  pendingSwaps: Omit<PendingSwap, "settlements" | "withdraws">[]
-  settlements: { [itemId: string]: Settlement } // only one since settlements are final
-  withdraws: { [itemId: string]: Withdraw[] }
+  pendingSwaps: Omit<PendingSwap, "events">[]
+  settlements: { [itemId: string]: SettlementEvent[] }
+  withdraws: { [itemId: string]: WithdrawEvent[] }
 }
 
 const VIRTUAL_SWAP_TOPICS = [
@@ -151,13 +156,19 @@ const usePendingSwapData = (): PendingSwap[] => {
       void parseSettlementFromEvent(event, chainId).then((settlement) => {
         if (settlement == null) return
         setState((prevState) => {
-          return {
-            ...prevState,
-            settlements: {
-              ...prevState.settlements,
-              [settlement.itemId]: settlement, // we're using an object so this is naturally deduped
-            },
-          }
+          const prevSettlements = prevState.settlements[settlement.itemId] || []
+          const txnsSet = new Set(
+            prevSettlements.map(({ transactionHash }) => transactionHash),
+          )
+          return txnsSet.has(settlement.transactionHash)
+            ? prevState
+            : {
+                ...prevState,
+                settlements: {
+                  ...prevState.settlements,
+                  [settlement.itemId]: prevSettlements.concat(settlement),
+                },
+              }
         })
       })
     },
@@ -170,17 +181,19 @@ const usePendingSwapData = (): PendingSwap[] => {
       void parseWithdrawFromEvent(event, chainId).then((withdraw) => {
         if (withdraw == null) return
         setState((prevState) => {
-          const prevWithdraws = prevState.withdraws[withdraw.itemId]
-          const dedupedWithdraws = Array.from(
-            new Set((prevWithdraws || []).concat(withdraw)),
+          const prevWithdraws = prevState.withdraws[withdraw.itemId] || []
+          const txnsSet = new Set(
+            prevWithdraws.map(({ transactionHash }) => transactionHash),
           )
-          return {
-            ...prevState,
-            withdraws: {
-              ...prevState.withdraws,
-              [withdraw.itemId]: dedupedWithdraws,
-            },
-          }
+          return txnsSet.has(withdraw.transactionHash)
+            ? prevState
+            : {
+                ...prevState,
+                withdraws: {
+                  ...prevState.withdraws,
+                  [withdraw.itemId]: prevWithdraws.concat(withdraw),
+                },
+              }
         })
       })
     },
@@ -268,10 +281,10 @@ const usePendingSwapData = (): PendingSwap[] => {
     // merge swaps + settlements state
     return {
       ...swap,
-      settlements: state.settlements[swap.itemId],
-      withdraws: (state.withdraws[swap.itemId] || []).sort(
-        (a, b) => a.timestamp - b.timestamp,
-      ),
+      events: [
+        ...(state.settlements[swap.itemId] || []),
+        ...(state.withdraws[swap.itemId] || []),
+      ].sort((a, b) => a.timestamp - b.timestamp),
     }
   })
 }
@@ -342,21 +355,13 @@ async function fetchAndPopulateWithdraws(
   if (withdraws.length === 0) return
   setState((prevState) => {
     const newState = { ...prevState }
-    const touchedIds = new Set<string>()
     withdraws.forEach((withdraw) => {
       if (withdraw == null) return
-      touchedIds.add(withdraw.itemId)
       const existingWithdraws = newState.withdraws[withdraw.itemId]
       newState.withdraws[withdraw.itemId] = (existingWithdraws || []).concat(
         withdraw,
       )
     })
-    // after we add all the events, sort the parts of state that we touched
-    for (const id of touchedIds) {
-      newState.withdraws[id] = newState.withdraws[id].sort(
-        (a, b) => a.timestamp - b.timestamp,
-      )
-    }
     return newState
   })
 }
@@ -395,7 +400,10 @@ async function fetchAndPopulateSettlements(
     const newState = { ...prevState }
     settlements.forEach((settlement) => {
       if (settlement == null) return
-      newState.settlements[settlement.itemId] = settlement
+      const existingSettlements = newState.settlements[settlement.itemId]
+      newState.settlements[settlement.itemId] = (
+        existingSettlements || []
+      ).concat(settlement)
     })
     return newState
   })
@@ -404,7 +412,7 @@ async function fetchAndPopulateSettlements(
 async function parseSettlementFromEvent(
   event: Event,
   chainId: ChainId,
-): Promise<Settlement | null> {
+): Promise<SettlementEvent | null> {
   // Settlements are final
   const settlement = (event.args as unknown) as BridgeEventSettle // TODO would love to set this from the typechain type
   if (settlement == null) return null
@@ -421,6 +429,8 @@ async function parseSettlementFromEvent(
         timestamp,
         toAmount: settlement.settleToAmount,
         toToken,
+        transactionHash: event.transactionHash,
+        type: "settlement" as const,
       }
     })
     .catch(() => null)
@@ -429,7 +439,7 @@ async function parseSettlementFromEvent(
 async function parseWithdrawFromEvent(
   event: Event,
   chainId: ChainId,
-): Promise<Withdraw | null> {
+): Promise<WithdrawEvent | null> {
   const withdraw = (event.args as unknown) as BridgeEventWithdraw
   if (withdraw == null) return null
   const synthToken = getTokenByAddress(withdraw.synth, chainId)
@@ -443,7 +453,8 @@ async function parseWithdrawFromEvent(
         synthToken,
         timestamp, // in seconds
         transactionHash: event.transactionHash,
-      } as Withdraw
+        type: "withdraw",
+      } as WithdrawEvent
     })
     .catch(() => null)
 }
@@ -502,6 +513,8 @@ async function fetchPendingSwapInfo(
       itemId,
       synthTokenFrom: synthTokenFrom,
       tokenTo: tokenTo,
+      transactionHash: event.transactionHash,
+      timestamp: eventBlock.timestamp,
     }
   } catch {
     // do nothing because this is probably okay

@@ -24,6 +24,9 @@ export function usePoolTokenBalances(): { [token: string]: BigNumber } | null {
       if (chainId == ChainId.HARDHAT) {
         ethcallProvider.multicallAddress =
           "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f"
+      } else if (chainId == ChainId.ROPSTEN) {
+        ethcallProvider.multicallAddress =
+          "0x53c43764255c17bd724f74c4ef150724ac50a3ed"
       }
 
       const tokens = Object.values(TOKENS_MAP)
