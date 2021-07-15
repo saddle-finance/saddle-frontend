@@ -60,5 +60,5 @@ context("Deposit Flow", () => {
       })
     })
   }
-  ;["BTC Pool", "Stablecoin Pool"].forEach(testPoolDeposit)
+  ;["BTC Pool", "Stablecoin Pool V2"].forEach(testPoolDeposit)
 })
