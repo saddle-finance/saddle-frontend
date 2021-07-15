@@ -10,6 +10,7 @@ import React, { ReactElement, useState } from "react"
 
 import PoolOverview from "../components/PoolOverview"
 import TopMenu from "../components/TopMenu"
+import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
 import styles from "./Pools.module.scss"
 import usePoolData from "../hooks/usePoolData"
@@ -25,30 +26,35 @@ function Pools(): ReactElement | null {
   function getPropsForPool(poolName: PoolName) {
     if (poolName === D4_POOL_NAME) {
       return {
+        name: D4_POOL_NAME,
         poolData: d4PoolData,
         userShareData: d4UserShareData,
         poolRoute: "/pools/d4",
       }
     } else if (poolName === ALETH_POOL_NAME) {
       return {
+        name: ALETH_POOL_NAME,
         poolData: alethPoolData,
         userShareData: alethUserShareData,
         poolRoute: "/pools/aleth",
       }
     } else if (poolName === BTC_POOL_NAME) {
       return {
+        name: BTC_POOL_NAME,
         poolData: btcPoolData,
         userShareData: btcUserShareData,
         poolRoute: "/pools/btc",
       }
     } else if (poolName === STABLECOIN_POOL_NAME) {
       return {
+        name: STABLECOIN_POOL_NAME,
         poolData: usdPoolData,
         userShareData: usdUserShareData,
         poolRoute: "/pools/usd",
       }
     } else {
       return {
+        name: VETH2_POOL_NAME,
         poolData: veth2PoolData,
         userShareData: veth2UserShareData,
         poolRoute: "/pools/veth2",
@@ -59,48 +65,25 @@ function Pools(): ReactElement | null {
     <div className={styles.poolsPage}>
       <TopMenu activeTab="pools" />
       <ul className={styles.filters}>
-        <li
-          className={classNames(styles.filterTab, {
-            [styles.selected]: filter === "all",
-          })}
-          onClick={(): void => setFilter("all")}
-        >
-          ALL
-        </li>
-        <li
-          className={classNames(styles.filterTab, {
-            [styles.selected]: filter === PoolTypes.BTC,
-          })}
-          onClick={(): void => setFilter(PoolTypes.BTC)}
-        >
-          BTC
-        </li>
-        <li
-          className={classNames(styles.filterTab, {
-            [styles.selected]: filter === PoolTypes.USD,
-          })}
-          onClick={(): void => setFilter(PoolTypes.USD)}
-        >
-          USD
-        </li>
-        <li
-          className={classNames(styles.filterTab, {
-            [styles.selected]: filter === PoolTypes.ETH,
-          })}
-          onClick={(): void => setFilter(PoolTypes.ETH)}
-        >
-          ETH
-        </li>
-        <li
-          className={classNames(styles.outdated, styles.filterTab, {
-            [styles.selected]: filter === "outdated",
-          })}
-          onClick={(): void => setFilter("outdated")}
-        >
-          OUTDATED
-        </li>
+        {[
+          ["all", "ALL"] as const,
+          [PoolTypes.BTC, "BTC"] as const,
+          [PoolTypes.ETH, "ETH"] as const,
+          [PoolTypes.USD, "USD"] as const,
+          ["outdated", "OUTDATED"] as const,
+        ].map(([filterKey, text]) => (
+          <li
+            key={filterKey}
+            className={classNames(styles.filterTab, {
+              [styles.selected]: filter === filterKey,
+              [styles.outdated]: filterKey === "outdated",
+            })}
+            onClick={(): void => setFilter(filterKey)}
+          >
+            {text}
+          </li>
+        ))}
       </ul>
-
       <div className={styles.content}>
         {Object.values(POOLS_MAP)
           .filter(
@@ -109,8 +92,36 @@ function Pools(): ReactElement | null {
               type === filter ||
               (filter === "outdated" && migration),
           )
-          .map(({ name }, index) => (
-            <PoolOverview key={index} {...getPropsForPool(name)} />
+          .map(
+            ({ name, migration }) =>
+              [getPropsForPool(name), migration] as const,
+          )
+          .sort(([a, aMigration], [b, bMigration]) => {
+            // 1. active pools
+            // 2. user pools
+            // 3. higher TVL pools
+            if (aMigration || bMigration) {
+              return aMigration ? 1 : -1
+            } else if (
+              (a.userShareData?.usdBalance || Zero).gt(Zero) ||
+              (b.userShareData?.usdBalance || Zero).gt(Zero)
+            ) {
+              return (a.userShareData?.usdBalance || Zero).gt(
+                b.userShareData?.usdBalance || Zero,
+              )
+                ? -1
+                : 1
+            } else {
+              return (a.poolData?.reserve || Zero).gt(
+                b.poolData?.reserve || Zero,
+              )
+                ? -1
+                : 1
+            }
+            return -1
+          })
+          .map(([poolProps]) => (
+            <PoolOverview key={poolProps.name} {...poolProps} />
           ))}
       </div>
     </div>
