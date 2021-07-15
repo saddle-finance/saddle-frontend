@@ -118,7 +118,6 @@ function Pools(): ReactElement | null {
                 ? -1
                 : 1
             }
-            return -1
           })
           .map(([poolProps]) => (
             <PoolOverview key={poolProps.name} {...poolProps} />
