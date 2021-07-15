@@ -86,6 +86,14 @@ export const BRIDGE_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.HARDHAT]: "0xf5059a5D33d5853360D16C683c16e67980206f36",
 }
 
+export const SWAP_MIGRATOR_USD_CONTRACT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "0x9cDeF6e33687F438808766fC133b2E9d1A16AD57",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf",
+}
+
 export const STABLECOIN_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0x3911F80530595fBd01Ab1516Ab61255d75AEb066",
   [ChainId.ROPSTEN]: "0xbCED0cB1e8022869678d40b3c71FA7A443CA8090",
@@ -438,7 +446,7 @@ export type Pool = {
   isSynthetic: boolean
   addresses: { [chainId in ChainId]: string }
   type: PoolTypes
-  migration?: null | PoolName
+  migration?: PoolName
 }
 export type PoolsMap = {
   [poolName: string]: Pool
@@ -525,6 +533,7 @@ export const TRANSACTION_TYPES = {
   DEPOSIT: "DEPOSIT",
   WITHDRAW: "WITHDRAW",
   SWAP: "SWAP",
+  MIGRATE: "MIGRATE",
 }
 
 export const POOL_FEE_PRECISION = 10
@@ -548,6 +557,7 @@ export const SWAP_CONTRACT_GAS_ESTIMATES_MAP = {
   addLiquidity: BigNumber.from("400000"), // 386,555
   removeLiquidityImbalance: BigNumber.from("350000"), // 318,231
   removeLiquidityOneToken: BigNumber.from("250000"), // 232,947
+  migrate: BigNumber.from("650000"), // 619,126
 }
 
 export interface WalletInfo {
