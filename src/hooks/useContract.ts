@@ -20,8 +20,11 @@ import {
   SBTC,
   SETH,
   STABLECOIN_POOL_NAME,
+  STABLECOIN_POOL_V2_NAME,
   STABLECOIN_SWAP_ADDRESSES,
   STABLECOIN_SWAP_TOKEN,
+  STABLECOIN_SWAP_V2_ADDRESSES,
+  STABLECOIN_SWAP_V2_TOKEN,
   TBTC,
   Token,
   USDC,
@@ -110,6 +113,14 @@ export function useSwapUSDContract(): SwapFlashLoan | null {
   ) as SwapFlashLoan
 }
 
+export function useSwapUSDV2Contract(): SwapFlashLoanNoWithdrawFee | null {
+  const { chainId } = useActiveWeb3React()
+  return useContract(
+    chainId ? STABLECOIN_SWAP_V2_ADDRESSES[chainId] : undefined,
+    SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI,
+  ) as SwapFlashLoanNoWithdrawFee
+}
+
 export function useSwapVETH2Contract(): SwapFlashLoan | null {
   const { chainId } = useActiveWeb3React()
   return useContract(
@@ -143,6 +154,7 @@ export function useSwapContract(
   poolName?: PoolName,
 ): SwapGuarded | SwapFlashLoan | SwapFlashLoanNoWithdrawFee | null {
   const usdSwapContract = useSwapUSDContract()
+  const usdSwapV2Contract = useSwapUSDV2Contract()
   const btcSwapContract = useSwapBTCContract()
   const veth2SwapContract = useSwapVETH2Contract()
   const alethSwapContract = useSwapALETHContract()
@@ -151,6 +163,8 @@ export function useSwapContract(
     return btcSwapContract
   } else if (poolName === STABLECOIN_POOL_NAME) {
     return usdSwapContract
+  } else if (poolName == STABLECOIN_POOL_V2_NAME) {
+    return usdSwapV2Contract
   } else if (poolName === VETH2_POOL_NAME) {
     return veth2SwapContract
   } else if (poolName === ALETH_POOL_NAME) {
@@ -210,6 +224,9 @@ export function useAllContracts(): AllContractsObject | null {
   const stablecoinSwapTokenContract = useTokenContract(
     STABLECOIN_SWAP_TOKEN,
   ) as LpTokenUnguarded
+  const stablecoinSwapV2TokenContract = useTokenContract(
+    STABLECOIN_SWAP_V2_TOKEN,
+  ) as LpTokenUnguarded
   const veth2SwapTokenContract = useTokenContract(
     VETH2_SWAP_TOKEN,
   ) as LpTokenUnguarded
@@ -240,6 +257,7 @@ export function useAllContracts(): AllContractsObject | null {
         lusdContract,
         btcSwapTokenContract,
         stablecoinSwapTokenContract,
+        stablecoinSwapV2TokenContract,
         veth2SwapTokenContract,
         alethSwapTokenContract,
         d4SwapTokenContract,
@@ -264,6 +282,7 @@ export function useAllContracts(): AllContractsObject | null {
       [LUSD.symbol]: lusdContract,
       [BTC_SWAP_TOKEN.symbol]: btcSwapTokenContract,
       [STABLECOIN_SWAP_TOKEN.symbol]: stablecoinSwapTokenContract,
+      [STABLECOIN_SWAP_V2_TOKEN.symbol]: stablecoinSwapV2TokenContract,
       [VETH2_SWAP_TOKEN.symbol]: veth2SwapTokenContract,
       [ALETH_SWAP_TOKEN.symbol]: alethSwapTokenContract,
       [D4_SWAP_TOKEN.symbol]: d4SwapTokenContract,
@@ -286,6 +305,7 @@ export function useAllContracts(): AllContractsObject | null {
     lusdContract,
     btcSwapTokenContract,
     stablecoinSwapTokenContract,
+    stablecoinSwapV2TokenContract,
     veth2SwapTokenContract,
     alethSwapTokenContract,
     d4SwapTokenContract,
