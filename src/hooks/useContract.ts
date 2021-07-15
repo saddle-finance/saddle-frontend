@@ -22,6 +22,7 @@ import {
   STABLECOIN_POOL_NAME,
   STABLECOIN_SWAP_ADDRESSES,
   STABLECOIN_SWAP_TOKEN,
+  SWAP_MIGRATOR_USD_CONTRACT_ADDRESSES,
   TBTC,
   Token,
   USDC,
@@ -44,12 +45,14 @@ import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
+import MIGRATOR_USD_CONTRACT_ABI from "../constants/abis/swapMigratorUSD.json"
 import SWAP_FLASH_LOAN_ABI from "../constants/abis/swapFlashLoan.json"
 import SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI from "../constants/abis/swapFlashLoanNoWithdrawFee.json"
 import SWAP_GUARDED_ABI from "../constants/abis/swapGuarded.json"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
+import { SwapMigratorUSD } from "../../types/ethers-contracts/SwapMigratorUSD"
 import { getContract } from "../utils"
 import { useActiveWeb3React } from "./index"
 
@@ -75,6 +78,17 @@ function useContract(
       return null
     }
   }, [address, ABI, library, withSignerIfPossible, account])
+}
+
+export function useSwapMigratorUSDContract(): SwapMigratorUSD | null {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress = chainId
+    ? SWAP_MIGRATOR_USD_CONTRACT_ADDRESSES[chainId]
+    : undefined
+  return useContract(
+    contractAddress,
+    MIGRATOR_USD_CONTRACT_ABI,
+  ) as SwapMigratorUSD
 }
 
 export function useBridgeContract(): Bridge | null {

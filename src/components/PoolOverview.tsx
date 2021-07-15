@@ -19,20 +19,19 @@ interface Props {
   poolRoute: string
   poolData: PoolDataType
   userShareData: UserShareType | null
-  outdated?: boolean
-  onMigrate?: (e: React.MouseEvent<HTMLButtonElement>) => void
+  onClickMigrate?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
 export default function PoolOverview({
   poolData,
   poolRoute,
   userShareData,
-  outdated,
-  onMigrate,
+  onClickMigrate,
 }: Props): ReactElement | null {
   const { t } = useTranslation()
   const { type: poolType } = POOLS_MAP[poolData.name]
   const formattedDecimals = poolType === PoolTypes.USD ? 2 : 4
+  const shouldMigrate = !!onClickMigrate
   const formattedData = {
     name: poolData.name,
     reserve: poolData.reserve
@@ -68,11 +67,11 @@ export default function PoolOverview({
   const hasShare = !!userShareData?.usdBalance.gt("0")
 
   return (
-    <div className={classNames("poolOverview", { outdated: outdated })}>
+    <div className={classNames("poolOverview", { outdated: shouldMigrate })}>
       <div className="left">
         <div className="titleAndTag">
           <h4 className="title">{formattedData.name}</h4>
-          {outdated && <Tag>OUTDATED</Tag>}
+          {shouldMigrate && <Tag>OUTDATED</Tag>}
         </div>
         {hasShare && (
           <div className="balance">
@@ -128,8 +127,12 @@ export default function PoolOverview({
               {t("withdraw")}
             </Button>
           </Link>
-          {outdated && onMigrate ? (
-            <Button kind="temporary" onClick={onMigrate}>
+          {shouldMigrate ? (
+            <Button
+              kind="temporary"
+              onClick={onClickMigrate}
+              disabled={!hasShare}
+            >
               {t("migrate")}
             </Button>
           ) : (
