@@ -7,10 +7,11 @@ import {
   BTC_POOL_NAME,
   D4_POOL_NAME,
   STABLECOIN_POOL_NAME,
+  STABLECOIN_POOL_V2_NAME,
   VETH2_POOL_NAME,
 } from "../constants"
 import { AppDispatch, AppState } from "../state"
-import React, { ReactElement, Suspense, useCallback } from "react"
+import React, { ReactElement, Suspense, useCallback, useEffect } from "react"
 import { Route, Switch } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 
@@ -26,7 +27,6 @@ import fetchSwapStats from "../utils/getSwapStats"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import { notify } from "../utils/notifyHandler"
 import { useActiveWeb3React } from "../hooks"
-import { useEffect } from "react"
 import usePoller from "../hooks/usePoller"
 
 export default function App(): ReactElement {
@@ -52,6 +52,13 @@ export default function App(): ReactElement {
                 path="/pools/usd/deposit"
                 render={(props) => (
                   <Deposit {...props} poolName={STABLECOIN_POOL_NAME} />
+                )}
+              />
+              <Route
+                exact
+                path="/pools/usdv2/deposit"
+                render={(props) => (
+                  <Deposit {...props} poolName={STABLECOIN_POOL_V2_NAME} />
                 )}
               />
               <Route
@@ -94,6 +101,13 @@ export default function App(): ReactElement {
                 path="/pools/usd/withdraw"
                 render={(props) => (
                   <Withdraw {...props} poolName={STABLECOIN_POOL_NAME} />
+                )}
+              />
+              <Route
+                exact
+                path="/pools/usdv2/withdraw"
+                render={(props) => (
+                  <Withdraw {...props} poolName={STABLECOIN_POOL_V2_NAME} />
                 )}
               />
               <Route

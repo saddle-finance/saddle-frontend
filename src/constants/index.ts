@@ -32,6 +32,7 @@ export const D4_POOL_NAME = "D4 Pool"
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof STABLECOIN_POOL_NAME
+  | typeof STABLECOIN_POOL_V2_NAME
   | typeof VETH2_POOL_NAME
   | typeof ALETH_POOL_NAME
   | typeof D4_POOL_NAME
@@ -101,6 +102,12 @@ export const STABLECOIN_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.HARDHAT]: "0x98A0Bc3f9FdAD482CB2e40dE1291f8b0A6FE1860",
 }
 
+export const STABLECOIN_SWAP_V2_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0xaCb83E0633d6605c5001e2Ab59EF3C745547C8C7",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "0xbf9fBFf01664500A33080Da5d437028b07DFcC55",
+}
+
 export const BTC_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0x4f6A43Ad7cba042606dECaCA730d4CE0A57ac62e",
   [ChainId.ROPSTEN]: "0x02ad8Da8cCa3764DFb62d749E51Cb3d4b35643ad",
@@ -137,6 +144,14 @@ export const STABLECOIN_SWAP_TOKEN_CONTRACT_ADDRESSES: {
   [ChainId.MAINNET]: "0x76204f8CFE8B95191A3d1CfA59E267EA65e06FAC",
   [ChainId.ROPSTEN]: "0x09f0e9d602c9989B2C03983cA37E7fa18084C44B",
   [ChainId.HARDHAT]: "0x6D1c89F08bbB35d80B6E6b6d58D2bEFE021eFE8d",
+}
+
+export const STABLECOIN_SWAP_V2_TOKEN_CONTRACT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "0x5f86558387293b6009d7896A61fcc86C17808D62",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "0xC863F1F636fddce400E7515eCBDAbbEc4d1E0390",
 }
 
 export const BTC_SWAP_TOKEN_CONTRACT_ADDRESSES: {
@@ -186,6 +201,15 @@ export const STABLECOIN_SWAP_TOKEN = new Token(
   "saddleUSD",
   "saddleusd",
   "Saddle DAI/USDC/USDT",
+  saddleLogo,
+)
+
+export const STABLECOIN_SWAP_V2_TOKEN = new Token(
+  STABLECOIN_SWAP_V2_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "saddleUSD-V2",
+  "saddleusd-v2",
+  "Saddle DAI/USDC/USDT V2",
   saddleLogo,
 )
 
@@ -469,6 +493,14 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     migration: STABLECOIN_POOL_V2_NAME,
+  },
+  [STABLECOIN_POOL_V2_NAME]: {
+    name: STABLECOIN_POOL_V2_NAME,
+    addresses: STABLECOIN_SWAP_V2_ADDRESSES,
+    lpToken: STABLECOIN_SWAP_V2_TOKEN,
+    poolTokens: STABLECOIN_POOL_TOKENS,
+    isSynthetic: false,
+    type: PoolTypes.USD,
   },
   [VETH2_POOL_NAME]: {
     name: VETH2_POOL_NAME,
