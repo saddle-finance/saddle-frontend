@@ -50,6 +50,7 @@ ul {
   --outline: #000;
   --outline-gray: #8c8c94;
   --option-hover: #{$primary-blue-light};
+  --tab: #{$black80};
 
   --text: #000;
   --text-darker: #000;
@@ -82,6 +83,7 @@ body.dark {
   --outline: #fff;
   --option-hover: #{$primary-blue-dark};
   --outline-gray: #8c8c94;
+  --tab: #{$white};
 
   --text: #fff;
   --text-darker: #ffffe9;
