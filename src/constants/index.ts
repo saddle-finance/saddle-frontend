@@ -432,12 +432,13 @@ export const LUSD = new Token(
 export const D4_POOL_TOKENS = [ALUSD, FEI, FRAX, LUSD]
 
 export type Pool = {
-  name: string
+  name: PoolName
   lpToken: Token
   poolTokens: Token[]
   isSynthetic: boolean
   addresses: { [chainId in ChainId]: string }
   type: PoolTypes
+  migration?: null | PoolName
 }
 export type PoolsMap = {
   [poolName: string]: Pool
