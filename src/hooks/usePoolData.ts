@@ -93,6 +93,7 @@ export default function usePoolData(
   const lastDepositTime = lastTransactionTimes[TRANSACTION_TYPES.DEPOSIT]
   const lastWithdrawTime = lastTransactionTimes[TRANSACTION_TYPES.WITHDRAW]
   const lastSwapTime = lastTransactionTimes[TRANSACTION_TYPES.SWAP]
+  const lastMigrateTime = lastTransactionTimes[TRANSACTION_TYPES.MIGRATE]
 
   const [poolData, setPoolData] = useState<PoolDataHookReturnType>([
     {
@@ -293,6 +294,7 @@ export default function usePoolData(
     lastDepositTime,
     lastWithdrawTime,
     lastSwapTime,
+    lastMigrateTime,
     poolName,
     swapContract,
     tokenPricesUSD,
