@@ -8,7 +8,6 @@ import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
 import Warning from "./Warning"
 import { calculateGasEstimate } from "../utils/gasEstimate"
-import { formatSlippageToString } from "../utils/slippage"
 import { gasBNFromState } from "../utils/gas"
 import { parseUnits } from "ethers/lib/utils"
 import { useSelector } from "react-redux"
@@ -26,12 +25,9 @@ function ReviewMigration({
   migrationAmount,
 }: Props): ReactElement {
   const { t } = useTranslation()
-  const {
-    slippageCustom,
-    slippageSelected,
-    gasPriceSelected,
-    gasCustom,
-  } = useSelector((state: AppState) => state.user)
+  const { gasPriceSelected, gasCustom } = useSelector(
+    (state: AppState) => state.user,
+  )
   const { tokenPricesUSD, gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -76,9 +72,7 @@ function ReviewMigration({
           )}
           <div className="row">
             <span className="title">{t("maxSlippage")}</span>
-            <span className="value floatRight">
-              {formatSlippageToString(slippageSelected, slippageCustom)}%
-            </span>
+            <span className="value floatRight">0.5%</span>
           </div>
         </div>
       </div>

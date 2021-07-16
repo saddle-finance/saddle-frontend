@@ -7,7 +7,6 @@ import { BigNumber } from "@ethersproject/bignumber"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { gasBNFromState } from "../utils/gas"
 import { notifyHandler } from "../utils/notifyHandler"
-import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
 
@@ -21,12 +20,9 @@ export function useApproveAndMigrateUSD(): (
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
-  const {
-    slippageCustom,
-    slippageSelected,
-    gasPriceSelected,
-    gasCustom,
-  } = useSelector((state: AppState) => state.user)
+  const { gasPriceSelected, gasCustom } = useSelector(
+    (state: AppState) => state.user,
+  )
 
   return async function approveAndMigrateUSD(
     lpTokenBalance?: BigNumber,
@@ -56,7 +52,7 @@ export function useApproveAndMigrateUSD(): (
       ).mul(BigNumber.from(10).pow(9))
       const migrateTransaction = await migratorContract.migrateUSDPool(
         lpTokenBalance,
-        subtractSlippage(lpTokenBalance, slippageSelected, slippageCustom),
+        lpTokenBalance.mul(5).div(1000), // 50bps, 0.5%
         {
           gasPrice,
         },
