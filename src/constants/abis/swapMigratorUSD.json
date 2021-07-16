@@ -1,0 +1,128 @@
+[
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "oldPoolAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "contract IERC20",
+            "name": "oldPoolLPTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "newPoolAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "contract IERC20",
+            "name": "newPoolLPTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "contract IERC20[]",
+            "name": "underlyingTokens",
+            "type": "address[]"
+          }
+        ],
+        "internalType": "struct SwapMigrator.MigrationData",
+        "name": "usdData_",
+        "type": "tuple"
+      },
+      {
+        "internalType": "address",
+        "name": "owner_",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "minAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "migrateUSDPool",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "rescue",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "usdPoolMigrationData",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "oldPoolAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IERC20",
+        "name": "oldPoolLPTokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "newPoolAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IERC20",
+        "name": "newPoolLPTokenAddress",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

@@ -14,7 +14,7 @@ export const notify = Notify({
 
 export function notifyHandler(
   hash: string,
-  type: "Deposit" | "Withdraw" | "Swap" | "Token approval",
+  type: "Deposit" | "Withdraw" | "Swap" | "Token approval" | "Migrate",
 ): void {
   const { emitter } = notify.hash(hash)
 
