@@ -25,12 +25,14 @@ import wethLogo from "../assets/icons/weth.svg"
 export const NetworkContextName = "NETWORK"
 export const BTC_POOL_NAME = "BTC Pool"
 export const STABLECOIN_POOL_NAME = "Stablecoin Pool"
+export const STABLECOIN_POOL_V2_NAME = "Stablecoin Pool V2"
 export const VETH2_POOL_NAME = "vETH2 Pool"
 export const ALETH_POOL_NAME = "alETH Pool"
 export const D4_POOL_NAME = "D4 Pool"
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof STABLECOIN_POOL_NAME
+  | typeof STABLECOIN_POOL_V2_NAME
   | typeof VETH2_POOL_NAME
   | typeof ALETH_POOL_NAME
   | typeof D4_POOL_NAME
@@ -86,10 +88,24 @@ export const BRIDGE_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.HARDHAT]: "0xf5059a5D33d5853360D16C683c16e67980206f36",
 }
 
+export const SWAP_MIGRATOR_USD_CONTRACT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "0x9cDeF6e33687F438808766fC133b2E9d1A16AD57",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf",
+}
+
 export const STABLECOIN_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0x3911F80530595fBd01Ab1516Ab61255d75AEb066",
   [ChainId.ROPSTEN]: "0xbCED0cB1e8022869678d40b3c71FA7A443CA8090",
   [ChainId.HARDHAT]: "0x98A0Bc3f9FdAD482CB2e40dE1291f8b0A6FE1860",
+}
+
+export const STABLECOIN_SWAP_V2_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0xaCb83E0633d6605c5001e2Ab59EF3C745547C8C7",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "0xbf9fBFf01664500A33080Da5d437028b07DFcC55",
 }
 
 export const BTC_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
@@ -128,6 +144,14 @@ export const STABLECOIN_SWAP_TOKEN_CONTRACT_ADDRESSES: {
   [ChainId.MAINNET]: "0x76204f8CFE8B95191A3d1CfA59E267EA65e06FAC",
   [ChainId.ROPSTEN]: "0x09f0e9d602c9989B2C03983cA37E7fa18084C44B",
   [ChainId.HARDHAT]: "0x6D1c89F08bbB35d80B6E6b6d58D2bEFE021eFE8d",
+}
+
+export const STABLECOIN_SWAP_V2_TOKEN_CONTRACT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "0x5f86558387293b6009d7896A61fcc86C17808D62",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "0xC863F1F636fddce400E7515eCBDAbbEc4d1E0390",
 }
 
 export const BTC_SWAP_TOKEN_CONTRACT_ADDRESSES: {
@@ -177,6 +201,15 @@ export const STABLECOIN_SWAP_TOKEN = new Token(
   "saddleUSD",
   "saddleusd",
   "Saddle DAI/USDC/USDT",
+  saddleLogo,
+)
+
+export const STABLECOIN_SWAP_V2_TOKEN = new Token(
+  STABLECOIN_SWAP_V2_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "saddleUSD-V2",
+  "saddleusd-v2",
+  "Saddle DAI/USDC/USDT V2",
   saddleLogo,
 )
 
@@ -432,12 +465,13 @@ export const LUSD = new Token(
 export const D4_POOL_TOKENS = [ALUSD, FEI, FRAX, LUSD]
 
 export type Pool = {
-  name: string
+  name: PoolName
   lpToken: Token
   poolTokens: Token[]
   isSynthetic: boolean
   addresses: { [chainId in ChainId]: string }
   type: PoolTypes
+  migration?: PoolName
 }
 export type PoolsMap = {
   [poolName: string]: Pool
@@ -455,6 +489,15 @@ export const POOLS_MAP: PoolsMap = {
     name: STABLECOIN_POOL_NAME,
     addresses: STABLECOIN_SWAP_ADDRESSES,
     lpToken: STABLECOIN_SWAP_TOKEN,
+    poolTokens: STABLECOIN_POOL_TOKENS,
+    isSynthetic: false,
+    type: PoolTypes.USD,
+    migration: STABLECOIN_POOL_V2_NAME,
+  },
+  [STABLECOIN_POOL_V2_NAME]: {
+    name: STABLECOIN_POOL_V2_NAME,
+    addresses: STABLECOIN_SWAP_V2_ADDRESSES,
+    lpToken: STABLECOIN_SWAP_V2_TOKEN,
     poolTokens: STABLECOIN_POOL_TOKENS,
     isSynthetic: false,
     type: PoolTypes.USD,
@@ -524,6 +567,7 @@ export const TRANSACTION_TYPES = {
   DEPOSIT: "DEPOSIT",
   WITHDRAW: "WITHDRAW",
   SWAP: "SWAP",
+  MIGRATE: "MIGRATE",
 }
 
 export const POOL_FEE_PRECISION = 10
@@ -547,6 +591,7 @@ export const SWAP_CONTRACT_GAS_ESTIMATES_MAP = {
   addLiquidity: BigNumber.from("400000"), // 386,555
   removeLiquidityImbalance: BigNumber.from("350000"), // 318,231
   removeLiquidityOneToken: BigNumber.from("250000"), // 232,947
+  migrate: BigNumber.from("650000"), // 619,126
 }
 
 export interface WalletInfo {
