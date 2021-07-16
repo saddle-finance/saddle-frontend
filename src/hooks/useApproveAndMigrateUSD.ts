@@ -52,7 +52,7 @@ export function useApproveAndMigrateUSD(): (
       ).mul(BigNumber.from(10).pow(9))
       const migrateTransaction = await migratorContract.migrateUSDPool(
         lpTokenBalance,
-        lpTokenBalance.mul(5).div(1000), // 50bps, 0.5%
+        lpTokenBalance.mul(1000 - 5).div(1000), // 50bps, 0.5%
         {
           gasPrice,
         },
