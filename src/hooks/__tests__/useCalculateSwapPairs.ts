@@ -1,4 +1,11 @@
-import { ChainId, Pool, SWAP_TYPES, Token } from "../../constants/index"
+import {
+  ChainId,
+  Pool,
+  PoolName,
+  PoolTypes,
+  SWAP_TYPES,
+  Token,
+} from "../../constants/index"
 
 import { __test__ } from "../useCalculateSwapPairs"
 
@@ -18,13 +25,18 @@ const createTestToken = (name: string, isSynth?: boolean) => {
   return new Token(chainObject, 0, name, "", name, "", !!isSynth)
 }
 
-const createTestPool = (name: string, tokens: Token[]) => {
+const createTestPool = (
+  name: string,
+  tokens: Token[],
+  type = PoolTypes.USD,
+): Pool => {
   return {
-    name: name,
+    name: name as PoolName, // not true but it's a test
     lpToken: createTestToken(`${name} LPToken`),
     poolTokens: tokens,
     isSynthetic: tokens.some(({ isSynthetic }) => isSynthetic),
     addresses: {} as { [chainId in ChainId]: string },
+    type,
   }
 }
 describe("getTradingPairsForToken", () => {
@@ -49,7 +61,7 @@ describe("getTradingPairsForToken", () => {
   )
   const poolsMap = allPools.reduce(
     (acc, p) => ({ ...acc, [p.name]: p }),
-    {} as { [symbol: string]: Pool },
+    {} as { [poolName: string]: Pool },
   )
   const tokensToPoolsMap = {
     [tokenA.symbol]: [pool1.name],
@@ -64,6 +76,7 @@ describe("getTradingPairsForToken", () => {
     const pairs = getTradingPairsForToken(
       tokensMap,
       poolsMap,
+      allPools,
       tokensToPoolsMap,
       tokenA,
     )
@@ -90,6 +103,7 @@ describe("getTradingPairsForToken", () => {
     const pairs = getTradingPairsForToken(
       tokensMap,
       poolsMap,
+      allPools,
       tokensToPoolsMap,
       tokenA,
     )
@@ -119,6 +133,7 @@ describe("getTradingPairsForToken", () => {
     const pairs = getTradingPairsForToken(
       tokensMap,
       poolsMap,
+      allPools,
       tokensToPoolsMap,
       tokenE,
     )
@@ -144,6 +159,7 @@ describe("getTradingPairsForToken", () => {
     const pairs = getTradingPairsForToken(
       tokensMap,
       poolsMap,
+      allPools,
       tokensToPoolsMap,
       tokenF,
     )
@@ -169,6 +185,7 @@ describe("getTradingPairsForToken", () => {
     const pairs = getTradingPairsForToken(
       tokensMap,
       poolsMap,
+      allPools,
       tokensToPoolsMap,
       tokenC,
     )
@@ -194,6 +211,7 @@ describe("getTradingPairsForToken", () => {
     const pairs = getTradingPairsForToken(
       tokensMap,
       poolsMap,
+      allPools,
       tokensToPoolsMap,
       tokenC,
     )
