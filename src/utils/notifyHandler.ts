@@ -1,8 +1,10 @@
 import Notify from "bnc-notify"
 import { getEtherscanLink } from "../utils/getEtherscanLink"
+import i18next from "i18next"
 
 const notifyNetworks = new Set([1, 3, 4, 5, 42, 56, 100])
 const networkId = parseInt(process.env.REACT_APP_CHAIN_ID ?? "1")
+console.log(networkId)
 export const notify = Notify({
   ...(notifyNetworks.has(networkId)
     ? { dappId: process.env.REACT_APP_NOTIFY_DAPP_ID }
@@ -14,45 +16,45 @@ export const notify = Notify({
 
 export function notifyHandler(
   hash: string,
-  type: "Deposit" | "Withdraw" | "Swap" | "Token approval" | "Migrate",
+  type: "deposit" | "withdraw" | "swap" | "tokenApproval" | "migrate",
 ): void {
   const { emitter } = notify.hash(hash)
 
   emitter.on("txPool", (transaction) => {
     if (transaction.hash) {
       return {
-        message: `${type} transaction is pending. View it on Etherscan.`,
+        message: i18next.t("txPool", { context: type }),
         link: getEtherscanLink(transaction.hash, "tx"),
       }
     }
   })
   emitter.on("txSent", () => {
     return {
-      message: `${type} transaction was sent to the network`,
+      message: i18next.t("txSent", { context: type }),
     }
   })
   emitter.on("txConfirmed", () => {
     return {
-      message: `${type} transaction is confirmed.`,
+      message: i18next.t("txConfirmed", { context: type }),
     }
   })
   emitter.on("txSpeedUp", (transaction) => {
     if (transaction.hash) {
       return {
-        message: `${type} transaction was sped up. View it on Etherscan.`,
+        message: i18next.t("txSpeedUp", { context: type }),
         link: getEtherscanLink(transaction.hash, "tx"),
       }
     }
   })
   emitter.on("txCancel", () => {
     return {
-      message: `${type} transaction was canceled.`,
+      message: i18next.t("txCancel", { context: type }),
     }
   })
   emitter.on("txFailed", (transaction) => {
     if (transaction.hash) {
       return {
-        message: `${type} transaction failed. View it on Etherscan.`,
+        message: i18next.t("txFailed", { context: type }),
         link: getEtherscanLink(transaction.hash, "tx"),
       }
     }
