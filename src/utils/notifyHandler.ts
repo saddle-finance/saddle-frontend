@@ -4,7 +4,7 @@ import i18next from "i18next"
 
 const notifyNetworks = new Set([1, 3, 4, 5, 42, 56, 100])
 const networkId = parseInt(process.env.REACT_APP_CHAIN_ID ?? "1")
-console.log(networkId)
+
 export const notify = Notify({
   ...(notifyNetworks.has(networkId)
     ? { dappId: process.env.REACT_APP_NOTIFY_DAPP_ID }
