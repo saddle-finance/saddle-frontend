@@ -19,8 +19,8 @@ div.poolOverview {
     width: 80%;
   }
   @include breakpoint(sm) {
-    padding: 24px 2%;
     width: 90%;
+    padding: 24px 2%;
   }
   @include breakpoint(xs) {
     width: 100%;
@@ -122,14 +122,21 @@ div.outdated {
 }
 
 .tag {
-  border: 1px solid $yellow2;
   border-radius: 4px;
-  color: $yellow2;
   font-size: 20px;
   font-weight: $bold;
   align-self: center;
   padding: 2px 4px;
 }
+.tag.warning {
+  border: 1px solid $yellow2;
+  color: $yellow2;
+}
+.tag.error {
+  border: 1px solid $error;
+  color: $error;
+}
+
 div.poolOverview:first-child {
   margin-top: 0;
 }
