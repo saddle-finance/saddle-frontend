@@ -58,7 +58,7 @@ export function useApproveAndMigrateUSD(): (
         },
       )
 
-      notifyHandler(migrateTransaction.hash, "Migrate")
+      notifyHandler(migrateTransaction.hash, "migrate")
 
       await migrateTransaction.wait()
       dispatch(
