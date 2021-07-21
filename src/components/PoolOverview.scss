@@ -1,4 +1,5 @@
 @import "../styles/theme";
+@import "../styles/viewports";
 
 div.poolOverview {
   margin-top: 40px;
@@ -10,6 +11,21 @@ div.poolOverview {
   padding: 24px 32px;
   display: grid;
   grid-template-columns: 45% 55%;
+  @include breakpoint(md) {
+    grid-template-columns: 100%;
+    grid-template-rows: auto auto;
+    row-gap: 24px;
+    padding: 24px 6%;
+    width: 80%;
+  }
+  @include breakpoint(sm) {
+    width: 90%;
+    padding: 24px 2%;
+  }
+  @include breakpoint(xs) {
+    width: 100%;
+    padding: 24px 2%;
+  }
 
   .left {
     display: grid;
@@ -38,6 +54,10 @@ div.poolOverview {
     grid-row: 5/6;
     display: flex;
     flex-direction: row;
+    @include breakpoint(md) {
+      width: 100%;
+      justify-content: space-between;
+    }
   }
 
   div.token {
@@ -56,15 +76,28 @@ div.poolOverview {
   div.right {
     display: grid;
     justify-content: end;
+    @include breakpoint(md) {
+      justify-content: space-between;
+      row-gap: 24px;
+      grid-template-columns: 100%;
+    }
 
     .margin {
       margin-right: 24px;
+      @include breakpoint(md) {
+        margin-right: auto;
+      }
     }
     .poolInfo {
       display: flex;
       flex-flow: row wrap;
       align-items: flex-start;
       justify-self: end;
+      @include breakpoint(md) {
+        justify-self: start;
+        width: 100%;
+        justify-content: space-between;
+      }
     }
     span.label {
       display: block;
@@ -87,6 +120,11 @@ div.poolOverview {
       display: grid;
       grid-template-columns: 176px 176px;
       column-gap: 16px;
+      @include breakpoint(md) {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+      }
     }
   }
 }
@@ -96,14 +134,21 @@ div.outdated {
 }
 
 .tag {
-  border: 1px solid $yellow2;
   border-radius: 4px;
-  color: $yellow2;
   font-size: 20px;
   font-weight: $bold;
   align-self: center;
   padding: 2px 4px;
 }
+.tag.warning {
+  border: 1px solid $yellow2;
+  color: $yellow2;
+}
+.tag.error {
+  border: 1px solid $error;
+  color: $error;
+}
+
 div.poolOverview:first-child {
   margin-top: 0;
 }
