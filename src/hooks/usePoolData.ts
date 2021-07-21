@@ -79,7 +79,7 @@ const emptyPoolData = {
   volume: null,
   aprs: {},
   lpTokenPriceUSD: Zero,
-  isPaused: true,
+  isPaused: false,
 } as PoolDataType
 
 export default function usePoolData(

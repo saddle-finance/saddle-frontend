@@ -154,5 +154,5 @@ function Tag(props: {
   kind?: "warning" | "error"
 }) {
   const { kind = "warning", ...tagProps } = props
-  return <span className={`tag ${kind}`} {...tagProps} />
+  return <span className={classNames("tag", kind)} {...tagProps} />
 }
