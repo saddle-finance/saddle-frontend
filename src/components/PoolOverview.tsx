@@ -123,7 +123,7 @@ export default function PoolOverview({
         </div>
         <div className="buttons">
           <Link to={`${poolRoute}/withdraw`}>
-            <Button kind="secondary" size="large" disabled={!hasShare}>
+            <Button kind="secondary" size="large">
               {t("withdraw")}
             </Button>
           </Link>
