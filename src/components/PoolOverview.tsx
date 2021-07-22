@@ -71,7 +71,8 @@ export default function PoolOverview({
       <div className="left">
         <div className="titleAndTag">
           <h4 className="title">{formattedData.name}</h4>
-          {shouldMigrate && <Tag>OUTDATED</Tag>}
+          {shouldMigrate && <Tag kind="warning">OUTDATED</Tag>}
+          {poolData.isPaused && <Tag kind="error">PAUSED</Tag>}
         </div>
         {hasShare && (
           <div className="balance">
@@ -137,7 +138,7 @@ export default function PoolOverview({
             </Button>
           ) : (
             <Link to={`${poolRoute}/deposit`}>
-              <Button kind="primary" size="large">
+              <Button kind="primary" size="large" disabled={poolData?.isPaused}>
                 {t("deposit")}
               </Button>
             </Link>
@@ -148,6 +149,10 @@ export default function PoolOverview({
   )
 }
 
-function Tag(props: { children?: React.ReactNode }) {
-  return <span className="tag" {...props} />
+function Tag(props: {
+  children?: React.ReactNode
+  kind?: "warning" | "error"
+}) {
+  const { kind = "warning", ...tagProps } = props
+  return <span className={classNames("tag", kind)} {...tagProps} />
 }
