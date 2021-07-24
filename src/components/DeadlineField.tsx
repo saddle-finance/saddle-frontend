@@ -18,10 +18,8 @@ export default function DeadlineField(): ReactElement {
   const { t } = useTranslation()
   const dispatch = useDispatch<AppDispatch>()
 
-  const {
-    transactionDeadlineSelected,
-    transactionDeadlineCustom,
-  } = useSelector((state: AppState) => state.user)
+  const { transactionDeadlineSelected, transactionDeadlineCustom } =
+    useSelector((state: AppState) => state.user)
   return (
     <div className="deadlineField">
       <div className="options">

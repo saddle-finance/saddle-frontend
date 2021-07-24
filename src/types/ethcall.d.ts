@@ -35,7 +35,7 @@ export class MulticallProvider extends Provider {
   all<
     A extends MulticallCall,
     B extends MulticallCall,
-    C extends MulticallCall
+    C extends MulticallCall,
   >(
     calls: readonly [A, B, C],
     overrides: CallOverrides,
@@ -44,7 +44,7 @@ export class MulticallProvider extends Provider {
     A extends MulticallCall,
     B extends MulticallCall,
     C extends MulticallCall,
-    D extends MulticallCall
+    D extends MulticallCall,
   >(
     calls: readonly [A, B, C, D],
     overrides: CallOverrides,

@@ -24,15 +24,10 @@ interface Props {
 }
 function Withdraw({ poolName }: Props): ReactElement {
   const [poolData, userShareData] = usePoolData(poolName)
-  const [withdrawFormState, updateWithdrawFormState] = useWithdrawFormState(
-    poolName,
-  )
-  const {
-    slippageCustom,
-    slippageSelected,
-    gasPriceSelected,
-    gasCustom,
-  } = useSelector((state: AppState) => state.user)
+  const [withdrawFormState, updateWithdrawFormState] =
+    useWithdrawFormState(poolName)
+  const { slippageCustom, slippageSelected, gasPriceSelected, gasCustom } =
+    useSelector((state: AppState) => state.user)
   const { tokenPricesUSD, gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -66,7 +61,9 @@ function Withdraw({ poolName }: Props): ReactElement {
       let withdrawLPTokenAmount
       if (poolData.totalLocked.gt(0) && tokenInputSum.gt(0)) {
         if (isLegacySwapABIPool(poolData.name)) {
-          withdrawLPTokenAmount = await (swapContract as SwapFlashLoan).calculateTokenAmount(
+          withdrawLPTokenAmount = await (
+            swapContract as SwapFlashLoan
+          ).calculateTokenAmount(
             account,
             POOL.poolTokens.map(
               ({ symbol }) => withdrawFormState.tokenInputs[symbol].valueSafe,
@@ -74,7 +71,9 @@ function Withdraw({ poolName }: Props): ReactElement {
             false,
           )
         } else {
-          withdrawLPTokenAmount = await (swapContract as SwapFlashLoanNoWithdrawFee).calculateTokenAmount(
+          withdrawLPTokenAmount = await (
+            swapContract as SwapFlashLoanNoWithdrawFee
+          ).calculateTokenAmount(
             POOL.poolTokens.map(
               ({ symbol }) => withdrawFormState.tokenInputs[symbol].valueSafe,
             ),
@@ -103,11 +102,8 @@ function Withdraw({ poolName }: Props): ReactElement {
     POOL.poolTokens,
   ])
   async function onConfirmTransaction(): Promise<void> {
-    const {
-      withdrawType,
-      tokenInputs,
-      lpTokenAmountToSpend,
-    } = withdrawFormState
+    const { withdrawType, tokenInputs, lpTokenAmountToSpend } =
+      withdrawFormState
     await approveAndWithdraw({
       tokenFormState: tokenInputs,
       withdrawType,

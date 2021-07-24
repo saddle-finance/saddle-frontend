@@ -162,9 +162,11 @@ export function useApproveAndSwap(): (
           Math.round(new Date().getTime() / 1000 + 60 * deadline),
           txnArgs,
         ] as const
-        swapTransaction = await (state.swapContract as NonNullable<
-          typeof state.swapContract // we already check for nonnull above
-        >).swap(...args)
+        swapTransaction = await (
+          state.swapContract as NonNullable<
+            typeof state.swapContract // we already check for nonnull above
+          >
+        ).swap(...args)
         console.debug("swap - direct", args)
       } else if (state.swapType === SWAP_TYPES.SYNTH_TO_SYNTH) {
         // TODO: support synth to synth

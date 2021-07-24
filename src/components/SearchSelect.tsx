@@ -136,12 +136,14 @@ function ListItem({
   swapType,
 }: TokenOption & { isActive: boolean }) {
   const { t } = useTranslation()
-  const isVirtualSwap = ([
-    SWAP_TYPES.SYNTH_TO_SYNTH,
-    SWAP_TYPES.SYNTH_TO_TOKEN,
-    SWAP_TYPES.TOKEN_TO_SYNTH,
-    SWAP_TYPES.TOKEN_TO_TOKEN,
-  ] as Array<SWAP_TYPES | null>).includes(swapType)
+  const isVirtualSwap = (
+    [
+      SWAP_TYPES.SYNTH_TO_SYNTH,
+      SWAP_TYPES.SYNTH_TO_TOKEN,
+      SWAP_TYPES.TOKEN_TO_SYNTH,
+      SWAP_TYPES.TOKEN_TO_TOKEN,
+    ] as Array<SWAP_TYPES | null>
+  ).includes(swapType)
   return (
     <div
       className={classnames(styles.listItem, {

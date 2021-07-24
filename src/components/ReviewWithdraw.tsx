@@ -34,10 +34,8 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
-  const [
-    hasConfirmedHighPriceImpact,
-    setHasConfirmedHighPriceImpact,
-  ] = useState(false)
+  const [hasConfirmedHighPriceImpact, setHasConfirmedHighPriceImpact] =
+    useState(false)
   const isHighSlippageTxn = isHighPriceImpact(data.priceImpact)
   const deadline = formatDeadlineToNumber(
     transactionDeadlineSelected,

@@ -213,9 +213,8 @@ export default function usePoolData(
       const userPoolTokenBalancesUSD = tokenBalancesUSD.map((balance) => {
         return userShare.mul(balance).div(BigNumber.from(10).pow(18))
       })
-      const userPoolTokenBalancesUSDSum: BigNumber = userPoolTokenBalancesUSD.reduce(
-        (sum, b) => sum.add(b),
-      )
+      const userPoolTokenBalancesUSDSum: BigNumber =
+        userPoolTokenBalancesUSD.reduce((sum, b) => sum.add(b))
 
       const poolTokens = POOL.poolTokens.map((token, i) => ({
         symbol: token.symbol,

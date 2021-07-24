@@ -251,11 +251,8 @@ async function getAlEthData(
     rewardsContract.getPoolTotalDeposited(POOL_ID),
     rewardsContract.getStakeTotalDeposited(accountId || AddressZero, POOL_ID),
   ]
-  const [
-    alcxRewardPerBlock,
-    poolTotalDeposited,
-    userStakedAmount,
-  ] = await ethcallProvider.all(multicalls, {})
+  const [alcxRewardPerBlock, poolTotalDeposited, userStakedAmount] =
+    await ethcallProvider.all(multicalls, {})
   const alcxPerYear = alcxRewardPerBlock.mul(52 * 45000) // 1e18 // blocks/year rate from Alchemix's own logic
   const alcxPerYearUSD = alcxPerYear.mul(parseUnits(alcxPrice.toFixed(2), 2)) // 1e20
   const totalDepositedUSD = poolTotalDeposited.mul(lpTokenPrice) // 1e36

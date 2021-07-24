@@ -46,10 +46,8 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
-  const [
-    hasConfirmedHighPriceImpact,
-    setHasConfirmedHighPriceImpact,
-  ] = useState(false)
+  const [hasConfirmedHighPriceImpact, setHasConfirmedHighPriceImpact] =
+    useState(false)
   const fromToken = TOKENS_MAP[data.from.symbol]
   const toToken = TOKENS_MAP[data.to.symbol]
   const isHighPriceImpactTxn = isHighPriceImpact(
