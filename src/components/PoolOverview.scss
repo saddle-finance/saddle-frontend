@@ -108,6 +108,7 @@ div.poolOverview {
     .plus {
       font-weight: $medium;
       color: var(--text-selected);
+      display: block;
     }
     .minus {
       font-weight: $medium;
@@ -126,6 +127,9 @@ div.poolOverview {
         justify-content: space-between;
       }
     }
+  }
+  .label.underline {
+    border-bottom: 1px dotted var(--text);
   }
 }
 
