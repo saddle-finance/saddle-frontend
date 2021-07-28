@@ -11,6 +11,7 @@ import {
 
 import Button from "./Button"
 import { Link } from "react-router-dom"
+import ToolTip from "./ToolTip"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
 import { useTranslation } from "react-i18next"
@@ -104,7 +105,15 @@ export default function PoolOverview({
             const symbol = poolData.aprs[key as Partners]?.symbol as string
             return poolData.aprs[key as Partners]?.apr.gt(Zero) ? (
               <div className="margin Apr" key={symbol}>
-                <span className="label">{symbol} APR</span>
+                {symbol.includes("/") ? (
+                  <span className="label underline">
+                    <ToolTip content={symbol.replaceAll("/", "\n")}>
+                      Reward APR
+                    </ToolTip>
+                  </span>
+                ) : (
+                  <span className="label">{symbol} APR</span>
+                )}
                 <span className="plus">
                   {formattedData.aprs[key as Partners] as string}
                 </span>
