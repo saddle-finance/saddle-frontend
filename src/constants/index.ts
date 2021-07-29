@@ -14,6 +14,7 @@ import renbtcLogo from "../assets/icons/renbtc.svg"
 import saddleLogo from "../assets/icons/logo.svg"
 import sbtcLogo from "../assets/icons/sbtc.svg"
 import sethLogo from "../assets/icons/seth.svg"
+import susdLogo from "../assets/icons/susd.svg"
 import tbtcLogo from "../assets/icons/tbtc.svg"
 import usdcLogo from "../assets/icons/usdc.svg"
 import usdtLogo from "../assets/icons/usdt.svg"
@@ -29,6 +30,7 @@ export const STABLECOIN_POOL_V2_NAME = "Stablecoin Pool V2"
 export const VETH2_POOL_NAME = "vETH2 Pool"
 export const ALETH_POOL_NAME = "alETH Pool"
 export const D4_POOL_NAME = "D4 Pool"
+export const SUSD_POOL_NAME = "sUSD Pool"
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof STABLECOIN_POOL_NAME
@@ -36,6 +38,7 @@ export type PoolName =
   | typeof VETH2_POOL_NAME
   | typeof ALETH_POOL_NAME
   | typeof D4_POOL_NAME
+  | typeof SUSD_POOL_NAME
 
 export enum ChainId {
   MAINNET = 1,
@@ -60,6 +63,7 @@ export class Token {
   readonly icon: string
   readonly geckoId: string
   readonly isSynthetic: boolean
+  readonly isLPToken: boolean
 
   constructor(
     addresses: { [chainId in ChainId]: string },
@@ -69,6 +73,7 @@ export class Token {
     name: string,
     icon: string,
     isSynthetic = false,
+    isLPToken = false,
   ) {
     this.addresses = addresses
     this.decimals = decimals
@@ -77,6 +82,7 @@ export class Token {
     this.name = name
     this.icon = icon
     this.isSynthetic = isSynthetic
+    this.isLPToken = isLPToken
   }
 }
 
@@ -94,6 +100,20 @@ export const SWAP_MIGRATOR_USD_CONTRACT_ADDRESSES: {
   [ChainId.MAINNET]: "0x9cDeF6e33687F438808766fC133b2E9d1A16AD57",
   [ChainId.ROPSTEN]: "",
   [ChainId.HARDHAT]: "0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf",
+}
+
+export const SUSD_META_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0x0C8BAe14c9f9BF2c953997C881BEfaC7729FD314",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "0x9d4454B023096f34B160D6B654540c56A1F81688",
+}
+
+export const SUSD_META_SWAP_DEPOSIT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "0xe280EFE654328a3325fc5A9EAb8E998D418C86FB",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "0x809d550fca64d94Bd9F66E60752A544199cfAC3D",
 }
 
 export const STABLECOIN_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
@@ -136,6 +156,14 @@ export const MERKLETREE_DATA: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "mainnetTestAccounts.json",
   [ChainId.ROPSTEN]: "",
   [ChainId.HARDHAT]: "hardhat.json",
+}
+
+export const SUSD_SWAP_TOKEN_CONTRACT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "0x8Fa31c1b33De16bf05c38AF20329f22D544aD64c",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "0xBeaAFDA2E17fC95E69Dc06878039d274E0d2B21A",
 }
 
 export const STABLECOIN_SWAP_TOKEN_CONTRACT_ADDRESSES: {
@@ -186,6 +214,17 @@ export const D4_SWAP_TOKEN_CONTRACT_ADDRESSES: {
   [ChainId.HARDHAT]: "0x2d2c18F63D2144161B38844dCd529124Fbb93cA2",
 }
 
+export const SUSD_SWAP_TOKEN = new Token(
+  SUSD_SWAP_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "saddleSUSD",
+  "saddlesusd",
+  "Saddle sUSD/saddleUSD-V2",
+  saddleLogo,
+  false,
+  true,
+)
+
 export const BTC_SWAP_TOKEN = new Token(
   BTC_SWAP_TOKEN_CONTRACT_ADDRESSES,
   18,
@@ -193,6 +232,8 @@ export const BTC_SWAP_TOKEN = new Token(
   "saddlebtc",
   "Saddle TBTC/WBTC/RENBTC/SBTC",
   saddleLogo,
+  false,
+  true,
 )
 
 export const STABLECOIN_SWAP_TOKEN = new Token(
@@ -202,6 +243,8 @@ export const STABLECOIN_SWAP_TOKEN = new Token(
   "saddleusd",
   "Saddle DAI/USDC/USDT",
   saddleLogo,
+  false,
+  true,
 )
 
 export const STABLECOIN_SWAP_V2_TOKEN = new Token(
@@ -211,6 +254,8 @@ export const STABLECOIN_SWAP_V2_TOKEN = new Token(
   "saddleusd-v2",
   "Saddle DAI/USDC/USDT V2",
   saddleLogo,
+  false,
+  true,
 )
 
 export const VETH2_SWAP_TOKEN = new Token(
@@ -220,6 +265,8 @@ export const VETH2_SWAP_TOKEN = new Token(
   "saddleveth2",
   "Saddle WETH/vETH2",
   saddleLogo,
+  false,
+  true,
 )
 
 export const ALETH_SWAP_TOKEN = new Token(
@@ -229,6 +276,8 @@ export const ALETH_SWAP_TOKEN = new Token(
   "saddlealeth",
   "Saddle WETH/alETH/sETH",
   saddleLogo,
+  false,
+  true,
 )
 
 export const D4_SWAP_TOKEN = new Token(
@@ -238,9 +287,26 @@ export const D4_SWAP_TOKEN = new Token(
   "saddled4",
   "Saddle alUSD/FEI/FRAX/LUSD",
   saddleLogo,
+  false,
+  true,
 )
 
 // Stablecoins
+const SUSD_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "0x0E801D84Fa97b50751Dbf25036d067dCf18858bF",
+}
+export const SUSD = new Token(
+  SUSD_CONTRACT_ADDRESSES,
+  18,
+  "sUSD",
+  "nusd",
+  "sUSD",
+  susdLogo,
+  true,
+)
+
 const DAI_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
   [ChainId.ROPSTEN]: "0x8C924e41d0624Ae6E7DB09fc93BBfB324c31BE0C",
@@ -284,6 +350,8 @@ export const USDT = new Token(
 )
 
 export const STABLECOIN_POOL_TOKENS = [DAI, USDC, USDT]
+export const SUSD_POOL_TOKENS = [SUSD, ...STABLECOIN_POOL_TOKENS]
+export const SUSD_UNDERLYING_POOL_TOKENS = [SUSD, STABLECOIN_SWAP_V2_TOKEN]
 
 // Tokenized BTC
 const TBTC_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
@@ -471,7 +539,10 @@ export type Pool = {
   isSynthetic: boolean
   addresses: { [chainId in ChainId]: string }
   type: PoolTypes
+  route: string
   migration?: PoolName
+  metaSwapAddresses?: { [chainId in ChainId]: string }
+  underlyingPoolTokens?: Token[]
 }
 export type PoolsMap = {
   [poolName: string]: Pool
@@ -484,6 +555,7 @@ export const POOLS_MAP: PoolsMap = {
     poolTokens: BTC_POOL_TOKENS,
     isSynthetic: true,
     type: PoolTypes.BTC,
+    route: "btc",
   },
   [STABLECOIN_POOL_NAME]: {
     name: STABLECOIN_POOL_NAME,
@@ -493,6 +565,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     migration: STABLECOIN_POOL_V2_NAME,
+    route: "usd",
   },
   [STABLECOIN_POOL_V2_NAME]: {
     name: STABLECOIN_POOL_V2_NAME,
@@ -501,6 +574,7 @@ export const POOLS_MAP: PoolsMap = {
     poolTokens: STABLECOIN_POOL_TOKENS,
     isSynthetic: false,
     type: PoolTypes.USD,
+    route: "usdv2",
   },
   [VETH2_POOL_NAME]: {
     name: VETH2_POOL_NAME,
@@ -509,6 +583,7 @@ export const POOLS_MAP: PoolsMap = {
     poolTokens: VETH2_POOL_TOKENS,
     isSynthetic: false,
     type: PoolTypes.ETH,
+    route: "veth2",
   },
   [ALETH_POOL_NAME]: {
     name: ALETH_POOL_NAME,
@@ -517,6 +592,7 @@ export const POOLS_MAP: PoolsMap = {
     poolTokens: ALETH_POOL_TOKENS,
     isSynthetic: true,
     type: PoolTypes.ETH,
+    route: "aleth",
   },
   [D4_POOL_NAME]: {
     name: D4_POOL_NAME,
@@ -525,24 +601,41 @@ export const POOLS_MAP: PoolsMap = {
     poolTokens: D4_POOL_TOKENS,
     isSynthetic: false,
     type: PoolTypes.USD,
+    route: "d4",
+  },
+  [SUSD_POOL_NAME]: {
+    name: SUSD_POOL_NAME,
+    lpToken: SUSD_SWAP_TOKEN,
+    poolTokens: SUSD_POOL_TOKENS,
+    addresses: SUSD_META_SWAP_DEPOSIT_ADDRESSES,
+    isSynthetic: true,
+    type: PoolTypes.USD,
+    metaSwapAddresses: SUSD_META_SWAP_ADDRESSES,
+    underlyingPoolTokens: SUSD_UNDERLYING_POOL_TOKENS,
+    route: "susd",
   },
 }
 export function isLegacySwapABIPool(poolName: string): boolean {
-  return [BTC_POOL_NAME, STABLECOIN_POOL_NAME, VETH2_POOL_NAME].includes(
+  return new Set([BTC_POOL_NAME, STABLECOIN_POOL_NAME, VETH2_POOL_NAME]).has(
     poolName,
   )
+}
+export function isMetaPool(poolName: string): boolean {
+  return new Set([SUSD_POOL_NAME]).has(poolName)
 }
 
 // maps a symbol string to a token object
 export type TokensMap = {
   [symbol: string]: Token
 }
+
 export const TOKENS_MAP = Object.keys(POOLS_MAP).reduce((acc, poolName) => {
   const pool = POOLS_MAP[poolName as PoolName]
   const newAcc = { ...acc }
   pool.poolTokens.forEach((token) => {
     newAcc[token.symbol] = token
   })
+  newAcc[pool.lpToken.symbol] = pool.lpToken
   return newAcc
 }, {} as TokensMap)
 
