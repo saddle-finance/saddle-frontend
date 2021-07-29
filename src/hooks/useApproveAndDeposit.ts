@@ -6,7 +6,12 @@ import {
   Token,
   isLegacySwapABIPool,
 } from "../constants"
-import { useAllContracts, useSwapContract } from "./useContract"
+import {
+  useAllContracts,
+  useLPTokenContract,
+  useSwapContract,
+} from "./useContract"
+import { useDispatch, useSelector } from "react-redux"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -24,8 +29,6 @@ import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
-import { useDispatch } from "react-redux"
-import { useSelector } from "react-redux"
 
 interface ApproveAndDepositStateArgument {
   [tokenSymbol: string]: NumberInputState
@@ -36,6 +39,7 @@ export function useApproveAndDeposit(
 ): (state: ApproveAndDepositStateArgument) => Promise<void> {
   const dispatch = useDispatch()
   const swapContract = useSwapContract(poolName)
+  const lpTokenContract = useLPTokenContract(poolName)
   const tokenContracts = useAllContracts()
   const { account } = useActiveWeb3React()
   const { gasStandard, gasFast, gasInstant } = useSelector(
@@ -56,7 +60,8 @@ export function useApproveAndDeposit(
     state: ApproveAndDepositStateArgument,
   ): Promise<void> {
     if (!account) throw new Error("Wallet must be connected")
-    if (!swapContract) throw new Error("Swap contract is not loaded")
+    if (!swapContract || !lpTokenContract)
+      throw new Error("Swap contract is not loaded")
 
     const approveSingleToken = async (token: Token): Promise<void> => {
       const spendingValue = BigNumber.from(state[token.symbol].valueSafe)
@@ -89,13 +94,7 @@ export function useApproveAndDeposit(
         )
       }
 
-      // "isFirstTransaction" check can be removed after launch
-      const poolTokenBalances: BigNumber[] = await Promise.all(
-        POOL.poolTokens.map(async (token, i) => {
-          return await swapContract.getTokenBalance(i)
-        }),
-      )
-      const isFirstTransaction = poolTokenBalances.every((bal) => bal.isZero())
+      const isFirstTransaction = (await lpTokenContract.totalSupply()).isZero()
       let minToMint: BigNumber
       if (isFirstTransaction) {
         minToMint = BigNumber.from("0")
