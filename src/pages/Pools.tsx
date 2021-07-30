@@ -7,6 +7,7 @@ import {
   PoolTypes,
   STABLECOIN_POOL_NAME,
   STABLECOIN_POOL_V2_NAME,
+  SUSD_POOL_NAME,
   VETH2_POOL_NAME,
 } from "../constants"
 import React, { ReactElement, useState } from "react"
@@ -31,6 +32,7 @@ function Pools(): ReactElement | null {
     STABLECOIN_POOL_V2_NAME,
   )
   const [usdPoolData, usdUserShareData] = usePoolData(STABLECOIN_POOL_NAME)
+  const [susdPoolData, susdUserShareData] = usePoolData(SUSD_POOL_NAME)
   const [veth2PoolData, veth2UserShareData] = usePoolData(VETH2_POOL_NAME)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const approveAndMigrateUSD = useApproveAndMigrateUSD()
@@ -76,6 +78,13 @@ function Pools(): ReactElement | null {
         poolData: usdPoolV2Data,
         userShareData: usdV2UserShareData,
         poolRoute: "/pools/usdv2",
+      }
+    } else if (poolName === SUSD_POOL_NAME) {
+      return {
+        name: SUSD_POOL_NAME,
+        poolData: susdPoolData,
+        userShareData: susdUserShareData,
+        poolRoute: "/pools/susd",
       }
     } else {
       return {
