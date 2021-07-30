@@ -23,15 +23,31 @@ div.reviewSwap {
       float: right;
     }
 
+    .row {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 16px;
+    }
+
+    svg.stepArrow {
+      margin-right: 16px;
+      stroke: var(--outline);
+    }
+
+    .aside {
+      font-size: 11px;
+    }
+
+    .grey {
+      color: var(--text-lighter);
+    }
+
     img.arrowDown {
       margin-top: 8px;
       margin-bottom: 8px;
       margin-left: auto;
       float: right;
-    }
-
-    .to {
-      clear: right;
     }
 
     img.tokenIcon {

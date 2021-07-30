@@ -1,13 +1,14 @@
 import "./ReviewSwap.scss"
 
 import React, { ReactElement, useState } from "react"
+import { SWAP_TYPES, TOKENS_MAP, getIsVirtualSwap } from "../constants"
 import { commify, formatBNToString, formatDeadlineToNumber } from "../utils"
 
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
-import { TOKENS_MAP } from "../constants"
+import classnames from "classnames"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import iconDown from "../assets/icons/icon_down.svg"
@@ -25,7 +26,9 @@ interface Props {
       pair: string
       priceImpact: BigNumber
       exchangeRate: BigNumber
+      route: string[]
     }
+    swapType: SWAP_TYPES
     txnGasCost: {
       amount: BigNumber
       valueUSD: BigNumber | null // amount * ethPriceUSD
@@ -50,11 +53,10 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
     hasConfirmedHighPriceImpact,
     setHasConfirmedHighPriceImpact,
   ] = useState(false)
-  const fromToken = TOKENS_MAP[data.from.symbol]
-  const toToken = TOKENS_MAP[data.to.symbol]
   const isHighPriceImpactTxn = isHighPriceImpact(
     data.exchangeRateInfo.priceImpact,
   )
+  const isVirtualSwap = getIsVirtualSwap(data.swapType)
   const deadline = formatDeadlineToNumber(
     transactionDeadlineSelected,
     transactionDeadlineCustom,
@@ -64,25 +66,15 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
     <div className="reviewSwap">
       <h3>{t("reviewSwap")}</h3>
       <div className="swapTable">
-        <div className="from">
-          <img className="tokenIcon" src={fromToken.icon} alt="icon" />
-          <span className="tokenName">{data.from.symbol}</span>
-          <div className="floatRight">
-            <span>{data.from.value}</span>
-          </div>
-        </div>
-        <img src={iconDown} alt="to" className="arrowDown" />
-        <div className="to">
-          <img className="tokenIcon" src={toToken.icon} alt="icon" />
-          <span className="tokenName">{data.to.symbol}</span>
-          <div className="floatRight">
-            <span>{data.to.value}</span>
-          </div>
-        </div>
+        {isVirtualSwap ? (
+          <VirtualSwapTokens data={data} />
+        ) : (
+          <DirectSwapTokens data={data} />
+        )}
         <div className="divider" style={{ height: "1px", width: "100%" }} />
         <div className="swapInfo">
           <div className="priceTable">
-            <span className="title">{t("price")}</span>
+            <span className="title">{t("price")} </span>
             <span className="pair">{data.exchangeRateInfo.pair}</span>
             <button className="exchange">
               <svg
@@ -133,12 +125,14 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
               {formatSlippageToString(slippageSelected, slippageCustom)}%
             </span>
           </div>
-          <div className="row">
-            <span className="title">{t("deadline")}</span>
-            <span className="value floatRight">
-              {deadline} {t("minutes")}
-            </span>
-          </div>
+          {!isVirtualSwap && (
+            <div className="row">
+              <span className="title">{t("deadline")}</span>
+              <span className="value floatRight">
+                {deadline} {t("minutes")}
+              </span>
+            </div>
+          )}
           {isHighPriceImpactTxn && (
             <div className="row">
               <HighPriceImpactConfirmation
@@ -167,6 +161,87 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
         </div>
       </div>
     </div>
+  )
+}
+
+function DirectSwapTokens({ data }: { data: Props["data"] }) {
+  const fromToken = TOKENS_MAP[data.from.symbol]
+  const toToken = TOKENS_MAP[data.to.symbol]
+  return (
+    <>
+      <div className="row">
+        <div>
+          <img className="tokenIcon" src={fromToken.icon} alt="icon" />
+          <span className="tokenName">{data.from.symbol}</span>
+        </div>
+        <div>
+          <span>{data.from.value}</span>
+        </div>
+      </div>
+      <img src={iconDown} alt="to" className="arrowDown" />
+      <div className="row">
+        <div>
+          <img className="tokenIcon" src={toToken.icon} alt="icon" />
+          <span className="tokenName">{data.to.symbol}</span>
+        </div>
+
+        <div>
+          <span>{data.to.value}</span>
+        </div>
+      </div>
+    </>
+  )
+}
+
+function VirtualSwapTokens({ data }: { data: Props["data"] }) {
+  const { t } = useTranslation()
+
+  return (
+    <>
+      {data.exchangeRateInfo.route.map((symbol, i) => {
+        const isFirst = i === 0
+        const isLast = i === data.exchangeRateInfo.route.length - 1
+        const token = TOKENS_MAP[symbol]
+        return (
+          <div className="row" key={symbol}>
+            <div>
+              {!isFirst && !isLast && (
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="stepArrow"
+                >
+                  <path d="M1 8L8 15L15 8" />
+                  <path d="M8 15L8 0" />
+                </svg>
+              )}
+              <img className="tokenIcon" src={token.icon} alt="icon" />
+              <span className={classnames("tokenName", { grey: isLast })}>
+                {token.symbol}
+              </span>
+
+              {(isFirst || isLast) && (
+                <span className="aside">
+                  {" "}
+                  (
+                  {t("stepN", {
+                    step: isFirst ? 1 : 2,
+                  })}
+                  )
+                </span>
+              )}
+            </div>
+            <div>
+              {isFirst && <span>{data.from.value}</span>}
+              {isLast && <span className="grey">{data.to.value}</span>}
+            </div>
+          </div>
+        )
+      })}
+    </>
   )
 }
 

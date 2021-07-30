@@ -2,6 +2,7 @@ import "./SwapPage.scss"
 
 import { Button, Center } from "@chakra-ui/react"
 import React, { ReactElement, useMemo, useState } from "react"
+import { SWAP_TYPES, getIsVirtualSwap } from "../constants"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 import { useDispatch, useSelector } from "react-redux"
 
@@ -47,6 +48,7 @@ interface Props {
     valueUSD: BigNumber | null // amount * ethPriceUSD
   }
   error: string | null
+  swapType: SWAP_TYPES
   fromState: { symbol: string; value: string; valueUSD: BigNumber }
   toState: { symbol: string; value: string; valueUSD: BigNumber }
   pendingSwaps: PendingSwap[]
@@ -68,6 +70,7 @@ const SwapPage = (props: Props): ReactElement => {
     fromState,
     toState,
     pendingSwaps,
+    swapType,
     onChangeFromToken,
     onChangeFromAmount,
     onChangeToToken,
@@ -76,10 +79,9 @@ const SwapPage = (props: Props): ReactElement => {
   } = props
 
   const [currentModal, setCurrentModal] = useState<string | null>(null)
-  const [
-    activePendingSwap,
-    setActivePendingSwap,
-  ] = useState<PendingSwap | null>(null)
+  const [activePendingSwap, setActivePendingSwap] = useState<string | null>(
+    null,
+  )
 
   const fromToken = useMemo(() => {
     return tokenOptions.from.find(({ symbol }) => symbol === fromState.symbol)
@@ -99,6 +101,7 @@ const SwapPage = (props: Props): ReactElement => {
   const formattedBalance = commify(
     formatBNToString(fromToken?.amount || Zero, fromToken?.decimals || 0, 6),
   )
+  const isVirtualSwap = getIsVirtualSwap(swapType)
 
   return (
     <div className="swapPage">
@@ -191,10 +194,22 @@ const SwapPage = (props: Props): ReactElement => {
             <span>{formattedPriceImpact}</span>
           </div>
           {formattedRoute && (
-            <div className="row">
-              <span>{t("route")}</span>
-              <span>{formattedRoute}</span>
-            </div>
+            <>
+              <div className="row">
+                <span>{t("route")}</span>
+                <span>{formattedRoute}</span>
+              </div>
+              {isVirtualSwap && (
+                <div className="row">
+                  <span></span>
+                  <span>
+                    <a href="https://docs.saddle.finance/">
+                      ({t("virtualSwap")})
+                    </a>
+                  </span>
+                </div>
+              )}
+            </>
           )}
         </div>
         {account && isHighPriceImpact(exchangeRateInfo.priceImpact) ? (
@@ -261,7 +276,7 @@ const SwapPage = (props: Props): ReactElement => {
                 className="pendingSwapItem"
                 key={pendingSwap.itemId?.toString()}
                 onClick={() => {
-                  setActivePendingSwap(pendingSwap)
+                  setActivePendingSwap(pendingSwap.itemId)
                   setCurrentModal("pendingSwap")
                 }}
               >
@@ -338,13 +353,18 @@ const SwapPage = (props: Props): ReactElement => {
                 to: toState,
                 exchangeRateInfo,
                 txnGasCost,
+                swapType,
               }}
             />
           ) : null}
           {currentModal === "confirm" ? <ConfirmTransaction /> : null}
           {currentModal === "pendingSwap" ? (
             <PendingSwapModal
-              pendingSwap={activePendingSwap as PendingSwap}
+              pendingSwap={
+                pendingSwaps.find(
+                  (p) => p.itemId === activePendingSwap,
+                ) as PendingSwap
+              }
               onClose={() => {
                 setActivePendingSwap(null)
                 setCurrentModal(null)

@@ -44,7 +44,11 @@ const PendingSwapTimeline = ({
       >
         {getFormattedShortTime(timestamp)} {t("stepAOfB", { a: 1, b: 2 })}{" "}
         {t("confirmTheSwap")}{" "}
-        <a href={`https://etherscan.io/tx/${transactionHash}`}>
+        <a
+          href={`https://etherscan.io/tx/${transactionHash}`}
+          target="_blank"
+          rel="noreferrer"
+        >
           {transactionHash.slice(0, 8)}
         </a>
       </TimelineStep>
