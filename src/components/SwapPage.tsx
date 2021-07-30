@@ -15,6 +15,7 @@ import InfiniteApprovalField from "./InfiniteApprovalField"
 import Modal from "./Modal"
 import { PayloadAction } from "@reduxjs/toolkit"
 import { PendingSwap } from "../hooks/usePendingSwapData"
+import PendingSwapModal from "./PendingSwapModal"
 import ReviewSwap from "./ReviewSwap"
 import SlippageField from "./SlippageField"
 import SwapInput from "./SwapInput"
@@ -75,6 +76,10 @@ const SwapPage = (props: Props): ReactElement => {
   } = props
 
   const [currentModal, setCurrentModal] = useState<string | null>(null)
+  const [
+    activePendingSwap,
+    setActivePendingSwap,
+  ] = useState<PendingSwap | null>(null)
 
   const fromToken = useMemo(() => {
     return tokenOptions.from.find(({ symbol }) => symbol === fromState.symbol)
@@ -255,6 +260,10 @@ const SwapPage = (props: Props): ReactElement => {
               <div
                 className="pendingSwapItem"
                 key={pendingSwap.itemId?.toString()}
+                onClick={() => {
+                  setActivePendingSwap(pendingSwap)
+                  setCurrentModal("pendingSwap")
+                }}
               >
                 <span className="swapDetails">
                   {formattedSynthBalance} {pendingSwap.synthTokenFrom.symbol}{" "}
@@ -333,9 +342,19 @@ const SwapPage = (props: Props): ReactElement => {
             />
           ) : null}
           {currentModal === "confirm" ? <ConfirmTransaction /> : null}
+          {currentModal === "pendingSwap" ? (
+            <PendingSwapModal
+              pendingSwap={activePendingSwap as PendingSwap}
+              onClose={() => {
+                setActivePendingSwap(null)
+                setCurrentModal(null)
+              }}
+            />
+          ) : null}
         </Modal>
       </div>
     </div>
   )
 }
+
 export default SwapPage
