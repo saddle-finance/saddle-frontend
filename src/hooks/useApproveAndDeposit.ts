@@ -6,26 +6,32 @@ import {
   Token,
   isLegacySwapABIPool,
 } from "../constants"
-import { useAllContracts, useSwapContract } from "./useContract"
+import { formatDeadlineToNumber, getContract } from "../utils"
+import {
+  useAllContracts,
+  useLPTokenContract,
+  useSwapContract,
+} from "./useContract"
+import { useDispatch, useSelector } from "react-redux"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { GasPrices } from "../state/user"
 import { IS_PRODUCTION } from "../utils/environment"
+import META_SWAP_ABI from "../constants/abis/metaSwap.json"
+import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { NumberInputState } from "../utils/numberInputState"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
-import { formatDeadlineToNumber } from "../utils"
 import { notifyHandler } from "../utils/notifyHandler"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
-import { useDispatch } from "react-redux"
-import { useSelector } from "react-redux"
+import { useMemo } from "react"
 
 interface ApproveAndDepositStateArgument {
   [tokenSymbol: string]: NumberInputState
@@ -33,11 +39,15 @@ interface ApproveAndDepositStateArgument {
 
 export function useApproveAndDeposit(
   poolName: PoolName,
-): (state: ApproveAndDepositStateArgument) => Promise<void> {
+): (
+  state: ApproveAndDepositStateArgument,
+  shouldDepositWrapped?: boolean,
+) => Promise<void> {
   const dispatch = useDispatch()
   const swapContract = useSwapContract(poolName)
+  const lpTokenContract = useLPTokenContract(poolName)
   const tokenContracts = useAllContracts()
-  const { account } = useActiveWeb3React()
+  const { account, chainId, library } = useActiveWeb3React()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -51,12 +61,36 @@ export function useApproveAndDeposit(
     infiniteApproval,
   } = useSelector((state: AppState) => state.user)
   const POOL = POOLS_MAP[poolName]
+  const metaSwapContract = useMemo(() => {
+    if (POOL.metaSwapAddresses && chainId && library) {
+      return getContract(
+        POOL.metaSwapAddresses?.[chainId],
+        META_SWAP_ABI,
+        library,
+        account ?? undefined,
+      ) as MetaSwap
+    }
+    return null
+  }, [chainId, library, POOL.metaSwapAddresses, account])
 
   return async function approveAndDeposit(
     state: ApproveAndDepositStateArgument,
+    shouldDepositWrapped = false,
   ): Promise<void> {
     if (!account) throw new Error("Wallet must be connected")
-    if (!swapContract) throw new Error("Swap contract is not loaded")
+    if (
+      !swapContract ||
+      !lpTokenContract ||
+      (shouldDepositWrapped && !metaSwapContract)
+    )
+      throw new Error("Swap contract is not loaded")
+
+    const poolTokens = shouldDepositWrapped
+      ? (POOL.underlyingPoolTokens as Token[])
+      : POOL.poolTokens
+    const effectiveSwapContract = shouldDepositWrapped
+      ? (metaSwapContract as MetaSwap)
+      : swapContract
 
     const approveSingleToken = async (token: Token): Promise<void> => {
       const spendingValue = BigNumber.from(state[token.symbol].valueSafe)
@@ -65,7 +99,7 @@ export function useApproveAndDeposit(
       if (tokenContract == null) return
       await checkAndApproveTokenForTrade(
         tokenContract,
-        swapContract.address,
+        effectiveSwapContract.address,
         account,
         spendingValue,
         infiniteApproval,
@@ -80,35 +114,27 @@ export function useApproveAndDeposit(
     try {
       // For each token being deposited, check the allowance and approve it if necessary
       if (!IS_PRODUCTION) {
-        for (const token of POOL.poolTokens) {
+        for (const token of poolTokens) {
           await approveSingleToken(token)
         }
       } else {
-        await Promise.all(
-          POOL.poolTokens.map((token) => approveSingleToken(token)),
-        )
+        await Promise.all(poolTokens.map((token) => approveSingleToken(token)))
       }
 
-      // "isFirstTransaction" check can be removed after launch
-      const poolTokenBalances: BigNumber[] = await Promise.all(
-        POOL.poolTokens.map(async (token, i) => {
-          return await swapContract.getTokenBalance(i)
-        }),
-      )
-      const isFirstTransaction = poolTokenBalances.every((bal) => bal.isZero())
+      const isFirstTransaction = (await lpTokenContract.totalSupply()).isZero()
       let minToMint: BigNumber
       if (isFirstTransaction) {
         minToMint = BigNumber.from("0")
       } else {
         if (isLegacySwapABIPool(poolName)) {
-          minToMint = await (swapContract as SwapFlashLoan).calculateTokenAmount(
+          minToMint = await (effectiveSwapContract as SwapFlashLoan).calculateTokenAmount(
             account,
-            POOL.poolTokens.map(({ symbol }) => state[symbol].valueSafe),
+            poolTokens.map(({ symbol }) => state[symbol].valueSafe),
             true, // deposit boolean
           )
         } else {
-          minToMint = await (swapContract as SwapFlashLoanNoWithdrawFee).calculateTokenAmount(
-            POOL.poolTokens.map(({ symbol }) => state[symbol].valueSafe),
+          minToMint = await (effectiveSwapContract as SwapFlashLoanNoWithdrawFee).calculateTokenAmount(
+            poolTokens.map(({ symbol }) => state[symbol].valueSafe),
             true, // deposit boolean
           )
         }
@@ -132,14 +158,12 @@ export function useApproveAndDeposit(
       )
 
       let spendTransaction
-      const txnAmounts = POOL.poolTokens.map(
-        ({ symbol }) => state[symbol].valueSafe,
-      )
+      const txnAmounts = poolTokens.map(({ symbol }) => state[symbol].valueSafe)
       const txnDeadline = Math.round(
         new Date().getTime() / 1000 + 60 * deadline,
       )
       if (poolName === BTC_POOL_NAME) {
-        const swapGuardedContract = swapContract as SwapGuarded
+        const swapGuardedContract = effectiveSwapContract as SwapGuarded
         spendTransaction = await swapGuardedContract?.addLiquidity(
           txnAmounts,
           minToMint,
@@ -150,7 +174,7 @@ export function useApproveAndDeposit(
           },
         )
       } else {
-        const swapFlashLoanContract = swapContract as SwapFlashLoan
+        const swapFlashLoanContract = effectiveSwapContract as SwapFlashLoan
         spendTransaction = await swapFlashLoanContract?.addLiquidity(
           txnAmounts,
           minToMint,

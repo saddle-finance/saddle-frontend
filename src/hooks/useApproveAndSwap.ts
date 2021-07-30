@@ -5,6 +5,7 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { Bridge } from "../../types/ethers-contracts/Bridge"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { GasPrices } from "../state/user"
+import { MetaSwapDeposit } from "../../types/ethers-contracts/MetaSwapDeposit"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
@@ -21,7 +22,12 @@ import { useSelector } from "react-redux"
 import { utils } from "ethers"
 
 type Contracts = {
-  swapContract: SwapFlashLoan | SwapFlashLoanNoWithdrawFee | SwapGuarded | null
+  swapContract:
+    | SwapFlashLoan
+    | SwapFlashLoanNoWithdrawFee
+    | SwapGuarded
+    | MetaSwapDeposit
+    | null
   bridgeContract: Bridge | null
 }
 type SwapSide = {

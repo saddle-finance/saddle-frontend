@@ -32,6 +32,7 @@
   "depositBalanceExceeded": "Amount exceeds wallet balance",
   "depositing": "Depositing",
   "depositLimitExceeded": "Deposit limit exceeded",
+  "depositWrapped": "Deposit wrapped",
   "dontHaveWallet": "Don't have a wallet?",
   "estimatedOutput": "Output is estimated. If the price changes by more than the max slippage your transaction will revert.",
   "estimatedTxCost": "Estimated TX Cost",

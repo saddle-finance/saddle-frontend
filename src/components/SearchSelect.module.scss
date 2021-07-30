@@ -46,9 +46,15 @@
 .listItem {
   display: flex;
   flex-direction: row;
+  align-items: center;
   padding: 8px;
   margin: 8px 0;
   user-select: none;
+
+  img {
+    height: 24px;
+    width: 24px;
+  }
 
   > :nth-child(2) {
     display: flex;
