@@ -620,7 +620,7 @@ export function isLegacySwapABIPool(poolName: string): boolean {
     poolName,
   )
 }
-export function isMetaPool(poolName: string): boolean {
+export function isMetaPool(poolName = ""): boolean {
   return new Set([SUSD_POOL_NAME]).has(poolName)
 }
 

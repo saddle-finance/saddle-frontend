@@ -122,9 +122,9 @@ export default function usePoolData(
       const POOL = POOLS_MAP[poolName]
       const effectivePoolTokens = POOL.underlyingPoolTokens || POOL.poolTokens
       const isMetaSwap = POOL.metaSwapAddresses != null
-      let metaSwapContact = null as MetaSwap | null
+      let metaSwapContract = null as MetaSwap | null
       if (isMetaSwap) {
-        metaSwapContact = getContract(
+        metaSwapContract = getContract(
           POOL.metaSwapAddresses?.[chainId] as string,
           META_SWAP_ABI,
           library,
@@ -132,7 +132,7 @@ export default function usePoolData(
         ) as MetaSwap
       }
       const effectiveSwapContract =
-        metaSwapContact || (swapContract as SwapFlashLoanNoWithdrawFee)
+        metaSwapContract || (swapContract as SwapFlashLoanNoWithdrawFee)
 
       // Swap fees, price, and LP Token data
       const [swapStorage, aParameter, isPaused] = await Promise.all([
