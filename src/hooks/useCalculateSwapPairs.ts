@@ -106,7 +106,9 @@ function getTradingPairsForToken(
   tokenToPoolsMap: TokenToPoolsMap,
   originToken: Token,
 ): SwapData[] {
-  const allTokens = Object.values(tokensMap)
+  const allTokens = Object.values(tokensMap).filter(
+    ({ isLPToken }) => !isLPToken,
+  )
   const synthPoolsSet = new Set(
     poolsSortedByTVL.filter(({ isSynthetic }) => isSynthetic),
   )

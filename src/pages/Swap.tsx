@@ -116,6 +116,7 @@ function Swap(): ReactElement {
   // build a representation of pool tokens for the UI
   const tokenOptions = useMemo(() => {
     const allTokens = Object.values(TOKENS_MAP)
+      .filter(({ isLPToken }) => !isLPToken)
       .map(({ symbol, name, icon, decimals }) => {
         const amount = tokenBalances?.[symbol] || Zero
         return {

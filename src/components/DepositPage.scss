@@ -88,6 +88,15 @@ div.deposit {
     display: none;
   }
 
+  div.wrappedDeposit {
+    display: flex;
+    align-items: center;
+    margin-top: 32px;
+    > span {
+      margin-left: 8px;
+    }
+  }
+
   div.transactionInfo {
     margin-top: 32px;
     display: grid;

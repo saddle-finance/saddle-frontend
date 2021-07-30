@@ -2,9 +2,9 @@ import {
   NumberInputState,
   numberInputStateCreator,
 } from "../utils/numberInputState"
+import React, { useCallback, useMemo } from "react"
 
 import { BigNumber } from "@ethersproject/bignumber"
-import React from "react"
 import { Token } from "../constants"
 
 export interface TokensStateType {
@@ -21,15 +21,19 @@ export function useTokenFormState(
   // Token input state handlers
   const tokenInputStateCreators: {
     [tokenSymbol: string]: ReturnType<typeof numberInputStateCreator>
-  } = tokens.reduce(
-    (acc, token) => ({
-      ...acc,
-      [token.symbol]: numberInputStateCreator(
-        token.decimals,
-        BigNumber.from("0"),
+  } = useMemo(
+    () =>
+      tokens.reduce(
+        (acc, token) => ({
+          ...acc,
+          [token.symbol]: numberInputStateCreator(
+            token.decimals,
+            BigNumber.from("0"),
+          ),
+        }),
+        {},
       ),
-    }),
-    {},
+    [tokens],
   )
 
   // Token input values, both "raw" and formatted "safe" BigNumbers
@@ -49,21 +53,22 @@ export function useTokenFormState(
   //     [tokenSymbol]: tokenInputStateCreators[tokenSymbol](value),
   //   }))
   // }
-  function updateTokenFormState(newState: {
-    [symbol: string]: string | BigNumber
-  }): void {
-    const convertedNewState = Object.keys(newState).reduce(
-      (acc, symbol) => ({
-        ...acc,
-        [symbol]: tokenInputStateCreators[symbol](newState[symbol]),
-      }),
-      {},
-    )
-    setTokenFormState((prevState) => ({
-      ...prevState,
-      ...convertedNewState,
-    }))
-  }
+  const updateTokenFormState = useCallback(
+    (newState: { [symbol: string]: string | BigNumber }) => {
+      const convertedNewState = Object.keys(newState).reduce(
+        (acc, symbol) => ({
+          ...acc,
+          [symbol]: tokenInputStateCreators[symbol](newState[symbol]),
+        }),
+        {},
+      )
+      setTokenFormState((prevState) => ({
+        ...prevState,
+        ...convertedNewState,
+      }))
+    },
+    [tokenInputStateCreators],
+  )
 
   return [tokenFormState, updateTokenFormState]
 }

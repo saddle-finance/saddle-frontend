@@ -57,6 +57,9 @@ div.poolInfoCard {
 
     img {
       vertical-align: text-bottom;
+      height: 24px;
+      width: 24px;
+      margin-right: 8px;
     }
 
     .token {
@@ -65,10 +68,6 @@ div.poolInfoCard {
       &:nth-child(odd) {
         width: 51%;
       }
-    }
-
-    img {
-      margin-right: 8px;
     }
 
     span.tokenPercent {

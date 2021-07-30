@@ -5,7 +5,11 @@ import {
   PoolName,
   TRANSACTION_TYPES,
 } from "../constants"
-import { formatBNToPercentString, getContract } from "../utils"
+import {
+  formatBNToPercentString,
+  getContract,
+  getTokenSymbolForPoolType,
+} from "../utils"
 import { useEffect, useState } from "react"
 
 import { AppState } from "../state"
@@ -14,6 +18,8 @@ import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
+import META_SWAP_ABI from "../constants/abis/metaSwap.json"
+import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { getThirdPartyDataForPool } from "../utils/thirdPartyIntegrations"
 import { parseUnits } from "@ethersproject/units"
@@ -114,12 +120,25 @@ export default function usePoolData(
       )
         return
       const POOL = POOLS_MAP[poolName]
+      const effectivePoolTokens = POOL.underlyingPoolTokens || POOL.poolTokens
+      const isMetaSwap = POOL.metaSwapAddresses != null
+      let metaSwapContract = null as MetaSwap | null
+      if (isMetaSwap) {
+        metaSwapContract = getContract(
+          POOL.metaSwapAddresses?.[chainId] as string,
+          META_SWAP_ABI,
+          library,
+          account ?? undefined,
+        ) as MetaSwap
+      }
+      const effectiveSwapContract =
+        metaSwapContract || (swapContract as SwapFlashLoanNoWithdrawFee)
 
       // Swap fees, price, and LP Token data
       const [swapStorage, aParameter, isPaused] = await Promise.all([
-        (swapContract as SwapFlashLoanNoWithdrawFee).swapStorage(),
-        (swapContract as SwapFlashLoanNoWithdrawFee).getA(),
-        (swapContract as SwapFlashLoanNoWithdrawFee).paused(),
+        effectiveSwapContract.swapStorage(),
+        effectiveSwapContract.getA(),
+        effectiveSwapContract.paused(),
       ])
       const { adminFee, lpToken: lpTokenAddress, swapFee } = swapStorage
       let lpTokenContract
@@ -145,12 +164,12 @@ export default function usePoolData(
 
       const virtualPrice = totalLpTokenBalance.isZero()
         ? BigNumber.from(10).pow(18)
-        : await swapContract.getVirtualPrice()
+        : await effectiveSwapContract.getVirtualPrice()
 
       // Pool token data
       const tokenBalances: BigNumber[] = await Promise.all(
-        POOL.poolTokens.map(async (token, i) => {
-          const balance = await swapContract.getTokenBalance(i)
+        effectivePoolTokens.map(async (token, i) => {
+          const balance = await effectiveSwapContract.getTokenBalance(i)
           return BigNumber.from(10)
             .pow(18 - token.decimals) // cast all to 18 decimals
             .mul(balance)
@@ -159,10 +178,15 @@ export default function usePoolData(
       const tokenBalancesSum: BigNumber = tokenBalances.reduce((sum, b) =>
         sum.add(b),
       )
-      const tokenBalancesUSD = POOL.poolTokens.map((token, i) => {
+      const tokenBalancesUSD = effectivePoolTokens.map((token, i, arr) => {
+        // use another token to estimate USD price of meta LP tokens
+        const symbol =
+          isMetaSwap && i === arr.length - 1
+            ? getTokenSymbolForPoolType(POOL.type)
+            : token.symbol
         const balance = tokenBalances[i]
         return balance
-          .mul(parseUnits(String(tokenPricesUSD[token.symbol] || 0), 18))
+          .mul(parseUnits(String(tokenPricesUSD[symbol] || 0), 18))
           .div(BigNumber.from(10).pow(18))
       })
       const tokenBalancesUSDSum: BigNumber = tokenBalancesUSD.reduce((sum, b) =>
@@ -217,7 +241,7 @@ export default function usePoolData(
         (sum, b) => sum.add(b),
       )
 
-      const poolTokens = POOL.poolTokens.map((token, i) => ({
+      const poolTokens = effectivePoolTokens.map((token, i) => ({
         symbol: token.symbol,
         percent: formatBNToPercentString(
           tokenBalances[i]
@@ -231,7 +255,7 @@ export default function usePoolData(
         ),
         value: tokenBalances[i],
       }))
-      const userPoolTokens = POOL.poolTokens.map((token, i) => ({
+      const userPoolTokens = effectivePoolTokens.map((token, i) => ({
         symbol: token.symbol,
         percent: formatBNToPercentString(
           tokenBalances[i]
