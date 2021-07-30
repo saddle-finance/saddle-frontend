@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       saddle-contract:
-        image: alphast0rm/saddle-contract:v1
+        image: saddlefinance/contracts:latest
         ports:
           - 8545:8545
 
