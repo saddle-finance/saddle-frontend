@@ -144,7 +144,7 @@ export function useApproveAndWithdraw(
         )
       }
 
-      notifyHandler(spendTransaction.hash, "Withdraw")
+      notifyHandler(spendTransaction.hash, "withdraw")
 
       await spendTransaction.wait()
       dispatch(

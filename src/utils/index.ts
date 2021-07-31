@@ -1,5 +1,5 @@
 import { AddressZero, Zero } from "@ethersproject/constants"
-import { ChainId, TOKENS_MAP, Token } from "../constants"
+import { ChainId, PoolTypes, TOKENS_MAP, Token } from "../constants"
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 
@@ -186,4 +186,16 @@ export function calculatePrice(
       .div(BigNumber.from(10).pow(decimals))
   }
   return Zero
+}
+
+export function getTokenSymbolForPoolType(poolType: PoolTypes): string {
+  if (poolType === PoolTypes.BTC) {
+    return "WBTC"
+  } else if (poolType === PoolTypes.ETH) {
+    return "WETH"
+  } else if (poolType === PoolTypes.USD) {
+    return "USDC"
+  } else {
+    return ""
+  }
 }

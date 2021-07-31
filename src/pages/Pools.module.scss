@@ -6,7 +6,38 @@ div.poolsPage {
   background: var(--background-main);
   color: var(--text);
   font-size: 16px;
-  padding-bottom: 40px;
+  padding-bottom: 80px;
+
+  .filters {
+    width: max-content;
+    margin: 24px auto;
+    display: grid;
+    grid-template-columns: auto auto auto auto auto;
+    column-gap: 16px;
+  }
+
+  .filterTab {
+    width: max-content;
+    padding: 2px 16px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: $medium;
+
+    &.selected {
+      background-color: var(--tab);
+      color: var(--primary-background);
+      font-weight: $bold;
+    }
+  }
+
+  .outdated {
+    color: $yellow;
+
+    &.selected {
+      background-color: $yellow;
+      color: $text-black;
+    }
+  }
 
   .content {
     max-width: 900px;

@@ -1,6 +1,6 @@
 import "./DepositPage.scss"
 
-import { ALETH_POOL_NAME, VETH2_POOL_NAME } from "../constants"
+import { ALETH_POOL_NAME, VETH2_POOL_NAME, isMetaPool } from "../constants"
 import { Button, Center } from "@chakra-ui/react"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
 import { AppState } from "../state"
+import CheckboxInput from "./CheckboxInput"
 import ConfirmTransaction from "./ConfirmTransaction"
 import DeadlineField from "./DeadlineField"
 import { DepositTransaction } from "../interfaces/transactions"
@@ -34,6 +35,8 @@ interface Props {
   title: string
   onConfirmTransaction: () => Promise<void>
   onChangeTokenInputValue: (tokenSymbol: string, value: string) => void
+  onToggleDepositWrapped: () => void
+  shouldDepositWrapped: boolean
   tokens: Array<{
     symbol: string
     name: string
@@ -57,8 +60,10 @@ const DepositPage = (props: Props): ReactElement => {
     poolData,
     myShareData,
     transactionData,
+    shouldDepositWrapped,
     onChangeTokenInputValue,
     onConfirmTransaction,
+    onToggleDepositWrapped,
   } = props
 
   const [currentModal, setCurrentModal] = useState<string | null>(null)
@@ -68,6 +73,7 @@ const DepositPage = (props: Props): ReactElement => {
     (state: AppState) => state.user,
   )
   const validDepositAmount = transactionData.to.totalAmount.gt(0)
+  const shouldDisplayWrappedOption = isMetaPool(poolData?.name)
 
   return (
     <div className="deposit">
@@ -126,6 +132,15 @@ const DepositPage = (props: Props): ReactElement => {
                 )}
               </div>
             ))}
+            {shouldDisplayWrappedOption && (
+              <div className="wrappedDeposit">
+                <CheckboxInput
+                  onChange={onToggleDepositWrapped}
+                  checked={shouldDepositWrapped}
+                />
+                <span>{t("depositWrapped")}</span>
+              </div>
+            )}
             <div className={classNames("transactionInfoContainer", "show")}>
               <div className="transactionInfo">
                 {poolData?.aprs?.keep?.apr.gt(Zero) && (
