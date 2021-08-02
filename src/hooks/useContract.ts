@@ -1,42 +1,36 @@
 import {
   ALETH,
-  ALETH_POOL_NAME,
-  ALETH_SWAP_ADDRESSES,
   ALETH_SWAP_TOKEN,
   ALUSD,
   BRIDGE_CONTRACT_ADDRESSES,
   BTC_POOL_NAME,
-  BTC_SWAP_ADDRESSES,
   BTC_SWAP_TOKEN,
-  D4_POOL_NAME,
-  D4_SWAP_ADDRESSES,
   D4_SWAP_TOKEN,
   DAI,
   FEI,
   FRAX,
   LUSD,
+  POOLS_MAP,
   PoolName,
   RENBTC,
   SBTC,
   SETH,
-  STABLECOIN_POOL_NAME,
-  STABLECOIN_POOL_V2_NAME,
-  STABLECOIN_SWAP_ADDRESSES,
   STABLECOIN_SWAP_TOKEN,
-  STABLECOIN_SWAP_V2_ADDRESSES,
   STABLECOIN_SWAP_V2_TOKEN,
+  SUSD,
+  SUSD_SWAP_TOKEN,
+  SWAP_MIGRATOR_USD_CONTRACT_ADDRESSES,
   TBTC,
   Token,
   USDC,
   USDT,
   VETH2,
-  VETH2_POOL_NAME,
-  VETH2_SWAP_ADDRESSES,
   VETH2_SWAP_TOKEN,
   WBTC,
   WETH,
+  isLegacySwapABIPool,
+  isMetaPool,
 } from "../constants"
-import { useMemo, useState } from "react"
 
 import BRIDGE_CONTRACT_ABI from "../constants/abis/bridge.json"
 import { Bridge } from "../../types/ethers-contracts/Bridge"
@@ -47,14 +41,19 @@ import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
+import META_SWAP_DEPOSIT_ABI from "../constants/abis/metaSwapDeposit.json"
+import MIGRATOR_USD_CONTRACT_ABI from "../constants/abis/swapMigratorUSD.json"
+import { MetaSwapDeposit } from "../../types/ethers-contracts/MetaSwapDeposit"
 import SWAP_FLASH_LOAN_ABI from "../constants/abis/swapFlashLoan.json"
 import SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI from "../constants/abis/swapFlashLoanNoWithdrawFee.json"
 import SWAP_GUARDED_ABI from "../constants/abis/swapGuarded.json"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
+import { SwapMigratorUSD } from "../../types/ethers-contracts/SwapMigratorUSD"
 import { getContract } from "../utils"
 import { useActiveWeb3React } from "./index"
+import { useMemo } from "react"
 
 // returns null on errors
 function useContract(
@@ -80,6 +79,17 @@ function useContract(
   }, [address, ABI, library, withSignerIfPossible, account])
 }
 
+export function useSwapMigratorUSDContract(): SwapMigratorUSD | null {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress = chainId
+    ? SWAP_MIGRATOR_USD_CONTRACT_ADDRESSES[chainId]
+    : undefined
+  return useContract(
+    contractAddress,
+    MIGRATOR_USD_CONTRACT_ABI,
+  ) as SwapMigratorUSD
+}
+
 export function useBridgeContract(): Bridge | null {
   const { chainId } = useActiveWeb3React()
   const contractAddress = chainId
@@ -97,82 +107,60 @@ export function useTokenContract(
   return useContract(tokenAddress, ERC20_ABI, withSignerIfPossible)
 }
 
-export function useSwapBTCContract(): SwapGuarded | null {
-  const { chainId } = useActiveWeb3React()
-  return useContract(
-    chainId ? BTC_SWAP_ADDRESSES[chainId] : undefined,
-    SWAP_GUARDED_ABI,
-  ) as SwapGuarded
-}
-
-export function useSwapUSDContract(): SwapFlashLoan | null {
-  const { chainId } = useActiveWeb3React()
-  return useContract(
-    chainId ? STABLECOIN_SWAP_ADDRESSES[chainId] : undefined,
-    SWAP_FLASH_LOAN_ABI,
-  ) as SwapFlashLoan
-}
-
-export function useSwapUSDV2Contract(): SwapFlashLoanNoWithdrawFee | null {
-  const { chainId } = useActiveWeb3React()
-  return useContract(
-    chainId ? STABLECOIN_SWAP_V2_ADDRESSES[chainId] : undefined,
-    SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI,
-  ) as SwapFlashLoanNoWithdrawFee
-}
-
-export function useSwapVETH2Contract(): SwapFlashLoan | null {
-  const { chainId } = useActiveWeb3React()
-  return useContract(
-    chainId ? VETH2_SWAP_ADDRESSES[chainId] : undefined,
-    SWAP_FLASH_LOAN_ABI,
-  ) as SwapFlashLoan
-}
-
-export function useSwapALETHContract(): SwapFlashLoanNoWithdrawFee | null {
-  const { chainId } = useActiveWeb3React()
-  return useContract(
-    chainId ? ALETH_SWAP_ADDRESSES[chainId] : undefined,
-    SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI,
-  ) as SwapFlashLoanNoWithdrawFee
-}
-
-export function useSwapD4Contract(): SwapFlashLoanNoWithdrawFee | null {
-  const { chainId } = useActiveWeb3React()
-  return useContract(
-    chainId ? D4_SWAP_ADDRESSES[chainId] : undefined,
-    SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI,
-  ) as SwapFlashLoanNoWithdrawFee
-}
-
 export function useSwapContract<T extends PoolName>(
   poolName?: T,
 ): T extends typeof BTC_POOL_NAME
   ? SwapGuarded | null
-  : SwapFlashLoan | SwapFlashLoanNoWithdrawFee | null
+  : SwapFlashLoan | SwapFlashLoanNoWithdrawFee | MetaSwapDeposit | null
 export function useSwapContract(
   poolName?: PoolName,
-): SwapGuarded | SwapFlashLoan | SwapFlashLoanNoWithdrawFee | null {
-  const usdSwapContract = useSwapUSDContract()
-  const usdSwapV2Contract = useSwapUSDV2Contract()
-  const btcSwapContract = useSwapBTCContract()
-  const veth2SwapContract = useSwapVETH2Contract()
-  const alethSwapContract = useSwapALETHContract()
-  const d4SwapContract = useSwapD4Contract()
-  if (poolName === BTC_POOL_NAME) {
-    return btcSwapContract
-  } else if (poolName === STABLECOIN_POOL_NAME) {
-    return usdSwapContract
-  } else if (poolName == STABLECOIN_POOL_V2_NAME) {
-    return usdSwapV2Contract
-  } else if (poolName === VETH2_POOL_NAME) {
-    return veth2SwapContract
-  } else if (poolName === ALETH_POOL_NAME) {
-    return alethSwapContract
-  } else if (poolName === D4_POOL_NAME) {
-    return d4SwapContract
-  }
-  return null
+):
+  | SwapGuarded
+  | SwapFlashLoan
+  | SwapFlashLoanNoWithdrawFee
+  | MetaSwapDeposit
+  | null {
+  const { chainId, account, library } = useActiveWeb3React()
+  return useMemo(() => {
+    if (!poolName || !library || !chainId) return null
+    try {
+      const pool = POOLS_MAP[poolName]
+      if (poolName === BTC_POOL_NAME) {
+        return getContract(
+          pool.addresses[chainId],
+          SWAP_GUARDED_ABI,
+          library,
+          account ?? undefined,
+        ) as SwapGuarded
+      } else if (isLegacySwapABIPool(poolName)) {
+        return getContract(
+          pool.addresses[chainId],
+          SWAP_FLASH_LOAN_ABI,
+          library,
+          account ?? undefined,
+        ) as SwapFlashLoan
+      } else if (isMetaPool(poolName)) {
+        return getContract(
+          pool.addresses[chainId],
+          META_SWAP_DEPOSIT_ABI,
+          library,
+          account ?? undefined,
+        ) as MetaSwapDeposit
+      } else if (pool) {
+        return getContract(
+          pool.addresses[chainId],
+          SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI,
+          library,
+          account ?? undefined,
+        ) as SwapFlashLoanNoWithdrawFee
+      } else {
+        return null
+      }
+    } catch (error) {
+      console.error("Failed to get contract", error)
+      return null
+    }
+  }, [chainId, library, account, poolName])
 }
 
 export function useLPTokenContract<T extends PoolName>(
@@ -183,26 +171,38 @@ export function useLPTokenContract<T extends PoolName>(
 export function useLPTokenContract(
   poolName: PoolName,
 ): LpTokenUnguarded | LpTokenGuarded | null {
-  const swapContract = useSwapContract(poolName)
-  const [lpTokenAddress, setLPTokenAddress] = useState("")
-  void swapContract
-    ?.swapStorage()
-    .then(({ lpToken }: { lpToken: string }) => setLPTokenAddress(lpToken))
-  const lpTokenGuarded = useContract(
-    lpTokenAddress,
-    LPTOKEN_GUARDED_ABI,
-  ) as LpTokenGuarded
-  const lpTokenUnguarded = useContract(
-    lpTokenAddress,
-    LPTOKEN_UNGUARDED_ABI,
-  ) as LpTokenUnguarded
-  return poolName === BTC_POOL_NAME ? lpTokenGuarded : lpTokenUnguarded
+  const { chainId, account, library } = useActiveWeb3React()
+  return useMemo(() => {
+    if (!poolName || !library || !chainId) return null
+    try {
+      const pool = POOLS_MAP[poolName]
+      if (poolName == BTC_POOL_NAME) {
+        return getContract(
+          pool.lpToken.addresses[chainId],
+          LPTOKEN_GUARDED_ABI,
+          library,
+          account ?? undefined,
+        ) as LpTokenGuarded
+      } else {
+        return getContract(
+          pool.lpToken.addresses[chainId],
+          LPTOKEN_UNGUARDED_ABI,
+          library,
+          account ?? undefined,
+        ) as LpTokenUnguarded
+      }
+    } catch (error) {
+      console.error("Failed to get contract", error)
+      return null
+    }
+  }, [chainId, library, account, poolName])
 }
 
 interface AllContractsObject {
   [x: string]: LpTokenGuarded | LpTokenUnguarded | Erc20 | null
 }
 export function useAllContracts(): AllContractsObject | null {
+  const susdContract = useTokenContract(SUSD) as Erc20
   const tbtcContract = useTokenContract(TBTC) as Erc20
   const wbtcContract = useTokenContract(WBTC) as Erc20
   const renbtcContract = useTokenContract(RENBTC) as Erc20
@@ -236,6 +236,9 @@ export function useAllContracts(): AllContractsObject | null {
   const d4SwapTokenContract = useTokenContract(
     D4_SWAP_TOKEN,
   ) as LpTokenUnguarded
+  const susdSwapTokenContract = useTokenContract(
+    SUSD_SWAP_TOKEN,
+  ) as LpTokenUnguarded
 
   return useMemo(() => {
     if (
@@ -255,12 +258,14 @@ export function useAllContracts(): AllContractsObject | null {
         feiContract,
         fraxContract,
         lusdContract,
+        susdContract,
         btcSwapTokenContract,
         stablecoinSwapTokenContract,
         stablecoinSwapV2TokenContract,
         veth2SwapTokenContract,
         alethSwapTokenContract,
         d4SwapTokenContract,
+        susdSwapTokenContract,
       ].some(Boolean)
     )
       return null
@@ -280,12 +285,14 @@ export function useAllContracts(): AllContractsObject | null {
       [FEI.symbol]: feiContract,
       [FRAX.symbol]: fraxContract,
       [LUSD.symbol]: lusdContract,
+      [SUSD.symbol]: susdContract,
       [BTC_SWAP_TOKEN.symbol]: btcSwapTokenContract,
       [STABLECOIN_SWAP_TOKEN.symbol]: stablecoinSwapTokenContract,
       [STABLECOIN_SWAP_V2_TOKEN.symbol]: stablecoinSwapV2TokenContract,
       [VETH2_SWAP_TOKEN.symbol]: veth2SwapTokenContract,
       [ALETH_SWAP_TOKEN.symbol]: alethSwapTokenContract,
       [D4_SWAP_TOKEN.symbol]: d4SwapTokenContract,
+      [SUSD_SWAP_TOKEN.symbol]: susdSwapTokenContract,
     }
   }, [
     tbtcContract,
@@ -303,11 +310,13 @@ export function useAllContracts(): AllContractsObject | null {
     feiContract,
     fraxContract,
     lusdContract,
+    susdContract,
     btcSwapTokenContract,
     stablecoinSwapTokenContract,
     stablecoinSwapV2TokenContract,
     veth2SwapTokenContract,
     alethSwapTokenContract,
     d4SwapTokenContract,
+    susdSwapTokenContract,
   ])
 }

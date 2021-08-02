@@ -6,7 +6,7 @@ import classNames from "classnames"
 
 type Props = {
   disabled?: boolean
-  kind?: "primary" | "secondary" | "ternary" | "cancel"
+  kind?: "primary" | "secondary" | "ternary" | "cancel" | "temporary"
   size?: "large" | "small"
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }

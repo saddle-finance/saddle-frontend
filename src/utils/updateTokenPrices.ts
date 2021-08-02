@@ -58,9 +58,14 @@ export default function fetchTokenPricesUSD(
           const result = tokens.reduce((acc, token) => {
             return { ...acc, [token.symbol]: body?.[token.geckoId]?.usd }
           }, otherTokensResult)
-          const vEth2Price = await getVeth2Price(result?.ETH, chainId, library)
-          if (vEth2Price) {
-            result.VETH2 = vEth2Price
+          result.alETH = result?.ETH || result.alETH || 0 // TODO: remove once CG price is fixed
+          if (chainId === ChainId.MAINNET) {
+            const vEth2Price = await getVeth2Price(
+              result?.ETH,
+              chainId,
+              library,
+            )
+            result.VETH2 = vEth2Price || result?.ETH | 0
           }
           dispatch(updateTokensPricesUSD(result))
         }),

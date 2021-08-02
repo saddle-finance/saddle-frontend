@@ -2,18 +2,26 @@ import {
   ALETH_POOL_NAME,
   BTC_POOL_NAME,
   D4_POOL_NAME,
+  POOLS_MAP,
+  PoolName,
+  PoolTypes,
   STABLECOIN_POOL_NAME,
   STABLECOIN_POOL_V2_NAME,
+  SUSD_POOL_NAME,
   VETH2_POOL_NAME,
 } from "../constants"
-import { POOLS_MAP, PoolName, PoolTypes } from "../constants"
 import React, { ReactElement, useState } from "react"
 
+import ConfirmTransaction from "../components/ConfirmTransaction"
+import Modal from "../components/Modal"
 import PoolOverview from "../components/PoolOverview"
+import ReviewMigration from "../components/ReviewMigration"
 import TopMenu from "../components/TopMenu"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
+import { logEvent } from "../utils/googleAnalytics"
 import styles from "./Pools.module.scss"
+import { useApproveAndMigrateUSD } from "../hooks/useApproveAndMigrateUSD"
 import usePoolData from "../hooks/usePoolData"
 
 function Pools(): ReactElement | null {
@@ -24,8 +32,16 @@ function Pools(): ReactElement | null {
     STABLECOIN_POOL_V2_NAME,
   )
   const [usdPoolData, usdUserShareData] = usePoolData(STABLECOIN_POOL_NAME)
+  const [susdPoolData, susdUserShareData] = usePoolData(SUSD_POOL_NAME)
   const [veth2PoolData, veth2UserShareData] = usePoolData(VETH2_POOL_NAME)
+  const [currentModal, setCurrentModal] = useState<string | null>(null)
+  const approveAndMigrateUSD = useApproveAndMigrateUSD()
+  const [activeMigration, setActiveMigration] = useState<PoolName | null>(null)
   const [filter, setFilter] = useState<PoolTypes | "all" | "outdated">("all")
+  const handleClickMigrate = (poolName: PoolName) => {
+    setActiveMigration(poolName)
+    setCurrentModal("migrate")
+  }
 
   function getPropsForPool(poolName: PoolName) {
     if (poolName === D4_POOL_NAME) {
@@ -62,6 +78,13 @@ function Pools(): ReactElement | null {
         poolData: usdPoolV2Data,
         userShareData: usdV2UserShareData,
         poolRoute: "/pools/usdv2",
+      }
+    } else if (poolName === SUSD_POOL_NAME) {
+      return {
+        name: SUSD_POOL_NAME,
+        poolData: susdPoolData,
+        userShareData: susdUserShareData,
+        poolRoute: "/pools/susd",
       }
     } else {
       return {
@@ -130,10 +153,42 @@ function Pools(): ReactElement | null {
                 : 1
             }
           })
-          .map(([poolProps]) => (
-            <PoolOverview key={poolProps.name} {...poolProps} />
+          .map(([poolProps, migrationPool]) => (
+            <PoolOverview
+              key={poolProps.name}
+              {...poolProps}
+              onClickMigrate={
+                migrationPool
+                  ? () => handleClickMigrate(migrationPool)
+                  : undefined
+              }
+            />
           ))}
       </div>
+      <Modal
+        isOpen={!!currentModal}
+        onClose={(): void => setCurrentModal(null)}
+      >
+        {currentModal === "migrate" ? (
+          <ReviewMigration
+            onClose={(): void => {
+              setCurrentModal(null)
+              setActiveMigration(null)
+            }}
+            onConfirm={async (): Promise<void> => {
+              setCurrentModal("confirm")
+              logEvent("migrate", {
+                pool: activeMigration,
+              })
+              await approveAndMigrateUSD(usdUserShareData?.lpTokenBalance)
+              setCurrentModal(null)
+              setActiveMigration(null)
+            }}
+            migrationAmount={usdUserShareData?.lpTokenBalance}
+          />
+        ) : null}
+        {currentModal === "confirm" ? <ConfirmTransaction /> : null}
+      </Modal>
     </div>
   )
 }
