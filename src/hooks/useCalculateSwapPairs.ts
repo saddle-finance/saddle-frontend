@@ -4,14 +4,13 @@ import {
   PoolsMap,
   SWAP_TYPES,
   TOKENS_MAP,
-  TOKEN_TO_POOLS_MAP,
   Token,
-  TokenToPoolsMap,
   TokensMap,
 } from "../constants/index"
+import { useMemo, useState } from "react"
 
 import { intersection } from "../utils/index"
-import { useState } from "react"
+import usePoolTVLs from "./usePoolsTVL"
 
 // swaptypes in order of least to most preferred (aka expensive)
 const SWAP_TYPES_ORDERED_ASC = [
@@ -23,9 +22,33 @@ const SWAP_TYPES_ORDERED_ASC = [
   SWAP_TYPES.DIRECT,
 ]
 
+type TokenToPoolsMap = {
+  [tokenSymbol: string]: string[]
+}
+
 type TokenToSwapDataMap = { [symbol: string]: SwapData[] }
 export function useCalculateSwapPairs(): (token?: Token) => SwapData[] {
   const [pairCache, setPairCache] = useState<TokenToSwapDataMap>({})
+  const poolTVLs = usePoolTVLs()
+  const [poolsSortedByTVL, tokenToPoolsMapSorted] = useMemo(() => {
+    const sortedPools = Object.values(POOLS_MAP).sort((a, b) => {
+      const aTVL = poolTVLs[a.name]
+      const bTVL = poolTVLs[b.name]
+      if (aTVL && bTVL) {
+        return aTVL.gt(bTVL) ? -1 : 1
+      }
+      return aTVL ? -1 : 1
+    })
+    const tokenToPools = sortedPools.reduce((acc, { name: poolName }) => {
+      const pool = POOLS_MAP[poolName]
+      const newAcc = { ...acc }
+      pool.poolTokens.forEach((token) => {
+        newAcc[token.symbol] = (newAcc[token.symbol] || []).concat(poolName)
+      })
+      return newAcc
+    }, {} as TokenToPoolsMap)
+    return [sortedPools, tokenToPools]
+  }, [poolTVLs])
 
   return function calculateSwapPairs(token?: Token): SwapData[] {
     if (!token) return []
@@ -34,7 +57,8 @@ export function useCalculateSwapPairs(): (token?: Token) => SwapData[] {
     const swapPairs = getTradingPairsForToken(
       TOKENS_MAP,
       POOLS_MAP,
-      TOKEN_TO_POOLS_MAP,
+      poolsSortedByTVL,
+      tokenToPoolsMapSorted,
       token,
     )
     setPairCache((prevState) => ({ ...prevState, [token.symbol]: swapPairs }))
@@ -78,12 +102,15 @@ export type SwapData =
 function getTradingPairsForToken(
   tokensMap: TokensMap,
   poolsMap: PoolsMap,
+  poolsSortedByTVL: Pool[],
   tokenToPoolsMap: TokenToPoolsMap,
   originToken: Token,
 ): SwapData[] {
-  const allTokens = Object.values(tokensMap)
+  const allTokens = Object.values(tokensMap).filter(
+    ({ isLPToken }) => !isLPToken,
+  )
   const synthPoolsSet = new Set(
-    Object.values(poolsMap).filter(({ isSynthetic }) => isSynthetic),
+    poolsSortedByTVL.filter(({ isSynthetic }) => isSynthetic),
   )
   const originTokenPoolsSet = new Set(
     tokenToPoolsMap[originToken.symbol].map((poolName) => poolsMap[poolName]),

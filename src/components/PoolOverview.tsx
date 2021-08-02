@@ -11,23 +11,28 @@ import {
 
 import Button from "./Button"
 import { Link } from "react-router-dom"
+import ToolTip from "./ToolTip"
 import { Zero } from "@ethersproject/constants"
+import classNames from "classnames"
 import { useTranslation } from "react-i18next"
 
 interface Props {
   poolRoute: string
   poolData: PoolDataType
   userShareData: UserShareType | null
+  onClickMigrate?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
-function PoolOverview({
+export default function PoolOverview({
   poolData,
   poolRoute,
   userShareData,
+  onClickMigrate,
 }: Props): ReactElement | null {
   const { t } = useTranslation()
   const { type: poolType } = POOLS_MAP[poolData.name]
   const formattedDecimals = poolType === PoolTypes.USD ? 2 : 4
+  const shouldMigrate = !!onClickMigrate
   const formattedData = {
     name: poolData.name,
     reserve: poolData.reserve
@@ -63,9 +68,13 @@ function PoolOverview({
   const hasShare = !!userShareData?.usdBalance.gt("0")
 
   return (
-    <div className="poolOverview">
+    <div className={classNames("poolOverview", { outdated: shouldMigrate })}>
       <div className="left">
-        <h4 className="title">{formattedData.name}</h4>
+        <div className="titleAndTag">
+          <h4 className="title">{formattedData.name}</h4>
+          {shouldMigrate && <Tag kind="warning">OUTDATED</Tag>}
+          {poolData.isPaused && <Tag kind="error">PAUSED</Tag>}
+        </div>
         {hasShare && (
           <div className="balance">
             <span>{t("balance")}: </span>
@@ -96,7 +105,15 @@ function PoolOverview({
             const symbol = poolData.aprs[key as Partners]?.symbol as string
             return poolData.aprs[key as Partners]?.apr.gt(Zero) ? (
               <div className="margin Apr" key={symbol}>
-                <span className="label">{symbol} APR</span>
+                {symbol.includes("/") ? (
+                  <span className="label underline">
+                    <ToolTip content={symbol.replaceAll("/", "\n")}>
+                      Reward APR
+                    </ToolTip>
+                  </span>
+                ) : (
+                  <span className="label">{symbol} APR</span>
+                )}
                 <span className="plus">
                   {formattedData.aprs[key as Partners] as string}
                 </span>
@@ -116,19 +133,35 @@ function PoolOverview({
         </div>
         <div className="buttons">
           <Link to={`${poolRoute}/withdraw`}>
-            <Button kind="secondary" size="large" disabled={!hasShare}>
+            <Button kind="secondary" size="large">
               {t("withdraw")}
             </Button>
           </Link>
-          <Link to={`${poolRoute}/deposit`}>
-            <Button kind="primary" size="large">
-              {t("deposit")}
+          {shouldMigrate ? (
+            <Button
+              kind="temporary"
+              onClick={onClickMigrate}
+              disabled={!hasShare}
+            >
+              {t("migrate")}
             </Button>
-          </Link>
+          ) : (
+            <Link to={`${poolRoute}/deposit`}>
+              <Button kind="primary" size="large" disabled={poolData?.isPaused}>
+                {t("deposit")}
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </div>
   )
 }
 
-export default PoolOverview
+function Tag(props: {
+  children?: React.ReactNode
+  kind?: "warning" | "error"
+}) {
+  const { kind = "warning", ...tagProps } = props
+  return <span className={classNames("tag", kind)} {...tagProps} />
+}
