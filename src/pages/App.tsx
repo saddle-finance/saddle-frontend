@@ -12,6 +12,7 @@ import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
 import Risk from "./Risk"
 import Swap from "./Swap"
+import Version from "../components/Version"
 import Web3ReactManager from "../components/Web3ReactManager"
 import Withdraw from "./Withdraw"
 import fetchGasPrices from "../utils/updateGasPrices"
@@ -57,6 +58,7 @@ export default function App(): ReactElement {
               ))}
               <Route exact path="/risk" component={Risk} />
             </Switch>
+            <Version />
           </PendingSwapsProvider>
         </GasAndTokenPrices>
       </Web3ReactManager>

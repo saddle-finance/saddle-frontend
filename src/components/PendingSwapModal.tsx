@@ -87,9 +87,6 @@ const PendingSwapModal = ({
         itemId,
         settlementState.amount,
       )
-      console.log("calcCompleteToToken")
-      console.log(settlementState.amount.toString())
-      console.log(calculatedTokenAmount.toString())
       setCalculatedTokenAmount(calculatedTokenAmount)
     }
     void calcAmount()
@@ -161,13 +158,13 @@ const PendingSwapModal = ({
         return
       }
       setCurrentStep("confirmation")
-      transaction && notifyHandler(transaction.hash, "Swap")
+      transaction && notifyHandler(transaction.hash, "swap")
       await transaction?.wait()
       onClose()
     } catch (e) {
       console.error(e)
     }
-  }, [settlementState, bridgeContract, itemId])
+  }, [settlementState, bridgeContract, itemId]) //TODO
 
   const minutesRemaining = Math.max(Math.ceil(secondsRemaining / 60), 0)
   const fromAmount =
