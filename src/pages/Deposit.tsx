@@ -41,7 +41,9 @@ function Deposit({ poolName }: Props): ReactElement | null {
   const [poolData, userShareData] = usePoolData(poolName)
   const swapContract = useSwapContract(poolName)
   const allTokens = useMemo(() => {
-    return POOL.poolTokens.concat(POOL.underlyingPoolTokens || [])
+    return Array.from(
+      new Set(POOL.poolTokens.concat(POOL.underlyingPoolTokens || [])),
+    )
   }, [POOL.poolTokens, POOL.underlyingPoolTokens])
   const [tokenFormState, updateTokenFormState] = useTokenFormState(allTokens)
   const [shouldDepositWrapped, setShouldDepositWrapped] = useState(false)
