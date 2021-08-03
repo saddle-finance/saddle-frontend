@@ -28,6 +28,12 @@ export function useApproveAndMigrateUSD(): (
     lpTokenBalance?: BigNumber,
   ): Promise<void> {
     try {
+      const gasPrice = gasBNFromState(
+        { gasStandard, gasFast, gasInstant },
+        gasPriceSelected,
+        gasCustom,
+      ).mul(BigNumber.from(10).pow(9))
+
       if (!account) throw new Error("Wallet must be connected")
       if (!migratorContract) throw new Error("Migration contract is not loaded")
       if (!lpTokenBalance || lpTokenBalance.isZero()) return
@@ -38,6 +44,7 @@ export function useApproveAndMigrateUSD(): (
         account,
         lpTokenBalance,
         false,
+        gasPrice,
         {
           onTransactionError: () => {
             throw new Error("Your transaction could not be completed")
@@ -45,11 +52,6 @@ export function useApproveAndMigrateUSD(): (
         },
       )
 
-      const gasPrice = gasBNFromState(
-        { gasStandard, gasFast, gasInstant },
-        gasPriceSelected,
-        gasCustom,
-      ).mul(BigNumber.from(10).pow(9))
       const migrateTransaction = await migratorContract.migrateUSDPool(
         lpTokenBalance,
         lpTokenBalance.mul(1000 - 5).div(1000), // 50bps, 0.5%

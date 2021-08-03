@@ -49,6 +49,17 @@ export function useApproveAndWithdraw(
       if (!swapContract) throw new Error("Swap contract is not loaded")
       if (state.lpTokenAmountToSpend.isZero()) return
       if (lpTokenContract == null) return
+      let gasPrice
+      if (gasPriceSelected === GasPrices.Custom && gasCustom?.valueSafe) {
+        gasPrice = gasCustom.valueSafe
+      } else if (gasPriceSelected === GasPrices.Standard) {
+        gasPrice = gasStandard
+      } else if (gasPriceSelected === GasPrices.Instant) {
+        gasPrice = gasInstant
+      } else {
+        gasPrice = gasFast
+      }
+      gasPrice = parseUnits(gasPrice?.toString() || "45", "gwei")
       const allowanceAmount =
         state.withdrawType === "IMBALANCE"
           ? addSlippage(
@@ -63,6 +74,7 @@ export function useApproveAndWithdraw(
         account,
         allowanceAmount,
         infiniteApproval,
+        gasPrice,
         {
           onTransactionError: () => {
             throw new Error("Your transaction could not be completed")
@@ -70,17 +82,6 @@ export function useApproveAndWithdraw(
         },
       )
 
-      let gasPrice
-      if (gasPriceSelected === GasPrices.Custom && gasCustom?.valueSafe) {
-        gasPrice = gasCustom.valueSafe
-      } else if (gasPriceSelected === GasPrices.Standard) {
-        gasPrice = gasStandard
-      } else if (gasPriceSelected === GasPrices.Instant) {
-        gasPrice = gasInstant
-      } else {
-        gasPrice = gasFast
-      }
-      gasPrice = parseUnits(gasPrice?.toString() || "45", "gwei")
       console.debug(
         `lpTokenAmountToSpend: ${formatUnits(state.lpTokenAmountToSpend, 18)}`,
       )

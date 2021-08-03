@@ -73,21 +73,6 @@ export function useApproveAndSwap(): (
       if (chainId === undefined) throw new Error("Unknown chain")
       // For each token being deposited, check the allowance and approve it if necessary
       const tokenContract = tokenContracts?.[state.from.symbol] as Erc20
-      if (tokenContract == null) return
-      await checkAndApproveTokenForTrade(
-        tokenContract,
-        (state.swapType === SWAP_TYPES.DIRECT
-          ? state.swapContract?.address
-          : state.bridgeContract?.address) as string,
-        account,
-        state.from.amount,
-        infiniteApproval,
-        {
-          onTransactionError: () => {
-            throw new Error("Your transaction could not be completed")
-          },
-        },
-      )
       let gasPrice
       if (gasPriceSelected === GasPrices.Custom) {
         gasPrice = gasCustom?.valueSafe
@@ -99,6 +84,22 @@ export function useApproveAndSwap(): (
         gasPrice = gasStandard
       }
       gasPrice = parseUnits(String(gasPrice) || "45", 9)
+      if (tokenContract == null) return
+      await checkAndApproveTokenForTrade(
+        tokenContract,
+        (state.swapType === SWAP_TYPES.DIRECT
+          ? state.swapContract?.address
+          : state.bridgeContract?.address) as string,
+        account,
+        state.from.amount,
+        infiniteApproval,
+        gasPrice,
+        {
+          onTransactionError: () => {
+            throw new Error("Your transaction could not be completed")
+          },
+        },
+      )
       const txnArgs = { gasPrice }
       let swapTransaction
       if (state.swapType === SWAP_TYPES.TOKEN_TO_TOKEN) {

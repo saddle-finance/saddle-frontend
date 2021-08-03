@@ -92,6 +92,18 @@ export function useApproveAndDeposit(
       ? (metaSwapContract as MetaSwap)
       : swapContract
 
+    let gasPrice: any // eslint-disable-line @typescript-eslint/no-explicit-any
+    if (gasPriceSelected === GasPrices.Custom) {
+      gasPrice = gasCustom?.valueSafe
+    } else if (gasPriceSelected === GasPrices.Fast) {
+      gasPrice = gasFast
+    } else if (gasPriceSelected === GasPrices.Instant) {
+      gasPrice = gasInstant
+    } else {
+      gasPrice = gasStandard
+    }
+    gasPrice = parseUnits(String(gasPrice) || "45", 9)
+
     const approveSingleToken = async (token: Token): Promise<void> => {
       const spendingValue = BigNumber.from(state[token.symbol].valueSafe)
       if (spendingValue.isZero()) return
@@ -103,6 +115,7 @@ export function useApproveAndDeposit(
         account,
         spendingValue,
         infiniteApproval,
+        gasPrice,
         {
           onTransactionError: () => {
             throw new Error("Your transaction could not be completed")
