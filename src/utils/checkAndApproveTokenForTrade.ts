@@ -26,6 +26,7 @@ export default async function checkAndApproveTokenForTrade(
   spenderAddress: string,
   spendingValue: BigNumber, // max is MaxUint256
   infiniteApproval = false,
+  gasPrice: BigNumber,
   callbacks: {
     onTransactionStart?: (
       transaction?: ContractTransaction,
@@ -52,6 +53,9 @@ export default async function checkAndApproveTokenForTrade(
       const approvalTransaction = await srcTokenContract.approve(
         swapAddress,
         amount,
+        {
+          gasPrice,
+        },
       )
       // Add notification
       notifyHandler(approvalTransaction.hash, "tokenApproval")

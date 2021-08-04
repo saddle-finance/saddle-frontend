@@ -77,41 +77,53 @@ export function useApproveAndDeposit(
     state: ApproveAndDepositStateArgument,
     shouldDepositWrapped = false,
   ): Promise<void> {
-    if (!account) throw new Error("Wallet must be connected")
-    if (
-      !swapContract ||
-      !lpTokenContract ||
-      (shouldDepositWrapped && !metaSwapContract)
-    )
-      throw new Error("Swap contract is not loaded")
-
-    const poolTokens = shouldDepositWrapped
-      ? (POOL.underlyingPoolTokens as Token[])
-      : POOL.poolTokens
-    const effectiveSwapContract = shouldDepositWrapped
-      ? (metaSwapContract as MetaSwap)
-      : swapContract
-
-    const approveSingleToken = async (token: Token): Promise<void> => {
-      const spendingValue = BigNumber.from(state[token.symbol].valueSafe)
-      if (spendingValue.isZero()) return
-      const tokenContract = tokenContracts?.[token.symbol] as Erc20
-      if (tokenContract == null) return
-      await checkAndApproveTokenForTrade(
-        tokenContract,
-        effectiveSwapContract.address,
-        account,
-        spendingValue,
-        infiniteApproval,
-        {
-          onTransactionError: () => {
-            throw new Error("Your transaction could not be completed")
-          },
-        },
-      )
-      return
-    }
     try {
+      if (!account) throw new Error("Wallet must be connected")
+      if (
+        !swapContract ||
+        !lpTokenContract ||
+        (shouldDepositWrapped && !metaSwapContract)
+      )
+        throw new Error("Swap contract is not loaded")
+
+      const poolTokens = shouldDepositWrapped
+        ? (POOL.underlyingPoolTokens as Token[])
+        : POOL.poolTokens
+      const effectiveSwapContract = shouldDepositWrapped
+        ? (metaSwapContract as MetaSwap)
+        : swapContract
+
+      let gasPriceUnsafe: string | number | undefined
+      if (gasPriceSelected === GasPrices.Custom) {
+        gasPriceUnsafe = gasCustom?.valueSafe
+      } else if (gasPriceSelected === GasPrices.Fast) {
+        gasPriceUnsafe = gasFast
+      } else if (gasPriceSelected === GasPrices.Instant) {
+        gasPriceUnsafe = gasInstant
+      } else {
+        gasPriceUnsafe = gasStandard
+      }
+      const gasPrice = parseUnits(String(gasPriceUnsafe) || "45", 9)
+      const approveSingleToken = async (token: Token): Promise<void> => {
+        const spendingValue = BigNumber.from(state[token.symbol].valueSafe)
+        if (spendingValue.isZero()) return
+        const tokenContract = tokenContracts?.[token.symbol] as Erc20
+        if (tokenContract == null) return
+        await checkAndApproveTokenForTrade(
+          tokenContract,
+          effectiveSwapContract.address,
+          account,
+          spendingValue,
+          infiniteApproval,
+          gasPrice,
+          {
+            onTransactionError: () => {
+              throw new Error("Your transaction could not be completed")
+            },
+          },
+        )
+        return
+      }
       // For each token being deposited, check the allowance and approve it if necessary
       if (!IS_PRODUCTION) {
         for (const token of poolTokens) {
@@ -141,17 +153,6 @@ export function useApproveAndDeposit(
       }
 
       minToMint = subtractSlippage(minToMint, slippageSelected, slippageCustom)
-      let gasPrice
-      if (gasPriceSelected === GasPrices.Custom) {
-        gasPrice = gasCustom?.valueSafe
-      } else if (gasPriceSelected === GasPrices.Fast) {
-        gasPrice = gasFast
-      } else if (gasPriceSelected === GasPrices.Instant) {
-        gasPrice = gasInstant
-      } else {
-        gasPrice = gasStandard
-      }
-      gasPrice = parseUnits(String(gasPrice) || "45", 9)
       const deadline = formatDeadlineToNumber(
         transactionDeadlineSelected,
         transactionDeadlineCustom,
