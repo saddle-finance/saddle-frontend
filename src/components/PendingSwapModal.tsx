@@ -164,7 +164,19 @@ const PendingSwapModal = ({
     } catch (e) {
       console.error(e)
     }
-  }, [settlementState, bridgeContract, itemId]) //TODO
+  }, [
+    settlementState,
+    bridgeContract,
+    itemId,
+    calculatedTokenAmount,
+    gasPrice,
+    onClose,
+    slippageCustom,
+    slippageSelected,
+    swapType,
+    transactionDeadlineCustom,
+    transactionDeadlineSelected,
+  ])
 
   const minutesRemaining = Math.max(Math.ceil(secondsRemaining / 60), 0)
   const fromAmount =
