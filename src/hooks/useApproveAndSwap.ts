@@ -1,4 +1,10 @@
-import { POOLS_MAP, SWAP_TYPES, TRANSACTION_TYPES } from "../constants"
+import {
+  POOLS_MAP,
+  SWAP_TYPES,
+  SYNTH_TRACKING_ID,
+  TRANSACTION_TYPES,
+} from "../constants"
+import { useAllContracts, useSynthetixContract } from "./useContract"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -16,7 +22,6 @@ import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
-import { useAllContracts } from "./useContract"
 import { useDispatch } from "react-redux"
 import { useSelector } from "react-redux"
 import { utils } from "ethers"
@@ -49,6 +54,7 @@ export function useApproveAndSwap(): (
   const dispatch = useDispatch()
   const tokenContracts = useAllContracts()
   const { account, chainId } = useActiveWeb3React()
+  const baseSynthetixContract = useSynthetixContract()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -74,11 +80,17 @@ export function useApproveAndSwap(): (
       // For each token being deposited, check the allowance and approve it if necessary
       const tokenContract = tokenContracts?.[state.from.symbol] as Erc20
       if (tokenContract == null) return
+      let addressToApprove = ""
+      if (state.swapType === SWAP_TYPES.DIRECT) {
+        addressToApprove = state.swapContract?.address as string
+      } else if (state.swapType === SWAP_TYPES.SYNTH_TO_SYNTH) {
+        addressToApprove = baseSynthetixContract?.address as string
+      } else {
+        addressToApprove = state.bridgeContract?.address as string
+      }
       await checkAndApproveTokenForTrade(
         tokenContract,
-        (state.swapType === SWAP_TYPES.DIRECT
-          ? state.swapContract?.address
-          : state.bridgeContract?.address) as string,
+        addressToApprove,
         account,
         state.from.amount,
         infiniteApproval,
@@ -119,10 +131,10 @@ export function useApproveAndSwap(): (
           ), // subtract slippage from minSynth
           txnArgs,
         ] as const
+        console.debug("swap - tokenToToken", args)
         swapTransaction = await (state.bridgeContract as Bridge).tokenToToken(
           ...args,
         )
-        console.debug("swap - tokenToToken", args)
       } else if (state.swapType === SWAP_TYPES.SYNTH_TO_TOKEN) {
         const destinationPool = POOLS_MAP[state.to.poolName]
         const args = [
@@ -137,10 +149,10 @@ export function useApproveAndSwap(): (
           ), // subtract slippage from minSynth
           txnArgs,
         ] as const
+        console.debug("swap - synthToToken", args)
         swapTransaction = await (state.bridgeContract as Bridge).synthToToken(
           ...args,
         )
-        console.debug("swap - synthToToken", args)
       } else if (state.swapType === SWAP_TYPES.TOKEN_TO_SYNTH) {
         const destinationPool = POOLS_MAP[state.to.poolName]
         const args = [
@@ -151,10 +163,10 @@ export function useApproveAndSwap(): (
           subtractSlippage(state.to.amount, slippageSelected, slippageCustom),
           txnArgs,
         ] as const
+        console.debug("swap - tokenToSynth", args)
         swapTransaction = await (state.bridgeContract as Bridge).tokenToSynth(
           ...args,
         )
-        console.debug("swap - tokenToSynth", args)
       } else if (state.swapType === SWAP_TYPES.DIRECT) {
         const deadline = formatDeadlineToNumber(
           transactionDeadlineSelected,
@@ -168,18 +180,27 @@ export function useApproveAndSwap(): (
           Math.round(new Date().getTime() / 1000 + 60 * deadline),
           txnArgs,
         ] as const
+        console.debug("swap - direct", args)
         swapTransaction = await (state.swapContract as NonNullable<
           typeof state.swapContract // we already check for nonnull above
         >).swap(...args)
-        console.debug("swap - direct", args)
       } else if (state.swapType === SWAP_TYPES.SYNTH_TO_SYNTH) {
-        // TODO: support synth to synth
-        throw new Error("Synth to Synth swaps not yet supported")
+        const args = [
+          utils.formatBytes32String(state.from.symbol),
+          state.from.amount,
+          utils.formatBytes32String(state.to.symbol),
+          account,
+          SYNTH_TRACKING_ID,
+        ] as const
+        console.debug("swap - synthToSynth", args)
+        swapTransaction = await baseSynthetixContract?.exchangeWithTracking(
+          ...args,
+        )
       } else {
         throw new Error("Invalid Swap Type, or contract not loaded")
       }
 
-      notifyHandler(swapTransaction.hash, "swap")
+      notifyHandler(swapTransaction?.hash || "", "swap")
 
       await swapTransaction?.wait()
       dispatch(

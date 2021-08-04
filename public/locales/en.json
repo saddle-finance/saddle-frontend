@@ -154,6 +154,7 @@
   "usdBalance": "USD balance",
   "virtualPrice": "Virtual price",
   "virtualSwap": "Virtual Swap",
+  "virtualSwapSynthToSynthInfo": "This is a Synth-to-Synth Virtual Swap. You will see your swapped tokens in your wallet immeidately after the swap executes, but must wait for up to 6 minutes before being able to transfer them.",
   "volume": "Volume",
   "whichAssetBucketDoYouWantToSwap": "Which asset bucket do you want to swap?",
   "whichAssetPoolDoYouWantToChoose": "Which asset pool do you want to choose?",

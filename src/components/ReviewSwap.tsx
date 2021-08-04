@@ -71,6 +71,11 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
         ) : (
           <DirectSwapTokens data={data} />
         )}
+        {data.swapType === SWAP_TYPES.SYNTH_TO_SYNTH && (
+          <div className="row">
+            <span className="aside">{t("virtualSwapSynthToSynthInfo")}</span>
+          </div>
+        )}
         <div className="divider" style={{ height: "1px", width: "100%" }} />
         <div className="swapInfo">
           <div className="priceTable">
@@ -95,7 +100,7 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
               </svg>
             </button>
             <span className="value floatRight">
-              {formatBNToString(data.exchangeRateInfo.exchangeRate, 18, 4)}
+              {formatBNToString(data.exchangeRateInfo.exchangeRate, 18, 6)}
             </span>
           </div>
           <div className="row">

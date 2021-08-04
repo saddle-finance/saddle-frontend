@@ -20,6 +20,8 @@ import {
   SUSD,
   SUSD_SWAP_TOKEN,
   SWAP_MIGRATOR_USD_CONTRACT_ADDRESSES,
+  SYNTHETIX_CONTRACT_ADDRESSES,
+  SYNTHETIX_EXCHANGE_RATES_CONTRACT_ADDRESSES,
   TBTC,
   Token,
   USDC,
@@ -47,10 +49,14 @@ import { MetaSwapDeposit } from "../../types/ethers-contracts/MetaSwapDeposit"
 import SWAP_FLASH_LOAN_ABI from "../constants/abis/swapFlashLoan.json"
 import SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI from "../constants/abis/swapFlashLoanNoWithdrawFee.json"
 import SWAP_GUARDED_ABI from "../constants/abis/swapGuarded.json"
+import SYNTHETIX_EXCHANGE_RATE_CONTRACT_ABI from "../constants/abis/synthetixExchangeRate.json"
+import SYNTHETIX_NETWORK_TOKEN_CONTRACT_ABI from "../constants/abis/synthetixNetworkToken.json"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import { SwapMigratorUSD } from "../../types/ethers-contracts/SwapMigratorUSD"
+import { SynthetixExchangeRate } from "../../types/ethers-contracts/SynthetixExchangeRate"
+import { SynthetixNetworkToken } from "../../types/ethers-contracts/SynthetixNetworkToken"
 import { getContract } from "../utils"
 import { useActiveWeb3React } from "./index"
 import { useMemo } from "react"
@@ -96,6 +102,28 @@ export function useBridgeContract(): Bridge | null {
     ? BRIDGE_CONTRACT_ADDRESSES[chainId]
     : undefined
   return useContract(contractAddress, BRIDGE_CONTRACT_ABI) as Bridge
+}
+
+export function useSynthetixContract(): SynthetixNetworkToken | null {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress = chainId
+    ? SYNTHETIX_CONTRACT_ADDRESSES[chainId]
+    : undefined
+  return useContract(
+    contractAddress,
+    SYNTHETIX_NETWORK_TOKEN_CONTRACT_ABI,
+  ) as SynthetixNetworkToken
+}
+
+export function useSynthetixExchangeRatesContract(): SynthetixExchangeRate | null {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress = chainId
+    ? SYNTHETIX_EXCHANGE_RATES_CONTRACT_ADDRESSES[chainId]
+    : undefined
+  return useContract(
+    contractAddress,
+    SYNTHETIX_EXCHANGE_RATE_CONTRACT_ABI,
+  ) as SynthetixExchangeRate
 }
 
 export function useTokenContract(
