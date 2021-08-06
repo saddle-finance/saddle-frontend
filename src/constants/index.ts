@@ -111,7 +111,7 @@ export const SUSD_META_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
 export const SUSD_META_SWAP_DEPOSIT_ADDRESSES: {
   [chainId in ChainId]: string
 } = {
-  [ChainId.MAINNET]: "0xe280EFE654328a3325fc5A9EAb8E998D418C86FB",
+  [ChainId.MAINNET]: "0x1e35ebF875f8A2185EDf22da02e7dBCa0F5558aB",
   [ChainId.ROPSTEN]: "",
   [ChainId.HARDHAT]: "0x809d550fca64d94Bd9F66E60752A544199cfAC3D",
 }
