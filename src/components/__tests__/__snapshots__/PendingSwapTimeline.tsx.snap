@@ -15,6 +15,8 @@ exports[`renders a basic swap correctly 1`] = `
        2/1 12:00 AM stepAOfB confirmTheSwap 
       <a
         href="https://etherscan.io/tx/0x0"
+        rel="noreferrer"
+        target="_blank"
       >
         0x0
       </a>
@@ -62,6 +64,8 @@ exports[`renders a swap after the waiting period correctly 1`] = `
        2/1 12:00 AM stepAOfB confirmTheSwap 
       <a
         href="https://etherscan.io/tx/0x0"
+        rel="noreferrer"
+        target="_blank"
       >
         0x0
       </a>
@@ -109,6 +113,8 @@ exports[`renders a swap with events correctly 1`] = `
        2/1 12:00 AM stepAOfB confirmTheSwap 
       <a
         href="https://etherscan.io/tx/0x0"
+        rel="noreferrer"
+        target="_blank"
       >
         0x0
       </a>
