@@ -2,6 +2,7 @@ import React, { ReactElement, useCallback, useState } from "react"
 import {
   calculateExchangeRate,
   calculatePrice,
+  commify,
   formatBNToString,
   formatDeadlineToNumber,
 } from "../utils"
@@ -67,7 +68,9 @@ const PendingSwapModal = ({
     calculatedTokenAmount,
     setCalculatedTokenAmount,
   ] = useState<BigNumber | null>(null)
-  const [currentStep, setCurrentStep] = useState<ModalStep>("timer")
+  const [currentStep, setCurrentStep] = useState<ModalStep>(
+    secondsRemaining === 0 ? "exchange" : "timer",
+  )
   useEffect(() => {
     // Watch the timer and transition to the "exchange" state
     if (currentStep === "timer" && secondsRemaining === 0) {
@@ -83,11 +86,11 @@ const PendingSwapModal = ({
           swapType !== SWAP_TYPES.TOKEN_TO_TOKEN)
       )
         return
-      const calculatedTokenAmount = await bridgeContract?.calcCompleteToToken(
+      const calculatedAmount = await bridgeContract?.calcCompleteToToken(
         itemId,
         settlementState.amount,
       )
-      setCalculatedTokenAmount(calculatedTokenAmount)
+      setCalculatedTokenAmount(calculatedAmount)
     }
     void calcAmount()
   }, [bridgeContract, settlementState, itemId, swapType])
@@ -110,6 +113,7 @@ const PendingSwapModal = ({
 
   const handleConfirmSettlement = useCallback(async () => {
     try {
+      setCurrentStep("confirmation")
       const txnArgs = { gasPrice }
       let transaction
       if (settlementState.action === "withdraw") {
@@ -157,7 +161,6 @@ const PendingSwapModal = ({
         ])
         return
       }
-      setCurrentStep("confirmation")
       transaction && notifyHandler(transaction.hash, "swap")
       await transaction?.wait()
       onClose()
@@ -184,10 +187,8 @@ const PendingSwapModal = ({
     swapType === SWAP_TYPES.TOKEN_TO_SYNTH
       ? synthBalance
       : settlementState.amount
-  const formattedFromAmount = formatBNToString(
-    fromAmount,
-    synthTokenFrom.decimals,
-    6,
+  const formattedSynthBalance = commify(
+    formatBNToString(synthBalance, synthTokenFrom.decimals, 6),
   )
 
   return (
@@ -196,7 +197,7 @@ const PendingSwapModal = ({
         <div className={styles.virtualSwapModal}>
           <div className={styles.headerContent}>
             <b className={styles.title}>
-              {formattedFromAmount} {synthTokenFrom.symbol} {"->"}{" "}
+              {formattedSynthBalance} {synthTokenFrom.symbol} {"->"}{" "}
               {tokenTo.symbol}
             </b>
           </div>
@@ -246,18 +247,20 @@ const PendingSwapModal = ({
                   },
                   exchangeRateInfo: {
                     pair: `${synthTokenFrom.symbol}/${tokenTo.symbol}`,
-                    priceImpact: calculatePriceImpact(
-                      calculatePrice(
-                        fromAmount,
-                        tokenPricesUSD?.[synthTokenFrom.symbol],
-                        synthTokenFrom.decimals,
-                      ),
-                      calculatePrice(
-                        calculatedTokenAmount || Zero,
-                        tokenPricesUSD?.[tokenTo.symbol],
-                        tokenTo.decimals,
-                      ),
-                    ),
+                    priceImpact: calculatedTokenAmount
+                      ? calculatePriceImpact(
+                          calculatePrice(
+                            fromAmount,
+                            tokenPricesUSD?.[synthTokenFrom.symbol],
+                            synthTokenFrom.decimals,
+                          ),
+                          calculatePrice(
+                            calculatedTokenAmount || Zero,
+                            tokenPricesUSD?.[tokenTo.symbol],
+                            tokenTo.decimals,
+                          ),
+                        )
+                      : Zero,
                     exchangeRate: calculateExchangeRate(
                       settlementState.amount,
                       synthTokenFrom.decimals,
