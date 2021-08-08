@@ -15,7 +15,11 @@ const pools = ["BTC Pool", "Stablecoin Pool"]
 
 context("Withdrawal Flow", () => {
   beforeEach(() => {
+    const host = Cypress.env("DAPP_HOST") as string
     pools.forEach(basicDeposit)
+
+    cy.visit(`${host}#/pools`)
+    cy.wait(5000)
   })
 
   function basicDeposit(poolName: PoolName) {
@@ -39,12 +43,11 @@ context("Withdrawal Flow", () => {
       cy.get("button").contains("Deposit").click()
       cy.get("button").contains("Confirm Deposit").click()
     })
-    cy.visit(`${host}#/pools`)
-    cy.wait(3000)
   }
 
   function testPoolWithdraw(poolName: PoolName) {
     it(`successfully completes a withdrawal of all ${poolName} assets`, () => {
+      cy.wait(10000)
       cy.contains(poolName)
         .parents(".poolOverview")
         .within(() => {
@@ -87,6 +90,22 @@ context("Withdrawal Flow", () => {
           })
       })
 
+      cy.wait(1000)
+      beforeValue = {}
+      poolTokens[poolName].forEach((token: string) => {
+        cy.get(".myShareCard .tokenName")
+          .contains(token)
+          .parent()
+          .find("span.tokenValue")
+          .then(($value) => {
+            console.log($value)
+            beforeValue = {
+              ...beforeValue,
+              [token]: parseInt($value.text().replace(",", "")),
+            }
+          })
+      })
+
       // test combo withdraw through percentage option
       cy.get(".radio_wrapper .label").contains("Combo").click()
       cy.get(".percentage input").first().type("3")
@@ -104,6 +123,22 @@ context("Withdrawal Flow", () => {
               expect(afterValue).to.lessThan(beforeValue[token])
             })
         })
+      })
+
+      cy.wait(1000)
+      beforeValue = {}
+      poolTokens[poolName].forEach((token: string) => {
+        cy.get(".myShareCard .tokenName")
+          .contains(token)
+          .parent()
+          .find("span.tokenValue")
+          .then(($value) => {
+            console.log($value)
+            beforeValue = {
+              ...beforeValue,
+              [token]: parseInt($value.text().replace(",", "")),
+            }
+          })
       })
 
       // test combo withdraw by inputting values
