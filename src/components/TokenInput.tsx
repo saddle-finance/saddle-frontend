@@ -1,11 +1,8 @@
-import React, { ReactElement, useState } from "react"
+import React, { ReactElement } from "react"
 
-// import Button from "./Button"
 import { calculatePrice, commify } from "../utils"
 import { AppState } from "../state/index"
 import { TOKENS_MAP } from "../constants"
-import { Zero } from "@ethersproject/constants"
-// import classNames from "classnames"
 import { formatBNToString } from "../utils"
 import styles from "./TokenInput.module.scss"
 import { useSelector } from "react-redux"
@@ -32,9 +29,6 @@ function TokenInput({
   const { name } = TOKENS_MAP[symbol]
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
 
-  const [valueUSD, setValueUSD] = useState<string>("0.00")
-  let inputValueUSD = Zero
-
   function onChangeInput(e: React.ChangeEvent<HTMLInputElement>): void {
     const { decimals } = TOKENS_MAP[symbol]
     const parsedValue = parseFloat("0" + e.target.value)
@@ -44,15 +38,8 @@ function TokenInput({
       periodIndex === -1 || e.target.value.length - 1 - periodIndex <= decimals
     if (isValidInput && isValidPrecision) {
       // don't allow input longer than the token allows
-      inputValueUSD = calculatePrice(e.target.value, tokenPricesUSD?.[symbol])
-      setValueUSD(commify(formatBNToString(inputValueUSD, 18, 2)))
       onChange(e.target.value)
     }
-  }
-  function onClickMax(): void {
-    onChange(String(max))
-    inputValueUSD = calculatePrice(String(max), tokenPricesUSD?.[symbol])
-    setValueUSD(commify(formatBNToString(inputValueUSD, 18, 2)))
   }
 
   return (
@@ -61,7 +48,7 @@ function TokenInput({
         <div className={styles.balanceContainer}>
           <span>{t("balance")}:</span>
           &nbsp;
-          <a onClick={() => onClickMax()}>{max}</a>
+          <a onClick={() => onChange(String(max))}>{max}</a>
         </div>
       )}
 
@@ -85,7 +72,16 @@ function TokenInput({
               e.target.select()
             }
           />
-          <p className={styles.smallText}>≈${valueUSD}</p>
+          <p className={styles.smallText}>
+            ≈$
+            {commify(
+              formatBNToString(
+                calculatePrice(inputValue, tokenPricesUSD?.[symbol]),
+                18,
+                2,
+              ),
+            )}
+          </p>
         </div>
         {/* {max != null && (
         <Button

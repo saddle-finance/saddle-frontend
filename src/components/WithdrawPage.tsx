@@ -158,7 +158,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                 {index === tokensData.length - 1 ? (
                   ""
                 ) : (
-                  <div className="divider"></div>
+                  <div className="formSpace"></div>
                 )}
               </div>
             ))}
