@@ -89,7 +89,7 @@ export class Token {
 export const BLOCK_TIME = 13000 // ms
 
 export const BRIDGE_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: "0x9d4454B023096f34B160D6B654540c56A1F81688", // TODO replace once mainnet deploy goes out
+  [ChainId.MAINNET]: "0xCD8a1C3ba11CF5ECfa6267617243239504a98d90", // TODO replace once mainnet deploy goes out
   [ChainId.ROPSTEN]: "",
   [ChainId.HARDHAT]: "",
 }
@@ -721,5 +721,5 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
 }
 
 // FLAGS
-export const IS_VIRTUAL_SWAP_ACTIVE = false
+export const IS_VIRTUAL_SWAP_ACTIVE = true
 // FLAGS END
