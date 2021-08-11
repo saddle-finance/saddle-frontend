@@ -176,12 +176,11 @@ function ReviewDeposit({
           <Button
             onClick={onConfirm}
             kind="primary"
-            size="large"
             disabled={isHighPriceImpactTxn && !hasConfirmedHighPriceImpact}
           >
             {t("confirmDeposit")}
           </Button>
-          <Button onClick={onClose} kind="cancel" size="large">
+          <Button onClick={onClose} kind="cancel">
             {t("cancel")}
           </Button>
         </div>

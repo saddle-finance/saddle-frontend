@@ -33,7 +33,7 @@ context("Deposit Flow", () => {
           })
       })
 
-      cy.get(".tokenInput input").then(($inputs) => {
+      cy.get("#tokenInput input").then(($inputs) => {
         cy.wrap($inputs).each(($input) => {
           cy.wrap($input).type("1")
         })

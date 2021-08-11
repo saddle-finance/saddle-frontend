@@ -52,7 +52,7 @@ function TokenInput({
         </div>
       )}
 
-      <div className={styles.tokenInputContainer}>
+      <div className={styles.tokenInputContainer} id="tokenInput">
         <img alt="icon" src={icon} />
         <div className={styles.tokenSymbolAndName}>
           <p className={styles.boldText}>{symbol}</p>
@@ -83,16 +83,6 @@ function TokenInput({
             )}
           </p>
         </div>
-        {/* {max != null && (
-        <Button
-          onClick={onClickMax}
-          size="small"
-          kind="ternary"
-          disabled={disabled}
-        >
-          {t("max")}
-        </Button>
-      )} */}
       </div>
     </div>
   )
