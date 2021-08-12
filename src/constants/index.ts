@@ -89,7 +89,7 @@ export class Token {
 export const BLOCK_TIME = 13000 // ms
 
 export const BRIDGE_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: "0xCD8a1C3ba11CF5ECfa6267617243239504a98d90", // TODO replace once mainnet deploy goes out
+  [ChainId.MAINNET]: "0x82e01223d51Eb87e16A03E24687EDF0F294da6f1", // TODO replace once mainnet deploy goes out
   [ChainId.ROPSTEN]: "",
   [ChainId.HARDHAT]: "",
 }
