@@ -48,7 +48,7 @@ ul {
   --background-logo: #{$primary};
   --secondary-button: #{$light-blue};
   --outline: #000;
-  --outline-gray: #8c8c94;
+  --outline-gray: #{$black30};
   --option-hover: #{$primary-blue-light};
   --tab: #{$black80};
 
@@ -82,7 +82,7 @@ body.dark {
   --secondary-button: #{$dark-purple};
   --outline: #fff;
   --option-hover: #{$primary-blue-dark};
-  --outline-gray: #8c8c94;
+  --outline-gray: #{$white30};
   --tab: #{$white};
 
   --text: #fff;
