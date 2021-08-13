@@ -366,8 +366,8 @@ const SwapPage = (props: Props): ReactElement => {
                 ) as PendingSwap
               }
               onClose={() => {
-                setActivePendingSwap(null)
                 setCurrentModal(null)
+                setActivePendingSwap(null)
               }}
             />
           ) : null}

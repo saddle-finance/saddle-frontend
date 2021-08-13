@@ -27,10 +27,8 @@ const PendingSwapTimeline = ({
     events,
   } = pendingSwap
   const minutesRemaining = Math.max(Math.ceil(secondsRemaining / 60), 0)
-  const formattedBalance = formatBNToString(
-    synthBalance,
-    synthTokenFrom.decimals,
-    6,
+  const formattedBalance = commify(
+    formatBNToString(synthBalance, synthTokenFrom.decimals, 6),
   )
   const hasEvents = events.length > 0
 

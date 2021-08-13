@@ -103,9 +103,9 @@ export const SYNTHETIX_EXCHANGE_RATES_CONTRACT_ADDRESSES: {
 }
 
 export const BRIDGE_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: "0x809d550fca64d94Bd9F66E60752A544199cfAC3D", // TODO replace once mainnet deploy goes out
-  [ChainId.ROPSTEN]: "0xf5059a5D33d5853360D16C683c16e67980206f36", // TODO couldn't find this
-  [ChainId.HARDHAT]: "0xf5059a5D33d5853360D16C683c16e67980206f36",
+  [ChainId.MAINNET]: "0x82e01223d51Eb87e16A03E24687EDF0F294da6f1", // TODO replace once mainnet deploy goes out
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "",
 }
 
 export const SWAP_MIGRATOR_USD_CONTRACT_ADDRESSES: {
@@ -125,7 +125,7 @@ export const SUSD_META_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
 export const SUSD_META_SWAP_DEPOSIT_ADDRESSES: {
   [chainId in ChainId]: string
 } = {
-  [ChainId.MAINNET]: "0xe280EFE654328a3325fc5A9EAb8E998D418C86FB",
+  [ChainId.MAINNET]: "0x1e35ebF875f8A2185EDf22da02e7dBCa0F5558aB",
   [ChainId.ROPSTEN]: "",
   [ChainId.HARDHAT]: "0x809d550fca64d94Bd9F66E60752A544199cfAC3D",
 }
@@ -739,5 +739,5 @@ export const SYNTH_TRACKING_ID =
   "0x534144444c450000000000000000000000000000000000000000000000000000"
 
 // FLAGS
-export const IS_VIRTUAL_SWAP_ACTIVE = false
+export const IS_VIRTUAL_SWAP_ACTIVE = true
 // FLAGS END

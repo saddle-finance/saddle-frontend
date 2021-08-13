@@ -8,6 +8,7 @@ import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
+import { ReactComponent as ThinArrowDown } from "../assets/icons/thinArrowDown.svg"
 import classnames from "classnames"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
@@ -70,11 +71,6 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
           <VirtualSwapTokens data={data} />
         ) : (
           <DirectSwapTokens data={data} />
-        )}
-        {data.swapType === SWAP_TYPES.SYNTH_TO_SYNTH && (
-          <div className="row">
-            <span className="aside">{t("virtualSwapSynthToSynthInfo")}</span>
-          </div>
         )}
         <div className="divider" style={{ height: "1px", width: "100%" }} />
         <div className="swapInfo">
@@ -210,19 +206,7 @@ function VirtualSwapTokens({ data }: { data: Props["data"] }) {
         return (
           <div className="row" key={symbol}>
             <div>
-              {!isFirst && !isLast && (
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="stepArrow"
-                >
-                  <path d="M1 8L8 15L15 8" />
-                  <path d="M8 15L8 0" />
-                </svg>
-              )}
+              {!isFirst && !isLast && <ThinArrowDown className="stepArrow" />}
               <img className="tokenIcon" src={token.icon} alt="icon" />
               <span className={classnames("tokenName", { grey: isLast })}>
                 {token.symbol}

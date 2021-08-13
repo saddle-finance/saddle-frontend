@@ -9,6 +9,7 @@ import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
+import { ReactComponent as ThinArrowDown } from "../assets/icons/thinArrowDown.svg"
 import { calculateGasEstimate } from "../utils/gasEstimate"
 import { formatSlippageToString } from "../utils/slippage"
 import { isHighPriceImpact } from "../utils/priceImpact"
@@ -51,9 +52,11 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
   ] = useState(false)
   const fromToken = TOKENS_MAP[data.from.symbol]
   const toToken = data.to ? TOKENS_MAP[data.to.symbol] : null
-  const isHighPriceImpactTxn =
-    data.exchangeRateInfo &&
-    isHighPriceImpact(data.exchangeRateInfo.priceImpact)
+  const isHighPriceImpactTxn = Boolean(
+    data.to?.value &&
+      data.exchangeRateInfo &&
+      isHighPriceImpact(data.exchangeRateInfo.priceImpact),
+  )
   const deadline = formatDeadlineToNumber(
     transactionDeadlineSelected,
     transactionDeadlineCustom,
@@ -80,17 +83,18 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
           <img className="tokenIcon" src={fromToken.icon} alt="icon" />
           <span className="tokenName">{data.from.symbol}</span>
           <div className="floatRight">
-            <span>{data.from.value}</span>
+            <span>{commify(data.from.value)}</span>
           </div>
         </div>
 
         {data.to && (
           <>
+            <ThinArrowDown className="stepArrow" />
             <div className="to">
               <img className="tokenIcon" src={toToken?.icon} alt="icon" />
               <span className="tokenName">{data.to.symbol}</span>
               <div className="floatRight">
-                <span>{data.to.value}</span>
+                <span>{commify(data.to.value)}</span>
               </div>
             </div>
           </>

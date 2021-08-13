@@ -79,6 +79,17 @@ export function useApproveAndSwap(): (
       if (chainId === undefined) throw new Error("Unknown chain")
       // For each token being deposited, check the allowance and approve it if necessary
       const tokenContract = tokenContracts?.[state.from.symbol] as Erc20
+      let gasPrice
+      if (gasPriceSelected === GasPrices.Custom) {
+        gasPrice = gasCustom?.valueSafe
+      } else if (gasPriceSelected === GasPrices.Fast) {
+        gasPrice = gasFast
+      } else if (gasPriceSelected === GasPrices.Instant) {
+        gasPrice = gasInstant
+      } else {
+        gasPrice = gasStandard
+      }
+      gasPrice = parseUnits(String(gasPrice) || "45", 9)
       if (tokenContract == null) return
       let addressToApprove = ""
       if (state.swapType === SWAP_TYPES.DIRECT) {
@@ -94,23 +105,13 @@ export function useApproveAndSwap(): (
         account,
         state.from.amount,
         infiniteApproval,
+        gasPrice,
         {
           onTransactionError: () => {
             throw new Error("Your transaction could not be completed")
           },
         },
       )
-      let gasPrice
-      if (gasPriceSelected === GasPrices.Custom) {
-        gasPrice = gasCustom?.valueSafe
-      } else if (gasPriceSelected === GasPrices.Fast) {
-        gasPrice = gasFast
-      } else if (gasPriceSelected === GasPrices.Instant) {
-        gasPrice = gasInstant
-      } else {
-        gasPrice = gasStandard
-      }
-      gasPrice = parseUnits(String(gasPrice) || "45", 9)
       const txnArgs = { gasPrice }
       let swapTransaction
       if (state.swapType === SWAP_TYPES.TOKEN_TO_TOKEN) {
@@ -154,9 +155,9 @@ export function useApproveAndSwap(): (
           ...args,
         )
       } else if (state.swapType === SWAP_TYPES.TOKEN_TO_SYNTH) {
-        const destinationPool = POOLS_MAP[state.to.poolName]
+        const originPool = POOLS_MAP[state.from.poolName]
         const args = [
-          destinationPool.addresses[chainId],
+          originPool.addresses[chainId],
           state.from.tokenIndex,
           utils.formatBytes32String(state.to.symbol),
           state.from.amount,

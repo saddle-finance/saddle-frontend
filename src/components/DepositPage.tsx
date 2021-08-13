@@ -128,7 +128,7 @@ const DepositPage = (props: Props): ReactElement => {
                 {index === tokens.length - 1 ? (
                   ""
                 ) : (
-                  <div className="divider"></div>
+                  <div className="formSpace"></div>
                 )}
               </div>
             ))}
