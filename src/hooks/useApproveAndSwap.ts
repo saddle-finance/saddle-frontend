@@ -143,9 +143,9 @@ export function useApproveAndSwap(): (
         )
         console.debug("swap - synthToToken", args)
       } else if (state.swapType === SWAP_TYPES.TOKEN_TO_SYNTH) {
-        const destinationPool = POOLS_MAP[state.to.poolName]
+        const originPool = POOLS_MAP[state.from.poolName]
         const args = [
-          destinationPool.addresses[chainId],
+          originPool.addresses[chainId],
           state.from.tokenIndex,
           utils.formatBytes32String(state.to.symbol),
           state.from.amount,
