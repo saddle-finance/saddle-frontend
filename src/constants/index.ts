@@ -721,5 +721,5 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
 }
 
 // FLAGS
-export const IS_VIRTUAL_SWAP_ACTIVE = true
+export const IS_VIRTUAL_SWAP_ACTIVE = false
 // FLAGS END
