@@ -1,0 +1,4 @@
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="stepArrow">
+  <path d="M1 8L8 15L15 8" />
+  <path d="M8 15L8 0" />
+</svg>

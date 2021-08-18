@@ -89,9 +89,9 @@ export class Token {
 export const BLOCK_TIME = 13000 // ms
 
 export const BRIDGE_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: "0x9d4454B023096f34B160D6B654540c56A1F81688", // TODO replace once mainnet deploy goes out
-  [ChainId.ROPSTEN]: "0xf5059a5D33d5853360D16C683c16e67980206f36", // TODO couldn't find this
-  [ChainId.HARDHAT]: "0xf5059a5D33d5853360D16C683c16e67980206f36",
+  [ChainId.MAINNET]: "0x82e01223d51Eb87e16A03E24687EDF0F294da6f1", // TODO replace once mainnet deploy goes out
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "",
 }
 
 export const SWAP_MIGRATOR_USD_CONTRACT_ADDRESSES: {
@@ -672,6 +672,15 @@ export enum SWAP_TYPES {
   TOKEN_TO_SYNTH = "swapTokenToSynth", // route length 3
   TOKEN_TO_TOKEN = "swapTokenToToken", // route length 4
   INVALID = "invalid",
+}
+
+export function getIsVirtualSwap(swapType: SWAP_TYPES): boolean {
+  return (
+    swapType === SWAP_TYPES.SYNTH_TO_SYNTH ||
+    swapType === SWAP_TYPES.SYNTH_TO_TOKEN ||
+    swapType === SWAP_TYPES.TOKEN_TO_SYNTH ||
+    swapType === SWAP_TYPES.TOKEN_TO_TOKEN
+  )
 }
 
 export const SWAP_CONTRACT_GAS_ESTIMATES_MAP = {

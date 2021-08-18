@@ -10,7 +10,9 @@ import { useCallback, useEffect, useState } from "react"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Bridge } from "../../types/ethers-contracts/Bridge"
 import { Event } from "ethers"
+import { Zero } from "@ethersproject/constants"
 import { getTokenByAddress } from "../utils"
+import { omit } from "lodash"
 import { useActiveWeb3React } from "./"
 import { useBridgeContract } from "./useContract"
 
@@ -110,7 +112,7 @@ const usePendingSwapData = (): PendingSwap[] => {
           return {
             ...prevState,
             pendingSwaps: prevState.pendingSwaps.map((swap) => {
-              let secondsRemaining = Math.ceil(
+              let secondsRemaining = Math.floor(
                 swap.settleableAtTimestamp / 1000 - timestamp,
               )
               secondsRemaining = Math.max(secondsRemaining, 0)
@@ -156,19 +158,30 @@ const usePendingSwapData = (): PendingSwap[] => {
       void parseSettlementFromEvent(event, chainId).then((settlement) => {
         if (settlement == null) return
         setState((prevState) => {
+          const pendingSwap = prevState.pendingSwaps.find(
+            ({ itemId }) => itemId === settlement.itemId,
+          )
+          const newPendingSwapBalance = pendingSwap
+            ? pendingSwap.synthBalance.sub(settlement.fromAmount)
+            : Zero
           const prevSettlements = prevState.settlements[settlement.itemId] || []
           const txnsSet = new Set(
             prevSettlements.map(({ transactionHash }) => transactionHash),
           )
-          return txnsSet.has(settlement.transactionHash)
-            ? prevState
-            : {
-                ...prevState,
-                settlements: {
-                  ...prevState.settlements,
-                  [settlement.itemId]: prevSettlements.concat(settlement),
-                },
-              }
+          if (newPendingSwapBalance.lte(Zero)) {
+            // if this action empties the pending swap balance, remove it from state
+            return removeItemFromState(prevState, settlement.itemId)
+          } else if (!txnsSet.has(settlement.transactionHash)) {
+            return {
+              ...prevState,
+              settlements: {
+                ...prevState.settlements,
+                [settlement.itemId]: prevSettlements.concat(settlement),
+              },
+            }
+          } else {
+            return prevState
+          }
         })
       })
     },
@@ -181,19 +194,30 @@ const usePendingSwapData = (): PendingSwap[] => {
       void parseWithdrawFromEvent(event, chainId).then((withdraw) => {
         if (withdraw == null) return
         setState((prevState) => {
+          const pendingSwap = prevState.pendingSwaps.find(
+            ({ itemId }) => itemId === withdraw.itemId,
+          )
+          const newPendingSwapBalance = pendingSwap
+            ? pendingSwap.synthBalance.sub(withdraw.amount)
+            : Zero
           const prevWithdraws = prevState.withdraws[withdraw.itemId] || []
           const txnsSet = new Set(
             prevWithdraws.map(({ transactionHash }) => transactionHash),
           )
-          return txnsSet.has(withdraw.transactionHash)
-            ? prevState
-            : {
-                ...prevState,
-                withdraws: {
-                  ...prevState.withdraws,
-                  [withdraw.itemId]: prevWithdraws.concat(withdraw),
-                },
-              }
+          if (newPendingSwapBalance.lte(Zero)) {
+            // if this action empties the pending swap balance, remove it from state
+            return removeItemFromState(prevState, withdraw.itemId)
+          } else if (!txnsSet.has(withdraw.transactionHash)) {
+            return {
+              ...prevState,
+              withdraws: {
+                ...prevState.withdraws,
+                [withdraw.itemId]: prevWithdraws.concat(withdraw),
+              },
+            }
+          } else {
+            return prevState
+          }
         })
       })
     },
@@ -520,6 +544,14 @@ async function fetchPendingSwapInfo(
     // do nothing because this is probably okay
   }
   return result
+}
+
+function removeItemFromState(state: State, itemId: string): State {
+  return {
+    settlements: omit(state.settlements, itemId),
+    withdraws: omit(state.withdraws, itemId),
+    pendingSwaps: state.pendingSwaps.filter(({ itemId }) => itemId !== itemId),
+  }
 }
 
 export default usePendingSwapData

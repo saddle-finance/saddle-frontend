@@ -35,7 +35,7 @@ context("Withdrawal Flow", () => {
 
     cy.wait(3000)
 
-    cy.get(".tokenInput input").then(($inputs) => {
+    cy.get("#tokenInput input").then(($inputs) => {
       cy.wrap($inputs).each(($input) => {
         cy.wrap($input).type("100")
       })
@@ -75,7 +75,7 @@ context("Withdrawal Flow", () => {
 
       const tokens = poolTokensFullName[poolName]
       cy.get(".radio_wrapper .label").contains(tokens[0]).click()
-      cy.get(".tokenInput input").first().type("1")
+      cy.get("#tokenInput input").first().type("1")
       cy.wait(500)
       cy.get("button").contains("Withdraw").click()
       cy.get("button").contains("Confirm Withdraw").click()
@@ -143,7 +143,7 @@ context("Withdrawal Flow", () => {
 
       // test combo withdraw by inputting values
       cy.get(".radio_wrapper .label").contains("Combo").click()
-      cy.get(".tokenInput input").then(($inputs) => {
+      cy.get("#tokenInput input").then(($inputs) => {
         cy.wrap($inputs).each(($input) => {
           cy.wrap($input).type("2")
           cy.wait(100)

@@ -27,10 +27,8 @@ const PendingSwapTimeline = ({
     events,
   } = pendingSwap
   const minutesRemaining = Math.max(Math.ceil(secondsRemaining / 60), 0)
-  const formattedBalance = formatBNToString(
-    synthBalance,
-    synthTokenFrom.decimals,
-    6,
+  const formattedBalance = commify(
+    formatBNToString(synthBalance, synthTokenFrom.decimals, 6),
   )
   const hasEvents = events.length > 0
 
@@ -44,7 +42,11 @@ const PendingSwapTimeline = ({
       >
         {getFormattedShortTime(timestamp)} {t("stepAOfB", { a: 1, b: 2 })}{" "}
         {t("confirmTheSwap")}{" "}
-        <a href={`https://etherscan.io/tx/${transactionHash}`}>
+        <a
+          href={`https://etherscan.io/tx/${transactionHash}`}
+          target="_blank"
+          rel="noreferrer"
+        >
           {transactionHash.slice(0, 8)}
         </a>
       </TimelineStep>

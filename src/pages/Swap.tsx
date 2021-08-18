@@ -538,6 +538,7 @@ function Swap(): ReactElement {
                 TOKENS_MAP[formState.to.symbol].decimals,
               ),
       }}
+      swapType={formState.swapType}
       onChangeFromAmount={handleUpdateAmountFrom}
       onChangeFromToken={handleUpdateTokenFrom}
       onChangeToToken={handleUpdateTokenTo}
