@@ -2,10 +2,12 @@ import {
   calculateExchangeRate,
   commify,
   formatBNToShortString,
+  formatDeadlineToNumber,
   getTokenByAddress,
   intersection,
 } from "../index"
 
+import { Deadlines } from "../../state/user"
 import { TOKENS_MAP } from "../../constants/index"
 import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
@@ -75,5 +77,27 @@ describe("commify", () => {
   })
   it("throws an error for invalid input", () => {
     expect(() => commify("123..")).toThrow()
+  })
+})
+
+describe("formatDeadlineToNumber", () => {
+  it("correctly formats 10 to number", () => {
+    expect(formatDeadlineToNumber(Deadlines.Ten, undefined)).toEqual(10)
+  })
+  it("correctly formats 20 to number", () => {
+    expect(formatDeadlineToNumber(Deadlines.Twenty, undefined)).toEqual(20)
+  })
+  it("correctly formats 30 to number", () => {
+    expect(formatDeadlineToNumber(Deadlines.Thirty, undefined)).toEqual(30)
+  })
+  it("correctly formats 40 to number", () => {
+    expect(formatDeadlineToNumber(Deadlines.Forty, undefined)).toEqual(40)
+  })
+
+  it("correctly formats custom deadline to number", () => {
+    expect(formatDeadlineToNumber(Deadlines.Custom, "23")).toEqual(23)
+  })
+  it("correctly formats empty custom deadline to default", () => {
+    expect(formatDeadlineToNumber(Deadlines.Custom, "")).toEqual(20)
   })
 })
