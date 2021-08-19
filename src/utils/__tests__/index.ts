@@ -1,14 +1,15 @@
+import { PoolTypes, TOKENS_MAP } from "../../constants/index"
 import {
   calculateExchangeRate,
   commify,
   formatBNToShortString,
   formatDeadlineToNumber,
   getTokenByAddress,
+  getTokenSymbolForPoolType,
   intersection,
 } from "../index"
 
 import { Deadlines } from "../../state/user"
-import { TOKENS_MAP } from "../../constants/index"
 import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
 
@@ -99,5 +100,20 @@ describe("formatDeadlineToNumber", () => {
   })
   it("correctly formats empty custom deadline to default", () => {
     expect(formatDeadlineToNumber(Deadlines.Custom, "")).toEqual(20)
+  })
+})
+
+describe("getTokenSymbolForPoolType", () => {
+  it("correctly gets token symbol for btc pool", () => {
+    expect(getTokenSymbolForPoolType(PoolTypes.BTC)).toBe("WBTC")
+  })
+  it("correctly gets token symbol for eth pool", () => {
+    expect(getTokenSymbolForPoolType(PoolTypes.ETH)).toBe("WETH")
+  })
+  it("correctly gets token symbol for usd pool", () => {
+    expect(getTokenSymbolForPoolType(PoolTypes.USD)).toBe("USDC")
+  })
+  it("correctly gets nothing for other pool", () => {
+    expect(getTokenSymbolForPoolType(PoolTypes.OTHER)).toBe("")
   })
 })
