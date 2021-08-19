@@ -1,6 +1,7 @@
 import { PoolTypes, TOKENS_MAP } from "../../constants/index"
 import {
   calculateExchangeRate,
+  calculatePrice,
   commify,
   formatBNToShortString,
   formatDeadlineToNumber,
@@ -9,6 +10,7 @@ import {
   intersection,
 } from "../index"
 
+import { BigNumber } from "@ethersproject/bignumber"
 import { Deadlines } from "../../state/user"
 import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
@@ -36,6 +38,9 @@ describe("getTokenByAddress", () => {
     expect(getTokenByAddress(target.addresses[chainId], chainId)).toEqual(
       target,
     )
+  })
+  it("correctly does not find a token", () => {
+    expect(getTokenByAddress("", 1)).toEqual(null)
   })
 })
 
@@ -115,5 +120,11 @@ describe("getTokenSymbolForPoolType", () => {
   })
   it("correctly gets nothing for other pool", () => {
     expect(getTokenSymbolForPoolType(PoolTypes.OTHER)).toBe("")
+  })
+})
+
+describe("calculatePrice", () => {
+  it("correctly gets Zero for an empty price", () => {
+    expect(calculatePrice(BigNumber.from(1), 0, undefined)).toBe(Zero)
   })
 })
