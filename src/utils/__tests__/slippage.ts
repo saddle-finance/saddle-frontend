@@ -1,6 +1,6 @@
+import { _applySlippage, formatSlippageToString } from "../slippage"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Slippages } from "../../state/user"
-import { _applySlippage } from "../slippage"
 import { numberInputStateCreator } from "../numberInputState"
 
 describe("_applySlippage", () => {
@@ -58,5 +58,28 @@ describe("_applySlippage", () => {
     expect(
       _applySlippage(input, Slippages.Custom, customNumberState, true),
     ).toEqual(expectedResult)
+  })
+})
+
+describe("formatSlippageToString", () => {
+  it("formats slippages one to string", () => {
+    expect(formatSlippageToString(Slippages.One, undefined)).toBe("1.0")
+  })
+  it("formats slippages custom without custom to give N/A", () => {
+    expect(formatSlippageToString(Slippages.Custom, undefined)).toBe("N/A")
+  })
+
+  const createNumberInputState = numberInputStateCreator(
+    5,
+    BigNumber.from(10).pow(5).mul(33),
+  )
+
+  it("formats slippages custom with custom", () => {
+    expect(
+      formatSlippageToString(
+        Slippages.Custom,
+        createNumberInputState("3.14159"),
+      ),
+    ).toBe("3.14159")
   })
 })
