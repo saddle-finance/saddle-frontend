@@ -543,6 +543,7 @@ export type Pool = {
   migration?: PoolName
   metaSwapAddresses?: { [chainId in ChainId]: string }
   underlyingPoolTokens?: Token[]
+  isOutdated?: boolean // pool can be outd  ated but not have a migration target
 }
 export type PoolsMap = {
   [poolName: string]: Pool
@@ -555,6 +556,7 @@ export const POOLS_MAP: PoolsMap = {
     poolTokens: BTC_POOL_TOKENS,
     isSynthetic: true,
     type: PoolTypes.BTC,
+    isOutdated: true,
     route: "btc",
   },
   [STABLECOIN_POOL_NAME]: {
