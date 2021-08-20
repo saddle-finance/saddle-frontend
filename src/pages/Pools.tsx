@@ -130,38 +130,40 @@ function Pools(): ReactElement | null {
       <div className={styles.content}>
         {Object.values(POOLS_MAP)
           .filter(
-            ({ type, migration }) =>
+            ({ type, migration, isOutdated }) =>
               filter === "all" ||
               type === filter ||
-              (filter === "outdated" && migration),
+              (filter === "outdated" && (migration || isOutdated)),
           )
           .map(
-            ({ name, migration }) =>
-              [getPropsForPool(name), migration] as const,
+            ({ name, migration, isOutdated }) =>
+              [getPropsForPool(name), migration, isOutdated] as const,
           )
-          .sort(([a, aMigration], [b, bMigration]) => {
-            // 1. active pools
-            // 2. user pools
-            // 3. higher TVL pools
-            if (aMigration || bMigration) {
-              return aMigration ? 1 : -1
-            } else if (
-              (a.userShareData?.usdBalance || Zero).gt(Zero) ||
-              (b.userShareData?.usdBalance || Zero).gt(Zero)
-            ) {
-              return (a.userShareData?.usdBalance || Zero).gt(
-                b.userShareData?.usdBalance || Zero,
-              )
-                ? -1
-                : 1
-            } else {
-              return (a.poolData?.reserve || Zero).gt(
-                b.poolData?.reserve || Zero,
-              )
-                ? -1
-                : 1
-            }
-          })
+          .sort(
+            ([a, aMigration, aIsOutdated], [b, bMigration, bIsOutdated]) => {
+              // 1. active pools
+              // 2. user pools
+              // 3. higher TVL pools
+              if (aMigration || bMigration || aIsOutdated || bIsOutdated) {
+                return aMigration || aIsOutdated ? 1 : -1
+              } else if (
+                (a.userShareData?.usdBalance || Zero).gt(Zero) ||
+                (b.userShareData?.usdBalance || Zero).gt(Zero)
+              ) {
+                return (a.userShareData?.usdBalance || Zero).gt(
+                  b.userShareData?.usdBalance || Zero,
+                )
+                  ? -1
+                  : 1
+              } else {
+                return (a.poolData?.reserve || Zero).gt(
+                  b.poolData?.reserve || Zero,
+                )
+                  ? -1
+                  : 1
+              }
+            },
+          )
           .map(([poolProps, migrationPool]) => (
             <PoolOverview
               key={poolProps.name}
