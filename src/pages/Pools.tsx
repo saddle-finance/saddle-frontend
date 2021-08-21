@@ -169,7 +169,7 @@ function Pools(): ReactElement | null {
               key={poolProps.name}
               {...poolProps}
               onClickMigrate={
-                migrationPool == STABLECOIN_POOL_V2_NAME
+                migrationPool
                   ? () => handleClickMigrate(migrationPool)
                   : undefined
               }
