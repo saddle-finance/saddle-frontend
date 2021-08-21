@@ -139,7 +139,7 @@ export const BTC_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
 export const BTC_SWAP_V2_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "", // TODO: add address after deployment
   [ChainId.ROPSTEN]: "", // TODO: add address after deployment
-  [ChainId.HARDHAT]: "", // TODO: add address after deployment
+  [ChainId.HARDHAT]: "0x93b6BDa6a0813D808d75aA42e900664Ceb868bcF",
 }
 
 export const VETH2_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
@@ -203,7 +203,7 @@ export const BTC_SWAP_V2_TOKEN_CONTRACT_ADDRESSES: {
 } = {
   [ChainId.MAINNET]: "", // TODO: add address after deployment
   [ChainId.ROPSTEN]: "", // TODO: add address after deployment
-  [ChainId.HARDHAT]: "", // TODO: add address after deployment
+  [ChainId.HARDHAT]: "0xbBc1b70e4e04486570bfB621194d4f901a906E8F",
 }
 
 export const VETH2_SWAP_TOKEN_CONTRACT_ADDRESSES: {

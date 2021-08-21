@@ -2,16 +2,16 @@ import { PoolName } from "../../src/constants"
 
 // have two seperate maps here since the naming convention is different throughout the page
 const poolTokensFullName: { [key: string]: string[] } = {
-  "BTC Pool": ["tBTC", "WBTC", "renBTC", "sBTC"],
-  "Stablecoin Pool": ["Dai", "USDC Coin", "Tether"],
+  "BTC Pool V2": ["WBTC", "renBTC", "sBTC"],
+  "Stablecoin Pool V2": ["Dai", "USDC Coin", "Tether"],
 }
 
 const poolTokens: { [key: string]: string[] } = {
-  "BTC Pool": ["TBTC", "WBTC", "RENBTC", "sBTC"],
-  "Stablecoin Pool": ["DAI", "USDC", "USDT"],
+  "BTC Pool V2": ["WBTC", "RENBTC", "sBTC"],
+  "Stablecoin Pool V2": ["DAI", "USDC", "USDT"],
 }
 
-const pools = ["BTC Pool", "Stablecoin Pool"]
+const pools = ["BTC Pool V2", "Stablecoin Pool V2"]
 
 context("Withdrawal Flow", () => {
   beforeEach(() => {
