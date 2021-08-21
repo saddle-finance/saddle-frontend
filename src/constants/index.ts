@@ -592,7 +592,7 @@ export const POOLS_MAP: PoolsMap = {
     addresses: BTC_SWAP_V2_ADDRESSES,
     lpToken: BTC_SWAP_V2_TOKEN,
     poolTokens: BTC_POOL_V2_TOKENS,
-    isSynthetic: true, // TODO: ??
+    isSynthetic: true,
     type: PoolTypes.BTC,
     route: "btcv2",
   },

@@ -68,7 +68,11 @@ export default function PoolOverview({
   const hasShare = !!userShareData?.usdBalance.gt("0")
 
   return (
-    <div className={classNames("poolOverview", { outdated: shouldMigrate })}>
+    <div
+      className={classNames("poolOverview", {
+        outdated: isOutdated || shouldMigrate,
+      })}
+    >
       <div className="left">
         <div className="titleAndTag">
           <h4 className="title">{formattedData.name}</h4>
@@ -145,7 +149,10 @@ export default function PoolOverview({
             </Button>
           ) : (
             <Link to={`${poolRoute}/deposit`}>
-              <Button kind="primary" disabled={poolData?.isPaused}>
+              <Button
+                kind="primary"
+                disabled={poolData?.isPaused || isOutdated}
+              >
                 {t("deposit")}
               </Button>
             </Link>
