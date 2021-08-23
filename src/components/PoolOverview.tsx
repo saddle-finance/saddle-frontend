@@ -30,7 +30,7 @@ export default function PoolOverview({
   onClickMigrate,
 }: Props): ReactElement | null {
   const { t } = useTranslation()
-  const { type: poolType } = POOLS_MAP[poolData.name]
+  const { type: poolType, isOutdated } = POOLS_MAP[poolData.name]
   const formattedDecimals = poolType === PoolTypes.USD ? 2 : 4
   const shouldMigrate = !!onClickMigrate
   const formattedData = {
@@ -68,11 +68,15 @@ export default function PoolOverview({
   const hasShare = !!userShareData?.usdBalance.gt("0")
 
   return (
-    <div className={classNames("poolOverview", { outdated: shouldMigrate })}>
+    <div
+      className={classNames("poolOverview", {
+        outdated: isOutdated || shouldMigrate,
+      })}
+    >
       <div className="left">
         <div className="titleAndTag">
           <h4 className="title">{formattedData.name}</h4>
-          {shouldMigrate && <Tag kind="warning">OUTDATED</Tag>}
+          {(shouldMigrate || isOutdated) && <Tag kind="warning">OUTDATED</Tag>}
           {poolData.isPaused && <Tag kind="error">PAUSED</Tag>}
         </div>
         {hasShare && (
@@ -145,7 +149,10 @@ export default function PoolOverview({
             </Button>
           ) : (
             <Link to={`${poolRoute}/deposit`}>
-              <Button kind="primary" disabled={poolData?.isPaused}>
+              <Button
+                kind="primary"
+                disabled={poolData?.isPaused || isOutdated}
+              >
                 {t("deposit")}
               </Button>
             </Link>
