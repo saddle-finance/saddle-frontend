@@ -95,7 +95,7 @@ context("Swap Flow", () => {
     })
   }
   const testConfigs: [string, string[]][] = [
-    ["BTC Pool", ["TBTC", "sBTC", "WBTC", "RENBTC"]],
+    ["BTC Pool V2", ["sBTC", "WBTC", "RENBTC"]],
     ["USD Pool V2", ["DAI", "USDC", "USDT"]],
   ]
   testConfigs.forEach((info) => testAssetSwap(...info))
