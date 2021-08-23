@@ -1,12 +1,17 @@
+import { PoolTypes, TOKENS_MAP } from "../../constants/index"
 import {
   calculateExchangeRate,
+  calculatePrice,
   commify,
   formatBNToShortString,
+  formatDeadlineToNumber,
   getTokenByAddress,
+  getTokenSymbolForPoolType,
   intersection,
 } from "../index"
 
-import { TOKENS_MAP } from "../../constants/index"
+import { BigNumber } from "@ethersproject/bignumber"
+import { Deadlines } from "../../state/user"
 import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
 
@@ -33,6 +38,9 @@ describe("getTokenByAddress", () => {
     expect(getTokenByAddress(target.addresses[chainId], chainId)).toEqual(
       target,
     )
+  })
+  it("correctly does not find a token", () => {
+    expect(getTokenByAddress("", 1)).toEqual(null)
   })
 })
 
@@ -75,5 +83,48 @@ describe("commify", () => {
   })
   it("throws an error for invalid input", () => {
     expect(() => commify("123..")).toThrow()
+  })
+})
+
+describe("formatDeadlineToNumber", () => {
+  it("correctly formats 10 to number", () => {
+    expect(formatDeadlineToNumber(Deadlines.Ten, undefined)).toEqual(10)
+  })
+  it("correctly formats 20 to number", () => {
+    expect(formatDeadlineToNumber(Deadlines.Twenty, undefined)).toEqual(20)
+  })
+  it("correctly formats 30 to number", () => {
+    expect(formatDeadlineToNumber(Deadlines.Thirty, undefined)).toEqual(30)
+  })
+  it("correctly formats 40 to number", () => {
+    expect(formatDeadlineToNumber(Deadlines.Forty, undefined)).toEqual(40)
+  })
+
+  it("correctly formats custom deadline to number", () => {
+    expect(formatDeadlineToNumber(Deadlines.Custom, "23")).toEqual(23)
+  })
+  it("correctly formats empty custom deadline to default", () => {
+    expect(formatDeadlineToNumber(Deadlines.Custom, "")).toEqual(20)
+  })
+})
+
+describe("getTokenSymbolForPoolType", () => {
+  it("correctly gets token symbol for btc pool", () => {
+    expect(getTokenSymbolForPoolType(PoolTypes.BTC)).toBe("WBTC")
+  })
+  it("correctly gets token symbol for eth pool", () => {
+    expect(getTokenSymbolForPoolType(PoolTypes.ETH)).toBe("WETH")
+  })
+  it("correctly gets token symbol for usd pool", () => {
+    expect(getTokenSymbolForPoolType(PoolTypes.USD)).toBe("USDC")
+  })
+  it("correctly gets nothing for other pool", () => {
+    expect(getTokenSymbolForPoolType(PoolTypes.OTHER)).toBe("")
+  })
+})
+
+describe("calculatePrice", () => {
+  it("correctly gets Zero for an empty price", () => {
+    expect(calculatePrice(BigNumber.from(1), 0, undefined)).toBe(Zero)
   })
 })
