@@ -1,7 +1,7 @@
 import { PoolName } from "../../src/constants"
 
 const poolTokens: { [key: string]: string[] } = {
-  "BTC Pool": ["TBTC", "WBTC", "RENBTC", "sBTC"],
+  "BTC Pool V2": ["WBTC", "RENBTC", "sBTC"],
   "Stablecoin Pool V2": ["DAI", "USDC", "USDT"],
 }
 
@@ -60,5 +60,5 @@ context("Deposit Flow", () => {
       })
     })
   }
-  ;["BTC Pool", "Stablecoin Pool V2"].forEach(testPoolDeposit)
+  ;["BTC Pool V2", "Stablecoin Pool V2"].forEach(testPoolDeposit)
 })
