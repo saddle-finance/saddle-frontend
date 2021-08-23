@@ -1,6 +1,7 @@
 import {
   ALETH_POOL_NAME,
   BTC_POOL_NAME,
+  BTC_POOL_V2_NAME,
   D4_POOL_NAME,
   POOLS_MAP,
   PoolName,
@@ -28,6 +29,7 @@ function Pools(): ReactElement | null {
   const [d4PoolData, d4UserShareData] = usePoolData(D4_POOL_NAME)
   const [alethPoolData, alethUserShareData] = usePoolData(ALETH_POOL_NAME)
   const [btcPoolData, btcUserShareData] = usePoolData(BTC_POOL_NAME)
+  const [btcPoolV2Data, btcV2UsersShareData] = usePoolData(BTC_POOL_V2_NAME)
   const [usdPoolV2Data, usdV2UserShareData] = usePoolData(
     STABLECOIN_POOL_V2_NAME,
   )
@@ -64,6 +66,13 @@ function Pools(): ReactElement | null {
         poolData: btcPoolData,
         userShareData: btcUserShareData,
         poolRoute: "/pools/btc",
+      }
+    } else if (poolName === BTC_POOL_V2_NAME) {
+      return {
+        name: BTC_POOL_V2_NAME,
+        poolData: btcPoolV2Data,
+        userShareData: btcV2UsersShareData,
+        poolRoute: "/pools/btcv2",
       }
     } else if (poolName === STABLECOIN_POOL_NAME) {
       return {
@@ -121,38 +130,40 @@ function Pools(): ReactElement | null {
       <div className={styles.content}>
         {Object.values(POOLS_MAP)
           .filter(
-            ({ type, migration }) =>
+            ({ type, migration, isOutdated }) =>
               filter === "all" ||
               type === filter ||
-              (filter === "outdated" && migration),
+              (filter === "outdated" && (migration || isOutdated)),
           )
           .map(
-            ({ name, migration }) =>
-              [getPropsForPool(name), migration] as const,
+            ({ name, migration, isOutdated }) =>
+              [getPropsForPool(name), migration, isOutdated] as const,
           )
-          .sort(([a, aMigration], [b, bMigration]) => {
-            // 1. active pools
-            // 2. user pools
-            // 3. higher TVL pools
-            if (aMigration || bMigration) {
-              return aMigration ? 1 : -1
-            } else if (
-              (a.userShareData?.usdBalance || Zero).gt(Zero) ||
-              (b.userShareData?.usdBalance || Zero).gt(Zero)
-            ) {
-              return (a.userShareData?.usdBalance || Zero).gt(
-                b.userShareData?.usdBalance || Zero,
-              )
-                ? -1
-                : 1
-            } else {
-              return (a.poolData?.reserve || Zero).gt(
-                b.poolData?.reserve || Zero,
-              )
-                ? -1
-                : 1
-            }
-          })
+          .sort(
+            ([a, aMigration, aIsOutdated], [b, bMigration, bIsOutdated]) => {
+              // 1. active pools
+              // 2. user pools
+              // 3. higher TVL pools
+              if (aMigration || bMigration || aIsOutdated || bIsOutdated) {
+                return aMigration || aIsOutdated ? 1 : -1
+              } else if (
+                (a.userShareData?.usdBalance || Zero).gt(Zero) ||
+                (b.userShareData?.usdBalance || Zero).gt(Zero)
+              ) {
+                return (a.userShareData?.usdBalance || Zero).gt(
+                  b.userShareData?.usdBalance || Zero,
+                )
+                  ? -1
+                  : 1
+              } else {
+                return (a.poolData?.reserve || Zero).gt(
+                  b.poolData?.reserve || Zero,
+                )
+                  ? -1
+                  : 1
+              }
+            },
+          )
           .map(([poolProps, migrationPool]) => (
             <PoolOverview
               key={poolProps.name}

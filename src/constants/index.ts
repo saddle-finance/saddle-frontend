@@ -25,6 +25,7 @@ import wethLogo from "../assets/icons/weth.svg"
 
 export const NetworkContextName = "NETWORK"
 export const BTC_POOL_NAME = "BTC Pool"
+export const BTC_POOL_V2_NAME = "BTC Pool V2"
 export const STABLECOIN_POOL_NAME = "Stablecoin Pool"
 export const STABLECOIN_POOL_V2_NAME = "Stablecoin Pool V2"
 export const VETH2_POOL_NAME = "vETH2 Pool"
@@ -33,6 +34,7 @@ export const D4_POOL_NAME = "D4 Pool"
 export const SUSD_POOL_NAME = "sUSD Pool"
 export type PoolName =
   | typeof BTC_POOL_NAME
+  | typeof BTC_POOL_V2_NAME
   | typeof STABLECOIN_POOL_NAME
   | typeof STABLECOIN_POOL_V2_NAME
   | typeof VETH2_POOL_NAME
@@ -148,6 +150,12 @@ export const BTC_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.HARDHAT]: "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
 }
 
+export const BTC_SWAP_V2_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0xdf3309771d2BF82cb2B6C56F9f5365C8bD97c4f2",
+  [ChainId.ROPSTEN]: "", // TODO: add address after deployment
+  [ChainId.HARDHAT]: "0x93b6BDa6a0813D808d75aA42e900664Ceb868bcF",
+}
+
 export const VETH2_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0xdec2157831D6ABC3Ec328291119cc91B337272b5",
   [ChainId.ROPSTEN]: "0x2C019509326485AE234c6CA8a51c9F4A0F94f5fA",
@@ -204,6 +212,14 @@ export const BTC_SWAP_TOKEN_CONTRACT_ADDRESSES: {
   [ChainId.HARDHAT]: "0x6F1216D1BFe15c98520CA1434FC1d9D57AC95321",
 }
 
+export const BTC_SWAP_V2_TOKEN_CONTRACT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "0xF32E91464ca18fc156aB97a697D6f8ae66Cd21a3",
+  [ChainId.ROPSTEN]: "", // TODO: add address after deployment
+  [ChainId.HARDHAT]: "0xbBc1b70e4e04486570bfB621194d4f901a906E8F",
+}
+
 export const VETH2_SWAP_TOKEN_CONTRACT_ADDRESSES: {
   [chainId in ChainId]: string
 } = {
@@ -245,6 +261,17 @@ export const BTC_SWAP_TOKEN = new Token(
   "saddleBTC",
   "saddlebtc",
   "Saddle TBTC/WBTC/RENBTC/SBTC",
+  saddleLogo,
+  false,
+  true,
+)
+
+export const BTC_SWAP_V2_TOKEN = new Token(
+  BTC_SWAP_V2_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "saddleBTC-V2",
+  "saddlebtc-v2",
+  "Saddle WBTC/RENBTC/SBTC",
   saddleLogo,
   false,
   true,
@@ -426,6 +453,7 @@ export const SBTC = new Token(
 )
 
 export const BTC_POOL_TOKENS = [TBTC, WBTC, RENBTC, SBTC]
+export const BTC_POOL_V2_TOKENS = [WBTC, RENBTC, SBTC]
 
 const WETH_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
@@ -557,6 +585,7 @@ export type Pool = {
   migration?: PoolName
   metaSwapAddresses?: { [chainId in ChainId]: string }
   underlyingPoolTokens?: Token[]
+  isOutdated?: boolean // pool can be outd  ated but not have a migration target
 }
 export type PoolsMap = {
   [poolName: string]: Pool
@@ -569,7 +598,17 @@ export const POOLS_MAP: PoolsMap = {
     poolTokens: BTC_POOL_TOKENS,
     isSynthetic: true,
     type: PoolTypes.BTC,
+    isOutdated: true,
     route: "btc",
+  },
+  [BTC_POOL_V2_NAME]: {
+    name: BTC_POOL_V2_NAME,
+    addresses: BTC_SWAP_V2_ADDRESSES,
+    lpToken: BTC_SWAP_V2_TOKEN,
+    poolTokens: BTC_POOL_V2_TOKENS,
+    isSynthetic: true,
+    type: PoolTypes.BTC,
+    route: "btcv2",
   },
   [STABLECOIN_POOL_NAME]: {
     name: STABLECOIN_POOL_NAME,
