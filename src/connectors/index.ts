@@ -21,7 +21,7 @@ export const network = new NetworkConnector({
 })
 
 let networkLibrary: BaseProvider | undefined
-export function getNetworkLibrary(): BaseProvider {
+export function getLibrary(): BaseProvider {
   const provider = getDefaultProvider(NETWORK_URL)
   return (networkLibrary = networkLibrary ?? provider)
 }

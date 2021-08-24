@@ -12,8 +12,7 @@ import React from "react"
 import ReactDOM from "react-dom"
 import { HashRouter as Router } from "react-router-dom"
 import chakraTheme from "./theme/"
-import getLibrary from "./utils/getLibrary"
-import { getNetworkLibrary } from "./connectors"
+import { getLibrary } from "./connectors"
 import reportWebVitals from "./reportWebVitals"
 import store from "./state"
 
@@ -24,14 +23,13 @@ if (window && window.ethereum) {
 }
 
 window.addEventListener("error", logError)
-
 ReactDOM.render(
   <>
     <ColorModeScript initialColorMode={chakraTheme.config.initialColorMode} />
     <React.StrictMode>
       <ChakraProvider theme={chakraTheme}>
         <Web3ReactProvider getLibrary={getLibrary}>
-          <Web3ProviderNetwork getLibrary={getNetworkLibrary}>
+          <Web3ProviderNetwork getLibrary={getLibrary}>
             <Provider store={store}>
               <Router>
                 <App />
