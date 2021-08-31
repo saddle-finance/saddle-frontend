@@ -121,7 +121,7 @@ export const SUSD_META_SWAP_DEPOSIT_ADDRESSES: {
 }
 
 export const TBTC_META_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: "", // TODO: add address after deployment
+  [ChainId.MAINNET]: "0xf74ebe6e5586275dc4CeD78F5DBEF31B1EfbE7a5",
   [ChainId.ROPSTEN]: "",
   [ChainId.HARDHAT]: "0xA22D78bc37cE77FeE1c44F0C2C0d2524318570c3",
 }
@@ -129,7 +129,7 @@ export const TBTC_META_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
 export const TBTC_META_SWAP_DEPOSIT_ADDRESSES: {
   [chainId in ChainId]: string
 } = {
-  [ChainId.MAINNET]: "", // TODO: add address after deployment
+  [ChainId.MAINNET]: "0xee1ec4e1C6e39C31dAaf3db2A62A397bdf3fe2f1", // TODO: add address after deployment
   [ChainId.ROPSTEN]: "",
   [ChainId.HARDHAT]: "0x0ed2E86FcE2e5A7965f59708c01f88a722BC7f07",
 }
@@ -225,7 +225,7 @@ export const BTC_SWAP_V2_TOKEN_CONTRACT_ADDRESSES: {
 export const TBTC_SWAP_TOKEN_CONTRACT_ADDRESSES: {
   [chainId in ChainId]: string
 } = {
-  [ChainId.MAINNET]: "", // TODO: add address after deployment
+  [ChainId.MAINNET]: "0x122Eca07139EB368245A29FB702c9ff11E9693B7",
   [ChainId.ROPSTEN]: "",
   [ChainId.HARDHAT]: "0xf76070F44307a4B6649fEC2081cE4B4730c37C76",
 }
