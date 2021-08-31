@@ -32,6 +32,7 @@ export const VETH2_POOL_NAME = "vETH2 Pool"
 export const ALETH_POOL_NAME = "alETH Pool"
 export const D4_POOL_NAME = "D4 Pool"
 export const SUSD_POOL_NAME = "sUSD Pool"
+export const TBTC_POOL_NAME = "tBTC Pool"
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof BTC_POOL_V2_NAME
@@ -41,6 +42,7 @@ export type PoolName =
   | typeof ALETH_POOL_NAME
   | typeof D4_POOL_NAME
   | typeof SUSD_POOL_NAME
+  | typeof TBTC_POOL_NAME
 
 export enum ChainId {
   MAINNET = 1,
@@ -116,6 +118,20 @@ export const SUSD_META_SWAP_DEPOSIT_ADDRESSES: {
   [ChainId.MAINNET]: "0x1e35ebF875f8A2185EDf22da02e7dBCa0F5558aB",
   [ChainId.ROPSTEN]: "",
   [ChainId.HARDHAT]: "0x809d550fca64d94Bd9F66E60752A544199cfAC3D",
+}
+
+export const TBTC_META_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0xf74ebe6e5586275dc4CeD78F5DBEF31B1EfbE7a5",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "0xA22D78bc37cE77FeE1c44F0C2C0d2524318570c3",
+}
+
+export const TBTC_META_SWAP_DEPOSIT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "0xee1ec4e1C6e39C31dAaf3db2A62A397bdf3fe2f1", // TODO: add address after deployment
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "0x0ed2E86FcE2e5A7965f59708c01f88a722BC7f07",
 }
 
 export const STABLECOIN_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
@@ -206,6 +222,14 @@ export const BTC_SWAP_V2_TOKEN_CONTRACT_ADDRESSES: {
   [ChainId.HARDHAT]: "0xbBc1b70e4e04486570bfB621194d4f901a906E8F",
 }
 
+export const TBTC_SWAP_TOKEN_CONTRACT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "0x122Eca07139EB368245A29FB702c9ff11E9693B7",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "0xf76070F44307a4B6649fEC2081cE4B4730c37C76",
+}
+
 export const VETH2_SWAP_TOKEN_CONTRACT_ADDRESSES: {
   [chainId in ChainId]: string
 } = {
@@ -258,6 +282,17 @@ export const BTC_SWAP_V2_TOKEN = new Token(
   "saddleBTC-V2",
   "saddlebtc-v2",
   "Saddle WBTC/RENBTC/SBTC",
+  saddleLogo,
+  false,
+  true,
+)
+
+export const TBTC_SWAP_TOKEN = new Token(
+  TBTC_SWAP_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "saddletBTC",
+  "saddletBTC",
+  "Saddle tBTCv2/saddleWRenSBTC",
   saddleLogo,
   false,
   true,
@@ -395,6 +430,20 @@ export const TBTC = new Token(
   tbtcLogo,
 )
 
+const TBTC_V2_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0x18084fba666a33d37592fa2633fd49a74dd93a88",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "0x82e01223d51Eb87e16A03E24687EDF0F294da6f1",
+}
+export const TBTC_V2 = new Token(
+  TBTC_V2_CONTRACT_ADDRESSES,
+  18,
+  "TBTCv2",
+  "tbtc",
+  "tBTCv2",
+  tbtcLogo,
+)
+
 const WBTC_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
   [ChainId.ROPSTEN]: "0x7264594dFB80a150f80b2988862605dDfda53727",
@@ -440,6 +489,9 @@ export const SBTC = new Token(
 
 export const BTC_POOL_TOKENS = [TBTC, WBTC, RENBTC, SBTC]
 export const BTC_POOL_V2_TOKENS = [WBTC, RENBTC, SBTC]
+
+export const TBTC_POOL_TOKENS = [TBTC_V2, ...BTC_POOL_V2_TOKENS]
+export const TBTC_UNDERLYING_POOL_TOKENS = [TBTC_V2, BTC_SWAP_V2_TOKEN]
 
 const WETH_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
@@ -652,6 +704,17 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: SUSD_UNDERLYING_POOL_TOKENS,
     route: "susd",
   },
+  [TBTC_POOL_NAME]: {
+    name: TBTC_POOL_NAME,
+    lpToken: TBTC_SWAP_TOKEN,
+    poolTokens: TBTC_POOL_TOKENS,
+    addresses: TBTC_META_SWAP_DEPOSIT_ADDRESSES,
+    isSynthetic: true,
+    type: PoolTypes.BTC,
+    metaSwapAddresses: TBTC_META_SWAP_ADDRESSES,
+    underlyingPoolTokens: TBTC_UNDERLYING_POOL_TOKENS,
+    route: "tbtc",
+  },
 }
 export function isLegacySwapABIPool(poolName: string): boolean {
   return new Set([BTC_POOL_NAME, STABLECOIN_POOL_NAME, VETH2_POOL_NAME]).has(
@@ -659,7 +722,7 @@ export function isLegacySwapABIPool(poolName: string): boolean {
   )
 }
 export function isMetaPool(poolName = ""): boolean {
-  return new Set([SUSD_POOL_NAME]).has(poolName)
+  return new Set([SUSD_POOL_NAME, TBTC_POOL_NAME]).has(poolName)
 }
 
 // maps a symbol string to a token object
