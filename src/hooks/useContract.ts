@@ -5,6 +5,7 @@ import {
   BRIDGE_CONTRACT_ADDRESSES,
   BTC_POOL_NAME,
   BTC_SWAP_TOKEN,
+  BTC_SWAP_V2_TOKEN,
   D4_SWAP_TOKEN,
   DAI,
   FEI,
@@ -23,6 +24,8 @@ import {
   SYNTHETIX_CONTRACT_ADDRESSES,
   SYNTHETIX_EXCHANGE_RATES_CONTRACT_ADDRESSES,
   TBTC,
+  TBTC_SWAP_TOKEN,
+  TBTC_V2,
   Token,
   USDC,
   USDT,
@@ -232,6 +235,7 @@ interface AllContractsObject {
 export function useAllContracts(): AllContractsObject | null {
   const susdContract = useTokenContract(SUSD) as Erc20
   const tbtcContract = useTokenContract(TBTC) as Erc20
+  const tbtcV2Contract = useTokenContract(TBTC_V2) as Erc20
   const wbtcContract = useTokenContract(WBTC) as Erc20
   const renbtcContract = useTokenContract(RENBTC) as Erc20
   const sbtcContract = useTokenContract(SBTC) as Erc20
@@ -267,11 +271,18 @@ export function useAllContracts(): AllContractsObject | null {
   const susdSwapTokenContract = useTokenContract(
     SUSD_SWAP_TOKEN,
   ) as LpTokenUnguarded
+  const btcSwapV2TokenContract = useTokenContract(
+    BTC_SWAP_V2_TOKEN,
+  ) as LpTokenUnguarded
+  const tbtcSwapTokenContract = useTokenContract(
+    TBTC_SWAP_TOKEN,
+  ) as LpTokenUnguarded
 
   return useMemo(() => {
     if (
       ![
         tbtcContract,
+        tbtcV2Contract,
         wbtcContract,
         renbtcContract,
         sbtcContract,
@@ -294,11 +305,14 @@ export function useAllContracts(): AllContractsObject | null {
         alethSwapTokenContract,
         d4SwapTokenContract,
         susdSwapTokenContract,
+        btcSwapV2TokenContract,
+        tbtcSwapTokenContract,
       ].some(Boolean)
     )
       return null
     return {
       [TBTC.symbol]: tbtcContract,
+      [TBTC_V2.symbol]: tbtcV2Contract,
       [WBTC.symbol]: wbtcContract,
       [RENBTC.symbol]: renbtcContract,
       [SBTC.symbol]: sbtcContract,
@@ -321,9 +335,12 @@ export function useAllContracts(): AllContractsObject | null {
       [ALETH_SWAP_TOKEN.symbol]: alethSwapTokenContract,
       [D4_SWAP_TOKEN.symbol]: d4SwapTokenContract,
       [SUSD_SWAP_TOKEN.symbol]: susdSwapTokenContract,
+      [BTC_SWAP_V2_TOKEN.symbol]: btcSwapV2TokenContract,
+      [TBTC_SWAP_TOKEN.symbol]: tbtcSwapTokenContract,
     }
   }, [
     tbtcContract,
+    tbtcV2Contract,
     wbtcContract,
     renbtcContract,
     sbtcContract,
@@ -346,5 +363,7 @@ export function useAllContracts(): AllContractsObject | null {
     alethSwapTokenContract,
     d4SwapTokenContract,
     susdSwapTokenContract,
+    btcSwapV2TokenContract,
+    tbtcSwapTokenContract,
   ])
 }
