@@ -21,6 +21,7 @@ import usdtLogo from "../assets/icons/usdt.svg"
 import veth2Logo from "../assets/icons/veth2.svg"
 import walletconnectIcon from "../assets/icons/walletconnect.svg"
 import wbtcLogo from "../assets/icons/wbtc.svg"
+import wcusdLogo from "../assets/icons/wcusd.png"
 import wethLogo from "../assets/icons/weth.svg"
 
 export const NetworkContextName = "NETWORK"
@@ -33,6 +34,7 @@ export const ALETH_POOL_NAME = "alETH Pool"
 export const D4_POOL_NAME = "D4 Pool"
 export const SUSD_POOL_NAME = "sUSD Pool"
 export const TBTC_POOL_NAME = "tBTC Pool"
+export const WCUSD_POOL_NAME = "wCUSD Pool"
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof BTC_POOL_V2_NAME
@@ -43,6 +45,7 @@ export type PoolName =
   | typeof D4_POOL_NAME
   | typeof SUSD_POOL_NAME
   | typeof TBTC_POOL_NAME
+  | typeof WCUSD_POOL_NAME
 
 export enum ChainId {
   MAINNET = 1,
@@ -129,9 +132,23 @@ export const TBTC_META_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
 export const TBTC_META_SWAP_DEPOSIT_ADDRESSES: {
   [chainId in ChainId]: string
 } = {
-  [ChainId.MAINNET]: "0xee1ec4e1C6e39C31dAaf3db2A62A397bdf3fe2f1", // TODO: add address after deployment
+  [ChainId.MAINNET]: "0xee1ec4e1C6e39C31dAaf3db2A62A397bdf3fe2f1",
   [ChainId.ROPSTEN]: "",
   [ChainId.HARDHAT]: "0x0ed2E86FcE2e5A7965f59708c01f88a722BC7f07",
+}
+
+export const WCUSD_META_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "0x1fA02b2d6A771842690194Cf62D91bdd92BfE28d",
+}
+
+export const WCUSD_META_SWAP_DEPOSIT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "0x4C4a2f8c81640e47606d3fd77B353E87Ba015584",
 }
 
 export const STABLECOIN_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
@@ -204,6 +221,14 @@ export const STABLECOIN_SWAP_V2_TOKEN_CONTRACT_ADDRESSES: {
   [ChainId.MAINNET]: "0x5f86558387293b6009d7896A61fcc86C17808D62",
   [ChainId.ROPSTEN]: "",
   [ChainId.HARDHAT]: "0xC863F1F636fddce400E7515eCBDAbbEc4d1E0390",
+}
+
+export const WCUSD_SWAP_TOKEN_CONTRACT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "0xf6cB1Bc71F7ed659E64C8a56dA5759494480e333",
 }
 
 export const BTC_SWAP_TOKEN_CONTRACT_ADDRESSES: {
@@ -320,6 +345,17 @@ export const STABLECOIN_SWAP_V2_TOKEN = new Token(
   true,
 )
 
+export const WCUSD_SWAP_TOKEN = new Token(
+  WCUSD_SWAP_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "saddlewCUSD",
+  "saddlewcusd",
+  "Saddle wCUSD/saddleUSD-V2",
+  saddleLogo,
+  false,
+  true,
+)
+
 export const VETH2_SWAP_TOKEN = new Token(
   VETH2_SWAP_TOKEN_CONTRACT_ADDRESSES,
   18,
@@ -354,6 +390,20 @@ export const D4_SWAP_TOKEN = new Token(
 )
 
 // Stablecoins
+const TBTC_V2_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0x18084fba666a33d37592fa2633fd49a74dd93a88",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "0x82e01223d51Eb87e16A03E24687EDF0F294da6f1",
+}
+export const TBTC_V2 = new Token(
+  TBTC_V2_CONTRACT_ADDRESSES,
+  18,
+  "TBTCv2",
+  "tbtc",
+  "tBTCv2",
+  tbtcLogo,
+)
+
 const SUSD_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51",
   [ChainId.ROPSTEN]: "",
@@ -430,18 +480,18 @@ export const TBTC = new Token(
   tbtcLogo,
 )
 
-const TBTC_V2_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: "0x18084fba666a33d37592fa2633fd49a74dd93a88",
+const WCUSD_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0xad3e3fc59dff318beceaab7d00eb4f68b1ecf195",
   [ChainId.ROPSTEN]: "",
-  [ChainId.HARDHAT]: "0x82e01223d51Eb87e16A03E24687EDF0F294da6f1",
+  [ChainId.HARDHAT]: "0xFD471836031dc5108809D173A067e8486B9047A3",
 }
-export const TBTC_V2 = new Token(
-  TBTC_V2_CONTRACT_ADDRESSES,
+export const WCUSD = new Token(
+  WCUSD_CONTRACT_ADDRESSES,
   18,
-  "TBTCv2",
-  "tbtc",
-  "tBTCv2",
-  tbtcLogo,
+  "wCUSD",
+  "wrapped-celo-dollar",
+  "Wrapped Celo USD",
+  wcusdLogo,
 )
 
 const WBTC_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
@@ -612,6 +662,9 @@ export const LUSD = new Token(
 
 export const D4_POOL_TOKENS = [ALUSD, FEI, FRAX, LUSD]
 
+export const WCUSD_POOL_TOKENS = [WCUSD, ...STABLECOIN_POOL_TOKENS]
+export const WCUSD_UNDERLYING_POOL_TOKENS = [WCUSD, STABLECOIN_SWAP_V2_TOKEN]
+
 export type Pool = {
   name: PoolName
   lpToken: Token
@@ -715,6 +768,17 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: TBTC_UNDERLYING_POOL_TOKENS,
     route: "tbtc",
   },
+  [WCUSD_POOL_NAME]: {
+    name: WCUSD_POOL_NAME,
+    lpToken: WCUSD_SWAP_TOKEN,
+    poolTokens: WCUSD_POOL_TOKENS,
+    addresses: WCUSD_META_SWAP_DEPOSIT_ADDRESSES,
+    isSynthetic: false,
+    type: PoolTypes.USD,
+    metaSwapAddresses: WCUSD_META_SWAP_ADDRESSES,
+    underlyingPoolTokens: WCUSD_UNDERLYING_POOL_TOKENS,
+    route: "wcusd",
+  },
 }
 export function isLegacySwapABIPool(poolName: string): boolean {
   return new Set([BTC_POOL_NAME, STABLECOIN_POOL_NAME, VETH2_POOL_NAME]).has(
@@ -722,7 +786,9 @@ export function isLegacySwapABIPool(poolName: string): boolean {
   )
 }
 export function isMetaPool(poolName = ""): boolean {
-  return new Set([SUSD_POOL_NAME, TBTC_POOL_NAME]).has(poolName)
+  return new Set([SUSD_POOL_NAME, TBTC_POOL_NAME, WCUSD_POOL_NAME]).has(
+    poolName,
+  )
 }
 
 // maps a symbol string to a token object
