@@ -93,7 +93,7 @@ export class Token {
 export const BLOCK_TIME = 13000 // ms
 
 export const SYNTHETIX_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F", //"0x43AE8037179a5746D618DA077A38DdeEa9640cBa",
+  [ChainId.MAINNET]: "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F",
   [ChainId.ROPSTEN]: "",
   [ChainId.HARDHAT]: "",
 }

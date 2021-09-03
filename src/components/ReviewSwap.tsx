@@ -72,6 +72,16 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
         ) : (
           <DirectSwapTokens data={data} />
         )}
+        {data.swapType === SWAP_TYPES.SYNTH_TO_SYNTH && (
+          <div className="row">
+            <span className="aside">
+              {t("virtualSwapSynthToSynthInfo")}{" "}
+              <a href="https://blog.synthetix.io/how-fee-reclamation-rebates-work/">
+                {t("learnMore")}
+              </a>
+            </span>
+          </div>
+        )}
         <div className="divider" style={{ height: "1px", width: "100%" }} />
         <div className="swapInfo">
           <div className="priceTable">

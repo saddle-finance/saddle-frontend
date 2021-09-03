@@ -200,8 +200,9 @@ export function useApproveAndSwap(): (
       } else {
         throw new Error("Invalid Swap Type, or contract not loaded")
       }
-
-      notifyHandler(swapTransaction?.hash || "", "swap")
+      if (swapTransaction?.hash) {
+        notifyHandler(swapTransaction.hash, "swap")
+      }
 
       await swapTransaction?.wait()
       dispatch(
