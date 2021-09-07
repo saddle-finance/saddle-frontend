@@ -78,14 +78,14 @@ export const SWAP_MIGRATOR_USD_CONTRACT_ADDRESSES: {
 
 export const STABLECOIN_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.OPTIMISTIC_MAINNET]: "", // TODO replace once mainnet deploy goes out
-  [ChainId.OPTIMISTIC_KOVAN]: "",
+  [ChainId.OPTIMISTIC_KOVAN]: "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1",
 }
 
 export const STABLECOIN_SWAP_TOKEN_CONTRACT_ADDRESSES: {
   [chainId in ChainId]: string
 } = {
   [ChainId.OPTIMISTIC_MAINNET]: "", // TODO replace once mainnet deploy goes out
-  [ChainId.OPTIMISTIC_KOVAN]: "",
+  [ChainId.OPTIMISTIC_KOVAN]: "0x56639dB16Ac50A89228026e42a316B30179A5376",
 }
 
 export const STABLECOIN_SWAP_TOKEN = new Token(
@@ -115,7 +115,7 @@ export const DAI = new Token(
 
 const USDC_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.OPTIMISTIC_MAINNET]: "", // TODO replace once mainnet deploy goes out
-  [ChainId.OPTIMISTIC_KOVAN]: "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44",
+  [ChainId.OPTIMISTIC_KOVAN]: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
 }
 export const USDC = new Token(
   USDC_CONTRACT_ADDRESSES,
@@ -128,7 +128,7 @@ export const USDC = new Token(
 
 const USDT_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.OPTIMISTIC_MAINNET]: "", // TODO replace once mainnet deploy goes out
-  [ChainId.OPTIMISTIC_KOVAN]: "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44",
+  [ChainId.OPTIMISTIC_KOVAN]: "0x4A679253410272dd5232B3Ff7cF5dbB88f295319",
 }
 export const USDT = new Token(
   USDT_CONTRACT_ADDRESSES,

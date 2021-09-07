@@ -1,16 +1,8 @@
 import {
-  ALETH_POOL_NAME,
-  BTC_POOL_NAME,
-  BTC_POOL_V2_NAME,
-  D4_POOL_NAME,
   POOLS_MAP,
   PoolName,
   PoolTypes,
   STABLECOIN_POOL_NAME,
-  STABLECOIN_POOL_V2_NAME,
-  SUSD_POOL_NAME,
-  TBTC_POOL_NAME,
-  VETH2_POOL_NAME,
 } from "../constants"
 import React, { ReactElement, useState } from "react"
 
@@ -27,17 +19,7 @@ import { useApproveAndMigrateUSD } from "../hooks/useApproveAndMigrateUSD"
 import usePoolData from "../hooks/usePoolData"
 
 function Pools(): ReactElement | null {
-  const [d4PoolData, d4UserShareData] = usePoolData(D4_POOL_NAME)
-  const [alethPoolData, alethUserShareData] = usePoolData(ALETH_POOL_NAME)
-  const [btcPoolData, btcUserShareData] = usePoolData(BTC_POOL_NAME)
-  const [btcPoolV2Data, btcV2UsersShareData] = usePoolData(BTC_POOL_V2_NAME)
-  const [usdPoolV2Data, usdV2UserShareData] = usePoolData(
-    STABLECOIN_POOL_V2_NAME,
-  )
   const [usdPoolData, usdUserShareData] = usePoolData(STABLECOIN_POOL_NAME)
-  const [susdPoolData, susdUserShareData] = usePoolData(SUSD_POOL_NAME)
-  const [tbtcPoolData, tbtcUserShareData] = usePoolData(TBTC_POOL_NAME)
-  const [veth2PoolData, veth2UserShareData] = usePoolData(VETH2_POOL_NAME)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const approveAndMigrateUSD = useApproveAndMigrateUSD()
   const [activeMigration, setActiveMigration] = useState<PoolName | null>(null)
@@ -48,68 +30,12 @@ function Pools(): ReactElement | null {
   }
 
   function getPropsForPool(poolName: PoolName) {
-    if (poolName === D4_POOL_NAME) {
-      return {
-        name: D4_POOL_NAME,
-        poolData: d4PoolData,
-        userShareData: d4UserShareData,
-        poolRoute: "/pools/d4",
-      }
-    } else if (poolName === ALETH_POOL_NAME) {
-      return {
-        name: ALETH_POOL_NAME,
-        poolData: alethPoolData,
-        userShareData: alethUserShareData,
-        poolRoute: "/pools/aleth",
-      }
-    } else if (poolName === BTC_POOL_NAME) {
-      return {
-        name: BTC_POOL_NAME,
-        poolData: btcPoolData,
-        userShareData: btcUserShareData,
-        poolRoute: "/pools/btc",
-      }
-    } else if (poolName === BTC_POOL_V2_NAME) {
-      return {
-        name: BTC_POOL_V2_NAME,
-        poolData: btcPoolV2Data,
-        userShareData: btcV2UsersShareData,
-        poolRoute: "/pools/btcv2",
-      }
-    } else if (poolName === STABLECOIN_POOL_NAME) {
+    if (poolName === STABLECOIN_POOL_NAME) {
       return {
         name: STABLECOIN_POOL_NAME,
         poolData: usdPoolData,
         userShareData: usdUserShareData,
         poolRoute: "/pools/usd",
-      }
-    } else if (poolName === STABLECOIN_POOL_V2_NAME) {
-      return {
-        name: STABLECOIN_POOL_V2_NAME,
-        poolData: usdPoolV2Data,
-        userShareData: usdV2UserShareData,
-        poolRoute: "/pools/usdv2",
-      }
-    } else if (poolName === SUSD_POOL_NAME) {
-      return {
-        name: SUSD_POOL_NAME,
-        poolData: susdPoolData,
-        userShareData: susdUserShareData,
-        poolRoute: "/pools/susd",
-      }
-    } else if (poolName === TBTC_POOL_NAME) {
-      return {
-        name: TBTC_POOL_NAME,
-        poolData: tbtcPoolData,
-        userShareData: tbtcUserShareData,
-        poolRoute: "/pools/tbtc",
-      }
-    } else {
-      return {
-        name: VETH2_POOL_NAME,
-        poolData: veth2PoolData,
-        userShareData: veth2UserShareData,
-        poolRoute: "/pools/veth2",
       }
     }
   }
