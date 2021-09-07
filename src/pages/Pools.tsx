@@ -37,6 +37,13 @@ function Pools(): ReactElement | null {
         userShareData: usdUserShareData,
         poolRoute: "/pools/usd",
       }
+    } else {
+      return {
+        name: STABLECOIN_POOL_NAME,
+        poolData: usdPoolData,
+        userShareData: usdUserShareData,
+        poolRoute: "/pools/usd",
+      }
     }
   }
   return (
@@ -82,17 +89,17 @@ function Pools(): ReactElement | null {
               if (aMigration || bMigration || aIsOutdated || bIsOutdated) {
                 return aMigration || aIsOutdated ? 1 : -1
               } else if (
-                (a.userShareData?.usdBalance || Zero).gt(Zero) ||
-                (b.userShareData?.usdBalance || Zero).gt(Zero)
+                (a?.userShareData?.usdBalance || Zero).gt(Zero) ||
+                (b?.userShareData?.usdBalance || Zero).gt(Zero)
               ) {
-                return (a.userShareData?.usdBalance || Zero).gt(
-                  b.userShareData?.usdBalance || Zero,
+                return (a?.userShareData?.usdBalance || Zero).gt(
+                  b?.userShareData?.usdBalance || Zero,
                 )
                   ? -1
                   : 1
               } else {
-                return (a.poolData?.reserve || Zero).gt(
-                  b.poolData?.reserve || Zero,
+                return (a?.poolData?.reserve || Zero).gt(
+                  b?.poolData?.reserve || Zero,
                 )
                   ? -1
                   : 1
@@ -101,7 +108,7 @@ function Pools(): ReactElement | null {
           )
           .map(([poolProps, migrationPool]) => (
             <PoolOverview
-              key={poolProps.name}
+              key={poolProps?.name}
               {...poolProps}
               onClickMigrate={
                 migrationPool

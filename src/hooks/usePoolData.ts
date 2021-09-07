@@ -1,10 +1,5 @@
 import { AddressZero, Zero } from "@ethersproject/constants"
-import {
-  BTC_POOL_NAME,
-  POOLS_MAP,
-  PoolName,
-  TRANSACTION_TYPES,
-} from "../constants"
+import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
 import {
   formatBNToPercentString,
   getContract,
@@ -14,13 +9,10 @@ import { useEffect, useState } from "react"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
-import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
-import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
-import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { getThirdPartyDataForPool } from "../utils/thirdPartyIntegrations"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
@@ -131,8 +123,7 @@ export default function usePoolData(
           account ?? undefined,
         ) as MetaSwap
       }
-      const effectiveSwapContract =
-        metaSwapContract || (swapContract as SwapFlashLoanNoWithdrawFee)
+      const effectiveSwapContract = metaSwapContract || swapContract
 
       // Swap fees, price, and LP Token data
       const [swapStorage, aParameter, isPaused] = await Promise.all([
@@ -141,22 +132,12 @@ export default function usePoolData(
         effectiveSwapContract.paused(),
       ])
       const { adminFee, lpToken: lpTokenAddress, swapFee } = swapStorage
-      let lpTokenContract
-      if (poolName === BTC_POOL_NAME) {
-        lpTokenContract = getContract(
-          lpTokenAddress,
-          LPTOKEN_GUARDED_ABI,
-          library,
-          account ?? undefined,
-        ) as LpTokenGuarded
-      } else {
-        lpTokenContract = getContract(
-          lpTokenAddress,
-          LPTOKEN_UNGUARDED_ABI,
-          library,
-          account ?? undefined,
-        ) as LpTokenUnguarded
-      }
+      const lpTokenContract = getContract(
+        lpTokenAddress,
+        LPTOKEN_UNGUARDED_ABI,
+        library,
+        account ?? undefined,
+      ) as LpTokenUnguarded
       const [userLpTokenBalance, totalLpTokenBalance] = await Promise.all([
         lpTokenContract.balanceOf(account || AddressZero),
         lpTokenContract.totalSupply(),
@@ -198,14 +179,7 @@ export default function usePoolData(
             .mul(BigNumber.from(10).pow(18))
             .div(tokenBalancesSum)
 
-      const { aprs, amountsStaked } = await getThirdPartyDataForPool(
-        library,
-        chainId,
-        account,
-        poolName,
-        tokenPricesUSD,
-        lpTokenPriceUSD,
-      )
+      const { aprs, amountsStaked } = getThirdPartyDataForPool()
 
       function calculatePctOfTotalShare(lpTokenAmount: BigNumber): BigNumber {
         // returns the % of total lpTokens

@@ -28,7 +28,6 @@ import SWAP_FLASH_LOAN_ABI from "../constants/abis/swapFlashLoan.json"
 import SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI from "../constants/abis/swapFlashLoanNoWithdrawFee.json"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
-import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import { SwapMigratorUSD } from "../../types/ethers-contracts/SwapMigratorUSD"
 import { getContract } from "../utils"
 import { useActiveWeb3React } from "./index"
@@ -89,16 +88,11 @@ export function useTokenContract(
 export function useSwapContract<T extends PoolName>(
   poolName?: T,
 ): T extends typeof STABLECOIN_POOL_NAME
-  ? SwapGuarded | null
+  ? SwapFlashLoanNoWithdrawFee | null
   : SwapFlashLoan | SwapFlashLoanNoWithdrawFee | MetaSwapDeposit | null
 export function useSwapContract(
   poolName?: PoolName,
-):
-  | SwapGuarded
-  | SwapFlashLoan
-  | SwapFlashLoanNoWithdrawFee
-  | MetaSwapDeposit
-  | null {
+): SwapFlashLoan | SwapFlashLoanNoWithdrawFee | MetaSwapDeposit | null {
   const { chainId, account, library } = useActiveWeb3React()
   return useMemo(() => {
     if (!poolName || !library || !chainId) return null
