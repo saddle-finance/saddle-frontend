@@ -390,18 +390,18 @@ export const D4_SWAP_TOKEN = new Token(
 )
 
 // Stablecoins
-const TBTC_V2_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: "0x18084fba666a33d37592fa2633fd49a74dd93a88",
+const WCUSD_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0xad3e3fc59dff318beceaab7d00eb4f68b1ecf195",
   [ChainId.ROPSTEN]: "",
-  [ChainId.HARDHAT]: "0x82e01223d51Eb87e16A03E24687EDF0F294da6f1",
+  [ChainId.HARDHAT]: "0xFD471836031dc5108809D173A067e8486B9047A3",
 }
-export const TBTC_V2 = new Token(
-  TBTC_V2_CONTRACT_ADDRESSES,
+export const WCUSD = new Token(
+  WCUSD_CONTRACT_ADDRESSES,
   18,
-  "TBTCv2",
-  "tbtc",
-  "tBTCv2",
-  tbtcLogo,
+  "wCUSD",
+  "wrapped-celo-dollar",
+  "Wrapped Celo USD",
+  wcusdLogo,
 )
 
 const SUSD_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
@@ -480,18 +480,18 @@ export const TBTC = new Token(
   tbtcLogo,
 )
 
-const WCUSD_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: "0xad3e3fc59dff318beceaab7d00eb4f68b1ecf195",
+const TBTC_V2_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0x18084fba666a33d37592fa2633fd49a74dd93a88",
   [ChainId.ROPSTEN]: "",
-  [ChainId.HARDHAT]: "0xFD471836031dc5108809D173A067e8486B9047A3",
+  [ChainId.HARDHAT]: "0x82e01223d51Eb87e16A03E24687EDF0F294da6f1",
 }
-export const WCUSD = new Token(
-  WCUSD_CONTRACT_ADDRESSES,
+export const TBTC_V2 = new Token(
+  TBTC_V2_CONTRACT_ADDRESSES,
   18,
-  "wCUSD",
-  "wrapped-celo-dollar",
-  "Wrapped Celo USD",
-  wcusdLogo,
+  "TBTCv2",
+  "tbtc",
+  "tBTCv2",
+  tbtcLogo,
 )
 
 const WBTC_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
