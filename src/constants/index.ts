@@ -78,14 +78,14 @@ export const SWAP_MIGRATOR_USD_CONTRACT_ADDRESSES: {
 
 export const STABLECOIN_SWAP_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.OPTIMISTIC_MAINNET]: "", // TODO replace once mainnet deploy goes out
-  [ChainId.OPTIMISTIC_KOVAN]: "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1",
+  [ChainId.OPTIMISTIC_KOVAN]: "0x19cA42B5e67DFd742C38eCe8Afc00F0D3e7D7485",
 }
 
 export const STABLECOIN_SWAP_TOKEN_CONTRACT_ADDRESSES: {
   [chainId in ChainId]: string
 } = {
   [ChainId.OPTIMISTIC_MAINNET]: "", // TODO replace once mainnet deploy goes out
-  [ChainId.OPTIMISTIC_KOVAN]: "0x56639dB16Ac50A89228026e42a316B30179A5376",
+  [ChainId.OPTIMISTIC_KOVAN]: "0x31064cd9D9785383063AD7A85244888c3e0D1AfA",
 }
 
 export const STABLECOIN_SWAP_TOKEN = new Token(
@@ -102,7 +102,7 @@ export const STABLECOIN_SWAP_TOKEN = new Token(
 // Stablecoins
 const DAI_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.OPTIMISTIC_MAINNET]: "", // TODO replace once mainnet deploy goes out
-  [ChainId.OPTIMISTIC_KOVAN]: "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44",
+  [ChainId.OPTIMISTIC_KOVAN]: "0x47bF36B2a1aF0DFcd4838D1D98DC742b4F9674e5",
 }
 export const DAI = new Token(
   DAI_CONTRACT_ADDRESSES,
@@ -115,7 +115,7 @@ export const DAI = new Token(
 
 const USDC_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.OPTIMISTIC_MAINNET]: "", // TODO replace once mainnet deploy goes out
-  [ChainId.OPTIMISTIC_KOVAN]: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+  [ChainId.OPTIMISTIC_KOVAN]: "0xe5d477628604a216d0B02B45AE5f2C532a827503",
 }
 export const USDC = new Token(
   USDC_CONTRACT_ADDRESSES,
@@ -128,7 +128,7 @@ export const USDC = new Token(
 
 const USDT_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.OPTIMISTIC_MAINNET]: "", // TODO replace once mainnet deploy goes out
-  [ChainId.OPTIMISTIC_KOVAN]: "0x4A679253410272dd5232B3Ff7cF5dbB88f295319",
+  [ChainId.OPTIMISTIC_KOVAN]: "0x7477eB86a1C362690a6872C664807dB743B4BcdA",
 }
 export const USDT = new Token(
   USDT_CONTRACT_ADDRESSES,
