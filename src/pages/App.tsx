@@ -25,10 +25,15 @@ import usePoller from "../hooks/usePoller"
 export default function App(): ReactElement {
   const { chainId } = useActiveWeb3React()
   const { userDarkMode } = useSelector((state: AppState) => state.user)
+  const notifyNetworks = new Set([1, 3, 4, 5, 42, 56, 100])
 
   useEffect(() => {
     notify?.config({
-      networkId: chainId ?? 1,
+      ...(notifyNetworks.has(chainId ?? 0)
+        ? {
+            networkId: chainId,
+          }
+        : {}),
       darkMode: userDarkMode,
     })
   }, [chainId, userDarkMode])
