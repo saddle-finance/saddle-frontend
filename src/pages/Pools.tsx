@@ -11,6 +11,7 @@ import {
   SUSD_POOL_NAME,
   TBTC_POOL_NAME,
   VETH2_POOL_NAME,
+  WCUSD_POOL_NAME,
 } from "../constants"
 import React, { ReactElement, useState } from "react"
 
@@ -38,6 +39,7 @@ function Pools(): ReactElement | null {
   const [susdPoolData, susdUserShareData] = usePoolData(SUSD_POOL_NAME)
   const [tbtcPoolData, tbtcUserShareData] = usePoolData(TBTC_POOL_NAME)
   const [veth2PoolData, veth2UserShareData] = usePoolData(VETH2_POOL_NAME)
+  const [wcusdPoolData, wcusdUserShareData] = usePoolData(WCUSD_POOL_NAME)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const approveAndMigrateUSD = useApproveAndMigrateUSD()
   const [activeMigration, setActiveMigration] = useState<PoolName | null>(null)
@@ -103,6 +105,13 @@ function Pools(): ReactElement | null {
         poolData: tbtcPoolData,
         userShareData: tbtcUserShareData,
         poolRoute: "/pools/tbtc",
+      }
+    } else if (poolName === WCUSD_POOL_NAME) {
+      return {
+        name: WCUSD_POOL_NAME,
+        poolData: wcusdPoolData,
+        userShareData: wcusdUserShareData,
+        poolRoute: "/pools/wcusd",
       }
     } else {
       return {
