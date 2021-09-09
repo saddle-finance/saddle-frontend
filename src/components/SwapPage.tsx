@@ -6,19 +6,16 @@ import { SWAP_TYPES, getIsVirtualSwap } from "../constants"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 import { useDispatch, useSelector } from "react-redux"
 
+import AdvancedOptions from "./AdvancedOptions"
 import { AppDispatch } from "../state"
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
-import DeadlineField from "./DeadlineField"
-import GasField from "./GasField"
-import InfiniteApprovalField from "./InfiniteApprovalField"
 import Modal from "./Modal"
 import { PayloadAction } from "@reduxjs/toolkit"
 import { PendingSwap } from "../hooks/usePendingSwapData"
 import PendingSwapModal from "./PendingSwapModal"
 import ReviewSwap from "./ReviewSwap"
-import SlippageField from "./SlippageField"
 import SwapInput from "./SwapInput"
 import type { TokenOption } from "../pages/Swap"
 import TopMenu from "./TopMenu"
@@ -247,20 +244,7 @@ const SwapPage = (props: Props): ReactElement => {
         </div>
         <div className="advancedOptions">
           <div className={"tableContainer " + classNames({ show: advanced })}>
-            <div className="table">
-              <div className="parameter">
-                <InfiniteApprovalField />
-              </div>
-              <div className="parameter">
-                <SlippageField />
-              </div>
-              <div className="parameter">
-                <DeadlineField />
-              </div>
-              <div className="parameter">
-                <GasField />
-              </div>
-            </div>
+            <AdvancedOptions />
           </div>
         </div>
         <div className="pendingSwaps">
