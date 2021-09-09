@@ -1,6 +1,13 @@
 @import "../styles/theme.scss";
 @import "../styles/viewports";
 
+.parameter {
+  margin: 2px 0;
+}
+.parameter .options {
+  margin-top: 10px;
+}
+
 .infiniteApproval {
   position: relative;
   font-size: 16px;
