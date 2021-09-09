@@ -1,0 +1,314 @@
+@import "../styles/theme.scss";
+@import "../styles/viewports";
+
+.infiniteApproval {
+  position: relative;
+  font-size: 16px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  display: flex;
+  align-items: center;
+
+  .label {
+    position: relative;
+    border-bottom: 1px dotted var(--text);
+    font-weight: $bold;
+    font-size: 16px;
+    letter-spacing: -0.04em;
+    margin-left: 16px;
+
+    &:hover {
+      cursor: help;
+    }
+  }
+}
+
+div.slippageField {
+  input {
+    width: 48px;
+    height: 28px;
+    border: 1px solid $black;
+    border-radius: 8px;
+    height: 28px;
+    font-size: 80%;
+    color: $text-black;
+    padding: 2px 4px;
+    margin: 4px -4px 4px 4px;
+    outline: none !important;
+  }
+
+  input:focus {
+    outline: 1px solid var(--outline);
+  }
+
+  .label {
+    font-weight: $bold;
+    font-size: 16px;
+    letter-spacing: -0.04em;
+    margin: auto 16px auto 0;
+    @include breakpoint(lg) {
+      font-size: 13px;
+      margin-right: 0px;
+      width: 90px;
+    }
+    @include breakpoint(sm) {
+      font-size: 13px;
+      margin-right: 0px;
+    }
+  }
+  .options {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    @include breakpoint(lg) {
+      font-size: 12px;
+    }
+    @include breakpoint(md) {
+      font-size: 11px;
+    }
+  }
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .options > button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    background: none;
+    font-size: 16px;
+    font-weight: $normal;
+    color: var(--text);
+    letter-spacing: -0.04em;
+    width: 70px;
+    height: 30px;
+    margin: 0 2px;
+    padding: 4px 10px;
+    cursor: pointer;
+
+    &:hover {
+      transform: none;
+      font-weight: $bold;
+    }
+
+    &:focus {
+      outline: none;
+      border: none;
+    }
+
+    &.selected {
+      color: var(--text-selected);
+      font-weight: $medium;
+      border: 1px solid var(--text-selected);
+      border-radius: 8px;
+    }
+    @include breakpoint(lg) {
+      font-size: 12px;
+      width: 72px;
+      height: 28px;
+    }
+    @include breakpoint(md) {
+      font-size: 11px;
+      width: 72px;
+      height: 28px;
+    }
+    @include breakpoint(xs) {
+      font-size: 11px;
+      width: 58px;
+      height: 28px;
+      padding: 0 2px;
+      margin-right: 2px;
+    }
+  }
+}
+
+div.deadlineField {
+  input {
+    width: 48px;
+    border: 1px solid $black;
+    border-radius: 8px;
+    height: 28px;
+    font-size: 80%;
+    color: $text-black;
+    padding: 2px 4px;
+    margin: 0 6px 0 8px;
+    outline: none !important;
+  }
+
+  input:focus {
+    outline: 1px solid var(--outline);
+  }
+
+  .label {
+    font-weight: $bold;
+    font-size: 16px;
+    letter-spacing: -0.04em;
+    margin: auto 16px auto 0;
+    @include breakpoint(lg) {
+      font-size: 13px;
+      margin-right: 0px;
+      width: 90px;
+    }
+    @include breakpoint(sm) {
+      font-size: 13px;
+      margin-right: 0px;
+      width: 80px;
+    }
+  }
+  .options {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-between;
+    @include breakpoint(lg) {
+      font-size: 12px;
+    }
+    @include breakpoint(md) {
+      font-size: 11px;
+    }
+  }
+
+  .options > button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    border-radius: 8px;
+    background: none;
+    font-size: 16px;
+    width: 80px;
+    height: 30px;
+    font-weight: $normal;
+    color: var(--text);
+    letter-spacing: -0.04em;
+    padding: 4px 10px;
+    cursor: pointer;
+
+    &:hover {
+      transform: none;
+      font-weight: $bold;
+    }
+
+    &:focus {
+      outline: none;
+      border: none;
+    }
+
+    &.selected {
+      color: var(--text-selected);
+      font-weight: $medium;
+      border: 1px solid var(--text-selected);
+      border-radius: 8px;
+    }
+    @include breakpoint(lg) {
+      font-size: 12px;
+      width: 72px;
+      height: 28px;
+    }
+    @include breakpoint(md) {
+      font-size: 11px;
+      width: 72px;
+      height: 28px;
+    }
+    @include breakpoint(xs) {
+      font-size: 11px;
+      width: 58px;
+      height: 28px;
+      padding: 0 2px;
+      margin-right: 2px;
+    }
+  }
+}
+
+div.gasField {
+  input {
+    width: 48px;
+    height: 28px;
+    border: 1px solid $black;
+    border-radius: 8px;
+    font-size: 80%;
+    color: $text-black;
+    padding: 2px 4px;
+    margin: 4px auto 4px 6px;
+    outline: none !important;
+  }
+
+  input:focus {
+    outline: 1px solid var(--outline);
+  }
+
+  .label {
+    margin: 0 auto;
+    font-weight: $bold;
+    font-size: 16px;
+    letter-spacing: -0.04em;
+    margin: auto 16px auto 0;
+    @include breakpoint(sm) {
+      font-size: 13px;
+    }
+  }
+  .options {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    @include breakpoint(md) {
+      font-size: 11px;
+    }
+  }
+
+  .options > button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    background: none;
+    font-size: 12px;
+    font-weight: $normal;
+    color: var(--text);
+    margin: 0 2px;
+    width: 80px;
+    height: 38px;
+    letter-spacing: -0.04em;
+    padding: 4px 16px;
+    cursor: pointer;
+
+    &:hover {
+      transform: none;
+      font-weight: $bold;
+    }
+
+    &:focus {
+      outline: none;
+      border: none;
+    }
+
+    &.selected {
+      color: var(--text-selected);
+      font-weight: $medium;
+      border: 1px solid var(--text-selected);
+      border-radius: 8px;
+    }
+    @include breakpoint(lg) {
+      font-size: 12px;
+      width: 72px;
+      height: 28px;
+    }
+    @include breakpoint(md) {
+      font-size: 11px;
+      width: 72px;
+      height: 28px;
+    }
+    @include breakpoint(xs) {
+      font-size: 11px;
+      width: 58px;
+      height: 28px;
+      padding: 0 2px;
+      margin-right: 2px;
+    }
+  }
+}

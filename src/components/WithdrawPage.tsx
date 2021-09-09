@@ -4,20 +4,18 @@ import { Button, Center } from "@chakra-ui/react"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
+
+import AdvancedOptions from "./AdvancedOptions"
 import { AppDispatch } from "../state"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
-import DeadlineField from "./DeadlineField"
-import GasField from "./GasField"
-import InfiniteApprovalField from "./InfiniteApprovalField"
 import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
 import { PayloadAction } from "@reduxjs/toolkit"
 import PoolInfoCard from "./PoolInfoCard"
 import RadioButton from "./RadioButton"
 import ReviewWithdraw from "./ReviewWithdraw"
-import SlippageField from "./SlippageField"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
@@ -209,18 +207,7 @@ const WithdrawPage = (props: Props): ReactElement => {
             </span>
             <div className="divider"></div>
             <div className={"tableContainer" + classNames({ show: advanced })}>
-              <div className="parameter">
-                <InfiniteApprovalField />
-              </div>
-              <div className="parameter">
-                <SlippageField />
-              </div>
-              <div className="parameter">
-                <DeadlineField />
-              </div>
-              <div className="parameter">
-                <GasField />
-              </div>
+              <AdvancedOptions />
             </div>
           </div>
           <Center width="100%" py={6}>

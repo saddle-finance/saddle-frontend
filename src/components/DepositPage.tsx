@@ -7,21 +7,18 @@ import React, { ReactElement, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 import { useDispatch, useSelector } from "react-redux"
 
+import AdvancedOptions from "./AdvancedOptions"
 import { AppDispatch } from "../state"
 import { AppState } from "../state"
 import CheckboxInput from "./CheckboxInput"
 import ConfirmTransaction from "./ConfirmTransaction"
-import DeadlineField from "./DeadlineField"
 import { DepositTransaction } from "../interfaces/transactions"
-import GasField from "./GasField"
-import InfiniteApprovalField from "./InfiniteApprovalField"
 import LPStakingBanner from "./LPStakingBanner"
 import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
 import { PayloadAction } from "@reduxjs/toolkit"
 import PoolInfoCard from "./PoolInfoCard"
 import ReviewDeposit from "./ReviewDeposit"
-import SlippageField from "./SlippageField"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import { Zero } from "@ethersproject/constants"
@@ -225,18 +222,7 @@ const DepositPage = (props: Props): ReactElement => {
             </span>
             <div className="divider"></div>
             <div className={"tableContainer" + classNames({ show: advanced })}>
-              <div className="parameter">
-                <InfiniteApprovalField />
-              </div>
-              <div className="parameter">
-                <SlippageField />
-              </div>
-              <div className="parameter">
-                <DeadlineField />
-              </div>
-              <div className="parameter">
-                <GasField />
-              </div>
+              <AdvancedOptions />
             </div>
           </div>
           <Center width="100%" py={6}>
