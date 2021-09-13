@@ -95,9 +95,7 @@ const usePendingSwapData = (): PendingSwap[] => {
     withdraws: {},
   })
   const queryStartBlock =
-    chainId === ChainId.HARDHAT
-      ? 0
-      : -1 * Math.round((365 * 24 * 60 * 60 * 1000) / BLOCK_TIME) // approx number of blocks in 1 year
+    -1 * Math.round((365 * 24 * 60 * 60 * 1000) / BLOCK_TIME) // approx number of blocks in 1 year
 
   // update the secondsRemaining every 15s
   useEffect(() => {

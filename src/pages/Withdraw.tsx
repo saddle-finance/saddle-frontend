@@ -1,12 +1,10 @@
-import { POOLS_MAP, PoolName, isLegacySwapABIPool } from "../constants"
+import { POOLS_MAP, PoolName } from "../constants"
 import React, { ReactElement, useEffect, useState } from "react"
 import WithdrawPage, { ReviewWithdrawData } from "../components/WithdrawPage"
 import { commify, formatUnits, parseUnits } from "@ethersproject/units"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
-import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
-import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { Zero } from "@ethersproject/constants"
 import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
@@ -65,22 +63,12 @@ function Withdraw({ poolName }: Props): ReactElement {
       )
       let withdrawLPTokenAmount
       if (poolData.totalLocked.gt(0) && tokenInputSum.gt(0)) {
-        if (isLegacySwapABIPool(poolData.name)) {
-          withdrawLPTokenAmount = await (swapContract as SwapFlashLoan).calculateTokenAmount(
-            account,
-            POOL.poolTokens.map(
-              ({ symbol }) => withdrawFormState.tokenInputs[symbol].valueSafe,
-            ),
-            false,
-          )
-        } else {
-          withdrawLPTokenAmount = await (swapContract as SwapFlashLoanNoWithdrawFee).calculateTokenAmount(
-            POOL.poolTokens.map(
-              ({ symbol }) => withdrawFormState.tokenInputs[symbol].valueSafe,
-            ),
-            false,
-          )
-        }
+        withdrawLPTokenAmount = await swapContract.calculateTokenAmount(
+          POOL.poolTokens.map(
+            ({ symbol }) => withdrawFormState.tokenInputs[symbol].valueSafe,
+          ),
+          false,
+        )
       } else {
         // when pool is empty, estimate the lptokens by just summing the input instead of calling contract
         withdrawLPTokenAmount = tokenInputSum

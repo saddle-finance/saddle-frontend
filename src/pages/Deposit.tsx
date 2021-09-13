@@ -1,11 +1,5 @@
 import { DepositTransaction, TransactionItem } from "../interfaces/transactions"
-import {
-  POOLS_MAP,
-  PoolName,
-  Token,
-  isLegacySwapABIPool,
-  isMetaPool,
-} from "../constants"
+import { POOLS_MAP, PoolName, Token, isMetaPool } from "../constants"
 import React, { ReactElement, useEffect, useMemo, useState } from "react"
 import { TokensStateType, useTokenFormState } from "../hooks/useTokenFormState"
 import { formatBNToString, getContract, shiftBNDecimals } from "../utils"
@@ -16,8 +10,6 @@ import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
-import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
-import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { TokenPricesUSD } from "../state/application"
 import { Zero } from "@ethersproject/constants"
 import { calculateGasEstimate } from "../utils/gasEstimate"
@@ -129,15 +121,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
       )
       let depositLPTokenAmount
       if (poolData.totalLocked.gt(0) && tokenInputSum.gt(0)) {
-        if (isLegacySwapABIPool(poolData.name)) {
-          depositLPTokenAmount = await (swapContract as SwapFlashLoan).calculateTokenAmount(
-            account,
-            POOL.poolTokens.map(
-              ({ symbol }) => tokenFormState[symbol].valueSafe,
-            ),
-            true, // deposit boolean
-          )
-        } else if (shouldDepositWrapped) {
+        if (shouldDepositWrapped) {
           depositLPTokenAmount = metaSwapContract
             ? await metaSwapContract.calculateTokenAmount(
                 (POOL.underlyingPoolTokens || []).map(
@@ -147,7 +131,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
               )
             : Zero
         } else {
-          depositLPTokenAmount = await (swapContract as SwapFlashLoanNoWithdrawFee).calculateTokenAmount(
+          depositLPTokenAmount = await swapContract.calculateTokenAmount(
             POOL.poolTokens.map(
               ({ symbol }) => tokenFormState[symbol].valueSafe,
             ),

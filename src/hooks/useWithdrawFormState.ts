@@ -2,12 +2,10 @@ import {
   NumberInputState,
   numberInputStateCreator,
 } from "../utils/numberInputState"
-import { POOLS_MAP, PoolName, isLegacySwapABIPool } from "../constants"
+import { POOLS_MAP, PoolName } from "../constants"
 import { useCallback, useMemo, useState } from "react"
 
 import { BigNumber } from "@ethersproject/bignumber"
-import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
-import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { debounce } from "lodash"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
@@ -106,23 +104,12 @@ export default function useWithdrawFormState(
       let nextState: WithdrawFormState | Record<string, unknown>
       if (state.withdrawType === IMBALANCE) {
         try {
-          let inputCalculatedLPTokenAmount: BigNumber
-          if (isLegacySwapABIPool(POOL.name)) {
-            inputCalculatedLPTokenAmount = await (swapContract as SwapFlashLoan).calculateTokenAmount(
-              account,
-              POOL.poolTokens.map(
-                ({ symbol }) => state.tokenInputs[symbol].valueSafe,
-              ),
-              false,
-            )
-          } else {
-            inputCalculatedLPTokenAmount = await (swapContract as SwapFlashLoanNoWithdrawFee).calculateTokenAmount(
-              POOL.poolTokens.map(
-                ({ symbol }) => state.tokenInputs[symbol].valueSafe,
-              ),
-              false,
-            )
-          }
+          const inputCalculatedLPTokenAmount = await swapContract.calculateTokenAmount(
+            POOL.poolTokens.map(
+              ({ symbol }) => state.tokenInputs[symbol].valueSafe,
+            ),
+            false,
+          )
           nextState = inputCalculatedLPTokenAmount.gt(
             effectiveUserLPTokenBalance,
           )
@@ -150,17 +137,9 @@ export default function useWithdrawFormState(
         }
       } else if (state.withdrawType === ALL) {
         try {
-          let tokenAmounts: BigNumber[]
-          if (isLegacySwapABIPool(poolName)) {
-            tokenAmounts = await (swapContract as SwapFlashLoan).calculateRemoveLiquidity(
-              account,
-              effectiveUserLPTokenBalance,
-            )
-          } else {
-            tokenAmounts = await (swapContract as SwapFlashLoanNoWithdrawFee).calculateRemoveLiquidity(
-              effectiveUserLPTokenBalance,
-            )
-          }
+          const tokenAmounts: BigNumber[] = await swapContract.calculateRemoveLiquidity(
+            effectiveUserLPTokenBalance,
+          )
           nextState = {
             lpTokenAmountToSpend: effectiveUserLPTokenBalance,
             tokenInputs: POOL.poolTokens.reduce(
@@ -186,19 +165,11 @@ export default function useWithdrawFormState(
             const tokenIndex = POOL.poolTokens.findIndex(
               ({ symbol }) => symbol === state.withdrawType,
             )
-            let tokenAmount: BigNumber
-            if (isLegacySwapABIPool(poolName)) {
-              tokenAmount = await (swapContract as SwapFlashLoan).calculateRemoveLiquidityOneToken(
-                account,
-                effectiveUserLPTokenBalance, // lp token to be burnt
-                tokenIndex,
-              ) // actual coin amount to be returned
-            } else {
-              tokenAmount = await (swapContract as SwapFlashLoanNoWithdrawFee).calculateRemoveLiquidityOneToken(
-                effectiveUserLPTokenBalance, // lp token to be burnt
-                tokenIndex,
-              ) // actual coin amount to be returned
-            }
+            const tokenAmount: BigNumber = await swapContract.calculateRemoveLiquidityOneToken(
+              effectiveUserLPTokenBalance, // lp token to be burnt
+              tokenIndex,
+            ) // actual coin amount to be returned
+
             nextState = {
               lpTokenAmountToSpend: effectiveUserLPTokenBalance,
               tokenInputs: POOL.poolTokens.reduce(
@@ -214,23 +185,12 @@ export default function useWithdrawFormState(
             }
           } else {
             // This branch addresses a user manually inputting a value for one token
-            let inputCalculatedLPTokenAmount: BigNumber
-            if (isLegacySwapABIPool(POOL.name)) {
-              inputCalculatedLPTokenAmount = await (swapContract as SwapFlashLoan).calculateTokenAmount(
-                account,
-                POOL.poolTokens.map(
-                  ({ symbol }) => state.tokenInputs[symbol].valueSafe,
-                ),
-                false,
-              )
-            } else {
-              inputCalculatedLPTokenAmount = await (swapContract as SwapFlashLoanNoWithdrawFee).calculateTokenAmount(
-                POOL.poolTokens.map(
-                  ({ symbol }) => state.tokenInputs[symbol].valueSafe,
-                ),
-                false,
-              )
-            }
+            const inputCalculatedLPTokenAmount: BigNumber = await swapContract.calculateTokenAmount(
+              POOL.poolTokens.map(
+                ({ symbol }) => state.tokenInputs[symbol].valueSafe,
+              ),
+              false,
+            )
             nextState = inputCalculatedLPTokenAmount.gt(
               effectiveUserLPTokenBalance,
             )

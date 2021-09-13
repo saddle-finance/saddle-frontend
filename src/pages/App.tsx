@@ -70,14 +70,13 @@ function GasAndTokenPrices({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
   const dispatch = useDispatch<AppDispatch>()
-  const { chainId, library } = useActiveWeb3React()
 
   const fetchAndUpdateGasPrice = useCallback(() => {
     void fetchGasPrices(dispatch)
   }, [dispatch])
   const fetchAndUpdateTokensPrice = useCallback(() => {
-    fetchTokenPricesUSD(dispatch, chainId, library)
-  }, [dispatch, chainId, library])
+    fetchTokenPricesUSD(dispatch)
+  }, [dispatch])
   const fetchAndUpdateSwapStats = useCallback(() => {
     void fetchSwapStats(dispatch)
   }, [dispatch])

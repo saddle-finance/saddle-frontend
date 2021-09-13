@@ -1,12 +1,11 @@
-import { ChainId, POOLS_MAP, PoolName, PoolTypes } from "../constants"
-import { Contract, Provider } from "ethcall"
-import { MulticallContract, MulticallProvider } from "../types/ethcall"
+import { POOLS_MAP, PoolName, PoolTypes } from "../constants"
 import { useEffect, useState } from "react"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
+import { getContract } from "../utils"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import { useSelector } from "react-redux"
@@ -27,28 +26,19 @@ export default function usePoolTVLs(): { [poolName in PoolName]?: BigNumber } {
       return
     async function fetchTVLs() {
       if (!library || !chainId) return
-      const ethcallProvider = new Provider() as MulticallProvider
-
-      await ethcallProvider.init(library)
-      // override the contract address when using hardhat
-      if (chainId == ChainId.HARDHAT) {
-        ethcallProvider.multicallAddress =
-          "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f"
-      } else if (chainId == ChainId.ROPSTEN) {
-        ethcallProvider.multicallAddress =
-          "0x53c43764255c17bd724f74c4ef150724ac50a3ed"
-      }
 
       const pools = Object.values(POOLS_MAP)
-      const supplyCalls = pools
-        .map((p) => {
-          return new Contract(
+      const tvls = await Promise.all(
+        pools.map(async (p) => {
+          console.log(`lptoken address ${p.lpToken.addresses[chainId]}`)
+          const lpToken = getContract(
             p.lpToken.addresses[chainId],
             LPTOKEN_UNGUARDED_ABI,
-          ) as MulticallContract<LpTokenUnguarded>
-        })
-        .map((c) => c.totalSupply())
-      const tvls = await ethcallProvider.all(supplyCalls, {})
+            library,
+          ) as LpTokenUnguarded
+          return await lpToken.totalSupply()
+        }),
+      )
       const tvlsUSD = pools.map((pool, i) => {
         const tvlAmount = tvls[i]
         let tokenValue = 0
