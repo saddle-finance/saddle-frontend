@@ -3,16 +3,13 @@ import "./WithdrawPage.scss"
 import { Button, Center } from "@chakra-ui/react"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
 
 import AdvancedOptions from "./AdvancedOptions"
-import { AppDispatch } from "../state"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
 import Modal from "./Modal"
 import MyShareCard from "./MyShareCard"
-import { PayloadAction } from "@reduxjs/toolkit"
 import PoolInfoCard from "./PoolInfoCard"
 import RadioButton from "./RadioButton"
 import ReviewWithdraw from "./ReviewWithdraw"
@@ -23,7 +20,7 @@ import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
 import { formatBNToPercentString } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
-import { updatePoolAdvancedMode } from "../state/user"
+import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
 export interface ReviewWithdrawData {
@@ -75,10 +72,7 @@ const WithdrawPage = (props: Props): ReactElement => {
     reviewData,
     onConfirmTransaction,
   } = props
-  const dispatch = useDispatch<AppDispatch>()
-  const { userPoolAdvancedMode: advanced } = useSelector(
-    (state: AppState) => state.user,
-  )
+
   const { gasPriceSelected } = useSelector((state: AppState) => state.user)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
 
@@ -181,35 +175,7 @@ const WithdrawPage = (props: Props): ReactElement => {
               </div>
             </div>
           </div>
-          <div className="advancedOptions">
-            <span
-              className="title"
-              onClick={(): PayloadAction<boolean> =>
-                dispatch(updatePoolAdvancedMode(!advanced))
-              }
-            >
-              {t("advancedOptions")}
-              <svg
-                className={classNames("triangle", { upsideDown: advanced })}
-                width="16"
-                height="10"
-                viewBox="0 0 16 10"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M14.8252 0C16.077 0 16.3783 0.827943 15.487 1.86207L8.80565 9.61494C8.35999 10.1321 7.63098 10.1246 7.19174 9.61494L0.510262 1.86207C-0.376016 0.833678 -0.0777447 0 1.17205 0L14.8252 0Z"
-                  fill="#00f4d7"
-                />
-              </svg>
-            </span>
-            <div className="divider"></div>
-            <div className={"tableContainer" + classNames({ show: advanced })}>
-              <AdvancedOptions />
-            </div>
-          </div>
+          <AdvancedOptions />
           <Center width="100%" py={6}>
             <Button
               variant="primary"
