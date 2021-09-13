@@ -10,7 +10,7 @@
     "@metamask/jazzicon": "^2.0.0",
     "@reduxjs/toolkit": "^1.4.0",
     "@types/jest": "^26.0.22",
-    "@types/lodash": "^4.14.165",
+    "@types/lodash": "^4.14.172",
     "@types/node": "^14.14.35",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.7",
