@@ -53,9 +53,6 @@ export default async function checkAndApproveTokenForTrade(
       const approvalTransaction = await srcTokenContract.approve(
         swapAddress,
         amount,
-        {
-          gasPrice,
-        },
       )
       // Add notification
       notifyHandler(approvalTransaction.hash, "tokenApproval")

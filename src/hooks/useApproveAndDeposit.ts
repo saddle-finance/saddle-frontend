@@ -150,9 +150,6 @@ export function useApproveAndDeposit(
         txnAmounts,
         minToMint,
         txnDeadline,
-        {
-          gasPrice,
-        },
       )
 
       notifyHandler(spendTransaction.hash, "deposit")
