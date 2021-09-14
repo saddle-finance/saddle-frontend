@@ -32,6 +32,8 @@ import {
   VETH2,
   VETH2_SWAP_TOKEN,
   WBTC,
+  WCUSD,
+  WCUSD_SWAP_TOKEN,
   WETH,
   isLegacySwapABIPool,
   isMetaPool,
@@ -250,6 +252,7 @@ export function useAllContracts(): AllContractsObject | null {
   const feiContract = useTokenContract(FEI) as Erc20
   const fraxContract = useTokenContract(FRAX) as Erc20
   const lusdContract = useTokenContract(LUSD) as Erc20
+  const wcusdContract = useTokenContract(WCUSD) as Erc20
   const btcSwapTokenContract = useTokenContract(
     BTC_SWAP_TOKEN,
   ) as LpTokenGuarded
@@ -277,6 +280,9 @@ export function useAllContracts(): AllContractsObject | null {
   const tbtcSwapTokenContract = useTokenContract(
     TBTC_SWAP_TOKEN,
   ) as LpTokenUnguarded
+  const wcusdSwapTokenContract = useTokenContract(
+    WCUSD_SWAP_TOKEN,
+  ) as LpTokenUnguarded
 
   return useMemo(() => {
     if (
@@ -298,6 +304,7 @@ export function useAllContracts(): AllContractsObject | null {
         fraxContract,
         lusdContract,
         susdContract,
+        wcusdContract,
         btcSwapTokenContract,
         stablecoinSwapTokenContract,
         stablecoinSwapV2TokenContract,
@@ -307,6 +314,7 @@ export function useAllContracts(): AllContractsObject | null {
         susdSwapTokenContract,
         btcSwapV2TokenContract,
         tbtcSwapTokenContract,
+        wcusdSwapTokenContract,
       ].some(Boolean)
     )
       return null
@@ -328,6 +336,7 @@ export function useAllContracts(): AllContractsObject | null {
       [FRAX.symbol]: fraxContract,
       [LUSD.symbol]: lusdContract,
       [SUSD.symbol]: susdContract,
+      [WCUSD.symbol]: wcusdContract,
       [BTC_SWAP_TOKEN.symbol]: btcSwapTokenContract,
       [STABLECOIN_SWAP_TOKEN.symbol]: stablecoinSwapTokenContract,
       [STABLECOIN_SWAP_V2_TOKEN.symbol]: stablecoinSwapV2TokenContract,
@@ -337,6 +346,7 @@ export function useAllContracts(): AllContractsObject | null {
       [SUSD_SWAP_TOKEN.symbol]: susdSwapTokenContract,
       [BTC_SWAP_V2_TOKEN.symbol]: btcSwapV2TokenContract,
       [TBTC_SWAP_TOKEN.symbol]: tbtcSwapTokenContract,
+      [WCUSD_SWAP_TOKEN.symbol]: wcusdSwapTokenContract,
     }
   }, [
     tbtcContract,
@@ -356,6 +366,7 @@ export function useAllContracts(): AllContractsObject | null {
     fraxContract,
     lusdContract,
     susdContract,
+    wcusdContract,
     btcSwapTokenContract,
     stablecoinSwapTokenContract,
     stablecoinSwapV2TokenContract,
@@ -365,5 +376,6 @@ export function useAllContracts(): AllContractsObject | null {
     susdSwapTokenContract,
     btcSwapV2TokenContract,
     tbtcSwapTokenContract,
+    wcusdSwapTokenContract,
   ])
 }

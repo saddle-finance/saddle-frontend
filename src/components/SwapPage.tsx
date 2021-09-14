@@ -4,21 +4,14 @@ import { Button, Center } from "@chakra-ui/react"
 import React, { ReactElement, useMemo, useState } from "react"
 import { SWAP_TYPES, getIsVirtualSwap } from "../constants"
 import { formatBNToPercentString, formatBNToString } from "../utils"
-import { useDispatch, useSelector } from "react-redux"
 
-import { AppDispatch } from "../state"
-import { AppState } from "../state/index"
+import AdvancedOptions from "./AdvancedOptions"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
-import DeadlineField from "./DeadlineField"
-import GasField from "./GasField"
-import InfiniteApprovalField from "./InfiniteApprovalField"
 import Modal from "./Modal"
-import { PayloadAction } from "@reduxjs/toolkit"
 import { PendingSwap } from "../hooks/usePendingSwapData"
 import PendingSwapModal from "./PendingSwapModal"
 import ReviewSwap from "./ReviewSwap"
-import SlippageField from "./SlippageField"
 import SwapInput from "./SwapInput"
 import type { TokenOption } from "../pages/Swap"
 import TopMenu from "./TopMenu"
@@ -28,7 +21,6 @@ import { commify } from "../utils"
 import { formatUnits } from "@ethersproject/units"
 import { isHighPriceImpact } from "../utils/priceImpact"
 import { logEvent } from "../utils/googleAnalytics"
-import { updateSwapAdvancedMode } from "../state/user"
 import { useActiveWeb3React } from "../hooks"
 import { useTranslation } from "react-i18next"
 
@@ -87,10 +79,6 @@ const SwapPage = (props: Props): ReactElement => {
     return tokenOptions.from.find(({ symbol }) => symbol === fromState.symbol)
   }, [tokenOptions.from, fromState.symbol])
 
-  const dispatch = useDispatch<AppDispatch>()
-  const { userSwapAdvancedMode: advanced } = useSelector(
-    (state: AppState) => state.user,
-  )
   const formattedPriceImpact = commify(
     formatBNToPercentString(exchangeRateInfo.priceImpact, 18),
   )
@@ -219,50 +207,7 @@ const SwapPage = (props: Props): ReactElement => {
             })}
           </div>
         ) : null}
-        <div className="infoSection">
-          <div
-            className="title"
-            onClick={(): PayloadAction<boolean> =>
-              dispatch(updateSwapAdvancedMode(!advanced))
-            }
-          >
-            {t("advancedOptions")}
-            {/* When advanced = true, icon will be upside down */}
-            <svg
-              className={classNames({ upsideDown: advanced })}
-              width="16"
-              height="10"
-              viewBox="0 0 16 10"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M14.8252 0C16.077 0 16.3783 0.827943 15.487 1.86207L8.80565 9.61494C8.35999 10.1321 7.63098 10.1246 7.19174 9.61494L0.510262 1.86207C-0.376016 0.833678 -0.0777447 0 1.17205 0L14.8252 0Z"
-                fill="#00f4d7"
-              />
-            </svg>
-          </div>
-        </div>
-        <div className="advancedOptions">
-          <div className={"tableContainer " + classNames({ show: advanced })}>
-            <div className="table">
-              <div className="parameter">
-                <InfiniteApprovalField />
-              </div>
-              <div className="parameter">
-                <SlippageField />
-              </div>
-              <div className="parameter">
-                <DeadlineField />
-              </div>
-              <div className="parameter">
-                <GasField />
-              </div>
-            </div>
-          </div>
-        </div>
+        <AdvancedOptions />
         <div className="pendingSwaps">
           {pendingSwaps.map((pendingSwap) => {
             const formattedSynthBalance = commify(
