@@ -95,6 +95,20 @@ export class Token {
 
 export const BLOCK_TIME = 13000 // ms
 
+export const SYNTHETIX_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "",
+}
+
+export const SYNTHETIX_EXCHANGE_RATES_CONTRACT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "0xd69b189020EF614796578AfE4d10378c5e7e1138",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "",
+}
+
 export const BRIDGE_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: "0x82e01223d51Eb87e16A03E24687EDF0F294da6f1", // TODO replace once mainnet deploy goes out
   [ChainId.ROPSTEN]: "",
@@ -856,7 +870,7 @@ export const SWAP_CONTRACT_GAS_ESTIMATES_MAP = {
   [SWAP_TYPES.TOKEN_TO_TOKEN]: BigNumber.from("2000000"), // 1,676,837
   [SWAP_TYPES.TOKEN_TO_SYNTH]: BigNumber.from("2000000"), // 1,655,502
   [SWAP_TYPES.SYNTH_TO_TOKEN]: BigNumber.from("1500000"), // 1,153,654
-  [SWAP_TYPES.SYNTH_TO_SYNTH]: BigNumber.from("999999999"), // 999,999,999 // TODO: https://github.com/saddle-finance/saddle-frontend/issues/471
+  [SWAP_TYPES.SYNTH_TO_SYNTH]: BigNumber.from("700000"), // 681,128 // TODO: https://github.com/saddle-finance/saddle-frontend/issues/471
   addLiquidity: BigNumber.from("400000"), // 386,555
   removeLiquidityImbalance: BigNumber.from("350000"), // 318,231
   removeLiquidityOneToken: BigNumber.from("250000"), // 232,947
@@ -886,6 +900,10 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     connector: walletlink,
   },
 }
+
+// "SADDLE" in bytes32 form
+export const SYNTH_TRACKING_ID =
+  "0x534144444c450000000000000000000000000000000000000000000000000000"
 
 // FLAGS
 export const IS_VIRTUAL_SWAP_ACTIVE = false

@@ -57,9 +57,6 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
       data.exchangeRateInfo &&
       isHighPriceImpact(data.exchangeRateInfo.priceImpact),
   )
-  if (isHighPriceImpactTxn) {
-    console.log("PI", data.exchangeRateInfo?.priceImpact.toString())
-  }
   const deadline = formatDeadlineToNumber(
     transactionDeadlineSelected,
     transactionDeadlineCustom,

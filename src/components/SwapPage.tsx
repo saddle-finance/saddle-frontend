@@ -6,12 +6,14 @@ import { SWAP_TYPES, getIsVirtualSwap } from "../constants"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 
 import AdvancedOptions from "./AdvancedOptions"
+import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
 import Modal from "./Modal"
 import { PendingSwap } from "../hooks/usePendingSwapData"
 import PendingSwapModal from "./PendingSwapModal"
 import ReviewSwap from "./ReviewSwap"
+import { Slippages } from "../state/user"
 import SwapInput from "./SwapInput"
 import type { TokenOption } from "../pages/Swap"
 import TopMenu from "./TopMenu"
@@ -22,6 +24,7 @@ import { formatUnits } from "@ethersproject/units"
 import { isHighPriceImpact } from "../utils/priceImpact"
 import { logEvent } from "../utils/googleAnalytics"
 import { useActiveWeb3React } from "../hooks"
+import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -74,6 +77,9 @@ const SwapPage = (props: Props): ReactElement => {
   const [activePendingSwap, setActivePendingSwap] = useState<string | null>(
     null,
   )
+  const { slippageCustom, slippageSelected } = useSelector(
+    (state: AppState) => state.user,
+  )
 
   const fromToken = useMemo(() => {
     return tokenOptions.from.find(({ symbol }) => symbol === fromState.symbol)
@@ -90,6 +96,10 @@ const SwapPage = (props: Props): ReactElement => {
     formatBNToString(fromToken?.amount || Zero, fromToken?.decimals || 0, 6),
   )
   const isVirtualSwap = getIsVirtualSwap(swapType)
+  const isHighSlippage =
+    slippageSelected === Slippages.OneTenth ||
+    (slippageSelected === Slippages.Custom &&
+      parseFloat(slippageCustom?.valueRaw || "0") < 0.5)
 
   return (
     <div className="swapPage">
@@ -195,6 +205,11 @@ const SwapPage = (props: Props): ReactElement => {
                       ({t("virtualSwap")})
                     </a>
                   </span>
+                </div>
+              )}
+              {isVirtualSwap && isHighSlippage && (
+                <div className="exchangeWarning">
+                  {t("lowSlippageVirtualSwapWarning")}
                 </div>
               )}
             </>
