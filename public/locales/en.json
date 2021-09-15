@@ -56,6 +56,7 @@
   "learnMore": "Learn more",
   "liquidityUtilization": "Liquidity utilization",
   "lossOfPeg": "Permanent loss of a peg",
+  "lowSlippageVirtualSwapWarning": "Warning: Slippage set below 0.5% will likely result in a failed virtual swap. Update in Advanced Settings below.",
   "lpMustStakeForRewards": "Liquidity Providers: You must stake your LP tokens to receive rewards",
   "lpTokens": "pool LP tokens",
   "max": "MAX",
