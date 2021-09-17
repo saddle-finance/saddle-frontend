@@ -110,7 +110,7 @@ export const SYNTHETIX_EXCHANGE_RATES_CONTRACT_ADDRESSES: {
 }
 
 export const BRIDGE_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: "0x82e01223d51Eb87e16A03E24687EDF0F294da6f1", // TODO replace once mainnet deploy goes out
+  [ChainId.MAINNET]: "0xa5bD85ed9fA27ba23BfB702989e7218E44fd4706",
   [ChainId.ROPSTEN]: "",
   [ChainId.HARDHAT]: "",
 }
@@ -892,6 +892,7 @@ export const SWAP_CONTRACT_GAS_ESTIMATES_MAP = {
   removeLiquidityImbalance: BigNumber.from("350000"), // 318,231
   removeLiquidityOneToken: BigNumber.from("250000"), // 232,947
   migrate: BigNumber.from("650000"), // 619,126
+  virtualSwapSettleOrWithdraw: BigNumber.from("400000"),
 }
 
 export interface WalletInfo {
@@ -923,5 +924,5 @@ export const SYNTH_TRACKING_ID =
   "0x534144444c450000000000000000000000000000000000000000000000000000"
 
 // FLAGS
-export const IS_VIRTUAL_SWAP_ACTIVE = false
+export const IS_VIRTUAL_SWAP_ACTIVE = true
 // FLAGS END

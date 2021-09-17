@@ -381,7 +381,9 @@ function Swap(): ReactElement {
     if (symbol === formState.to.symbol) return handleReverseExchangeDirection()
     setFormState((prevState) => {
       const swapPairs = calculateSwapPairs(TOKENS_MAP[symbol])
-      const activeSwapPair = swapPairs.find((pair) => pair.to.symbol === symbol)
+      const activeSwapPair = swapPairs.find(
+        (pair) => pair.to.symbol === prevState.to.symbol,
+      )
       const isValidSwap =
         IS_VIRTUAL_SWAP_ACTIVE && activeSwapPair
           ? activeSwapPair.type !== SWAP_TYPES.INVALID
@@ -424,12 +426,12 @@ function Swap(): ReactElement {
     setFormState((prevState) => {
       const activeSwapPair = prevState.currentSwapPairs.find(
         (pair) => pair.to.symbol === symbol,
-      ) as SwapData
+      )
       const nextState = {
         ...prevState,
         from: {
           ...prevState.from,
-          ...activeSwapPair.from,
+          ...(activeSwapPair?.from || {}),
         },
         error: null,
         to: {
@@ -438,13 +440,13 @@ function Swap(): ReactElement {
           valueSynth: Zero,
           symbol,
           valueUSD: Zero,
-          poolName: activeSwapPair.to.poolName,
-          tokenIndex: activeSwapPair.to.tokenIndex,
+          poolName: activeSwapPair?.to.poolName,
+          tokenIndex: activeSwapPair?.to.tokenIndex,
         },
         priceImpact: Zero,
         exchangeRate: Zero,
-        route: activeSwapPair.route || [],
-        swapType: activeSwapPair.type || SWAP_TYPES.INVALID,
+        route: activeSwapPair?.route || [],
+        swapType: activeSwapPair?.type || SWAP_TYPES.INVALID,
       }
       return nextState
     })

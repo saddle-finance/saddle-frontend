@@ -9,6 +9,7 @@ import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
+import { ReactComponent as InfoIcon } from "../assets/icons/info.svg"
 import Modal from "./Modal"
 import { PendingSwap } from "../hooks/usePendingSwapData"
 import PendingSwapModal from "./PendingSwapModal"
@@ -201,7 +202,12 @@ const SwapPage = (props: Props): ReactElement => {
                 <div className="row">
                   <span></span>
                   <span>
-                    <a href="https://docs.saddle.finance/">
+                    <a
+                      href="https://docs.saddle.finance/faq#what-is-virtual-swap"
+                      style={{ textDecoration: "underline" }}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       ({t("virtualSwap")})
                     </a>
                   </span>
@@ -222,6 +228,20 @@ const SwapPage = (props: Props): ReactElement => {
             })}
           </div>
         ) : null}
+        {isVirtualSwap && (
+          <div className="virtualSwapInfoBubble">
+            <InfoIcon />
+            {t("crossAssetSwapsUseVirtualSwaps")} {"<"}
+            <a
+              href="https://docs.saddle.finance/faq#what-is-virtual-swap"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {t("learnMore")}
+            </a>
+            {">"}
+          </div>
+        )}
         <AdvancedOptions />
         <div className="pendingSwaps">
           {pendingSwaps.map((pendingSwap) => {

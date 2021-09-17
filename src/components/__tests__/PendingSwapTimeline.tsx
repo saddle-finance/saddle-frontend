@@ -48,7 +48,7 @@ it("renders a basic swap correctly", () => {
   )
   expect(
     screen.getByTestId("PendingSwapTimeline:minutesLeft"),
-  ).toHaveTextContent("5 minutesLeft")
+  ).toHaveTextContent("minutesLeft")
   expect(asFragment()).toMatchSnapshot()
 })
 
