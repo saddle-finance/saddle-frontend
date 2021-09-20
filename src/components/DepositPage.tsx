@@ -18,7 +18,6 @@ import ReviewDeposit from "./ReviewDeposit"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import { Zero } from "@ethersproject/constants"
-import classNames from "classnames"
 import { formatBNToPercentString } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
 
@@ -129,7 +128,7 @@ const DepositPage = (props: Props): ReactElement => {
                 <span>{t("depositWrapped")}</span>
               </div>
             )}
-            <div className={classNames("transactionInfoContainer", "show")}>
+            <div className={"transactionInfoContainer"}>
               <div className="transactionInfo">
                 {poolData?.aprs?.keep?.apr.gt(Zero) && (
                   <div className="transactionInfoItem">
