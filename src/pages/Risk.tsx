@@ -12,7 +12,7 @@ function Risk(): ReactElement {
     <div className="riskpage">
       <TopMenu activeTab={t("risk")} />
       <div className="content">
-        <p>
+        <p data-testid="risk-intro">
           {t("riskIntro")}{" "}
           <a href="https://github.com/saddle-finance/saddle-contract">
             {t("riskIntro2")}
@@ -20,7 +20,7 @@ function Risk(): ReactElement {
           {t("riskIntro3")}
         </p>
         <h3>{t("audits")}</h3>
-        <p>
+        <p data-testid="risk-audits">
           {t("riskAudits")}{" "}
           <a href="https://github.com/saddle-finance/saddle-audits">
             {t("riskAudits2")}
@@ -34,9 +34,9 @@ function Risk(): ReactElement {
           {t("riskAudits4")}
         </p>
         <h3>{t("adminKeys")}</h3>
-        <p>{t("riskAdminKeys")}</p>
+        <p data-testid="risk-adminkeys">{t("riskAdminKeys")}</p>
         <h3>{t("lossOfPeg")}</h3>
-        <p>{t("riskLossOfPeg")}</p>
+        <p data-testid="risk-lossofpeg">{t("riskLossOfPeg")}</p>
       </div>
     </div>
   )
