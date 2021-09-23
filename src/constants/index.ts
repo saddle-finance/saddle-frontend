@@ -691,7 +691,7 @@ export type Pool = {
   metaSwapAddresses?: { [chainId in ChainId]: string }
   underlyingPoolTokens?: Token[]
   underlyingPool?: PoolName
-  isOutdated?: boolean // pool can be outd  ated but not have a migration target
+  isOutdated?: boolean // pool can be outdated but not have a migration target
 }
 export type PoolsMap = {
   [poolName: string]: Pool
