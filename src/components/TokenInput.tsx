@@ -1,10 +1,12 @@
+import { LPTOKEN_TO_POOL_MAP, TOKENS_MAP } from "../constants"
 import React, { ReactElement } from "react"
-
 import { calculatePrice, commify } from "../utils"
 import { AppState } from "../state/index"
-import { TOKENS_MAP } from "../constants"
+import { BigNumber } from "ethers"
+import { Zero } from "@ethersproject/constants"
 import { formatBNToString } from "../utils"
 import styles from "./TokenInput.module.scss"
+import usePoolData from "../hooks/usePoolData"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
@@ -27,7 +29,19 @@ function TokenInput({
 }: Props): ReactElement {
   const { t } = useTranslation()
   const { name } = TOKENS_MAP[symbol]
+
+  let tokenUSDValue: number | BigNumber | undefined
+  const poolName = LPTOKEN_TO_POOL_MAP[symbol]
+  const [poolData] = usePoolData(poolName)
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
+
+  if (poolData.lpTokenPriceUSD != Zero) {
+    tokenUSDValue = parseFloat(
+      formatBNToString(poolData.lpTokenPriceUSD, 18, 2),
+    )
+  } else {
+    tokenUSDValue = tokenPricesUSD?.[symbol]
+  }
 
   function onChangeInput(e: React.ChangeEvent<HTMLInputElement>): void {
     const { decimals } = TOKENS_MAP[symbol]
@@ -76,7 +90,7 @@ function TokenInput({
             ≈$
             {commify(
               formatBNToString(
-                calculatePrice(inputValue, tokenPricesUSD?.[symbol]),
+                calculatePrice(inputValue, tokenUSDValue),
                 18,
                 2,
               ),
