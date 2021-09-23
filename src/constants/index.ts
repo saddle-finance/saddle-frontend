@@ -690,6 +690,7 @@ export type Pool = {
   migration?: PoolName
   metaSwapAddresses?: { [chainId in ChainId]: string }
   underlyingPoolTokens?: Token[]
+  underlyingPool?: PoolName
   isOutdated?: boolean // pool can be outd  ated but not have a migration target
 }
 export type PoolsMap = {
@@ -769,6 +770,7 @@ export const POOLS_MAP: PoolsMap = {
     type: PoolTypes.USD,
     metaSwapAddresses: SUSD_META_SWAP_ADDRESSES,
     underlyingPoolTokens: SUSD_UNDERLYING_POOL_TOKENS,
+    underlyingPool: STABLECOIN_POOL_V2_NAME,
     route: "susd",
   },
   [TBTC_POOL_NAME]: {
@@ -780,6 +782,7 @@ export const POOLS_MAP: PoolsMap = {
     type: PoolTypes.BTC,
     metaSwapAddresses: TBTC_META_SWAP_ADDRESSES,
     underlyingPoolTokens: TBTC_UNDERLYING_POOL_TOKENS,
+    underlyingPool: BTC_POOL_V2_NAME,
     route: "tbtc",
   },
   [WCUSD_POOL_NAME]: {
@@ -791,6 +794,7 @@ export const POOLS_MAP: PoolsMap = {
     type: PoolTypes.USD,
     metaSwapAddresses: WCUSD_META_SWAP_ADDRESSES,
     underlyingPoolTokens: WCUSD_UNDERLYING_POOL_TOKENS,
+    underlyingPool: STABLECOIN_POOL_V2_NAME,
     route: "wcusd",
   },
 }
@@ -835,6 +839,19 @@ export const TOKEN_TO_POOLS_MAP = Object.keys(POOLS_MAP).reduce(
     return newAcc
   },
   {} as TokenToPoolsMap,
+)
+
+export type LPTokenToPoolsMap = {
+  [tokenSymbol: string]: PoolName
+}
+export const LPTOKEN_TO_POOL_MAP = Object.keys(POOLS_MAP).reduce(
+  (acc, poolName) => {
+    const pool = POOLS_MAP[poolName as PoolName]
+    const newAcc = { ...acc }
+    newAcc[pool.lpToken.symbol] = poolName as PoolName
+    return newAcc
+  },
+  {} as LPTokenToPoolsMap,
 )
 
 export const TRANSACTION_TYPES = {
