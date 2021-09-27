@@ -21,7 +21,7 @@ interface Props {
 function PoolInfoCard({ data }: Props): ReactElement | null {
   const { t } = useTranslation()
   if (data == null) return null
-  const { type: poolType } = POOLS_MAP[data?.name]
+  const { type: poolType, underlyingPool } = POOLS_MAP[data?.name]
   const formattedDecimals = poolType === PoolTypes.USD ? 2 : 4
   const swapFee = data?.swapFee
     ? formatBNToPercentString(data.swapFee, POOL_FEE_PRECISION)
@@ -61,7 +61,16 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
 
   return (
     <div className="poolInfoCard">
-      <h4>{formattedData.name}</h4>
+      {underlyingPool ? (
+        <h4>
+          {formattedData.name}&nbsp;
+          <div className="underline inlineDiv">
+            <ToolTip content={t("metapool")}>(META)</ToolTip>
+          </div>
+        </h4>
+      ) : (
+        <h4>{formattedData.name}</h4>
+      )}
       <div className="info">
         <div className="infoItem">
           <span className="label bold">{`${t("fee")}:`}</span>

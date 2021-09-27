@@ -130,7 +130,7 @@ div.poolOverview {
       }
     }
   }
-  .label.underline {
+  .underline {
     border-bottom: 1px dotted var(--text);
   }
 }
@@ -157,4 +157,8 @@ div.outdated {
 
 div.poolOverview:first-child {
   margin-top: 0;
+}
+
+.inlineDiv {
+  display: inline;
 }

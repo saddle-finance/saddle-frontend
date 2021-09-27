@@ -57,6 +57,7 @@
   "lpTokens": "资金池LP代币",
   "max": "上限",
   "maxSlippage": "最高滑点",
+  "metapool": null,
   "migrate": "迁移",
   "migrationAmount": "迁移数量",
   "migrationExplain": "本资金池已过时，新版本进行了gas费用优化，我们建议您把资产迁移到新池以获取更高的回报率。",

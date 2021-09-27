@@ -77,9 +77,16 @@ export default function PoolOverview({
     >
       <div className="left">
         <div className="titleAndTag">
-          <h4 className="title">
-            {`${formattedData.name}${underlyingPool ? " (META)" : ""}`}
-          </h4>
+          {underlyingPool ? (
+            <h4 className="title">
+              {formattedData.name}&nbsp;
+              <div className="underline inlineDiv">
+                <ToolTip content={t("metapool")}>(META)</ToolTip>
+              </div>
+            </h4>
+          ) : (
+            <h4 className="title">{formattedData.name}</h4>
+          )}
           {(shouldMigrate || isOutdated) && <Tag kind="warning">OUTDATED</Tag>}
           {poolData.isPaused && <Tag kind="error">PAUSED</Tag>}
         </div>

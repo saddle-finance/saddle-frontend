@@ -84,4 +84,8 @@ div.poolInfoCard {
   .bold {
     font-weight: $bold;
   }
+
+  .underline {
+    border-bottom: 1px dotted var(--text);
+  }
 }
