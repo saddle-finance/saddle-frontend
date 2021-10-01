@@ -39,6 +39,30 @@ describe("calculatePriceImpact", () => {
       ),
     ).toEqual(parseUnits("-.5", 18))
   })
+
+  it("correctly calculates value for negative imbalanced withdraw", () => {
+    // 9 / 10 * 1.01 - 1 = -0.10891089108910891
+    expect(
+      calculatePriceImpact(
+        parseUnits("10", 18), // give 10 lpTokens
+        parseUnits("9", 18), // receive 9 pool tokens
+        parseUnits("1.01", 18),
+        true,
+      ),
+    ).toEqual(parseUnits("-.108910891089108911", 18))
+  })
+
+  it("correctly calculates value for posiive imbalanced withdraw", () => {
+    // 11 / 10 * 1.01 - 1 = .089108910
+    expect(
+      calculatePriceImpact(
+        parseUnits("10", 18), // give 10 lpTokens
+        parseUnits("11", 18), // receive 9 pool tokens
+        parseUnits("1.01", 18),
+        true,
+      ),
+    ).toEqual(parseUnits("0.089108910891089108", 18))
+  })
 })
 
 describe("isHighPriceImpact", () => {
