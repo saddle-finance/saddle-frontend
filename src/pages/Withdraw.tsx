@@ -60,7 +60,7 @@ function Withdraw({ poolName }: Props): ReactElement {
               sum + (+withdrawFormState.tokenInputs[symbol].valueRaw || 0),
             0,
           )
-          .toFixed(18),
+          .toString(),
         18,
       )
       let withdrawLPTokenAmount
@@ -90,6 +90,7 @@ function Withdraw({ poolName }: Props): ReactElement {
           withdrawLPTokenAmount,
           tokenInputSum,
           poolData.virtualPrice,
+          true,
         ),
       )
     }

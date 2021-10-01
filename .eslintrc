@@ -1,5 +1,6 @@
+
 {
-  "extends":  [
+  "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
@@ -12,9 +13,9 @@
       "version": "detect" // Tells eslint-plugin-react to automatically detect the version of React to use
     }
   },
-  "parser":  "@typescript-eslint/parser",
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion":  2018,
+    "ecmaVersion": 2018,
     "project": ["./tsconfig.json", "./cypress/tsconfig.json"],
     "sourceType": "module"
   },
@@ -28,6 +29,7 @@
   },
   "rules": {
     "@typescript-eslint/no-unused-vars": ["error"],
+    "@typescript-eslint/ban-ts-comment": "off",
     "no-invalid-this": 0,
     "no-unused-vars": "off",
     "sort-imports": "error"
