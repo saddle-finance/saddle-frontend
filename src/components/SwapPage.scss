@@ -72,6 +72,19 @@ div.swapPage {
     }
   }
 
+  .virtualSwapInfoBubble {
+    padding: 8px 16px;
+    margin-top: 16px;
+    border: 1px solid;
+    border-radius: 8px;
+    background: $primary40T;
+    width: 100%;
+    > svg {
+      fill: var(--primary-foreground);
+      margin-right: 8px;
+    }
+  }
+
   .exchangeWarning {
     color: $white;
     background-color: $text-red;
@@ -151,6 +164,7 @@ div.swapPage {
   }
 
   .pendingSwaps {
+    margin-top: 16px;
     width: 100%;
     > .pendingSwapItem {
       width: 100%;
@@ -162,6 +176,7 @@ div.swapPage {
       justify-content: space-between;
       padding: 16px 24px;
       cursor: pointer;
+      margin-bottom: 16px;
       .swapDetails {
         color: $primary-blue;
         font-weight: 700;

@@ -81,6 +81,21 @@ function Deposit({ poolName }: Props): ReactElement | null {
     (state: AppState) => state.application,
   )
 
+  // Merge underlying token usd prices and tokenPricesUSD array
+  const [underlyingPoolData] = usePoolData(POOL.underlyingPool)
+  let newTokenPricesUSD
+  if (underlyingPoolData.lpTokenPriceUSD != Zero) {
+    const underlyingTokenUSDValue = parseFloat(
+      formatBNToString(poolData.lpTokenPriceUSD, 18, 2),
+    )
+    newTokenPricesUSD = {
+      ...tokenPricesUSD,
+      ...{
+        [underlyingPoolData.lpToken]: underlyingTokenUSDValue,
+      },
+    }
+  }
+
   const { gasPriceSelected, gasCustom } = useSelector(
     (state: AppState) => state.user,
   )
@@ -225,7 +240,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
     priceImpact,
     estDepositLPTokenAmount,
     gasPrice,
-    tokenPricesUSD,
+    newTokenPricesUSD,
   )
 
   return (

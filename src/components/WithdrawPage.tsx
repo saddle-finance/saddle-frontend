@@ -154,7 +154,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                 )}
               </div>
             ))}
-            <div className={classNames("transactionInfoContainer", "show")}>
+            <div className={"transactionInfoContainer"}>
               <div className="transactionInfo">
                 <div className="transactionInfoItem">
                   {reviewData.priceImpact.gte(0) ? (

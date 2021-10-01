@@ -24,7 +24,11 @@ import {
   shiftBNDecimals,
 } from "../utils"
 import { formatUnits, parseUnits } from "@ethersproject/units"
-import { useBridgeContract, useSwapContract } from "../hooks/useContract"
+import {
+  useBridgeContract,
+  useSwapContract,
+  useSynthetixExchangeRatesContract,
+} from "../hooks/useContract"
 
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -96,6 +100,7 @@ function Swap(): ReactElement {
   const approveAndSwap = useApproveAndSwap()
   const tokenBalances = usePoolTokenBalances()
   const bridgeContract = useBridgeContract()
+  const snxEchangeRatesContract = useSynthetixExchangeRatesContract()
   const calculateSwapPairs = useCalculateSwapPairs()
   const pendingSwapData = useContext(PendingSwapsContext)
   const { tokenPricesUSD, gasStandard, gasFast, gasInstant } = useSelector(
@@ -150,10 +155,8 @@ function Swap(): ReactElement {
                 ),
                 swapType,
                 isAvailable: IS_VIRTUAL_SWAP_ACTIVE
-                  ? ![SWAP_TYPES.INVALID, SWAP_TYPES.SYNTH_TO_SYNTH].includes(
-                      swapType,
-                    )
-                  : swapType == SWAP_TYPES.DIRECT, // TODO replace once VSwaps are live
+                  ? swapType !== SWAP_TYPES.INVALID
+                  : swapType === SWAP_TYPES.DIRECT, // TODO replace once VSwaps are live
               }
             })
             .sort(sortTokenOptions)
@@ -260,6 +263,15 @@ function Swap(): ReactElement {
           formStateArg.from.tokenIndex,
           formStateArg.to.tokenIndex,
           amountToGive,
+        )
+      } else if (
+        formStateArg.swapType === SWAP_TYPES.SYNTH_TO_SYNTH &&
+        snxEchangeRatesContract != null
+      ) {
+        amountToReceive = await snxEchangeRatesContract.effectiveValue(
+          utils.formatBytes32String(formStateArg.from.symbol),
+          amountToGive,
+          utils.formatBytes32String(formStateArg.to.symbol),
         )
       }
       const toValueUSD = calculatePrice(
@@ -369,7 +381,9 @@ function Swap(): ReactElement {
     if (symbol === formState.to.symbol) return handleReverseExchangeDirection()
     setFormState((prevState) => {
       const swapPairs = calculateSwapPairs(TOKENS_MAP[symbol])
-      const activeSwapPair = swapPairs.find((pair) => pair.to.symbol === symbol)
+      const activeSwapPair = swapPairs.find(
+        (pair) => pair.to.symbol === prevState.to.symbol,
+      )
       const isValidSwap =
         IS_VIRTUAL_SWAP_ACTIVE && activeSwapPair
           ? activeSwapPair.type !== SWAP_TYPES.INVALID
@@ -412,12 +426,12 @@ function Swap(): ReactElement {
     setFormState((prevState) => {
       const activeSwapPair = prevState.currentSwapPairs.find(
         (pair) => pair.to.symbol === symbol,
-      ) as SwapData
+      )
       const nextState = {
         ...prevState,
         from: {
           ...prevState.from,
-          ...activeSwapPair.from,
+          ...(activeSwapPair?.from || {}),
         },
         error: null,
         to: {
@@ -426,13 +440,13 @@ function Swap(): ReactElement {
           valueSynth: Zero,
           symbol,
           valueUSD: Zero,
-          poolName: activeSwapPair.to.poolName,
-          tokenIndex: activeSwapPair.to.tokenIndex,
+          poolName: activeSwapPair?.to.poolName,
+          tokenIndex: activeSwapPair?.to.tokenIndex,
         },
         priceImpact: Zero,
         exchangeRate: Zero,
-        route: activeSwapPair.route || [],
-        swapType: activeSwapPair.type || SWAP_TYPES.INVALID,
+        route: activeSwapPair?.route || [],
+        swapType: activeSwapPair?.type || SWAP_TYPES.INVALID,
       }
       return nextState
     })

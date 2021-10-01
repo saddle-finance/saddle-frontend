@@ -95,8 +95,22 @@ export class Token {
 
 export const BLOCK_TIME = 13000 // ms
 
+export const SYNTHETIX_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "",
+}
+
+export const SYNTHETIX_EXCHANGE_RATES_CONTRACT_ADDRESSES: {
+  [chainId in ChainId]: string
+} = {
+  [ChainId.MAINNET]: "0xd69b189020EF614796578AfE4d10378c5e7e1138",
+  [ChainId.ROPSTEN]: "",
+  [ChainId.HARDHAT]: "",
+}
+
 export const BRIDGE_CONTRACT_ADDRESSES: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: "0x82e01223d51Eb87e16A03E24687EDF0F294da6f1", // TODO replace once mainnet deploy goes out
+  [ChainId.MAINNET]: "0xa5bD85ed9fA27ba23BfB702989e7218E44fd4706",
   [ChainId.ROPSTEN]: "",
   [ChainId.HARDHAT]: "",
 }
@@ -676,6 +690,7 @@ export type Pool = {
   migration?: PoolName
   metaSwapAddresses?: { [chainId in ChainId]: string }
   underlyingPoolTokens?: Token[]
+  underlyingPool?: PoolName
   isOutdated?: boolean // pool can be outd  ated but not have a migration target
 }
 export type PoolsMap = {
@@ -755,6 +770,7 @@ export const POOLS_MAP: PoolsMap = {
     type: PoolTypes.USD,
     metaSwapAddresses: SUSD_META_SWAP_ADDRESSES,
     underlyingPoolTokens: SUSD_UNDERLYING_POOL_TOKENS,
+    underlyingPool: STABLECOIN_POOL_V2_NAME,
     route: "susd",
   },
   [TBTC_POOL_NAME]: {
@@ -766,6 +782,7 @@ export const POOLS_MAP: PoolsMap = {
     type: PoolTypes.BTC,
     metaSwapAddresses: TBTC_META_SWAP_ADDRESSES,
     underlyingPoolTokens: TBTC_UNDERLYING_POOL_TOKENS,
+    underlyingPool: BTC_POOL_V2_NAME,
     route: "tbtc",
   },
   [WCUSD_POOL_NAME]: {
@@ -777,6 +794,7 @@ export const POOLS_MAP: PoolsMap = {
     type: PoolTypes.USD,
     metaSwapAddresses: WCUSD_META_SWAP_ADDRESSES,
     underlyingPoolTokens: WCUSD_UNDERLYING_POOL_TOKENS,
+    underlyingPool: STABLECOIN_POOL_V2_NAME,
     route: "wcusd",
   },
 }
@@ -823,6 +841,19 @@ export const TOKEN_TO_POOLS_MAP = Object.keys(POOLS_MAP).reduce(
   {} as TokenToPoolsMap,
 )
 
+export type LPTokenToPoolsMap = {
+  [tokenSymbol: string]: PoolName
+}
+export const LPTOKEN_TO_POOL_MAP = Object.keys(POOLS_MAP).reduce(
+  (acc, poolName) => {
+    const pool = POOLS_MAP[poolName as PoolName]
+    const newAcc = { ...acc }
+    newAcc[pool.lpToken.symbol] = poolName as PoolName
+    return newAcc
+  },
+  {} as LPTokenToPoolsMap,
+)
+
 export const TRANSACTION_TYPES = {
   DEPOSIT: "DEPOSIT",
   WITHDRAW: "WITHDRAW",
@@ -856,11 +887,12 @@ export const SWAP_CONTRACT_GAS_ESTIMATES_MAP = {
   [SWAP_TYPES.TOKEN_TO_TOKEN]: BigNumber.from("2000000"), // 1,676,837
   [SWAP_TYPES.TOKEN_TO_SYNTH]: BigNumber.from("2000000"), // 1,655,502
   [SWAP_TYPES.SYNTH_TO_TOKEN]: BigNumber.from("1500000"), // 1,153,654
-  [SWAP_TYPES.SYNTH_TO_SYNTH]: BigNumber.from("999999999"), // 999,999,999 // TODO: https://github.com/saddle-finance/saddle-frontend/issues/471
+  [SWAP_TYPES.SYNTH_TO_SYNTH]: BigNumber.from("700000"), // 681,128 // TODO: https://github.com/saddle-finance/saddle-frontend/issues/471
   addLiquidity: BigNumber.from("400000"), // 386,555
   removeLiquidityImbalance: BigNumber.from("350000"), // 318,231
   removeLiquidityOneToken: BigNumber.from("250000"), // 232,947
   migrate: BigNumber.from("650000"), // 619,126
+  virtualSwapSettleOrWithdraw: BigNumber.from("400000"),
 }
 
 export interface WalletInfo {
@@ -887,6 +919,10 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   },
 }
 
+// "SADDLE" in bytes32 form
+export const SYNTH_TRACKING_ID =
+  "0x534144444c450000000000000000000000000000000000000000000000000000"
+
 // FLAGS
-export const IS_VIRTUAL_SWAP_ACTIVE = false
+export const IS_VIRTUAL_SWAP_ACTIVE = true
 // FLAGS END

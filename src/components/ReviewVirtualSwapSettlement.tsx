@@ -32,8 +32,11 @@ interface Props {
   }
 }
 
-function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
-  // TODO: account for swaptype in UI
+function ReviewVirtualSwapSettlement({
+  onClose,
+  onConfirm,
+  data,
+}: Props): ReactElement {
   const { t } = useTranslation()
   const {
     slippageCustom,
@@ -57,9 +60,6 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
       data.exchangeRateInfo &&
       isHighPriceImpact(data.exchangeRateInfo.priceImpact),
   )
-  if (isHighPriceImpactTxn) {
-    console.log("PI", data.exchangeRateInfo?.priceImpact.toString())
-  }
   const deadline = formatDeadlineToNumber(
     transactionDeadlineSelected,
     transactionDeadlineCustom,
@@ -69,7 +69,9 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
     gasPriceSelected,
     gasCustom,
   )
-  const gasAmount = calculateGasEstimate(data.swapType).mul(gasPrice)
+  const gasAmount = calculateGasEstimate("virtualSwapSettleOrWithdraw").mul(
+    gasPrice,
+  )
   const gasValueUSD = tokenPricesUSD?.ETH
     ? parseUnits(tokenPricesUSD.ETH.toFixed(2), 18) // USD / ETH  * 10^18
         .mul(gasAmount) // GWEI
@@ -177,4 +179,4 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
   )
 }
 
-export default ReviewSwap
+export default ReviewVirtualSwapSettlement
