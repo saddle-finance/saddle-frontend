@@ -4,6 +4,7 @@ import {
   SYNTH_TRACKING_ID,
   TRANSACTION_TYPES,
 } from "../constants"
+import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
 import { useAllContracts, useSynthetixContract } from "./useContract"
 
 import { AppState } from "../state"
@@ -17,7 +18,7 @@ import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFla
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { formatDeadlineToNumber } from "../utils"
-import { notifyHandler } from "../utils/notifyHandler"
+
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
@@ -58,6 +59,7 @@ export function useApproveAndSwap(): (
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
+
   const {
     slippageCustom,
     slippageSelected,
@@ -213,6 +215,7 @@ export function useApproveAndSwap(): (
       return Promise.resolve()
     } catch (e) {
       console.error(e)
+      notifyCustomError(<Error>e)
     }
   }
 }
