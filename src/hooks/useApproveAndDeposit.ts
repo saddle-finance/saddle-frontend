@@ -198,7 +198,7 @@ export function useApproveAndDeposit(
       return Promise.resolve()
     } catch (e) {
       console.error(e)
-      notifyCustomError(<Error>e)
+      notifyCustomError(e as Error)
     }
   }
 }
