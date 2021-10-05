@@ -62,12 +62,9 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
   return (
     <div className="poolInfoCard">
       {underlyingPool ? (
-        <h4>
-          {formattedData.name}&nbsp;
-          <div className="underline inlineDiv">
-            <ToolTip content={t("metapool")}>(META)</ToolTip>
-          </div>
-        </h4>
+        <ToolTip content={t("metapool")}>
+          <h4 className="underline">{formattedData.name}</h4>
+        </ToolTip>
       ) : (
         <h4>{formattedData.name}</h4>
       )}

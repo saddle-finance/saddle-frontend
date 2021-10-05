@@ -32,9 +32,9 @@ export const STABLECOIN_POOL_V2_NAME = "Stablecoin Pool V2"
 export const VETH2_POOL_NAME = "vETH2 Pool"
 export const ALETH_POOL_NAME = "alETH Pool"
 export const D4_POOL_NAME = "D4 Pool"
-export const SUSD_POOL_NAME = "sUSD Pool"
-export const TBTC_POOL_NAME = "tBTC Pool"
-export const WCUSD_POOL_NAME = "wCUSD Pool"
+export const SUSD_METAPOOL_NAME = "sUSD Metapool"
+export const TBTC_METAPOOL_NAME = "tBTC Metapool"
+export const WCUSD_METAPOOL_NAME = "wCUSD Metapool"
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof BTC_POOL_V2_NAME
@@ -43,9 +43,9 @@ export type PoolName =
   | typeof VETH2_POOL_NAME
   | typeof ALETH_POOL_NAME
   | typeof D4_POOL_NAME
-  | typeof SUSD_POOL_NAME
-  | typeof TBTC_POOL_NAME
-  | typeof WCUSD_POOL_NAME
+  | typeof SUSD_METAPOOL_NAME
+  | typeof TBTC_METAPOOL_NAME
+  | typeof WCUSD_METAPOOL_NAME
 
 export enum ChainId {
   MAINNET = 1,
@@ -761,8 +761,8 @@ export const POOLS_MAP: PoolsMap = {
     type: PoolTypes.USD,
     route: "d4",
   },
-  [SUSD_POOL_NAME]: {
-    name: SUSD_POOL_NAME,
+  [SUSD_METAPOOL_NAME]: {
+    name: SUSD_METAPOOL_NAME,
     lpToken: SUSD_SWAP_TOKEN,
     poolTokens: SUSD_POOL_TOKENS,
     addresses: SUSD_META_SWAP_DEPOSIT_ADDRESSES,
@@ -773,8 +773,8 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPool: STABLECOIN_POOL_V2_NAME,
     route: "susd",
   },
-  [TBTC_POOL_NAME]: {
-    name: TBTC_POOL_NAME,
+  [TBTC_METAPOOL_NAME]: {
+    name: TBTC_METAPOOL_NAME,
     lpToken: TBTC_SWAP_TOKEN,
     poolTokens: TBTC_POOL_TOKENS,
     addresses: TBTC_META_SWAP_DEPOSIT_ADDRESSES,
@@ -785,8 +785,8 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPool: BTC_POOL_V2_NAME,
     route: "tbtc",
   },
-  [WCUSD_POOL_NAME]: {
-    name: WCUSD_POOL_NAME,
+  [WCUSD_METAPOOL_NAME]: {
+    name: WCUSD_METAPOOL_NAME,
     lpToken: WCUSD_SWAP_TOKEN,
     poolTokens: WCUSD_POOL_TOKENS,
     addresses: WCUSD_META_SWAP_DEPOSIT_ADDRESSES,
@@ -804,9 +804,11 @@ export function isLegacySwapABIPool(poolName: string): boolean {
   )
 }
 export function isMetaPool(poolName = ""): boolean {
-  return new Set([SUSD_POOL_NAME, TBTC_POOL_NAME, WCUSD_POOL_NAME]).has(
-    poolName,
-  )
+  return new Set([
+    SUSD_METAPOOL_NAME,
+    TBTC_METAPOOL_NAME,
+    WCUSD_METAPOOL_NAME,
+  ]).has(poolName)
 }
 
 // maps a symbol string to a token object

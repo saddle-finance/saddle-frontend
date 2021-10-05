@@ -1,6 +1,6 @@
 import "./PoolOverview.scss"
 
-import { POOLS_MAP, PoolTypes, TOKENS_MAP } from "../constants"
+import { POOLS_MAP, PoolTypes, TOKENS_MAP, isMetaPool } from "../constants"
 import { Partners, PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement } from "react"
 import {
@@ -30,9 +30,7 @@ export default function PoolOverview({
   onClickMigrate,
 }: Props): ReactElement | null {
   const { t } = useTranslation()
-  const { type: poolType, isOutdated, underlyingPool } = POOLS_MAP[
-    poolData.name
-  ]
+  const { type: poolType, isOutdated } = POOLS_MAP[poolData.name]
   const formattedDecimals = poolType === PoolTypes.USD ? 2 : 4
   const shouldMigrate = !!onClickMigrate
   const formattedData = {
@@ -68,6 +66,7 @@ export default function PoolOverview({
     }),
   }
   const hasShare = !!userShareData?.usdBalance.gt("0")
+  const isMetapool = isMetaPool(formattedData.name)
 
   return (
     <div
@@ -77,13 +76,10 @@ export default function PoolOverview({
     >
       <div className="left">
         <div className="titleAndTag">
-          {underlyingPool ? (
-            <h4 className="title">
-              {formattedData.name}&nbsp;
-              <div className="underline inlineDiv">
-                <ToolTip content={t("metapool")}>(META)</ToolTip>
-              </div>
-            </h4>
+          {isMetapool ? (
+            <ToolTip content={t("metapool")}>
+              <h4 className="title underline">{formattedData.name}</h4>
+            </ToolTip>
           ) : (
             <h4 className="title">{formattedData.name}</h4>
           )}
