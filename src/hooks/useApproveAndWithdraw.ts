@@ -1,6 +1,7 @@
 import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
 import { addSlippage, subtractSlippage } from "../utils/slippage"
 import { formatUnits, parseUnits } from "@ethersproject/units"
+import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
 import { useLPTokenContract, useSwapContract } from "./useContract"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -8,7 +9,6 @@ import { GasPrices } from "../state/user"
 import { NumberInputState } from "../utils/numberInputState"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { formatDeadlineToNumber } from "../utils"
-import { notifyHandler } from "../utils/notifyHandler"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
 import { useDispatch } from "react-redux"
@@ -155,6 +155,7 @@ export function useApproveAndWithdraw(
       )
     } catch (e) {
       console.error(e)
+      notifyCustomError(e as Error)
     }
   }
 }
