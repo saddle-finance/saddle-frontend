@@ -222,7 +222,7 @@ const PendingSwapModal = ({
             <div className={styles.about}>
               <InfoIcon />
               <a
-                href="https://docs.saddle.finance/faq#what-is-virtual-swap"
+                href="https://docs.saddle.finance/saddle-faq#what-is-virtual-swap"
                 target="_blank"
                 rel="noreferrer"
               >

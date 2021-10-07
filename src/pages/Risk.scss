@@ -30,6 +30,10 @@ div.riskpage {
 
   a {
     color: var(--text-selected);
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   p {
