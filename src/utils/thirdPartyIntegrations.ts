@@ -71,18 +71,6 @@ export async function getThirdPartyDataForPool(
     )
     result.aprs.sharedStake = { apr, symbol: rewardSymbol }
     result.amountsStaked.sharedStake = userStakedAmount
-  } else if (poolName === BTC_POOL_NAME) {
-    const rewardSymbol = "KEEP"
-    const [apr, userStakedAmount] = await getKeepData(
-      library,
-      chainId,
-      lpTokenPriceUSD,
-      BTC_POOL_NAME,
-      tokenPricesUSD?.[rewardSymbol],
-      accountId,
-    )
-    result.aprs.keep = { apr, symbol: rewardSymbol }
-    result.amountsStaked.keep = userStakedAmount
   } else if (poolName === TBTC_POOL_NAME) {
     const rewardSymbol = "KEEP"
     const [apr, userStakedAmount] = await getKeepData(
@@ -132,7 +120,7 @@ async function getFraxData(
 
 type KeepPoolName = typeof BTC_POOL_NAME | typeof TBTC_POOL_NAME
 
-// LPRewardsTBTCv2Saddle and LPRewardsTBTCv2Saddle have the same interface
+// LPRewardsTBTCSaddle and LPRewardsTBTCv2Saddle have the same interface
 // https://github.com/keep-network/keep-ecdsa/blob/main/solidity/contracts/LPRewards.sol#L267
 // https://github.com/keep-network/tbtc-v2/blob/main/yearn/contracts/SaddleStrategy.sol#L42
 
