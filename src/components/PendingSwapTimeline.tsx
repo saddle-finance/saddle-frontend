@@ -56,7 +56,7 @@ const PendingSwapTimeline = ({
           icon="clock"
           testId="PendingSwapTimeline:minutesLeft"
         >
-          {`${minutesRemaining} ${t("minutesLeft")}`}
+          {t("minutesLeft", { count: minutesRemaining })}
         </TimelineStep>
       ) : (
         <TimelineStep

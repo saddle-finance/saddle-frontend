@@ -221,7 +221,13 @@ const PendingSwapModal = ({
             <PendingSwapTimeline pendingSwap={pendingSwap} />
             <div className={styles.about}>
               <InfoIcon />
-              <span>{t("aboutVirtualSwap")}</span>
+              <a
+                href="https://docs.saddle.finance/saddle-faq#what-is-virtual-swap"
+                target="_blank"
+                rel="noreferrer"
+              >
+                {t("aboutVirtualSwap")}
+              </a>
             </div>
           </div>
         </div>

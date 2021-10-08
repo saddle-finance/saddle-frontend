@@ -2,6 +2,7 @@ import React, { ReactElement, useCallback, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 import { calculatePrice, commify, formatBNToString } from "../utils"
 
+import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state"
 import { BigNumber } from "ethers"
 import Button from "./Button"
@@ -136,6 +137,7 @@ const PendingSwapExchange = ({
           </Trans>
         </Button>
       </div>
+      <AdvancedOptions />
     </div>
   )
 }

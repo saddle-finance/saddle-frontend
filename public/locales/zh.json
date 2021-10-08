@@ -146,6 +146,8 @@
   "txSpeedUp_swap": "兑换交易已加速，在Etherscan查看请点击本框。",
   "txSpeedUp_tokenApproval": "代币授权已加速，在Etherscan查看请点击本框。",
   "unavailable": "不可兑换",
+  "unnecessaryApprovalAskA": null,
+  "unnecessaryApprovalAskQ": null,
   "usdBalance": "美元余额",
   "utilization": "利用率",
   "virtualPrice": "虚拟价格",

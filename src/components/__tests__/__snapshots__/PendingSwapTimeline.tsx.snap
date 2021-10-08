@@ -31,7 +31,7 @@ exports[`renders a basic swap correctly 1`] = `
       <svg>
         clock.svg
       </svg>
-       5 minutesLeft
+       minutesLeft
     </div>
     <div
       class="timelineStep inactive"
@@ -129,7 +129,7 @@ exports[`renders a swap with events correctly 1`] = `
       <svg>
         clock.svg
       </svg>
-       5 minutesLeft
+       minutesLeft
     </div>
     <div
       class="timelineStep inactive"

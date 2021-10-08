@@ -57,6 +57,7 @@ export interface PoolDataType {
     >
   >
   lpTokenPriceUSD: BigNumber
+  lpToken: string
 }
 
 export interface UserShareType {
@@ -85,6 +86,7 @@ const emptyPoolData = {
   volume: null,
   aprs: {},
   lpTokenPriceUSD: Zero,
+  lpToken: "",
   isPaused: false,
 } as PoolDataType
 
@@ -197,7 +199,6 @@ export default function usePoolData(
         : tokenBalancesUSDSum
             .mul(BigNumber.from(10).pow(18))
             .div(tokenBalancesSum)
-
       const { aprs, amountsStaked } = await getThirdPartyDataForPool(
         library,
         chainId,
@@ -288,6 +289,7 @@ export default function usePoolData(
         apy: apy ? parseUnits(apy, 18) : null,
         aprs,
         lpTokenPriceUSD,
+        lpToken: POOL.lpToken.symbol,
         isPaused,
       }
       const userShareData = account
