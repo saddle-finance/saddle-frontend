@@ -199,7 +199,6 @@ export default function usePoolData(
         : tokenBalancesUSDSum
             .mul(BigNumber.from(10).pow(18))
             .div(tokenBalancesSum)
-
       const { aprs, amountsStaked } = await getThirdPartyDataForPool(
         library,
         chainId,
