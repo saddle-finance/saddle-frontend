@@ -62,6 +62,7 @@
   "lpTokens": "pool LP tokens",
   "max": "MAX",
   "maxSlippage": "Max Slippage",
+  "metapool": "Metapools contain one token to trade with another underlying Base pool. Adding the single asset to the metapool does not dilute the liquidity of the underlying base pool.",
   "migrate": "Migrate",
   "migrationAmount": "Migration Amount",
   "migrationExplain": "This pool is outdated. We recommend migrating to the new gas optimized version to earn better returns.",

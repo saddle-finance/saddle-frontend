@@ -8,10 +8,10 @@ import {
   PoolTypes,
   STABLECOIN_POOL_NAME,
   STABLECOIN_POOL_V2_NAME,
-  SUSD_POOL_NAME,
-  TBTC_POOL_NAME,
+  SUSD_METAPOOL_NAME,
+  TBTC_METAPOOL_NAME,
   VETH2_POOL_NAME,
-  WCUSD_POOL_NAME,
+  WCUSD_METAPOOL_NAME,
 } from "../constants"
 import React, { ReactElement, useState } from "react"
 
@@ -36,10 +36,10 @@ function Pools(): ReactElement | null {
     STABLECOIN_POOL_V2_NAME,
   )
   const [usdPoolData, usdUserShareData] = usePoolData(STABLECOIN_POOL_NAME)
-  const [susdPoolData, susdUserShareData] = usePoolData(SUSD_POOL_NAME)
-  const [tbtcPoolData, tbtcUserShareData] = usePoolData(TBTC_POOL_NAME)
+  const [susdPoolData, susdUserShareData] = usePoolData(SUSD_METAPOOL_NAME)
+  const [tbtcPoolData, tbtcUserShareData] = usePoolData(TBTC_METAPOOL_NAME)
   const [veth2PoolData, veth2UserShareData] = usePoolData(VETH2_POOL_NAME)
-  const [wcusdPoolData, wcusdUserShareData] = usePoolData(WCUSD_POOL_NAME)
+  const [wcusdPoolData, wcusdUserShareData] = usePoolData(WCUSD_METAPOOL_NAME)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const approveAndMigrateUSD = useApproveAndMigrateUSD()
   const [activeMigration, setActiveMigration] = useState<PoolName | null>(null)
@@ -92,23 +92,23 @@ function Pools(): ReactElement | null {
         userShareData: usdV2UserShareData,
         poolRoute: "/pools/usdv2",
       }
-    } else if (poolName === SUSD_POOL_NAME) {
+    } else if (poolName === SUSD_METAPOOL_NAME) {
       return {
-        name: SUSD_POOL_NAME,
+        name: SUSD_METAPOOL_NAME,
         poolData: susdPoolData,
         userShareData: susdUserShareData,
         poolRoute: "/pools/susd",
       }
-    } else if (poolName === TBTC_POOL_NAME) {
+    } else if (poolName === TBTC_METAPOOL_NAME) {
       return {
-        name: TBTC_POOL_NAME,
+        name: TBTC_METAPOOL_NAME,
         poolData: tbtcPoolData,
         userShareData: tbtcUserShareData,
         poolRoute: "/pools/tbtc",
       }
-    } else if (poolName === WCUSD_POOL_NAME) {
+    } else if (poolName === WCUSD_METAPOOL_NAME) {
       return {
-        name: WCUSD_POOL_NAME,
+        name: WCUSD_METAPOOL_NAME,
         poolData: wcusdPoolData,
         userShareData: wcusdUserShareData,
         poolRoute: "/pools/wcusd",

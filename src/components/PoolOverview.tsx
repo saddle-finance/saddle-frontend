@@ -1,6 +1,6 @@
 import "./PoolOverview.scss"
 
-import { POOLS_MAP, PoolTypes, TOKENS_MAP } from "../constants"
+import { POOLS_MAP, PoolTypes, TOKENS_MAP, isMetaPool } from "../constants"
 import { Partners, PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement } from "react"
 import {
@@ -66,6 +66,7 @@ export default function PoolOverview({
     }),
   }
   const hasShare = !!userShareData?.usdBalance.gt("0")
+  const isMetapool = isMetaPool(formattedData.name)
 
   return (
     <div
@@ -75,7 +76,13 @@ export default function PoolOverview({
     >
       <div className="left">
         <div className="titleAndTag">
-          <h4 className="title">{formattedData.name}</h4>
+          {isMetapool ? (
+            <ToolTip content={t("metapool")}>
+              <h4 className="title underline">{formattedData.name}</h4>
+            </ToolTip>
+          ) : (
+            <h4 className="title">{formattedData.name}</h4>
+          )}
           {(shouldMigrate || isOutdated) && <Tag kind="warning">OUTDATED</Tag>}
           {poolData.isPaused && <Tag kind="error">PAUSED</Tag>}
         </div>
