@@ -78,11 +78,10 @@ context("Virtual Swap Flow", { env: { NETWORK_ID: 1 } }, () => {
       })
       it("shows review modal with further info", () => {
         // open advanced options
-        cy.get(".infoSection > .title").contains("Advanced Options").click()
+        cy.get("[data-testid=advanced-options]").click()
         // set slippage
-        cy.get(".advancedOptions div.parameter").eq(1).find("input").type("0.8")
-        cy.wait(500)
-        cy.get("button").contains("Swap").click()
+        cy.get("[data-testid=custom-slippage]").type("0.8")
+        cy.get("[data-testid=swap-btn]").click()
         cy.react("ReviewSwap")
           .find(".swapTable > .row")
           .should("have.length", swapRouteLength)
@@ -117,9 +116,10 @@ context("Virtual Swap Flow", { env: { NETWORK_ID: 1 } }, () => {
           .eq(runNumber - 1)
           .click()
         cy.react("PendingSwapModal").as("pendingSwapModal").should("exist")
-        cy.get("@pendingSwapModal")
-          .find("h2")
-          .should("contain.text", "min remaining")
+        cy.get("[data-testid=PendingSwapModal-time-remaining]").should(
+          "contain.text",
+          "min remaining",
+        )
       })
       it("reveals the exchange interface after countdown", () => {
         const provider = getDefaultProvider(

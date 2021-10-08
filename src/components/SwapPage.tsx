@@ -298,6 +298,7 @@ const SwapPage = (props: Props): ReactElement => {
         </div>
         <Center width="100%" py={6}>
           <Button
+            data-testid="swap-btn"
             variant="primary"
             size="lg"
             width="240px"

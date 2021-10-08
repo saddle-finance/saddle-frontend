@@ -42,6 +42,7 @@ export default function AdvancedOptions(): ReactElement {
   return (
     <div className={styles.advancedOptions}>
       <span
+        data-testid="advanced-options"
         className={styles.title}
         onClick={(): PayloadAction<boolean> =>
           dispatch(updatePoolAdvancedMode(!advanced))
@@ -111,6 +112,7 @@ export default function AdvancedOptions(): ReactElement {
               </button>
               <div>
                 <input
+                  data-testid="custom-slippage"
                   value={slippageCustom?.valueRaw}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
                     const value = e.target.value

@@ -204,7 +204,7 @@ const PendingSwapModal = ({
           <div className={styles.centerContent}>
             {currentStep === "timer" && (
               <div className={styles.timer}>
-                <h2>
+                <h2 data-testid="PendingSwapModal-time-remaining">
                   {minutesRemaining} {t("minRemaining")}
                 </h2>
               </div>
