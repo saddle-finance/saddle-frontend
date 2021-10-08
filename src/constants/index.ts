@@ -705,6 +705,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: true,
     type: PoolTypes.BTC,
     route: "btc",
+    isOutdated: true,
   },
   [BTC_POOL_V2_NAME]: {
     name: BTC_POOL_V2_NAME,
