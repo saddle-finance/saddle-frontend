@@ -67,3 +67,11 @@ export function notifyHandler(
     }
   })
 }
+
+export function notifyCustomError(e: Error): void {
+  notify.notification({
+    eventCode: "txFailed",
+    type: "error",
+    message: `Your transaction failed. ${e.message}`,
+  })
+}
