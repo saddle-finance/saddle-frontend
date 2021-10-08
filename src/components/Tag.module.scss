@@ -1,0 +1,35 @@
+@import "../styles/theme";
+
+.large {
+  border-radius: 4px;
+  font-size: 20px;
+  font-weight: $bold;
+  align-self: center;
+  padding: 2px 4px;
+}
+.warning {
+  border: 1px solid $yellow2;
+  color: $yellow2;
+}
+.error {
+  border: 1px solid $error;
+  color: $error;
+}
+.small {
+  border-radius: 4px;
+  padding: 1px 2px;
+  font-weight: 700;
+  font-size: 12px;
+  align-self: center;
+  display: inline-block;
+  line-height: 16px;
+}
+.disabled {
+  color: var(--text-lightest);
+  border: 1px solid var(--text-lightest);
+}
+
+.primary {
+  color: var(--text-primary);
+  border: 1px solid var(--text-primary);
+}

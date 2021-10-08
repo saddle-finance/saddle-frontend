@@ -11,6 +11,7 @@ import {
 
 import Button from "./Button"
 import { Link } from "react-router-dom"
+import Tag from "./Tag"
 import ToolTip from "./ToolTip"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
@@ -76,8 +77,16 @@ export default function PoolOverview({
       <div className="left">
         <div className="titleAndTag">
           <h4 className="title">{formattedData.name}</h4>
-          {(shouldMigrate || isOutdated) && <Tag kind="warning">OUTDATED</Tag>}
-          {poolData.isPaused && <Tag kind="error">PAUSED</Tag>}
+          {(shouldMigrate || isOutdated) && (
+            <Tag kind="warning" size="large">
+              OUTDATED
+            </Tag>
+          )}
+          {poolData.isPaused && (
+            <Tag kind="error" size="large">
+              PAUSED
+            </Tag>
+          )}
         </div>
         {hasShare && (
           <div className="balance">
@@ -161,12 +170,4 @@ export default function PoolOverview({
       </div>
     </div>
   )
-}
-
-function Tag(props: {
-  children?: React.ReactNode
-  kind?: "warning" | "error"
-}) {
-  const { kind = "warning", ...tagProps } = props
-  return <span className={classNames("tag", kind)} {...tagProps} />
 }

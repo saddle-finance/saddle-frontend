@@ -139,22 +139,6 @@ div.outdated {
   border-color: $yellow2;
 }
 
-.tag {
-  border-radius: 4px;
-  font-size: 20px;
-  font-weight: $bold;
-  align-self: center;
-  padding: 2px 4px;
-}
-.tag.warning {
-  border: 1px solid $yellow2;
-  color: $yellow2;
-}
-.tag.error {
-  border: 1px solid $error;
-  color: $error;
-}
-
 div.poolOverview:first-child {
   margin-top: 0;
 }
