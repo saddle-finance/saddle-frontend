@@ -8,7 +8,7 @@ function ConfirmTransaction(): ReactElement {
   const { t } = useTranslation()
 
   return (
-    <div className="confirmTransaction">
+    <div data-testid="confirm-transaction" className="confirmTransaction">
       <svg
         width="240"
         height="240"

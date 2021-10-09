@@ -62,6 +62,7 @@ const PendingSwapExchange = ({
         <p>
           {t("balance")}:{" "}
           <b
+            data-testid="max-balance-btn"
             className={styles.balance}
             onClick={() =>
               setInputState((prevState) => ({
@@ -82,6 +83,7 @@ const PendingSwapExchange = ({
         </p>
       </div>
       <SwapInput
+        dataTestid="settlement-input"
         tokens={[]}
         onChangeAmount={(newValue) =>
           setInputState((prevState) => {
@@ -117,6 +119,7 @@ const PendingSwapExchange = ({
       )}
       <div className={styles.buttonGroup}>
         <Button
+          data-testid="settle-as-btn"
           onClick={settle}
           disabled={
             (swapType !== SWAP_TYPES.TOKEN_TO_SYNTH && !inputState.value) ||

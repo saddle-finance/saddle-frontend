@@ -12,6 +12,7 @@ import useDetectOutsideClick from "../hooks/useDetectOutsideClick"
 import { useTranslation } from "react-i18next"
 
 interface Props {
+  dataTestid?: string
   tokens: TokenOption[]
   selected: string
   inputValue: string
@@ -21,6 +22,7 @@ interface Props {
   onChangeAmount?: (value: string) => void
 }
 export default function SwapInput({
+  dataTestid,
   tokens,
   selected,
   onSelect,
@@ -95,6 +97,7 @@ export default function SwapInput({
         }}
       >
         <input
+          data-testid={dataTestid}
           ref={inputRef}
           autoComplete="off"
           autoCorrect="off"
