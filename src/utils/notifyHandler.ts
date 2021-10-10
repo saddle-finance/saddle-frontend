@@ -71,7 +71,8 @@ export function notifyHandler(
 
 export function notifyCustomError(e: Error): void {
   const truncatedMessage = e.message
-    .split(" ")
+    .trim()
+    .split(/\s+/)
     .map((word) => truncate(word, { length: 15 }))
     .join(" ")
 
