@@ -4,7 +4,7 @@ import {
   ChainId,
   D4_POOL_NAME,
   PoolName,
-  TBTC_POOL_NAME,
+  TBTC_METAPOOL_NAME,
   VETH2_POOL_NAME,
 } from "../constants"
 import { AddressZero, Zero } from "@ethersproject/constants"
@@ -71,13 +71,13 @@ export async function getThirdPartyDataForPool(
     )
     result.aprs.sharedStake = { apr, symbol: rewardSymbol }
     result.amountsStaked.sharedStake = userStakedAmount
-  } else if (poolName === TBTC_POOL_NAME) {
+  } else if (poolName === TBTC_METAPOOL_NAME) {
     const rewardSymbol = "KEEP"
     const [apr, userStakedAmount] = await getKeepData(
       library,
       chainId,
       lpTokenPriceUSD,
-      TBTC_POOL_NAME,
+      TBTC_METAPOOL_NAME,
       tokenPricesUSD?.[rewardSymbol],
       accountId,
     )
@@ -118,7 +118,7 @@ async function getFraxData(
   return [apy, Zero]
 }
 
-type KeepPoolName = typeof BTC_POOL_NAME | typeof TBTC_POOL_NAME
+type KeepPoolName = typeof BTC_POOL_NAME | typeof TBTC_METAPOOL_NAME
 
 // LPRewardsTBTCSaddle and LPRewardsTBTCv2Saddle have the same interface
 // https://github.com/keep-network/keep-ecdsa/blob/main/solidity/contracts/LPRewards.sol#L267
