@@ -148,6 +148,10 @@ context("Virtual Swap Flow", { env: { NETWORK_ID: 1 } }, () => {
         })
         cy.get("[data-testid=settle-as-btn]").click()
         // reviews the transaction
+        cy.get("[data-testid=settlement-review-modal]").should("exist")
+        cy.get("[data-testid=settlement-confirm-swap-btn]").click()
+        // TODO: How to confirm transaction in wallet?
+        cy.get("[data-testid=confirm-transaction]").should("not.exist")
         // settles in the output currency
         // deducts the amount from the previous total
       })
