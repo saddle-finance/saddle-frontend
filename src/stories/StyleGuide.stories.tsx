@@ -2,6 +2,7 @@ import "../styles/global.scss"
 
 import { Button, Heading, Stack, Text } from "@chakra-ui/react"
 import React, { ReactElement } from "react"
+import { Text as SDSText } from "@saddle-finance/saddle-design-system"
 
 const Headings = () => (
   <Stack spacing={6}>
@@ -34,6 +35,7 @@ const Headings = () => (
 
 const Texts = () => (
   <Stack spacing={3}>
+    <SDSText>Hello, World!</SDSText>
     <Text fontSize="6xl">{`(6xl) It's time to Saddle Up!`}</Text>
     <Text fontSize="5xl">{`(5xl) It's time to Saddle Up!`}</Text>
     <Text fontSize="4xl">{`(4xl) It's time to Saddle Up!`}</Text>
