@@ -10,10 +10,19 @@ The UI is deployed on IPFS and accessible at
 
 ## Installation
 
+#### Configure Github Packages
+1. Generate a [Github Personal Access Token](https://github.com/settings/token) with the `read:packages` permission enabled
+2. Create a `.npmrc` in your home directory with the following:
+```
+//npm.pkg.github.com/:_authToken=<PERSONAL_ACCESS_TOKEN_HERE>
+```
+
+#### Install Packages
 ```bash
 $ npm install
 ```
 
+#### Configuration
 Create a `.env.local` file with a valid `REACT_APP_NETWORK_URL` (e.g. Alchemy,
 Infura):
 
