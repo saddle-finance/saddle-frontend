@@ -12,6 +12,7 @@ function Risk(): ReactElement {
     <div className="riskpage">
       <TopMenu activeTab={t("risk")} />
       <div className="content">
+        <h1 className="title">Risk</h1>
         <p data-testid="risk-intro">
           {t("riskIntro")}{" "}
           <a href="https://github.com/saddle-finance/saddle-contract">
@@ -37,6 +38,14 @@ function Risk(): ReactElement {
         <p data-testid="risk-adminkeys">{t("riskAdminKeys")}</p>
         <h3>{t("lossOfPeg")}</h3>
         <p data-testid="risk-lossofpeg">{t("riskLossOfPeg")}</p>
+        <h3>{t("unnecessaryApprovalAskQ")}</h3>
+        <p>
+          {t("unnecessaryApprovalAskA")} <br />
+          <br />
+          <a href="https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729">
+            ERC: Token standard · Issue #20 · ethereum/EIPs
+          </a>
+        </p>
       </div>
     </div>
   )

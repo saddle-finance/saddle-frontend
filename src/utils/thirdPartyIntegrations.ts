@@ -4,6 +4,7 @@ import {
   ChainId,
   D4_POOL_NAME,
   PoolName,
+  TBTC_METAPOOL_NAME,
   VETH2_POOL_NAME,
 } from "../constants"
 import { AddressZero, Zero } from "@ethersproject/constants"
@@ -70,12 +71,13 @@ export async function getThirdPartyDataForPool(
     )
     result.aprs.sharedStake = { apr, symbol: rewardSymbol }
     result.amountsStaked.sharedStake = userStakedAmount
-  } else if (poolName === BTC_POOL_NAME) {
+  } else if (poolName === TBTC_METAPOOL_NAME) {
     const rewardSymbol = "KEEP"
     const [apr, userStakedAmount] = await getKeepData(
       library,
       chainId,
       lpTokenPriceUSD,
+      TBTC_METAPOOL_NAME,
       tokenPricesUSD?.[rewardSymbol],
       accountId,
     )
@@ -116,10 +118,17 @@ async function getFraxData(
   return [apy, Zero]
 }
 
+type KeepPoolName = typeof BTC_POOL_NAME | typeof TBTC_METAPOOL_NAME
+
+// LPRewardsTBTCSaddle and LPRewardsTBTCv2Saddle have the same interface
+// https://github.com/keep-network/keep-ecdsa/blob/main/solidity/contracts/LPRewards.sol#L267
+// https://github.com/keep-network/tbtc-v2/blob/main/yearn/contracts/SaddleStrategy.sol#L42
+
 async function getKeepData(
   library: Web3Provider,
   chainId: ChainId,
   lpTokenPrice: BigNumber,
+  keepPoolName: KeepPoolName,
   keepPrice = 0,
   accountId?: string | null,
 ): Promise<[BigNumber, BigNumber]> {
@@ -130,10 +139,16 @@ async function getKeepData(
     chainId !== ChainId.MAINNET
   )
     return [Zero, Zero]
+
+  const rewardsContractAddress =
+    keepPoolName == BTC_POOL_NAME
+      ? "0x78aa83bd6c9de5de0a2231366900ab060a482edd" // v1 prod address
+      : "0x6aD9E8e5236C0E2cF6D755Bb7BE4eABCbC03f76d" // v2 prod address
+
   const ethcallProvider = new Provider() as MulticallProvider
   await ethcallProvider.init(library)
   const rewardsContract = new Contract(
-    "0x78aa83bd6c9de5de0a2231366900ab060a482edd", // prod address
+    rewardsContractAddress,
     KEEP_REWARDS_ABI,
   ) as MulticallContract<KeepRewards>
   const multicalls = [
