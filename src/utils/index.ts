@@ -7,6 +7,8 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "@ethersproject/contracts"
 import { ContractInterface } from "ethers"
 import { Deadlines } from "../state/user"
+import { MulticallProvider } from "../types/ethcall"
+import { Provider } from "ethcall"
 import { getAddress } from "@ethersproject/address"
 
 // returns the checksummed address if the address is valid, otherwise returns false
@@ -198,4 +200,20 @@ export function getTokenSymbolForPoolType(poolType: PoolTypes): string {
   } else {
     return ""
   }
+}
+
+export async function getMulticallProvider(
+  library: Web3Provider,
+  chainId: ChainId,
+): Promise<MulticallProvider> {
+  const ethcallProvider = new Provider() as MulticallProvider
+  await ethcallProvider.init(library)
+  if (chainId == ChainId.HARDHAT) {
+    ethcallProvider.multicallAddress =
+      "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f"
+  } else if (chainId == ChainId.ROPSTEN) {
+    ethcallProvider.multicallAddress =
+      "0x53c43764255c17bd724f74c4ef150724ac50a3ed"
+  }
+  return ethcallProvider
 }
