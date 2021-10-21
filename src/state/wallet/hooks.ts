@@ -28,8 +28,9 @@ export function usePoolTokenBalances(): { [token: string]: BigNumber } | null {
         ethcallProvider.multicallAddress =
           "0x53c43764255c17bd724f74c4ef150724ac50a3ed"
       }
-
-      const tokens = Object.values(TOKENS_MAP)
+      const tokens = Object.values(TOKENS_MAP).filter(
+        ({ addresses }) => addresses[chainId],
+      )
       const balanceCalls = tokens
         .map((t) => {
           return new Contract(
