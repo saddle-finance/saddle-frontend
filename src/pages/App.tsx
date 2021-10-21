@@ -9,6 +9,7 @@ import { isChainSupportedByNotify, notify } from "../utils/notifyHandler"
 import { useDispatch, useSelector } from "react-redux"
 
 import Deposit from "./Deposit"
+import { Passport } from "@arcxmoney/passport-js"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
 import Risk from "./Risk"
@@ -23,7 +24,7 @@ import { useActiveWeb3React } from "../hooks"
 import usePoller from "../hooks/usePoller"
 
 export default function App(): ReactElement {
-  const { chainId } = useActiveWeb3React()
+  const { chainId, account } = useActiveWeb3React()
   const { userDarkMode } = useSelector((state: AppState) => state.user)
 
   useEffect(() => {
@@ -32,8 +33,10 @@ export default function App(): ReactElement {
       darkMode: userDarkMode,
     })
   }, [chainId, userDarkMode])
+  console.log(account)
   return (
     <Suspense fallback={null}>
+      {account && <Passport account={account} />}
       <Web3ReactManager>
         <GasAndTokenPrices>
           <PendingSwapsProvider>
