@@ -122,6 +122,7 @@ export default function usePoolData(
       )
         return
       const POOL = POOLS_MAP[poolName]
+      if (!POOL.addresses[chainId]) return
       const effectivePoolTokens = POOL.underlyingPoolTokens || POOL.poolTokens
       const isMetaSwap = POOL.metaSwapAddresses != null
       let metaSwapContract = null as MetaSwap | null
