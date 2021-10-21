@@ -8,20 +8,20 @@ import {
   VETH2_POOL_NAME,
 } from "../constants"
 import { AddressZero, Zero } from "@ethersproject/constants"
-import { Contract, Provider } from "ethcall"
-import { MulticallContract, MulticallProvider } from "../types/ethcall"
+import { getMulticallProvider, shiftBNDecimals } from "../utils"
 
 import ALCX_REWARDS_ABI from "../constants/abis/alchemixStakingPools.json"
 import { AlchemixStakingPools } from "../../types/ethers-contracts/AlchemixStakingPools"
 import { BigNumber } from "@ethersproject/bignumber"
+import { Contract } from "ethcall"
 import KEEP_REWARDS_ABI from "../constants/abis/keepRewards.json"
 import { KeepRewards } from "../../types/ethers-contracts/KeepRewards"
+import { MulticallContract } from "../types/ethcall"
 import SGT_REWARDS_ABI from "../constants/abis/sharedStakeStakingRewards.json"
 import { SharedStakeStakingRewards } from "../../types/ethers-contracts/SharedStakeStakingRewards"
 import { TokenPricesUSD } from "../state/application"
 import { Web3Provider } from "@ethersproject/providers"
 import { parseUnits } from "@ethersproject/units"
-import { shiftBNDecimals } from "../utils"
 
 export type Partners = "keep" | "sharedStake" | "alchemix" | "frax"
 
@@ -145,8 +145,7 @@ async function getKeepData(
       ? "0x78aa83bd6c9de5de0a2231366900ab060a482edd" // v1 prod address
       : "0x6aD9E8e5236C0E2cF6D755Bb7BE4eABCbC03f76d" // v2 prod address
 
-  const ethcallProvider = new Provider() as MulticallProvider
-  await ethcallProvider.init(library)
+  const ethcallProvider = await getMulticallProvider(library, chainId)
   const rewardsContract = new Contract(
     rewardsContractAddress,
     KEEP_REWARDS_ABI,
@@ -188,8 +187,7 @@ async function getSharedStakeData(
     chainId !== ChainId.MAINNET
   )
     return [Zero, Zero]
-  const ethcallProvider = new Provider() as MulticallProvider
-  await ethcallProvider.init(library)
+  const ethcallProvider = await getMulticallProvider(library, chainId)
   const rewardsContract = new Contract(
     "0xcf91812631e37c01c443a4fa02dfb59ee2ddba7c", // prod address
     SGT_REWARDS_ABI,
@@ -254,8 +252,7 @@ async function getAlEthData(
     chainId !== ChainId.MAINNET
   )
     return [Zero, Zero]
-  const ethcallProvider = new Provider() as MulticallProvider
-  await ethcallProvider.init(library)
+  const ethcallProvider = await getMulticallProvider(library, chainId)
   const rewardsContract = new Contract(
     "0xAB8e74017a8Cc7c15FFcCd726603790d26d7DeCa", // prod address
     ALCX_REWARDS_ABI,
