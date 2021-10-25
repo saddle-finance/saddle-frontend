@@ -139,8 +139,9 @@ context("Virtual Swap Flow", { env: { NETWORK_ID: 1 } }, () => {
       // settlement flow
       it("allows user to perform the settlement", () => {
         // allows user to select max balance
+        let maxBalance
         cy.get("[data-testid=max-balance-btn]").then((el) => {
-          const maxBalance = el.text()
+          maxBalance = el.text()
           cy.get("[data-testid=max-balance-btn]").click({ force: true })
           cy.get("[data-testid=settlement-input]")
             .invoke("val")
@@ -149,15 +150,18 @@ context("Virtual Swap Flow", { env: { NETWORK_ID: 1 } }, () => {
         cy.get("[data-testid=settle-as-btn]").click()
         // reviews the transaction
         cy.get("[data-testid=settlement-review-modal]").should("exist")
+        cy.wait(1000)
         cy.get("[data-testid=settlement-confirm-swap-btn]").click()
-        // TODO: How to confirm transaction in wallet?
         cy.get("[data-testid=confirm-transaction]").should("not.exist")
         // settles in the output currency
+        cy.get(".pendingSwapItem").should("have.length", 0)
         // deducts the amount from the previous total
+        cy.react("SwapInput").eq(0).next().as("dropdownButton").click()
+        cy.react("ListItem")
+          .contains(to)
+          .invoke("val")
+          .then((val) => assert(Number(val) >= Number(maxBalance)))
       })
-      // it("reviews the transaction")
-      // it("settles in the output currency")
-      // it("deducts the amount from the previous total")
 
       // withdraw flow
       it("allows user to select max balance")
