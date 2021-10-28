@@ -598,7 +598,7 @@ export const FEI = new Token(
   FEI_CONTRACT_ADDRESSES,
   18,
   "FEI",
-  "fei-protocol",
+  "fei-usd",
   "Fei Protocol",
   feiLogo,
 )
