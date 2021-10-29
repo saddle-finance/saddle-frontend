@@ -32,7 +32,9 @@ export default function fetchTokenPricesUSD(
   chainId?: ChainId,
   library?: Web3Provider,
 ): void {
-  const tokens = Object.values(TOKENS_MAP)
+  const tokens = Object.values(TOKENS_MAP).filter(({ addresses }) =>
+    chainId ? addresses[chainId] : false,
+  )
   const tokenIds = Array.from(
     new Set(
       tokens.map(({ geckoId }) => geckoId).concat(Object.values(otherTokens)),
