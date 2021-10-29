@@ -17,12 +17,12 @@ function TopMenu({ activeTab }: Props): ReactElement {
   const { t } = useTranslation()
 
   return (
-    <header className="top">
-      <h1>
+    <header className="top" style={{ border: "#000, solid 3px" }}>
+      <div className="logoWrapper">
         <Link to="/">
           <img className="logo" alt="logo" src={logo} />
         </Link>
-      </h1>
+      </div>
 
       <ul className="nav">
         <li>
@@ -52,8 +52,10 @@ function TopMenu({ activeTab }: Props): ReactElement {
           </Link>
         </li>
       </ul>
-      <Web3Status />
-      <ThemeChanger />
+      <div className="walletWrapper">
+        <Web3Status />
+        <ThemeChanger />
+      </div>
     </header>
   )
 }

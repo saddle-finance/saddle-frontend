@@ -14,11 +14,9 @@ header.top {
     padding-right: 70px;
   }
 
-  h1 {
-    width: 20%;
-    margin: 0;
-    margin-right: auto;
-
+  .logoWrapper {
+    flex-grow: 1;
+    flex-basis: 30%;
     .logo {
       background-color: #ffffe9;
       border-radius: 52px;
@@ -38,6 +36,7 @@ header.top {
     list-style-type: none;
     padding: 0;
     margin: 0;
+    flex: 1;
 
     & > li {
       display: inline;
@@ -86,7 +85,6 @@ header.top {
   }
   .walletStatus {
     margin-left: auto;
-    width: 20%;
 
     .connection {
       // padding: 8px;
@@ -99,5 +97,11 @@ header.top {
     img.logo {
       height: 1.5em;
     }
+  }
+  .walletWrapper {
+    flex: 1;
+    flex-basis: 30%;
+    display: flex;
+    align-items: center;
   }
 }
