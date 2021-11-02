@@ -24,10 +24,12 @@ import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
 import { logEvent } from "../utils/googleAnalytics"
 import styles from "./Pools.module.scss"
+import { useActiveWeb3React } from "../hooks"
 import { useApproveAndMigrateUSD } from "../hooks/useApproveAndMigrateUSD"
 import usePoolData from "../hooks/usePoolData"
 
 function Pools(): ReactElement | null {
+  const { chainId } = useActiveWeb3React()
   const [d4PoolData, d4UserShareData] = usePoolData(D4_POOL_NAME)
   const [alethPoolData, alethUserShareData] = usePoolData(ALETH_POOL_NAME)
   const [btcPoolData, btcUserShareData] = usePoolData(BTC_POOL_NAME)
@@ -153,6 +155,7 @@ function Pools(): ReactElement | null {
               type === filter ||
               (filter === "outdated" && (migration || isOutdated)),
           )
+          .filter(({ addresses }) => (chainId ? addresses[chainId] : false))
           .map(
             ({ name, migration, isOutdated }) =>
               [getPropsForPool(name), migration, isOutdated] as const,

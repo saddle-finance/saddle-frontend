@@ -8,23 +8,20 @@ interface GenericGasReponse {
   gasInstant: number
 }
 interface POAGasResponse {
-  standard: number
+  slow: number
+  average: number
   fast: number
-  instant: number
-  health: boolean
 }
 
 const fetchGasPricePOA = (): Promise<GenericGasReponse> =>
-  fetch("https://gasprice.poa.network/")
+  fetch("https://blockscout.com/eth/mainnet/api/v1/gas-price-oracle")
     .then((res) => res.json())
     .then((body: POAGasResponse) => {
-      const { standard, fast, instant, health } = body
-      if (health) {
-        return {
-          gasStandard: Math.round(standard),
-          gasFast: Math.round(fast),
-          gasInstant: Math.round(instant),
-        }
+      const { slow: standard, average: fast, fast: instant } = body
+      return {
+        gasStandard: Math.round(standard),
+        gasFast: Math.round(fast),
+        gasInstant: Math.round(instant),
       }
       throw new Error("Unable to fetch gas price from POA Network")
     })
