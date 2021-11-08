@@ -31,6 +31,31 @@ button.button {
       box-shadow: var(--shadow-hover);
     }
   }
+  &.outline {
+    background-color: transparent;
+    border-color: $outline;
+    border-width: 1px;
+    border-style: solid;
+    color: $outline;
+    &.dark {
+      background-color: transparent;
+      border-color: $primary;
+      border-width: 1px;
+      border-style: solid;
+      color: $primary;
+      &:hover {
+        border-color: transparent;
+        background-color: $primary;
+        color: #000;
+      }
+    }
+
+    &:hover {
+      background-color: $primary-blue;
+      color: $text-white;
+      box-shadow: var(--shadow-hover);
+    }
+  }
 
   &.secondary {
     background-color: var(--secondary-button);

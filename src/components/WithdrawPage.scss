@@ -6,6 +6,7 @@ div.withdraw {
   background: var(--background-main);
   color: var(--text);
   padding-bottom: 80px;
+  width: 100vw;
   box-sizing: border-box; // Make the padding included in height calculation
 
   .content {
@@ -26,7 +27,7 @@ div.withdraw {
 
     .infoPanels {
       margin-top: 40px;
-      width: 434px;
+      // width: 434px;
       padding: 24px 32px;
       border: 1px solid var(--outline);
       border-radius: 10px;

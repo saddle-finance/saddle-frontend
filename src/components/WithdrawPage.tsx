@@ -1,6 +1,6 @@
 import "./WithdrawPage.scss"
 
-import { Button, Center } from "@chakra-ui/react"
+import { Box, Button, HStack } from "@chakra-ui/react"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 
@@ -9,6 +9,7 @@ import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
 import Modal from "./Modal"
+import MyFarm from "./MyFarm"
 import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
 import RadioButton from "./RadioButton"
@@ -168,7 +169,6 @@ const WithdrawPage = (props: Props): ReactElement => {
                       (reviewData.priceImpact.gte(0) ? "bonus" : "slippage")
                     }
                   >
-                    {" "}
                     {formatBNToPercentString(reviewData.priceImpact, 18, 4)}
                   </span>
                 </div>
@@ -176,22 +176,38 @@ const WithdrawPage = (props: Props): ReactElement => {
             </div>
           </div>
           <AdvancedOptions />
-          <Center width="100%" py={6}>
-            <Button
-              variant="primary"
-              size="lg"
-              width="240px"
-              disabled={
-                noShare ||
-                !!formStateData.error ||
-                formStateData.lpTokenAmountToSpend.isZero()
-              }
-              onClick={onSubmit}
-            >
-              {t("withdraw")}
-            </Button>
-          </Center>
+          <HStack
+            width="100%"
+            spacing={[0, 2]}
+            py={6}
+            flexWrap={["wrap", "nowrap"]}
+            justifyContent={["center", "space-between"]}
+          >
+            <Box width={["90%", "50%"]} paddingTop={2}>
+              <Button
+                variant="primary"
+                size="lg"
+                width="100%"
+                disabled={
+                  noShare ||
+                  !!formStateData.error ||
+                  formStateData.lpTokenAmountToSpend.isZero()
+                }
+                onClick={onSubmit}
+              >
+                {t("deposit")}
+              </Button>
+            </Box>
+
+            <Box width={["90%", "50%"]} paddingTop={2}>
+              <Button variant="primary" size="lg" width="100%">
+                {t("depositAndStack")}
+              </Button>
+            </Box>
+          </HStack>
         </div>
+
+        <MyFarm />
         <div className="infoPanels">
           <MyShareCard data={myShareData} />
           <div
@@ -202,6 +218,7 @@ const WithdrawPage = (props: Props): ReactElement => {
           ></div>{" "}
           <PoolInfoCard data={poolData} />
         </div>
+
         <Modal
           isOpen={!!currentModal}
           onClose={(): void => setCurrentModal(null)}
