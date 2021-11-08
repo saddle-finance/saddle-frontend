@@ -14,7 +14,7 @@ type Props = {
     | "cancel"
     | "temporary"
     | "outline"
-  size?: "large"
+  size?: "large" | "middle"
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 export default function Button(
