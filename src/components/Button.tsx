@@ -22,7 +22,6 @@ export default function Button(
 ): ReactElement {
   const { kind = "primary", size = "large", ...buttonProps } = props
   const { userDarkMode } = React.useContext(ThemeContext)
-  console.log(userDarkMode)
   return (
     <button
       className={classNames("button", kind, size, userDarkMode && "dark")}

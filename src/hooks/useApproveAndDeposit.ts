@@ -103,8 +103,10 @@ export function useApproveAndDeposit(
       } else {
         gasPriceUnsafe = gasStandard
       }
-      console.log("gas price ==>", gasPriceUnsafe)
-      const gasPrice = parseUnits(String(gasPriceUnsafe) || "45", 9)
+      const gasPrice = parseUnits(
+        gasPriceUnsafe ? String(gasPriceUnsafe) : "45",
+        9,
+      )
       const approveSingleToken = async (token: Token): Promise<void> => {
         const spendingValue = BigNumber.from(state[token.symbol].valueSafe)
         if (spendingValue.isZero()) return
