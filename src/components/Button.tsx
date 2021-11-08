@@ -14,17 +14,18 @@ type Props = {
     | "cancel"
     | "temporary"
     | "outline"
+  size?: "large"
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 export default function Button(
   props: React.PropsWithChildren<Props>,
 ): ReactElement {
-  const { kind = "primary", ...buttonProps } = props
+  const { kind = "primary", size = "large", ...buttonProps } = props
   const { userDarkMode } = React.useContext(ThemeContext)
   console.log(userDarkMode)
   return (
     <button
-      className={classNames("button", kind, "large", userDarkMode && "dark")}
+      className={classNames("button", kind, size, userDarkMode && "dark")}
       {...buttonProps}
     />
   )

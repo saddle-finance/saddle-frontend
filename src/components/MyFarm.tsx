@@ -1,5 +1,6 @@
 import "./MyFarm.scss"
 import React, { ReactElement } from "react"
+import { Box } from "@chakra-ui/react"
 import StackButton from "./Button"
 // TODO All number is place holder.
 export default function MyFarm(): ReactElement {
@@ -11,14 +12,18 @@ export default function MyFarm(): ReactElement {
           <p>LP Available</p>
           <p className="bold">2.123456</p>
         </div>
-        <StackButton kind="outline">stake all</StackButton>
+        <Box>
+          <StackButton kind="outline">stake all</StackButton>
+        </Box>
       </div>
       <div className="item">
         <div>
           <p>LP Staked</p>
           <p className="bold">2.123456</p>
         </div>
-        <StackButton kind="outline">unstake all</StackButton>
+        <Box>
+          <StackButton kind="outline">unstake all</StackButton>
+        </Box>
       </div>
     </div>
   )
