@@ -207,16 +207,18 @@ const WithdrawPage = (props: Props): ReactElement => {
           </HStack>
         </div>
 
-        <MyFarm />
-        <div className="infoPanels">
-          <MyShareCard data={myShareData} />
-          <div
-            style={{
-              display: myShareData ? "block" : "none",
-            }}
-            className="divider"
-          ></div>{" "}
-          <PoolInfoCard data={poolData} />
+        <div>
+          <MyFarm />
+          <div className="infoPanels">
+            <MyShareCard data={myShareData} />
+            <div
+              style={{
+                display: myShareData ? "block" : "none",
+              }}
+              className="divider"
+            ></div>{" "}
+            <PoolInfoCard data={poolData} />
+          </div>
         </div>
 
         <Modal
