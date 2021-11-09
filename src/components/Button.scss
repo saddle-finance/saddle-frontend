@@ -111,7 +111,10 @@ button.button {
   }
 
   &.large {
-    min-width: 140px;
+    width: 176px;
     min-height: 40px;
+    @include breakpoint(md) {
+      width: 140px;
+    }
   }
 }
