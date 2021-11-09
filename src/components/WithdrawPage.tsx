@@ -82,7 +82,7 @@ const WithdrawPage = (props: Props): ReactElement => {
   const noShare = !myShareData || myShareData.lpTokenBalance.eq(Zero)
 
   return (
-    <div className={"withdraw " + classNames({ noShare: noShare })}>
+    <div className={classNames({ noShare: noShare, withdraw: true })}>
       <TopMenu activeTab={"withdraw"} />
       <div className="content">
         <div className="left">

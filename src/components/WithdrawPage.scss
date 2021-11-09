@@ -1,9 +1,10 @@
 @import "../styles/theme.scss";
 @import "../styles/viewports";
 
-div.withdraw {
+.withdraw {
   min-height: 100vh;
   background: var(--background-main);
+  border: solid 4px #f00;
   color: var(--text);
   padding-bottom: 80px;
   box-sizing: border-box; // Make the padding included in height calculation
@@ -223,6 +224,6 @@ div.withdraw {
   }
 }
 
-div.noShare {
-  background: var(--background);
-}
+// div.noShare {
+//   background: var(--background);
+// }

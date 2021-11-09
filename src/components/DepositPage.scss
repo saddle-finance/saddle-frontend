@@ -4,6 +4,7 @@
 div.deposit {
   min-height: 100vh;
   background: var(--background-main);
+  border: solid 1px #f00;
   color: var(--text);
   padding-bottom: 80px;
   box-sizing: border-box; // Make the padding included in height calculation
