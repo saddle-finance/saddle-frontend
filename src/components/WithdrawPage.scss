@@ -115,6 +115,13 @@ div.withdraw {
       }
     }
 
+    .infoPanels .divider {
+      width: 100%;
+      height: 1px;
+      background: $divider-red;
+      margin: 16px 0;
+    }
+
     div.horizontalDisplay {
       display: flex;
       gap: 8px;
