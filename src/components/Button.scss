@@ -1,7 +1,7 @@
 @import "../styles/theme";
 
 button.button {
-  border-radius: 4px;
+  border-radius: 8px;
   border: none;
   color: $text-black;
   font-weight: $bold;
@@ -58,6 +58,23 @@ button.button {
     letter-spacing: -0.06em;
   }
 
+  &.ghost {
+    color: var(--text);
+    background: var(--background);
+    border: 1px solid var(--emphasis-1);
+    font-weight: normal;
+
+    &:disabled {
+      cursor: not-allowed;
+      color: var(--text-secondary-button-disabled);
+    }
+
+    &:enabled:hover,
+    &:enabled:focus {
+      background-color: var(--emphasis-1);
+    }
+  }
+
   &.temporary {
     background: $yellow;
     color: $black;
@@ -87,5 +104,10 @@ button.button {
   &.large {
     width: 176px;
     min-height: 40px;
+  }
+
+  &.medium {
+    padding: 8px;
+    min-height: 32px;
   }
 }
