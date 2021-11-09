@@ -3,6 +3,7 @@ import "./TopMenu.scss"
 import React, { ReactElement } from "react"
 
 import { Link } from "react-router-dom"
+import NetworkDisplay from "./NetworkDisplay"
 import ThemeChanger from "./ThemeChanger"
 import Web3Status from "./Web3Status"
 import classNames from "classnames"
@@ -53,6 +54,7 @@ function TopMenu({ activeTab }: Props): ReactElement {
         </li>
       </ul>
       <div className="walletWrapper">
+        <NetworkDisplay />
         <Web3Status />
         <ThemeChanger />
       </div>
