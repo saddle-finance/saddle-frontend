@@ -31,6 +31,7 @@
   "dailyVolume": "Daily volume",
   "deadline": "Txn Deadline",
   "deposit": "Deposit",
+  "depositAndStack": "deposit and stake",
   "depositBalanceExceeded": "Amount exceeds wallet balance",
   "depositIn": "Deposit in",
   "depositing": "Depositing",
