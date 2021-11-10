@@ -1,0 +1,13 @@
+@import "../styles/theme";
+
+div.circle {
+  border-radius: 50%;
+  border: 2px solid var(--emphasis-1);
+  height: 12px;
+  width: 12px;
+  background: $error;
+  display: inline-block;
+  &.active {
+    background: $primary;
+  }
+}

@@ -84,8 +84,6 @@ header.top {
     }
   }
   .walletStatus {
-    margin-left: auto;
-
     .connection {
       // padding: 8px;
       // border: 1px solid;
@@ -103,5 +101,6 @@ header.top {
     flex-basis: 30%;
     display: flex;
     align-items: center;
+    justify-content: flex-end;
   }
 }
