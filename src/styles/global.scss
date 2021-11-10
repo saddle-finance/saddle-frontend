@@ -47,6 +47,7 @@ ul {
     no-repeat fixed;
   --background-logo: #{$primary};
   --secondary-button: #{$light-blue};
+  --emphasis-1: #faf3ce;
   --outline: #000;
   --outline-gray: #{$black30};
   --option-hover: #{$primary-blue-light};
@@ -80,6 +81,7 @@ body.dark {
     fixed;
   --background-logo: #ffffe9;
   --secondary-button: #{$dark-purple};
+  --emphasis-1: #121334;
   --outline: #fff;
   --option-hover: #{$primary-blue-dark};
   --outline-gray: #{$white30};
