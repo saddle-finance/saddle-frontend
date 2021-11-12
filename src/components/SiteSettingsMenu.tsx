@@ -5,14 +5,13 @@ import { ThemeContext } from "../providers/ThemeProvider"
 import classnames from "classnames"
 import styles from "./SiteSettingsMenu.module.scss"
 import { useActiveWeb3React } from "../hooks"
-// import useDetectOutsideClick from "../hooks/useDetectOutsideClick"
 import { useTranslation } from "react-i18next"
 
 export default function SiteSettingsMenu(): ReactElement {
   return (
     <div className={styles.container}>
-      <NetworkSection />
-      <Divider />
+      {IS_L2_SUPPORTED && <NetworkSection />}
+      {IS_L2_SUPPORTED && <Divider />}
       <LanguageSection />
       <Divider />
       <ThemeSection />
