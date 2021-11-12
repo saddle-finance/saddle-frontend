@@ -2,7 +2,7 @@
 @import "../styles/viewports";
 
 button.button {
-  border-radius: 4px;
+  border-radius: 8px;
   border: none;
   color: $text-black;
   font-weight: $bold;
@@ -78,10 +78,37 @@ button.button {
   }
 
   &.ternary {
-    color: $white;
-    background: $divider-red;
-    font-weight: $medium;
-    letter-spacing: -0.06em;
+    color: var(--text);
+    background: var(--emphasis-1);
+    border: 1px solid var(--emphasis-1);
+    font-weight: normal;
+
+    &:disabled {
+      cursor: not-allowed;
+      color: var(--text-secondary-button-disabled);
+    }
+
+    &:enabled:hover,
+    &:enabled:focus {
+      background-color: var(--emphasis-2);
+    }
+  }
+
+  &.ghost {
+    color: var(--text);
+    background: var(--background);
+    border: 1px solid var(--emphasis-1);
+    font-weight: normal;
+
+    &:disabled {
+      cursor: not-allowed;
+      color: var(--text-secondary-button-disabled);
+    }
+
+    &:enabled:hover,
+    &:enabled:focus {
+      background-color: var(--emphasis-1);
+    }
   }
 
   &.temporary {
@@ -116,5 +143,10 @@ button.button {
     @include breakpoint(md) {
       width: 140px;
     }
+  }
+
+  &.medium {
+    padding: 8px;
+    min-height: 32px;
   }
 }

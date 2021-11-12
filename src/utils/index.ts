@@ -208,12 +208,15 @@ export async function getMulticallProvider(
 ): Promise<MulticallProvider> {
   const ethcallProvider = new Provider() as MulticallProvider
   await ethcallProvider.init(library)
-  if (chainId == ChainId.HARDHAT) {
+  if (chainId === ChainId.HARDHAT) {
     ethcallProvider.multicallAddress =
       "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f"
-  } else if (chainId == ChainId.ROPSTEN) {
+  } else if (chainId === ChainId.ROPSTEN) {
     ethcallProvider.multicallAddress =
       "0x53c43764255c17bd724f74c4ef150724ac50a3ed"
+  } else if (chainId === ChainId.ARBITRUM) {
+    ethcallProvider.multicallAddress =
+      "0xab16069d3e9e352343b2040ce7d7715c585994f9"
   }
   return ethcallProvider
 }
