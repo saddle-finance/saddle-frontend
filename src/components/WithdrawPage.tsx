@@ -177,7 +177,6 @@ const WithdrawPage = (props: Props): ReactElement => {
           </div>
           <AdvancedOptions />
           <Center width="100%" py={6}>
-            {console.log("no share ==>", noShare)}
             <Button
               variant="primary"
               size="lg"
