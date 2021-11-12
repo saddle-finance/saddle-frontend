@@ -1,6 +1,6 @@
 import "./WithdrawPage.scss"
 
-import { Box, Button, HStack } from "@chakra-ui/react"
+import { Button, Center } from "@chakra-ui/react"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 
@@ -176,35 +176,21 @@ const WithdrawPage = (props: Props): ReactElement => {
             </div>
           </div>
           <AdvancedOptions />
-          <HStack
-            width="100%"
-            spacing={[0, 2]}
-            py={6}
-            flexWrap={["wrap", "nowrap"]}
-            justifyContent={["center", "space-between"]}
-          >
-            <Box width={["90%", "50%"]} paddingTop={2}>
-              <Button
-                variant="primary"
-                size="lg"
-                width="100%"
-                disabled={
-                  noShare ||
-                  !!formStateData.error ||
-                  formStateData.lpTokenAmountToSpend.isZero()
-                }
-                onClick={onSubmit}
-              >
-                {t("deposit")}
-              </Button>
-            </Box>
-
-            <Box width={["90%", "50%"]} paddingTop={2}>
-              <Button variant="primary" size="lg" width="100%">
-                {t("depositAndStack")}
-              </Button>
-            </Box>
-          </HStack>
+          <Center width="100%" py={6}>
+            <Button
+              variant="primary"
+              size="lg"
+              width="240px"
+              disabled={
+                noShare ||
+                !!formStateData.error ||
+                formStateData.lpTokenAmountToSpend.isZero()
+              }
+              onClick={onSubmit}
+            >
+              {t("withdraw")}
+            </Button>
+          </Center>
         </div>
 
         <div>

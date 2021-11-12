@@ -211,7 +211,7 @@ const DepositPage = (props: Props): ReactElement => {
 
             <Box width={["90%", "50%"]} paddingTop={2}>
               <Button variant="primary" size="lg" width="100%">
-                {t("depositAndStack")}
+                {t("depositAndStake")}
               </Button>
             </Box>
           </HStack>
