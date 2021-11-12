@@ -102,5 +102,23 @@ header.top {
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    > * {
+      margin-left: 8px;
+    }
+  }
+}
+
+.siteSettingsWrapper {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  z-index: 2;
+  box-shadow: var(--shadow);
+  width: 176px;
+}
+
+svg.hamburger {
+  circle {
+    fill: var(--primary-foreground);
   }
 }
