@@ -53,7 +53,6 @@ context("Deposit Flow", () => {
               .find("span.tokenValue")
               .then(($value) => {
                 const afterValue = parseInt($value.text())
-                console.log("After value =>", afterValue)
                 expect(afterValue).to.eq(beforeValue[token] + 1)
               })
           })

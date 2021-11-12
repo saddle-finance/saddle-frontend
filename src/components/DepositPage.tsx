@@ -189,7 +189,8 @@ const DepositPage = (props: Props): ReactElement => {
           </div>
           <AdvancedOptions />
           <HStack
-            width="100%"
+            width="434px"
+            margin="auto"
             spacing={[0, 2]}
             py={6}
             flexWrap={["wrap", "nowrap"]}
