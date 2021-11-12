@@ -17,7 +17,7 @@ context("Deposit Flow", () => {
       cy.contains(poolName)
         .parents(".poolOverview")
         .within(() => {
-          cy.get("button").contains("Deposit").first().click()
+          cy.get("button").contains("Deposit").click()
         })
       // attempt to wait for pool data to load
       cy.get("input").first({ timeout: 10000 }).should("be.enabled")
