@@ -1,0 +1,28 @@
+{
+  "__note": {
+    "source": "https://github.com/saddle-finance/saddle-token/blob/deploySDL/test/merkleTree.json"
+  },
+  "merkleRoot": "0x4cead4a17e8540e1f11adb8b3b23d6a02c1ba49db95d351c3fd0535664d9d292",
+  "recipients": {
+    "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC": {
+      "amount": "300000",
+      "proof": [
+        "0x5fc3dd38932871dbc8e92371e7b9247fe2ef3e45140b31de829ec74886cb34d8",
+        "0x98bb935b78932be058c9de5bdf20d1c8cfc4d27fcd14e0c0ad4bd86716ae20c5"
+      ]
+    },
+    "0x70997970C51812dc3A010C7d01b50e0d17dc79C8": {
+      "amount": "200000",
+      "proof": [
+        "0x2cfa95ed9a86b95946d7bd5c10fe03a493b8a4bfd735def784182b646bd736d4"
+      ]
+    },
+    "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266": {
+      "amount": "100000",
+      "proof": [
+        "0x5c110dd3b6974b3e2b2a4cb9cff8fd68fd231669dbd84c74612b6594d8ece466",
+        "0x98bb935b78932be058c9de5bdf20d1c8cfc4d27fcd14e0c0ad4bd86716ae20c5"
+      ]
+    }
+  }
+}
