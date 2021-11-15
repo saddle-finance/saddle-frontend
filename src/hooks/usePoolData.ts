@@ -336,6 +336,7 @@ export default function usePoolData(
     library,
     chainId,
     swapStats,
+    amountStakedInRewards,
   ])
 
   return poolData
