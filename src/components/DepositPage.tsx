@@ -59,7 +59,6 @@ const DepositPage = (props: Props): ReactElement => {
   } = props
 
   const [currentModal, setCurrentModal] = useState<string | null>(null)
-
   const validDepositAmount = transactionData.to.totalAmount.gt(0)
   const shouldDisplayWrappedOption = isMetaPool(poolData?.name)
 
@@ -210,15 +209,20 @@ const DepositPage = (props: Props): ReactElement => {
               </Button>
             </Box>
 
-            <Box width={["90%", "50%"]} paddingTop={2}>
+            {/* <Box width={["90%", "50%"]} paddingTop={2}>
               <Button variant="primary" size="lg" width="100%">
                 {t("depositAndStake")}
               </Button>
-            </Box>
+            </Box> */}
           </HStack>
         </div>
         <div>
-          <MyFarm />
+          {poolData && (
+            <MyFarm
+              lpWalletBalance={myShareData?.lpTokenBalance || Zero}
+              poolName={poolData.name}
+            />
+          )}
           <div className="infoPanels">
             <MyShareCard data={myShareData} />
             <div

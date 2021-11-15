@@ -34,26 +34,14 @@ button.button {
   }
   &.outline {
     background-color: transparent;
-    border-color: $outline;
+    border-color: var(--primary-accent);
     border-width: 1px;
     border-style: solid;
-    color: $outline;
-    &.dark {
-      background-color: transparent;
-      border-color: $primary;
-      border-width: 1px;
-      border-style: solid;
-      color: $primary;
-      &:hover {
-        border-color: transparent;
-        background-color: $primary;
-        color: #000;
-      }
-    }
+    color: var(--primary-accent);
 
     &:hover {
-      background-color: $primary-blue;
-      color: $text-white;
+      background-color: var(--primary-accent);
+      color: var(--primary-foreground);
       box-shadow: var(--shadow-hover);
     }
   }

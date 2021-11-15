@@ -1,7 +1,6 @@
 import "./Button.scss"
 
 import React, { ReactElement } from "react"
-import { ThemeContext } from "../providers/ThemeProvider"
 
 import classNames from "classnames"
 
@@ -22,11 +21,7 @@ export default function Button(
   props: React.PropsWithChildren<Props>,
 ): ReactElement {
   const { kind = "primary", size = "large", ...buttonProps } = props
-  const { userDarkMode } = React.useContext(ThemeContext)
   return (
-    <button
-      className={classNames("button", kind, size, userDarkMode && "dark")}
-      {...buttonProps}
-    />
+    <button className={classNames("button", kind, size)} {...buttonProps} />
   )
 }

@@ -194,7 +194,12 @@ const WithdrawPage = (props: Props): ReactElement => {
         </div>
 
         <div>
-          <MyFarm />
+          {poolData && (
+            <MyFarm
+              lpWalletBalance={myShareData?.lpTokenBalance || Zero}
+              poolName={poolData.name}
+            />
+          )}
           <div className="infoPanels">
             <MyShareCard data={myShareData} />
             <div
