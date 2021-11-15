@@ -1,4 +1,8 @@
 {
+  "totalClaimableSDL": "Total Claimable SDL",
+  "retroactiveDrop": "Retroactive Drop",
+  "claimForAllPools": "Claim for all Pools",
+  "claim": "Claim",
   "24HrVolume": "24h Volume",
   "aboutVirtualSwap": "About Virtual Swap",
   "account": "Account",
