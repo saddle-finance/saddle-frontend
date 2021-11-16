@@ -128,11 +128,11 @@ export const BRIDGE_CONTRACT_ADDRESSES = buildAddresses({
 })
 
 export const MINICHEF_CONTRACT_ADDRESSES = buildAddresses({
-  [ChainId.HARDHAT]: "0x36b58F5C1969B7b6591D752ea6F5486D069010AB",
+  [ChainId.HARDHAT]: "0x927b167526bAbB9be047421db732C663a0b77B11",
 })
 
 export const RETROACTIVE_VESTING_CONTRACT_ADDRESSES = buildAddresses({
-  [ChainId.HARDHAT]: "0xDC11f7E700A4c898AE5CAddB1082cFfa76512aDD",
+  [ChainId.HARDHAT]: "0xD42912755319665397FF090fBB63B1a31aE87Cee",
 })
 
 export const SWAP_MIGRATOR_USD_CONTRACT_ADDRESSES = buildAddresses({
@@ -707,7 +707,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: true,
     type: PoolTypes.BTC,
     route: "btcv2",
-    rewardPids: buildPids({ [ChainId.MAINNET]: 3, [ChainId.HARDHAT]: 3 }),
+    rewardPids: buildPids({ [ChainId.MAINNET]: 4, [ChainId.HARDHAT]: 4 }),
   },
   [STABLECOIN_POOL_NAME]: {
     name: STABLECOIN_POOL_NAME,
@@ -728,7 +728,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "usdv2",
-    rewardPids: buildPids({ [ChainId.MAINNET]: 2, [ChainId.HARDHAT]: 2 }),
+    rewardPids: buildPids({ [ChainId.MAINNET]: 3, [ChainId.HARDHAT]: 3 }),
   },
   [VETH2_POOL_NAME]: {
     name: VETH2_POOL_NAME,
@@ -748,7 +748,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: true,
     type: PoolTypes.ETH,
     route: "aleth",
-    rewardPids: buildPids({ [ChainId.MAINNET]: 0, [ChainId.HARDHAT]: 0 }),
+    rewardPids: buildPids({ [ChainId.MAINNET]: 1, [ChainId.HARDHAT]: 1 }),
   },
   [D4_POOL_NAME]: {
     name: D4_POOL_NAME,
@@ -758,7 +758,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "d4",
-    rewardPids: buildPids({ [ChainId.MAINNET]: 1, [ChainId.HARDHAT]: 1 }),
+    rewardPids: buildPids({ [ChainId.MAINNET]: 2, [ChainId.HARDHAT]: 2 }),
   },
   [SUSD_METAPOOL_NAME]: {
     name: SUSD_METAPOOL_NAME,
