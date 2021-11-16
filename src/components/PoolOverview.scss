@@ -66,13 +66,15 @@ div.poolOverview {
     &:last-child {
       margin-right: 0;
     }
+  }
 
-    & > img {
-      margin-right: 4px;
-      vertical-align: sub;
-      height: 18px;
-      width: 18px;
-    }
+  img.tokenIcon {
+    margin-right: 4px;
+    vertical-align: sub;
+    height: 18px;
+    width: 18px;
+    background-color: white;
+    border-radius: 50%;
   }
 
   div.right {
