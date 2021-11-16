@@ -100,8 +100,15 @@ function useRetroactiveRewardBalance() {
         }
         // bail if vesting hasn't yet started
         if (startTimeMs.gt(nowMs)) return
-        const vestedPercent = nowMs.sub(startTimeMs).div(twoYearsMs)
-        const vestedAmount = userMerkleData.amount.mul(vestedPercent)
+
+        // Scale by 1e18 for more accurate percentage
+        const vestedPercent = nowMs
+          .mul(BigNumber.from(10).pow(18))
+          .sub(startTimeMs)
+          .div(twoYearsMs)
+        const vestedAmount = userMerkleData.amount
+          .mul(vestedPercent)
+          .div(BigNumber.from(10).pow(18))
         setBalance(vestedAmount)
       }
     } catch (e) {
