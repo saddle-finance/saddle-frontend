@@ -47,7 +47,7 @@ export interface PoolDataType {
   utilization: BigNumber | null
   virtualPrice: BigNumber
   volume: BigNumber | null
-  sdlPerDay: BigNumber
+  sdlPerDay: BigNumber | null
   isPaused: boolean
   aprs: Partial<
     Record<
@@ -90,7 +90,7 @@ const emptyPoolData = {
   lpTokenPriceUSD: Zero,
   lpToken: "",
   isPaused: false,
-  sdlPerDay: Zero,
+  sdlPerDay: null,
 } as PoolDataType
 
 export default function usePoolData(
@@ -287,7 +287,7 @@ export default function usePoolData(
           ? swapStats[poolAddress]
           : { oneDayVolume: null, apy: null, utilization: null }
 
-      let sdlPerDay = Zero
+      let sdlPerDay = null
       if (rewardsContract && rewardsPid !== null) {
         const [poolInfo, saddlePerSecond, totalAllocPoint] = await Promise.all([
           rewardsContract.poolInfo(rewardsPid),
