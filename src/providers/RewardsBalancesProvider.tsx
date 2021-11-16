@@ -29,6 +29,7 @@ import { useSelector } from "react-redux"
 type PoolsRewards = { [poolName: string]: BigNumber }
 type AggRewards = PoolsRewards & { total: BigNumber } & {
   retroactive: BigNumber
+  retroactiveTotal: BigNumber
 }
 export const RewardsBalancesContext = React.createContext<PoolsRewards>({
   total: Zero,
@@ -40,23 +41,28 @@ export default function RewardsBalancesProvider({
   const [aggbalances, setAggBalances] = useState<AggRewards>({
     total: Zero,
     retroactive: Zero,
+    retroactiveTotal: Zero,
   })
   const poolsRewardsBalances = usePoolsRewardBalances()
-  const retroBalance = useRetroactiveRewardBalance()
+  const {
+    vested: retroBalanceVested,
+    total: retroBalanceTotal,
+  } = useRetroactiveRewardBalance()
 
   useMemo(() => {
     const total = Object.values({
       ...poolsRewardsBalances,
-      retroBalance,
+      retroBalanceVested,
     }).reduce((acc, bal) => {
       return acc.add(bal || Zero)
     }, Zero)
     setAggBalances({
       ...poolsRewardsBalances,
-      retroactive: retroBalance,
+      retroactive: retroBalanceVested,
+      retroactiveTotal: retroBalanceTotal,
       total,
     })
-  }, [poolsRewardsBalances, retroBalance])
+  }, [poolsRewardsBalances, retroBalanceVested, retroBalanceTotal])
 
   return (
     <RewardsBalancesContext.Provider value={aggbalances}>
@@ -67,7 +73,10 @@ export default function RewardsBalancesProvider({
 
 function useRetroactiveRewardBalance() {
   const { chainId, account, library } = useActiveWeb3React()
-  const [balance, setBalance] = useState<BigNumber>(Zero)
+  const [balances, setBalances] = useState<{
+    vested: BigNumber
+    total: BigNumber
+  }>({ vested: Zero, total: Zero })
   const retroRewardsContract = useRetroactiveVestingContract()
   const userMerkleData = useRetroMerkleData()
 
@@ -86,7 +95,10 @@ function useRetroactiveRewardBalance() {
       const userVesting = await retroRewardsContract.vestings(account)
       if (userVesting?.isVerified) {
         const fetchedBalance = await retroRewardsContract.vestedAmount(account)
-        setBalance(fetchedBalance || Zero)
+        setBalances({
+          vested: fetchedBalance || Zero,
+          total: userVesting.totalAmount || Zero,
+        })
       } else {
         // estimate claimable % of user's grant based on elapsed time
         const startTimeSeconds = await retroRewardsContract.startTimestamp()
@@ -104,17 +116,24 @@ function useRetroactiveRewardBalance() {
         const vestedAmount = userMerkleData.amount
           .mul(vestedPercent)
           .div(BigNumber.from(10).pow(18))
-        setBalance(vestedAmount)
+        setBalances({
+          vested: vestedAmount || Zero,
+          total: userMerkleData.amount || Zero,
+        })
       }
     } catch (e) {
       console.error(e)
+      setBalances({
+        vested: Zero,
+        total: Zero,
+      })
     }
   }, [library, chainId, account, retroRewardsContract, userMerkleData])
   useEffect(() => {
     void fetchBalance()
   }, [fetchBalance])
   usePoller(() => void fetchBalance(), BLOCK_TIME * 3)
-  return balance
+  return balances
 }
 
 function usePoolsRewardBalances() {
