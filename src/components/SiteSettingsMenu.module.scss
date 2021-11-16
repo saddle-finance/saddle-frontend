@@ -18,13 +18,18 @@
   margin: 8px;
 }
 
-.section {
+.logo {
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background-color: white;
 }
 
 .sectionTitle {
   width: 100%;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   &:hover {
     cursor: pointer;
   }

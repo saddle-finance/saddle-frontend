@@ -6,6 +6,8 @@ import classNames from "classnames"
 
 type Props = {
   disabled?: boolean
+  size?: "medium" | "large"
+  fullWidth?: boolean
   kind?:
     | "primary"
     | "secondary"
@@ -14,14 +16,16 @@ type Props = {
     | "temporary"
     | "outline"
     | "ghost"
-  size?: "large" | "middle" | "medium"
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 export default function Button(
   props: React.PropsWithChildren<Props>,
 ): ReactElement {
-  const { kind = "primary", size = "large", ...buttonProps } = props
+  const { kind = "primary", size = "large", fullWidth, ...buttonProps } = props
   return (
-    <button className={classNames("button", kind, size)} {...buttonProps} />
+    <button
+      className={classNames("button", kind, size, { fullWidth })}
+      {...buttonProps}
+    />
   )
 }

@@ -10,6 +10,9 @@ button.button {
   letter-spacing: 0.02em;
   cursor: pointer;
   padding: 1px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:disabled {
     cursor: not-allowed;
@@ -136,5 +139,9 @@ button.button {
   &.medium {
     padding: 8px;
     min-height: 32px;
+  }
+
+  &.fullWidth {
+    width: 100%;
   }
 }
