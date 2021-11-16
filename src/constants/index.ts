@@ -223,7 +223,6 @@ export const ARB_USD_SWAP_ADDRESSES = buildAddresses({
 })
 
 export const RETROACTIVE_SDL_MERKLETREE_DATA = buildAddresses({
-  [ChainId.MAINNET]: "mainnetTestAccounts.json",
   [ChainId.HARDHAT]: "hardhat.json",
 })
 

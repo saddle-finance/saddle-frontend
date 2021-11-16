@@ -42,7 +42,14 @@ button.button {
     border-style: solid;
     color: var(--primary-accent);
 
-    &:hover {
+    &:disabled {
+      cursor: not-allowed;
+      color: var(--text-secondary-button-disabled);
+      border-color: var(--text-secondary-button-disabled);
+    }
+
+    &:enabled:hover,
+    &:enabled:focus {
       background-color: var(--primary-accent);
       color: var(--primary-foreground);
       box-shadow: var(--shadow-hover);
