@@ -2,6 +2,7 @@ import {
   BLOCK_TIME,
   MINICHEF_CONTRACT_ADDRESSES,
   POOLS_MAP,
+  TRANSACTION_TYPES,
 } from "../constants"
 import React, {
   ReactElement,
@@ -11,6 +12,7 @@ import React, {
   useState,
 } from "react"
 
+import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "ethcall"
 import { IS_DEVELOPMENT } from "../utils/environment"
@@ -23,6 +25,7 @@ import { useActiveWeb3React } from "../hooks"
 import usePoller from "../hooks/usePoller"
 import { useRetroMerkleData } from "../hooks/useRetroMerkleData"
 import { useRetroactiveVestingContract } from "../hooks/useContract"
+import { useSelector } from "react-redux"
 
 type PoolsRewards = { [poolName: string]: BigNumber }
 type AggRewards = PoolsRewards & { total: BigNumber } & {
@@ -108,14 +111,18 @@ function useRetroactiveRewardBalance() {
   useEffect(() => {
     void fetchBalance()
   }, [fetchBalance])
-  usePoller(() => void fetchBalance(), BLOCK_TIME * 5)
+  usePoller(() => void fetchBalance(), BLOCK_TIME * 3)
   return balance
 }
 
 function usePoolsRewardBalances() {
   const { chainId, account, library } = useActiveWeb3React()
   const [balances, setBalances] = useState<PoolsRewards>({})
-
+  const { lastTransactionTimes } = useSelector(
+    (state: AppState) => state.application,
+  )
+  const lastStakeOrClaim =
+    lastTransactionTimes[TRANSACTION_TYPES.STAKE_OR_CLAIM]
   const fetchBalances = useCallback(async () => {
     if (!library || !chainId || !account) return
     const ethcallProvider = await getMulticallProvider(library, chainId)
@@ -150,7 +157,7 @@ function usePoolsRewardBalances() {
   }, [library, chainId, account])
   useEffect(() => {
     void fetchBalances()
-  }, [fetchBalances])
-  usePoller(() => void fetchBalances(), BLOCK_TIME * 5)
+  }, [fetchBalances, lastStakeOrClaim])
+  usePoller(() => void fetchBalances(), BLOCK_TIME * 3)
   return balances
 }
