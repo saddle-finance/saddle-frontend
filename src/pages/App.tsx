@@ -3,8 +3,14 @@ import "./NotifyStyle.scss"
 
 import { AppDispatch, AppState } from "../state"
 import { BLOCK_TIME, POOLS_MAP } from "../constants"
-import React, { ReactElement, Suspense, useCallback, useEffect } from "react"
-import { Route, Switch } from "react-router-dom"
+import React, {
+  ReactElement,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+} from "react"
+import { Redirect, Route, Switch } from "react-router-dom"
 import { isChainSupportedByNotify, notify } from "../utils/notifyHandler"
 import { useDispatch, useSelector } from "react-redux"
 
@@ -34,6 +40,11 @@ export default function App(): ReactElement {
       darkMode: userDarkMode,
     })
   }, [chainId, userDarkMode])
+  const pools = useMemo(() => {
+    return Object.values(POOLS_MAP).filter(
+      ({ addresses }) => chainId && addresses[chainId],
+    )
+  }, [chainId])
   return (
     <Suspense fallback={null}>
       <ThemeProvider>
@@ -44,7 +55,7 @@ export default function App(): ReactElement {
                 <Switch>
                   <Route exact path="/" component={Swap} />
                   <Route exact path="/pools" component={Pools} />
-                  {Object.values(POOLS_MAP).map(({ name, route }) => (
+                  {pools.map(({ name, route }) => (
                     <Route
                       exact
                       path={`/pools/${route}/deposit`}
@@ -52,7 +63,7 @@ export default function App(): ReactElement {
                       key={`${name}-deposit`}
                     />
                   ))}
-                  {Object.values(POOLS_MAP).map(({ name, route }) => (
+                  {pools.map(({ name, route }) => (
                     <Route
                       exact
                       path={`/pools/${route}/withdraw`}
@@ -62,6 +73,7 @@ export default function App(): ReactElement {
                       key={`${name}-withdraw`}
                     />
                   ))}
+                  <Redirect from="/pools/:route/:action" to="/pools" />
                   <Route exact path="/risk" component={Risk} />
                 </Switch>
                 <Version />

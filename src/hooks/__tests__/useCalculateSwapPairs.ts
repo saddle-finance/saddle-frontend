@@ -37,6 +37,7 @@ const createTestPool = (
     isSynthetic: tokens.some(({ isSynthetic }) => isSynthetic),
     addresses: {} as { [chainId in ChainId]: string },
     type,
+    route: "",
   }
 }
 describe("getTradingPairsForToken", () => {
@@ -79,6 +80,7 @@ describe("getTradingPairsForToken", () => {
       allPools,
       tokensToPoolsMap,
       tokenA,
+      true,
     )
     const selfPair = pairs.find(
       (swapData) => swapData.from.symbol === swapData.to.symbol,
@@ -106,6 +108,7 @@ describe("getTradingPairsForToken", () => {
       allPools,
       tokensToPoolsMap,
       tokenA,
+      true,
     )
     expect(pairs).toContainEqual({
       type: SWAP_TYPES.DIRECT,
@@ -136,6 +139,7 @@ describe("getTradingPairsForToken", () => {
       allPools,
       tokensToPoolsMap,
       tokenE,
+      true,
     )
     expect(tokenE.isSynthetic).toBeTruthy()
     expect(tokenF.isSynthetic).toBeTruthy()
@@ -155,6 +159,33 @@ describe("getTradingPairsForToken", () => {
     })
   })
 
+  it("Virtual swaps can be disabled", () => {
+    const pairs = getTradingPairsForToken(
+      tokensMap,
+      poolsMap,
+      allPools,
+      tokensToPoolsMap,
+      tokenE,
+      false,
+    )
+    expect(tokenE.isSynthetic).toBeTruthy()
+    expect(tokenF.isSynthetic).toBeTruthy()
+    expect(pairs).toContainEqual({
+      type: SWAP_TYPES.INVALID,
+      from: {
+        symbol: tokenE.symbol,
+        poolName: undefined,
+        tokenIndex: undefined,
+      },
+      to: {
+        symbol: tokenF.symbol,
+        poolName: undefined,
+        tokenIndex: undefined,
+      },
+      route: [],
+    })
+  })
+
   it("A synth token can swap with a nonSynth token in a synth pool", () => {
     const pairs = getTradingPairsForToken(
       tokensMap,
@@ -162,6 +193,7 @@ describe("getTradingPairsForToken", () => {
       allPools,
       tokensToPoolsMap,
       tokenF,
+      true,
     )
     expect(tokenF.isSynthetic).toBeTruthy()
     expect(tokenC.isSynthetic).toBeFalsy()
@@ -188,6 +220,7 @@ describe("getTradingPairsForToken", () => {
       allPools,
       tokensToPoolsMap,
       tokenC,
+      true,
     )
     expect(tokenC.isSynthetic).toBeFalsy()
     expect(tokenG.isSynthetic).toBeFalsy()
@@ -214,6 +247,7 @@ describe("getTradingPairsForToken", () => {
       allPools,
       tokensToPoolsMap,
       tokenC,
+      true,
     )
     expect(tokenC.isSynthetic).toBeFalsy()
     expect(tokenF.isSynthetic).toBeTruthy()
