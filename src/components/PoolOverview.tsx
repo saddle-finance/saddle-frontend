@@ -117,7 +117,7 @@ export default function PoolOverview({
 
       <div className="right">
         <div className="poolInfo">
-          {poolData.sdlPerDay?.gt(Zero) && (
+          {poolData.sdlPerDay != null && (
             <div className="margin">
               <span className="label">
                 <a
