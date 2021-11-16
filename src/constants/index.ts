@@ -471,7 +471,7 @@ export const NUSD = new Token(
 )
 
 const MIM_CONTRACT_ADDRESSES = buildAddresses({
-  [ChainId.ARBITRUM]: "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+  [ChainId.ARBITRUM]: "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a",
 })
 export const MIM = new Token(
   MIM_CONTRACT_ADDRESSES,
