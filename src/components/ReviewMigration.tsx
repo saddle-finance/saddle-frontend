@@ -42,6 +42,7 @@ function ReviewMigration({
         .mul(gasAmount) // GWEI
         .div(BigNumber.from(10).pow(25)) // USD / ETH * GWEI * ETH / GWEI = USD
     : null
+  const shouldDisplayGas = !!gasStandard
 
   return (
     <div className="reviewMigration">
@@ -58,10 +59,14 @@ function ReviewMigration({
               saddleUSD
             </span>
           </div>
-          <div className="row">
-            <span className="title">{t("gas")}</span>
-            <span className="value floatRight">{gasPrice.toString()} GWEI</span>
-          </div>
+          {shouldDisplayGas && (
+            <div className="row">
+              <span className="title">{t("gas")}</span>
+              <span className="value floatRight">
+                {gasPrice.toString()} GWEI
+              </span>
+            </div>
+          )}
           {gasValueUSD && (
             <div className="row">
               <span className="title">{t("estimatedTxCost")}</span>
