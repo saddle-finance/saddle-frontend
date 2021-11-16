@@ -15,7 +15,6 @@ import React, {
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "ethcall"
-import { IS_DEVELOPMENT } from "../utils/environment"
 import MINICHEF_CONTRACT_ABI from "../constants/abis/miniChef.json"
 import { MiniChef } from "../../types/ethers-contracts/MiniChef"
 import { MulticallContract } from "../types/ethcall"
@@ -72,7 +71,6 @@ function useRetroactiveRewardBalance() {
   const retroRewardsContract = useRetroactiveVestingContract()
   const userMerkleData = useRetroMerkleData()
 
-  // async function fetchBalance() {
   const fetchBalance = useCallback(async () => {
     if (
       !library ||
@@ -92,12 +90,9 @@ function useRetroactiveRewardBalance() {
       } else {
         // estimate claimable % of user's grant based on elapsed time
         const startTimeSeconds = await retroRewardsContract.startTimestamp()
-        let startTimeMs = startTimeSeconds.mul(1000)
+        const startTimeMs = startTimeSeconds.mul(1000)
         const twoYearsMs = BigNumber.from(2 * 365 * 24 * 60 * 60 * 1000) // the vesting period
         const nowMs = BigNumber.from(Date.now())
-        if (IS_DEVELOPMENT) {
-          startTimeMs = nowMs.sub(1e11)
-        }
         // bail if vesting hasn't yet started
         if (startTimeMs.gt(nowMs)) return
 
