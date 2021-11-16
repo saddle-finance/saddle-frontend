@@ -123,7 +123,7 @@ export default function TokenClaimModal(): ReactElement {
               SDL token is launched by Saddle Finance. Read more about token
               distribution{" "}
               <a
-                href="https://docs.saddle.finance/"
+                href="https://blog.saddle.finance/introducing-sdl"
                 target="_blank"
                 rel="noreferrer"
                 style={{ textDecoration: "underline" }}

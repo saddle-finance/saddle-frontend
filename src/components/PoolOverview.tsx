@@ -1,6 +1,12 @@
 import "./PoolOverview.scss"
 
-import { POOLS_MAP, PoolTypes, TOKENS_MAP, isMetaPool } from "../constants"
+import {
+  IS_SDL_LIVE,
+  POOLS_MAP,
+  PoolTypes,
+  TOKENS_MAP,
+  isMetaPool,
+} from "../constants"
 import { Partners, PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement } from "react"
 import {
@@ -117,11 +123,11 @@ export default function PoolOverview({
 
       <div className="right">
         <div className="poolInfo">
-          {poolData.sdlPerDay != null && (
+          {poolData.sdlPerDay != null && IS_SDL_LIVE && (
             <div className="margin">
               <span className="label">
                 <a
-                  href="https://docs.saddle.finance/saddle-faq"
+                  href="https://blog.saddle.finance/introducing-sdl"
                   target="_blank"
                   rel="noreferrer"
                   style={{ textDecoration: "underline" }}
