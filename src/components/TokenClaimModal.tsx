@@ -44,6 +44,9 @@ export default function TokenClaimModal(): ReactElement {
   const formattedUnclaimedTokenbalance = commify(
     formatBNToString(rewardBalances.total, 18, 0),
   )
+  const formattedTotalRetroDrop = commify(
+    formatBNToString(rewardBalances.retroactiveTotal, 18, 2),
+  )
   const [allPoolsWithRewards, poolsWithUserRewards] = useMemo(() => {
     if (!chainId) return [[], []]
     const allPoolsWithRewards = Object.values(POOLS_MAP)
@@ -99,6 +102,9 @@ export default function TokenClaimModal(): ReactElement {
                 claimCallback={() => claimRetroReward()}
                 status={claimsStatuses["retroactive"]}
               />
+              <div className={styles.info}>
+                {t("totalRetroactiveDrop")} {formattedTotalRetroDrop}
+              </div>
               {!!allPoolsWithRewards.length && (
                 <div style={{ height: "32px" }} />
               )}
