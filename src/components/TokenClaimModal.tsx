@@ -38,15 +38,14 @@ export default function TokenClaimModal(): ReactElement {
   const formattedUnclaimedTokenbalance = commify(
     formatBNToString(rewardBalances.total, 18, 0),
   )
-  const pools = useMemo(() => {
-    if (!chainId) return []
-    return Object.values(POOLS_MAP)
-      .filter(({ addresses, rewardPids, name }) => {
+  const [allPoolsWithRewards, poolsWithUserRewards] = useMemo(() => {
+    if (!chainId) return [[], []]
+    const allPoolsWithRewards = Object.values(POOLS_MAP)
+      .filter(({ addresses, rewardPids }) => {
         // remove pools not in this chain and without rewards
         const isChainPool = !!addresses[chainId]
         const hasRewards = rewardPids[chainId] !== null
-        const hasUserRewards = rewardBalances[name]?.gt(Zero)
-        return isChainPool && hasRewards && hasUserRewards
+        return isChainPool && hasRewards
       })
       .sort(({ name: nameA }, { name: nameB }) => {
         const [rewardBalA, rewardBalB] = [
@@ -55,6 +54,11 @@ export default function TokenClaimModal(): ReactElement {
         ]
         return (rewardBalA || Zero).gte(rewardBalB || Zero) ? -1 : 1
       })
+    const poolsWithUserRewards = allPoolsWithRewards.filter(({ name }) => {
+      const hasUserRewards = rewardBalances[name]?.gt(Zero)
+      return !!hasUserRewards
+    })
+    return [allPoolsWithRewards, poolsWithUserRewards]
   }, [chainId, rewardBalances])
 
   return (
@@ -81,10 +85,12 @@ export default function TokenClaimModal(): ReactElement {
                 claimCallback={() => claimRetroReward()}
                 status={claimsStatuses["retroactive"]}
               />
-              {!!pools.length && <div style={{ height: "32px" }} />}
+              {!!allPoolsWithRewards.length && (
+                <div style={{ height: "32px" }} />
+              )}
             </>
           )}
-          {pools.map((pool, i, arr) => (
+          {allPoolsWithRewards.map((pool, i, arr) => (
             <>
               <ClaimListItem
                 title={pool.name}
@@ -114,8 +120,11 @@ export default function TokenClaimModal(): ReactElement {
           </span>
         </div>
         {rewardBalances.total.gt(rewardBalances.retroactive) &&
-          pools.length > 1 && (
-            <Button onClick={() => claimAllPoolsRewards(pools)} fullWidth>
+          poolsWithUserRewards.length > 1 && (
+            <Button
+              onClick={() => claimAllPoolsRewards(poolsWithUserRewards)}
+              fullWidth
+            >
               {t("claimForAllPools")}
             </Button>
           )}
