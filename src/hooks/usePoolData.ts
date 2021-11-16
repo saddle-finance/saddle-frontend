@@ -11,6 +11,7 @@ import {
   getTokenSymbolForPoolType,
 } from "../utils"
 import { useEffect, useState } from "react"
+import { useMiniChefContract, useSwapContract } from "./useContract"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -26,7 +27,6 @@ import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import { useRewardsHelpers } from "./useRewardsHelpers"
 import { useSelector } from "react-redux"
-import { useSwapContract } from "./useContract"
 
 interface TokenShareType {
   percent: string
@@ -47,6 +47,7 @@ export interface PoolDataType {
   utilization: BigNumber | null
   virtualPrice: BigNumber
   volume: BigNumber | null
+  sdlPerDay: BigNumber
   isPaused: boolean
   aprs: Partial<
     Record<
@@ -89,6 +90,7 @@ const emptyPoolData = {
   lpTokenPriceUSD: Zero,
   lpToken: "",
   isPaused: false,
+  sdlPerDay: Zero,
 } as PoolDataType
 
 export default function usePoolData(
@@ -96,6 +98,7 @@ export default function usePoolData(
 ): PoolDataHookReturnType {
   const { account, library, chainId } = useActiveWeb3React()
   const swapContract = useSwapContract(poolName)
+  const rewardsContract = useMiniChefContract()
   const { tokenPricesUSD, lastTransactionTimes, swapStats } = useSelector(
     (state: AppState) => state.application,
   )
@@ -131,6 +134,7 @@ export default function usePoolData(
       if (!POOL.addresses[chainId]) return
       const effectivePoolTokens = POOL.underlyingPoolTokens || POOL.poolTokens
       const isMetaSwap = POOL.metaSwapAddresses != null
+      const rewardsPid = POOL.rewardPids[chainId]
       let metaSwapContract = null as MetaSwap | null
       if (isMetaSwap) {
         metaSwapContract = getContract(
@@ -282,6 +286,21 @@ export default function usePoolData(
         swapStats && poolAddress in swapStats
           ? swapStats[poolAddress]
           : { oneDayVolume: null, apy: null, utilization: null }
+
+      let sdlPerDay = Zero
+      if (rewardsContract && rewardsPid !== null) {
+        const [poolInfo, saddlePerSecond, totalAllocPoint] = await Promise.all([
+          rewardsContract.poolInfo(rewardsPid),
+          rewardsContract.saddlePerSecond(),
+          rewardsContract.totalAllocPoint(),
+        ])
+        const { allocPoint } = poolInfo
+        const oneDaySecs = BigNumber.from(24 * 60 * 60)
+        sdlPerDay = saddlePerSecond
+          .mul(oneDaySecs)
+          .mul(allocPoint)
+          .div(totalAllocPoint)
+      }
       const poolData = {
         name: poolName,
         tokens: poolTokens,
@@ -298,6 +317,7 @@ export default function usePoolData(
         lpTokenPriceUSD,
         lpToken: POOL.lpToken.symbol,
         isPaused,
+        sdlPerDay,
       }
       const userShareData = account
         ? {
@@ -336,6 +356,7 @@ export default function usePoolData(
     library,
     chainId,
     swapStats,
+    rewardsContract,
     amountStakedInRewards,
   ])
 

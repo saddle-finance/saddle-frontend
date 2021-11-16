@@ -15,6 +15,7 @@ import Tag from "./Tag"
 import ToolTip from "./ToolTip"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
+import logo from "../assets/icons/logo.svg"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -56,6 +57,7 @@ export default function PoolOverview({
       userShareData?.usdBalance || Zero,
       18,
     ),
+    sdlPerDay: formatBNToShortString(poolData?.sdlPerDay || Zero, 18),
     tokens: poolData.tokens.map((coin) => {
       const token = TOKENS_MAP[coin.symbol]
       return {
@@ -105,7 +107,7 @@ export default function PoolOverview({
           <span style={{ marginRight: "8px" }}>[</span>
           {formattedData.tokens.map(({ symbol, icon }) => (
             <div className="token" key={symbol}>
-              <img alt="icon" src={icon} />
+              <img alt="icon" className="tokenIcon" src={icon} />
               <span>{symbol}</span>
             </div>
           ))}
@@ -115,6 +117,24 @@ export default function PoolOverview({
 
       <div className="right">
         <div className="poolInfo">
+          {poolData.sdlPerDay?.gt(Zero) && (
+            <div className="margin">
+              <span className="label">
+                <a
+                  href="https://docs.saddle.finance/saddle-faq"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ textDecoration: "underline" }}
+                >
+                  SDL/24h
+                </a>
+              </span>
+              <span>
+                <img src={logo} className="tokenIcon" />
+                {formattedData.sdlPerDay}
+              </span>
+            </div>
+          )}
           {formattedData.apy && (
             <div className="margin">
               <span className="label">{`${t("apy")}`}</span>
