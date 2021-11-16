@@ -25,6 +25,7 @@ import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFla
 import { getThirdPartyDataForPool } from "../utils/thirdPartyIntegrations"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
+import { useRewardsHelpers } from "./useRewardsHelpers"
 import { useSelector } from "react-redux"
 
 interface TokenShareType {
@@ -101,10 +102,15 @@ export default function usePoolData(
   const { tokenPricesUSD, lastTransactionTimes, swapStats } = useSelector(
     (state: AppState) => state.application,
   )
+  const { amountStaked: amountStakedInRewards } = useRewardsHelpers(
+    poolName as PoolName,
+  )
   const lastDepositTime = lastTransactionTimes[TRANSACTION_TYPES.DEPOSIT]
   const lastWithdrawTime = lastTransactionTimes[TRANSACTION_TYPES.WITHDRAW]
   const lastSwapTime = lastTransactionTimes[TRANSACTION_TYPES.SWAP]
   const lastMigrateTime = lastTransactionTimes[TRANSACTION_TYPES.MIGRATE]
+  const lastStakeOrClaimTime =
+    lastTransactionTimes[TRANSACTION_TYPES.STAKE_OR_CLAIM]
 
   const [poolData, setPoolData] = useState<PoolDataHookReturnType>([
     {
@@ -231,9 +237,9 @@ export default function usePoolData(
         Zero,
       )
       // lpToken balance in wallet as a % of total lpTokens, plus lpTokens staked elsewhere
-      const userShare = calculatePctOfTotalShare(userLpTokenBalance).add(
-        calculatePctOfTotalShare(userLpTokenBalanceStakedElsewhere),
-      )
+      const userShare = calculatePctOfTotalShare(userLpTokenBalance)
+        .add(calculatePctOfTotalShare(userLpTokenBalanceStakedElsewhere))
+        .add(calculatePctOfTotalShare(amountStakedInRewards))
       const userPoolTokenBalances = tokenBalances.map((balance) => {
         return userShare.mul(balance).div(BigNumber.from(10).pow(18))
       })
@@ -342,6 +348,7 @@ export default function usePoolData(
     lastWithdrawTime,
     lastSwapTime,
     lastMigrateTime,
+    lastStakeOrClaimTime,
     poolName,
     swapContract,
     tokenPricesUSD,
@@ -350,6 +357,7 @@ export default function usePoolData(
     chainId,
     swapStats,
     rewardsContract,
+    amountStakedInRewards,
   ])
 
   return poolData
