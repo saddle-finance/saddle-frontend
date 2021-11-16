@@ -109,7 +109,7 @@ function NetworkDisplayAndSettings(): ReactElement {
       <NetworkDisplay onClick={() => setIsDropdownOpen((state) => !state)} />
       {isDropdownOpen && (
         <div className="siteSettingsWrapper">
-          <SiteSettingsMenu />
+          <SiteSettingsMenu key="networkSettings" />
         </div>
       )}
     </div>
@@ -147,7 +147,7 @@ function IconButtonAndSettings(): ReactElement {
       </Button>
       {isDropdownOpen && (
         <div className="siteSettingsWrapper">
-          <SiteSettingsMenu />
+          <SiteSettingsMenu key="buttonSettings" />
         </div>
       )}
     </div>

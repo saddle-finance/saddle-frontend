@@ -1,4 +1,4 @@
-import { POOLS_MAP, Pool } from "../constants"
+import { POOLS_MAP, Pool, SDL_TOKEN } from "../constants"
 import React, {
   ReactElement,
   useCallback,
@@ -19,8 +19,10 @@ import Button from "./Button"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
+import plusIcon from "../assets/icons/plus.svg"
 import styles from "./TokenClaimModal.module.scss"
 import { useActiveWeb3React } from "../hooks"
+import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
 import { useRetroMerkleData } from "../hooks/useRetroMerkleData"
 
 // TODO: update token launch link
@@ -34,6 +36,10 @@ export default function TokenClaimModal(): ReactElement {
     claimAllPoolsRewards,
     claimRetroReward,
   } = useRewardClaims()
+  const { addToken, canAdd } = useAddTokenToMetamask({
+    ...SDL_TOKEN,
+    icon: `${window.location.origin}/logo.svg`,
+  })
 
   const formattedUnclaimedTokenbalance = commify(
     formatBNToString(rewardBalances.total, 18, 0),
@@ -72,6 +78,14 @@ export default function TokenClaimModal(): ReactElement {
       <div className={styles.mainContent}>
         <div className={styles.tokenBalance}>
           {formattedUnclaimedTokenbalance}
+
+          {canAdd && (
+            <img
+              src={plusIcon}
+              className={styles.plus}
+              onClick={() => addToken()}
+            />
+          )}
         </div>
         <div className={styles.tokenBalanceHelpText}>
           {t("totalClaimableSDL")}
@@ -119,15 +133,15 @@ export default function TokenClaimModal(): ReactElement {
             </Trans>
           </span>
         </div>
-        {rewardBalances.total.gt(rewardBalances.retroactive) &&
-          poolsWithUserRewards.length > 1 && (
-            <Button
-              onClick={() => claimAllPoolsRewards(poolsWithUserRewards)}
-              fullWidth
-            >
-              {t("claimForAllPools")}
-            </Button>
-          )}
+        {
+          <Button
+            onClick={() => claimAllPoolsRewards(poolsWithUserRewards)}
+            fullWidth
+            disabled={poolsWithUserRewards.length < 2}
+          >
+            {t("claimForAllPools")}
+          </Button>
+        }
       </div>
     </div>
   )

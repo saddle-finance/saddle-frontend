@@ -1,26 +1,46 @@
-import { ChainId, IS_L2_SUPPORTED } from "../constants"
+import { ChainId, IS_L2_SUPPORTED, IS_SDL_LIVE, SDL_TOKEN } from "../constants"
 import React, { ReactElement, useContext, useState } from "react"
 
 import { ThemeContext } from "../providers/ThemeProvider"
 import classnames from "classnames"
+import logo from "../assets/icons/logo.svg"
 import styles from "./SiteSettingsMenu.module.scss"
 import { useActiveWeb3React } from "../hooks"
+import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
 import { useTranslation } from "react-i18next"
 
 export default function SiteSettingsMenu(): ReactElement {
   return (
     <div className={styles.container}>
-      {IS_L2_SUPPORTED && <NetworkSection />}
+      {IS_L2_SUPPORTED && <NetworkSection key="network" />}
       {IS_L2_SUPPORTED && <Divider />}
-      <LanguageSection />
+      <LanguageSection key="language" />
       <Divider />
-      <ThemeSection />
+      <ThemeSection key="theme" />
+      {IS_SDL_LIVE && <Divider />}
+      {IS_SDL_LIVE && <AddTokenSection key="token" />}
     </div>
   )
 }
 
 function Divider(): ReactElement {
   return <div className={styles.divider}></div>
+}
+
+function AddTokenSection(): ReactElement | null {
+  const { addToken, canAdd } = useAddTokenToMetamask({
+    ...SDL_TOKEN,
+    icon: `${window.location.origin}/logo.svg`,
+  })
+  const { t } = useTranslation()
+
+  return canAdd ? (
+    <div className={styles.section}>
+      <div className={styles.sectionTitle} onClick={() => addToken()}>
+        <span>{t("addSDL")}</span> <img src={logo} className={styles.logo} />
+      </div>
+    </div>
+  ) : null
 }
 
 // refer to https://github.com/sushiswap/sushiswap-interface/blob/canary/src/modals/NetworkModal/index.tsx#L13

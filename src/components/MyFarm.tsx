@@ -1,12 +1,12 @@
 import "./MyFarm.scss"
 
+import { IS_SDL_LIVE, PoolName } from "../constants"
 import React, { ReactElement } from "react"
 import { commify, formatBNToString } from "../utils"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { Box } from "@chakra-ui/react"
 import Button from "./Button"
-import { PoolName } from "../constants"
 import { useRewardsHelpers } from "../hooks/useRewardsHelpers"
 import { useTranslation } from "react-i18next"
 
@@ -31,7 +31,7 @@ export default function MyFarm({
   const formattedLpStakedBalance = commify(
     formatBNToString(amountStaked, 18, 4),
   )
-  return isPoolIncentivized ? (
+  return isPoolIncentivized && IS_SDL_LIVE ? (
     <div className="myFarm">
       <h4>{t("myFarm")}</h4>
       <div className="item" style={{ marginBottom: 16 }}>
