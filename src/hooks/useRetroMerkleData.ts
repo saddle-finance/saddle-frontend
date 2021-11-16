@@ -24,8 +24,27 @@ export function useRetroMerkleData(): MerkleState {
   useEffect(() => {
     async function fetchUserMerkleData() {
       if (!chainId || !account) return
+      // eslint-disable-next-line no-constant-condition
       if (IS_PRODUCTION) {
         // TODO: do network stuff
+        const resp = await fetch(
+          `https://ipfs.saddle.exchange/token-merkle-proofs/${account}`,
+        )
+        if (resp.ok) {
+          void resp.json().then((userData: AccountMerkleData) => {
+            setUserMerkleData(
+              userData
+                ? {
+                    proof: userData.proof,
+                    amount: BigNumber.from(userData.amount),
+                  }
+                : null,
+            )
+          })
+        } else {
+          // API will 404 if account proof doesn't exist
+          setUserMerkleData(null)
+        }
       } else {
         const pathToFetch = RETROACTIVE_SDL_MERKLETREE_DATA[chainId]
         if (!pathToFetch) {
