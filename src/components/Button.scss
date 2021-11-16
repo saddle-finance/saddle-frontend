@@ -1,4 +1,5 @@
-@import "../styles/theme";
+@import "../styles/theme.scss";
+@import "../styles/viewports";
 
 button.button {
   border-radius: 8px;
@@ -9,6 +10,9 @@ button.button {
   letter-spacing: 0.02em;
   cursor: pointer;
   padding: 1px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:disabled {
     cursor: not-allowed;
@@ -28,6 +32,26 @@ button.button {
     &:enabled:focus {
       background-color: $primary-blue;
       color: $text-white;
+      box-shadow: var(--shadow-hover);
+    }
+  }
+  &.outline {
+    background-color: transparent;
+    border-color: var(--primary-accent);
+    border-width: 1px;
+    border-style: solid;
+    color: var(--primary-accent);
+
+    &:disabled {
+      cursor: not-allowed;
+      color: var(--text-secondary-button-disabled);
+      border-color: var(--text-secondary-button-disabled);
+    }
+
+    &:enabled:hover,
+    &:enabled:focus {
+      background-color: var(--primary-accent);
+      color: var(--primary-foreground);
       box-shadow: var(--shadow-hover);
     }
   }
@@ -114,10 +138,17 @@ button.button {
   &.large {
     width: 176px;
     min-height: 40px;
+    @include breakpoint(md) {
+      width: 140px;
+    }
   }
 
   &.medium {
     padding: 8px;
     min-height: 32px;
+  }
+
+  &.fullWidth {
+    width: 100%;
   }
 }

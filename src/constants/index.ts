@@ -13,6 +13,7 @@ import metamaskIcon from "../assets/icons/metamask.svg"
 import mimLogo from "../assets/icons/mim.png"
 import nusdLogo from "../assets/icons/nusd.svg"
 import renbtcLogo from "../assets/icons/renbtc.svg"
+import saddleLPTokenLogo from "../assets/icons/saddle_lp_token.svg"
 import saddleLogo from "../assets/icons/logo_24.svg"
 import sbtcLogo from "../assets/icons/sbtc.svg"
 import sethLogo from "../assets/icons/seth.svg"
@@ -74,6 +75,16 @@ const buildAddresses = (
     return { ...acc, [numId]: addresses?.[numId] || "" }
   }, {}) as Record<ChainId, string>
 }
+const buildPids = (
+  pids: Partial<Record<ChainId, number>>,
+): Record<ChainId, number | null> => {
+  // @dev be careful to include pid 0 in this boolean logic
+  return Object.keys(ChainId).reduce((acc, id) => {
+    const numId = Number(id) as ChainId
+    const pid = pids[numId]
+    return { ...acc, [numId]: pid == null ? null : pid }
+  }, {}) as Record<ChainId, number | null>
+}
 
 export class Token {
   readonly addresses: { [chainId in ChainId]: string }
@@ -118,6 +129,17 @@ export const SYNTHETIX_EXCHANGE_RATES_CONTRACT_ADDRESSES = buildAddresses({
 
 export const BRIDGE_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0xa5bD85ed9fA27ba23BfB702989e7218E44fd4706",
+})
+
+export const MINICHEF_CONTRACT_ADDRESSES = buildAddresses({
+  [ChainId.HARDHAT]: "0x927b167526bAbB9be047421db732C663a0b77B11",
+  [ChainId.ARBITRUM]: "0x2069043d7556B1207a505eb459D18d908DF29b55",
+  [ChainId.MAINNET]: "0x691ef79e40d909C715BE5e9e93738B3fF7D58534",
+})
+
+export const RETROACTIVE_VESTING_CONTRACT_ADDRESSES = buildAddresses({
+  [ChainId.HARDHAT]: "0xD42912755319665397FF090fBB63B1a31aE87Cee",
+  [ChainId.MAINNET]: "0x5DCA270671935cf3dF78bd8373C22BE250198a03",
 })
 
 export const SWAP_MIGRATOR_USD_CONTRACT_ADDRESSES = buildAddresses({
@@ -200,8 +222,7 @@ export const ARB_USD_SWAP_ADDRESSES = buildAddresses({
   [ChainId.ARBITRUM]: "0xBea9F78090bDB9e662d8CB301A00ad09A5b756e9",
 })
 
-export const MERKLETREE_DATA = buildAddresses({
-  [ChainId.MAINNET]: "mainnetTestAccounts.json",
+export const RETROACTIVE_SDL_MERKLETREE_DATA = buildAddresses({
   [ChainId.HARDHAT]: "hardhat.json",
 })
 
@@ -265,13 +286,30 @@ export const D4_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0x2d2c18F63D2144161B38844dCd529124Fbb93cA2",
 })
 
+export const SDL_TOKEN_ADDRESSES = buildAddresses({
+  [ChainId.HARDHAT]: "0x04C89607413713Ec9775E14b954286519d836FEf",
+  [ChainId.MAINNET]: "0xf1Dc500FdE233A4055e25e5BbF516372BC4F6871",
+  [ChainId.ARBITRUM]: "0x75c9bc761d88f70156daf83aa010e84680baf131",
+})
+
+export const SDL_TOKEN = new Token(
+  SDL_TOKEN_ADDRESSES,
+  18,
+  "SDL",
+  "saddle-dao", // TBD
+  "Saddle DAO",
+  saddleLogo,
+  false,
+  false,
+)
+
 export const SUSD_SWAP_TOKEN = new Token(
   SUSD_SWAP_TOKEN_CONTRACT_ADDRESSES,
   18,
   "saddleSUSD",
   "saddlesusd",
   "Saddle sUSD/saddleUSD-V2",
-  saddleLogo,
+  saddleLPTokenLogo,
   false,
   true,
 )
@@ -282,7 +320,7 @@ export const BTC_SWAP_TOKEN = new Token(
   "saddleBTC",
   "saddlebtc",
   "Saddle TBTC/WBTC/RENBTC/SBTC",
-  saddleLogo,
+  saddleLPTokenLogo,
   false,
   true,
 )
@@ -293,7 +331,7 @@ export const BTC_SWAP_V2_TOKEN = new Token(
   "saddleBTC-V2",
   "saddlebtc-v2",
   "Saddle WBTC/RENBTC/SBTC",
-  saddleLogo,
+  saddleLPTokenLogo,
   false,
   true,
 )
@@ -304,7 +342,7 @@ export const TBTC_SWAP_TOKEN = new Token(
   "saddletBTC",
   "saddletBTC",
   "Saddle tBTCv2/saddleWRenSBTC",
-  saddleLogo,
+  saddleLPTokenLogo,
   false,
   true,
 )
@@ -315,7 +353,7 @@ export const STABLECOIN_SWAP_TOKEN = new Token(
   "saddleUSD",
   "saddleusd",
   "Saddle DAI/USDC/USDT",
-  saddleLogo,
+  saddleLPTokenLogo,
   false,
   true,
 )
@@ -326,7 +364,7 @@ export const STABLECOIN_SWAP_V2_TOKEN = new Token(
   "saddleUSD-V2",
   "saddleusd-v2",
   "Saddle DAI/USDC/USDT V2",
-  saddleLogo,
+  saddleLPTokenLogo,
   false,
   true,
 )
@@ -337,7 +375,7 @@ export const WCUSD_SWAP_TOKEN = new Token(
   "saddlewCUSD",
   "saddlewcusd",
   "Saddle wCUSD/saddleUSD-V2",
-  saddleLogo,
+  saddleLPTokenLogo,
   false,
   true,
 )
@@ -359,7 +397,7 @@ export const VETH2_SWAP_TOKEN = new Token(
   "saddleVETH2",
   "saddleveth2",
   "Saddle WETH/vETH2",
-  saddleLogo,
+  saddleLPTokenLogo,
   false,
   true,
 )
@@ -370,7 +408,7 @@ export const ALETH_SWAP_TOKEN = new Token(
   "saddleALETH",
   "saddlealeth",
   "Saddle WETH/alETH/sETH",
-  saddleLogo,
+  saddleLPTokenLogo,
   false,
   true,
 )
@@ -381,7 +419,7 @@ export const D4_SWAP_TOKEN = new Token(
   "saddleD4",
   "saddled4",
   "Saddle alUSD/FEI/FRAX/LUSD",
-  saddleLogo,
+  saddleLPTokenLogo,
   false,
   true,
 )
@@ -699,6 +737,7 @@ export type Pool = {
   underlyingPoolTokens?: Token[]
   underlyingPool?: PoolName
   isOutdated?: boolean // pool can be outdated but not have a migration target
+  rewardPids: { [chainId in ChainId]: number | null }
 }
 export type PoolsMap = {
   [poolName: string]: Pool
@@ -713,6 +752,7 @@ export const POOLS_MAP: PoolsMap = {
     type: PoolTypes.BTC,
     route: "btc",
     isOutdated: true,
+    rewardPids: buildPids({}),
   },
   [BTC_POOL_V2_NAME]: {
     name: BTC_POOL_V2_NAME,
@@ -722,6 +762,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: true,
     type: PoolTypes.BTC,
     route: "btcv2",
+    rewardPids: buildPids({ [ChainId.MAINNET]: 4, [ChainId.HARDHAT]: 4 }),
   },
   [STABLECOIN_POOL_NAME]: {
     name: STABLECOIN_POOL_NAME,
@@ -732,6 +773,7 @@ export const POOLS_MAP: PoolsMap = {
     type: PoolTypes.USD,
     migration: STABLECOIN_POOL_V2_NAME,
     route: "usd",
+    rewardPids: buildPids({}),
   },
   [STABLECOIN_POOL_V2_NAME]: {
     name: STABLECOIN_POOL_V2_NAME,
@@ -741,6 +783,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "usdv2",
+    rewardPids: buildPids({ [ChainId.MAINNET]: 3, [ChainId.HARDHAT]: 3 }),
   },
   [VETH2_POOL_NAME]: {
     name: VETH2_POOL_NAME,
@@ -750,6 +793,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.ETH,
     route: "veth2",
+    rewardPids: buildPids({}),
   },
   [ALETH_POOL_NAME]: {
     name: ALETH_POOL_NAME,
@@ -759,6 +803,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: true,
     type: PoolTypes.ETH,
     route: "aleth",
+    rewardPids: buildPids({ [ChainId.MAINNET]: 1, [ChainId.HARDHAT]: 1 }),
   },
   [D4_POOL_NAME]: {
     name: D4_POOL_NAME,
@@ -768,6 +813,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "d4",
+    rewardPids: buildPids({ [ChainId.MAINNET]: 2, [ChainId.HARDHAT]: 2 }),
   },
   [ARB_USD_POOL_NAME]: {
     name: ARB_USD_POOL_NAME,
@@ -777,6 +823,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "arbusd",
+    rewardPids: buildPids({ [ChainId.ARBITRUM]: 1 }),
   },
   [SUSD_METAPOOL_NAME]: {
     name: SUSD_METAPOOL_NAME,
@@ -789,6 +836,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: SUSD_UNDERLYING_POOL_TOKENS,
     underlyingPool: STABLECOIN_POOL_V2_NAME,
     route: "susd",
+    rewardPids: buildPids({}),
   },
   [TBTC_METAPOOL_NAME]: {
     name: TBTC_METAPOOL_NAME,
@@ -801,6 +849,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: TBTC_UNDERLYING_POOL_TOKENS,
     underlyingPool: BTC_POOL_V2_NAME,
     route: "tbtc",
+    rewardPids: buildPids({}),
   },
   [WCUSD_METAPOOL_NAME]: {
     name: WCUSD_METAPOOL_NAME,
@@ -813,6 +862,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: WCUSD_UNDERLYING_POOL_TOKENS,
     underlyingPool: STABLECOIN_POOL_V2_NAME,
     route: "wcusd",
+    rewardPids: buildPids({}),
   },
 }
 export function isLegacySwapABIPool(poolName: string): boolean {
@@ -878,6 +928,7 @@ export const TRANSACTION_TYPES = {
   WITHDRAW: "WITHDRAW",
   SWAP: "SWAP",
   MIGRATE: "MIGRATE",
+  STAKE_OR_CLAIM: "STAKE_OR_CLAIM",
 }
 
 export const POOL_FEE_PRECISION = 10
@@ -945,4 +996,5 @@ export const SYNTH_TRACKING_ID =
 // FLAGS
 export const IS_VIRTUAL_SWAP_ACTIVE = true
 export const IS_L2_SUPPORTED = true
+export const IS_SDL_LIVE = true
 // FLAGS END

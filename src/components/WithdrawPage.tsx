@@ -9,6 +9,7 @@ import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
 import Modal from "./Modal"
+import MyFarm from "./MyFarm"
 import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
 import RadioButton from "./RadioButton"
@@ -168,7 +169,6 @@ const WithdrawPage = (props: Props): ReactElement => {
                       (reviewData.priceImpact.gte(0) ? "bonus" : "slippage")
                     }
                   >
-                    {" "}
                     {formatBNToPercentString(reviewData.priceImpact, 18, 4)}
                   </span>
                 </div>
@@ -192,16 +192,26 @@ const WithdrawPage = (props: Props): ReactElement => {
             </Button>
           </Center>
         </div>
-        <div className="infoPanels">
-          <MyShareCard data={myShareData} />
-          <div
-            style={{
-              display: myShareData ? "block" : "none",
-            }}
-            className="divider"
-          ></div>{" "}
-          <PoolInfoCard data={poolData} />
+
+        <div>
+          {poolData && (
+            <MyFarm
+              lpWalletBalance={myShareData?.lpTokenBalance || Zero}
+              poolName={poolData.name}
+            />
+          )}
+          <div className="infoPanels">
+            <MyShareCard data={myShareData} />
+            <div
+              style={{
+                display: myShareData ? "block" : "none",
+              }}
+              className="divider"
+            ></div>{" "}
+            <PoolInfoCard data={poolData} />
+          </div>
         </div>
+
         <Modal
           isOpen={!!currentModal}
           onClose={(): void => setCurrentModal(null)}

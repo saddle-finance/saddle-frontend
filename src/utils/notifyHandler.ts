@@ -24,7 +24,7 @@ export function isChainSupportedByNotify(chainId: number | undefined): boolean {
 
 export function notifyHandler(
   hash: string,
-  type: "deposit" | "withdraw" | "swap" | "tokenApproval" | "migrate",
+  type: "deposit" | "withdraw" | "swap" | "tokenApproval" | "migrate" | "claim",
 ): void {
   const { emitter } = notify.hash(hash)
 
