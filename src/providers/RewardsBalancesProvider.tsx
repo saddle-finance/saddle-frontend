@@ -98,8 +98,8 @@ function useRetroactiveRewardBalance() {
 
         // Scale by 1e18 for more accurate percentage
         const vestedPercent = nowMs
-          .mul(BigNumber.from(10).pow(18))
           .sub(startTimeMs)
+          .mul(BigNumber.from(10).pow(18))
           .div(twoYearsMs)
         const vestedAmount = userMerkleData.amount
           .mul(vestedPercent)
