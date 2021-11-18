@@ -17,7 +17,7 @@ import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import { Zero } from "@ethersproject/constants"
-import classNames from "classnames"
+// import classNames from "classnames"
 import { formatBNToPercentString } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
 import { useSelector } from "react-redux"
@@ -82,7 +82,7 @@ const WithdrawPage = (props: Props): ReactElement => {
   const noShare = !myShareData || myShareData.lpTokenBalance.eq(Zero)
 
   return (
-    <div className={classNames({ noShare: noShare, withdraw: true })}>
+    <div className="withdraw">
       <TopMenu activeTab={"withdraw"} />
       <div className="content">
         <div className="left">
