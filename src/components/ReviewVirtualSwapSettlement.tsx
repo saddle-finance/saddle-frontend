@@ -77,6 +77,7 @@ function ReviewVirtualSwapSettlement({
         .mul(gasAmount) // GWEI
         .div(BigNumber.from(10).pow(25)) // USD / ETH * GWEI * ETH / GWEI = USD
     : null
+  const shouldDisplayGas = !!gasStandard
   const isWithdrawAction = !data.from
   return (
     <div className="reviewSwap">
@@ -117,17 +118,19 @@ function ReviewVirtualSwapSettlement({
             </div>
           )}
 
-          <div className="row">
-            <span className="title">{t("gas")}</span>
-            <span className="value floatRight">
-              {formatGasToString(
-                { gasStandard, gasFast, gasInstant },
-                gasPriceSelected,
-                gasCustom,
-              )}{" "}
-              GWEI
-            </span>
-          </div>
+          {shouldDisplayGas && (
+            <div className="row">
+              <span className="title">{t("gas")}</span>
+              <span className="value floatRight">
+                {formatGasToString(
+                  { gasStandard, gasFast, gasInstant },
+                  gasPriceSelected,
+                  gasCustom,
+                )}{" "}
+                GWEI
+              </span>
+            </div>
+          )}
           {gasValueUSD && (
             <div className="row">
               <span className="title">{t("estimatedTxCost")}</span>

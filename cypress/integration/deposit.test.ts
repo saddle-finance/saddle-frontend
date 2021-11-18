@@ -40,7 +40,7 @@ context("Deposit Flow", () => {
         // TODO: assert price impact changes
         cy.wait(500)
         // click "deposit" to trigger review modal
-        cy.get("button").contains("Deposit").click()
+        cy.get("button").contains("Deposit").first().click()
         // TODO: assert review data
         // click "confirm" to initiate the actual transactions
         cy.get("button").contains("Confirm Deposit").click()

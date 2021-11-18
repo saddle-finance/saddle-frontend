@@ -43,6 +43,8 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
     transactionDeadlineSelected,
     transactionDeadlineCustom,
   )
+  const shouldDisplayGas = !!gasStandard
+
   return (
     <div className="reviewWithdraw">
       <h3>{t("youWillReceive")}</h3>
@@ -61,17 +63,19 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
           ))}
         </div>
         <div className="divider"></div>
-        <div className="withdrawInfoItem">
-          <span className="label">{t("gas")}</span>
-          <span className="value">
-            {formatGasToString(
-              { gasStandard, gasFast, gasInstant },
-              gasPriceSelected,
-              gasCustom,
-            )}{" "}
-            GWEI
-          </span>
-        </div>
+        {shouldDisplayGas && (
+          <div className="withdrawInfoItem">
+            <span className="label">{t("gas")}</span>
+            <span className="value">
+              {formatGasToString(
+                { gasStandard, gasFast, gasInstant },
+                gasPriceSelected,
+                gasCustom,
+              )}{" "}
+              GWEI
+            </span>
+          </div>
+        )}
         {data.txnGasCost?.valueUSD && (
           <div className="withdrawInfoItem">
             <span className="label">{t("estimatedTxCost")}</span>
