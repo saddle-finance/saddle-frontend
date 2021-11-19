@@ -50,6 +50,7 @@ function ReviewDeposit({
     transactionDeadlineSelected,
     transactionDeadlineCustom,
   )
+  const shouldDisplayGas = !!gasStandard
   return (
     <div className="reviewDeposit">
       <h3>{t("reviewDeposit")}</h3>
@@ -109,17 +110,19 @@ function ReviewDeposit({
             {formatBNToPercentString(transactionData.shareOfPool, 18)}
           </span>
         </div>
-        <div className="depositInfoItem">
-          <span className="label">{t("gas")}</span>
-          <span className="value">
-            {formatGasToString(
-              { gasStandard, gasFast, gasInstant },
-              gasPriceSelected,
-              gasCustom,
-            )}{" "}
-            GWEI
-          </span>
-        </div>
+        {shouldDisplayGas && (
+          <div className="depositInfoItem">
+            <span className="label">{t("gas")}</span>
+            <span className="value">
+              {formatGasToString(
+                { gasStandard, gasFast, gasInstant },
+                gasPriceSelected,
+                gasCustom,
+              )}{" "}
+              GWEI
+            </span>
+          </div>
+        )}
         {transactionData.txnGasCost?.valueUSD && (
           <div className="depositInfoItem">
             <span className="label">{t("estimatedTxCost")}</span>

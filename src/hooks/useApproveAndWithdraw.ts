@@ -3,6 +3,7 @@ import { addSlippage, subtractSlippage } from "../utils/slippage"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
 import { useLPTokenContract, useSwapContract } from "./useContract"
+
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import { GasPrices } from "../state/user"
@@ -105,9 +106,6 @@ export function useApproveAndWithdraw(
             ),
           ),
           deadline,
-          {
-            gasPrice,
-          },
         )
       } else if (state.withdrawType === "IMBALANCE") {
         spendTransaction = await swapContract.removeLiquidityImbalance(
@@ -120,9 +118,6 @@ export function useApproveAndWithdraw(
             slippageCustom,
           ),
           deadline,
-          {
-            gasPrice,
-          },
         )
       } else {
         // state.withdrawType === [TokenSymbol]
@@ -139,9 +134,6 @@ export function useApproveAndWithdraw(
             slippageCustom,
           ),
           deadline,
-          {
-            gasPrice,
-          },
         )
       }
 

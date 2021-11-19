@@ -1,4 +1,5 @@
 import {
+  ChainId,
   POOLS_MAP,
   Pool,
   PoolsMap,
@@ -7,7 +8,7 @@ import {
   Token,
   TokensMap,
 } from "../constants/index"
-import { useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { intersection } from "../utils/index"
 import { useActiveWeb3React } from "."
@@ -54,20 +55,29 @@ export function useCalculateSwapPairs(): (token?: Token) => SwapData[] {
     return [sortedPools, tokenToPools]
   }, [poolTVLs, chainId])
 
-  return function calculateSwapPairs(token?: Token): SwapData[] {
-    if (!token) return []
-    const cacheHit = pairCache[token.symbol]
-    if (cacheHit) return cacheHit
-    const swapPairs = getTradingPairsForToken(
-      TOKENS_MAP,
-      POOLS_MAP,
-      poolsSortedByTVL,
-      tokenToPoolsMapSorted,
-      token,
-    )
-    setPairCache((prevState) => ({ ...prevState, [token.symbol]: swapPairs }))
-    return swapPairs
-  }
+  useEffect(() => {
+    // @dev clear cache when moving chains
+    setPairCache({})
+  }, [chainId])
+
+  return useCallback(
+    function calculateSwapPairs(token?: Token): SwapData[] {
+      if (!token) return []
+      const cacheHit = pairCache[token.symbol]
+      if (cacheHit) return cacheHit
+      const swapPairs = getTradingPairsForToken(
+        TOKENS_MAP,
+        POOLS_MAP,
+        poolsSortedByTVL,
+        tokenToPoolsMapSorted,
+        token,
+        [ChainId.MAINNET, ChainId.HARDHAT].includes(chainId as ChainId),
+      )
+      setPairCache((prevState) => ({ ...prevState, [token.symbol]: swapPairs }))
+      return swapPairs
+    },
+    [poolsSortedByTVL, tokenToPoolsMapSorted, pairCache, chainId],
+  )
 }
 
 function buildSwapSideData(token: Token): SwapSide
@@ -109,6 +119,7 @@ function getTradingPairsForToken(
   poolsSortedByTVL: Pool[],
   tokenToPoolsMap: TokenToPoolsMap,
   originToken: Token,
+  allowVirtualSwap: boolean,
 ): SwapData[] {
   const allTokens = Object.values(tokensMap).filter(
     ({ isLPToken, symbol }) => !isLPToken && tokenToPoolsMap[symbol],
@@ -155,6 +166,8 @@ function getTradingPairsForToken(
         to: buildSwapSideData(token, tradePool),
         route: [originToken.symbol, token.symbol],
       }
+    } else if (!allowVirtualSwap) {
+      // fall through to default "invalid" swapData
     }
 
     // Case 3: sTokenA <> sTokenB

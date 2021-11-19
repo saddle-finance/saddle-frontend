@@ -1,8 +1,10 @@
 import {
   BRIDGE_CONTRACT_ADDRESSES,
   BTC_POOL_NAME,
+  MINICHEF_CONTRACT_ADDRESSES,
   POOLS_MAP,
   PoolName,
+  RETROACTIVE_VESTING_CONTRACT_ADDRESSES,
   SWAP_MIGRATOR_USD_CONTRACT_ADDRESSES,
   SYNTHETIX_CONTRACT_ADDRESSES,
   SYNTHETIX_EXCHANGE_RATES_CONTRACT_ADDRESSES,
@@ -23,7 +25,11 @@ import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import META_SWAP_DEPOSIT_ABI from "../constants/abis/metaSwapDeposit.json"
 import MIGRATOR_USD_CONTRACT_ABI from "../constants/abis/swapMigratorUSD.json"
+import MINICHEF_CONTRACT_ABI from "../constants/abis/miniChef.json"
 import { MetaSwapDeposit } from "../../types/ethers-contracts/MetaSwapDeposit"
+import { MiniChef } from "../../types/ethers-contracts/MiniChef"
+import RETROACTIVE_VESTING_CONTRACT_ABI from "../constants/abis/retroactiveVesting.json"
+import { RetroactiveVesting } from "../../types/ethers-contracts/RetroactiveVesting"
 import SWAP_FLASH_LOAN_ABI from "../constants/abis/swapFlashLoan.json"
 import SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI from "../constants/abis/swapFlashLoanNoWithdrawFee.json"
 import SWAP_GUARDED_ABI from "../constants/abis/swapGuarded.json"
@@ -80,6 +86,25 @@ export function useBridgeContract(): Bridge | null {
     ? BRIDGE_CONTRACT_ADDRESSES[chainId]
     : undefined
   return useContract(contractAddress, BRIDGE_CONTRACT_ABI) as Bridge
+}
+
+export function useMiniChefContract(): MiniChef | null {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress = chainId
+    ? MINICHEF_CONTRACT_ADDRESSES[chainId]
+    : undefined
+  return useContract(contractAddress, MINICHEF_CONTRACT_ABI) as MiniChef
+}
+
+export function useRetroactiveVestingContract(): RetroactiveVesting | null {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress = chainId
+    ? RETROACTIVE_VESTING_CONTRACT_ADDRESSES[chainId]
+    : undefined
+  return useContract(
+    contractAddress,
+    RETROACTIVE_VESTING_CONTRACT_ABI,
+  ) as RetroactiveVesting
 }
 
 export function useSynthetixContract(): SynthetixNetworkToken | null {

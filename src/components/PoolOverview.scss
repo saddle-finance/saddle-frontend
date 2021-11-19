@@ -66,13 +66,15 @@ div.poolOverview {
     &:last-child {
       margin-right: 0;
     }
+  }
 
-    & > img {
-      margin-right: 4px;
-      vertical-align: sub;
-      height: 18px;
-      width: 18px;
-    }
+  img.tokenIcon {
+    margin-right: 4px;
+    vertical-align: sub;
+    height: 18px;
+    width: 18px;
+    background-color: white;
+    border-radius: 50%;
   }
 
   div.right {
@@ -137,22 +139,6 @@ div.poolOverview {
 
 div.outdated {
   border-color: $yellow2;
-}
-
-.tag {
-  border-radius: 4px;
-  font-size: 20px;
-  font-weight: $bold;
-  align-self: center;
-  padding: 2px 4px;
-}
-.tag.warning {
-  border: 1px solid $yellow2;
-  color: $yellow2;
-}
-.tag.error {
-  border: 1px solid $error;
-  color: $error;
 }
 
 div.poolOverview:first-child {
