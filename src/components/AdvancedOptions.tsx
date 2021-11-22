@@ -1,3 +1,4 @@
+import "./AdvancedOptions.scss"
 import { Deadlines, GasPrices, Slippages } from "../state/user"
 import React, { ReactElement } from "react"
 import {
@@ -18,7 +19,6 @@ import CheckboxInput from "./CheckboxInput"
 import { PayloadAction } from "@reduxjs/toolkit"
 import ToolTip from "./ToolTip"
 import classNames from "classnames"
-import styles from "./AdvancedOptions.module.scss"
 import { useTranslation } from "react-i18next"
 
 export default function AdvancedOptions(): ReactElement {
@@ -39,18 +39,19 @@ export default function AdvancedOptions(): ReactElement {
     (state: AppState) => state.application,
   )
 
+  console.log("advanced === >", advanced)
   return (
-    <div className={styles.advancedOptions}>
+    <div className={"advancedOptions"}>
       <span
-        className={styles.title}
+        className={"title"}
         onClick={(): PayloadAction<boolean> =>
           dispatch(updatePoolAdvancedMode(!advanced))
         }
       >
         {t("advancedOptions")}
         <svg
-          className={classNames(styles.triangle, {
-            [styles.upsideDown]: advanced,
+          className={classNames("triangle", {
+            ["upsideDown"]: advanced,
           })}
           width="16"
           height="10"
@@ -66,14 +67,14 @@ export default function AdvancedOptions(): ReactElement {
           />
         </svg>
       </span>
-      <div className={styles.divider}></div>
+      <div className={"divider"}></div>
       <div
-        className={classNames(styles.tableContainer, {
-          [styles.show]: advanced,
+        className={classNames("show", {
+          ["tableContainer"]: advanced,
         })}
       >
-        <div className={styles.parameter}>
-          <div className={styles.infiniteApproval}>
+        <div className={"parameter"}>
+          <div className={"infiniteApproval"}>
             <CheckboxInput
               checked={infiniteApproval}
               onChange={(): PayloadAction<boolean> =>
@@ -81,17 +82,17 @@ export default function AdvancedOptions(): ReactElement {
               }
             />
             <ToolTip content={t("infiniteApprovalTooltip")}>
-              <span className={styles.label}>{t("infiniteApproval")}</span>
+              <span className={"label"}>{t("infiniteApproval")}</span>
             </ToolTip>
           </div>
         </div>
-        <div className={styles.parameter}>
-          <div className={styles.inputGroup}>
-            <div className={styles.options}>
-              <div className={styles.label}>{t("maxSlippage")}: </div>
+        <div className={"parameter"}>
+          <div className={"inputGroup"}>
+            <div className={"options"}>
+              <div className={"label"}>{t("maxSlippage")}: </div>
               <button
                 className={classNames({
-                  [styles.selected]: slippageSelected === Slippages.OneTenth,
+                  ["selected"]: slippageSelected === Slippages.OneTenth,
                 })}
                 onClick={(): PayloadAction<Slippages> =>
                   dispatch(updateSlippageSelected(Slippages.OneTenth))
@@ -101,7 +102,7 @@ export default function AdvancedOptions(): ReactElement {
               </button>
               <button
                 className={classNames({
-                  [styles.selected]: slippageSelected === Slippages.One,
+                  ["selected"]: slippageSelected === Slippages.One,
                 })}
                 onClick={(): PayloadAction<Slippages> =>
                   dispatch(updateSlippageSelected(Slippages.One))
@@ -129,13 +130,13 @@ export default function AdvancedOptions(): ReactElement {
             </div>
           </div>
         </div>
-        <div className={styles.parameter}>
-          <div className={styles.inputGroup}>
-            <div className={styles.options}>
-              <div className={styles.label}>{t("deadline")}: </div>
+        <div className={"parameter"}>
+          <div className={"inputGroup"}>
+            <div className={"options"}>
+              <div className={"label"}>{t("deadline")}: </div>
               <button
                 className={classNames({
-                  [styles.selected]:
+                  ["selected"]:
                     transactionDeadlineSelected === Deadlines.Twenty,
                 })}
                 onClick={(): void => {
@@ -146,8 +147,7 @@ export default function AdvancedOptions(): ReactElement {
               </button>
               <button
                 className={classNames({
-                  [styles.selected]:
-                    transactionDeadlineSelected === Deadlines.Forty,
+                  ["selected"]: transactionDeadlineSelected === Deadlines.Forty,
                 })}
                 onClick={(): void => {
                   dispatch(updateTransactionDeadlineSelected(Deadlines.Forty))
@@ -159,7 +159,7 @@ export default function AdvancedOptions(): ReactElement {
                 <input
                   type="text"
                   className={classNames({
-                    [styles.selected]:
+                    ["selected"]:
                       transactionDeadlineSelected === Deadlines.Custom,
                   })}
                   placeholder="20"
@@ -190,10 +190,10 @@ export default function AdvancedOptions(): ReactElement {
             </div>
           </div>
         </div>
-        <div className={styles.parameter}>
-          <div className={styles.inputGroup}>
-            <div className={styles.options}>
-              <div className={styles.label}>{t("gas")}:</div>
+        <div className={"parameter"}>
+          <div className={"inputGroup"}>
+            <div className={"options"}>
+              <div className={"label"}>{t("gas")}:</div>
               {[GasPrices.Standard, GasPrices.Fast, GasPrices.Instant].map(
                 (gasPriceConst) => {
                   let priceValue
@@ -213,7 +213,7 @@ export default function AdvancedOptions(): ReactElement {
                     <button
                       key={gasPriceConst}
                       className={classNames({
-                        [styles.selected]: gasPriceSelected === gasPriceConst,
+                        ["selected"]: gasPriceSelected === gasPriceConst,
                       })}
                       onClick={(): PayloadAction<GasPrices> =>
                         dispatch(updateGasPriceSelected(gasPriceConst))
@@ -230,7 +230,7 @@ export default function AdvancedOptions(): ReactElement {
               <input
                 type="text"
                 className={classNames({
-                  [styles.selected]: gasPriceSelected === GasPrices.Custom,
+                  ["selected"]: gasPriceSelected === GasPrices.Custom,
                 })}
                 value={gasCustom?.valueRaw}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
