@@ -13,6 +13,9 @@ div.radio {
     display: grid;
     grid-template-columns: min-content auto;
     grid-gap: 4px;
+    &.disabled {
+      cursor: not-allowed;
+    }
 
     .radio_control {
       display: block;
@@ -40,6 +43,9 @@ div.radio {
             var(--text-selected) 42%,
             rgba(0, 0, 0, 0) 42%
           );
+        }
+        &:disabled {
+          cursor: not-allowed;
         }
       }
     }

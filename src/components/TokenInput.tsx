@@ -1,9 +1,11 @@
 import { LPTOKEN_TO_POOL_MAP, TOKENS_MAP } from "../constants"
 import React, { ReactElement } from "react"
 import { calculatePrice, commify } from "../utils"
+
 import { AppState } from "../state/index"
 import { BigNumber } from "ethers"
 import { Zero } from "@ethersproject/constants"
+import classnames from "classnames"
 import { formatBNToString } from "../utils"
 import styles from "./TokenInput.module.scss"
 import usePoolData from "../hooks/usePoolData"
@@ -66,7 +68,12 @@ function TokenInput({
         </div>
       )}
 
-      <div className={styles.tokenInputContainer} id="tokenInput">
+      <div
+        className={classnames(styles.tokenInputContainer, {
+          [styles.disabled]: disabled,
+        })}
+        id="tokenInput"
+      >
         <img alt="icon" src={icon} />
         <div className={styles.tokenSymbolAndName}>
           <p className={styles.boldText}>{symbol}</p>
