@@ -69,8 +69,8 @@ export default function AdvancedOptions(): ReactElement {
       </span>
       <div className={"divider"}></div>
       <div
-        className={classNames("show", {
-          ["tableContainer"]: advanced,
+        className={classNames("tableContainer", {
+          ["show"]: advanced,
         })}
       >
         <div className={"parameter"}>

@@ -23,6 +23,12 @@ context("Advanced option test", () => {
     cy.wait(10000)
 
     cy.get(".advancedOptions>span").should("exist")
+    cy.get(".advancedOptions").then((advancedOptions) => {
+      if (advancedOptions.find(".tableContainer").length > 0) {
+        const isShow = advancedOptions.find(".tableContainer").hasClass("show")
+        cy.log("There is table container", isShow)
+      }
+    })
   }
   it("input slipage value", () => {
     pools.forEach(advancedOptionTest)
