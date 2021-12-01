@@ -70,6 +70,12 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
       )}
       <div className="info">
         <div className="infoItem">
+          <span className="label bold">{`${t("status")}:`}</span>
+          <span className="value">{`${
+            data?.isPaused ? t("paused") : t("active")
+          }`}</span>
+        </div>
+        <div className="infoItem">
           <span className="label bold">{`${t("fee")}:`}</span>
           <span className="value">{formattedData.swapFee}</span>
         </div>

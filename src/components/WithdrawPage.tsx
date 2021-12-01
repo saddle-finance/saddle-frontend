@@ -130,6 +130,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                         value: t.symbol,
                       })
                     }
+                    disabled={poolData?.isPaused}
                     label={t.name}
                   />
                 )
@@ -147,6 +148,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                       tokenSymbol: token.symbol,
                     })
                   }
+                  disabled={poolData?.isPaused}
                 />
                 {index === tokensData.length - 1 ? (
                   ""
