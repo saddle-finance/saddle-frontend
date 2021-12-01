@@ -55,9 +55,6 @@ export function useApproveAndMigrateUSD(): (
       const migrateTransaction = await migratorContract.migrateUSDPool(
         lpTokenBalance,
         lpTokenBalance.mul(1000 - 5).div(1000), // 50bps, 0.5%
-        {
-          gasPrice,
-        },
       )
 
       notifyHandler(migrateTransaction.hash, "migrate")

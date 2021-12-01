@@ -1,5 +1,6 @@
 import {
   ALETH_POOL_NAME,
+  ARB_USD_POOL_NAME,
   BTC_POOL_NAME,
   BTC_POOL_V2_NAME,
   D4_POOL_NAME,
@@ -42,6 +43,7 @@ function Pools(): ReactElement | null {
   const [tbtcPoolData, tbtcUserShareData] = usePoolData(TBTC_METAPOOL_NAME)
   const [veth2PoolData, veth2UserShareData] = usePoolData(VETH2_POOL_NAME)
   const [wcusdPoolData, wcusdUserShareData] = usePoolData(WCUSD_METAPOOL_NAME)
+  const [arbUsdPoolData, arbUsdUserShareData] = usePoolData(ARB_USD_POOL_NAME)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const approveAndMigrateUSD = useApproveAndMigrateUSD()
   const [activeMigration, setActiveMigration] = useState<PoolName | null>(null)
@@ -114,6 +116,13 @@ function Pools(): ReactElement | null {
         poolData: wcusdPoolData,
         userShareData: wcusdUserShareData,
         poolRoute: "/pools/wcusd",
+      }
+    } else if (poolName === ARB_USD_POOL_NAME) {
+      return {
+        name: ARB_USD_POOL_NAME,
+        poolData: arbUsdPoolData,
+        userShareData: arbUsdUserShareData,
+        poolRoute: "/pools/arbusd",
       }
     } else {
       return {

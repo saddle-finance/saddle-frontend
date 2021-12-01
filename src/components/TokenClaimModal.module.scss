@@ -1,0 +1,104 @@
+@import "../styles/theme";
+
+.container {
+  border-radius: 10px;
+  width: 100%;
+  background: var(--primary-background);
+}
+
+.mainContent {
+  padding: 32px 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.gradient {
+  height: 128px;
+  width: 100%;
+  background: var(--primary-background);
+  background: linear-gradient(
+    0deg,
+    var(--emphasis-2) 0%,
+    var(--emphasis-1) 40%,
+    var(--primary-background) 100%
+  );
+}
+
+.logo {
+  height: 170px;
+  width: 170px;
+  border-radius: 50%;
+  margin-top: -85px;
+  background: var(--primary-background);
+  background: linear-gradient(
+    0deg,
+    var(--emphasis-2) 0%,
+    var(--emphasis-1) 40%,
+    var(--primary-background) 100%
+  );
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  > img {
+    height: 85%;
+    width: 85%;
+    border-radius: 50%;
+    background: $white;
+  }
+}
+
+div.tokenBalance {
+  font-size: 48px;
+  font-family: $font-family;
+  color: var(--primary-foreground);
+  display: flex;
+  align-items: center;
+  img {
+    margin-left: 16px;
+    cursor: pointer;
+  }
+}
+div.tokenBalanceHelpText {
+  font-size: 12px;
+  font-family: $font-family;
+  color: var(--primary-foreground);
+  padding-bottom: 24px;
+}
+
+.claimsList {
+  padding-bottom: 24px;
+  width: 100%;
+  .listItem {
+    width: 100%;
+    padding: 16px 0;
+    display: flex;
+    align-items: center;
+    justify-items: flex-start;
+    & > * {
+      display: inline-block;
+      flex: 1 1 40%;
+    }
+
+    :last-child {
+      flex: 0 1 20%;
+    }
+  }
+}
+
+.info {
+  padding-bottom: 24px;
+  font-size: 12px;
+}
+
+.divider {
+  height: 1px;
+  width: 100%;
+  border-top: 1px solid var(--emphasis-2);
+}

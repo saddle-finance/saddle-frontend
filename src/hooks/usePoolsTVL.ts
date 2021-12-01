@@ -30,7 +30,9 @@ export default function usePoolTVLs(): { [poolName in PoolName]?: BigNumber } {
       if (!library || !chainId) return
       const ethcallProvider = await getMulticallProvider(library, chainId)
 
-      const pools = Object.values(POOLS_MAP)
+      const pools = Object.values(POOLS_MAP).filter(
+        ({ addresses }) => addresses[chainId],
+      )
       const supplyCalls = pools
         .map((p) => {
           return new Contract(
