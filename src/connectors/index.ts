@@ -26,11 +26,24 @@ export function getNetworkLibrary(): BaseProvider {
   return (networkLibrary = networkLibrary ?? provider)
 }
 
-export const injected = new InjectedConnector({
-  // mainnet, ropsten, rinkeby, goerli, kovan, local buidler
-  // see: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
-  supportedChainIds: [1, 3, 4, 5, 42, 42161, 31337],
-})
+function createInjectedMetaMaskProvider() {
+  return new InjectedConnector({
+    // mainnet, ropsten, rinkeby, goerli, kovan, local buidler
+    // see: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
+    supportedChainIds: [1, 3, 4, 5, 42, 42161, 31337],
+  })
+}
+
+function createInjectedTallyProvider() {
+  return new InjectedConnector({
+    // currently tally supports only mainnet
+    // see: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
+    supportedChainIds: [1],
+  })
+}
+
+export const injectedMetaMaskProvider = createInjectedMetaMaskProvider()
+export const injectedTallyProvider = createInjectedTallyProvider()
 
 export const walletconnect = new WalletConnectConnector({
   rpc: { [NETWORK_CHAIN_ID]: NETWORK_URL },
