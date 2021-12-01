@@ -13,7 +13,12 @@ export default function CheckboxInput({
 }: Props): ReactElement {
   return (
     <label className="checkboxInput">
-      <input type="checkbox" checked={checked} onChange={onChange} />
+      <input
+        type="checkbox"
+        name="checkbox"
+        checked={checked}
+        onChange={onChange}
+      />
       <div className="checkboxControl">
         <svg
           xmlns="http://www.w3.org/2000/svg"
