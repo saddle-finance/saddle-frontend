@@ -20,7 +20,7 @@ context("Advanced option test", () => {
       .within(() => {
         cy.get("button").contains("Withdraw").click()
       })
-    // cy.wait(10000)
+    cy.wait(10000)
 
     cy.get("[data-testid=advOptionContainer]").should("exist")
     cy.get("[data-testid=advTableContainer]").then(($table) => {
