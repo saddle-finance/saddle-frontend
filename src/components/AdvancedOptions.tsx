@@ -40,8 +40,9 @@ export default function AdvancedOptions(): ReactElement {
   )
 
   return (
-    <div className={styles.advancedOptions}>
+    <div data-testid="optionContainer" className={styles.advancedOptions}>
       <span
+        data-testid="title"
         className={styles.title}
         onClick={(): PayloadAction<boolean> =>
           dispatch(updatePoolAdvancedMode(!advanced))
@@ -68,12 +69,16 @@ export default function AdvancedOptions(): ReactElement {
       </span>
       <div className={styles.divider}></div>
       <div
+        dat-testid="tableContainer"
         className={classNames(styles.tableContainer, {
           [styles.show]: advanced,
         })}
       >
         <div className={styles.parameter}>
-          <div className={styles.infiniteApproval}>
+          <div
+            data-testid="infiniteApproval"
+            className={styles.infiniteApproval}
+          >
             <CheckboxInput
               checked={infiniteApproval}
               onChange={(): PayloadAction<boolean> =>
@@ -86,7 +91,7 @@ export default function AdvancedOptions(): ReactElement {
           </div>
         </div>
         <div className={styles.parameter}>
-          <div className={styles.inputGroup}>
+          <div data-testid="inputGroup" className={styles.inputGroup}>
             <div className={styles.options}>
               <div className={styles.label}>{t("maxSlippage")}: </div>
               <button
@@ -130,7 +135,7 @@ export default function AdvancedOptions(): ReactElement {
           </div>
         </div>
         <div className={styles.parameter}>
-          <div className={styles.inputGroup}>
+          <div data-testid="inputGroup" className={styles.inputGroup}>
             <div className={styles.options}>
               <div className={styles.label}>{t("deadline")}: </div>
               <button
@@ -191,7 +196,7 @@ export default function AdvancedOptions(): ReactElement {
           </div>
         </div>
         <div className={styles.parameter} style={{ display: "none" }}>
-          <div className={styles.inputGroup}>
+          <div data-testid="inputGroup" className={styles.inputGroup}>
             <div className={styles.options}>
               <div className={styles.label}>{t("gas")}:</div>
               {[GasPrices.Standard, GasPrices.Fast, GasPrices.Instant].map(

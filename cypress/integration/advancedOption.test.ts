@@ -23,22 +23,28 @@ context("Advanced option test", () => {
       })
     cy.wait(10000)
 
-    cy.get(".advancedOptions>span").should("exist")
-    cy.get(".advancedOptions").then((advancedOptions) => {
-      if (advancedOptions.find(".tableContainer").length > 0) {
-        const isShow = advancedOptions.find(".tableContainer").hasClass("show")
+    cy.get("[data-testid=optionContainer]").should("exist")
+    cy.get("[data-testid=optionContainer]").then((advancedOptions) => {
+      if (advancedOptions.find("[dat-testid=tableContainer]").length > 0) {
+        const isShow = advancedOptions
+          .find("[dat-testid=tableContainer]")
+          .hasClass("show")
         if (!isShow) {
-          cy.get(".title").click()
+          cy.get("[data-testid=title]").click()
         }
-        cy.get(".infiniteApproval")
-          .find('[name="checkbox"]')
+        cy.get("[data-testid=infiniteApproval]")
+          .find('[type="checkbox"]')
           .check({ force: true })
-        cy.get(".inputGroup").each(($inputGrop, index) => {
+        cy.get("[data-testid=inputGroup]").each(($inputGrop, index) => {
           cy.wrap($inputGrop)
-            .find(".options")
             .find("button")
             .each(($button) => {
-              cy.wrap($button).click().should("have.class", "selected")
+              cy.wrap($button)
+                .click()
+                .then(($afterClick) => {
+                  const buttonClass = $afterClick.attr("class")
+                  expect(buttonClass).to.match(/selected/)
+                })
             })
           cy.wrap($inputGrop)
             .find("input")
@@ -50,7 +56,7 @@ context("Advanced option test", () => {
       }
     })
   }
-  it("input slipage value", () => {
+  it("input slippage value", () => {
     pools.forEach(advancedOptionTest)
   })
 })
