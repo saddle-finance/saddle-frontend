@@ -40,9 +40,9 @@ export default function AdvancedOptions(): ReactElement {
   )
 
   return (
-    <div data-testid="optionContainer" className={styles.advancedOptions}>
+    <div data-testid="advOptionContainer" className={styles.advancedOptions}>
       <span
-        data-testid="title"
+        data-testid="advOptionTitle"
         className={styles.title}
         onClick={(): PayloadAction<boolean> =>
           dispatch(updatePoolAdvancedMode(!advanced))
@@ -69,14 +69,14 @@ export default function AdvancedOptions(): ReactElement {
       </span>
       <div className={styles.divider}></div>
       <div
-        dat-testid="tableContainer"
+        data-testid="advTableContainer"
         className={classNames(styles.tableContainer, {
           [styles.show]: advanced,
         })}
       >
         <div className={styles.parameter}>
           <div
-            data-testid="infiniteApproval"
+            data-testid="infiniteApprovalContainer"
             className={styles.infiniteApproval}
           >
             <CheckboxInput
@@ -91,7 +91,10 @@ export default function AdvancedOptions(): ReactElement {
           </div>
         </div>
         <div className={styles.parameter}>
-          <div data-testid="inputGroup" className={styles.inputGroup}>
+          <div
+            data-testid="maxSlippageInputGroup"
+            className={styles.inputGroup}
+          >
             <div className={styles.options}>
               <div className={styles.label}>{t("maxSlippage")}: </div>
               <button
@@ -135,7 +138,10 @@ export default function AdvancedOptions(): ReactElement {
           </div>
         </div>
         <div className={styles.parameter}>
-          <div data-testid="inputGroup" className={styles.inputGroup}>
+          <div
+            data-testid="txnDeadlineInputGroup"
+            className={styles.inputGroup}
+          >
             <div className={styles.options}>
               <div className={styles.label}>{t("deadline")}: </div>
               <button
@@ -196,7 +202,7 @@ export default function AdvancedOptions(): ReactElement {
           </div>
         </div>
         <div className={styles.parameter} style={{ display: "none" }}>
-          <div data-testid="inputGroup" className={styles.inputGroup}>
+          <div className={styles.inputGroup}>
             <div className={styles.options}>
               <div className={styles.label}>{t("gas")}:</div>
               {[GasPrices.Standard, GasPrices.Fast, GasPrices.Instant].map(
