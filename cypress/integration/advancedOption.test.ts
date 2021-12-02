@@ -26,30 +26,39 @@ context("Advanced option test", () => {
     cy.get("[data-testid=optionContainer]").should("exist")
     cy.get("[data-testid=optionContainer]").then((advancedOptions) => {
       if (advancedOptions.find("[dat-testid=tableContainer]").length > 0) {
-        const isShow = advancedOptions
-          .find("[dat-testid=tableContainer]")
-          .hasClass("show")
-        if (!isShow) {
-          cy.get("[data-testid=title]").click()
-        }
+        cy.get("[dat-testid=tableContainer]").then(($table) => {
+          const tableDisplay = $table.css("display")
+          const isTableVisible = tableDisplay !== "none"
+
+          if (!isTableVisible) {
+            cy.get("[data-testid=title]").click()
+          }
+        })
         cy.get("[data-testid=infiniteApproval]")
           .find('[type="checkbox"]')
           .check({ force: true })
+
         cy.get("[data-testid=inputGroup]").each(($inputGrop, index) => {
-          cy.wrap($inputGrop)
-            .find("button")
-            .each(($button) => {
-              cy.wrap($button)
-                .click()
-                .then(($afterClick) => {
-                  const buttonClass = $afterClick.attr("class")
-                  expect(buttonClass).to.match(/selected/)
-                })
-            })
-          cy.wrap($inputGrop)
-            .find("input")
-            .type(advancedOptionValues[index])
-            .should("have.value", advancedOptionValues[index])
+          const display = $inputGrop.parent().css("display")
+
+          if (display !== "none") {
+            cy.wrap($inputGrop)
+              .find("button")
+              .each(($button) => {
+                cy.wrap($button)
+                  .click()
+                  .then(($afterClick) => {
+                    const buttonClass = $afterClick.attr("class")
+                    expect(buttonClass).to.match(/selected/)
+                  })
+              })
+            cy.wrap($inputGrop)
+              .find("input")
+              .type(advancedOptionValues[index])
+              .should("have.value", advancedOptionValues[index])
+          } else {
+            cy.log("input group is invisibel")
+          }
         })
       } else {
         cy.log("There is no table container")
