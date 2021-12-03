@@ -133,7 +133,7 @@ function IconButtonAndSettings(): ReactElement {
   return (
     <div style={{ position: "relative" }} ref={wrapperRef}>
       <Button
-        data-testid="settingMenuBtn"
+        data-testid="settingsMenuBtn"
         kind="ternary"
         size="medium"
         onClick={() => setIsDropdownOpen((state) => !state)}

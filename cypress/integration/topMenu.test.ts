@@ -1,11 +1,12 @@
-context("Tob menu test", () => {
+context("Top menu test", () => {
   beforeEach(() => {
     const host = Cypress.env("DAPP_HOST") as string
 
     cy.visit(`${host}#/pools`)
     cy.wait(3000)
   })
-  it("render top menu ", () => {
+
+  it("render top menu", () => {
     cy.get("[data-testid=topMenuContainer]").should("be.visible")
   })
 
@@ -22,9 +23,10 @@ context("Tob menu test", () => {
       .click()
       .should("not.exist")
   })
+
   it("side menu test", () => {
-    cy.get("[data-testid=settingMenuBtn]").click()
-    cy.get("[data-testid=settingMenuContainer]").should("be.visible")
+    cy.get("[data-testid=settingsMenuBtn]").click()
+    cy.get("[data-testid=settingsMenuContainer]").should("be.visible")
     cy.get("[data-testid=networkMenu]")
       .contains("∨")
       .click()

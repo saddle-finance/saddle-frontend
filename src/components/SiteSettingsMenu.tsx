@@ -90,7 +90,7 @@ function NetworkSection(): ReactElement {
   ]
 
   return (
-    <div data-testid="settingMenuContainer" className={styles.section}>
+    <div data-testid="settingsMenuContainer" className={styles.section}>
       <div
         data-testid="networkMenu"
         className={styles.sectionTitle}
@@ -171,7 +171,7 @@ function ThemeSection(): ReactElement {
   return (
     <div className={styles.section}>
       <div
-        data-testid="themeMenu"
+        data-testid="themeMenuOption"
         className={styles.sectionTitle}
         onClick={toggleTheme}
       >
