@@ -32,7 +32,9 @@ export default function fetchTokenPricesUSD(
   chainId?: ChainId,
   library?: Web3Provider,
 ): void {
-  const tokens = Object.values(TOKENS_MAP)
+  const tokens = Object.values(TOKENS_MAP).filter(({ addresses }) =>
+    chainId ? addresses[chainId] : false,
+  )
   const tokenIds = Array.from(
     new Set(
       tokens.map(({ geckoId }) => geckoId).concat(Object.values(otherTokens)),
@@ -59,6 +61,7 @@ export default function fetchTokenPricesUSD(
             return { ...acc, [token.symbol]: body?.[token.geckoId]?.usd }
           }, otherTokensResult)
           result.alETH = result?.ETH || result.alETH || 0 // TODO: remove once CG price is fixed
+          result.nUSD = 1
           if (chainId === ChainId.MAINNET) {
             const vEth2Price = await getVeth2Price(
               result?.ETH,

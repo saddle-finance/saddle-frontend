@@ -1,5 +1,6 @@
 import {
   ALETH_POOL_NAME,
+  ARB_USD_POOL_NAME,
   BTC_POOL_NAME,
   BTC_POOL_V2_NAME,
   D4_POOL_NAME,
@@ -8,10 +9,10 @@ import {
   PoolTypes,
   STABLECOIN_POOL_NAME,
   STABLECOIN_POOL_V2_NAME,
-  SUSD_POOL_NAME,
-  TBTC_POOL_NAME,
+  SUSD_METAPOOL_NAME,
+  TBTC_METAPOOL_NAME,
   VETH2_POOL_NAME,
-  WCUSD_POOL_NAME,
+  WCUSD_METAPOOL_NAME,
 } from "../constants"
 import React, { ReactElement, useState } from "react"
 
@@ -24,10 +25,12 @@ import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
 import { logEvent } from "../utils/googleAnalytics"
 import styles from "./Pools.module.scss"
+import { useActiveWeb3React } from "../hooks"
 import { useApproveAndMigrateUSD } from "../hooks/useApproveAndMigrateUSD"
 import usePoolData from "../hooks/usePoolData"
 
 function Pools(): ReactElement | null {
+  const { chainId } = useActiveWeb3React()
   const [d4PoolData, d4UserShareData] = usePoolData(D4_POOL_NAME)
   const [alethPoolData, alethUserShareData] = usePoolData(ALETH_POOL_NAME)
   const [btcPoolData, btcUserShareData] = usePoolData(BTC_POOL_NAME)
@@ -36,10 +39,11 @@ function Pools(): ReactElement | null {
     STABLECOIN_POOL_V2_NAME,
   )
   const [usdPoolData, usdUserShareData] = usePoolData(STABLECOIN_POOL_NAME)
-  const [susdPoolData, susdUserShareData] = usePoolData(SUSD_POOL_NAME)
-  const [tbtcPoolData, tbtcUserShareData] = usePoolData(TBTC_POOL_NAME)
+  const [susdPoolData, susdUserShareData] = usePoolData(SUSD_METAPOOL_NAME)
+  const [tbtcPoolData, tbtcUserShareData] = usePoolData(TBTC_METAPOOL_NAME)
   const [veth2PoolData, veth2UserShareData] = usePoolData(VETH2_POOL_NAME)
-  const [wcusdPoolData, wcusdUserShareData] = usePoolData(WCUSD_POOL_NAME)
+  const [wcusdPoolData, wcusdUserShareData] = usePoolData(WCUSD_METAPOOL_NAME)
+  const [arbUsdPoolData, arbUsdUserShareData] = usePoolData(ARB_USD_POOL_NAME)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const approveAndMigrateUSD = useApproveAndMigrateUSD()
   const [activeMigration, setActiveMigration] = useState<PoolName | null>(null)
@@ -92,26 +96,33 @@ function Pools(): ReactElement | null {
         userShareData: usdV2UserShareData,
         poolRoute: "/pools/usdv2",
       }
-    } else if (poolName === SUSD_POOL_NAME) {
+    } else if (poolName === SUSD_METAPOOL_NAME) {
       return {
-        name: SUSD_POOL_NAME,
+        name: SUSD_METAPOOL_NAME,
         poolData: susdPoolData,
         userShareData: susdUserShareData,
         poolRoute: "/pools/susd",
       }
-    } else if (poolName === TBTC_POOL_NAME) {
+    } else if (poolName === TBTC_METAPOOL_NAME) {
       return {
-        name: TBTC_POOL_NAME,
+        name: TBTC_METAPOOL_NAME,
         poolData: tbtcPoolData,
         userShareData: tbtcUserShareData,
         poolRoute: "/pools/tbtc",
       }
-    } else if (poolName === WCUSD_POOL_NAME) {
+    } else if (poolName === WCUSD_METAPOOL_NAME) {
       return {
-        name: WCUSD_POOL_NAME,
+        name: WCUSD_METAPOOL_NAME,
         poolData: wcusdPoolData,
         userShareData: wcusdUserShareData,
         poolRoute: "/pools/wcusd",
+      }
+    } else if (poolName === ARB_USD_POOL_NAME) {
+      return {
+        name: ARB_USD_POOL_NAME,
+        poolData: arbUsdPoolData,
+        userShareData: arbUsdUserShareData,
+        poolRoute: "/pools/arbusd",
       }
     } else {
       return {
@@ -153,6 +164,7 @@ function Pools(): ReactElement | null {
               type === filter ||
               (filter === "outdated" && (migration || isOutdated)),
           )
+          .filter(({ addresses }) => (chainId ? addresses[chainId] : false))
           .map(
             ({ name, migration, isOutdated }) =>
               [getPropsForPool(name), migration, isOutdated] as const,

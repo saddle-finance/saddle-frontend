@@ -4,24 +4,24 @@ import {
   ChainId,
   D4_POOL_NAME,
   PoolName,
-  TBTC_POOL_NAME,
+  TBTC_METAPOOL_NAME,
   VETH2_POOL_NAME,
 } from "../constants"
 import { AddressZero, Zero } from "@ethersproject/constants"
-import { Contract, Provider } from "ethcall"
-import { MulticallContract, MulticallProvider } from "../types/ethcall"
+import { getMulticallProvider, shiftBNDecimals } from "../utils"
 
 import ALCX_REWARDS_ABI from "../constants/abis/alchemixStakingPools.json"
 import { AlchemixStakingPools } from "../../types/ethers-contracts/AlchemixStakingPools"
 import { BigNumber } from "@ethersproject/bignumber"
+import { Contract } from "ethcall"
 import KEEP_REWARDS_ABI from "../constants/abis/keepRewards.json"
 import { KeepRewards } from "../../types/ethers-contracts/KeepRewards"
+import { MulticallContract } from "../types/ethcall"
 import SGT_REWARDS_ABI from "../constants/abis/sharedStakeStakingRewards.json"
 import { SharedStakeStakingRewards } from "../../types/ethers-contracts/SharedStakeStakingRewards"
 import { TokenPricesUSD } from "../state/application"
 import { Web3Provider } from "@ethersproject/providers"
 import { parseUnits } from "@ethersproject/units"
-import { shiftBNDecimals } from "../utils"
 
 export type Partners = "keep" | "sharedStake" | "alchemix" | "frax"
 
@@ -49,51 +49,55 @@ export async function getThirdPartyDataForPool(
     aprs: {},
     amountsStaked: {},
   }
-  if (poolName === ALETH_POOL_NAME) {
-    const rewardSymbol = "ALCX"
-    const [apr, userStakedAmount] = await getAlEthData(
-      library,
-      chainId,
-      lpTokenPriceUSD,
-      tokenPricesUSD?.[rewardSymbol],
-      accountId,
-    )
-    result.aprs.alchemix = { apr, symbol: rewardSymbol }
-    result.amountsStaked.alchemix = userStakedAmount
-  } else if (poolName === VETH2_POOL_NAME) {
-    const rewardSymbol = "SGT"
-    const [apr, userStakedAmount] = await getSharedStakeData(
-      library,
-      chainId,
-      lpTokenPriceUSD,
-      tokenPricesUSD?.[rewardSymbol],
-      accountId,
-    )
-    result.aprs.sharedStake = { apr, symbol: rewardSymbol }
-    result.amountsStaked.sharedStake = userStakedAmount
-  } else if (poolName === TBTC_POOL_NAME) {
-    const rewardSymbol = "KEEP"
-    const [apr, userStakedAmount] = await getKeepData(
-      library,
-      chainId,
-      lpTokenPriceUSD,
-      TBTC_POOL_NAME,
-      tokenPricesUSD?.[rewardSymbol],
-      accountId,
-    )
-    result.aprs.keep = { apr, symbol: rewardSymbol }
-    result.amountsStaked.keep = userStakedAmount
-  } else if (poolName === D4_POOL_NAME) {
-    // this is a slight bastardization of how this is supposed to work
-    // TODO: update once we have UI for multiple APYS
-    const rewardSymbol = "ALCX/FXS/LQTY/TRIBE"
-    const [apr, userStakedAmount] = await getFraxData(
-      library,
-      chainId,
-      lpTokenPriceUSD,
-    )
-    result.aprs.frax = { apr, symbol: rewardSymbol }
-    result.amountsStaked.frax = userStakedAmount
+  try {
+    if (poolName === ALETH_POOL_NAME) {
+      const rewardSymbol = "ALCX"
+      const [apr, userStakedAmount] = await getAlEthData(
+        library,
+        chainId,
+        lpTokenPriceUSD,
+        tokenPricesUSD?.[rewardSymbol],
+        accountId,
+      )
+      result.aprs.alchemix = { apr, symbol: rewardSymbol }
+      result.amountsStaked.alchemix = userStakedAmount
+    } else if (poolName === VETH2_POOL_NAME) {
+      const rewardSymbol = "SGT"
+      const [apr, userStakedAmount] = await getSharedStakeData(
+        library,
+        chainId,
+        lpTokenPriceUSD,
+        tokenPricesUSD?.[rewardSymbol],
+        accountId,
+      )
+      result.aprs.sharedStake = { apr, symbol: rewardSymbol }
+      result.amountsStaked.sharedStake = userStakedAmount
+    } else if (poolName === TBTC_METAPOOL_NAME) {
+      const rewardSymbol = "KEEP"
+      const [apr, userStakedAmount] = await getKeepData(
+        library,
+        chainId,
+        lpTokenPriceUSD,
+        TBTC_METAPOOL_NAME,
+        tokenPricesUSD?.[rewardSymbol],
+        accountId,
+      )
+      result.aprs.keep = { apr, symbol: rewardSymbol }
+      result.amountsStaked.keep = userStakedAmount
+    } else if (poolName === D4_POOL_NAME) {
+      // this is a slight bastardization of how this is supposed to work
+      // TODO: update once we have UI for multiple APYS
+      const rewardSymbol = "ALCX/FXS/LQTY/TRIBE"
+      const [apr, userStakedAmount] = await getFraxData(
+        library,
+        chainId,
+        lpTokenPriceUSD,
+      )
+      result.aprs.frax = { apr, symbol: rewardSymbol }
+      result.amountsStaked.frax = userStakedAmount
+    }
+  } catch (e) {
+    console.error(e)
   }
   return result
 }
@@ -118,7 +122,7 @@ async function getFraxData(
   return [apy, Zero]
 }
 
-type KeepPoolName = typeof BTC_POOL_NAME | typeof TBTC_POOL_NAME
+type KeepPoolName = typeof BTC_POOL_NAME | typeof TBTC_METAPOOL_NAME
 
 // LPRewardsTBTCSaddle and LPRewardsTBTCv2Saddle have the same interface
 // https://github.com/keep-network/keep-ecdsa/blob/main/solidity/contracts/LPRewards.sol#L267
@@ -145,8 +149,7 @@ async function getKeepData(
       ? "0x78aa83bd6c9de5de0a2231366900ab060a482edd" // v1 prod address
       : "0x6aD9E8e5236C0E2cF6D755Bb7BE4eABCbC03f76d" // v2 prod address
 
-  const ethcallProvider = new Provider() as MulticallProvider
-  await ethcallProvider.init(library)
+  const ethcallProvider = await getMulticallProvider(library, chainId)
   const rewardsContract = new Contract(
     rewardsContractAddress,
     KEEP_REWARDS_ABI,
@@ -188,8 +191,7 @@ async function getSharedStakeData(
     chainId !== ChainId.MAINNET
   )
     return [Zero, Zero]
-  const ethcallProvider = new Provider() as MulticallProvider
-  await ethcallProvider.init(library)
+  const ethcallProvider = await getMulticallProvider(library, chainId)
   const rewardsContract = new Contract(
     "0xcf91812631e37c01c443a4fa02dfb59ee2ddba7c", // prod address
     SGT_REWARDS_ABI,
@@ -254,8 +256,7 @@ async function getAlEthData(
     chainId !== ChainId.MAINNET
   )
     return [Zero, Zero]
-  const ethcallProvider = new Provider() as MulticallProvider
-  await ethcallProvider.init(library)
+  const ethcallProvider = await getMulticallProvider(library, chainId)
   const rewardsContract = new Contract(
     "0xAB8e74017a8Cc7c15FFcCd726603790d26d7DeCa", // prod address
     ALCX_REWARDS_ABI,

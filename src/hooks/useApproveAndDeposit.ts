@@ -103,7 +103,10 @@ export function useApproveAndDeposit(
       } else {
         gasPriceUnsafe = gasStandard
       }
-      const gasPrice = parseUnits(String(gasPriceUnsafe) || "45", 9)
+      const gasPrice = parseUnits(
+        gasPriceUnsafe ? String(gasPriceUnsafe) : "45",
+        9,
+      )
       const approveSingleToken = async (token: Token): Promise<void> => {
         const spendingValue = BigNumber.from(state[token.symbol].valueSafe)
         if (spendingValue.isZero()) return
@@ -170,9 +173,6 @@ export function useApproveAndDeposit(
           minToMint,
           txnDeadline,
           [],
-          {
-            gasPrice,
-          },
         )
       } else {
         const swapFlashLoanContract = effectiveSwapContract as SwapFlashLoan
@@ -180,9 +180,6 @@ export function useApproveAndDeposit(
           txnAmounts,
           minToMint,
           txnDeadline,
-          {
-            gasPrice,
-          },
         )
       }
 

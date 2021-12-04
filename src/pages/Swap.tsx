@@ -120,8 +120,13 @@ function Swap(): ReactElement {
   )
   // build a representation of pool tokens for the UI
   const tokenOptions = useMemo(() => {
+    if (!chainId)
+      return {
+        from: [],
+        to: [],
+      }
     const allTokens = Object.values(TOKENS_MAP)
-      .filter(({ isLPToken }) => !isLPToken)
+      .filter(({ isLPToken, addresses }) => !isLPToken && addresses[chainId])
       .map(({ symbol, name, icon, decimals }) => {
         const amount = tokenBalances?.[symbol] || Zero
         return {
@@ -166,7 +171,7 @@ function Swap(): ReactElement {
       from: allTokens,
       to: toTokens,
     }
-  }, [tokenPricesUSD, tokenBalances, formState.currentSwapPairs])
+  }, [tokenPricesUSD, tokenBalances, formState.currentSwapPairs, chainId])
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const calculateSwapAmount = useCallback(
     debounce(async (formStateArg: FormState) => {

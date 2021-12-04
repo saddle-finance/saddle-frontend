@@ -13,8 +13,8 @@ import { notifyHandler } from "../utils/notifyHandler"
  * Approves them to spend if they're not already allowed.
  * Won't make requests if spendingValue eq 0
  * @param {Contract} srcTokenContract
- * @param {string} swapAddress
  * @param {string} spenderAddress
+ * @param {string} ownerAddress
  * @param {BigNumber} spendingValue
  * @param {boolean} infiniteApproval
  * @param {{}} callbacks
@@ -22,11 +22,12 @@ import { notifyHandler } from "../utils/notifyHandler"
  */
 export default async function checkAndApproveTokenForTrade(
   srcTokenContract: Erc20 | LpTokenGuarded | LpTokenUnguarded,
-  swapAddress: string,
   spenderAddress: string,
+  ownerAddress: string,
   spendingValue: BigNumber, // max is MaxUint256
   infiniteApproval = false,
-  gasPrice: BigNumber,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  gasPrice: BigNumber, // @dev unused
   callbacks: {
     onTransactionStart?: (
       transaction?: ContractTransaction,
@@ -39,8 +40,8 @@ export default async function checkAndApproveTokenForTrade(
   if (spendingValue.eq(0)) return
   const tokenName = await srcTokenContract.name()
   const existingAllowance = await srcTokenContract.allowance(
+    ownerAddress,
     spenderAddress,
-    swapAddress,
   )
 
   console.debug(
@@ -51,11 +52,8 @@ export default async function checkAndApproveTokenForTrade(
     try {
       const cleanupOnStart = callbacks.onTransactionStart?.()
       const approvalTransaction = await srcTokenContract.approve(
-        swapAddress,
+        spenderAddress,
         amount,
-        {
-          gasPrice,
-        },
       )
       // Add notification
       notifyHandler(approvalTransaction.hash, "tokenApproval")

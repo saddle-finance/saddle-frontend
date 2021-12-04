@@ -14,11 +14,9 @@ header.top {
     padding-right: 70px;
   }
 
-  h1 {
-    width: 20%;
-    margin: 0;
-    margin-right: auto;
-
+  .logoWrapper {
+    flex-grow: 1;
+    flex-basis: 30%;
     .logo {
       background-color: #ffffe9;
       border-radius: 52px;
@@ -33,11 +31,20 @@ header.top {
     }
   }
 
+  .sdlToken {
+    height: 20px;
+    width: 20px;
+    background-color: $white;
+    border-radius: 50%;
+    margin-left: 8px;
+  }
+
   ul.nav {
     font-family: $font-family;
     list-style-type: none;
     padding: 0;
     margin: 0;
+    flex: 1;
 
     & > li {
       display: inline;
@@ -85,9 +92,6 @@ header.top {
     }
   }
   .walletStatus {
-    margin-left: auto;
-    width: 20%;
-
     .connection {
       // padding: 8px;
       // border: 1px solid;
@@ -99,5 +103,30 @@ header.top {
     img.logo {
       height: 1.5em;
     }
+  }
+  .walletWrapper {
+    flex: 1;
+    flex-basis: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    > * {
+      margin-left: 8px;
+    }
+  }
+}
+
+.siteSettingsWrapper {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  z-index: 2;
+  box-shadow: var(--shadow);
+  width: 176px;
+}
+
+svg.hamburger {
+  circle {
+    fill: var(--primary-foreground);
   }
 }
