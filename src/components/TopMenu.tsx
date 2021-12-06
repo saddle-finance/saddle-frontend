@@ -39,7 +39,11 @@ function TopMenu({ activeTab }: Props): ReactElement {
 
       <ul className="nav">
         <li>
-          <Link to="/" className={classNames({ active: activeTab === "swap" })}>
+          <Link
+            data-testid="swapNavLink"
+            to="/"
+            className={classNames({ active: activeTab === "swap" })}
+          >
             {t("swap")}
           </Link>
         </li>

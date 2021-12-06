@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next"
 
 export default function SiteSettingsMenu(): ReactElement {
   return (
-    <div data-testid="settingMenuContainer" className={styles.container}>
+    <div data-testid="settingsMenuContainer" className={styles.container}>
       {IS_L2_SUPPORTED && <NetworkSection key="network" />}
       {IS_L2_SUPPORTED && <Divider />}
       <LanguageSection key="language" />
@@ -90,9 +90,9 @@ function NetworkSection(): ReactElement {
   ]
 
   return (
-    <div data-testid="settingsMenuContainer" className={styles.section}>
+    <div data-testid="networkMenuContainer" className={styles.section}>
       <div
-        data-testid="networkMenu"
+        data-testid="networkMenuTitle"
         className={styles.sectionTitle}
         onClick={() => setIsNetworkVisible((state) => !state)}
       >
