@@ -94,7 +94,7 @@ export default function TokenClaimModal(): ReactElement {
         <div className={styles.tokenBalanceHelpText}>
           {t("totalClaimableSDL")}
         </div>
-        <ul className={styles.claimsList}>
+        <ul data-testid="claimsListContainer" className={styles.claimsList}>
           {rewardBalances.retroactive && (
             <>
               <ClaimListItem

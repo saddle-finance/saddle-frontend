@@ -18,6 +18,7 @@ context("Top menu test", () => {
       .should("exist")
       .find("[data-testid=tokenAddBtn]")
       .click()
+    cy.get("[data-testid=claimsListContainer]").find("Button").first().click()
     cy.get("[data-testid=modalContainer]")
       .should("be.visible")
       .find("[data-testid=modalCloseBtn]")
