@@ -40,8 +40,9 @@ export default function AdvancedOptions(): ReactElement {
   )
 
   return (
-    <div className={styles.advancedOptions}>
+    <div data-testid="advOptionContainer" className={styles.advancedOptions}>
       <span
+        data-testid="advOptionTitle"
         className={styles.title}
         onClick={(): PayloadAction<boolean> =>
           dispatch(updatePoolAdvancedMode(!advanced))
@@ -68,12 +69,16 @@ export default function AdvancedOptions(): ReactElement {
       </span>
       <div className={styles.divider}></div>
       <div
+        data-testid="advTableContainer"
         className={classNames(styles.tableContainer, {
           [styles.show]: advanced,
         })}
       >
         <div className={styles.parameter}>
-          <div className={styles.infiniteApproval}>
+          <div
+            data-testid="infiniteApprovalContainer"
+            className={styles.infiniteApproval}
+          >
             <CheckboxInput
               checked={infiniteApproval}
               onChange={(): PayloadAction<boolean> =>
@@ -86,7 +91,10 @@ export default function AdvancedOptions(): ReactElement {
           </div>
         </div>
         <div className={styles.parameter}>
-          <div className={styles.inputGroup}>
+          <div
+            data-testid="maxSlippageInputGroup"
+            className={styles.inputGroup}
+          >
             <div className={styles.options}>
               <div className={styles.label}>{t("maxSlippage")}: </div>
               <button
@@ -130,7 +138,10 @@ export default function AdvancedOptions(): ReactElement {
           </div>
         </div>
         <div className={styles.parameter}>
-          <div className={styles.inputGroup}>
+          <div
+            data-testid="txnDeadlineInputGroup"
+            className={styles.inputGroup}
+          >
             <div className={styles.options}>
               <div className={styles.label}>{t("deadline")}: </div>
               <button
