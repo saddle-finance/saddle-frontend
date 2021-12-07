@@ -1,0 +1,10 @@
+@import "../../styles/theme.scss";
+@import "../../styles/viewports";
+
+.modalTitle {
+  display: flex;
+  align-items: center;
+  color: var(--text-title);
+  font-size: 30px;
+  font-style: $normal;
+}

@@ -6,6 +6,7 @@ import { Web3ReactProvider, createWeb3ReactRoot } from "@web3-react/core"
 import { logError, sendWebVitalsToGA } from "./utils/googleAnalytics"
 
 import App from "./pages/App"
+import ModalsProvider from "./providers/ModalsProvider"
 import { NetworkContextName } from "./constants"
 import { Provider } from "react-redux"
 import React from "react"
@@ -33,9 +34,11 @@ ReactDOM.render(
         <Web3ReactProvider getLibrary={getLibrary}>
           <Web3ProviderNetwork getLibrary={getNetworkLibrary}>
             <Provider store={store}>
-              <Router>
-                <App />
-              </Router>
+              <ModalsProvider>
+                <Router>
+                  <App />
+                </Router>
+              </ModalsProvider>
             </Provider>
           </Web3ProviderNetwork>
         </Web3ReactProvider>

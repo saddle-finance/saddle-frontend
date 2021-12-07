@@ -1,0 +1,11 @@
+@import "../../styles/theme.scss";
+@import "../../styles/viewports";
+
+.modalContent {
+  color: var(--text);
+  background: var(--background);
+  @include breakpoint(md) {
+    flex: 1;
+    overflow: auto;
+  }
+}

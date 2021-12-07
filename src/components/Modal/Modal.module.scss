@@ -1,0 +1,38 @@
+@import "../../styles/viewports";
+
+.responsiveWrapper {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+  width: 100%;
+  max-width: 512px;
+
+  color: var(--text);
+  padding: 20px;
+  background: var(--background);
+  border-radius: 8px;
+  border: 1px solid var(--outline);
+  @include breakpoint(md) {
+    flex: 1;
+    position: absolute;
+    @keyframes size {
+      0% {
+        transform: translateY(0%);
+      }
+      100% {
+        transform: translateY(-100%);
+      }
+    }
+  }
+  .modal {
+    padding: 0 20px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 100%;
+    min-height: 0;
+  }
+}
