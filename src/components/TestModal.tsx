@@ -1,10 +1,10 @@
+import Modal, { ModalProps } from "./Modal/Modal"
 import React, { ReactElement } from "react"
 import { Button } from "@chakra-ui/react"
-import Modal from "./Modal/Modal"
 import ModalContent from "./Modal/ModalContent"
 import ModalTitle from "./Modal/ModalTitle"
 
-export default function TestModal(): ReactElement {
+export default function TestModal({ onClose }: ModalProps): ReactElement {
   return (
     <Modal>
       <ModalTitle title="Modal title" />
@@ -13,7 +13,7 @@ export default function TestModal(): ReactElement {
         faster and easier web development. It follows Material Design from
         Google.
       </ModalContent>
-      <Button>confirm</Button>
+      <Button onClick={onClose}>confirm</Button>
     </Modal>
   )
 }

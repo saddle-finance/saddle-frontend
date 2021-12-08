@@ -1,0 +1,12 @@
+@import "../../styles/theme.scss";
+@import "../../styles/viewports";
+
+.modalActions {
+  align-items: center;
+  background-color: var(--background);
+  display: flex;
+  margin: 0;
+  .modalAction {
+    flex: 1;
+  }
+}

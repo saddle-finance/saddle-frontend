@@ -10,12 +10,12 @@ interface ModalsContext {
   content?: React.ReactNode
   isOpen?: boolean
   onPresent: (content: React.ReactNode, key?: string) => void
-  onDismiss: () => void
+  onClose: () => void
 }
 
 export const Context = createContext<ModalsContext>({
   onPresent: () => undefined,
-  onDismiss: () => undefined,
+  onClose: () => undefined,
 })
 
 const ModalsProvider: React.FC = ({ children }: PropsWithChildren<unknown>) => {
@@ -32,7 +32,7 @@ const ModalsProvider: React.FC = ({ children }: PropsWithChildren<unknown>) => {
     [setContent, setIsOpen, setModalKey],
   )
 
-  const handleDismiss = useCallback(() => {
+  const handleClose = useCallback(() => {
     setContent(undefined)
     setIsOpen(false)
   }, [setContent, setIsOpen])
@@ -43,16 +43,16 @@ const ModalsProvider: React.FC = ({ children }: PropsWithChildren<unknown>) => {
         content,
         isOpen,
         onPresent: handlePresent,
-        onDismiss: handleDismiss,
+        onClose: handleClose,
       }}
     >
       {children}
       {isOpen && (
         <div className={styles.modalWrapper}>
-          <div className={styles.modalBackdrop} onClick={handleDismiss} />
+          <div className={styles.modalBackdrop} onClick={handleClose} />
           {React.isValidElement(content) &&
             React.cloneElement(content, {
-              onDismiss: handleDismiss,
+              onClose: handleClose,
             })}
         </div>
       )}
@@ -60,5 +60,4 @@ const ModalsProvider: React.FC = ({ children }: PropsWithChildren<unknown>) => {
   )
 }
 
-// export const useModal = (): ModalsContext => useContext(Context)
 export default ModalsProvider
