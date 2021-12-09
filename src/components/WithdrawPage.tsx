@@ -1,17 +1,18 @@
 import "./WithdrawPage.scss"
 
 import { Button, Center } from "@chakra-ui/react"
+import Modal, { ModalProps } from "../components/Modal/Modal"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
-import React, { ReactElement, useState } from "react"
+import React, { ReactElement } from "react"
 
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
-import Modal from "./Modal"
 import MyFarm from "./MyFarm"
 import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
+import { PoolName } from "../constants"
 import RadioButton from "./RadioButton"
 import ReviewWithdraw from "./ReviewWithdraw"
 import TokenInput from "./TokenInput"
@@ -21,8 +22,10 @@ import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
 import { formatBNToPercentString } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
+import useModal from "../hooks/useModal"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
+import useWithdrawFormState from "../hooks/useWithdrawFormState"
 
 export interface ReviewWithdrawData {
   withdraw: {
@@ -45,7 +48,7 @@ export interface ReviewWithdrawData {
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
-  title: string
+  title: PoolName
   tokensData: Array<{
     symbol: string
     name: string
@@ -65,6 +68,7 @@ interface Props {
 const WithdrawPage = (props: Props): ReactElement => {
   const { t } = useTranslation()
   const {
+    title,
     tokensData,
     poolData,
     myShareData,
@@ -74,13 +78,23 @@ const WithdrawPage = (props: Props): ReactElement => {
     onConfirmTransaction,
   } = props
 
-  const { gasPriceSelected } = useSelector((state: AppState) => state.user)
-  const [currentModal, setCurrentModal] = useState<string | null>(null)
-
-  const onSubmit = (): void => {
-    setCurrentModal("review")
-  }
   const noShare = !myShareData || myShareData.lpTokenBalance.eq(Zero)
+  const [withdrawFormState, updateWithdrawFormState] = useWithdrawFormState(
+    title,
+  )
+
+  const [openConfirmModal, confirmClose] = useModal(<ConfirmTransaction />)
+  const onConfirm = async (): Promise<void> => {
+    openConfirmModal()
+    logEvent("withdraw", (poolData && { pool: poolData?.name }) || {})
+    await onConfirmTransaction?.()
+    confirmClose()
+  }
+  console.log("withdraw form state ==>", withdrawFormState)
+
+  const [openModal] = useModal(
+    <ReviewModal reviewData={reviewData} onConfirm={onConfirm} />,
+  )
 
   return (
     <div className={"withdraw " + classNames({ noShare: noShare })}>
@@ -94,7 +108,7 @@ const WithdrawPage = (props: Props): ReactElement => {
               <input
                 placeholder="100"
                 onChange={(e: React.FormEvent<HTMLInputElement>): void =>
-                  onFormChange({
+                  updateWithdrawFormState({
                     fieldName: "percentage",
                     value: e.currentTarget.value,
                   })
@@ -188,7 +202,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                 !!formStateData.error ||
                 formStateData.lpTokenAmountToSpend.isZero()
               }
-              onClick={onSubmit}
+              onClick={openModal}
             >
               {t("withdraw")}
             </Button>
@@ -213,32 +227,31 @@ const WithdrawPage = (props: Props): ReactElement => {
             <PoolInfoCard data={poolData} />
           </div>
         </div>
-
-        <Modal
-          isOpen={!!currentModal}
-          onClose={(): void => setCurrentModal(null)}
-        >
-          {currentModal === "review" ? (
-            <ReviewWithdraw
-              data={reviewData}
-              gas={gasPriceSelected}
-              onConfirm={async (): Promise<void> => {
-                setCurrentModal("confirm")
-                logEvent(
-                  "withdraw",
-                  (poolData && { pool: poolData?.name }) || {},
-                )
-                await onConfirmTransaction?.()
-                setCurrentModal(null)
-              }}
-              onClose={(): void => setCurrentModal(null)}
-            />
-          ) : null}
-          {currentModal === "confirm" ? <ConfirmTransaction /> : null}
-        </Modal>
       </div>
     </div>
   )
 }
 
 export default WithdrawPage
+
+interface ReviewModalProps {
+  reviewData: ReviewWithdrawData
+  onConfirm: () => Promise<void>
+}
+const ReviewModal = ({
+  onConfirm,
+  reviewData,
+  onClose,
+}: ReviewModalProps & ModalProps) => {
+  const { gasPriceSelected } = useSelector((state: AppState) => state.user)
+  return (
+    <Modal>
+      <ReviewWithdraw
+        data={reviewData}
+        gas={gasPriceSelected}
+        onConfirm={onConfirm}
+        onClose={onClose}
+      />
+    </Modal>
+  )
+}

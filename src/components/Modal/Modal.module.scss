@@ -10,7 +10,6 @@
   max-width: 512px;
 
   color: var(--text);
-  padding: 20px;
   background: var(--background);
   border-radius: 8px;
   border: 1px solid var(--outline);
@@ -27,7 +26,6 @@
     }
   }
   .modal {
-    padding: 0 20px;
     border-radius: 12px;
     display: flex;
     flex-direction: column;

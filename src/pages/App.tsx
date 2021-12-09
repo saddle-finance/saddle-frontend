@@ -13,15 +13,12 @@ import React, {
 import { Redirect, Route, Switch } from "react-router-dom"
 import { isChainSupportedByNotify, notify } from "../utils/notifyHandler"
 import { useDispatch, useSelector } from "react-redux"
-
-import { Button } from "@chakra-ui/button"
 import Deposit from "./Deposit"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import Risk from "./Risk"
 import Swap from "./Swap"
-import TestModal from "../components/TestModal"
 import ThemeProvider from "../providers/ThemeProvider"
 import Version from "../components/Version"
 import Web3ReactManager from "../components/Web3ReactManager"
@@ -30,13 +27,11 @@ import fetchGasPrices from "../utils/updateGasPrices"
 import fetchSwapStats from "../utils/getSwapStats"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import { useActiveWeb3React } from "../hooks"
-import useModal from "../hooks/useModal"
 import usePoller from "../hooks/usePoller"
 
 export default function App(): ReactElement {
   const { chainId } = useActiveWeb3React()
   const { userDarkMode } = useSelector((state: AppState) => state.user)
-  const [onPresent] = useModal(<TestModal />)
 
   useEffect(() => {
     notify?.config({
@@ -56,7 +51,6 @@ export default function App(): ReactElement {
           <GasAndTokenPrices>
             <PendingSwapsProvider>
               <RewardsBalancesProvider>
-                <Button onClick={onPresent}>open</Button>
                 <Switch>
                   <Route exact path="/" component={Swap} />
                   <Route exact path="/pools" component={Pools} />
