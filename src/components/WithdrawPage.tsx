@@ -25,7 +25,6 @@ import { logEvent } from "../utils/googleAnalytics"
 import useModal from "../hooks/useModal"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
-import useWithdrawFormState from "../hooks/useWithdrawFormState"
 
 export interface ReviewWithdrawData {
   withdraw: {
@@ -68,7 +67,6 @@ interface Props {
 const WithdrawPage = (props: Props): ReactElement => {
   const { t } = useTranslation()
   const {
-    title,
     tokensData,
     poolData,
     myShareData,
@@ -79,18 +77,18 @@ const WithdrawPage = (props: Props): ReactElement => {
   } = props
 
   const noShare = !myShareData || myShareData.lpTokenBalance.eq(Zero)
-  const [withdrawFormState, updateWithdrawFormState] = useWithdrawFormState(
-    title,
-  )
 
-  const [openConfirmModal, confirmClose] = useModal(<ConfirmTransaction />)
+  const [openConfirmModal, closeConfirmModal] = useModal(
+    <Modal>
+      <ConfirmTransaction />
+    </Modal>,
+  )
   const onConfirm = async (): Promise<void> => {
     openConfirmModal()
     logEvent("withdraw", (poolData && { pool: poolData?.name }) || {})
     await onConfirmTransaction?.()
-    confirmClose()
+    closeConfirmModal()
   }
-  console.log("withdraw form state ==>", withdrawFormState)
 
   const [openModal] = useModal(
     <ReviewModal reviewData={reviewData} onConfirm={onConfirm} />,
@@ -108,7 +106,7 @@ const WithdrawPage = (props: Props): ReactElement => {
               <input
                 placeholder="100"
                 onChange={(e: React.FormEvent<HTMLInputElement>): void =>
-                  updateWithdrawFormState({
+                  onFormChange({
                     fieldName: "percentage",
                     value: e.currentTarget.value,
                   })
