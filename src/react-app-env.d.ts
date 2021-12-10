@@ -20,10 +20,11 @@ declare module "*.gif" {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Window {
   ethereum?: {
-    isMetaMask?: true
+    isMetaMask?: boolean
+    isTally?: boolean
     on?: (...args: any[]) => void
     removeListener?: (...args: any[]) => void
-    autoRefreshOnNetworkChange?: bool
+    autoRefreshOnNetworkChange?: boolean
   }
   gtag?: (...args: any[]) => void
   web3?: unknown
