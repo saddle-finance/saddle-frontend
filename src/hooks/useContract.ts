@@ -1,6 +1,7 @@
 import {
   BRIDGE_CONTRACT_ADDRESSES,
   BTC_POOL_NAME,
+  INVESTOR_EMPLOYEE_VESTING_CONTRACT_ADDRESSES,
   MINICHEF_CONTRACT_ADDRESSES,
   POOLS_MAP,
   PoolName,
@@ -19,6 +20,7 @@ import { Bridge } from "../../types/ethers-contracts/Bridge"
 import { Contract } from "@ethersproject/contracts"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
+import INVESTOR_EMPLOYEE_VESTING_CONTRACT_ABI from "../constants/abis/vesting.json"
 import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
@@ -41,6 +43,7 @@ import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import { SwapMigratorUSD } from "../../types/ethers-contracts/SwapMigratorUSD"
 import { SynthetixExchangeRate } from "../../types/ethers-contracts/SynthetixExchangeRate"
 import { SynthetixNetworkToken } from "../../types/ethers-contracts/SynthetixNetworkToken"
+import { Vesting } from "../../types/ethers-contracts/Vesting"
 import { getContract } from "../utils"
 import { useActiveWeb3React } from "./index"
 import { useMemo } from "react"
@@ -105,6 +108,17 @@ export function useRetroactiveVestingContract(): RetroactiveVesting | null {
     contractAddress,
     RETROACTIVE_VESTING_CONTRACT_ABI,
   ) as RetroactiveVesting
+}
+
+export function useInvestorEmployeeVestingContract(): Vesting | null {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress = chainId
+    ? INVESTOR_EMPLOYEE_VESTING_CONTRACT_ADDRESSES[chainId]
+    : undefined
+  return useContract(
+    contractAddress,
+    INVESTOR_EMPLOYEE_VESTING_CONTRACT_ABI,
+  ) as Vesting
 }
 
 export function useSynthetixContract(): SynthetixNetworkToken | null {

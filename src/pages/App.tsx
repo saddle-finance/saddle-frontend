@@ -21,6 +21,7 @@ import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import Risk from "./Risk"
 import Swap from "./Swap"
 import Version from "../components/Version"
+import VestingClaim from "./VestingClaim"
 import Web3ReactManager from "../components/Web3ReactManager"
 import Withdraw from "./Withdraw"
 import fetchGasPrices from "../utils/updateGasPrices"
@@ -71,6 +72,7 @@ export default function App(): ReactElement {
                 ))}
                 <Redirect from="/pools/:route/:action" to="/pools" />
                 <Route exact path="/risk" component={Risk} />
+                <Route exact path="/vesting-claim" component={VestingClaim} />
               </Switch>
 
               <Version />
