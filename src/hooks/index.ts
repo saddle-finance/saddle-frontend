@@ -21,57 +21,35 @@ export function useEagerConnect(): boolean {
 
   useEffect(() => {
     if (process.env.NODE_ENV === "production") {
-      if (window.ethereum) {
-        if (window.ethereum.isTally) {
-          void injectedTallyProvider.isAuthorized().then((isAuthorized) => {
-            if (isAuthorized) {
-              activate(injectedTallyProvider, undefined, true).catch(() => {
-                setTried(true)
-              })
-            } else {
-              if (isMobile && window.ethereum) {
-                activate(injectedTallyProvider, undefined, true).catch(() => {
-                  setTried(true)
-                })
-              } else {
-                setTried(true)
-              }
-            }
-          })
-        } else if (window.ethereum?.isMetaMask) {
-          void injectedMetaMaskProvider.isAuthorized().then((isAuthorized) => {
-            if (isAuthorized) {
-              activate(injectedMetaMaskProvider, undefined, true).catch(() => {
-                setTried(true)
-              })
-            } else {
-              if (isMobile) {
-                activate(injectedMetaMaskProvider, undefined, true).catch(
-                  () => {
-                    setTried(true)
-                  },
-                )
-              } else {
-                setTried(true)
-              }
-            }
-          })
-        }
-      }
-    } else {
-      void injectedMetaMaskProvider.isAuthorized().then((isAuthorized) => {
-        if (isAuthorized) {
-          activate(injectedMetaMaskProvider, undefined, true).catch(() => {
+      if (window.ethereum?.isTally) {
+        void injectedTallyProvider.isAuthorized().then((isAuthorized) => {
+          if (isAuthorized || isMobile) {
+            activate(injectedTallyProvider, undefined, true).catch(() => {
+              setTried(true)
+            })
+          } else {
             setTried(true)
-          })
-        } else {
-          if (isMobile) {
+          }
+        })
+      } else if (window.ethereum?.isMetaMask) {
+        void injectedMetaMaskProvider.isAuthorized().then((isAuthorized) => {
+          if (isAuthorized || isMobile) {
             activate(injectedMetaMaskProvider, undefined, true).catch(() => {
               setTried(true)
             })
           } else {
             setTried(true)
           }
+        })
+      }
+    } else {
+      void injectedMetaMaskProvider.isAuthorized().then((isAuthorized) => {
+        if (isAuthorized || isMobile) {
+          activate(injectedMetaMaskProvider, undefined, true).catch(() => {
+            setTried(true)
+          })
+        } else {
+          setTried(true)
         }
       })
     }
