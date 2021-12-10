@@ -5,11 +5,11 @@ const useModal = (
   modal: React.ReactNode,
   key?: string,
 ): [() => void, () => void] => {
-  const { onClose, onPresent } = useContext(Context)
+  const { onClose, onOpen } = useContext(Context)
 
   const handlePresent = useCallback(() => {
-    onPresent(modal, key)
-  }, [key, modal, onPresent])
+    onOpen(modal, key)
+  }, [key, modal, onOpen])
 
   return [handlePresent, onClose]
 }

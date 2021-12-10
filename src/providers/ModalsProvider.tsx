@@ -6,43 +6,41 @@ import React, {
 } from "react"
 import styles from "./ModalProvider.module.scss"
 
-interface ModalsContext {
-  content?: React.ReactNode
+interface ModalsContextProps {
+  modal?: React.ReactNode
   isOpen?: boolean
-  onPresent: (content: React.ReactNode, key?: string) => void
+  onOpen: (content: React.ReactNode, key?: string) => void
   onClose: () => void
 }
 
-export const Context = createContext<ModalsContext>({
-  onPresent: () => undefined,
+export const Context = createContext<ModalsContextProps>({
+  onOpen: () => undefined,
   onClose: () => undefined,
 })
 
 const ModalsProvider: React.FC = ({ children }: PropsWithChildren<unknown>) => {
   const [isOpen, setIsOpen] = useState(false)
-  const [content, setContent] = useState<React.ReactNode>()
-  const [, setModalKey] = useState<string>()
+  const [modalNode, setModalNode] = useState<React.ReactNode>()
 
-  const handlePresent = useCallback(
-    (modalContent: React.ReactNode, key?: string) => {
-      setModalKey(key)
-      setContent(modalContent)
+  const handleOpen = useCallback(
+    (modalContent: React.ReactNode) => {
+      setModalNode(modalContent)
       setIsOpen(true)
     },
-    [setContent, setIsOpen, setModalKey],
+    [setModalNode, setIsOpen],
   )
 
   const handleClose = useCallback(() => {
-    setContent(undefined)
+    setModalNode(<div />)
     setIsOpen(false)
-  }, [setContent, setIsOpen])
+  }, [setModalNode, setIsOpen])
 
   return (
     <Context.Provider
       value={{
-        content,
+        modal: modalNode,
         isOpen,
-        onPresent: handlePresent,
+        onOpen: handleOpen,
         onClose: handleClose,
       }}
     >
@@ -50,8 +48,8 @@ const ModalsProvider: React.FC = ({ children }: PropsWithChildren<unknown>) => {
       {isOpen && (
         <div className={styles.modalWrapper}>
           <div className={styles.modalBackdrop} onClick={handleClose} />
-          {React.isValidElement(content) &&
-            React.cloneElement(content, {
+          {React.isValidElement(modalNode) &&
+            React.cloneElement(modalNode, {
               onClose: handleClose,
             })}
         </div>
