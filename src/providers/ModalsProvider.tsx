@@ -13,7 +13,7 @@ interface ModalsContextProps {
   onClose: () => void
 }
 
-export const Context = createContext<ModalsContextProps>({
+export const ModalContext = createContext<ModalsContextProps>({
   onOpen: () => undefined,
   onClose: () => undefined,
 })
@@ -36,7 +36,7 @@ const ModalsProvider: React.FC = ({ children }: PropsWithChildren<unknown>) => {
   }, [setModalNode, setIsOpen])
 
   return (
-    <Context.Provider
+    <ModalContext.Provider
       value={{
         modal: modalNode,
         isOpen,
@@ -54,7 +54,7 @@ const ModalsProvider: React.FC = ({ children }: PropsWithChildren<unknown>) => {
             })}
         </div>
       )}
-    </Context.Provider>
+    </ModalContext.Provider>
   )
 }
 

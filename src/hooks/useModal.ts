@@ -1,17 +1,17 @@
 import { useCallback, useContext } from "react"
-import { Context } from "../providers/ModalsProvider"
+import { ModalContext } from "../providers/ModalsProvider"
 
 const useModal = (
   modal: React.ReactNode,
   key?: string,
 ): [() => void, () => void] => {
-  const { onClose, onOpen } = useContext(Context)
+  const { onClose, onOpen } = useContext(ModalContext)
 
-  const handlePresent = useCallback(() => {
+  const handleOpen = useCallback(() => {
     onOpen(modal, key)
   }, [key, modal, onOpen])
 
-  return [handlePresent, onClose]
+  return [handleOpen, onClose]
 }
 
 export default useModal

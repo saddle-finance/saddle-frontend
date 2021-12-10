@@ -1,7 +1,6 @@
 import "./WithdrawPage.scss"
 
 import { Button, Center } from "@chakra-ui/react"
-import Modal, { ModalProps } from "../components/Modal/Modal"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement } from "react"
 
@@ -9,6 +8,7 @@ import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
+import { Modal } from "./NewModal"
 import MyFarm from "./MyFarm"
 import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
@@ -235,6 +235,10 @@ export default WithdrawPage
 interface ReviewModalProps {
   reviewData: ReviewWithdrawData
   onConfirm: () => Promise<void>
+}
+
+export interface ModalProps {
+  onClose?: () => void
 }
 const ReviewModal = ({
   onConfirm,
