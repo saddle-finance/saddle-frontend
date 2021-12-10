@@ -20,40 +20,60 @@ export function useEagerConnect(): boolean {
   const [tried, setTried] = useState(false)
 
   useEffect(() => {
-    if (window.ethereum) {
-      if (window.ethereum.isTally) {
-        void injectedTallyProvider.isAuthorized().then((isAuthorized) => {
-          if (isAuthorized) {
-            activate(injectedTallyProvider, undefined, true).catch(() => {
-              setTried(true)
-            })
-          } else {
-            if (isMobile && window.ethereum) {
+    if (process.env.NODE_ENV === "production") {
+      if (window.ethereum) {
+        if (window.ethereum.isTally) {
+          void injectedTallyProvider.isAuthorized().then((isAuthorized) => {
+            if (isAuthorized) {
               activate(injectedTallyProvider, undefined, true).catch(() => {
                 setTried(true)
               })
             } else {
-              setTried(true)
+              if (isMobile && window.ethereum) {
+                activate(injectedTallyProvider, undefined, true).catch(() => {
+                  setTried(true)
+                })
+              } else {
+                setTried(true)
+              }
             }
-          }
-        })
-      } else if (window.ethereum?.isMetaMask) {
-        void injectedMetaMaskProvider.isAuthorized().then((isAuthorized) => {
-          if (isAuthorized) {
-            activate(injectedMetaMaskProvider, undefined, true).catch(() => {
-              setTried(true)
-            })
-          } else {
-            if (isMobile) {
+          })
+        } else if (window.ethereum?.isMetaMask) {
+          void injectedMetaMaskProvider.isAuthorized().then((isAuthorized) => {
+            if (isAuthorized) {
               activate(injectedMetaMaskProvider, undefined, true).catch(() => {
                 setTried(true)
               })
             } else {
-              setTried(true)
+              if (isMobile) {
+                activate(injectedMetaMaskProvider, undefined, true).catch(
+                  () => {
+                    setTried(true)
+                  },
+                )
+              } else {
+                setTried(true)
+              }
             }
-          }
-        })
+          })
+        }
       }
+    } else {
+      void injectedMetaMaskProvider.isAuthorized().then((isAuthorized) => {
+        if (isAuthorized) {
+          activate(injectedMetaMaskProvider, undefined, true).catch(() => {
+            setTried(true)
+          })
+        } else {
+          if (isMobile) {
+            activate(injectedMetaMaskProvider, undefined, true).catch(() => {
+              setTried(true)
+            })
+          } else {
+            setTried(true)
+          }
+        }
+      })
     }
   }, [activate]) // intentionally only running on mount (make sure it's only mounted once :))
 
