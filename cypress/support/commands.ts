@@ -50,7 +50,7 @@ class CustomizedBridge extends _Eip1193Bridge {
     console.log(`method: ${method}`)
     function wrapResponse(result, error = null) {
       if (result == null && result == null) {
-        error = new Error("Something went wrong")
+        error = new Error(`Something went wrong on result, result is${result}`)
       }
       if (isCallbackForm) {
         callback(error, result ? { result } : null)
