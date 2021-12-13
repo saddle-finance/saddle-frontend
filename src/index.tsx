@@ -1,7 +1,7 @@
 import "./index.css"
 import "./i18n"
 
-import { ChakraProvider, ColorModeScript } from "@chakra-ui/react"
+// import { ChakraProvider, ColorModeScript } from "@chakra-ui/react"
 import { Web3ReactProvider, createWeb3ReactRoot } from "@web3-react/core"
 import { logError, sendWebVitalsToGA } from "./utils/googleAnalytics"
 
@@ -11,9 +11,11 @@ import { Provider } from "react-redux"
 import React from "react"
 import ReactDOM from "react-dom"
 import { HashRouter as Router } from "react-router-dom"
-import chakraTheme from "./theme/"
+import { ThemeProvider } from "@mui/material"
+// import chakraTheme from "./theme/"
 import getLibrary from "./utils/getLibrary"
 import { getNetworkLibrary } from "./connectors"
+import { lightTheme } from "./theme"
 import reportWebVitals from "./reportWebVitals"
 import store from "./state"
 
@@ -27,19 +29,21 @@ window.addEventListener("error", logError)
 
 ReactDOM.render(
   <>
-    <ColorModeScript initialColorMode={chakraTheme.config.initialColorMode} />
+    {/* <ColorModeScript initialColorMode={chakraTheme.config.initialColorMode} /> */}
     <React.StrictMode>
-      <ChakraProvider theme={chakraTheme}>
-        <Web3ReactProvider getLibrary={getLibrary}>
-          <Web3ProviderNetwork getLibrary={getNetworkLibrary}>
-            <Provider store={store}>
+      {/* <ChakraProvider theme={chakraTheme}> */}
+      <Web3ReactProvider getLibrary={getLibrary}>
+        <Web3ProviderNetwork getLibrary={getNetworkLibrary}>
+          <Provider store={store}>
+            <ThemeProvider theme={lightTheme}>
               <Router>
                 <App />
               </Router>
-            </Provider>
-          </Web3ProviderNetwork>
-        </Web3ReactProvider>
-      </ChakraProvider>
+            </ThemeProvider>
+          </Provider>
+        </Web3ProviderNetwork>
+      </Web3ReactProvider>
+      {/* </ChakraProvider> */}
     </React.StrictMode>
   </>,
   document.getElementById("root"),

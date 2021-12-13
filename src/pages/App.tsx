@@ -1,5 +1,5 @@
-import "../styles/global.scss"
-import "./NotifyStyle.scss"
+// import "../styles/global.scss"
+// import "./NotifyStyle.scss"
 
 import { AppDispatch, AppState } from "../state"
 import { BLOCK_TIME, POOLS_MAP } from "../constants"
@@ -14,13 +14,15 @@ import { Redirect, Route, Switch } from "react-router-dom"
 import { isChainSupportedByNotify, notify } from "../utils/notifyHandler"
 import { useDispatch, useSelector } from "react-redux"
 
+import Container from "../muiComponents/layout/Container"
 import Deposit from "./Deposit"
+import MuiSwap from "../muiComponents/Swap"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import Risk from "./Risk"
 import Swap from "./Swap"
-import ThemeProvider from "../providers/ThemeProvider"
+// import ThemeProvider from "../providers/ThemeProvider"
 import Version from "../components/Version"
 import Web3ReactManager from "../components/Web3ReactManager"
 import Withdraw from "./Withdraw"
@@ -47,11 +49,11 @@ export default function App(): ReactElement {
   }, [chainId])
   return (
     <Suspense fallback={null}>
-      <ThemeProvider>
-        <Web3ReactManager>
-          <GasAndTokenPrices>
-            <PendingSwapsProvider>
-              <RewardsBalancesProvider>
+      <Web3ReactManager>
+        <GasAndTokenPrices>
+          <PendingSwapsProvider>
+            <RewardsBalancesProvider>
+              <Container>
                 <Switch>
                   <Route exact path="/" component={Swap} />
                   <Route exact path="/pools" component={Pools} />
@@ -75,13 +77,15 @@ export default function App(): ReactElement {
                   ))}
                   <Redirect from="/pools/:route/:action" to="/pools" />
                   <Route exact path="/risk" component={Risk} />
+                  <Route exact path="/mui" component={MuiSwap} />
                 </Switch>
-                <Version />
-              </RewardsBalancesProvider>
-            </PendingSwapsProvider>
-          </GasAndTokenPrices>
-        </Web3ReactManager>
-      </ThemeProvider>
+              </Container>
+
+              <Version />
+            </RewardsBalancesProvider>
+          </PendingSwapsProvider>
+        </GasAndTokenPrices>
+      </Web3ReactManager>
     </Suspense>
   )
 }
