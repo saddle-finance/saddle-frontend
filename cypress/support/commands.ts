@@ -50,10 +50,10 @@ class CustomizedBridge extends _Eip1193Bridge {
     console.log(`method: ${method}`)
     function wrapResponse(result, error = null) {
       if (result == null && result == null) {
-        error = new Error("Something went wrong")
+        error = new Error(`Something went wrong on result, result is${result}`)
       }
       if (isCallbackForm) {
-        callback(error, result ? { result } : null )
+        callback(error, result ? { result } : null)
       } else {
         return result ? Promise.resolve(result) : Promise.reject(error)
       }
@@ -62,7 +62,9 @@ class CustomizedBridge extends _Eip1193Bridge {
       return wrapResponse([Cypress.env("PRIVATE_TEST_WALLET_ADDRESS")])
     }
     if (method === "eth_chainId") {
-      return wrapResponse(`0x${Cypress.env("NETWORK_ID").toString(16).toUpperCase()}`)
+      return wrapResponse(
+        `0x${Cypress.env("NETWORK_ID").toString(16).toUpperCase()}`,
+      )
     }
     let [argsObject, ...paramsRest] = params || []
     if (
@@ -94,12 +96,16 @@ Cypress.Commands.overwrite("visit", (original, url, options) => {
       onBeforeLoad(win) {
         options && options.onBeforeLoad && options.onBeforeLoad(win)
         win.localStorage.clear()
-        const provider = new JsonRpcProvider(
-          Cypress.env("PROVIDER_HOST"),
-          { name: "local", chainId: Cypress.env("NETWORK_ID") },
+        const provider = new JsonRpcProvider(Cypress.env("PROVIDER_HOST"), {
+          name: "local",
+          chainId: Cypress.env("NETWORK_ID"),
+        })
+        const signer = new Wallet(
+          Cypress.env("PRIVATE_TEST_WALLET_PK"),
+          provider,
         )
-        const signer = new Wallet(Cypress.env("PRIVATE_TEST_WALLET_PK"), provider)
         win.ethereum = new CustomizedBridge(signer, provider)
+        win.ethereum.isMetaMask = true
       },
     },
   )
