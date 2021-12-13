@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next"
 
 export default function SiteSettingsMenu(): ReactElement {
   return (
-    <div className={styles.container}>
+    <div data-testid="settingsMenuContainer" className={styles.container}>
       {IS_L2_SUPPORTED && <NetworkSection key="network" />}
       {IS_L2_SUPPORTED && <Divider />}
       <LanguageSection key="language" />
@@ -90,8 +90,9 @@ function NetworkSection(): ReactElement {
   ]
 
   return (
-    <div className={styles.section}>
+    <div data-testid="networkMenuContainer" className={styles.section}>
       <div
+        data-testid="networkMenuTitle"
         className={styles.sectionTitle}
         onClick={() => setIsNetworkVisible((state) => !state)}
       >
@@ -139,7 +140,7 @@ function LanguageSection(): ReactElement {
   ]
   const currentLanguage = i18n.language
   return (
-    <div className={styles.section}>
+    <div data-testid="languageMenu" className={styles.section}>
       <div
         className={styles.sectionTitle}
         onClick={() => setIsLanguageVisible((state) => !state)}
@@ -169,7 +170,11 @@ function ThemeSection(): ReactElement {
 
   return (
     <div className={styles.section}>
-      <div className={styles.sectionTitle} onClick={toggleTheme}>
+      <div
+        data-testid="themeMenuOption"
+        className={styles.sectionTitle}
+        onClick={toggleTheme}
+      >
         <span>{t("theme")}</span> <span>{userDarkMode ? "☾" : "☀"}</span>
       </div>
     </div>
