@@ -71,7 +71,7 @@ export default function TokenClaimModal(): ReactElement {
   }, [chainId, rewardBalances])
 
   return (
-    <div className={styles.container}>
+    <div data-testid="tknClaimContainer" className={styles.container}>
       <div className={styles.gradient}></div>
       <div className={styles.logoWrapper}>
         <div className={styles.logo}>
@@ -84,6 +84,7 @@ export default function TokenClaimModal(): ReactElement {
 
           {canAdd && (
             <img
+              data-testid="tokenAddBtn"
               src={plusIcon}
               className={styles.plus}
               onClick={() => addToken()}
@@ -93,7 +94,7 @@ export default function TokenClaimModal(): ReactElement {
         <div className={styles.tokenBalanceHelpText}>
           {t("totalClaimableSDL")}
         </div>
-        <ul className={styles.claimsList}>
+        <ul data-testid="claimsListContainer" className={styles.claimsList}>
           {rewardBalances.retroactive && (
             <>
               <ClaimListItem
