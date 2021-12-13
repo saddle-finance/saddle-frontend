@@ -5,9 +5,11 @@
   "private": true,
   "dependencies": {
     "@chakra-ui/react": "^1.4.1",
-    "@emotion/react": "^11.1.5",
-    "@emotion/styled": "^11.1.5",
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
     "@metamask/jazzicon": "^2.0.0",
+    "@mui/icons-material": "^5.2.1",
+    "@mui/material": "^5.2.3",
     "@reduxjs/toolkit": "^1.4.0",
     "@types/jest": "^26.0.22",
     "@types/lodash": "^4.14.165",
