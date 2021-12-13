@@ -1,7 +1,6 @@
 import "./index.css"
 import "./i18n"
 
-// import { ChakraProvider, ColorModeScript } from "@chakra-ui/react"
 import { Web3ReactProvider, createWeb3ReactRoot } from "@web3-react/core"
 import { logError, sendWebVitalsToGA } from "./utils/googleAnalytics"
 

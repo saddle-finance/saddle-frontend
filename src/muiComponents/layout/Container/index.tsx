@@ -21,9 +21,9 @@ export default function Container({
   console.log("theme value ==>", themeSwitchChecked)
   return (
     <MuiContainer maxWidth="lg">
-      <AppBar>
+      <AppBar elevation={2}>
         <Toolbar>
-          appbar
+          Saddle
           <Switch
             defaultChecked={themeSwitchChecked}
             onChange={handleSwitchChange}
