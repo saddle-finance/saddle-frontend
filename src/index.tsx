@@ -11,11 +11,9 @@ import { Provider } from "react-redux"
 import React from "react"
 import ReactDOM from "react-dom"
 import { HashRouter as Router } from "react-router-dom"
-import { ThemeProvider } from "@mui/material"
-// import chakraTheme from "./theme/"
+import { SettingsProvider } from "./providers/SettingContext"
 import getLibrary from "./utils/getLibrary"
 import { getNetworkLibrary } from "./connectors"
-import { lightTheme } from "./theme"
 import reportWebVitals from "./reportWebVitals"
 import store from "./state"
 
@@ -29,21 +27,18 @@ window.addEventListener("error", logError)
 
 ReactDOM.render(
   <>
-    {/* <ColorModeScript initialColorMode={chakraTheme.config.initialColorMode} /> */}
     <React.StrictMode>
-      {/* <ChakraProvider theme={chakraTheme}> */}
       <Web3ReactProvider getLibrary={getLibrary}>
         <Web3ProviderNetwork getLibrary={getNetworkLibrary}>
           <Provider store={store}>
-            <ThemeProvider theme={lightTheme}>
+            <SettingsProvider>
               <Router>
                 <App />
               </Router>
-            </ThemeProvider>
+            </SettingsProvider>
           </Provider>
         </Web3ProviderNetwork>
       </Web3ReactProvider>
-      {/* </ChakraProvider> */}
     </React.StrictMode>
   </>,
   document.getElementById("root"),
