@@ -53,6 +53,7 @@
     "@chakra-ui/cli": "^1.2.1",
     "@cypress/code-coverage": "^3.9.4",
     "@cypress/instrument-cra": "^1.4.0",
+    "@cypress/react": "^5.10.3",
     "@ethersproject/experimental": "^5.0.9",
     "@storybook/addon-actions": "^6.0.28",
     "@storybook/addon-essentials": "^6.3.2",
