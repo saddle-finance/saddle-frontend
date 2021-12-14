@@ -117,7 +117,7 @@ function VestingClaim(): ReactElement {
 
   return (
     <>
-      <TopMenu activeTab={t("risk")} />
+      <TopMenu activeTab={t("n/a")} />
       <div className={styles.container}>
         <div className={styles.gradient}></div>
         <div className={styles.logoWrapper}>
