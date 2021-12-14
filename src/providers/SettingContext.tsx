@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, ReactElement, createContext } from "react"
-import { darkTheme, lightTheme } from "../theme"
+import { darkTheme, lightTheme } from "../theme/theme"
 import { CssBaseline } from "@mui/material"
 import { ThemeProvider } from "@mui/material"
 import { getCookie } from "../utils/helper"
