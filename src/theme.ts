@@ -79,6 +79,9 @@ export const darkTheme = createTheme({
   spacing: 8,
   components: {
     MuiAppBar: {
+      defaultProps: {
+        color: "inherit",
+      },
       styleOverrides: {
         colorInherit: {
           backgroundColor: "#000",

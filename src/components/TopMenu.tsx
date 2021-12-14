@@ -51,7 +51,9 @@ function TopMenu(): ReactElement {
     >
       <Box flex={1}>
         <Link to="/">
-          <SaddleLogo />
+          <Box mt={2} mb={1}>
+            <SaddleLogo />
+          </Box>
         </Link>
       </Box>
 

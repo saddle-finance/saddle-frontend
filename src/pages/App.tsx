@@ -78,9 +78,8 @@ export default function App(): ReactElement {
                   <Route exact path="/risk" component={Risk} />
                   <Route exact path="/mui" component={MuiSwap} />
                 </Switch>
+                <Version />
               </Container>
-
-              <Version />
             </RewardsBalancesProvider>
           </PendingSwapsProvider>
         </GasAndTokenPrices>
