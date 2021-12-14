@@ -6,15 +6,16 @@ export const lightTheme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#00f4d7",
+      main: "#3800d6",
     },
     secondary: {
-      main: "#3800d6",
+      main: "#00f4d7",
     },
     background: {
       default: "#ffffe9",
     },
   },
+
   spacing: 8,
   components: {
     MuiAppBar: {
@@ -40,6 +41,17 @@ export const lightTheme = createTheme({
     MuiButtonBase: {
       defaultProps: {
         disableRipple: true,
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: "none",
+          boxShadow: "none",
+          borderRadius: 6,
+          minWidth: 176,
+          minHeight: 40,
+        },
       },
     },
 

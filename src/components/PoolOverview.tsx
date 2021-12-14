@@ -1,5 +1,6 @@
 import "./PoolOverview.scss"
 
+import { Button, styled } from "@mui/material"
 import {
   IS_SDL_LIVE,
   POOLS_MAP,
@@ -15,7 +16,6 @@ import {
   formatBNToString,
 } from "../utils"
 
-import Button from "./Button"
 import { Link } from "react-router-dom"
 import Tag from "./Tag"
 import ToolTip from "./ToolTip"
@@ -31,6 +31,17 @@ interface Props {
   onClickMigrate?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
+const LinkStyle = styled(Link)(({ theme }) => ({
+  ...theme.typography.subtitle2,
+  color: theme.palette.text.primary,
+  transition: theme.transitions.create("opacity", {
+    duration: theme.transitions.duration.shortest,
+  }),
+  textDecoration: "none",
+  "&:hover": {
+    opacity: 0.48,
+  },
+}))
 export default function PoolOverview({
   poolData,
   poolRoute,
@@ -178,26 +189,23 @@ export default function PoolOverview({
           )}
         </div>
         <div className="buttons">
-          <Link to={`${poolRoute}/withdraw`}>
-            <Button kind="secondary">{t("withdraw")}</Button>
-          </Link>
+          <LinkStyle to={`${poolRoute}/withdraw`}>
+            <Button variant="outlined">{t("withdraw")}</Button>
+          </LinkStyle>
           {shouldMigrate ? (
-            <Button
-              kind="temporary"
-              onClick={onClickMigrate}
-              disabled={!hasShare}
-            >
+            <Button onClick={onClickMigrate} disabled={!hasShare}>
               {t("migrate")}
             </Button>
           ) : (
-            <Link to={`${poolRoute}/deposit`}>
+            <LinkStyle to={`${poolRoute}/deposit`}>
               <Button
-                kind="primary"
+                variant="contained"
                 disabled={poolData?.isPaused || isOutdated}
+                color="secondary"
               >
                 {t("deposit")}
               </Button>
-            </Link>
+            </LinkStyle>
           )}
         </div>
       </div>

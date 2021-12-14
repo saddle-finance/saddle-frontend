@@ -1,87 +1,92 @@
 import "./TopMenu.scss"
 
+import { Box, Stack, styled } from "@mui/material"
+import { Link, useLocation } from "react-router-dom"
 import React, { ReactElement, useContext, useRef, useState } from "react"
-
 import Button from "./Button"
 import { IS_SDL_LIVE } from "../constants"
-import { Link } from "react-router-dom"
 import Modal from "./Modal"
 import NetworkDisplay from "./NetworkDisplay"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
+import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
 import SiteSettingsMenu from "./SiteSettingsMenu"
 import TokenClaimModal from "./TokenClaimModal"
 import Web3Status from "./Web3Status"
-import classNames from "classnames"
 import { formatBNToShortString } from "../utils"
-import logo from "../assets/icons/logo.svg"
 import useDetectOutsideClick from "../hooks/useDetectOutsideClick"
 import { useTranslation } from "react-i18next"
 
-interface Props {
-  activeTab: string
+type LinkStyleProps = {
+  active: boolean
 }
+const LinkStyle = styled(Link)<LinkStyleProps>(({ theme, active }) => ({
+  ...theme.typography.subtitle1,
+  color: theme.palette.text.primary,
+  marginRight: theme.spacing(5),
+  transition: theme.transitions.create("opacity", {
+    duration: theme.transitions.duration.shortest,
+  }),
+  fontWeight: active ? "bold" : "normal",
+  textDecoration: "none",
+  "&:hover": {
+    opacity: 0.48,
+  },
+}))
 
-function TopMenu({ activeTab }: Props): ReactElement {
+function TopMenu(): ReactElement {
   const { t } = useTranslation()
   const [currentModal, setCurrentModal] = useState<string | null>(null)
+  const { pathname } = useLocation()
+  console.log("path name ==>", pathname)
+  const activeTab = pathname.split("/")[1]
+  console.log("active name ==>", activeTab)
 
   return (
-    <header
+    <Stack
+      direction="row"
+      justifyContent="space-between"
+      alignItems="center"
       data-testid="topMenuContainer"
-      className="top"
-      style={{ border: "#000, solid 3px" }}
+      width="100%"
     >
-      <div className="logoWrapper">
+      <Box flex={1}>
         <Link to="/">
-          <img className="logo" alt="logo" src={logo} />
+          <SaddleLogo />
         </Link>
-      </div>
+      </Box>
 
-      <ul className="nav">
-        <li>
-          <Link
-            data-testid="swapNavLink"
-            to="/"
-            className={classNames({ active: activeTab === "swap" })}
-          >
+      <Box flex={1} textAlign="center">
+        <nav>
+          <LinkStyle to="/" active={activeTab === ""}>
             {t("swap")}
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/pools"
-            className={classNames({
-              active:
-                activeTab === "pools" ||
-                activeTab === "deposit" ||
-                activeTab === "withdraw",
-            })}
-          >
+          </LinkStyle>
+          <LinkStyle to="/pools" active={activeTab === "pools"}>
             {t("pools")}
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/risk"
-            className={classNames({ active: activeTab === t("risk") })}
-          >
+          </LinkStyle>
+          <LinkStyle to="/risk" active={activeTab === "risk"}>
             {t("risk")}
-          </Link>
-        </li>
-      </ul>
-      <div className="walletWrapper">
+          </LinkStyle>
+        </nav>
+      </Box>
+
+      <Box
+        display="flex"
+        justifyContent="space-around"
+        alignItems="center"
+        flex={1}
+      >
         <RewardsButton setCurrentModal={setCurrentModal} />
         <Web3Status />
         <NetworkDisplayAndSettings />
         <IconButtonAndSettings />
-      </div>
+      </Box>
       <Modal
         isOpen={!!currentModal}
         onClose={(): void => setCurrentModal(null)}
       >
         {currentModal === "tokenClaim" && <TokenClaimModal />}
       </Modal>
-    </header>
+    </Stack>
   )
 }
 
@@ -99,7 +104,10 @@ function RewardsButton({
       onClick={() => setCurrentModal("tokenClaim")}
       size="medium"
     >
-      {formattedTotal} <img className="sdlToken" alt="logo" src={logo} />
+      {formattedTotal}
+      <Box width={20} height={20} borderRadius={20} bgcolor="white">
+        <SaddleLogo width={20} height={20} />
+      </Box>
     </Button>
   ) : null
 }
