@@ -70,6 +70,13 @@ div.tokenBalanceHelpText {
   font-family: $font-family;
   color: var(--primary-foreground);
   padding-bottom: 24px;
+  a {
+    color: var(--text-selected);
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 .claimsList {
@@ -101,4 +108,7 @@ div.tokenBalanceHelpText {
   height: 1px;
   width: 100%;
   border-top: 1px solid var(--emphasis-2);
+}
+
+.vestingContractLink {
 }
