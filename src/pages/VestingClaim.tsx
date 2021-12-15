@@ -1,15 +1,16 @@
-import { Contract as EthersContract, ethers } from "ethers"
 import React, { ReactElement, useEffect, useState } from "react"
 import { SDL_TOKEN, SDL_TOKEN_ADDRESSES } from "../constants"
 import { Trans, useTranslation } from "react-i18next"
-import { commify, formatBNToString } from "../utils"
+import { commify, formatBNToString, getContract } from "../utils"
 import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
+import { BigNumber } from "@ethersproject/bignumber"
 import Button from "../components/Button"
 import INVESTOR_EMPLOYEE_VESTING_CONTRACT_ABI from "../constants/abis/vesting.json"
 import SDL_TOKEN_ABI from "../constants/abis/sdl.json"
 import { Sdl } from "../../types/ethers-contracts/Sdl"
 import TopMenu from "../components/TopMenu"
 import { Vesting } from "../../types/ethers-contracts/Vesting"
+import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
 import plusIcon from "../assets/icons/plus.svg"
 import styles from "../components/TokenClaimModal.module.scss"
@@ -24,21 +25,22 @@ function VestingClaim(): ReactElement {
     icon: `${window.location.origin}/logo.svg`,
   })
 
-  const [isValidBene, setIsValidBene] = useState(false)
-  const [claimableVestedAmount, setClaimableVestedAmount] = useState("0.0")
-  const [remainingAmount, setRemainingAmount] = useState("0.0")
+  const [isValidBeneficiary, setIsValidBeneficiary] = useState(false)
+  const [claimableVestedAmount, setClaimableVestedAmount] = useState(Zero)
+  const [remainingAmount, setRemainingAmount] = useState(Zero)
   const [vestingContract, setVestingContract] = useState<Vesting>()
+
+  const formatAmount = (amount: BigNumber): string =>
+    commify(formatBNToString(amount, 18, 2))
 
   useEffect(() => {
     const fetchBeneficiaries = async () => {
-      if (!library || !chainId) return
-      const provider = new ethers.providers.Web3Provider(
-        window.ethereum as never,
-      )
-      const SDLContract = new EthersContract(
+      if (!library || !chainId || !account) return
+      const SDLContract = getContract(
         SDL_TOKEN_ADDRESSES[chainId],
         SDL_TOKEN_ABI,
-        provider.getSigner(),
+        library,
+        account,
       ) as Sdl
       const vestingContractDeployedFilter = SDLContract.filters.VestingContractDeployed(
         null,
@@ -48,24 +50,21 @@ function VestingClaim(): ReactElement {
         const events = await SDLContract.queryFilter(
           vestingContractDeployedFilter,
         )
-        const currentBeneficiary = events.filter(
+        const currentBeneficiaryEvents = events.filter(
           (event) => event.args?.beneficiary === account,
         )
-        setIsValidBene(currentBeneficiary.length > 0)
-        if (isValidBene) {
-          const vestingContract = new EthersContract(
-            currentBeneficiary[0].args?.vestingContract,
+        setIsValidBeneficiary(currentBeneficiaryEvents.length > 0)
+        if (isValidBeneficiary) {
+          const vestingContract = getContract(
+            currentBeneficiaryEvents[0].args?.vestingContract,
             INVESTOR_EMPLOYEE_VESTING_CONTRACT_ABI,
-            provider.getSigner(),
+            library,
+            account,
           ) as Vesting
           setVestingContract(vestingContract)
           try {
-            const remainingAmount = commify(
-              formatBNToString(
-                await SDLContract.balanceOf(vestingContract.address),
-                18,
-                2,
-              ),
+            const remainingAmount = await SDLContract.balanceOf(
+              vestingContract.address,
             )
             setRemainingAmount(remainingAmount)
           } catch (err) {
@@ -76,9 +75,7 @@ function VestingClaim(): ReactElement {
             })
           }
           try {
-            const claimableVestedAmount = commify(
-              formatBNToString(await vestingContract.vestedAmount(), 18, 2),
-            )
+            const claimableVestedAmount = await vestingContract.vestedAmount()
             setClaimableVestedAmount(claimableVestedAmount)
           } catch (err) {
             console.error(err)
@@ -97,7 +94,7 @@ function VestingClaim(): ReactElement {
       }
     }
     void fetchBeneficiaries()
-  }, [account, chainId, library, isValidBene])
+  }, [account, chainId, library, isValidBeneficiary])
 
   const onClaimClick: () => void = async () => {
     if (!vestingContract) return
@@ -105,7 +102,7 @@ function VestingClaim(): ReactElement {
       const txn = await vestingContract.release()
       notifyHandler(txn?.hash, "claim")
       await txn?.wait()
-      setClaimableVestedAmount("0.0")
+      setClaimableVestedAmount(Zero)
     } catch (err) {
       console.error(err)
       notifyCustomError({
@@ -126,23 +123,32 @@ function VestingClaim(): ReactElement {
           </div>
         </div>
         <div className={styles.mainContent}>
-          {isValidBene ? (
+          {isValidBeneficiary ? (
             <>
-              <div className={styles.tokenBalance}>
-                {claimableVestedAmount} of {remainingAmount} remaining tokens
+              <div className={styles.amountContainer}>
+                <div>
+                  <div>
+                    {t("investorClaimAmount", {
+                      claimable: formatAmount(claimableVestedAmount),
+                    })}
+                  </div>
+                  <div>
+                    {t("investorRemainingAmount", {
+                      remaining: formatAmount(remainingAmount),
+                    })}
+                  </div>
+                </div>
                 {canAdd && (
                   <img
                     src={plusIcon}
                     className={styles.plus}
+                    style={{ width: 16, marginBottom: 3, marginLeft: 32 }}
                     onClick={() => addToken()}
                   />
                 )}
               </div>
               <div className={styles.tokenBalanceHelpText}>
-                {t("totalClaimableSDL")}
-              </div>
-              <div className={styles.tokenBalanceHelpText}>
-                Vesting Contract:{" "}
+                {t("vestingContract")}{" "}
                 <a
                   href={`https://etherscan.io/address/${
                     vestingContract?.address ?? ""
@@ -153,9 +159,7 @@ function VestingClaim(): ReactElement {
               </div>
             </>
           ) : (
-            <div className={styles.info}>
-              Please switch to your beneficiary address
-            </div>
+            <div className={styles.info}>{t("switchToBeneficiaryAddress")}</div>
           )}
 
           <div className={styles.info}>
@@ -177,7 +181,10 @@ function VestingClaim(): ReactElement {
           {
             <Button
               onClick={onClaimClick}
-              disabled={!isValidBene || Number(claimableVestedAmount) === 0}
+              disabled={
+                !isValidBeneficiary ||
+                Number(formatAmount(claimableVestedAmount)) === 0
+              }
             >
               {t("claim")}
             </Button>

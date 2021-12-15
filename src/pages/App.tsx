@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import "../styles/global.scss"
 import "./NotifyStyle.scss"
 
@@ -18,17 +20,19 @@ import Deposit from "./Deposit"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
-import Risk from "./Risk"
 import Swap from "./Swap"
 import Version from "../components/Version"
-import VestingClaim from "./VestingClaim"
 import Web3ReactManager from "../components/Web3ReactManager"
 import Withdraw from "./Withdraw"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchSwapStats from "../utils/getSwapStats"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
+import loadable from "@loadable/component"
 import { useActiveWeb3React } from "../hooks"
 import usePoller from "../hooks/usePoller"
+
+const VestingClaim = loadable(() => import("./VestingClaim"))
+const Risk = loadable(() => import("./Risk"))
 
 export default function App(): ReactElement {
   const { chainId } = useActiveWeb3React()

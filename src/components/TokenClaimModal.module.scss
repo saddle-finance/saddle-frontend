@@ -109,3 +109,9 @@ div.tokenBalanceHelpText {
   width: 100%;
   border-top: 1px solid var(--emphasis-2);
 }
+
+.amountContainer {
+  display: flex;
+  align-items: center;
+  padding-bottom: 24px;
+}
