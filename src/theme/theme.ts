@@ -18,7 +18,10 @@ export const lightTheme = createTheme({
 
   spacing: 4,
   typography: {
-    fontFamily: ['"Noe Display"'].join(","),
+    fontFamily: ['"Source Code Pro"', "monospace"].join(","),
+    h3: {
+      fontFamily: ['"Noe Display"'].join(","),
+    },
   },
   components: {
     MuiCssBaseline: {
@@ -80,9 +83,6 @@ export const lightTheme = createTheme({
       font-weight: 700;
       font-style: italic;
     }
-    
-    // Source Code Pro
-    @import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&display=swap");
     
     // Camphor
     @font-face {

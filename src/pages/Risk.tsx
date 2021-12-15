@@ -1,7 +1,8 @@
-import "./Risk.scss"
+// import "./Risk.scss"
 
 import React, { ReactElement } from "react"
 
+import { Typography } from "@mui/material"
 import { useTranslation } from "react-i18next"
 
 function Risk(): ReactElement {
@@ -10,14 +11,16 @@ function Risk(): ReactElement {
   return (
     <div className="riskpage">
       <div className="content">
-        <h1 className="title">Risk</h1>
-        <p data-testid="risk-intro">
+        <Typography variant="h3" className="title">
+          Risk
+        </Typography>
+        <Typography variant="body1" data-testid="risk-intro">
           {t("riskIntro")}{" "}
           <a href="https://github.com/saddle-finance/saddle-contract">
             {t("riskIntro2")}
           </a>{" "}
           {t("riskIntro3")}
-        </p>
+        </Typography>
         <h3>{t("audits")}</h3>
         <p data-testid="risk-audits">
           {t("riskAudits")}{" "}
