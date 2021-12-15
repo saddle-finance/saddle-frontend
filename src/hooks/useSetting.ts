@@ -1,8 +1,12 @@
-import React from "react"
-import { SettingsContext } from "../providers/SettingContext"
+import {
+  SettingsContext,
+  SettingsContextProps,
+} from "../providers/SettingContext"
+import { useContext } from "react"
 
 // ----------------------------------------------------------------------
 
-const useSettings = () => React.useContext(SettingsContext)
+const useSettings: () => SettingsContextProps = () =>
+  useContext(SettingsContext)
 
 export default useSettings

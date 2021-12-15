@@ -1,5 +1,5 @@
-// import "../styles/global.scss"
-// import "./NotifyStyle.scss"
+import "../styles/global.scss"
+import "./NotifyStyle.scss"
 
 import { AppDispatch, AppState } from "../state"
 import { BLOCK_TIME, POOLS_MAP } from "../constants"

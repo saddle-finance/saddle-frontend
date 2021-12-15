@@ -2,7 +2,6 @@
 
 import React, { ReactElement } from "react"
 
-import { Typography } from "@mui/material"
 import { useTranslation } from "react-i18next"
 
 function Risk(): ReactElement {
@@ -11,16 +10,14 @@ function Risk(): ReactElement {
   return (
     <div className="riskpage">
       <div className="content">
-        <Typography variant="h3" className="title">
-          Risk
-        </Typography>
-        <Typography variant="body1" data-testid="risk-intro">
+        <h3 className="title">Risk</h3>
+        <p data-testid="risk-intro">
           {t("riskIntro")}{" "}
           <a href="https://github.com/saddle-finance/saddle-contract">
             {t("riskIntro2")}
           </a>{" "}
           {t("riskIntro3")}
-        </Typography>
+        </p>
         <h3>{t("audits")}</h3>
         <p data-testid="risk-audits">
           {t("riskAudits")}{" "}

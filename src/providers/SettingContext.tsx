@@ -1,13 +1,18 @@
-import React, { PropsWithChildren, ReactElement, createContext } from "react"
-import { darkTheme, lightTheme } from "../theme/theme"
+import React, {
+  PropsWithChildren,
+  ReactElement,
+  createContext,
+  useEffect,
+  useState,
+} from "react"
+import { darkTheme, lightTheme } from "../theme"
 import { CssBaseline } from "@mui/material"
 import { ThemeProvider } from "@mui/material"
-import { getCookie } from "../utils/helper"
 import useMediaQuery from "@mui/material/useMediaQuery"
 
 export type ThemeMode = "light" | "dark" | "system"
 export type SettingsContextProps = {
-  themeMode: ThemeMode | null
+  themeMode: ThemeMode
   onChangeMode: (themeMode: ThemeMode) => void
 }
 
@@ -21,19 +26,29 @@ const SettingsContext = createContext(initialState)
 function SettingsProvider({
   children,
 }: PropsWithChildren<unknown>): ReactElement {
-  const [mode, setMode] = React.useState<ThemeMode | null>(null)
+  const [mode, setMode] = useState<ThemeMode>("system")
   const prefersDarkMode = (useMediaQuery("(prefers-color-scheme: dark)")
     ? "dark"
     : "light") as ThemeMode
 
-  React.useEffect(() => {
-    const initialMode = (getCookie("paletteMode") || "system") as ThemeMode
+  useEffect(() => {
+    const initialMode = (localStorage.getItem("paletteMode") ||
+      "system") as ThemeMode
     setMode(initialMode === "system" ? prefersDarkMode : initialMode)
   }, [setMode, prefersDarkMode])
 
+  useEffect(() => {
+    const modeValue = mode === "system" ? prefersDarkMode : mode
+    if (modeValue === "dark") {
+      document.body.classList.add("dark")
+    } else {
+      document.body.classList.remove("dark")
+    }
+  }, [mode, prefersDarkMode])
+
   const onChangeMode = (mode: ThemeMode) => {
     setMode(mode)
-    document.cookie = `paletteMode=${mode};path=/;max-age=31536000`
+    localStorage.setItem("paletteMode", mode)
   }
 
   return (
