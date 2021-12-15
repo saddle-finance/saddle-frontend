@@ -8,7 +8,6 @@ import React, {
 import { darkTheme, lightTheme } from "../theme"
 import { CssBaseline } from "@mui/material"
 import { ThemeProvider } from "@mui/material"
-import { getCookie } from "../utils/helper"
 import useMediaQuery from "@mui/material/useMediaQuery"
 
 export type ThemeMode = "light" | "dark" | "system"
@@ -33,7 +32,8 @@ function SettingsProvider({
     : "light") as ThemeMode
 
   useEffect(() => {
-    const initialMode = (getCookie("paletteMode") || "system") as ThemeMode
+    const initialMode = (localStorage.getItem("paletteMode") ||
+      "system") as ThemeMode
     setMode(initialMode === "system" ? prefersDarkMode : initialMode)
   }, [setMode, prefersDarkMode])
 
@@ -48,7 +48,7 @@ function SettingsProvider({
 
   const onChangeMode = (mode: ThemeMode) => {
     setMode(mode)
-    document.cookie = `paletteMode=${mode};path=/;max-age=31536000`
+    localStorage.setItem("paletteMode", mode)
   }
 
   return (
