@@ -1,4 +1,10 @@
-import React, { PropsWithChildren, ReactElement, createContext } from "react"
+import React, {
+  PropsWithChildren,
+  ReactElement,
+  createContext,
+  useEffect,
+  useState,
+} from "react"
 import { darkTheme, lightTheme } from "../theme"
 import { CssBaseline } from "@mui/material"
 import { ThemeProvider } from "@mui/material"
@@ -21,12 +27,12 @@ const SettingsContext = createContext(initialState)
 function SettingsProvider({
   children,
 }: PropsWithChildren<unknown>): ReactElement {
-  const [mode, setMode] = React.useState<ThemeMode | null>(null)
+  const [mode, setMode] = useState<ThemeMode>("system")
   const prefersDarkMode = (useMediaQuery("(prefers-color-scheme: dark)")
     ? "dark"
     : "light") as ThemeMode
 
-  React.useEffect(() => {
+  useEffect(() => {
     const initialMode = (getCookie("paletteMode") || "system") as ThemeMode
     setMode(initialMode === "system" ? prefersDarkMode : initialMode)
   }, [setMode, prefersDarkMode])
