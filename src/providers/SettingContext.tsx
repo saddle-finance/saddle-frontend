@@ -13,7 +13,7 @@ import useMediaQuery from "@mui/material/useMediaQuery"
 
 export type ThemeMode = "light" | "dark" | "system"
 export type SettingsContextProps = {
-  themeMode: ThemeMode | null
+  themeMode: ThemeMode
   onChangeMode: (themeMode: ThemeMode) => void
 }
 
