@@ -26,7 +26,6 @@ const saddleColors = {
   cherry: "#FB5A5A",
   cherry2: "#68282F",
 }
-console.log("saddle color ==>", saddleColors)
 
 export const lightTheme = createTheme({
   palette: {
