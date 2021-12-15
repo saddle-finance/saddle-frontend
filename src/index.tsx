@@ -10,7 +10,7 @@ import { Provider } from "react-redux"
 import React from "react"
 import ReactDOM from "react-dom"
 import { HashRouter as Router } from "react-router-dom"
-import { SettingsProvider } from "./providers/SettingContext"
+import { ThemeSettingsProvider } from "./providers/ThemeSettingsContext"
 import getLibrary from "./utils/getLibrary"
 import { getNetworkLibrary } from "./connectors"
 import reportWebVitals from "./reportWebVitals"
@@ -30,11 +30,11 @@ ReactDOM.render(
       <Web3ReactProvider getLibrary={getLibrary}>
         <Web3ProviderNetwork getLibrary={getNetworkLibrary}>
           <Provider store={store}>
-            <SettingsProvider>
+            <ThemeSettingsProvider>
               <Router>
                 <App />
               </Router>
-            </SettingsProvider>
+            </ThemeSettingsProvider>
           </Provider>
         </Web3ProviderNetwork>
       </Web3ReactProvider>

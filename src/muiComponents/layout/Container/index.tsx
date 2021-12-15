@@ -2,14 +2,14 @@ import { AppBar, Toolbar } from "@mui/material"
 import React, { PropsWithChildren, ReactElement } from "react"
 import MuiContainer from "@mui/material/Container/Container"
 import { Switch } from "@mui/material"
-import { ThemeMode } from "../../../providers/SettingContext"
+import { ThemeMode } from "../../../providers/ThemeSettingsContext"
 import useSettings from "../../../hooks/useSetting"
 
 export default function Container({
   children,
 }: PropsWithChildren<unknown>): ReactElement {
   const { themeMode, onChangeMode } = useSettings()
-  const themeSwitchChecked = themeMode === "dark" ?? "light"
+  const currentThemeSelected = themeMode === "dark" ?? "light"
   const handleSwitchChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     checked: boolean,
@@ -18,14 +18,13 @@ export default function Container({
     onChangeMode(mode)
   }
 
-  console.log("theme value ==>", themeSwitchChecked)
   return (
     <MuiContainer maxWidth="lg">
       <AppBar elevation={2}>
         <Toolbar>
           Saddle
           <Switch
-            defaultChecked={themeSwitchChecked}
+            defaultChecked={currentThemeSelected}
             onChange={handleSwitchChange}
           />
         </Toolbar>

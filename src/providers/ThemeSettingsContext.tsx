@@ -11,19 +11,19 @@ import { ThemeProvider } from "@mui/material"
 import useMediaQuery from "@mui/material/useMediaQuery"
 
 export type ThemeMode = "light" | "dark" | "system"
-export type SettingsContextProps = {
+export type ThemeSettingsContextProps = {
   themeMode: ThemeMode
   onChangeMode: (themeMode: ThemeMode) => void
 }
 
-const initialState: SettingsContextProps = {
-  themeMode: "light",
+const initialState: ThemeSettingsContextProps = {
+  themeMode: "system",
   onChangeMode: () => undefined,
 }
 
-const SettingsContext = createContext(initialState)
+const ThemeSettingsContext = createContext(initialState)
 
-function SettingsProvider({
+function ThemeSettingsProvider({
   children,
 }: PropsWithChildren<unknown>): ReactElement {
   const [mode, setMode] = useState<ThemeMode>("system")
@@ -52,9 +52,8 @@ function SettingsProvider({
   }
 
   return (
-    <SettingsContext.Provider
+    <ThemeSettingsContext.Provider
       value={{
-        // Mode
         themeMode: mode,
         onChangeMode,
       }}
@@ -63,8 +62,8 @@ function SettingsProvider({
         <CssBaseline />
         {children}
       </ThemeProvider>
-    </SettingsContext.Provider>
+    </ThemeSettingsContext.Provider>
   )
 }
 
-export { SettingsProvider, SettingsContext }
+export { ThemeSettingsProvider, ThemeSettingsContext }

@@ -7,7 +7,8 @@ import { formatBNToPercentString, formatBNToString } from "../utils"
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
-import { Button } from "@mui/material"
+import { Box } from "@mui/material"
+import Button from "./Button"
 import ConfirmTransaction from "./ConfirmTransaction"
 import { ReactComponent as InfoIcon } from "../assets/icons/info.svg"
 import Modal from "./Modal"
@@ -296,17 +297,17 @@ const SwapPage = (props: Props): ReactElement => {
             )
           })}
         </div>
-
-        <Button
-          variant="contained"
-          sx={{ width: "240px" }}
-          onClick={(): void => {
-            setCurrentModal("review")
-          }}
-          disabled={!!error || +toState.value <= 0}
-        >
-          {t("swap")}
-        </Button>
+        <Box mt={3}>
+          <Button
+            kind="primary"
+            onClick={(): void => {
+              setCurrentModal("review")
+            }}
+            disabled={!!error || +toState.value <= 0}
+          >
+            {t("swap")}
+          </Button>
+        </Box>
 
         <div className={classNames({ showError: !!error }, "error")}>
           {error}
