@@ -32,7 +32,7 @@ function ThemeSettingsProvider({
     : "light") as ThemeMode
 
   useEffect(() => {
-    const initialMode = (localStorage.getItem("paletteMode") ||
+    const initialMode: ThemeMode = (localStorage.getItem("paletteMode") ||
       "system") as ThemeMode
     setMode(initialMode === "system" ? prefersDarkMode : initialMode)
   }, [setMode, prefersDarkMode])

@@ -15,7 +15,6 @@ import { isChainSupportedByNotify, notify } from "../utils/notifyHandler"
 import { useDispatch, useSelector } from "react-redux"
 
 import Deposit from "./Deposit"
-import MuiSwap from "../muiComponents/Swap"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
@@ -72,7 +71,6 @@ export default function App(): ReactElement {
                 ))}
                 <Redirect from="/pools/:route/:action" to="/pools" />
                 <Route exact path="/risk" component={Risk} />
-                <Route exact path="/mui" component={MuiSwap} />
               </Switch>
 
               <Version />
