@@ -26,7 +26,11 @@ function TopMenu({ activeTab }: Props): ReactElement {
   const [currentModal, setCurrentModal] = useState<string | null>(null)
 
   return (
-    <header className="top" style={{ border: "#000, solid 3px" }}>
+    <header
+      data-testid="topMenuContainer"
+      className="top"
+      style={{ border: "#000, solid 3px" }}
+    >
       <div className="logoWrapper">
         <Link to="/">
           <img className="logo" alt="logo" src={logo} />
@@ -35,7 +39,11 @@ function TopMenu({ activeTab }: Props): ReactElement {
 
       <ul className="nav">
         <li>
-          <Link to="/" className={classNames({ active: activeTab === "swap" })}>
+          <Link
+            data-testid="swapNavLink"
+            to="/"
+            className={classNames({ active: activeTab === "swap" })}
+          >
             {t("swap")}
           </Link>
         </li>
@@ -86,6 +94,7 @@ function RewardsButton({
   const formattedTotal = formatBNToShortString(rewardBalances.total, 18)
   return IS_SDL_LIVE ? (
     <Button
+      data-testid="rewardButton"
       kind="secondary"
       onClick={() => setCurrentModal("tokenClaim")}
       size="medium"
@@ -128,6 +137,7 @@ function IconButtonAndSettings(): ReactElement {
   return (
     <div style={{ position: "relative" }} ref={wrapperRef}>
       <Button
+        data-testid="settingsMenuBtn"
         kind="ternary"
         size="medium"
         onClick={() => setIsDropdownOpen((state) => !state)}

@@ -15,6 +15,7 @@ function Modal({ isOpen, onClose, children }: Props): ReactElement | null {
     return (
       // Modal container, provide the dark background
       <div
+        data-testid="modalContainer"
         className="modal"
         onClick={(e: React.MouseEvent<HTMLSpanElement, MouseEvent>): void => {
           if (e.target === e.currentTarget) {
@@ -25,6 +26,7 @@ function Modal({ isOpen, onClose, children }: Props): ReactElement | null {
         {/* Modal content */}
         <div className="modalContent">
           <span
+            data-testid="modalCloseBtn"
             className="close"
             onClick={(
               e: React.MouseEvent<HTMLSpanElement, MouseEvent>,

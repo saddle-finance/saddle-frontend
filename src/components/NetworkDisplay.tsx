@@ -19,7 +19,12 @@ export default function NetworkDisplay({
     (chainId ? NETWORK_LABEL[chainId] : undefined) || t("unknown")
 
   return IS_L2_SUPPORTED ? (
-    <Button kind="ghost" size="medium" onClick={onClick}>
+    <Button
+      data-testid="networkDisplayBtn"
+      kind="ghost"
+      size="medium"
+      onClick={onClick}
+    >
       <div
         className={classnames(styles.circle, { [styles.active]: active })}
       ></div>{" "}
