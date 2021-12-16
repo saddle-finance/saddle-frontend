@@ -2,6 +2,9 @@
 @import "../styles/viewports";
 
 .myFarm {
+  * {
+    margin: 0px;
+  }
   h4 {
     width: 100%;
     flex-wrap: nowrap;

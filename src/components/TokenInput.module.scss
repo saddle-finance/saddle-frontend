@@ -29,6 +29,9 @@
     cursor: not-allowed;
   }
 
+  * {
+    margin: 0px;
+  }
   .smallText {
     font-size: $smallFont;
   }

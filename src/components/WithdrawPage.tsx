@@ -6,7 +6,8 @@ import React, { ReactElement, useState } from "react"
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
-import { Button } from "@mui/material"
+import { Box } from "@mui/material"
+import Button from "./Button"
 import ConfirmTransaction from "./ConfirmTransaction"
 import Modal from "./Modal"
 import MyFarm from "./MyFarm"
@@ -177,19 +178,19 @@ const WithdrawPage = (props: Props): ReactElement => {
           </div>
           <AdvancedOptions />
 
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ width: "240px" }}
-            disabled={
-              noShare ||
-              !!formStateData.error ||
-              formStateData.lpTokenAmountToSpend.isZero()
-            }
-            onClick={onSubmit}
-          >
-            {t("withdraw")}
-          </Button>
+          <Box display="flex" justifyContent="center" width="100%" mt={5}>
+            <Button
+              kind="primary"
+              disabled={
+                noShare ||
+                !!formStateData.error ||
+                formStateData.lpTokenAmountToSpend.isZero()
+              }
+              onClick={onSubmit}
+            >
+              {t("withdraw")}
+            </Button>
+          </Box>
         </div>
 
         <div>

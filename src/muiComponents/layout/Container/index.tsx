@@ -13,7 +13,7 @@ export default function Container({
           <TopMenu />
         </Toolbar>
       </AppBar>
-      <Toolbar sx={{ marginBottom: "10px" }} />
+      <Toolbar sx={{ marginBottom: "20px" }} />
       {children}
     </MuiContainer>
   )

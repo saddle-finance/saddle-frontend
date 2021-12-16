@@ -47,6 +47,9 @@ export const lightTheme = createTheme({
     h3: {
       fontFamily: ['"Noe Display"'].join(","),
     },
+    subtitle1: {
+      fontSize: 20,
+    },
   },
   components: {
     MuiCssBaseline: cssBaseline,
