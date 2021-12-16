@@ -1,5 +1,9 @@
+html {
+  /* prevent screen shaking due to the appearing of scrollbar */
+  margin-left: calc(100vw - 100%);
+  overflow-y: scroll;
+}
 body {
-  margin: 0;
   font-family: "Source Code Pro", monospace, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
