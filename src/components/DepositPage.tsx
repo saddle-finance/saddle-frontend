@@ -1,12 +1,13 @@
 import "./DepositPage.scss"
 
 import { ALETH_POOL_NAME, VETH2_POOL_NAME, isMetaPool } from "../constants"
-import { Box, Button } from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
 import AdvancedOptions from "./AdvancedOptions"
+import { Box } from "@mui/material"
+import Button from "./Button"
 import CheckboxInput from "./CheckboxInput"
 import ConfirmTransaction from "./ConfirmTransaction"
 import { DepositTransaction } from "../interfaces/transactions"
@@ -194,7 +195,7 @@ const DepositPage = (props: Props): ReactElement => {
           >
             <Box width={["90%", "50%"]} paddingTop={2}>
               <Button
-                variant="contained"
+                kind="primary"
                 fullWidth
                 onClick={(): void => {
                   setCurrentModal("review")

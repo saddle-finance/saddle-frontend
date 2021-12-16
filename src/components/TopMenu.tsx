@@ -71,9 +71,10 @@ function TopMenu(): ReactElement {
         </nav>
       </Box>
 
-      <Box
-        display="flex"
-        justifyContent="space-around"
+      <Stack
+        direction="row"
+        spacing={2}
+        justifyContent="end"
         alignItems="center"
         flex={1}
       >
@@ -81,7 +82,7 @@ function TopMenu(): ReactElement {
         <Web3Status />
         <NetworkDisplayAndSettings />
         <IconButtonAndSettings />
-      </Box>
+      </Stack>
       <Modal
         isOpen={!!currentModal}
         onClose={(): void => setCurrentModal(null)}

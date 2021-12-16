@@ -1,6 +1,5 @@
 import "./PoolOverview.scss"
 
-import { Button, styled } from "@mui/material"
 import {
   IS_SDL_LIVE,
   POOLS_MAP,
@@ -16,12 +15,14 @@ import {
   formatBNToString,
 } from "../utils"
 
+import Button from "./Button"
 import { Link } from "react-router-dom"
 import Tag from "./Tag"
 import ToolTip from "./ToolTip"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
 import logo from "../assets/icons/logo.svg"
+import { styled } from "@mui/material"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -190,7 +191,7 @@ export default function PoolOverview({
         </div>
         <div className="buttons">
           <LinkStyle to={`${poolRoute}/withdraw`}>
-            <Button variant="outlined">{t("withdraw")}</Button>
+            <Button kind="secondary">{t("withdraw")}</Button>
           </LinkStyle>
           {shouldMigrate ? (
             <Button onClick={onClickMigrate} disabled={!hasShare}>
@@ -199,9 +200,8 @@ export default function PoolOverview({
           ) : (
             <LinkStyle to={`${poolRoute}/deposit`}>
               <Button
-                variant="contained"
+                kind="primary"
                 disabled={poolData?.isPaused || isOutdated}
-                color="secondary"
               >
                 {t("deposit")}
               </Button>

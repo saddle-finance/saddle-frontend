@@ -7,7 +7,7 @@ import { formatBNToPercentString, formatBNToString } from "../utils"
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
-import { Button } from "@mui/material"
+import Button from "./Button"
 import ConfirmTransaction from "./ConfirmTransaction"
 import { ReactComponent as InfoIcon } from "../assets/icons/info.svg"
 import Modal from "./Modal"
@@ -296,8 +296,7 @@ const SwapPage = (props: Props): ReactElement => {
         </div>
 
         <Button
-          variant="contained"
-          sx={{ width: "240px" }}
+          kind="primary"
           onClick={(): void => {
             setCurrentModal("review")
           }}
