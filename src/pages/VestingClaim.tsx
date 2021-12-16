@@ -53,7 +53,8 @@ function VestingClaim(): ReactElement {
         const currentBeneficiaryEvents = events.filter(
           (event) => event.args?.beneficiary === account,
         )
-        setIsValidBeneficiary(currentBeneficiaryEvents.length > 0)
+        const isValidBeneficiary = currentBeneficiaryEvents.length > 0
+        setIsValidBeneficiary(isValidBeneficiary)
         if (isValidBeneficiary) {
           const vestingContract = getContract(
             currentBeneficiaryEvents[0].args?.vestingContract,
@@ -94,7 +95,7 @@ function VestingClaim(): ReactElement {
       }
     }
     void fetchBeneficiaries()
-  }, [account, chainId, library, isValidBeneficiary])
+  }, [account, chainId, library])
 
   const onClaimClick: () => void = async () => {
     if (!vestingContract) return
