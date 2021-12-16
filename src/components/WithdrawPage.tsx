@@ -6,7 +6,6 @@ import React, { ReactElement, useState } from "react"
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
-import { Box } from "@mui/material"
 import Button from "./Button"
 import ConfirmTransaction from "./ConfirmTransaction"
 import Modal from "./Modal"
@@ -15,6 +14,7 @@ import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
 import RadioButton from "./RadioButton"
 import ReviewWithdraw from "./ReviewWithdraw"
+import { Stack } from "@mui/material"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
@@ -180,7 +180,7 @@ const WithdrawPage = (props: Props): ReactElement => {
           </div>
           <AdvancedOptions />
 
-          <Box display="flex" justifyContent="center" mt={3}>
+          <Stack direction="row" width="434px" pt={3} justifyContent="center">
             <Button
               disabled={
                 noShare ||
@@ -191,7 +191,7 @@ const WithdrawPage = (props: Props): ReactElement => {
             >
               {t("withdraw")}
             </Button>
-          </Box>
+          </Stack>
         </div>
 
         <div>

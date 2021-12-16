@@ -1,12 +1,12 @@
 import "./DepositPage.scss"
 
 import { ALETH_POOL_NAME, VETH2_POOL_NAME, isMetaPool } from "../constants"
+import { Box, Stack } from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
 import AdvancedOptions from "./AdvancedOptions"
-import { Box } from "@mui/material"
 import Button from "./Button"
 import CheckboxInput from "./CheckboxInput"
 import ConfirmTransaction from "./ConfirmTransaction"
@@ -188,7 +188,7 @@ const DepositPage = (props: Props): ReactElement => {
             </div>
           </div>
           <AdvancedOptions />
-          <Box display="flex" width="434px" pt={3} justifyContent="center">
+          <Stack direction="row" width="434px" pt={3} justifyContent="center">
             <Box width={["90%", "50%"]}>
               <Button
                 kind="primary"
@@ -207,7 +207,7 @@ const DepositPage = (props: Props): ReactElement => {
                 {t("depositAndStake")}
               </Button>
             </Box> */}
-          </Box>
+          </Stack>
         </div>
         <div>
           {poolData && (

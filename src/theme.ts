@@ -1,6 +1,5 @@
 import { createTheme } from "@mui/material"
 
-// const seaweed = "#00F4D7"
 const saddleColors = {
   indigo: "#4B11F2",
   seafoam: "#06D7D7",
