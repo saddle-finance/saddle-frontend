@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import "../styles/global.scss"
 import "./NotifyStyle.scss"
 
@@ -8,6 +6,7 @@ import { BLOCK_TIME, POOLS_MAP } from "../constants"
 import React, {
   ReactElement,
   Suspense,
+  lazy,
   useCallback,
   useEffect,
   useMemo,
@@ -27,12 +26,11 @@ import Withdraw from "./Withdraw"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchSwapStats from "../utils/getSwapStats"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
-import loadable from "@loadable/component"
 import { useActiveWeb3React } from "../hooks"
 import usePoller from "../hooks/usePoller"
 
-const VestingClaim = loadable(() => import("./VestingClaim"))
-const Risk = loadable(() => import("./Risk"))
+const VestingClaim = lazy(() => import("./VestingClaim"))
+const Risk = lazy(() => import("./Risk"))
 
 export default function App(): ReactElement {
   const { chainId } = useActiveWeb3React()
