@@ -10,9 +10,12 @@ import {
   STABLECOIN_POOL_NAME,
   STABLECOIN_POOL_V2_NAME,
   SUSD_METAPOOL_NAME,
+  SUSD_METAPOOL_V2_NAME,
   TBTC_METAPOOL_NAME,
+  TBTC_METAPOOL_V2_NAME,
   VETH2_POOL_NAME,
   WCUSD_METAPOOL_NAME,
+  WCUSD_METAPOOL_V2_NAME,
 } from "../constants"
 import React, { ReactElement, useState } from "react"
 
@@ -40,9 +43,18 @@ function Pools(): ReactElement | null {
   )
   const [usdPoolData, usdUserShareData] = usePoolData(STABLECOIN_POOL_NAME)
   const [susdPoolData, susdUserShareData] = usePoolData(SUSD_METAPOOL_NAME)
+  const [susdPoolV2Data, susdV2UserShareData] = usePoolData(
+    SUSD_METAPOOL_V2_NAME,
+  )
   const [tbtcPoolData, tbtcUserShareData] = usePoolData(TBTC_METAPOOL_NAME)
+  const [tbtcPoolV2Data, tbtcV2UserShareData] = usePoolData(
+    TBTC_METAPOOL_V2_NAME,
+  )
   const [veth2PoolData, veth2UserShareData] = usePoolData(VETH2_POOL_NAME)
   const [wcusdPoolData, wcusdUserShareData] = usePoolData(WCUSD_METAPOOL_NAME)
+  const [wcusdPoolV2Data, wcusdV2UserShareData] = usePoolData(
+    WCUSD_METAPOOL_V2_NAME,
+  )
   const [arbUsdPoolData, arbUsdUserShareData] = usePoolData(ARB_USD_POOL_NAME)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const approveAndMigrateUSD = useApproveAndMigrateUSD()
@@ -103,6 +115,13 @@ function Pools(): ReactElement | null {
         userShareData: susdUserShareData,
         poolRoute: "/pools/susd",
       }
+    } else if (poolName === SUSD_METAPOOL_V2_NAME) {
+      return {
+        name: SUSD_METAPOOL_V2_NAME,
+        poolData: susdPoolV2Data,
+        userShareData: susdV2UserShareData,
+        poolRoute: "/pools/susdv2",
+      }
     } else if (poolName === TBTC_METAPOOL_NAME) {
       return {
         name: TBTC_METAPOOL_NAME,
@@ -110,12 +129,26 @@ function Pools(): ReactElement | null {
         userShareData: tbtcUserShareData,
         poolRoute: "/pools/tbtc",
       }
+    } else if (poolName === TBTC_METAPOOL_V2_NAME) {
+      return {
+        name: TBTC_METAPOOL_V2_NAME,
+        poolData: tbtcPoolV2Data,
+        userShareData: tbtcV2UserShareData,
+        poolRoute: "/pools/tbtcv2",
+      }
     } else if (poolName === WCUSD_METAPOOL_NAME) {
       return {
         name: WCUSD_METAPOOL_NAME,
         poolData: wcusdPoolData,
         userShareData: wcusdUserShareData,
         poolRoute: "/pools/wcusd",
+      }
+    } else if (poolName === WCUSD_METAPOOL_V2_NAME) {
+      return {
+        name: WCUSD_METAPOOL_V2_NAME,
+        poolData: wcusdPoolV2Data,
+        userShareData: wcusdV2UserShareData,
+        poolRoute: "/pools/wcusdv2",
       }
     } else if (poolName === ARB_USD_POOL_NAME) {
       return {
