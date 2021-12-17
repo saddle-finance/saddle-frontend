@@ -19,6 +19,7 @@ import {
 } from "../constants"
 import React, { ReactElement, useState } from "react"
 
+import { BigNumber } from "ethers"
 import ConfirmTransaction from "../components/ConfirmTransaction"
 import Modal from "../components/Modal"
 import PoolOverview from "../components/PoolOverview"
@@ -58,10 +59,16 @@ function Pools(): ReactElement | null {
   const [arbUsdPoolData, arbUsdUserShareData] = usePoolData(ARB_USD_POOL_NAME)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const approveAndMigrate = useApproveAndMigrate()
-  const [activeMigration, setActiveMigration] = useState<PoolName | null>(null)
+  const [activeMigration, setActiveMigration] = useState<{
+    poolName: PoolName
+    lpTokenBalance: BigNumber
+  }>({ poolName: STABLECOIN_POOL_NAME, lpTokenBalance: Zero })
   const [filter, setFilter] = useState<PoolTypes | "all" | "outdated">("all")
-  const handleClickMigrate = (poolName: PoolName) => {
-    setActiveMigration(poolName)
+  const handleClickMigrate = (
+    poolName: PoolName,
+    lpTokenBalance: BigNumber,
+  ) => {
+    setActiveMigration({ poolName, lpTokenBalance })
     setCurrentModal("migrate")
   }
 
@@ -230,21 +237,21 @@ function Pools(): ReactElement | null {
                 : 1
             }
           })
-          .map(([poolProps, migrationPool]) => {
-            console.log({ poolProps, migrationPool })
-            return (
-              <PoolOverview
-                key={poolProps.name}
-                {...poolProps}
-                onClickMigrate={
-                  poolProps.poolData.isMigrated
-                    ? () =>
-                        handleClickMigrate(poolProps.poolData.name as PoolName)
-                    : undefined
-                }
-              />
-            )
-          })}
+          .map(([poolProps]) => (
+            <PoolOverview
+              key={poolProps.name}
+              {...poolProps}
+              onClickMigrate={
+                poolProps.poolData.isMigrated
+                  ? () =>
+                      handleClickMigrate(
+                        POOLS_MAP[poolProps.poolData.name].name,
+                        poolProps.userShareData?.lpTokenBalance ?? Zero,
+                      )
+                  : undefined
+              }
+            />
+          ))}
       </div>
       <Modal
         isOpen={!!currentModal}
@@ -254,22 +261,27 @@ function Pools(): ReactElement | null {
           <ReviewMigration
             onClose={(): void => {
               setCurrentModal(null)
-              setActiveMigration(null)
+              setActiveMigration({
+                poolName: STABLECOIN_POOL_NAME,
+                lpTokenBalance: Zero,
+              })
             }}
             onConfirm={async (): Promise<void> => {
               setCurrentModal("confirm")
               logEvent("migrate", {
-                pool: activeMigration,
+                pool: activeMigration.poolName,
               })
-              // await approveAndMigrate(usdUserShareData?.lpTokenBalance)
               await approveAndMigrate(
-                BTC_POOL_V2_NAME,
-                usdUserShareData?.lpTokenBalance,
+                activeMigration.poolName,
+                activeMigration.lpTokenBalance,
               )
               setCurrentModal(null)
-              setActiveMigration(null)
+              setActiveMigration({
+                poolName: STABLECOIN_POOL_NAME,
+                lpTokenBalance: Zero,
+              })
             }}
-            migrationAmount={usdUserShareData?.lpTokenBalance}
+            migrationAmount={activeMigration.lpTokenBalance}
           />
         ) : null}
         {currentModal === "confirm" ? <ConfirmTransaction /> : null}

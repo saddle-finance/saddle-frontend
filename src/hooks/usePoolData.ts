@@ -3,6 +3,7 @@ import {
   BTC_POOL_NAME,
   POOLS_MAP,
   PoolName,
+  STABLECOIN_POOL_NAME,
   TRANSACTION_TYPES,
 } from "../constants"
 import {
@@ -310,10 +311,37 @@ export default function usePoolData(
           .div(totalAllocPoint)
       }
 
-      const oldPoolLPTokenAddress = await migratorContract.migrationMap(
-        poolAddress,
-      )
-      console.log({ oldPoolLPTokenAddress })
+      const metaSwapAddress = POOL.metaSwapAddresses?.[chainId]
+      let isMigrated = false
+      if (metaSwapAddress) {
+        try {
+          const migrationMapRes = await migratorContract.migrationMap(
+            metaSwapAddress,
+          )
+          isMigrated =
+            migrationMapRes.oldPoolLPTokenAddress !==
+            "0x0000000000000000000000000000000000000000"
+              ? true
+              : false
+        } catch (err) {
+          console.error(err)
+        }
+      }
+      // Edge case for Stable Coin Pool as it has no metaSwapAddress but is still migrated.
+      if (poolName === STABLECOIN_POOL_NAME) {
+        try {
+          const migrationMapRes = await migratorContract.migrationMap(
+            poolAddress,
+          )
+          isMigrated =
+            migrationMapRes.oldPoolLPTokenAddress !==
+            "0x0000000000000000000000000000000000000000"
+              ? true
+              : false
+        } catch (err) {
+          console.error(err)
+        }
+      }
 
       const poolData = {
         name: poolName,
@@ -331,7 +359,7 @@ export default function usePoolData(
         lpTokenPriceUSD,
         lpToken: POOL.lpToken.symbol,
         isPaused,
-        isMigrated: !!oldPoolLPTokenAddress,
+        isMigrated,
         sdlPerDay,
       }
       const userShareData = account
