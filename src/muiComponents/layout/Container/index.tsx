@@ -1,14 +1,16 @@
 import { AppBar, Toolbar } from "@mui/material"
 import React, { PropsWithChildren, ReactElement } from "react"
+import {
+  ThemeMode,
+  useThemeSettings,
+} from "../../../providers/ThemeSettingsProvider"
 import MuiContainer from "@mui/material/Container/Container"
 import { Switch } from "@mui/material"
-import { ThemeMode } from "../../../providers/ThemeSettingsContext"
-import useSettings from "../../../hooks/useSetting"
 
 export default function Container({
   children,
 }: PropsWithChildren<unknown>): ReactElement {
-  const { themeMode, onChangeMode } = useSettings()
+  const { themeMode, onChangeMode } = useThemeSettings()
   const currentThemeSelected = themeMode === "dark" ?? "light"
   const handleSwitchChange = (
     event: React.ChangeEvent<HTMLInputElement>,

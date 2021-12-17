@@ -2,6 +2,7 @@ import React, {
   PropsWithChildren,
   ReactElement,
   createContext,
+  useContext,
   useEffect,
   useState,
 } from "react"
@@ -67,3 +68,6 @@ function ThemeSettingsProvider({
 }
 
 export { ThemeSettingsProvider, ThemeSettingsContext }
+
+export const useThemeSettings: () => ThemeSettingsContextProps = () =>
+  useContext(ThemeSettingsContext)

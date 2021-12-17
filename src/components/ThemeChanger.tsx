@@ -1,11 +1,10 @@
 import "./ThemeChanger.scss"
 
 import React, { ReactElement } from "react"
-
-import useSettings from "../hooks/useSetting"
+import { useThemeSettings } from "../providers/ThemeSettingsProvider"
 
 const ThemeChanger = (): ReactElement => {
-  const { themeMode, onChangeMode } = useSettings()
+  const { themeMode, onChangeMode } = useThemeSettings()
 
   const handleThemeChange = () => {
     onChangeMode(themeMode === "light" ? "dark" : "light")

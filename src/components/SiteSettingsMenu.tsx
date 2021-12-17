@@ -6,7 +6,7 @@ import logo from "../assets/icons/logo.svg"
 import styles from "./SiteSettingsMenu.module.scss"
 import { useActiveWeb3React } from "../hooks"
 import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
-import useSettings from "../hooks/useSetting"
+import { useThemeSettings } from "../providers/ThemeSettingsProvider"
 import { useTranslation } from "react-i18next"
 
 export default function SiteSettingsMenu(): ReactElement {
@@ -166,7 +166,7 @@ function LanguageSection(): ReactElement {
 
 function ThemeSection(): ReactElement {
   const { t } = useTranslation()
-  const { themeMode, onChangeMode } = useSettings()
+  const { themeMode, onChangeMode } = useThemeSettings()
 
   const handleChangeMode = () => {
     onChangeMode(themeMode === "dark" ? "light" : "dark")
