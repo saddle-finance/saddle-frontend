@@ -1,12 +1,12 @@
 import "./WithdrawPage.scss"
 
-import { Button, Center } from "@chakra-ui/react"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
+import Button from "./Button"
 import ConfirmTransaction from "./ConfirmTransaction"
 import Modal from "./Modal"
 import MyFarm from "./MyFarm"
@@ -14,6 +14,7 @@ import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
 import RadioButton from "./RadioButton"
 import ReviewWithdraw from "./ReviewWithdraw"
+import { Stack } from "@mui/material"
 import TokenInput from "./TokenInput"
 import TopMenu from "./TopMenu"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
@@ -178,11 +179,9 @@ const WithdrawPage = (props: Props): ReactElement => {
             </div>
           </div>
           <AdvancedOptions />
-          <Center width="100%" py={6}>
+
+          <Stack direction="row" width="434px" pt={3} justifyContent="center">
             <Button
-              variant="primary"
-              size="lg"
-              width="240px"
               disabled={
                 noShare ||
                 !!formStateData.error ||
@@ -192,7 +191,7 @@ const WithdrawPage = (props: Props): ReactElement => {
             >
               {t("withdraw")}
             </Button>
-          </Center>
+          </Stack>
         </div>
 
         <div>

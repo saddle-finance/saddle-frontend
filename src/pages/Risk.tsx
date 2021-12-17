@@ -12,7 +12,7 @@ function Risk(): ReactElement {
     <div className="riskpage">
       <TopMenu activeTab={t("risk")} />
       <div className="content">
-        <h1 className="title">Risk</h1>
+        <h3 className="title">Risk</h3>
         <p data-testid="risk-intro">
           {t("riskIntro")}{" "}
           <a href="https://github.com/saddle-finance/saddle-contract">

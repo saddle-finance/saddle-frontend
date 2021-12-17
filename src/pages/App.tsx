@@ -20,7 +20,6 @@ import Pools from "./Pools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import Risk from "./Risk"
 import Swap from "./Swap"
-import ThemeProvider from "../providers/ThemeProvider"
 import Version from "../components/Version"
 import Web3ReactManager from "../components/Web3ReactManager"
 import Withdraw from "./Withdraw"
@@ -47,41 +46,38 @@ export default function App(): ReactElement {
   }, [chainId])
   return (
     <Suspense fallback={null}>
-      <ThemeProvider>
-        <Web3ReactManager>
-          <GasAndTokenPrices>
-            <PendingSwapsProvider>
-              <RewardsBalancesProvider>
-                <Switch>
-                  <Route exact path="/" component={Swap} />
-                  <Route exact path="/pools" component={Pools} />
-                  {pools.map(({ name, route }) => (
-                    <Route
-                      exact
-                      path={`/pools/${route}/deposit`}
-                      render={(props) => <Deposit {...props} poolName={name} />}
-                      key={`${name}-deposit`}
-                    />
-                  ))}
-                  {pools.map(({ name, route }) => (
-                    <Route
-                      exact
-                      path={`/pools/${route}/withdraw`}
-                      render={(props) => (
-                        <Withdraw {...props} poolName={name} />
-                      )}
-                      key={`${name}-withdraw`}
-                    />
-                  ))}
-                  <Redirect from="/pools/:route/:action" to="/pools" />
-                  <Route exact path="/risk" component={Risk} />
-                </Switch>
-                <Version />
-              </RewardsBalancesProvider>
-            </PendingSwapsProvider>
-          </GasAndTokenPrices>
-        </Web3ReactManager>
-      </ThemeProvider>
+      <Web3ReactManager>
+        <GasAndTokenPrices>
+          <PendingSwapsProvider>
+            <RewardsBalancesProvider>
+              <Switch>
+                <Route exact path="/" component={Swap} />
+                <Route exact path="/pools" component={Pools} />
+                {pools.map(({ name, route }) => (
+                  <Route
+                    exact
+                    path={`/pools/${route}/deposit`}
+                    render={(props) => <Deposit {...props} poolName={name} />}
+                    key={`${name}-deposit`}
+                  />
+                ))}
+                {pools.map(({ name, route }) => (
+                  <Route
+                    exact
+                    path={`/pools/${route}/withdraw`}
+                    render={(props) => <Withdraw {...props} poolName={name} />}
+                    key={`${name}-withdraw`}
+                  />
+                ))}
+                <Redirect from="/pools/:route/:action" to="/pools" />
+                <Route exact path="/risk" component={Risk} />
+              </Switch>
+
+              <Version />
+            </RewardsBalancesProvider>
+          </PendingSwapsProvider>
+        </GasAndTokenPrices>
+      </Web3ReactManager>
     </Suspense>
   )
 }

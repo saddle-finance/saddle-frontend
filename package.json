@@ -4,10 +4,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@chakra-ui/react": "^1.4.1",
-    "@emotion/react": "^11.1.5",
-    "@emotion/styled": "^11.1.5",
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
     "@metamask/jazzicon": "^2.0.0",
+    "@mui/icons-material": "^5.2.1",
+    "@mui/material": "^5.2.3",
     "@reduxjs/toolkit": "^1.4.0",
     "@types/jest": "^26.0.22",
     "@types/lodash": "^4.14.165",
@@ -48,7 +49,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
-    "@chakra-ui/cli": "^1.2.1",
     "@cypress/code-coverage": "^3.9.4",
     "@cypress/instrument-cra": "^1.4.0",
     "@cypress/react": "^5.10.3",
@@ -97,8 +97,7 @@
     "cy:open": "cypress open",
     "cy:startopen": "start-test 3000 'cypress open'",
     "cy:coverage": "start-test 3000 'cypress run --config video=false'",
-    "postinstall": "typechain --target ethers-v5 'src/constants/abis/*.json' && npm run gen:theme-typings",
-    "gen:theme-typings": "chakra-cli tokens src/theme/index.ts",
+    "postinstall": "typechain --target ethers-v5 'src/constants/abis/*.json'",
     "prepare": "husky install"
   },
   "homepage": ".",

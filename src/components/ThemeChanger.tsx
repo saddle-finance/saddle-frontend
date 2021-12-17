@@ -1,20 +1,23 @@
 import "./ThemeChanger.scss"
 
-import React, { ReactElement, useContext } from "react"
-
-import { ThemeContext } from "../providers/ThemeProvider"
+import React, { ReactElement } from "react"
+import { useThemeSettings } from "../providers/ThemeSettingsProvider"
 
 const ThemeChanger = (): ReactElement => {
-  const { toggleTheme, userDarkMode } = useContext(ThemeContext)
+  const { themeMode, onChangeMode } = useThemeSettings()
+
+  const handleThemeChange = () => {
+    onChangeMode(themeMode === "light" ? "dark" : "light")
+  }
 
   return (
     <div className="themeChanger">
       <button
         onClick={(): void => {
-          toggleTheme()
+          handleThemeChange()
         }}
       >
-        {userDarkMode ? "☾" : "☀"}
+        {themeMode == "dark" ? "☾" : "☀"}
       </button>
     </div>
   )
