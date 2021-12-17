@@ -33,9 +33,9 @@ export function useApproveAndMigrate(): (
   ): Promise<void> {
     if (!migratorContract || !chainId || !account || !library) return
     const pool = POOLS_MAP[oldPoolName]
-    const poolAddress = pool.addresses[chainId]
+    const lpTokenAddress = pool.lpToken.addresses[chainId]
     const lpTokenContract = getContract(
-      poolAddress,
+      lpTokenAddress,
       ERC20_ABI,
       library,
       account,

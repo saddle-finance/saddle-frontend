@@ -311,18 +311,13 @@ export default function usePoolData(
 
       const metaSwapAddress = POOL.metaSwapAddresses?.[chainId]
       const poolAddressToCheckMigrationStatus = metaSwapAddress || poolAddress
-      const migrationAddress = metaSwapAddress ? metaSwapAddress : poolAddress
       let isMigrated = false
-      if (
-        poolAddressToCheckMigrationStatus &&
-        migratorContract &&
-        migrationAddress
-      ) {
+      if (poolAddressToCheckMigrationStatus && migratorContract) {
         try {
           const migrationMapRes = await migratorContract.migrationMap(
-            migrationAddress,
+            poolAddressToCheckMigrationStatus,
           )
-          isMigrated = migrationMapRes.oldPoolLPTokenAddress !== AddressZero
+          isMigrated = migrationMapRes.newPoolAddress !== AddressZero
         } catch (err) {
           console.error(err)
         }
