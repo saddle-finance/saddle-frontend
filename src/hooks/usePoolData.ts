@@ -3,7 +3,6 @@ import {
   BTC_POOL_NAME,
   POOLS_MAP,
   PoolName,
-  STABLECOIN_POOL_NAME,
   TRANSACTION_TYPES,
 } from "../constants"
 import {
@@ -135,8 +134,7 @@ export default function usePoolData(
         swapContract == null ||
         tokenPricesUSD == null ||
         library == null ||
-        chainId == null ||
-        migratorContract == null
+        chainId == null
       )
         return
       const POOL = POOLS_MAP[poolName]
@@ -312,32 +310,19 @@ export default function usePoolData(
       }
 
       const metaSwapAddress = POOL.metaSwapAddresses?.[chainId]
+      const poolAddressToCheckMigrationStatus = metaSwapAddress || poolAddress
+      const migrationAddress = metaSwapAddress ? metaSwapAddress : poolAddress
       let isMigrated = false
-      if (metaSwapAddress) {
+      if (
+        poolAddressToCheckMigrationStatus &&
+        migratorContract &&
+        migrationAddress
+      ) {
         try {
           const migrationMapRes = await migratorContract.migrationMap(
-            metaSwapAddress,
+            migrationAddress,
           )
-          isMigrated =
-            migrationMapRes.oldPoolLPTokenAddress !==
-            "0x0000000000000000000000000000000000000000"
-              ? true
-              : false
-        } catch (err) {
-          console.error(err)
-        }
-      }
-      // Edge case for Stable Coin Pool as it has no metaSwapAddress but is still migrated.
-      if (poolName === STABLECOIN_POOL_NAME) {
-        try {
-          const migrationMapRes = await migratorContract.migrationMap(
-            poolAddress,
-          )
-          isMigrated =
-            migrationMapRes.oldPoolLPTokenAddress !==
-            "0x0000000000000000000000000000000000000000"
-              ? true
-              : false
+          isMigrated = migrationMapRes.oldPoolLPTokenAddress !== AddressZero
         } catch (err) {
           console.error(err)
         }
