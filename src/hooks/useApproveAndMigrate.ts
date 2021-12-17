@@ -1,22 +1,27 @@
-import { STABLECOIN_POOL_NAME, TRANSACTION_TYPES } from "../constants"
+import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
 import { useDispatch, useSelector } from "react-redux"
-import { useLPTokenContract, useSwapMigratorUSDContract } from "./useContract"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
+import ERC20_ABI from "../constants/abis/erc20.json"
+import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { gasBNFromState } from "../utils/gas"
+import { getContract } from "../utils"
 import { notifyHandler } from "../utils/notifyHandler"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
+import { useGeneralizedSwapMigratorContract } from "./useContract"
 
-export function useApproveAndMigrateUSD(): (
+export function useApproveAndMigrate(): (
+  oldPoolName: PoolName,
   lpTokenBalance?: BigNumber,
 ) => Promise<void> {
   const dispatch = useDispatch()
-  const migratorContract = useSwapMigratorUSDContract()
-  const lpTokenContract = useLPTokenContract(STABLECOIN_POOL_NAME)
-  const { account } = useActiveWeb3React()
+  // const migratorContract = useSwapMigratorUSDContract()
+  const migratorContract = useGeneralizedSwapMigratorContract()
+  // const lpTokenContract = useLPTokenContract(oldPoolName)
+  const { account, chainId, library } = useActiveWeb3React()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -24,9 +29,19 @@ export function useApproveAndMigrateUSD(): (
     (state: AppState) => state.user,
   )
 
-  return async function approveAndMigrateUSD(
+  return async function approveAndMigrate(
+    oldPoolName: PoolName,
     lpTokenBalance?: BigNumber,
   ): Promise<void> {
+    if (!migratorContract || !chainId || !account || !library) return
+    const pool = POOLS_MAP[oldPoolName]
+    const poolAddress = pool.addresses[chainId]
+    const lpTokenContract = getContract(
+      poolAddress,
+      ERC20_ABI,
+      library,
+      account,
+    ) as Erc20
     try {
       const gasPrice = gasBNFromState(
         { gasStandard, gasFast, gasInstant },
@@ -52,7 +67,8 @@ export function useApproveAndMigrateUSD(): (
         },
       )
 
-      const migrateTransaction = await migratorContract.migrateUSDPool(
+      const migrateTransaction = await migratorContract.migrate(
+        oldPoolName,
         lpTokenBalance,
         lpTokenBalance.mul(1000 - 5).div(1000), // 50bps, 0.5%
       )

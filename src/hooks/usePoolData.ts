@@ -11,7 +11,11 @@ import {
   getTokenSymbolForPoolType,
 } from "../utils"
 import { useEffect, useState } from "react"
-import { useMiniChefContract, useSwapContract } from "./useContract"
+import {
+  useGeneralizedSwapMigratorContract,
+  useMiniChefContract,
+  useSwapContract,
+} from "./useContract"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -60,6 +64,7 @@ export interface PoolDataType {
   >
   lpTokenPriceUSD: BigNumber
   lpToken: string
+  isMigrated: boolean
 }
 
 export interface UserShareType {
@@ -90,6 +95,7 @@ const emptyPoolData = {
   lpTokenPriceUSD: Zero,
   lpToken: "",
   isPaused: false,
+  isMigrated: false,
   sdlPerDay: null,
 } as PoolDataType
 
@@ -99,6 +105,7 @@ export default function usePoolData(
   const { account, library, chainId } = useActiveWeb3React()
   const swapContract = useSwapContract(poolName)
   const rewardsContract = useMiniChefContract()
+  const migratorContract = useGeneralizedSwapMigratorContract()
   const { tokenPricesUSD, lastTransactionTimes, swapStats } = useSelector(
     (state: AppState) => state.application,
   )
@@ -127,7 +134,8 @@ export default function usePoolData(
         swapContract == null ||
         tokenPricesUSD == null ||
         library == null ||
-        chainId == null
+        chainId == null ||
+        migratorContract == null
       )
         return
       const POOL = POOLS_MAP[poolName]
@@ -301,6 +309,12 @@ export default function usePoolData(
           .mul(allocPoint)
           .div(totalAllocPoint)
       }
+
+      const oldPoolLPTokenAddress = await migratorContract.migrationMap(
+        poolAddress,
+      )
+      console.log({ oldPoolLPTokenAddress })
+
       const poolData = {
         name: poolName,
         tokens: poolTokens,
@@ -317,6 +331,7 @@ export default function usePoolData(
         lpTokenPriceUSD,
         lpToken: POOL.lpToken.symbol,
         isPaused,
+        isMigrated: !!oldPoolLPTokenAddress,
         sdlPerDay,
       }
       const userShareData = account
@@ -349,6 +364,7 @@ export default function usePoolData(
     lastSwapTime,
     lastMigrateTime,
     lastStakeOrClaimTime,
+    migratorContract,
     poolName,
     swapContract,
     tokenPricesUSD,

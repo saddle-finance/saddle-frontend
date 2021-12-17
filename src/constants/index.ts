@@ -159,6 +159,11 @@ export const SWAP_MIGRATOR_USD_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0x99bbA657f2BbC93c02D617f8bA121cB8Fc104Acf",
 })
 
+export const GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES = buildAddresses({
+  [ChainId.MAINNET]: "0x2d5D79753bB8e02ca1ce8EcE0aa55288F8c8d840",
+  [ChainId.HARDHAT]: "0x202CCe504e04bEd6fC0521238dDf04Bc9E8E15aB",
+})
+
 export const SUSD_META_SWAP_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0x0C8BAe14c9f9BF2c953997C881BEfaC7729FD314",
   [ChainId.HARDHAT]: "0x9d4454B023096f34B160D6B654540c56A1F81688",
@@ -822,7 +827,6 @@ export type Pool = {
   addresses: { [chainId in ChainId]: string }
   type: PoolTypes
   route: string
-  migration?: PoolName
   metaSwapAddresses?: { [chainId in ChainId]: string }
   underlyingPoolTokens?: Token[]
   underlyingPool?: PoolName
@@ -861,7 +865,6 @@ export const POOLS_MAP: PoolsMap = {
     poolTokens: STABLECOIN_POOL_TOKENS,
     isSynthetic: false,
     type: PoolTypes.USD,
-    migration: STABLECOIN_POOL_V2_NAME,
     route: "usd",
     rewardPids: buildPids({}),
   },
