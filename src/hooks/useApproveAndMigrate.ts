@@ -18,9 +18,7 @@ export function useApproveAndMigrate(): (
   lpTokenBalance?: BigNumber,
 ) => Promise<void> {
   const dispatch = useDispatch()
-  // const migratorContract = useSwapMigratorUSDContract()
   const migratorContract = useGeneralizedSwapMigratorContract()
-  // const lpTokenContract = useLPTokenContract(oldPoolName)
   const { account, chainId, library } = useActiveWeb3React()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
