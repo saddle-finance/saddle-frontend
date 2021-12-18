@@ -14,7 +14,7 @@ import { useActiveWeb3React } from "."
 import { useGeneralizedSwapMigratorContract } from "./useContract"
 
 export function useApproveAndMigrate(): (
-  oldPoolName: PoolName,
+  oldPoolName: PoolName | null,
   lpTokenBalance?: BigNumber,
 ) => Promise<void> {
   const dispatch = useDispatch()
@@ -28,10 +28,11 @@ export function useApproveAndMigrate(): (
   )
 
   return async function approveAndMigrate(
-    oldPoolName: PoolName,
+    oldPoolName: PoolName | null,
     lpTokenBalance?: BigNumber,
   ): Promise<void> {
-    if (!migratorContract || !chainId || !account || !library) return
+    if (!migratorContract || !chainId || !account || !library || !oldPoolName)
+      return
     const pool = POOLS_MAP[oldPoolName]
     const lpTokenAddress = pool.lpToken.addresses[chainId]
     const lpTokenContract = getContract(
@@ -64,21 +65,25 @@ export function useApproveAndMigrate(): (
           },
         },
       )
+      try {
+        const metaSwapAddress = pool.metaSwapAddresses?.[chainId]
+        const migratingPoolAddress = metaSwapAddress || pool.addresses[chainId]
+        const migrateTransaction = await migratorContract.migrate(
+          migratingPoolAddress,
+          lpTokenBalance,
+          lpTokenBalance.mul(1000 - 5).div(1000), // 50bps, 0.5%
+        )
+        notifyHandler(migrateTransaction.hash, "migrate")
+        await migrateTransaction.wait()
+        dispatch(
+          updateLastTransactionTimes({
+            [TRANSACTION_TYPES.MIGRATE]: Date.now(),
+          }),
+        )
+      } catch (err) {
+        console.error(err)
+      }
 
-      const migrateTransaction = await migratorContract.migrate(
-        oldPoolName,
-        lpTokenBalance,
-        lpTokenBalance.mul(1000 - 5).div(1000), // 50bps, 0.5%
-      )
-
-      notifyHandler(migrateTransaction.hash, "migrate")
-
-      await migrateTransaction.wait()
-      dispatch(
-        updateLastTransactionTimes({
-          [TRANSACTION_TYPES.MIGRATE]: Date.now(),
-        }),
-      )
       return Promise.resolve()
     } catch (e) {
       console.error(e)

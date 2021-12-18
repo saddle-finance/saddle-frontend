@@ -17,7 +17,7 @@ import {
   WCUSD_METAPOOL_NAME,
   WCUSD_METAPOOL_V2_NAME,
 } from "../constants"
-import React, { ReactElement, useState } from "react"
+import React, { ReactElement, useEffect, useState } from "react"
 
 import { BigNumber } from "ethers"
 import ConfirmTransaction from "../components/ConfirmTransaction"
@@ -34,7 +34,7 @@ import { useApproveAndMigrate } from "../hooks/useApproveAndMigrate"
 import usePoolData from "../hooks/usePoolData"
 
 function Pools(): ReactElement | null {
-  const { chainId } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const [d4PoolData, d4UserShareData] = usePoolData(D4_POOL_NAME)
   const [alethPoolData, alethUserShareData] = usePoolData(ALETH_POOL_NAME)
   const [btcPoolData, btcUserShareData] = usePoolData(BTC_POOL_NAME)
@@ -60,9 +60,9 @@ function Pools(): ReactElement | null {
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const approveAndMigrate = useApproveAndMigrate()
   const [activeMigration, setActiveMigration] = useState<{
-    poolName: PoolName
+    poolName: PoolName | null
     lpTokenBalance: BigNumber
-  }>({ poolName: STABLECOIN_POOL_NAME, lpTokenBalance: Zero })
+  }>({ poolName: null, lpTokenBalance: Zero })
   const [filter, setFilter] = useState<PoolTypes | "all" | "outdated">("all")
   const handleClickMigrate = (
     poolName: PoolName,
@@ -71,6 +71,10 @@ function Pools(): ReactElement | null {
     setActiveMigration({ poolName, lpTokenBalance })
     setCurrentModal("migrate")
   }
+
+  useEffect(() => {
+    setActiveMigration({ poolName: null, lpTokenBalance: Zero })
+  }, [account, chainId])
 
   function getPropsForPool(poolName: PoolName) {
     if (poolName === D4_POOL_NAME) {
@@ -198,29 +202,23 @@ function Pools(): ReactElement | null {
       </ul>
       <div className={styles.content}>
         {Object.values(POOLS_MAP)
-          .filter(
-            ({ type, isOutdated }) =>
-              filter === "all" ||
-              type === filter ||
-              (filter === "outdated" && isOutdated),
-          )
           .filter(({ addresses }) => (chainId ? addresses[chainId] : false))
           .map(
-            ({ name, isOutdated }) =>
-              [getPropsForPool(name), isOutdated] as const,
+            ({ name, type, isOutdated }) =>
+              [getPropsForPool(name), isOutdated, type] as const,
+          )
+          .filter(
+            ([poolProps, isOutdated, type]) =>
+              filter === "all" ||
+              type === filter ||
+              (filter === "outdated" &&
+                (isOutdated || poolProps.poolData.isMigrated)),
           )
           .sort(([a, aIsOutdated], [b, bIsOutdated]) => {
             // 1. active pools
             // 2. user pools
             // 3. higher TVL pools
             if (
-              a.poolData.isMigrated ||
-              b.poolData.isMigrated ||
-              aIsOutdated ||
-              bIsOutdated
-            ) {
-              return a.poolData.isMigrated || aIsOutdated ? 1 : -1
-            } else if (
               (a.userShareData?.usdBalance || Zero).gt(Zero) ||
               (b.userShareData?.usdBalance || Zero).gt(Zero)
             ) {
@@ -229,6 +227,13 @@ function Pools(): ReactElement | null {
               )
                 ? -1
                 : 1
+            } else if (
+              a.poolData.isMigrated ||
+              b.poolData.isMigrated ||
+              aIsOutdated ||
+              bIsOutdated
+            ) {
+              return a.poolData.isMigrated || aIsOutdated ? 1 : -1
             } else {
               return (a.poolData?.reserve || Zero).gt(
                 b.poolData?.reserve || Zero,
