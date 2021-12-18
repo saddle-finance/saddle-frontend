@@ -215,8 +215,8 @@ function Pools(): ReactElement | null {
                 (isOutdated || poolProps.poolData.isMigrated)),
           )
           .sort(([a, aIsOutdated], [b, bIsOutdated]) => {
-            // 1. active pools
-            // 2. user pools
+            // 1. user pools
+            // 2. active pools
             // 3. higher TVL pools
             if (
               (a.userShareData?.usdBalance || Zero).gt(Zero) ||
