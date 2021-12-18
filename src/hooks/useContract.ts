@@ -1,11 +1,11 @@
 import {
   BRIDGE_CONTRACT_ADDRESSES,
   BTC_POOL_NAME,
+  GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES,
   MINICHEF_CONTRACT_ADDRESSES,
   POOLS_MAP,
   PoolName,
   RETROACTIVE_VESTING_CONTRACT_ADDRESSES,
-  SWAP_MIGRATOR_USD_CONTRACT_ADDRESSES,
   SYNTHETIX_CONTRACT_ADDRESSES,
   SYNTHETIX_EXCHANGE_RATES_CONTRACT_ADDRESSES,
   TOKENS_MAP,
@@ -19,12 +19,13 @@ import { Bridge } from "../../types/ethers-contracts/Bridge"
 import { Contract } from "@ethersproject/contracts"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
+import GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI from "../constants/abis/generalizedSwapMigrator.json"
+import { GeneralizedSwapMigrator } from "../../types/ethers-contracts/GeneralizedSwapMigrator"
 import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import META_SWAP_DEPOSIT_ABI from "../constants/abis/metaSwapDeposit.json"
-import MIGRATOR_USD_CONTRACT_ABI from "../constants/abis/swapMigratorUSD.json"
 import MINICHEF_CONTRACT_ABI from "../constants/abis/miniChef.json"
 import { MetaSwapDeposit } from "../../types/ethers-contracts/MetaSwapDeposit"
 import { MiniChef } from "../../types/ethers-contracts/MiniChef"
@@ -38,7 +39,6 @@ import SYNTHETIX_NETWORK_TOKEN_CONTRACT_ABI from "../constants/abis/synthetixNet
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
-import { SwapMigratorUSD } from "../../types/ethers-contracts/SwapMigratorUSD"
 import { SynthetixExchangeRate } from "../../types/ethers-contracts/SynthetixExchangeRate"
 import { SynthetixNetworkToken } from "../../types/ethers-contracts/SynthetixNetworkToken"
 import { getContract } from "../utils"
@@ -69,15 +69,15 @@ function useContract(
   }, [address, ABI, library, withSignerIfPossible, account])
 }
 
-export function useSwapMigratorUSDContract(): SwapMigratorUSD | null {
+export function useGeneralizedSwapMigratorContract(): GeneralizedSwapMigrator | null {
   const { chainId } = useActiveWeb3React()
   const contractAddress = chainId
-    ? SWAP_MIGRATOR_USD_CONTRACT_ADDRESSES[chainId]
+    ? GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES[chainId]
     : undefined
   return useContract(
     contractAddress,
-    MIGRATOR_USD_CONTRACT_ABI,
-  ) as SwapMigratorUSD
+    GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI,
+  ) as GeneralizedSwapMigrator
 }
 
 export function useBridgeContract(): Bridge | null {
