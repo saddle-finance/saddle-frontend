@@ -1,12 +1,12 @@
 import { ChainId, IS_L2_SUPPORTED, IS_SDL_LIVE, SDL_TOKEN } from "../constants"
-import React, { ReactElement, useContext, useState } from "react"
+import React, { ReactElement, useState } from "react"
 
-import { ThemeContext } from "../providers/ThemeProvider"
 import classnames from "classnames"
 import logo from "../assets/icons/logo.svg"
 import styles from "./SiteSettingsMenu.module.scss"
 import { useActiveWeb3React } from "../hooks"
 import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
+import { useThemeSettings } from "../providers/ThemeSettingsProvider"
 import { useTranslation } from "react-i18next"
 
 export default function SiteSettingsMenu(): ReactElement {
@@ -166,16 +166,21 @@ function LanguageSection(): ReactElement {
 
 function ThemeSection(): ReactElement {
   const { t } = useTranslation()
-  const { toggleTheme, userDarkMode } = useContext(ThemeContext)
+  const { themeMode, onChangeMode } = useThemeSettings()
+
+  const handleChangeMode = () => {
+    onChangeMode(themeMode === "dark" ? "light" : "dark")
+  }
 
   return (
     <div className={styles.section}>
       <div
         data-testid="themeMenuOption"
         className={styles.sectionTitle}
-        onClick={toggleTheme}
+        onClick={handleChangeMode}
       >
-        <span>{t("theme")}</span> <span>{userDarkMode ? "☾" : "☀"}</span>
+        <span>{t("theme")}</span>{" "}
+        <span>{themeMode === "dark" ? "☾" : "☀"}</span>
       </div>
     </div>
   )
