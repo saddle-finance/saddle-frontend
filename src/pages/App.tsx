@@ -6,6 +6,7 @@ import { BLOCK_TIME, POOLS_MAP } from "../constants"
 import React, {
   ReactElement,
   Suspense,
+  lazy,
   useCallback,
   useEffect,
   useMemo,
@@ -18,7 +19,6 @@ import Deposit from "./Deposit"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
-import Risk from "./Risk"
 import Swap from "./Swap"
 import Version from "../components/Version"
 import Web3ReactManager from "../components/Web3ReactManager"
@@ -28,6 +28,9 @@ import fetchSwapStats from "../utils/getSwapStats"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import { useActiveWeb3React } from "../hooks"
 import usePoller from "../hooks/usePoller"
+
+const VestingClaim = lazy(() => import("./VestingClaim"))
+const Risk = lazy(() => import("./Risk"))
 
 export default function App(): ReactElement {
   const { chainId } = useActiveWeb3React()
@@ -71,6 +74,7 @@ export default function App(): ReactElement {
                 ))}
                 <Redirect from="/pools/:route/:action" to="/pools" />
                 <Route exact path="/risk" component={Risk} />
+                <Route exact path="/vesting-claim" component={VestingClaim} />
               </Switch>
 
               <Version />
