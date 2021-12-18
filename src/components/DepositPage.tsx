@@ -1,12 +1,13 @@
 import "./DepositPage.scss"
 
 import { ALETH_POOL_NAME, VETH2_POOL_NAME, isMetaPool } from "../constants"
-import { Box, Button, HStack } from "@chakra-ui/react"
+import { Box, Stack } from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
 import AdvancedOptions from "./AdvancedOptions"
+import Button from "./Button"
 import CheckboxInput from "./CheckboxInput"
 import ConfirmTransaction from "./ConfirmTransaction"
 import { DepositTransaction } from "../interfaces/transactions"
@@ -187,19 +188,11 @@ const DepositPage = (props: Props): ReactElement => {
             </div>
           </div>
           <AdvancedOptions />
-          <HStack
-            width="434px"
-            margin="auto"
-            spacing={[0, 2]}
-            py={6}
-            flexWrap={["wrap", "nowrap"]}
-            justifyContent={["center", "space-between"]}
-          >
-            <Box width={["90%", "50%"]} paddingTop={2}>
+          <Stack direction="row" width="434px" pt={3} justifyContent="center">
+            <Box width={["90%", "50%"]}>
               <Button
-                variant="primary"
-                size="lg"
-                width="100%"
+                kind="primary"
+                fullWidth
                 onClick={(): void => {
                   setCurrentModal("review")
                 }}
@@ -214,7 +207,7 @@ const DepositPage = (props: Props): ReactElement => {
                 {t("depositAndStake")}
               </Button>
             </Box> */}
-          </HStack>
+          </Stack>
         </div>
         <div>
           {poolData && (
