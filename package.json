@@ -1,6 +1,6 @@
 {
   "name": "saddle-frontend",
-  "description": "The frontend test for saddle.finance 🤠",
+  "description": "The frontend tt for saddle.finance 🤠",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
