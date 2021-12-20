@@ -50,7 +50,6 @@ export const lightTheme = createTheme({
           backgroundColor: "#FFFFE9",
           color: "#141414",
           boxShadow: "transparent",
-          backgroundImage: "none !important",
           borderColor: "transparent",
         },
       },
