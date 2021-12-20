@@ -1,9 +1,9 @@
 import "./TopMenu.scss"
 
+import { ChainId, IS_SDL_LIVE } from "../constants"
 import React, { ReactElement, useContext, useRef, useState } from "react"
 
 import Button from "./Button"
-import { IS_SDL_LIVE } from "../constants"
 import { Link } from "react-router-dom"
 import Modal from "./Modal"
 import NetworkDisplay from "./NetworkDisplay"
@@ -14,6 +14,7 @@ import Web3Status from "./Web3Status"
 import classNames from "classnames"
 import { formatBNToShortString } from "../utils"
 import logo from "../assets/icons/logo.svg"
+import { useActiveWeb3React } from "../hooks"
 import useDetectOutsideClick from "../hooks/useDetectOutsideClick"
 import { useTranslation } from "react-i18next"
 
@@ -24,6 +25,9 @@ interface Props {
 function TopMenu({ activeTab }: Props): ReactElement {
   const { t } = useTranslation()
   const [currentModal, setCurrentModal] = useState<string | null>(null)
+  const { chainId } = useActiveWeb3React()
+  const showRewardButton: boolean =
+    chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT
 
   return (
     <header
@@ -70,7 +74,10 @@ function TopMenu({ activeTab }: Props): ReactElement {
         </li>
       </ul>
       <div className="walletWrapper">
-        <RewardsButton setCurrentModal={setCurrentModal} />
+        {showRewardButton && (
+          <RewardsButton setCurrentModal={setCurrentModal} />
+        )}
+
         <Web3Status />
         <NetworkDisplayAndSettings />
         <IconButtonAndSettings />
