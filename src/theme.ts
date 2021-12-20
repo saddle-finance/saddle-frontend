@@ -49,8 +49,9 @@ export const lightTheme = createTheme({
         colorInherit: {
           backgroundColor: "#FFFFE9",
           color: "#141414",
-          border: "1px solid #FFFFE9",
           boxShadow: "transparent",
+          backgroundImage: "none !important",
+          borderColor: "transparent",
         },
       },
     },
@@ -92,10 +93,10 @@ export const darkTheme = createTheme({
   components: {
     MuiAppBar: {
       styleOverrides: {
-        colorInherit: {
+        root: {
+          borderColor: "transparent",
           backgroundColor: "#000",
           color: "#fff",
-          border: "1px solid #000",
         },
       },
     },
@@ -103,6 +104,7 @@ export const darkTheme = createTheme({
       styleOverrides: {
         root: {
           border: "1px solid #FFF",
+          backgroundImage: "none",
         },
       },
     },

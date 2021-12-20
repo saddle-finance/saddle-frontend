@@ -16,7 +16,6 @@ import RadioButton from "./RadioButton"
 import ReviewWithdraw from "./ReviewWithdraw"
 import { Stack } from "@mui/material"
 import TokenInput from "./TokenInput"
-import TopMenu from "./TopMenu"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
@@ -85,7 +84,6 @@ const WithdrawPage = (props: Props): ReactElement => {
 
   return (
     <div className={"withdraw " + classNames({ noShare: noShare })}>
-      <TopMenu activeTab={"withdraw"} />
       <div className="content">
         <div className="left">
           <div className="form">
