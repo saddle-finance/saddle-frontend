@@ -3,7 +3,7 @@ import "./AccountDetails.scss"
 import React, { ReactElement } from "react"
 import { commify, formatBNToString } from "../utils"
 import Copy from "./Copy"
-import Identicon from "./Identicon"
+import Davatar from "@davatar/react"
 import { SUPPORTED_WALLETS } from "../constants"
 import Transactions from "./Transactions"
 import { Zero } from "@ethersproject/constants"
@@ -39,7 +39,11 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
           </span>
           <span className="label">{t("balance")}</span>
           <div className="data">
-            <Identicon />
+            <Davatar
+              size={24}
+              address={account || ""}
+              generatedAvatarType="jazzicon"
+            />
             <span className="address">
               {account && shortenAddress(account)}
             </span>
