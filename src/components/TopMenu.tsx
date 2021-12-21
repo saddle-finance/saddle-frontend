@@ -1,11 +1,11 @@
 import "./TopMenu.scss"
 
 import { AppBar, Box, Hidden, Toolbar } from "@mui/material"
+import { ChainId, IS_SDL_LIVE } from "../constants"
 import { Link, useLocation } from "react-router-dom"
 import React, { ReactElement, useContext, useRef, useState } from "react"
 
 import Button from "./Button"
-import { IS_SDL_LIVE } from "../constants"
 import Modal from "./Modal"
 import NetworkDisplay from "./NetworkDisplay"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
@@ -15,6 +15,7 @@ import TokenClaimModal from "./TokenClaimModal"
 import Web3Status from "./Web3Status"
 import classNames from "classnames"
 import { formatBNToShortString } from "../utils"
+import { useActiveWeb3React } from "../hooks"
 import useDetectOutsideClick from "../hooks/useDetectOutsideClick"
 import { useTranslation } from "react-i18next"
 
@@ -25,6 +26,9 @@ function TopMenu(): ReactElement {
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const { pathname } = useLocation()
   const activeTab = pathname.split("/")[1] as ActiveTabType
+  const { chainId } = useActiveWeb3React()
+  const showRewardButton: boolean =
+    chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT
 
   return (
     <AppBar position="static" elevation={0}>
@@ -70,7 +74,9 @@ function TopMenu(): ReactElement {
           </li>
         </ul>
         <div className="walletWrapper">
-          <RewardsButton setCurrentModal={setCurrentModal} />
+          {showRewardButton && (
+            <RewardsButton setCurrentModal={setCurrentModal} />
+          )}
           <Web3Status />
           <NetworkDisplayAndSettings />
           <IconButtonAndSettings />
