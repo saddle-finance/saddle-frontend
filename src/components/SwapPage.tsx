@@ -1,6 +1,5 @@
 import "./SwapPage.scss"
 
-import { Button, Center } from "@chakra-ui/react"
 import React, { ReactElement, useMemo, useState } from "react"
 import { SWAP_TYPES, getIsVirtualSwap } from "../constants"
 import { formatBNToPercentString, formatBNToString } from "../utils"
@@ -8,6 +7,8 @@ import { formatBNToPercentString, formatBNToString } from "../utils"
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
+import { Box } from "@mui/material"
+import Button from "./Button"
 import ConfirmTransaction from "./ConfirmTransaction"
 import { ReactComponent as InfoIcon } from "../assets/icons/info.svg"
 import Modal from "./Modal"
@@ -296,11 +297,9 @@ const SwapPage = (props: Props): ReactElement => {
             )
           })}
         </div>
-        <Center width="100%" py={6}>
+        <Box mt={3}>
           <Button
-            variant="primary"
-            size="lg"
-            width="240px"
+            kind="primary"
             onClick={(): void => {
               setCurrentModal("review")
             }}
@@ -308,7 +307,8 @@ const SwapPage = (props: Props): ReactElement => {
           >
             {t("swap")}
           </Button>
-        </Center>
+        </Box>
+
         <div className={classNames({ showError: !!error }, "error")}>
           {error}
         </div>

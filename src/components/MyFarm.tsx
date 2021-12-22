@@ -5,7 +5,7 @@ import React, { ReactElement } from "react"
 import { commify, formatBNToString } from "../utils"
 
 import { BigNumber } from "@ethersproject/bignumber"
-import { Box } from "@chakra-ui/react"
+import { Box } from "@mui/material"
 import Button from "./Button"
 import { useRewardsHelpers } from "../hooks/useRewardsHelpers"
 import { useTranslation } from "react-i18next"

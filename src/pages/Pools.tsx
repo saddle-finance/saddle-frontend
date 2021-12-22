@@ -10,12 +10,16 @@ import {
   STABLECOIN_POOL_NAME,
   STABLECOIN_POOL_V2_NAME,
   SUSD_METAPOOL_NAME,
+  SUSD_METAPOOL_V2_NAME,
   TBTC_METAPOOL_NAME,
+  TBTC_METAPOOL_V2_NAME,
   VETH2_POOL_NAME,
   WCUSD_METAPOOL_NAME,
+  WCUSD_METAPOOL_V2_NAME,
 } from "../constants"
-import React, { ReactElement, useState } from "react"
+import React, { ReactElement, useEffect, useState } from "react"
 
+import { BigNumber } from "ethers"
 import ConfirmTransaction from "../components/ConfirmTransaction"
 import Modal from "../components/Modal"
 import PoolOverview from "../components/PoolOverview"
@@ -26,11 +30,11 @@ import classNames from "classnames"
 import { logEvent } from "../utils/googleAnalytics"
 import styles from "./Pools.module.scss"
 import { useActiveWeb3React } from "../hooks"
-import { useApproveAndMigrateUSD } from "../hooks/useApproveAndMigrateUSD"
+import { useApproveAndMigrate } from "../hooks/useApproveAndMigrate"
 import usePoolData from "../hooks/usePoolData"
 
 function Pools(): ReactElement | null {
-  const { chainId } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const [d4PoolData, d4UserShareData] = usePoolData(D4_POOL_NAME)
   const [alethPoolData, alethUserShareData] = usePoolData(ALETH_POOL_NAME)
   const [btcPoolData, btcUserShareData] = usePoolData(BTC_POOL_NAME)
@@ -40,18 +44,37 @@ function Pools(): ReactElement | null {
   )
   const [usdPoolData, usdUserShareData] = usePoolData(STABLECOIN_POOL_NAME)
   const [susdPoolData, susdUserShareData] = usePoolData(SUSD_METAPOOL_NAME)
+  const [susdPoolV2Data, susdV2UserShareData] = usePoolData(
+    SUSD_METAPOOL_V2_NAME,
+  )
   const [tbtcPoolData, tbtcUserShareData] = usePoolData(TBTC_METAPOOL_NAME)
+  const [tbtcPoolV2Data, tbtcV2UserShareData] = usePoolData(
+    TBTC_METAPOOL_V2_NAME,
+  )
   const [veth2PoolData, veth2UserShareData] = usePoolData(VETH2_POOL_NAME)
   const [wcusdPoolData, wcusdUserShareData] = usePoolData(WCUSD_METAPOOL_NAME)
+  const [wcusdPoolV2Data, wcusdV2UserShareData] = usePoolData(
+    WCUSD_METAPOOL_V2_NAME,
+  )
   const [arbUsdPoolData, arbUsdUserShareData] = usePoolData(ARB_USD_POOL_NAME)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
-  const approveAndMigrateUSD = useApproveAndMigrateUSD()
-  const [activeMigration, setActiveMigration] = useState<PoolName | null>(null)
+  const approveAndMigrate = useApproveAndMigrate()
+  const [activeMigration, setActiveMigration] = useState<{
+    poolName: PoolName | null
+    lpTokenBalance: BigNumber
+  }>({ poolName: null, lpTokenBalance: Zero })
   const [filter, setFilter] = useState<PoolTypes | "all" | "outdated">("all")
-  const handleClickMigrate = (poolName: PoolName) => {
-    setActiveMigration(poolName)
+  const handleClickMigrate = (
+    poolName: PoolName,
+    lpTokenBalance: BigNumber,
+  ) => {
+    setActiveMigration({ poolName, lpTokenBalance })
     setCurrentModal("migrate")
   }
+
+  useEffect(() => {
+    setActiveMigration({ poolName: null, lpTokenBalance: Zero })
+  }, [account, chainId])
 
   function getPropsForPool(poolName: PoolName) {
     if (poolName === D4_POOL_NAME) {
@@ -103,6 +126,13 @@ function Pools(): ReactElement | null {
         userShareData: susdUserShareData,
         poolRoute: "/pools/susd",
       }
+    } else if (poolName === SUSD_METAPOOL_V2_NAME) {
+      return {
+        name: SUSD_METAPOOL_V2_NAME,
+        poolData: susdPoolV2Data,
+        userShareData: susdV2UserShareData,
+        poolRoute: "/pools/susdv2",
+      }
     } else if (poolName === TBTC_METAPOOL_NAME) {
       return {
         name: TBTC_METAPOOL_NAME,
@@ -110,12 +140,26 @@ function Pools(): ReactElement | null {
         userShareData: tbtcUserShareData,
         poolRoute: "/pools/tbtc",
       }
+    } else if (poolName === TBTC_METAPOOL_V2_NAME) {
+      return {
+        name: TBTC_METAPOOL_V2_NAME,
+        poolData: tbtcPoolV2Data,
+        userShareData: tbtcV2UserShareData,
+        poolRoute: "/pools/tbtcv2",
+      }
     } else if (poolName === WCUSD_METAPOOL_NAME) {
       return {
         name: WCUSD_METAPOOL_NAME,
         poolData: wcusdPoolData,
         userShareData: wcusdUserShareData,
         poolRoute: "/pools/wcusd",
+      }
+    } else if (poolName === WCUSD_METAPOOL_V2_NAME) {
+      return {
+        name: WCUSD_METAPOOL_V2_NAME,
+        poolData: wcusdPoolV2Data,
+        userShareData: wcusdV2UserShareData,
+        poolRoute: "/pools/wcusdv2",
       }
     } else if (poolName === ARB_USD_POOL_NAME) {
       return {
@@ -158,49 +202,57 @@ function Pools(): ReactElement | null {
       </ul>
       <div className={styles.content}>
         {Object.values(POOLS_MAP)
-          .filter(
-            ({ type, migration, isOutdated }) =>
-              filter === "all" ||
-              type === filter ||
-              (filter === "outdated" && (migration || isOutdated)),
-          )
           .filter(({ addresses }) => (chainId ? addresses[chainId] : false))
           .map(
-            ({ name, migration, isOutdated }) =>
-              [getPropsForPool(name), migration, isOutdated] as const,
+            ({ name, type, isOutdated }) =>
+              [getPropsForPool(name), isOutdated, type] as const,
           )
-          .sort(
-            ([a, aMigration, aIsOutdated], [b, bMigration, bIsOutdated]) => {
-              // 1. active pools
-              // 2. user pools
-              // 3. higher TVL pools
-              if (aMigration || bMigration || aIsOutdated || bIsOutdated) {
-                return aMigration || aIsOutdated ? 1 : -1
-              } else if (
-                (a.userShareData?.usdBalance || Zero).gt(Zero) ||
-                (b.userShareData?.usdBalance || Zero).gt(Zero)
-              ) {
-                return (a.userShareData?.usdBalance || Zero).gt(
-                  b.userShareData?.usdBalance || Zero,
-                )
-                  ? -1
-                  : 1
-              } else {
-                return (a.poolData?.reserve || Zero).gt(
-                  b.poolData?.reserve || Zero,
-                )
-                  ? -1
-                  : 1
-              }
-            },
+          .filter(
+            ([poolProps, isOutdated, type]) =>
+              filter === "all" ||
+              type === filter ||
+              (filter === "outdated" &&
+                (isOutdated || poolProps.poolData.isMigrated)),
           )
-          .map(([poolProps, migrationPool]) => (
+          .sort(([a, aIsOutdated], [b, bIsOutdated]) => {
+            // 1. user pools
+            // 2. active pools
+            // 3. higher TVL pools
+            if (
+              (a.userShareData?.usdBalance || Zero).gt(Zero) ||
+              (b.userShareData?.usdBalance || Zero).gt(Zero)
+            ) {
+              return (a.userShareData?.usdBalance || Zero).gt(
+                b.userShareData?.usdBalance || Zero,
+              )
+                ? -1
+                : 1
+            } else if (
+              a.poolData.isMigrated ||
+              b.poolData.isMigrated ||
+              aIsOutdated ||
+              bIsOutdated
+            ) {
+              return a.poolData.isMigrated || aIsOutdated ? 1 : -1
+            } else {
+              return (a.poolData?.reserve || Zero).gt(
+                b.poolData?.reserve || Zero,
+              )
+                ? -1
+                : 1
+            }
+          })
+          .map(([poolProps]) => (
             <PoolOverview
               key={poolProps.name}
               {...poolProps}
               onClickMigrate={
-                migrationPool
-                  ? () => handleClickMigrate(migrationPool)
+                poolProps.poolData.isMigrated
+                  ? () =>
+                      handleClickMigrate(
+                        POOLS_MAP[poolProps.poolData.name].name,
+                        poolProps.userShareData?.lpTokenBalance ?? Zero,
+                      )
                   : undefined
               }
             />
@@ -214,18 +266,27 @@ function Pools(): ReactElement | null {
           <ReviewMigration
             onClose={(): void => {
               setCurrentModal(null)
-              setActiveMigration(null)
+              setActiveMigration({
+                poolName: STABLECOIN_POOL_NAME,
+                lpTokenBalance: Zero,
+              })
             }}
             onConfirm={async (): Promise<void> => {
               setCurrentModal("confirm")
               logEvent("migrate", {
-                pool: activeMigration,
+                pool: activeMigration.poolName,
               })
-              await approveAndMigrateUSD(usdUserShareData?.lpTokenBalance)
+              await approveAndMigrate(
+                activeMigration.poolName,
+                activeMigration.lpTokenBalance,
+              )
               setCurrentModal(null)
-              setActiveMigration(null)
+              setActiveMigration({
+                poolName: STABLECOIN_POOL_NAME,
+                lpTokenBalance: Zero,
+              })
             }}
-            migrationAmount={usdUserShareData?.lpTokenBalance}
+            migrationAmount={activeMigration.lpTokenBalance}
           />
         ) : null}
         {currentModal === "confirm" ? <ConfirmTransaction /> : null}
