@@ -41,30 +41,34 @@ export default function usePoolTVLs(): { [poolName in PoolName]?: BigNumber } {
           ) as MulticallContract<LpTokenUnguarded>
         })
         .map((c) => c.totalSupply())
-      const tvls = await ethcallProvider.all(supplyCalls, {})
-      const tvlsUSD = pools.map((pool, i) => {
-        const tvlAmount = tvls[i]
-        let tokenValue = 0
-        if (pool.type === PoolTypes.BTC) {
-          tokenValue = tokenPricesUSD?.BTC || 0
-        } else if (pool.type === PoolTypes.ETH) {
-          tokenValue = tokenPricesUSD?.ETH || 0
-        } else {
-          tokenValue = 1 // USD
-        }
-        return parseUnits(tokenValue.toFixed(2), 2)
-          .mul(tvlAmount)
-          .div(BigNumber.from(10).pow(2)) //1e18
-      })
-      setPoolTvls((prevState) => {
-        return pools.reduce(
-          (acc, pool, i) => ({
-            ...acc,
-            [pool.name]: tvlsUSD[i],
-          }),
-          prevState,
-        )
-      })
+      try {
+        const tvls = await ethcallProvider.all(supplyCalls, {})
+        const tvlsUSD = pools.map((pool, i) => {
+          const tvlAmount = tvls[i]
+          let tokenValue = 0
+          if (pool.type === PoolTypes.BTC) {
+            tokenValue = tokenPricesUSD?.BTC || 0
+          } else if (pool.type === PoolTypes.ETH) {
+            tokenValue = tokenPricesUSD?.ETH || 0
+          } else {
+            tokenValue = 1 // USD
+          }
+          return parseUnits(tokenValue.toFixed(2), 2)
+            .mul(tvlAmount)
+            .div(BigNumber.from(10).pow(2)) //1e18
+        })
+        setPoolTvls((prevState) => {
+          return pools.reduce(
+            (acc, pool, i) => ({
+              ...acc,
+              [pool.name]: tvlsUSD[i],
+            }),
+            prevState,
+          )
+        })
+      } catch (err) {
+        console.log("Error on fetchTVLs", err)
+      }
     }
     void fetchTVLs()
   }, [chainId, library, tokenPricesUSD, poolTvls])
