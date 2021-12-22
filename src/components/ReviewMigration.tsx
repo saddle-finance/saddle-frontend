@@ -6,7 +6,6 @@ import { commify, formatBNToString } from "../utils"
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
-import { PoolName } from "../constants"
 import Warning from "./Warning"
 import { calculateGasEstimate } from "../utils/gasEstimate"
 import { gasBNFromState } from "../utils/gas"
@@ -18,14 +17,14 @@ interface Props {
   onClose?: () => void
   onConfirm?: () => void
   migrationAmount?: BigNumber // 1e18
-  migrationType?: PoolName | null
+  lpTokenName?: string
 }
 
 function ReviewMigration({
   onClose,
   onConfirm,
   migrationAmount,
-  migrationType,
+  lpTokenName,
 }: Props): ReactElement {
   const { t } = useTranslation()
   const { gasPriceSelected, gasCustom } = useSelector(
@@ -40,7 +39,6 @@ function ReviewMigration({
     gasCustom,
   )
   const gasAmount = calculateGasEstimate("migrate").mul(gasPrice)
-  const isBTCMigration = migrationType?.toLowerCase().includes("btc")
   const gasValueUSD = tokenPricesUSD?.ETH
     ? parseUnits(tokenPricesUSD.ETH.toFixed(2), 18) // USD / ETH  * 10^18
         .mul(gasAmount) // GWEI
@@ -60,7 +58,7 @@ function ReviewMigration({
               {commify(
                 formatBNToString(migrationAmount || BigNumber.from("0"), 18, 2),
               )}{" "}
-              {isBTCMigration ? "saddleBTC" : "saddleUSD"}
+              {lpTokenName}
             </span>
           </div>
           {shouldDisplayGas && (
