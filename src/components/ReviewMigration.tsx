@@ -17,12 +17,14 @@ interface Props {
   onClose?: () => void
   onConfirm?: () => void
   migrationAmount?: BigNumber // 1e18
+  lpTokenName?: string
 }
 
 function ReviewMigration({
   onClose,
   onConfirm,
   migrationAmount,
+  lpTokenName,
 }: Props): ReactElement {
   const { t } = useTranslation()
   const { gasPriceSelected, gasCustom } = useSelector(
@@ -56,7 +58,7 @@ function ReviewMigration({
               {commify(
                 formatBNToString(migrationAmount || BigNumber.from("0"), 18, 2),
               )}{" "}
-              saddleUSD
+              {lpTokenName}
             </span>
           </div>
           {shouldDisplayGas && (
