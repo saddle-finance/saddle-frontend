@@ -267,7 +267,7 @@ function Pools(): ReactElement | null {
             onClose={(): void => {
               setCurrentModal(null)
               setActiveMigration({
-                poolName: STABLECOIN_POOL_NAME,
+                poolName: null,
                 lpTokenBalance: Zero,
               })
             }}
@@ -282,10 +282,11 @@ function Pools(): ReactElement | null {
               )
               setCurrentModal(null)
               setActiveMigration({
-                poolName: STABLECOIN_POOL_NAME,
+                poolName: null,
                 lpTokenBalance: Zero,
               })
             }}
+            migrationType={activeMigration.poolName}
             migrationAmount={activeMigration.lpTokenBalance}
           />
         ) : null}
