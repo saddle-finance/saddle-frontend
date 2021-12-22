@@ -499,9 +499,9 @@ export const ARB_USD_SWAP_TOKEN = new Token(
 export const FRAX_ARB_USD_SWAP_V2_TOKEN = new Token(
   FRAX_ARB_USD_SWAP_V2_TOKEN_CONTRACT_ADDRESSES,
   18,
-  "saddleArbUSD-V2",
-  "saddlearbUSD-v2",
-  "Saddle nUSD/MIM/USDC/USDT",
+  "saddleFraxArbUSD-V2",
+  "saddlefraxarbUSD-v2",
+  "Saddle FRAX/USDC/USDT",
   saddleLogo,
   false,
   true,
@@ -821,7 +821,7 @@ export const FRAX = new Token(
   fraxLogo,
 )
 
-export const FRAX_ARB_USD_POOL_V2_TOKENS = [FRAX, MIM, USDC, USDT]
+export const FRAX_ARB_USD_POOL_V2_TOKENS = [FRAX, USDC, USDT]
 
 const LUSD_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
