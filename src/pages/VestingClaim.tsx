@@ -56,6 +56,8 @@ function VestingClaim(): ReactElement {
         const nonCapturedBeneficiaryAddresses: {
           [beneficiaryAddress: string]: string
         } = {
+          "0x3F8E527aF4e0c6e763e8f368AC679c44C45626aE":
+            "0x5DFbCeea7A5F6556356C7A66d2A43332755D68A5",
           "0xCB11d6C568448cAbEC62C2c3469b538Eb37E1341":
             "0xB960FaFEBb589ca3500Eb9350Eea503548bCcFC2",
           "0xEC6f7607cD7E4C942a75d40C269deC01BBc9A15e":
