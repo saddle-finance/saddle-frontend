@@ -15,7 +15,6 @@ import TokenClaimModal from "./TokenClaimModal"
 import Web3Status from "./Web3Status"
 import classNames from "classnames"
 import { formatBNToShortString } from "../utils"
-
 import useDetectOutsideClick from "../hooks/useDetectOutsideClick"
 import { useTranslation } from "react-i18next"
 
