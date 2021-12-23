@@ -949,7 +949,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "frax-arbusdv2",
-    rewardPids: buildPids({ [ChainId.ARBITRUM]: 1 }),
+    rewardPids: buildPids({}),
   },
   [SUSD_METAPOOL_V2_NAME]: {
     name: SUSD_METAPOOL_V2_NAME,
