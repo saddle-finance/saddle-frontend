@@ -4,6 +4,7 @@ import {
   BTC_POOL_NAME,
   BTC_POOL_V2_NAME,
   D4_POOL_NAME,
+  FRAX_ARB_USD_POOL_V2_NAME,
   POOLS_MAP,
   PoolName,
   PoolTypes,
@@ -57,6 +58,9 @@ function Pools(): ReactElement | null {
     WCUSD_METAPOOL_V2_NAME,
   )
   const [arbUsdPoolData, arbUsdUserShareData] = usePoolData(ARB_USD_POOL_NAME)
+  const [fraxArbUsdPoolV2Data, fraxArbUsdV2UserShareData] = usePoolData(
+    FRAX_ARB_USD_POOL_V2_NAME,
+  )
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const approveAndMigrate = useApproveAndMigrate()
   const [activeMigration, setActiveMigration] = useState<{
@@ -173,6 +177,13 @@ function Pools(): ReactElement | null {
         poolData: arbUsdPoolData,
         userShareData: arbUsdUserShareData,
         poolRoute: "/pools/arbusd",
+      }
+    } else if (poolName === FRAX_ARB_USD_POOL_V2_NAME) {
+      return {
+        name: FRAX_ARB_USD_POOL_V2_NAME,
+        poolData: fraxArbUsdPoolV2Data,
+        userShareData: fraxArbUsdV2UserShareData,
+        poolRoute: "/pools/fraxarbusdv2",
       }
     } else {
       return {
