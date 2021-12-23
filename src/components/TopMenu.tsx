@@ -15,7 +15,7 @@ import TokenClaimModal from "./TokenClaimModal"
 import Web3Status from "./Web3Status"
 import classNames from "classnames"
 import { formatBNToShortString } from "../utils"
-import { useActiveWeb3React } from "../hooks"
+
 import useDetectOutsideClick from "../hooks/useDetectOutsideClick"
 import { useTranslation } from "react-i18next"
 
@@ -26,9 +26,6 @@ function TopMenu(): ReactElement {
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const { pathname } = useLocation()
   const activeTab = pathname.split("/")[1] as ActiveTabType
-  const { chainId } = useActiveWeb3React()
-  const showRewardButton: boolean =
-    chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT
 
   return (
     <AppBar position="static" elevation={0}>
@@ -74,9 +71,7 @@ function TopMenu(): ReactElement {
           </li>
         </ul>
         <div className="walletWrapper">
-          {showRewardButton && (
-            <RewardsButton setCurrentModal={setCurrentModal} />
-          )}
+          <RewardsButton setCurrentModal={setCurrentModal} />
           <Web3Status />
           <NetworkDisplayAndSettings />
           <IconButtonAndSettings />
