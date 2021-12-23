@@ -1,11 +1,11 @@
 import "./TopMenu.scss"
 
 import { AppBar, Box, Hidden, Toolbar } from "@mui/material"
-import { ChainId, IS_SDL_LIVE } from "../constants"
 import { Link, useLocation } from "react-router-dom"
 import React, { ReactElement, useContext, useRef, useState } from "react"
 
 import Button from "./Button"
+import { IS_SDL_LIVE } from "../constants"
 import Modal from "./Modal"
 import NetworkDisplay from "./NetworkDisplay"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
