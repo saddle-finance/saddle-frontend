@@ -53,6 +53,7 @@ function VestingClaim(): ReactElement {
         const currentBeneficiaryEvents = events.filter(
           (event) => event.args?.beneficiary === account,
         )
+        console.log({ currentBeneficiaryEvents, events })
         const isValidBeneficiary = currentBeneficiaryEvents.length > 0
         setIsValidBeneficiary(isValidBeneficiary)
         if (isValidBeneficiary) {
