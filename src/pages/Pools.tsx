@@ -61,18 +61,24 @@ function Pools(): ReactElement | null {
   const [activeMigration, setActiveMigration] = useState<{
     poolName: PoolName | null
     lpTokenBalance: BigNumber
-  }>({ poolName: null, lpTokenBalance: Zero })
+    lpTokenName: string
+  }>({ poolName: null, lpTokenBalance: Zero, lpTokenName: "" })
   const [filter, setFilter] = useState<PoolTypes | "all" | "outdated">("all")
   const handleClickMigrate = (
     poolName: PoolName,
     lpTokenBalance: BigNumber,
+    lpTokenName: string,
   ) => {
-    setActiveMigration({ poolName, lpTokenBalance })
+    setActiveMigration({ poolName, lpTokenBalance, lpTokenName })
     setCurrentModal("migrate")
   }
 
   useEffect(() => {
-    setActiveMigration({ poolName: null, lpTokenBalance: Zero })
+    setActiveMigration({
+      poolName: null,
+      lpTokenBalance: Zero,
+      lpTokenName: "",
+    })
   }, [account, chainId])
 
   function getPropsForPool(poolName: PoolName) {
@@ -250,6 +256,7 @@ function Pools(): ReactElement | null {
                       handleClickMigrate(
                         POOLS_MAP[poolProps.poolData.name].name,
                         poolProps.userShareData?.lpTokenBalance ?? Zero,
+                        POOLS_MAP[poolProps.poolData.name].lpToken.symbol,
                       )
                   : undefined
               }
@@ -265,8 +272,9 @@ function Pools(): ReactElement | null {
             onClose={(): void => {
               setCurrentModal(null)
               setActiveMigration({
-                poolName: STABLECOIN_POOL_NAME,
+                poolName: null,
                 lpTokenBalance: Zero,
+                lpTokenName: "",
               })
             }}
             onConfirm={async (): Promise<void> => {
@@ -280,10 +288,12 @@ function Pools(): ReactElement | null {
               )
               setCurrentModal(null)
               setActiveMigration({
-                poolName: STABLECOIN_POOL_NAME,
+                poolName: null,
                 lpTokenBalance: Zero,
+                lpTokenName: "",
               })
             }}
+            lpTokenName={activeMigration.lpTokenName}
             migrationAmount={activeMigration.lpTokenBalance}
           />
         ) : null}
