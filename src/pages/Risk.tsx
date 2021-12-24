@@ -2,7 +2,6 @@ import "./Risk.scss"
 
 import React, { ReactElement } from "react"
 
-import TopMenu from "../components/TopMenu"
 import { useTranslation } from "react-i18next"
 
 function Risk(): ReactElement {
@@ -10,9 +9,8 @@ function Risk(): ReactElement {
 
   return (
     <div className="riskpage">
-      <TopMenu activeTab={t("risk")} />
       <div className="content">
-        <h1 className="title">Risk</h1>
+        <h3 className="title">Risk</h3>
         <p data-testid="risk-intro">
           {t("riskIntro")}{" "}
           <a href="https://github.com/saddle-finance/saddle-contract">

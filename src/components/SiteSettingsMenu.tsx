@@ -1,17 +1,17 @@
 import { ChainId, IS_L2_SUPPORTED, IS_SDL_LIVE, SDL_TOKEN } from "../constants"
-import React, { ReactElement, useContext, useState } from "react"
+import React, { ReactElement, useState } from "react"
 
-import { ThemeContext } from "../providers/ThemeProvider"
 import classnames from "classnames"
 import logo from "../assets/icons/logo.svg"
 import styles from "./SiteSettingsMenu.module.scss"
 import { useActiveWeb3React } from "../hooks"
 import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
+import { useThemeSettings } from "../providers/ThemeSettingsProvider"
 import { useTranslation } from "react-i18next"
 
 export default function SiteSettingsMenu(): ReactElement {
   return (
-    <div className={styles.container}>
+    <div data-testid="settingsMenuContainer" className={styles.container}>
       {IS_L2_SUPPORTED && <NetworkSection key="network" />}
       {IS_L2_SUPPORTED && <Divider />}
       <LanguageSection key="language" />
@@ -90,8 +90,9 @@ function NetworkSection(): ReactElement {
   ]
 
   return (
-    <div className={styles.section}>
+    <div data-testid="networkMenuContainer" className={styles.section}>
       <div
+        data-testid="networkMenuTitle"
         className={styles.sectionTitle}
         onClick={() => setIsNetworkVisible((state) => !state)}
       >
@@ -139,7 +140,7 @@ function LanguageSection(): ReactElement {
   ]
   const currentLanguage = i18n.language
   return (
-    <div className={styles.section}>
+    <div data-testid="languageMenu" className={styles.section}>
       <div
         className={styles.sectionTitle}
         onClick={() => setIsLanguageVisible((state) => !state)}
@@ -165,12 +166,21 @@ function LanguageSection(): ReactElement {
 
 function ThemeSection(): ReactElement {
   const { t } = useTranslation()
-  const { toggleTheme, userDarkMode } = useContext(ThemeContext)
+  const { themeMode, onChangeMode } = useThemeSettings()
+
+  const handleChangeMode = () => {
+    onChangeMode(themeMode === "dark" ? "light" : "dark")
+  }
 
   return (
     <div className={styles.section}>
-      <div className={styles.sectionTitle} onClick={toggleTheme}>
-        <span>{t("theme")}</span> <span>{userDarkMode ? "☾" : "☀"}</span>
+      <div
+        data-testid="themeMenuOption"
+        className={styles.sectionTitle}
+        onClick={handleChangeMode}
+      >
+        <span>{t("theme")}</span>{" "}
+        <span>{themeMode === "dark" ? "☾" : "☀"}</span>
       </div>
     </div>
   )

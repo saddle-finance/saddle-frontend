@@ -1,8 +1,12 @@
 @import "../styles/theme";
+@import "../styles/viewports";
 
 div.version {
   font-size: 12px;
-  position: absolute;
+  position: fixed;
   bottom: 24px;
   left: 56px;
+  @include breakpoint(md) {
+    position: static;
+  }
 }
