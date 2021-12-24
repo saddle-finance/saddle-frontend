@@ -25,7 +25,6 @@ import ConfirmTransaction from "../components/ConfirmTransaction"
 import Modal from "../components/Modal"
 import PoolOverview from "../components/PoolOverview"
 import ReviewMigration from "../components/ReviewMigration"
-import TopMenu from "../components/TopMenu"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
 import { logEvent } from "../utils/googleAnalytics"
@@ -196,7 +195,6 @@ function Pools(): ReactElement | null {
   }
   return (
     <div className={styles.poolsPage}>
-      <TopMenu activeTab="pools" />
       <ul className={styles.filters}>
         {[
           ["all", "ALL"] as const,

@@ -8,7 +8,6 @@ import Button from "../components/Button"
 import INVESTOR_EMPLOYEE_VESTING_CONTRACT_ABI from "../constants/abis/vesting.json"
 import SDL_TOKEN_ABI from "../constants/abis/sdl.json"
 import { Sdl } from "../../types/ethers-contracts/Sdl"
-import TopMenu from "../components/TopMenu"
 import { Vesting } from "../../types/ethers-contracts/Vesting"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
@@ -134,7 +133,6 @@ function VestingClaim(): ReactElement {
 
   return (
     <>
-      <TopMenu activeTab={t("n/a")} />
       <div className={styles.container}>
         <div className={styles.gradient}></div>
         <div className={styles.logoWrapper}>

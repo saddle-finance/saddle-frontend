@@ -1,87 +1,88 @@
 import "./TopMenu.scss"
 
+import { AppBar, Box, Hidden, Toolbar } from "@mui/material"
+import { Link, useLocation } from "react-router-dom"
 import React, { ReactElement, useContext, useRef, useState } from "react"
 
 import Button from "./Button"
 import { IS_SDL_LIVE } from "../constants"
-import { Link } from "react-router-dom"
 import Modal from "./Modal"
 import NetworkDisplay from "./NetworkDisplay"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
+import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
 import SiteSettingsMenu from "./SiteSettingsMenu"
 import TokenClaimModal from "./TokenClaimModal"
 import Web3Status from "./Web3Status"
 import classNames from "classnames"
 import { formatBNToShortString } from "../utils"
-import logo from "../assets/icons/logo.svg"
 import useDetectOutsideClick from "../hooks/useDetectOutsideClick"
 import { useTranslation } from "react-i18next"
 
-interface Props {
-  activeTab: string
-}
+type ActiveTabType = "" | "pools" | "risk"
 
-function TopMenu({ activeTab }: Props): ReactElement {
+function TopMenu(): ReactElement {
   const { t } = useTranslation()
   const [currentModal, setCurrentModal] = useState<string | null>(null)
+  const { pathname } = useLocation()
+  const activeTab = pathname.split("/")[1] as ActiveTabType
 
   return (
-    <header
-      data-testid="topMenuContainer"
-      className="top"
-      style={{ border: "#000, solid 3px" }}
-    >
-      <div className="logoWrapper">
-        <Link to="/">
-          <img className="logo" alt="logo" src={logo} />
-        </Link>
-      </div>
-
-      <ul className="nav">
-        <li>
-          <Link
-            data-testid="swapNavLink"
-            to="/"
-            className={classNames({ active: activeTab === "swap" })}
-          >
-            {t("swap")}
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/pools"
-            className={classNames({
-              active:
-                activeTab === "pools" ||
-                activeTab === "deposit" ||
-                activeTab === "withdraw",
-            })}
-          >
-            {t("pools")}
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/risk"
-            className={classNames({ active: activeTab === t("risk") })}
-          >
-            {t("risk")}
-          </Link>
-        </li>
-      </ul>
-      <div className="walletWrapper">
-        <RewardsButton setCurrentModal={setCurrentModal} />
-        <Web3Status />
-        <NetworkDisplayAndSettings />
-        <IconButtonAndSettings />
-      </div>
-      <Modal
-        isOpen={!!currentModal}
-        onClose={(): void => setCurrentModal(null)}
+    <AppBar position="static" elevation={0}>
+      <Toolbar
+        data-testid="topMenuContainer"
+        sx={{ mx: { md: 7 }, mt: { md: 3 } }}
       >
-        {currentModal === "tokenClaim" && <TokenClaimModal />}
-      </Modal>
-    </header>
+        <Hidden mdDown>
+          <Box flex={1} flexBasis="30%">
+            <Link to="/">
+              <SaddleLogo />
+            </Link>
+          </Box>
+        </Hidden>
+
+        <ul className="nav">
+          <li>
+            <Link
+              data-testid="swapNavLink"
+              to="/"
+              className={classNames({ active: activeTab === "" })}
+            >
+              {t("swap")}
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/pools"
+              className={classNames({
+                active: activeTab === "pools",
+              })}
+            >
+              {t("pools")}
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/risk"
+              className={classNames({ active: activeTab === "risk" })}
+            >
+              {t("risk")}
+            </Link>
+          </li>
+        </ul>
+        <div className="walletWrapper">
+          <RewardsButton setCurrentModal={setCurrentModal} />
+          <Web3Status />
+          <NetworkDisplayAndSettings />
+          <IconButtonAndSettings />
+        </div>
+        <Modal
+          isOpen={!!currentModal}
+          onClose={(): void => setCurrentModal(null)}
+        >
+          {currentModal === "tokenClaim" && <TokenClaimModal />}
+        </Modal>
+      </Toolbar>
+    </AppBar>
   )
 }
 
@@ -99,7 +100,7 @@ function RewardsButton({
       onClick={() => setCurrentModal("tokenClaim")}
       size="medium"
     >
-      {formattedTotal} <img className="sdlToken" alt="logo" src={logo} />
+      {formattedTotal} <SaddleLogo width={24} height={24} />
     </Button>
   ) : null
 }
