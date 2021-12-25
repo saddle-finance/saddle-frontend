@@ -114,6 +114,10 @@ function Swap(): ReactElement {
   const [prevFormState, setPrevFormState] = useState<FormState>(
     EMPTY_FORM_STATE,
   )
+  useEffect(() => {
+    setFormState(EMPTY_FORM_STATE)
+    setPrevFormState(EMPTY_FORM_STATE)
+  }, [chainId])
 
   const swapContract = useSwapContract(
     formState.to.poolName as PoolName | undefined,

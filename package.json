@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@davatar/react": "^1.8.1",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
-    "@metamask/jazzicon": "^2.0.0",
     "@mui/icons-material": "^5.2.1",
     "@mui/material": "^5.2.3",
     "@reduxjs/toolkit": "^1.4.0",
@@ -48,7 +48,7 @@
     "web-vitals": "^2.0.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.3",
+    "@babel/core": "^7.16.5",
     "@cypress/code-coverage": "^3.9.4",
     "@cypress/instrument-cra": "^1.4.0",
     "@cypress/react": "^5.10.3",
@@ -98,7 +98,8 @@
     "cy:startopen": "start-test 3000 'cypress open'",
     "cy:coverage": "start-test 3000 'cypress run --config video=false'",
     "postinstall": "typechain --target ethers-v5 'src/constants/abis/*.json'",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "missing-translations": "node scripts/missing-translations.js"
   },
   "homepage": ".",
   "browserslist": {
