@@ -59,6 +59,7 @@ export const lightTheme = createTheme({
         root: {
           border: "1px solid #000000",
           boxShadow: "none",
+          opacity: 1,
         },
       },
     },
@@ -114,8 +115,10 @@ export const darkTheme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          border: "1px solid #FFF",
           backgroundImage: "none",
+          borderColor: saddleColors.grey50,
+          borderWidth: 1,
+          borderStyle: "solid",
         },
       },
     },
@@ -126,6 +129,15 @@ export const darkTheme = createTheme({
         },
         paper: {
           borderRadius: 10,
+          backgroundColor: saddleColors.indigo4,
+          backgroundImage: "none",
+        },
+      },
+    },
+    MuiBackdrop: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "rgba(0,0,0,0.7)",
         },
       },
     },
