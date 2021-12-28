@@ -58,6 +58,7 @@ export const lightTheme = createTheme({
       styleOverrides: {
         root: {
           border: "1px solid #000000",
+          boxShadow: "none",
         },
       },
     },
@@ -70,6 +71,17 @@ export const lightTheme = createTheme({
     MuiTooltip: {
       defaultProps: {
         arrow: true,
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        root: {
+          borderRadius: 10,
+        },
+        paper: {
+          borderRadius: 10,
+          borderColor: "transparent",
+        },
       },
     },
   },
@@ -103,6 +115,16 @@ export const darkTheme = createTheme({
       styleOverrides: {
         root: {
           border: "1px solid #FFF",
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        root: {
+          borderRadius: 10,
+        },
+        paper: {
+          borderRadius: 10,
         },
       },
     },

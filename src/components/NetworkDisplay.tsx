@@ -1,11 +1,11 @@
+import { ChainId, IS_L2_SUPPORTED } from "../constants"
 import React, { ReactElement } from "react"
+import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
 
 import Button from "./Button"
-import { IS_L2_SUPPORTED } from "../constants"
 import { NETWORK_LABEL } from "../constants/networks"
 import classnames from "classnames"
 import styles from "./NetworkDisplay.module.scss"
-import { useActiveWeb3React } from "../hooks"
 import { useTranslation } from "react-i18next"
 
 export default function NetworkDisplay({
@@ -13,10 +13,11 @@ export default function NetworkDisplay({
 }: {
   onClick: () => void
 }): ReactElement | null {
-  const { chainId, active } = useActiveWeb3React()
+  const { active, chainId, error } = useWeb3React()
   const { t } = useTranslation()
   const networkLabel: string =
-    (chainId ? NETWORK_LABEL[chainId] : undefined) || t("unknown")
+    (chainId ? NETWORK_LABEL[chainId as ChainId] : undefined) || t("unknown")
+  const isUnsupportChainIdError = error instanceof UnsupportedChainIdError
 
   return IS_L2_SUPPORTED ? (
     <Button
@@ -26,7 +27,10 @@ export default function NetworkDisplay({
       onClick={onClick}
     >
       <div
-        className={classnames(styles.circle, { [styles.active]: active })}
+        className={classnames(styles.circle, {
+          [styles.wrong]: isUnsupportChainIdError,
+          [styles.active]: active,
+        })}
       ></div>{" "}
       {networkLabel}
     </Button>
