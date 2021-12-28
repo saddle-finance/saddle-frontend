@@ -48,6 +48,7 @@ export const TBTC_METAPOOL_V2_NAME = "tBTC Metapool V2"
 export const WCUSD_METAPOOL_NAME = "wCUSD Metapool"
 export const WCUSD_METAPOOL_V2_NAME = "wCUSD Metapool V2"
 export const ARB_USD_POOL_NAME = "arbUSD Pool"
+export const FRAX_ARB_USD_POOL_V2_NAME = "frax-ArbUSD Pool V2"
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof BTC_POOL_V2_NAME
@@ -63,6 +64,7 @@ export type PoolName =
   | typeof WCUSD_METAPOOL_NAME
   | typeof WCUSD_METAPOOL_V2_NAME
   | typeof ARB_USD_POOL_NAME
+  | typeof FRAX_ARB_USD_POOL_V2_NAME
 
 export enum ChainId {
   MAINNET = 1,
@@ -160,7 +162,7 @@ export const SWAP_MIGRATOR_USD_CONTRACT_ADDRESSES = buildAddresses({
 })
 
 export const GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES = buildAddresses({
-  [ChainId.MAINNET]: "0x2d5D79753bB8e02ca1ce8EcE0aa55288F8c8d840",
+  [ChainId.MAINNET]: "0x46866D274E6D9015c5FDc098CE270803e11e3eF4",
   [ChainId.HARDHAT]: "0x202CCe504e04bEd6fC0521238dDf04Bc9E8E15aB",
 })
 
@@ -269,6 +271,10 @@ export const ARB_USD_SWAP_ADDRESSES = buildAddresses({
   [ChainId.ARBITRUM]: "0xBea9F78090bDB9e662d8CB301A00ad09A5b756e9",
 })
 
+export const FRAX_ARB_USD_SWAP_V2_ADDRESSES = buildAddresses({
+  [ChainId.ARBITRUM]: "0xfeEa4D1BacB0519E8f952460A70719944fe56Ee0",
+})
+
 export const RETROACTIVE_SDL_MERKLETREE_DATA = buildAddresses({
   [ChainId.HARDHAT]: "hardhat.json",
 })
@@ -306,6 +312,10 @@ export const WCUSD_SWAP_TOKEN_V2_CONTRACT_ADDRESSES = buildAddresses({
 
 export const ARB_USD_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.ARBITRUM]: "0xc969dD0A7AB0F8a0C5A69C0839dB39b6C928bC08",
+})
+
+export const FRAX_ARB_USD_SWAP_V2_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
+  [ChainId.ARBITRUM]: "0x0a20c2FFa10cD43F67D06170422505b7D6fC0953",
 })
 
 export const BTC_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
@@ -481,6 +491,17 @@ export const ARB_USD_SWAP_TOKEN = new Token(
   "saddleArbUSD",
   "saddlearbUSD",
   "Saddle nUSD/MIM/USDC/USDT",
+  saddleLogo,
+  false,
+  true,
+)
+
+export const FRAX_ARB_USD_SWAP_V2_TOKEN = new Token(
+  FRAX_ARB_USD_SWAP_V2_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "saddleFraxArbUSD-V2",
+  "saddlefraxarbUSD-v2",
+  "Saddle FRAX/USDC/USDT",
   saddleLogo,
   false,
   true,
@@ -800,6 +821,8 @@ export const FRAX = new Token(
   fraxLogo,
 )
 
+export const FRAX_ARB_USD_POOL_V2_TOKENS = [FRAX, USDC, USDT]
+
 const LUSD_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
   [ChainId.ROPSTEN]: "0x440d96e36f1A087deFdB5206b5e53DD2e526840B",
@@ -917,6 +940,16 @@ export const POOLS_MAP: PoolsMap = {
     type: PoolTypes.USD,
     route: "arbusd",
     rewardPids: buildPids({ [ChainId.ARBITRUM]: 1 }),
+  },
+  [FRAX_ARB_USD_POOL_V2_NAME]: {
+    name: FRAX_ARB_USD_POOL_V2_NAME,
+    addresses: FRAX_ARB_USD_SWAP_V2_ADDRESSES,
+    lpToken: FRAX_ARB_USD_SWAP_V2_TOKEN,
+    poolTokens: FRAX_ARB_USD_POOL_V2_TOKENS,
+    isSynthetic: false,
+    type: PoolTypes.USD,
+    route: "frax-arbusdv2",
+    rewardPids: buildPids({}),
   },
   [SUSD_METAPOOL_V2_NAME]: {
     name: SUSD_METAPOOL_V2_NAME,

@@ -8,7 +8,6 @@ import Button from "../components/Button"
 import INVESTOR_EMPLOYEE_VESTING_CONTRACT_ABI from "../constants/abis/vesting.json"
 import SDL_TOKEN_ABI from "../constants/abis/sdl.json"
 import { Sdl } from "../../types/ethers-contracts/Sdl"
-import TopMenu from "../components/TopMenu"
 import { Vesting } from "../../types/ethers-contracts/Vesting"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
@@ -53,11 +52,30 @@ function VestingClaim(): ReactElement {
         const currentBeneficiaryEvents = events.filter(
           (event) => event.args?.beneficiary === account,
         )
-        const isValidBeneficiary = currentBeneficiaryEvents.length > 0
+        const nonCapturedBeneficiaryAddresses: {
+          [beneficiaryAddress: string]: string
+        } = {
+          "0x3F8E527aF4e0c6e763e8f368AC679c44C45626aE":
+            "0x5DFbCeea7A5F6556356C7A66d2A43332755D68A5",
+          "0xCB11d6C568448cAbEC62C2c3469b538Eb37E1341":
+            "0xB960FaFEBb589ca3500Eb9350Eea503548bCcFC2",
+          "0xEC6f7607cD7E4C942a75d40C269deC01BBc9A15e":
+            "0x597e475a5ddd90b3eb2135ac47319bd866f685d8",
+          "0x53ab66E5bAb196CF86F65feD79981cb85470200e":
+            "0x5c85B43468da23F86016f508f14cA927bfD8A737",
+          "0x17f61d0F9701A7fB5814C2d4AD3dC3831e07b277":
+            "0x41092b4ecf2c4db719ec5ab67dbd0c66f095ee97",
+        }
+        const isValidBeneficiary =
+          currentBeneficiaryEvents.length > 0 ||
+          Boolean(nonCapturedBeneficiaryAddresses[account])
         setIsValidBeneficiary(isValidBeneficiary)
         if (isValidBeneficiary) {
+          const vestingContractAddress =
+            nonCapturedBeneficiaryAddresses[account] ||
+            currentBeneficiaryEvents[0].args?.vestingContract
           const vestingContract = getContract(
-            currentBeneficiaryEvents[0].args?.vestingContract,
+            vestingContractAddress,
             INVESTOR_EMPLOYEE_VESTING_CONTRACT_ABI,
             library,
             account,
@@ -115,7 +133,6 @@ function VestingClaim(): ReactElement {
 
   return (
     <>
-      <TopMenu activeTab={t("n/a")} />
       <div className={styles.container}>
         <div className={styles.gradient}></div>
         <div className={styles.logoWrapper}>

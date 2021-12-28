@@ -20,6 +20,7 @@ import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import Swap from "./Swap"
+import TopMenu from "../components/TopMenu"
 import Version from "../components/Version"
 import Web3ReactManager from "../components/Web3ReactManager"
 import Withdraw from "./Withdraw"
@@ -54,6 +55,8 @@ export default function App(): ReactElement {
         <GasAndTokenPrices>
           <PendingSwapsProvider>
             <RewardsBalancesProvider>
+              <TopMenu />
+
               <Switch>
                 <Route exact path="/" component={Swap} />
                 <Route exact path="/pools" component={Pools} />
