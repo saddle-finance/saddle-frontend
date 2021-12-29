@@ -7,6 +7,7 @@ body {
   font-family: "Source Code Pro", monospace, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  white-space: pre-line;
 }
 
 code {
