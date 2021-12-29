@@ -14,12 +14,13 @@ import {
   useRetroactiveVestingContract,
 } from "../hooks/useContract"
 
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
 import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
+import { IconButton } from "@mui/material"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
-import plusIcon from "../assets/icons/plus.svg"
 import styles from "./TokenClaimModal.module.scss"
 import { useActiveWeb3React } from "../hooks"
 import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
@@ -29,7 +30,12 @@ import { useRetroMerkleData } from "../hooks/useRetroMerkleData"
 export default function TokenClaimModal(): ReactElement {
   const { t } = useTranslation()
   const { chainId } = useActiveWeb3React()
-  const isMainNet = chainId === ChainId.MAINNET
+  const isClaimableNetwork =
+    chainId === ChainId.MAINNET ||
+    chainId === ChainId.HARDHAT ||
+    chainId === ChainId.ROPSTEN
+
+  console.log("is claimable network =>", isClaimableNetwork)
 
   const rewardBalances = useContext(RewardsBalancesContext)
   const {
@@ -85,19 +91,20 @@ export default function TokenClaimModal(): ReactElement {
           {formattedUnclaimedTokenbalance}
 
           {canAdd && (
-            <img
-              data-testid="tokenAddBtn"
-              src={plusIcon}
-              className={styles.plus}
+            <IconButton
               onClick={() => addToken()}
-            />
+              color="primary"
+              disabled={!isClaimableNetwork}
+            >
+              <AddCircleOutlineIcon fontSize="large" />
+            </IconButton>
           )}
         </div>
         <div className={styles.tokenBalanceHelpText}>
           {t("totalClaimableSDL")}
         </div>
         <ul data-testid="claimsListContainer" className={styles.claimsList}>
-          {rewardBalances.retroactive && isMainNet && (
+          {rewardBalances.retroactive && isClaimableNetwork && (
             <>
               <ClaimListItem
                 title={t("retroactiveDrop")}
@@ -113,6 +120,7 @@ export default function TokenClaimModal(): ReactElement {
               )}
             </>
           )}
+          {!isClaimableNetwork && <div>{t("desableRewardContent")}</div>}
           {allPoolsWithRewards.map((pool, i, arr) => (
             <>
               <ClaimListItem

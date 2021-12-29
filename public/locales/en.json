@@ -47,6 +47,7 @@
   "depositing": "Depositing",
   "depositLimitExceeded": "Deposit limit exceeded",
   "depositWrapped": "Deposit wrapped",
+  "desableRewardContent": "SDL is currently only deployed on Ethereum Mainnet and is not yet claimable on this chain.\n We display the amount that will be claimable once SDL is available on this network. See this post for more information.",
   "dontHaveWallet": "Don't have a wallet?",
   "estimatedOutput": "Output is estimated. If the price changes by more than the max slippage your transaction will revert.",
   "estimatedTxCost": "Estimated TX Cost",
