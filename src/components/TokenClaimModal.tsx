@@ -120,7 +120,11 @@ export default function TokenClaimModal(): ReactElement {
               )}
             </>
           )}
-          {!isClaimableNetwork && <div>{t("desableRewardContent")}</div>}
+          {!isClaimableNetwork && (
+            <p style={{ whiteSpace: "pre-line" }}>
+              {t("desableRewardContent")}
+            </p>
+          )}
           {allPoolsWithRewards.map((pool, i, arr) => (
             <>
               <ClaimListItem
