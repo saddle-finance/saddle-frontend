@@ -1,4 +1,4 @@
-import { POOLS_MAP, Pool, SDL_TOKEN } from "../constants"
+import { ChainId, POOLS_MAP, Pool, SDL_TOKEN } from "../constants"
 import React, {
   ReactElement,
   useCallback,
@@ -29,6 +29,8 @@ import { useRetroMerkleData } from "../hooks/useRetroMerkleData"
 export default function TokenClaimModal(): ReactElement {
   const { t } = useTranslation()
   const { chainId } = useActiveWeb3React()
+  const isMainNet = chainId === ChainId.MAINNET
+
   const rewardBalances = useContext(RewardsBalancesContext)
   const {
     claimsStatuses,
@@ -95,7 +97,7 @@ export default function TokenClaimModal(): ReactElement {
           {t("totalClaimableSDL")}
         </div>
         <ul data-testid="claimsListContainer" className={styles.claimsList}>
-          {rewardBalances.retroactive && (
+          {rewardBalances.retroactive && isMainNet && (
             <>
               <ClaimListItem
                 title={t("retroactiveDrop")}
