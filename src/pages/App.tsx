@@ -24,6 +24,7 @@ import TopMenu from "../components/TopMenu"
 import Version from "../components/Version"
 import Web3ReactManager from "../components/Web3ReactManager"
 import Withdraw from "./Withdraw"
+import WrongNetworkModal from "../components/WrongNetworkModal"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchSwapStats from "../utils/getSwapStats"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
@@ -79,7 +80,7 @@ export default function App(): ReactElement {
                 <Route exact path="/risk" component={Risk} />
                 <Route exact path="/vesting-claim" component={VestingClaim} />
               </Switch>
-
+              <WrongNetworkModal />
               <Version />
             </RewardsBalancesProvider>
           </PendingSwapsProvider>

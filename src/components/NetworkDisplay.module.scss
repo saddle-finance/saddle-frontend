@@ -10,4 +10,7 @@ div.circle {
   &.active {
     background: $primary;
   }
+  &.wrong {
+    background: $error;
+  }
 }
