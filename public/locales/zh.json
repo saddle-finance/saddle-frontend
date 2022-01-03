@@ -184,6 +184,7 @@
   "withdrawPercentage": "提取的百分比",
   "withdrawSynth": null,
   "withdrewNToken": null,
+  "wrongNetworkContent": null,
   "yes": "是",
   "yourRecentTransactions": "您近期的交易记录会在此显示。",
   "youWillReceive": "您会收到"
