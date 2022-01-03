@@ -18,7 +18,6 @@ import {
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
 import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
-// import{ Link } from "react-router-dom"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
