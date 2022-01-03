@@ -1,4 +1,5 @@
 import { ChainId, POOLS_MAP, Pool, SDL_TOKEN } from "../constants"
+import { IconButton, Link } from "@mui/material"
 import React, {
   ReactElement,
   useCallback,
@@ -17,7 +18,7 @@ import {
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
 import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
-import { IconButton } from "@mui/material"
+// import{ Link } from "react-router-dom"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
@@ -122,7 +123,19 @@ export default function TokenClaimModal(): ReactElement {
           )}
           {!isClaimableNetwork && (
             <p style={{ whiteSpace: "pre-line" }}>
-              {t("desableRewardContent")}
+              <Trans i18nKey="disableRewardContent">
+                SDL is currently only deployed on Ethereum Mainnet and is not
+                yet claimable on this chain. We display the amount that will be
+                claimable once SDL is available on this network. See
+                <Link
+                  href="https://docs.saddle.finance/saddle-faq#why-cant-i-claim-my-sdl-on-arbitrum"
+                  color="secondary"
+                  target="_blank"
+                >
+                  this post
+                </Link>
+                for more information.
+              </Trans>
             </p>
           )}
           {allPoolsWithRewards.map((pool, i, arr) => (
