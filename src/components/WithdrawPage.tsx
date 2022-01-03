@@ -15,10 +15,8 @@ import PoolInfoCard from "./PoolInfoCard"
 import RadioButton from "./RadioButton"
 import ReviewWithdraw from "./ReviewWithdraw"
 import TokenInput from "./TokenInput"
-import TopMenu from "./TopMenu"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import { Zero } from "@ethersproject/constants"
-// import classNames from "classnames"
 import { formatBNToPercentString } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
 import { useSelector } from "react-redux"
@@ -84,7 +82,6 @@ const WithdrawPage = (props: Props): ReactElement => {
 
   return (
     <div className="withdraw">
-      <TopMenu activeTab={"withdraw"} />
       <div className="content">
         <div className="left">
           <div className="form">
