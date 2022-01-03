@@ -35,8 +35,6 @@ export default function TokenClaimModal(): ReactElement {
     chainId === ChainId.HARDHAT ||
     chainId === ChainId.ROPSTEN
 
-  console.log("is claimable network =>", isClaimableNetwork)
-
   const rewardBalances = useContext(RewardsBalancesContext)
   const {
     claimsStatuses,
