@@ -3,8 +3,10 @@ import "./Web3Status.scss"
 import React, { ReactElement, useEffect, useState } from "react"
 import AccountDetails from "./AccountDetails"
 import ConnectWallet from "./ConnectWallet"
-import Identicon from "./Identicon"
+import Davatar from "@davatar/react"
 import Modal from "./Modal"
+import { shortenAddress } from "../utils/shortenAddress"
+import { useENS } from "../hooks/useENS"
 import { useTranslation } from "react-i18next"
 import { useWeb3React } from "@web3-react/core"
 
@@ -18,6 +20,7 @@ const Web3Status = (): ReactElement => {
   const [modalOpen, setModalOpen] = useState(false)
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT)
   const { t } = useTranslation()
+  const { ensName } = useENS(account)
 
   // always reset to account view
   useEffect(() => {
@@ -32,11 +35,13 @@ const Web3Status = (): ReactElement => {
         {account ? (
           <div className="hasAccount">
             <span className="address">
-              {account.substring(0, 6)}...
-              {account.substring(account.length - 4, account.length)}
+              {ensName || shortenAddress(account)}
             </span>
-
-            <Identicon />
+            <Davatar
+              size={24}
+              address={account}
+              generatedAvatarType="jazzicon"
+            />
           </div>
         ) : (
           <div className="noAccount">{t("connectWallet")}</div>

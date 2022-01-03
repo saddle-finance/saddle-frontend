@@ -8,10 +8,17 @@
 
 * {
   box-sizing: border-box;
+  margin: 0px;
+  font-family: "Source Code Pro", monospace, sans-serif;
 }
 
 p,
 b,
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
 span {
   font-family: $font-family;
   line-height: 20px;
@@ -24,6 +31,10 @@ h3,
 h4,
 h5 {
   font-family: $font-family-title;
+}
+input {
+  border: none;
+  font-size: 100%;
 }
 
 svg,
