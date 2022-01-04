@@ -95,7 +95,6 @@ const PendingSwapModal = ({
     void calcAmount()
   }, [bridgeContract, settlementState, itemId, swapType])
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const gasPrice = gasBNFromState(
     { gasStandard, gasFast, gasInstant },
     gasPriceSelected,
@@ -115,7 +114,7 @@ const PendingSwapModal = ({
   const handleConfirmSettlement = useCallback(async () => {
     try {
       setCurrentStep("confirmation")
-      const txnArgs = {}
+      const txnArgs = { gasPrice }
       let transaction
       if (settlementState.action === "withdraw") {
         transaction = await bridgeContract?.withdraw(
@@ -173,6 +172,7 @@ const PendingSwapModal = ({
     bridgeContract,
     itemId,
     calculatedTokenAmount,
+    gasPrice,
     onClose,
     slippageCustom,
     slippageSelected,

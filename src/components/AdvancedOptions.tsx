@@ -201,7 +201,7 @@ export default function AdvancedOptions(): ReactElement {
             </div>
           </div>
         </div>
-        <div className={styles.parameter} style={{ display: "none" }}>
+        <div className={styles.parameter}>
           <div className={styles.inputGroup}>
             <div className={styles.options}>
               <div className={styles.label}>{t("gas")}:</div>

@@ -1,4 +1,6 @@
 import { AppDispatch } from "../state"
+import retry from "async-retry"
+import { updateGasPrices } from "../state/application"
 
 interface GenericGasReponse {
   gasStandard: number
@@ -11,7 +13,6 @@ interface POAGasResponse {
   fast: number
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const fetchGasPricePOA = (): Promise<GenericGasReponse> =>
   fetch("https://blockscout.com/eth/mainnet/api/v1/gas-price-oracle")
     .then((res) => res.json())
@@ -26,20 +27,19 @@ const fetchGasPricePOA = (): Promise<GenericGasReponse> =>
     })
 
 export default async function fetchGasPrices(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   dispatch: AppDispatch,
 ): Promise<void> {
-  return Promise.resolve()
-  // const dispatchUpdate = (gasPrices: GenericGasReponse) => {
-  //   dispatch(updateGasPrices(gasPrices))
-  // }
-  // await retry(
-  //   () =>
-  //     fetchGasPricePOA()
-  //       .then(dispatchUpdate)
-  //       .catch(() => fetchGasPricePOA().then(dispatchUpdate)), // else fall back to poa before retrying
-  //   {
-  //     retries: 3,
-  //   },
-  // )
+  // return Promise.resolve()
+  const dispatchUpdate = (gasPrices: GenericGasReponse) => {
+    dispatch(updateGasPrices(gasPrices))
+  }
+  await retry(
+    () =>
+      fetchGasPricePOA()
+        .then(dispatchUpdate)
+        .catch(() => fetchGasPricePOA().then(dispatchUpdate)), // else fall back to poa before retrying
+    {
+      retries: 3,
+    },
+  )
 }

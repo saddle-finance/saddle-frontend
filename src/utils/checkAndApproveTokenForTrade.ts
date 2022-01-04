@@ -26,8 +26,7 @@ export default async function checkAndApproveTokenForTrade(
   ownerAddress: string,
   spendingValue: BigNumber, // max is MaxUint256
   infiniteApproval = false,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  gasPrice: BigNumber, // @dev unused
+  gasPrice: BigNumber,
   callbacks: {
     onTransactionStart?: (
       transaction?: ContractTransaction,
@@ -54,6 +53,7 @@ export default async function checkAndApproveTokenForTrade(
       const approvalTransaction = await srcTokenContract.approve(
         spenderAddress,
         amount,
+        { gasPrice },
       )
       // Add notification
       notifyHandler(approvalTransaction.hash, "tokenApproval")

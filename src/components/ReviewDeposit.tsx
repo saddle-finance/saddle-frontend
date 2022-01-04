@@ -123,8 +123,7 @@ function ReviewDeposit({
             </span>
           </div>
         )}
-        {/* TODO: Create a light API to expose the cached BlockNative gas estimates. */}
-        {/* {transactionData.txnGasCost?.valueUSD && (
+        {transactionData.txnGasCost?.valueUSD && (
           <div className="depositInfoItem">
             <span className="label">{t("estimatedTxCost")}</span>
             <span className="value">
@@ -133,7 +132,7 @@ function ReviewDeposit({
               )}`}
             </span>
           </div>
-        )} */}
+        )}
         <div className="depositInfoItem">
           <span className="label">{t("maxSlippage")}</span>
           <span className="value">

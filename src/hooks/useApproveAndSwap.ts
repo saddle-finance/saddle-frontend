@@ -112,6 +112,7 @@ export function useApproveAndSwap(): (
           },
         },
       )
+      const txnArgs = { gasPrice }
       let swapTransaction
       if (state.swapType === SWAP_TYPES.TOKEN_TO_TOKEN) {
         const originPool = POOLS_MAP[state.from.poolName]
@@ -129,6 +130,7 @@ export function useApproveAndSwap(): (
             slippageSelected,
             slippageCustom,
           ), // subtract slippage from minSynth
+          txnArgs,
         ] as const
         console.debug("swap - tokenToToken", args)
         swapTransaction = await (state.bridgeContract as Bridge).tokenToToken(
@@ -146,6 +148,7 @@ export function useApproveAndSwap(): (
             slippageSelected,
             slippageCustom,
           ), // subtract slippage from minSynth
+          txnArgs,
         ] as const
         console.debug("swap - synthToToken", args)
         swapTransaction = await (state.bridgeContract as Bridge).synthToToken(
@@ -159,6 +162,7 @@ export function useApproveAndSwap(): (
           utils.formatBytes32String(state.to.symbol),
           state.from.amount,
           subtractSlippage(state.to.amount, slippageSelected, slippageCustom),
+          txnArgs,
         ] as const
         console.debug("swap - tokenToSynth", args)
         swapTransaction = await (state.bridgeContract as Bridge).tokenToSynth(
@@ -175,6 +179,7 @@ export function useApproveAndSwap(): (
           state.from.amount,
           subtractSlippage(state.to.amount, slippageSelected, slippageCustom),
           Math.round(new Date().getTime() / 1000 + 60 * deadline),
+          txnArgs,
         ] as const
         console.debug("swap - direct", args)
         swapTransaction = await (state.swapContract as NonNullable<

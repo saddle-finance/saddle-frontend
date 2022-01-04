@@ -173,6 +173,7 @@ export function useApproveAndDeposit(
           minToMint,
           txnDeadline,
           [],
+          { gasPrice },
         )
       } else {
         const swapFlashLoanContract = effectiveSwapContract as SwapFlashLoan
@@ -180,6 +181,7 @@ export function useApproveAndDeposit(
           txnAmounts,
           minToMint,
           txnDeadline,
+          { gasPrice },
         )
       }
 
