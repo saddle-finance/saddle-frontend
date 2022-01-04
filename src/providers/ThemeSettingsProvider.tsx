@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useState,
 } from "react"
-import { darkTheme, lightTheme } from "../theme"
+import { darkTheme, lightTheme } from "../theme/theme"
 import { CssBaseline } from "@mui/material"
 import { ThemeProvider } from "@mui/material"
 import useMediaQuery from "@mui/material/useMediaQuery"
