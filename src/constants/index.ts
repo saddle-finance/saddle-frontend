@@ -182,7 +182,7 @@ export const SUSD_META_SWAP_DEPOSIT_ADDRESSES = buildAddresses({
 })
 
 export const SUSD_META_SWAP_V2_DEPOSIT_ADDRESSES = buildAddresses({
-  [ChainId.MAINNET]: "0x30117eD3c82cC49B07BE49EE94436E928F8421b6",
+  [ChainId.MAINNET]: "0xc66Ed5d7800579220c71f21B1cCa2006B3a95900",
   [ChainId.HARDHAT]: "0xf433C50017d963b6082043445bCD0A54716DDC1d",
 })
 
@@ -202,7 +202,7 @@ export const TBTC_META_SWAP_DEPOSIT_ADDRESSES = buildAddresses({
 })
 
 export const TBTC_META_SWAP_V2_DEPOSIT_ADDRESSES = buildAddresses({
-  [ChainId.MAINNET]: "0x0B636ae06dE08dfe25a69d66291Bd0A600ca3CD7",
+  [ChainId.MAINNET]: "0x05383312655856E25b851c15fA856dB7e270F0cF",
   [ChainId.HARDHAT]: "0xB06Ce7334A26e90077F0182F07aCF650Bc978936",
 })
 
@@ -222,7 +222,7 @@ export const WCUSD_META_SWAP_DEPOSIT_ADDRESSES = buildAddresses({
 })
 
 export const WCUSD_META_SWAP_V2_DEPOSIT_ADDRESSES = buildAddresses({
-  [ChainId.MAINNET]: "0x91F3D09BD9B00BBD92CE60d10B5589274E9b2926",
+  [ChainId.MAINNET]: "0x9898D87368DE0Bf1f10bbea8dE46c00cC3a2F9F1",
   [ChainId.HARDHAT]: "0xbc51860c89838ec548d7190657874556407423f4",
 })
 
@@ -811,6 +811,7 @@ const FRAX_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0x853d955aCEf822Db058eb8505911ED77F175b99e",
   [ChainId.ROPSTEN]: "0xb295E36469C8Aef7d76b661aD5af02cdB258D662",
   [ChainId.HARDHAT]: "0x851356ae760d987E095750cCeb3bC6014560891C",
+  [ChainId.ARBITRUM]: "0x17fc002b466eec40dae837fc4be5c67993ddbd6f",
 })
 export const FRAX = new Token(
   FRAX_CONTRACT_ADDRESSES,
@@ -962,7 +963,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: SUSD_UNDERLYING_POOL_TOKENS,
     underlyingPool: STABLECOIN_POOL_V2_NAME,
     route: "susdv2",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.MAINNET]: 6 }),
   },
   [SUSD_METAPOOL_NAME]: {
     name: SUSD_METAPOOL_NAME,
@@ -1001,7 +1002,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: TBTC_UNDERLYING_POOL_TOKENS,
     underlyingPool: BTC_POOL_V2_NAME,
     route: "tbtcv2",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.MAINNET]: 5 }),
   },
   [WCUSD_METAPOOL_NAME]: {
     name: WCUSD_METAPOOL_NAME,
@@ -1027,7 +1028,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: WCUSD_UNDERLYING_POOL_TOKENS,
     underlyingPool: STABLECOIN_POOL_V2_NAME,
     route: "wcusdv2",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.MAINNET]: 7 }),
   },
 }
 export function isLegacySwapABIPool(poolName: string): boolean {

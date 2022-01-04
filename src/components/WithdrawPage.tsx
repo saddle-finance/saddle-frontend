@@ -18,7 +18,6 @@ import { Stack } from "@mui/material"
 import TokenInput from "./TokenInput"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import { Zero } from "@ethersproject/constants"
-import classNames from "classnames"
 import { formatBNToPercentString } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
 import { useSelector } from "react-redux"
@@ -83,7 +82,7 @@ const WithdrawPage = (props: Props): ReactElement => {
   const noShare = !myShareData || myShareData.lpTokenBalance.eq(Zero)
 
   return (
-    <div className={"withdraw " + classNames({ noShare: noShare })}>
+    <div className="withdraw">
       <div className="content">
         <div className="left">
           <div className="form">
@@ -91,7 +90,7 @@ const WithdrawPage = (props: Props): ReactElement => {
             <div className="percentage">
               <span>{`${t("withdrawPercentage")} (%):`}</span>
               <input
-                placeholder="100"
+                placeholder="0"
                 onChange={(e: React.FormEvent<HTMLInputElement>): void =>
                   onFormChange({
                     fieldName: "percentage",

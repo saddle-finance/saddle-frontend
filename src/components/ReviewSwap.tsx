@@ -2,7 +2,7 @@ import "./ReviewSwap.scss"
 
 import React, { ReactElement, useState } from "react"
 import { SWAP_TYPES, TOKENS_MAP, getIsVirtualSwap } from "../constants"
-import { commify, formatBNToString, formatDeadlineToNumber } from "../utils"
+import { formatBNToString, formatDeadlineToNumber } from "../utils"
 
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -120,7 +120,8 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
               GWEI
             </span>
           </div>
-          {data.txnGasCost?.valueUSD && (
+          {/* TODO: Create a light API to expose the cached BlockNative gas estimates. */}
+          {/* {data.txnGasCost?.valueUSD && (
             <div className="row">
               <span className="title">{t("estimatedTxCost")}</span>
               <span className="value floatRight">
@@ -129,7 +130,7 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
                 )}`}
               </span>
             </div>
-          )}
+          )} */}
           <div className="row">
             <span className="title">{t("maxSlippage")}</span>
             <span className="value floatRight">

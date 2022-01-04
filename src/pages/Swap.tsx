@@ -4,6 +4,7 @@ import {
   PoolName,
   SWAP_TYPES,
   TOKENS_MAP,
+  TOKEN_TO_POOLS_MAP,
 } from "../constants"
 import React, {
   ReactElement,
@@ -42,6 +43,7 @@ import { formatGasToString } from "../utils/gas"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndSwap } from "../hooks/useApproveAndSwap"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
+import usePoolsStatuses from "../hooks/usePoolsStatuses"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 import { utils } from "ethers"
@@ -99,6 +101,7 @@ function Swap(): ReactElement {
   const { chainId } = useActiveWeb3React()
   const approveAndSwap = useApproveAndSwap()
   const tokenBalances = usePoolTokenBalances()
+  const poolsStatuses = usePoolsStatuses()
   const bridgeContract = useBridgeContract()
   const snxEchangeRatesContract = useSynthetixExchangeRatesContract()
   const calculateSwapPairs = useCalculateSwapPairs()
@@ -131,6 +134,16 @@ function Swap(): ReactElement {
       }
     const allTokens = Object.values(TOKENS_MAP)
       .filter(({ isLPToken, addresses }) => !isLPToken && addresses[chainId])
+      .filter(({ symbol }) => {
+        // get list of pools containing the token
+        const tokenPools = TOKEN_TO_POOLS_MAP[symbol]
+        // ensure at least one pool is unpaused to include token in swappable list
+        const hasAnyUnpaused = tokenPools.reduce((acc, poolName) => {
+          const poolStatus = poolsStatuses[poolName as PoolName]
+          return poolStatus ? Boolean(acc || !poolStatus.isPaused) : acc
+        }, false)
+        return hasAnyUnpaused
+      })
       .map(({ symbol, name, icon, decimals }) => {
         const amount = tokenBalances?.[symbol] || Zero
         return {
@@ -175,7 +188,13 @@ function Swap(): ReactElement {
       from: allTokens,
       to: toTokens,
     }
-  }, [tokenPricesUSD, tokenBalances, formState.currentSwapPairs, chainId])
+  }, [
+    tokenPricesUSD,
+    tokenBalances,
+    formState.currentSwapPairs,
+    chainId,
+    poolsStatuses,
+  ])
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const calculateSwapAmount = useCallback(
     debounce(async (formStateArg: FormState) => {
@@ -582,12 +601,14 @@ const sortTokenOptions = (a: TokenOption, b: TokenOption) => {
   if (a.swapType === SWAP_TYPES.INVALID || b.swapType === SWAP_TYPES.INVALID) {
     return a.swapType === SWAP_TYPES.INVALID ? 1 : -1
   }
-  if (a.valueUSD.eq(b.valueUSD)) {
+  if (a.valueUSD.gt(b.valueUSD)) {
+    // prefer largest wallet balance
+    return -1
+  } else if (a.valueUSD.gt(Zero) && a.valueUSD.eq(b.valueUSD)) {
     const amountA = shiftBNDecimals(a.amount, 18 - a.decimals)
     const amountB = shiftBNDecimals(b.amount, 18 - b.decimals)
     return amountA.gt(amountB) ? -1 : 1
-  } else if (a.valueUSD.gt(b.valueUSD)) {
-    return -1
   }
-  return 1
+  // prefer direct swaps
+  return a.swapType === SWAP_TYPES.DIRECT ? -1 : 1
 }
