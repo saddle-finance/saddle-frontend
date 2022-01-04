@@ -963,7 +963,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: SUSD_UNDERLYING_POOL_TOKENS,
     underlyingPool: STABLECOIN_POOL_V2_NAME,
     route: "susdv2",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.MAINNET]: 6 }),
   },
   [SUSD_METAPOOL_NAME]: {
     name: SUSD_METAPOOL_NAME,
@@ -1002,7 +1002,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: TBTC_UNDERLYING_POOL_TOKENS,
     underlyingPool: BTC_POOL_V2_NAME,
     route: "tbtcv2",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.MAINNET]: 5 }),
   },
   [WCUSD_METAPOOL_NAME]: {
     name: WCUSD_METAPOOL_NAME,
@@ -1028,7 +1028,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: WCUSD_UNDERLYING_POOL_TOKENS,
     underlyingPool: STABLECOIN_POOL_V2_NAME,
     route: "wcusdv2",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.MAINNET]: 7 }),
   },
 }
 export function isLegacySwapABIPool(poolName: string): boolean {
