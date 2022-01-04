@@ -1,5 +1,9 @@
 import { ChainId, NetworkContextName } from "../constants"
-import { injectedMetaMaskProvider, injectedTallyProvider } from "../connectors"
+import {
+  injectedMetaMaskProvider,
+  injectedTallyProvider,
+  uauth,
+} from "../connectors"
 import { useEffect, useState } from "react"
 
 import { Web3Provider } from "@ethersproject/providers"
@@ -30,6 +34,22 @@ export function useEagerConnect(): boolean {
           } else {
             if (isMobile && window.ethereum) {
               activate(injectedTallyProvider, undefined, true).catch(() => {
+                setTried(true)
+              })
+            } else {
+              setTried(true)
+            }
+          }
+        })
+      } else if (window.ethereum.isUnstoppableDomains) {
+        void uauth.isAuthorized().then((isAuthorized) => {
+          if (isAuthorized) {
+            activate(uauth, undefined, true).catch(() => {
+              setTried(true)
+            })
+          } else {
+            if (isMobile && window.ethereum) {
+              activate(uauth, undefined, true).catch(() => {
                 setTried(true)
               })
             } else {
@@ -87,6 +107,11 @@ export function useInactiveListener(suppress = false): void {
           activate(injectedTallyProvider, undefined, true).catch((error) => {
             console.error("Failed to activate after chain changed", error)
           })
+        } else if (ethereum.isUnstoppableDomains) {
+          // eat errors
+          activate(uauth, undefined, true).catch((error) => {
+            console.error("Failed to activate after chain changed", error)
+          })
         } else if (ethereum.isMetaMask) {
           // eat errors
           activate(injectedMetaMaskProvider, undefined, true).catch((error) => {
@@ -100,6 +125,11 @@ export function useInactiveListener(suppress = false): void {
           if (ethereum.isTally) {
             // eat errors
             activate(injectedTallyProvider, undefined, true).catch((error) => {
+              console.error("Failed to activate after accounts changed", error)
+            })
+          } else if (ethereum.isUnstoppableDomains) {
+            // eat errors
+            activate(uauth, undefined, true).catch((error) => {
               console.error("Failed to activate after accounts changed", error)
             })
           } else if (ethereum.isMetaMask) {

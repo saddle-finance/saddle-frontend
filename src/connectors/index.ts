@@ -2,6 +2,7 @@ import { BaseProvider, getDefaultProvider } from "@ethersproject/providers"
 
 import { InjectedConnector } from "@web3-react/injected-connector"
 import { NetworkConnector } from "@web3-react/network-connector"
+import { UAuthConnector } from "@uauth/web3-react"
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
 import { WalletLinkConnector } from "@web3-react/walletlink-connector"
 
@@ -42,14 +43,38 @@ function createInjectedTallyProvider() {
   })
 }
 
+function createInjectedUnstoppableDomainsProvider() {
+  return new InjectedConnector({
+    // currently Unstoppable Domains supports only mainnet
+    // see: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
+    supportedChainIds: [1],
+  })
+}
+
 export const injectedMetaMaskProvider = createInjectedMetaMaskProvider()
 export const injectedTallyProvider = createInjectedTallyProvider()
+export const injectedUnstoppableDomainsProvider = createInjectedUnstoppableDomainsProvider()
 
 export const walletconnect = new WalletConnectConnector({
   rpc: { [NETWORK_CHAIN_ID]: NETWORK_URL },
   bridge: "https://bridge.walletconnect.org",
   qrcode: true,
   // pollingInterval: POLLING_INTERVAL / 12000
+})
+
+export const uauth = new UAuthConnector({
+  clientID: process.env.REACT_APP_CLIENT_ID!,
+  clientSecret: process.env.REACT_APP_CLIENT_SECRET!,
+  redirectUri: process.env.REACT_APP_REDIRECT_URI!,
+  // postLogoutRedirectUri: process.env.REACT_APP_POST_LOGOUT_REDIRECT_URI!,
+  fallbackIssuer: process.env.REACT_APP_FALLBACK_ISSUER!,
+
+  // Scope must include openid and wallet
+  scope: "openid wallet",
+
+  // Injected and walletconnect connectors are required
+  // @ts-ignore
+  connectors: { injectedUnstoppableDomainsProvider, walletconnect },
 })
 
 export const walletlink = new WalletLinkConnector({

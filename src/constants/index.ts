@@ -1,6 +1,7 @@
 import {
   injectedMetaMaskProvider,
   injectedTallyProvider,
+  uauth,
   walletconnect,
   walletlink,
 } from "../connectors"
@@ -1145,6 +1146,11 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     name: "Tally",
     icon: tallyIcon,
     connector: injectedTallyProvider,
+  },
+  UNSTOPPABLE_DOMAINS: {
+    name: "Unstoppable Domains",
+    icon: metamaskIcon,
+    connector: uauth,
   },
   METAMASK: {
     name: "MetaMask",
