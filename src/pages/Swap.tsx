@@ -158,7 +158,6 @@ function Swap(): ReactElement {
         }
       })
       .sort(sortTokenOptions)
-    console.log(allTokens.map(({ symbol }) => symbol).sort())
     const toTokens =
       formState.currentSwapPairs.length > 0
         ? formState.currentSwapPairs
@@ -189,7 +188,13 @@ function Swap(): ReactElement {
       from: allTokens,
       to: toTokens,
     }
-  }, [tokenPricesUSD, tokenBalances, formState.currentSwapPairs, chainId])
+  }, [
+    tokenPricesUSD,
+    tokenBalances,
+    formState.currentSwapPairs,
+    chainId,
+    poolsStatuses,
+  ])
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const calculateSwapAmount = useCallback(
     debounce(async (formStateArg: FormState) => {
