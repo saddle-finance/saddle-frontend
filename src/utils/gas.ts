@@ -15,12 +15,12 @@ export function gasBNFromState(
   let gasPrice
   if (gasSelected === GasPrices.Custom) {
     gasPrice = gasCustom?.valueSafe
-  } else if (gasSelected === GasPrices.Fast) {
-    gasPrice = gasFast
+  } else if (gasSelected === GasPrices.Standard) {
+    gasPrice = gasStandard
   } else if (gasSelected === GasPrices.Instant) {
     gasPrice = gasInstant
   } else {
-    gasPrice = gasStandard
+    gasPrice = gasFast
   }
   return BigNumber.from(gasPrice)
 }

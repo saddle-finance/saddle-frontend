@@ -45,7 +45,7 @@ export const initialState: UserState = {
   userSwapAdvancedMode: false,
   userPoolAdvancedMode: false,
   userDarkMode: false,
-  gasPriceSelected: GasPrices.Standard,
+  gasPriceSelected: GasPrices.Fast,
   slippageSelected: Slippages.OneTenth,
   infiniteApproval: false,
   transactionDeadlineSelected: Deadlines.Twenty,
