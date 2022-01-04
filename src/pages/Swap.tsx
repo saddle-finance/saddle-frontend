@@ -601,12 +601,14 @@ const sortTokenOptions = (a: TokenOption, b: TokenOption) => {
   if (a.swapType === SWAP_TYPES.INVALID || b.swapType === SWAP_TYPES.INVALID) {
     return a.swapType === SWAP_TYPES.INVALID ? 1 : -1
   }
-  if (a.valueUSD.eq(b.valueUSD)) {
+  if (a.valueUSD.gt(b.valueUSD)) {
+    // prefer largest wallet balance
+    return -1
+  } else if (a.valueUSD.gt(Zero) && a.valueUSD.eq(b.valueUSD)) {
     const amountA = shiftBNDecimals(a.amount, 18 - a.decimals)
     const amountB = shiftBNDecimals(b.amount, 18 - b.decimals)
     return amountA.gt(amountB) ? -1 : 1
-  } else if (a.valueUSD.gt(b.valueUSD)) {
-    return -1
   }
-  return 1
+  // prefer direct swaps
+  return a.swapType === SWAP_TYPES.DIRECT ? -1 : 1
 }
