@@ -30,7 +30,7 @@ context("Withdrawal Flow", () => {
     cy.contains(poolName)
       .parents(".poolOverview")
       .within(() => {
-        cy.get("button").contains("Deposit").click()
+        cy.get("button").contains("Deposit").click({ force: true })
       })
 
     cy.wait(3000)
@@ -40,7 +40,7 @@ context("Withdrawal Flow", () => {
         cy.wrap($input).type("100")
       })
       cy.wait(500)
-      cy.get("button").contains("Deposit").click()
+      cy.get("button").contains("Deposit").click({ force: true })
       cy.get("button").contains("Confirm Deposit").click()
     })
   }

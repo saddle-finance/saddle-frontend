@@ -93,7 +93,7 @@
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6008 -s public --no-dll",
     "build-storybook": "build-storybook -s public --no-dll",
-    "cy:run": "cypress run",
+    "cy:run": "cypress run --record",
     "cy:open": "cypress open",
     "cy:startopen": "start-test 3000 'cypress open'",
     "cy:coverage": "start-test 3000 'cypress run --config video=false'",

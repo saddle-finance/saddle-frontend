@@ -1,4 +1,5 @@
 {
+  "projectId": "ch3eek",
   "env": {
     "NETWORK_ID": 31337,
     "DAPP_HOST": "http://localhost:3000/",
@@ -9,6 +10,6 @@
       "root": "#root"
     }
   },
-  "defaultCommandTimeout": 40000,
-  "requestTimeout": 40000
+  "defaultCommandTimeout": 10000,
+  "requestTimeout": 10000
 }
