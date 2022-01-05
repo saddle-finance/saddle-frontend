@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.16.5",
-    "@cypress/code-coverage": "^3.9.4",
+    "@cypress/code-coverage": "^3.9.12",
     "@cypress/instrument-cra": "^1.4.0",
     "@cypress/react": "^5.10.3",
     "@ethersproject/experimental": "^5.0.9",
@@ -66,7 +66,7 @@
     "@types/async-retry": "^1.4.2",
     "@typescript-eslint/eslint-plugin": "^4.9.1",
     "@typescript-eslint/parser": "^4.9.1",
-    "cypress": "^7.6.0",
+    "cypress": "^9.2.0",
     "cypress-react-selector": "^2.3.6",
     "eslint": "^7.11.0",
     "eslint-config-prettier": "^8.3.0",

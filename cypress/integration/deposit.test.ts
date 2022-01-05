@@ -23,6 +23,7 @@ context("Deposit Flow", () => {
       cy.get("input").first({ timeout: 10000 }).should("be.enabled")
       // TODO: assert default state of the page
       // Get before value of each token in My Share section
+      cy.wait(20000)
       poolTokens[poolName].forEach((token: string) => {
         cy.get(".tokenName")
           .contains(token)
