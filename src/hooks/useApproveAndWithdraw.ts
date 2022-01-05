@@ -27,7 +27,6 @@ export function useApproveAndWithdraw(
   const dispatch = useDispatch()
   const swapContract = useSwapContract(poolName)
   const { account } = useActiveWeb3React()
-  console.log("s")
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
