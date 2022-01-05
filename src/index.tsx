@@ -33,6 +33,7 @@ Sentry.init({
   dsn:
     "https://aa2638e61b14430385cc4be7023ba621@o1107900.ingest.sentry.io/6135183",
   integrations: [new Integrations.BrowserTracing()],
+  release: process.env.REACT_APP_GIT_SHA,
   tracesSampleRate: 0.1,
 })
 
