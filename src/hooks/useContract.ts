@@ -190,7 +190,7 @@ export function useSwapContract(
         return null
       }
     } catch (error) {
-      console.log("Failed to get contract", error)
+      console.error("Failed to get contract", error)
       return null
     }
   }, [chainId, library, account, poolName])
