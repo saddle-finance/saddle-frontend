@@ -45,7 +45,7 @@ context("Deposit Flow", () => {
         // click "confirm" to initiate the actual transactions
         cy.get("button").contains("Confirm Deposit").click()
         // Wait and assert after value of each token has been increased by 1
-        cy.wait(10000).then(() => {
+        cy.wait(40000).then(() => {
           poolTokens[poolName].forEach((token: string) => {
             cy.get(".tokenName")
               .contains(token)
