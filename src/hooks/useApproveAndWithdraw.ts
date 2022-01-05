@@ -60,7 +60,7 @@ export function useApproveAndWithdraw(
       } else {
         gasPrice = gasFast
       }
-      gasPrice = parseUnits(gasPrice?.toString() || "45", "gwei")
+      gasPrice = parseUnits(gasPrice?.toString() ?? "0", "gwei")
       const allowanceAmount =
         state.withdrawType === "IMBALANCE"
           ? addSlippage(
