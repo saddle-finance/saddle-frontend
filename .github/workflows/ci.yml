@@ -87,7 +87,10 @@ jobs:
         image: saddlefinance/contracts:latest
         ports:
           - 8545:8545
-
+      saddle-token:
+        image: saddlefinance/tokens:deploySDL
+        ports:
+          - 8545:8545
     env:
       REACT_APP_NOTIFY_DAPP_ID: ${{ secrets.REACT_APP_NOTIFY_DAPP_ID }}
     steps:
