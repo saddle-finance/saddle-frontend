@@ -20,7 +20,7 @@ context("Deposit Flow", () => {
           cy.get("button").contains("Deposit").click()
         })
       // attempt to wait for pool data to load
-      cy.get("input").first({ timeout: 40000 }).should("be.enabled")
+      cy.get("input").first({ timeout: 10000 }).should("be.enabled")
       // TODO: assert default state of the page
       // Get before value of each token in My Share section
       poolTokens[poolName].forEach((token: string) => {
@@ -45,7 +45,7 @@ context("Deposit Flow", () => {
         // click "confirm" to initiate the actual transactions
         cy.get("button").contains("Confirm Deposit").click()
         // Wait and assert after value of each token has been increased by 1
-        cy.wait(40000).then(() => {
+        cy.wait(10000).then(() => {
           poolTokens[poolName].forEach((token: string) => {
             cy.get(".tokenName")
               .contains(token)
