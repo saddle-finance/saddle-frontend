@@ -76,7 +76,7 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
             </span>
           </div>
         )}
-        {data.txnGasCost?.valueUSD && (
+        {data.txnGasCost?.valueUSD && shouldDisplayGas && (
           <div className="withdrawInfoItem">
             <span className="label">{t("estimatedTxCost")}</span>
             <span className="value">

@@ -123,7 +123,7 @@ function ReviewDeposit({
             </span>
           </div>
         )}
-        {transactionData.txnGasCost?.valueUSD && (
+        {transactionData.txnGasCost?.valueUSD && shouldDisplayGas && (
           <div className="depositInfoItem">
             <span className="label">{t("estimatedTxCost")}</span>
             <span className="value">

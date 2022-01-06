@@ -38,7 +38,6 @@ const fetchGasPricePOA = (): Promise<GenericGasReponse> =>
 export default async function fetchGasPrices(
   dispatch: AppDispatch,
 ): Promise<void> {
-  // return Promise.resolve()
   const dispatchUpdate = (gasPrices: GenericGasReponse) => {
     dispatch(updateGasPrices(gasPrices))
   }

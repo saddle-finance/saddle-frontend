@@ -69,7 +69,7 @@ function ReviewMigration({
               </span>
             </div>
           )}
-          {gasValueUSD && (
+          {gasValueUSD && shouldDisplayGas && (
             <div className="row">
               <span className="title">{t("estimatedTxCost")}</span>
               <span className="value floatRight">
