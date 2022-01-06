@@ -45,7 +45,7 @@ function createInjectedTallyProvider() {
 
 function createInjectedUnstoppableDomainsProvider() {
   return new InjectedConnector({
-    // currently Unstoppable Domains supports only mainnet
+    // currently Unstoppable Domains supports only mainnet and Polygon
     // see: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
     supportedChainIds: [1],
   })
