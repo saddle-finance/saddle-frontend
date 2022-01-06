@@ -1,5 +1,5 @@
 import { Components, Theme } from "@mui/material"
-import AppBarTheme from "./AppbarTheme"
+import AppBarTheme from "./AppBarTheme"
 import BackdropTheme from "./BackdropTheme"
 import DialogTheme from "./DialogTheme"
 import TooltipTheme from "./TooltipTheme"
