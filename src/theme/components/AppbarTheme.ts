@@ -1,7 +1,6 @@
 import { Components, Theme } from "@mui/material"
 
-export default function AppBar(theme: Theme): Components {
-  console.log("background.default", theme.palette.background.default)
+export default function AppBarTheme(theme: Theme): Components {
   return {
     MuiAppBar: {
       styleOverrides: {
