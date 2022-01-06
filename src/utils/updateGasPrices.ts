@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/react"
+
 import { AppDispatch } from "../state"
 import retry from "async-retry"
 import { updateGasPrices } from "../state/application"
@@ -24,8 +26,13 @@ const fetchGasPricePOA = (): Promise<GenericGasReponse> =>
         gasInstant: Math.round(instant),
       }
     })
-    .catch(() => {
-      throw new Error("Unable to fetch gas price from POA Network")
+    .catch((err) => {
+      Sentry.captureException(err)
+      return {
+        gasStandard: 0,
+        gasFast: 0,
+        gasInstant: 0,
+      }
     })
 
 export default async function fetchGasPrices(
