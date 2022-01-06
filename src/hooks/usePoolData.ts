@@ -306,9 +306,11 @@ export default function usePoolData(
           value: userPoolTokenBalances[i],
         }))
         const poolAddress = POOL.addresses[chainId].toLowerCase()
+        const metaSwapAddress = POOL.metaSwapAddresses?.[chainId]?.toLowerCase()
+        const underlyingPool = metaSwapAddress || poolAddress
         const { oneDayVolume, apy, utilization } =
-          swapStats && poolAddress in swapStats
-            ? swapStats[poolAddress]
+          swapStats && underlyingPool in swapStats
+            ? swapStats[underlyingPool]
             : { oneDayVolume: null, apy: null, utilization: null }
 
         let sdlPerDay = null
@@ -330,13 +332,11 @@ export default function usePoolData(
             .div(totalAllocPoint)
         }
 
-        const metaSwapAddress = POOL.metaSwapAddresses?.[chainId]
-        const poolAddressToCheckMigrationStatus = metaSwapAddress || poolAddress
         let isMigrated = false
-        if (poolAddressToCheckMigrationStatus && migratorContract) {
+        if (underlyingPool && migratorContract) {
           try {
             const migrationMapRes = await migratorContract.migrationMap(
-              poolAddressToCheckMigrationStatus,
+              underlyingPool,
             )
             isMigrated = migrationMapRes.newPoolAddress !== AddressZero
           } catch (err) {
