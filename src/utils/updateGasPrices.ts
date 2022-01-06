@@ -23,6 +23,8 @@ const fetchGasPricePOA = (): Promise<GenericGasReponse> =>
         gasFast: Math.round(fast),
         gasInstant: Math.round(instant),
       }
+    })
+    .catch(() => {
       throw new Error("Unable to fetch gas price from POA Network")
     })
 
