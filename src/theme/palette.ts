@@ -63,4 +63,4 @@ const darkPalette: PaletteOptions | undefined = {
   },
   grey: GREY,
 }
-export default { lightTheme: lightPalette, darkTheme: darkPalette }
+export default { lightPalette, darkPalette }
