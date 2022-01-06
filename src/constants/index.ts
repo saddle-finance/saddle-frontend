@@ -26,6 +26,7 @@ import sethLogo from "../assets/icons/seth.svg"
 import susdLogo from "../assets/icons/susd.svg"
 import tallyIcon from "../assets/icons/tally.svg"
 import tbtcLogo from "../assets/icons/tbtc.svg"
+import unstoppableDomainsLogo from "../assets/icons/unstoppableDomainsLogo.png"
 import usdcLogo from "../assets/icons/usdc.svg"
 import usdtLogo from "../assets/icons/usdt.svg"
 import veth2Logo from "../assets/icons/veth2.svg"
@@ -1149,7 +1150,7 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   },
   UNSTOPPABLE_DOMAINS: {
     name: "Unstoppable Domains",
-    icon: metamaskIcon,
+    icon: unstoppableDomainsLogo,
     connector: uauth,
   },
   METAMASK: {
