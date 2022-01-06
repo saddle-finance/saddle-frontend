@@ -79,6 +79,17 @@ export const SUPPORTED_NETWORKS: {
     rpcUrls: ["https://arb1.arbitrum.io/rpc"],
     blockExplorerUrls: ["https://mainnet-arb-explorer.netlify.app"],
   },
+  [ChainId.MATICMUMBAI]: {
+    chainId: "0x13881",
+    chainName: "MaticMumbai",
+    nativeCurrency: {
+      name: "Ethereum",
+      symbol: "ETH",
+      decimals: 18,
+    },
+    rpcUrls: ["https://rpc-mumbai.maticvigil.com"],
+    blockExplorerUrls: ["https://mumbai.polygonscan.com/"],
+  },
 }
 function NetworkSection(): ReactElement {
   const { t } = useTranslation()
