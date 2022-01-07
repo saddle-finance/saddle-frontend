@@ -12,6 +12,7 @@ import { AppState } from "../state/index"
 import Button from "./Button"
 import { DepositTransaction } from "../interfaces/transactions"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
+import { Zero } from "@ethersproject/constants"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import { isHighPriceImpact } from "../utils/priceImpact"
@@ -123,7 +124,7 @@ function ReviewDeposit({
             </span>
           </div>
         )}
-        {transactionData.txnGasCost?.valueUSD && shouldDisplayGas && (
+        {transactionData.txnGasCost?.valueUSD?.gt(Zero) && (
           <div className="depositInfoItem">
             <span className="label">{t("estimatedTxCost")}</span>
             <span className="value">

@@ -10,6 +10,7 @@ import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { ReactComponent as ThinArrowDown } from "../assets/icons/thinArrowDown.svg"
+import { Zero } from "@ethersproject/constants"
 import { calculateGasEstimate } from "../utils/gasEstimate"
 import { formatSlippageToString } from "../utils/slippage"
 import { isHighPriceImpact } from "../utils/priceImpact"
@@ -131,7 +132,7 @@ function ReviewVirtualSwapSettlement({
               </span>
             </div>
           )}
-          {gasValueUSD && shouldDisplayGas && (
+          {gasValueUSD?.gt(Zero) && (
             <div className="row">
               <span className="title">{t("estimatedTxCost")}</span>
               <span className="value floatRight">

@@ -8,6 +8,7 @@ import Button from "./Button"
 import { GasPrices } from "../state/user"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { ReviewWithdrawData } from "./WithdrawPage"
+import { Zero } from "@ethersproject/constants"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import { isHighPriceImpact } from "../utils/priceImpact"
@@ -76,7 +77,7 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
             </span>
           </div>
         )}
-        {data.txnGasCost?.valueUSD && shouldDisplayGas && (
+        {data.txnGasCost?.valueUSD?.gt(Zero) && (
           <div className="withdrawInfoItem">
             <span className="label">{t("estimatedTxCost")}</span>
             <span className="value">

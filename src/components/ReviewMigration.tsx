@@ -7,6 +7,7 @@ import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
 import Warning from "./Warning"
+import { Zero } from "@ethersproject/constants"
 import { calculateGasEstimate } from "../utils/gasEstimate"
 import { gasBNFromState } from "../utils/gas"
 import { parseUnits } from "ethers/lib/utils"
@@ -69,7 +70,7 @@ function ReviewMigration({
               </span>
             </div>
           )}
-          {gasValueUSD && shouldDisplayGas && (
+          {gasValueUSD?.gt(Zero) && (
             <div className="row">
               <span className="title">{t("estimatedTxCost")}</span>
               <span className="value floatRight">
