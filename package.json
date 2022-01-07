@@ -30,7 +30,7 @@
     "classnames": "^2.3.1",
     "copy-to-clipboard": "^3.3.1",
     "ethcall": "^3.2.0",
-    "ethers": "^5.4.6",
+    "ethers": "^5.5.3",
     "framer-motion": "^4.0.3",
     "history": "^5.0.0",
     "i18next": "^19.8.3",
