@@ -83,8 +83,8 @@ export const SUPPORTED_NETWORKS: {
     chainId: "0x13881",
     chainName: "MaticMumbai",
     nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
+      name: "Matic",
+      symbol: "MATIC",
       decimals: 18,
     },
     rpcUrls: ["https://rpc-mumbai.maticvigil.com"],

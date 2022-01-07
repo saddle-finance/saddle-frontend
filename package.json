@@ -47,6 +47,7 @@
     "redux": "^4.1.0",
     "redux-localstorage-simple": "^2.4.0",
     "typescript": "^4.2.4",
+    "vercel": "^23.1.2",
     "web-vitals": "^2.0.1"
   },
   "devDependencies": {
