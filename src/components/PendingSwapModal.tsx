@@ -64,10 +64,8 @@ const PendingSwapModal = ({
     action: null,
     amount: Zero,
   })
-  const [
-    calculatedTokenAmount,
-    setCalculatedTokenAmount,
-  ] = useState<BigNumber | null>(null)
+  const [calculatedTokenAmount, setCalculatedTokenAmount] =
+    useState<BigNumber | null>(null)
   const [currentStep, setCurrentStep] = useState<ModalStep>(
     secondsRemaining === 0 ? "exchange" : "timer",
   )

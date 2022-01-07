@@ -139,13 +139,17 @@ export function useApproveAndDeposit(
         minToMint = BigNumber.from("0")
       } else {
         if (isLegacySwapABIPool(poolName)) {
-          minToMint = await (effectiveSwapContract as SwapFlashLoan).calculateTokenAmount(
+          minToMint = await (
+            effectiveSwapContract as SwapFlashLoan
+          ).calculateTokenAmount(
             account,
             poolTokens.map(({ symbol }) => state[symbol].valueSafe),
             true, // deposit boolean
           )
         } else {
-          minToMint = await (effectiveSwapContract as SwapFlashLoanNoWithdrawFee).calculateTokenAmount(
+          minToMint = await (
+            effectiveSwapContract as SwapFlashLoanNoWithdrawFee
+          ).calculateTokenAmount(
             poolTokens.map(({ symbol }) => state[symbol].valueSafe),
             true, // deposit boolean
           )

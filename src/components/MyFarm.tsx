@@ -18,12 +18,8 @@ export default function MyFarm({
   lpWalletBalance,
   poolName,
 }: Props): ReactElement | null {
-  const {
-    approveAndStake,
-    unstake,
-    amountStaked,
-    isPoolIncentivized,
-  } = useRewardsHelpers(poolName as PoolName)
+  const { approveAndStake, unstake, amountStaked, isPoolIncentivized } =
+    useRewardsHelpers(poolName as PoolName)
   const { t } = useTranslation()
   const formattedLpWalletBalance = commify(
     formatBNToString(lpWalletBalance, 18, 4),

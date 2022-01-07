@@ -42,10 +42,8 @@ function ReviewDeposit({
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
-  const [
-    hasConfirmedHighPriceImpact,
-    setHasConfirmedHighPriceImpact,
-  ] = useState(false)
+  const [hasConfirmedHighPriceImpact, setHasConfirmedHighPriceImpact] =
+    useState(false)
   const isHighPriceImpactTxn = isHighPriceImpact(transactionData.priceImpact)
   const deadline = formatDeadlineToNumber(
     transactionDeadlineSelected,
