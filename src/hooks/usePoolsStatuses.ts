@@ -7,26 +7,32 @@ import { Contract } from "ethcall"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import { MulticallContract } from "../types/ethcall"
+import SWAP_FLASH_LOAN_ABI from "../constants/abis/swapFlashLoan.json"
+import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { getMulticallProvider } from "../utils"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import { useSelector } from "react-redux"
 
-export default function usePoolTVLs(): { [poolName in PoolName]?: BigNumber } {
+type PoolStatuses = {
+  [poolName in PoolName]?: {
+    tvl: BigNumber
+    isPaused: boolean
+  }
+}
+export default function usePoolStatuses(): PoolStatuses {
   const { chainId, library } = useActiveWeb3React()
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
-  const [poolTvls, setPoolTvls] = useState<
-    { [poolName in PoolName]?: BigNumber }
-  >({})
+  const [poolStatuses, setPoolStatuses] = useState<PoolStatuses>({})
 
   useEffect(() => {
     if (
-      Object.keys(poolTvls).length > 0 && // only run once
+      Object.keys(poolStatuses).length > 0 && // only run once
       tokenPricesUSD?.BTC &&
       tokenPricesUSD?.ETH
     )
       return
-    async function fetchTVLs() {
+    async function fetchStatuses() {
       if (!library || !chainId) return
       const ethcallProvider = await getMulticallProvider(library, chainId)
 
@@ -41,8 +47,17 @@ export default function usePoolTVLs(): { [poolName in PoolName]?: BigNumber } {
           ) as MulticallContract<LpTokenUnguarded>
         })
         .map((c) => c.totalSupply())
+      const pausedCalls = pools
+        .map((p) => {
+          return new Contract(
+            p.metaSwapAddresses?.[chainId] || p.addresses[chainId],
+            SWAP_FLASH_LOAN_ABI,
+          ) as MulticallContract<SwapFlashLoan>
+        })
+        .map((c) => c.paused())
       try {
         const tvls = await ethcallProvider.all(supplyCalls, {})
+        const pausedStatuses = await ethcallProvider.all(pausedCalls, {})
         const tvlsUSD = pools.map((pool, i) => {
           const tvlAmount = tvls[i]
           let tokenValue = 0
@@ -57,20 +72,20 @@ export default function usePoolTVLs(): { [poolName in PoolName]?: BigNumber } {
             .mul(tvlAmount)
             .div(BigNumber.from(10).pow(2)) //1e18
         })
-        setPoolTvls((prevState) => {
+        setPoolStatuses(() => {
           return pools.reduce(
             (acc, pool, i) => ({
               ...acc,
-              [pool.name]: tvlsUSD[i],
+              [pool.name]: { tvl: tvlsUSD[i], isPaused: pausedStatuses[i] },
             }),
-            prevState,
+            {},
           )
         })
       } catch (err) {
-        console.log("Error on fetchTVLs", err)
+        console.log("Error on fetchStatuses", err)
       }
     }
-    void fetchTVLs()
-  }, [chainId, library, tokenPricesUSD, poolTvls])
-  return poolTvls
+    void fetchStatuses()
+  }, [chainId, library, tokenPricesUSD, poolStatuses])
+  return poolStatuses
 }
