@@ -53,7 +53,8 @@ function createInjectedUnstoppableDomainsProvider() {
 
 export const injectedMetaMaskProvider = createInjectedMetaMaskProvider()
 export const injectedTallyProvider = createInjectedTallyProvider()
-export const injectedUnstoppableDomainsProvider = createInjectedUnstoppableDomainsProvider()
+export const injectedUnstoppableDomainsProvider =
+  createInjectedUnstoppableDomainsProvider()
 
 export const walletconnect = new WalletConnectConnector({
   rpc: { [NETWORK_CHAIN_ID]: NETWORK_URL },
@@ -63,11 +64,10 @@ export const walletconnect = new WalletConnectConnector({
 })
 
 export const uauth = new UAuthConnector({
-  clientID: process.env.REACT_APP_CLIENT_ID,
-  clientSecret: process.env.REACT_APP_CLIENT_SECRET,
-  redirectUri: process.env.REACT_APP_REDIRECT_URI,
-  // postLogoutRedirectUri: process.env.REACT_APP_POST_LOGOUT_REDIRECT_URI,
-  fallbackIssuer: process.env.REACT_APP_FALLBACK_ISSUER,
+  clientID: process.env.REACT_APP_UD_CLIENT_ID,
+  clientSecret: process.env.REACT_APP_UD_CLIENT_SECRET,
+  redirectUri: process.env.REACT_APP_UD_REDIRECT_URI,
+  postLogoutRedirectUri: process.env.REACT_APP_UD_POST_LOGOUT_REDIRECT_URI,
 
   // Scope must include openid and wallet
   scope: "openid wallet",

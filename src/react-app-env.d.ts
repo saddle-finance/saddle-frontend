@@ -22,7 +22,6 @@ interface Window {
   ethereum?: {
     isMetaMask?: boolean
     isTally?: boolean
-    isUnstoppableDomains?: boolean
     on?: (...args: any[]) => void
     removeListener?: (...args: any[]) => void
     autoRefreshOnNetworkChange?: boolean
