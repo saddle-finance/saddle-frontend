@@ -177,9 +177,11 @@ export function useApproveAndSwap(): (
           Math.round(new Date().getTime() / 1000 + 60 * deadline),
         ] as const
         console.debug("swap - direct", args)
-        swapTransaction = await (state.swapContract as NonNullable<
-          typeof state.swapContract // we already check for nonnull above
-        >).swap(...args)
+        swapTransaction = await (
+          state.swapContract as NonNullable<
+            typeof state.swapContract // we already check for nonnull above
+          >
+        ).swap(...args)
       } else if (state.swapType === SWAP_TYPES.SYNTH_TO_SYNTH) {
         const args = [
           utils.formatBytes32String(state.from.symbol),
