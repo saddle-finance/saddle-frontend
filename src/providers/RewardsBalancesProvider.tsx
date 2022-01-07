@@ -44,10 +44,8 @@ export default function RewardsBalancesProvider({
     retroactiveTotal: Zero,
   })
   const poolsRewardsBalances = usePoolsRewardBalances()
-  const {
-    vested: retroBalanceVested,
-    total: retroBalanceTotal,
-  } = useRetroactiveRewardBalance()
+  const { vested: retroBalanceVested, total: retroBalanceTotal } =
+    useRetroactiveRewardBalance()
 
   useMemo(() => {
     const total = Object.values({

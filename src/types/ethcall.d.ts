@@ -14,8 +14,7 @@ export type MulticallContract<ContractType> = {
       ? V // if ReturnType is a Promise, unwrap it
       : ReturnType<ContractType[Fn]>
   >
-} &
-  Contract
+} & Contract
 export class MulticallProvider extends Provider {
   /**
    *  TODO: TS can't infer tuple types
@@ -35,7 +34,7 @@ export class MulticallProvider extends Provider {
   all<
     A extends MulticallCall,
     B extends MulticallCall,
-    C extends MulticallCall
+    C extends MulticallCall,
   >(
     calls: readonly [A, B, C],
     overrides: CallOverrides,
@@ -44,7 +43,7 @@ export class MulticallProvider extends Provider {
     A extends MulticallCall,
     B extends MulticallCall,
     C extends MulticallCall,
-    D extends MulticallCall
+    D extends MulticallCall,
   >(
     calls: readonly [A, B, C, D],
     overrides: CallOverrides,
