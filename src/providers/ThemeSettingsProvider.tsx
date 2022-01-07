@@ -28,9 +28,9 @@ function ThemeSettingsProvider({
   children,
 }: PropsWithChildren<unknown>): ReactElement {
   const [mode, setMode] = useState<ThemeMode>("system")
-  const prefersDarkMode = (useMediaQuery("(prefers-color-scheme: dark)")
-    ? "dark"
-    : "light") as ThemeMode
+  const prefersDarkMode = (
+    useMediaQuery("(prefers-color-scheme: dark)") ? "dark" : "light"
+  ) as ThemeMode
 
   useEffect(() => {
     const initialMode: ThemeMode = (localStorage.getItem("paletteMode") ||

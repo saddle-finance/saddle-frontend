@@ -114,9 +114,8 @@ function Swap(): ReactElement {
   )
 
   const [formState, setFormState] = useState<FormState>(EMPTY_FORM_STATE)
-  const [prevFormState, setPrevFormState] = useState<FormState>(
-    EMPTY_FORM_STATE,
-  )
+  const [prevFormState, setPrevFormState] =
+    useState<FormState>(EMPTY_FORM_STATE)
   useEffect(() => {
     setFormState(EMPTY_FORM_STATE)
     setPrevFormState(EMPTY_FORM_STATE)
@@ -245,15 +244,13 @@ function Swap(): ReactElement {
       ) {
         const originPool = POOLS_MAP[formStateArg.from.poolName]
         const destinationPool = POOLS_MAP[formStateArg.to.poolName]
-        const [
-          amountOutSynth,
-          amountOutToken,
-        ] = await bridgeContract.calcTokenToToken(
-          [originPool.addresses[chainId], destinationPool.addresses[chainId]],
-          formStateArg.from.tokenIndex,
-          formStateArg.to.tokenIndex,
-          amountToGive,
-        )
+        const [amountOutSynth, amountOutToken] =
+          await bridgeContract.calcTokenToToken(
+            [originPool.addresses[chainId], destinationPool.addresses[chainId]],
+            formStateArg.from.tokenIndex,
+            formStateArg.to.tokenIndex,
+            amountToGive,
+          )
         amountToReceive = amountOutToken
         amountMediumSynth = amountOutSynth
       } else if (
@@ -261,15 +258,13 @@ function Swap(): ReactElement {
         bridgeContract != null
       ) {
         const destinationPool = POOLS_MAP[formStateArg.to.poolName]
-        const [
-          amountOutSynth,
-          amountOutToken,
-        ] = await bridgeContract.calcSynthToToken(
-          destinationPool.addresses[chainId],
-          utils.formatBytes32String(formStateArg.from.symbol),
-          formStateArg.to.tokenIndex,
-          amountToGive,
-        )
+        const [amountOutSynth, amountOutToken] =
+          await bridgeContract.calcSynthToToken(
+            destinationPool.addresses[chainId],
+            utils.formatBytes32String(formStateArg.from.symbol),
+            formStateArg.to.tokenIndex,
+            amountToGive,
+          )
         amountToReceive = amountOutToken
         amountMediumSynth = amountOutSynth
       } else if (

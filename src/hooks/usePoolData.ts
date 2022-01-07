@@ -267,15 +267,13 @@ export default function usePoolData(
         const userPoolTokenBalances = tokenBalances.map((balance) => {
           return userShare.mul(balance).div(BigNumber.from(10).pow(18))
         })
-        const userPoolTokenBalancesSum: BigNumber = userPoolTokenBalances.reduce(
-          (sum, b) => sum.add(b),
-        )
+        const userPoolTokenBalancesSum: BigNumber =
+          userPoolTokenBalances.reduce((sum, b) => sum.add(b))
         const userPoolTokenBalancesUSD = tokenBalancesUSD.map((balance) => {
           return userShare.mul(balance).div(BigNumber.from(10).pow(18))
         })
-        const userPoolTokenBalancesUSDSum: BigNumber = userPoolTokenBalancesUSD.reduce(
-          (sum, b) => sum.add(b),
-        )
+        const userPoolTokenBalancesUSDSum: BigNumber =
+          userPoolTokenBalancesUSD.reduce((sum, b) => sum.add(b))
 
         const poolTokens = effectivePoolTokens.map((token, i) => ({
           symbol: token.symbol,
@@ -315,15 +313,12 @@ export default function usePoolData(
 
         let sdlPerDay = null
         if (rewardsContract && rewardsPid !== null) {
-          const [
-            poolInfo,
-            saddlePerSecond,
-            totalAllocPoint,
-          ] = await Promise.all([
-            rewardsContract.poolInfo(rewardsPid),
-            rewardsContract.saddlePerSecond(),
-            rewardsContract.totalAllocPoint(),
-          ])
+          const [poolInfo, saddlePerSecond, totalAllocPoint] =
+            await Promise.all([
+              rewardsContract.poolInfo(rewardsPid),
+              rewardsContract.saddlePerSecond(),
+              rewardsContract.totalAllocPoint(),
+            ])
           const { allocPoint } = poolInfo
           const oneDaySecs = BigNumber.from(24 * 60 * 60)
           sdlPerDay = saddlePerSecond
