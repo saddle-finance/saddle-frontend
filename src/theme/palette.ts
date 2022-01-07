@@ -27,7 +27,7 @@ const saddleColors = {
   cherry2: "#68282F",
 }
 
-const GREY = {
+const GREY_TONES = {
   100: "#E4E4E4",
   200: "#A7A7A7",
   300: "#7D7D7D",
@@ -46,7 +46,7 @@ const lightPalette: PaletteOptions | undefined = {
   background: {
     default: "#FFFFE9",
   },
-  grey: GREY,
+  grey: GREY_TONES,
 }
 
 const darkPalette: PaletteOptions | undefined = {
@@ -61,6 +61,6 @@ const darkPalette: PaletteOptions | undefined = {
     default: saddleColors.black,
     paper: alpha(saddleColors.black, 0.7),
   },
-  grey: GREY,
+  grey: GREY_TONES,
 }
 export default { lightPalette, darkPalette }
