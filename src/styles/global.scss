@@ -12,13 +12,13 @@
   font-family: "Source Code Pro", monospace, sans-serif;
 }
 
-p,
-b,
 button {
   background: none;
   border: none;
   cursor: pointer;
 }
+p,
+b,
 span {
   font-family: $font-family;
   line-height: 20px;
