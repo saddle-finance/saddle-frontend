@@ -41,10 +41,8 @@ function VestingClaim(): ReactElement {
         library,
         account,
       ) as Sdl
-      const vestingContractDeployedFilter = SDLContract.filters.VestingContractDeployed(
-        null,
-        null,
-      )
+      const vestingContractDeployedFilter =
+        SDLContract.filters.VestingContractDeployed(null, null)
       try {
         const events = await SDLContract.queryFilter(
           vestingContractDeployedFilter,
