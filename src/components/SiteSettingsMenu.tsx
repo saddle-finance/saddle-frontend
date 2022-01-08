@@ -68,18 +68,18 @@ export const SUPPORTED_NETWORKS: {
     rpcUrls: ["https://mainnet.infura.io/v3"],
     blockExplorerUrls: ["https://etherscan.com"],
   },
+  // [ChainId.ARBITRUM]: {
+  //   chainId: "0xA4B1",
+  //   chainName: "Arbitrum",
+  //   nativeCurrency: {
+  //     name: "Ethereum",
+  //     symbol: "ETH",
+  //     decimals: 18,
+  //   },
+  //   rpcUrls: ["https://arb1.arbitrum.io/rpc"],
+  //   blockExplorerUrls: ["https://mainnet-arb-explorer.netlify.app"],
+  // },
   [ChainId.ARBITRUM]: {
-    chainId: "0xA4B1",
-    chainName: "Arbitrum",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
-    rpcUrls: ["https://arb1.arbitrum.io/rpc"],
-    blockExplorerUrls: ["https://mainnet-arb-explorer.netlify.app"],
-  },
-  [ChainId.MATICMUMBAI]: {
     chainId: "0x13881",
     chainName: "MaticMumbai",
     nativeCurrency: {
@@ -97,7 +97,7 @@ function NetworkSection(): ReactElement {
   const [isNetworkVisible, setIsNetworkVisible] = useState(false)
   const networks = [
     ChainId.MAINNET,
-    ...(IS_L2_SUPPORTED ? [ChainId.ARBITRUM, ChainId.MATICMUMBAI] : []),
+    ...(IS_L2_SUPPORTED ? [ChainId.ARBITRUM] : []),
   ]
 
   return (
