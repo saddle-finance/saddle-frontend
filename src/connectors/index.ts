@@ -34,16 +34,7 @@ function createInjectedMetaMaskProvider() {
   })
 }
 
-function createInjectedTallyProvider() {
-  return new InjectedConnector({
-    // currently tally supports only mainnet
-    // see: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
-    supportedChainIds: [1],
-  })
-}
-
 export const injectedMetaMaskProvider = createInjectedMetaMaskProvider()
-export const injectedTallyProvider = createInjectedTallyProvider()
 
 export const walletconnect = new WalletConnectConnector({
   rpc: { [NETWORK_CHAIN_ID]: NETWORK_URL },

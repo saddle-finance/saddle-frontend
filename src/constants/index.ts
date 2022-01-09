@@ -1,6 +1,5 @@
 import {
   injectedMetaMaskProvider,
-  injectedTallyProvider,
   walletconnect,
   walletlink,
 } from "../connectors"
@@ -23,7 +22,6 @@ import saddleLogo from "../assets/icons/logo_24.svg"
 import sbtcLogo from "../assets/icons/sbtc.svg"
 import sethLogo from "../assets/icons/seth.svg"
 import susdLogo from "../assets/icons/susd.svg"
-import tallyIcon from "../assets/icons/tally.svg"
 import tbtcLogo from "../assets/icons/tbtc.svg"
 import usdcLogo from "../assets/icons/usdc.svg"
 import usdtLogo from "../assets/icons/usdt.svg"
@@ -1151,11 +1149,6 @@ export interface WalletInfo {
 }
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
-  TALLY: {
-    name: "Tally",
-    icon: tallyIcon,
-    connector: injectedTallyProvider,
-  },
   METAMASK: {
     name: "MetaMask",
     icon: metamaskIcon,

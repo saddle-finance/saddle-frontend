@@ -1,9 +1,9 @@
 import { ChainId, NetworkContextName } from "../constants"
-import { injectedMetaMaskProvider, injectedTallyProvider } from "../connectors"
 import { useEffect, useState } from "react"
 
 import { Web3Provider } from "@ethersproject/providers"
 import { Web3ReactContextInterface } from "@web3-react/core/dist/types"
+import { injectedMetaMaskProvider } from "../connectors"
 import { isMobile } from "react-device-detect"
 import { useWeb3React as useWeb3ReactCore } from "@web3-react/core"
 
@@ -21,23 +21,7 @@ export function useEagerConnect(): boolean {
 
   useEffect(() => {
     if (window.ethereum) {
-      if (window.ethereum.isTally) {
-        void injectedTallyProvider.isAuthorized().then((isAuthorized) => {
-          if (isAuthorized) {
-            activate(injectedTallyProvider, undefined, true).catch(() => {
-              setTried(true)
-            })
-          } else {
-            if (isMobile && window.ethereum) {
-              activate(injectedTallyProvider, undefined, true).catch(() => {
-                setTried(true)
-              })
-            } else {
-              setTried(true)
-            }
-          }
-        })
-      } else if (window.ethereum?.isMetaMask) {
+      if (window.ethereum?.isMetaMask) {
         void injectedMetaMaskProvider.isAuthorized().then((isAuthorized) => {
           if (isAuthorized) {
             activate(injectedMetaMaskProvider, undefined, true).catch(() => {
@@ -82,12 +66,7 @@ export function useInactiveListener(suppress = false): void {
 
     if (ethereum && ethereum.on && !active && !error && !suppress) {
       const handleChainChanged = (): void => {
-        if (ethereum.isTally) {
-          // eat errors
-          activate(injectedTallyProvider, undefined, true).catch((error) => {
-            console.error("Failed to activate after chain changed", error)
-          })
-        } else if (ethereum.isMetaMask) {
+        if (ethereum.isMetaMask) {
           // eat errors
           activate(injectedMetaMaskProvider, undefined, true).catch((error) => {
             console.error("Failed to activate after chain changed", error)
@@ -97,12 +76,7 @@ export function useInactiveListener(suppress = false): void {
 
       const handleAccountsChanged = (accounts: string[]): void => {
         if (accounts.length > 0) {
-          if (ethereum.isTally) {
-            // eat errors
-            activate(injectedTallyProvider, undefined, true).catch((error) => {
-              console.error("Failed to activate after accounts changed", error)
-            })
-          } else if (ethereum.isMetaMask) {
+          if (ethereum.isMetaMask) {
             // eat errors
             activate(injectedMetaMaskProvider, undefined, true).catch(
               (error) => {
