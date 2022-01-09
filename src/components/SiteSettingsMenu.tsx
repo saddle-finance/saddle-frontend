@@ -17,6 +17,8 @@ export default function SiteSettingsMenu(): ReactElement {
       <LanguageSection key="language" />
       <Divider />
       <ThemeSection key="theme" />
+      <Divider />
+      <MainNet key="mainnet" />
       {IS_SDL_LIVE && <Divider />}
       {IS_SDL_LIVE && <AddTokenSection key="token" />}
     </div>
@@ -192,6 +194,25 @@ function ThemeSection(): ReactElement {
       >
         <span>{t("theme")}</span>{" "}
         <span>{themeMode === "dark" ? "☾" : "☀"}</span>
+      </div>
+    </div>
+  )
+}
+
+function MainNet(): ReactElement {
+  const { t } = useTranslation()
+
+  const handleRedirection = () => {
+    window.open("https://saddle.exchange/#/")
+  }
+  return (
+    <div className={styles.section}>
+      <div
+        data-testid="mainNetRedirect"
+        className={styles.sectionTitle}
+        onClick={handleRedirection}
+      >
+        <span>{t("mainnet")}</span>
       </div>
     </div>
   )
