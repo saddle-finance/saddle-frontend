@@ -6,7 +6,6 @@ import Button from "./Button"
 import { NETWORK_LABEL } from "../constants/networks"
 import classnames from "classnames"
 import styles from "./NetworkDisplay.module.scss"
-import { useTranslation } from "react-i18next"
 
 export default function NetworkDisplay({
   onClick,
@@ -14,9 +13,8 @@ export default function NetworkDisplay({
   onClick: () => void
 }): ReactElement | null {
   const { active, chainId, error } = useWeb3React()
-  const { t } = useTranslation()
   const networkLabel: string =
-    (chainId ? NETWORK_LABEL[chainId as ChainId] : undefined) || t("unknown")
+    (chainId ? NETWORK_LABEL[chainId as ChainId] : undefined) ?? "Ethereum"
   const isUnsupportChainIdError = error instanceof UnsupportedChainIdError
 
   return IS_L2_SUPPORTED ? (

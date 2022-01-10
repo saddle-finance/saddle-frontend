@@ -5,9 +5,7 @@ import { find } from "lodash"
 import { useActiveWeb3React } from "./index"
 
 // @dev https://eips.ethereum.org/EIPS/eip-747#wallet_watchasset
-export default function useAddTokenToMetamask(
-  token: Token | undefined,
-): {
+export default function useAddTokenToMetamask(token: Token | undefined): {
   addToken: () => void
   success: boolean | undefined
   canAdd: boolean
