@@ -438,7 +438,7 @@ async function parseSettlementFromEvent(
   chainId: ChainId,
 ): Promise<SettlementEvent | null> {
   // Settlements are final
-  const settlement = (event.args as unknown) as BridgeEventSettle // TODO would love to set this from the typechain type
+  const settlement = event.args as unknown as BridgeEventSettle // TODO would love to set this from the typechain type
   if (settlement == null) return null
   const fromToken = getTokenByAddress(settlement.settleFrom, chainId)
   const toToken = getTokenByAddress(settlement.settleTo, chainId)
@@ -464,7 +464,7 @@ async function parseWithdrawFromEvent(
   event: Event,
   chainId: ChainId,
 ): Promise<WithdrawEvent | null> {
-  const withdraw = (event.args as unknown) as BridgeEventWithdraw
+  const withdraw = event.args as unknown as BridgeEventWithdraw
   if (withdraw == null) return null
   const synthToken = getTokenByAddress(withdraw.synth, chainId)
   if (synthToken == null) return null
@@ -499,7 +499,7 @@ async function fetchPendingSwapInfo(
     // this will throw if the itemId has already fully resolved
     // afik we don't have a better way of fetching current pendingSwaps
     // DEVELOPER: for this reason we don't use multicall
-    const pendingSwap = (event.args as unknown) as BridgeEventGenericSwap
+    const pendingSwap = event.args as unknown as BridgeEventGenericSwap
     if (pendingSwap == null) return null
     const itemId = pendingSwap.itemId.toString()
     const [pendingSwapInfo, eventBlock] = await Promise.all([

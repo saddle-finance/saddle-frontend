@@ -47,10 +47,8 @@ function ReviewVirtualSwapSettlement({
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
-  const [
-    hasConfirmedHighPriceImpact,
-    setHasConfirmedHighPriceImpact,
-  ] = useState(false)
+  const [hasConfirmedHighPriceImpact, setHasConfirmedHighPriceImpact] =
+    useState(false)
   const fromToken = TOKENS_MAP[data.from.symbol]
   const toToken = data.to ? TOKENS_MAP[data.to.symbol] : null
   const isHighPriceImpactTxn = Boolean(

@@ -9,6 +9,7 @@ import React, {
 import { darkTheme, lightTheme } from "../theme"
 import { CssBaseline } from "@mui/material"
 import { ThemeProvider } from "@mui/material"
+import componentsOverrides from "../theme/components"
 import useMediaQuery from "@mui/material/useMediaQuery"
 
 export type ThemeMode = "light" | "dark" | "system"
@@ -28,9 +29,9 @@ function ThemeSettingsProvider({
   children,
 }: PropsWithChildren<unknown>): ReactElement {
   const [mode, setMode] = useState<ThemeMode>("system")
-  const prefersDarkMode = (useMediaQuery("(prefers-color-scheme: dark)")
-    ? "dark"
-    : "light") as ThemeMode
+  const prefersDarkMode = (
+    useMediaQuery("(prefers-color-scheme: dark)") ? "dark" : "light"
+  ) as ThemeMode
 
   useEffect(() => {
     const initialMode: ThemeMode = (localStorage.getItem("paletteMode") ||
@@ -52,6 +53,9 @@ function ThemeSettingsProvider({
     localStorage.setItem("paletteMode", mode)
   }
 
+  const theme = mode === "dark" ? darkTheme : lightTheme
+  theme.components = componentsOverrides(theme)
+
   return (
     <ThemeSettingsContext.Provider
       value={{
@@ -59,7 +63,7 @@ function ThemeSettingsProvider({
         onChangeMode,
       }}
     >
-      <ThemeProvider theme={mode === "dark" ? darkTheme : lightTheme}>
+      <ThemeProvider theme={theme}>
         <CssBaseline />
         {children}
       </ThemeProvider>
