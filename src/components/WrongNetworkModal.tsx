@@ -16,10 +16,10 @@ export default function WrongNetworkModal({ open }: Props): ReactElement {
   return (
     <Dialog open={open ?? isUnsupportChainIdError} maxWidth="xs">
       <DialogContent sx={{ whiteSpace: "pre-line" }}>
-        <Typography variant="h3" textAlign="center" mb={3}>
+        <Typography textAlign="center" mb={3} sx={{ fontSize: 48 }}>
           &#129325;
         </Typography>
-        {t("wrongNetworkContent")}
+        <Typography>{t("wrongNetworkContent")}</Typography>
       </DialogContent>
     </Dialog>
   )

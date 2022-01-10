@@ -1,3 +1,4 @@
+import { CssBaseline, responsiveFontSizes } from "@mui/material"
 import React, {
   PropsWithChildren,
   ReactElement,
@@ -7,7 +8,6 @@ import React, {
   useState,
 } from "react"
 import { darkTheme, lightTheme } from "../theme"
-import { CssBaseline } from "@mui/material"
 import { ThemeProvider } from "@mui/material"
 import componentsOverrides from "../theme/components"
 import useMediaQuery from "@mui/material/useMediaQuery"
@@ -53,7 +53,10 @@ function ThemeSettingsProvider({
     localStorage.setItem("paletteMode", mode)
   }
 
-  const theme = mode === "dark" ? darkTheme : lightTheme
+  const theme =
+    mode === "dark"
+      ? responsiveFontSizes(darkTheme)
+      : responsiveFontSizes(lightTheme)
   theme.components = componentsOverrides(theme)
 
   return (
