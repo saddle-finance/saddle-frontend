@@ -5,7 +5,7 @@ import {
   BTC_POOL_V2_NAME,
   D4_POOL_NAME,
   FRAX_ARB_USD_POOL_V2_NAME,
-  OPTIMISM_USD_POOL_NAME,
+  OPT_USD_POOL_NAME,
   POOLS_MAP,
   PoolName,
   PoolTypes,
@@ -58,9 +58,7 @@ function Pools(): ReactElement | null {
     WCUSD_METAPOOL_V2_NAME,
   )
   const [arbUsdPoolData, arbUsdUserShareData] = usePoolData(ARB_USD_POOL_NAME)
-  const [optUsdPoolData, optUsdUserShareData] = usePoolData(
-    OPTIMISM_USD_POOL_NAME,
-  )
+  const [optUsdPoolData, optUsdUserShareData] = usePoolData(OPT_USD_POOL_NAME)
   const [fraxArbUsdPoolV2Data, fraxArbUsdV2UserShareData] = usePoolData(
     FRAX_ARB_USD_POOL_V2_NAME,
   )
@@ -181,9 +179,9 @@ function Pools(): ReactElement | null {
         userShareData: arbUsdUserShareData,
         poolRoute: "/pools/arbusd",
       }
-    } else if (poolName === OPTIMISM_USD_POOL_NAME) {
+    } else if (poolName === OPT_USD_POOL_NAME) {
       return {
-        name: OPTIMISM_USD_POOL_NAME,
+        name: OPT_USD_POOL_NAME,
         poolData: optUsdPoolData,
         userShareData: optUsdUserShareData,
         poolRoute: "/pools/optusd",

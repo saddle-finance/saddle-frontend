@@ -48,7 +48,7 @@ export const TBTC_METAPOOL_V2_NAME = "tBTC Metapool V2"
 export const WCUSD_METAPOOL_NAME = "wCUSD Metapool"
 export const WCUSD_METAPOOL_V2_NAME = "wCUSD Metapool V2"
 export const ARB_USD_POOL_NAME = "arbUSD Pool"
-export const OPTIMISM_USD_POOL_NAME = "optUSD Pool"
+export const OPT_USD_POOL_NAME = "optUSD Pool"
 export const FRAX_ARB_USD_POOL_V2_NAME = "frax-ArbUSD Pool V2"
 export type PoolName =
   | typeof BTC_POOL_NAME
@@ -65,7 +65,7 @@ export type PoolName =
   | typeof WCUSD_METAPOOL_NAME
   | typeof WCUSD_METAPOOL_V2_NAME
   | typeof ARB_USD_POOL_NAME
-  | typeof OPTIMISM_USD_POOL_NAME
+  | typeof OPT_USD_POOL_NAME
   | typeof FRAX_ARB_USD_POOL_V2_NAME
 
 export enum ChainId {
@@ -275,7 +275,7 @@ export const ARB_USD_SWAP_ADDRESSES = buildAddresses({
 })
 
 // TODO: Update address
-export const OPTIMISM_USD_SWAP_ADDRESSES = buildAddresses({
+export const OPT_USD_SWAP_ADDRESSES = buildAddresses({
   [ChainId.OPTIMISM]: "0xBea9F78090bDB9e662d8CB301A00ad09A5b756e9",
 })
 
@@ -323,7 +323,7 @@ export const ARB_USD_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
 })
 
 // TODO: Update address
-export const OPTIMISM_USD_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
+export const OPT_USD_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.OPTIMISM]: "0xc969dD0A7AB0F8a0C5A69C0839dB39b6C928bC08",
 })
 
@@ -511,8 +511,8 @@ export const ARB_USD_SWAP_TOKEN = new Token(
 )
 
 // TODO: Revisit this
-export const OPTIMISM_USD_SWAP_TOKEN = new Token(
-  OPTIMISM_USD_SWAP_TOKEN_CONTRACT_ADDRESSES,
+export const OPT_USD_SWAP_TOKEN = new Token(
+  OPT_USD_SWAP_TOKEN_CONTRACT_ADDRESSES,
   18,
   "saddleOptUSD",
   "saddleoptUSD",
@@ -665,7 +665,7 @@ export const STABLECOIN_POOL_TOKENS = [DAI, USDC, USDT]
 export const SUSD_POOL_TOKENS = [SUSD, ...STABLECOIN_POOL_TOKENS]
 export const SUSD_UNDERLYING_POOL_TOKENS = [SUSD, STABLECOIN_SWAP_V2_TOKEN]
 export const ARB_USD_POOL_TOKENS = [NUSD, MIM, USDC, USDT]
-export const OPTIMISM_USD_POOL_TOKENS = [NUSD, MIM, USDC, USDT] // TODO: Update this
+export const OPT_USD_POOL_TOKENS = [NUSD, MIM, USDC, USDT] // TODO: Update this
 
 // Tokenized BTC
 const TBTC_CONTRACT_ADDRESSES = buildAddresses({
@@ -968,11 +968,11 @@ export const POOLS_MAP: PoolsMap = {
     route: "arbusd",
     rewardPids: buildPids({ [ChainId.ARBITRUM]: 1 }),
   },
-  [OPTIMISM_USD_POOL_NAME]: {
-    name: OPTIMISM_USD_POOL_NAME,
-    addresses: OPTIMISM_USD_SWAP_ADDRESSES,
-    lpToken: OPTIMISM_USD_SWAP_TOKEN,
-    poolTokens: OPTIMISM_USD_POOL_TOKENS,
+  [OPT_USD_POOL_NAME]: {
+    name: OPT_USD_POOL_NAME,
+    addresses: OPT_USD_SWAP_ADDRESSES,
+    lpToken: OPT_USD_SWAP_TOKEN,
+    poolTokens: OPT_USD_POOL_TOKENS,
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "optusd",
