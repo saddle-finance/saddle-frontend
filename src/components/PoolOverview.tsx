@@ -75,12 +75,6 @@ export default function PoolOverview({
     }),
   }
   const hasShare = !!userShareData?.usdBalance.gt("0")
-  console.log({
-    hasShare,
-    name: userShareData?.name,
-    bal: formatBNToShortString(userShareData?.usdBalance ?? Zero, 18),
-    gt: userShareData?.usdBalance.gt("0"),
-  })
   const isMetapool = isMetaPool(formattedData.name)
 
   return (
