@@ -9,7 +9,7 @@ export default function componentsOverrides(theme: Theme): Components {
   return merge(
     AppBarTheme(theme),
     DialogTheme(theme),
-    TooltipTheme,
-    BackdropTheme,
+    TooltipTheme(),
+    BackdropTheme(),
   )
 }
