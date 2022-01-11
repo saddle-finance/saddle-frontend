@@ -62,7 +62,7 @@ export default function fetchTokenPricesUSD(
           }, otherTokensResult)
           result.alETH = result?.ETH || result.alETH || 0 // TODO: remove once CG price is fixed
           result.nUSD = 1
-          if (chainId === ChainId.MAINNET) {
+          if (chainId === ChainId.MATICMUMBAI) {
             const vEth2Price = await getVeth2Price(
               result?.ETH,
               chainId,
