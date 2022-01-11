@@ -43,7 +43,7 @@ export default function AccountDetail({
   const theme = useTheme()
 
   return (
-    <div className="accountDetail">
+    <div className="accountDetail" data-testid="accountDetailContainer">
       <DialogTitle onClose={onClose}>
         <Typography variant="h3">{t("account")}</Typography>
       </DialogTitle>

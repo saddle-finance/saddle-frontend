@@ -9,7 +9,7 @@ context("Account detail test", () => {
   it("renders account detail after click account avatar", () => {
     cy.get("[data-testid=walletStatusContainer]").should("exist")
     cy.get("[data-testid=accountDetailButton]").should("exist").click()
-    cy.get("[data-testid=accountDetail]").should("exist")
+    cy.get("[data-testid=accountDetailContainer]").should("exist")
     cy.get("[data-testid=changeAccount]").click()
     cy.get("[data-testid=connectWallet]").should("exist")
   })
