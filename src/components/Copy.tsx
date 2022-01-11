@@ -1,5 +1,5 @@
+import { Button, Typography } from "@mui/material"
 import React, { ReactElement } from "react"
-import { Button } from "@mui/material"
 import CheckIcon from "@mui/icons-material/Check"
 import ContentCopyIcon from "@mui/icons-material/ContentCopy"
 import useCopyClipboard from "../hooks/useCopyClipboard"
@@ -16,7 +16,7 @@ export default function CopyHelper(props: {
       onClick={() => setCopied(props.toCopy)}
       startIcon={isCopied ? <CheckIcon /> : <ContentCopyIcon />}
     >
-      {isCopied ? "Copied!" : props.children}
+      <Typography>{isCopied ? "Copied!" : props.children}</Typography>
     </Button>
   )
 }

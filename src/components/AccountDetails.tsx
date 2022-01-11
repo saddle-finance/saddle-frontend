@@ -91,7 +91,7 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
               }}
               startIcon={<ChangeIcon color={theme.palette.info.main} />}
             >
-              {t("changeAccount")}
+              <Typography>{t("changeAccount")}</Typography>
             </Button>
           </Box>
         </Box>

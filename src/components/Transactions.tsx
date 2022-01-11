@@ -157,12 +157,12 @@ export default function Transactions(): ReactElement {
       <Box display="flex" justifyContent="space-between" mb={3}>
         <Typography variant="subtitle1">{t("recentTransactions")}</Typography>
         <Button
-          color="inherit"
+          color="info"
           onClick={(): void => {
             setTransactionList([])
           }}
         >
-          {t("clear")}
+          <Typography variant="body2">{t("clear")}</Typography>
         </Button>
       </Box>
       <div className="transactionList">
