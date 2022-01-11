@@ -43,6 +43,9 @@ const lightPalette: PaletteOptions | undefined = {
   secondary: {
     main: saddleColors.sunburn,
   },
+  info: {
+    main: "#4B11F2",
+  },
   background: {
     default: "#FFFFE9",
   },
@@ -56,6 +59,9 @@ const darkPalette: PaletteOptions | undefined = {
   },
   secondary: {
     main: saddleColors.sunburn,
+  },
+  info: {
+    main: "#00f4d7",
   },
   background: {
     default: saddleColors.black,
