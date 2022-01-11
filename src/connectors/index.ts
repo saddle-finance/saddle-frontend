@@ -71,10 +71,10 @@ export const uauth = new UAuthConnector({
 
   // Scope must include openid and wallet
   scope: "openid wallet",
-
-  // Injected and walletconnect connectors are required
-  // @ts-ignore
-  connectors: { injectedUnstoppableDomainsProvider, walletconnect },
+  connectors: {
+    injected: new InjectedConnector({ supportedChainIds: [1] }),
+    walletconnect,
+  },
 })
 
 export const walletlink = new WalletLinkConnector({

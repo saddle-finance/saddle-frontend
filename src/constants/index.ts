@@ -1148,15 +1148,15 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     icon: tallyIcon,
     connector: injectedTallyProvider,
   },
-  UNSTOPPABLE_DOMAINS: {
-    name: "Unstoppable Domains",
-    icon: unstoppableDomainsLogo,
-    connector: uauth,
-  },
   METAMASK: {
     name: "MetaMask",
     icon: metamaskIcon,
     connector: injectedMetaMaskProvider,
+  },
+  UNSTOPPABLE_DOMAINS: {
+    name: "Unstoppable Domains",
+    icon: unstoppableDomainsLogo,
+    connector: uauth,
   },
   WALLET_CONNECT: {
     name: "WalletConnect",

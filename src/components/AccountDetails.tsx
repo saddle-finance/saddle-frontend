@@ -1,7 +1,8 @@
 import "./AccountDetails.scss"
 
-import React, { ReactElement } from "react"
+import React, { ReactElement, useEffect, useState } from "react"
 import { commify, formatBNToString } from "../utils"
+
 import Copy from "./Copy"
 import Davatar from "@davatar/react"
 import { SUPPORTED_WALLETS } from "../constants"
@@ -10,6 +11,7 @@ import { Zero } from "@ethersproject/constants"
 import { find } from "lodash"
 import { getEtherscanLink } from "../utils/getEtherscanLink"
 import { shortenAddress } from "../utils/shortenAddress"
+import { uauth } from "../connectors"
 import { useActiveWeb3React } from "../hooks"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
 import { useTranslation } from "react-i18next"
@@ -25,8 +27,22 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
   const ethBalanceFormatted = commify(
     formatBNToString(tokenBalances?.ETH || Zero, 18, 6),
   )
+  const [user, setUser] = useState<string>("")
 
   const connectorName = find(SUPPORTED_WALLETS, ["connector", connector])?.name
+  useEffect(() => {
+    const checkUDName = async () => {
+      if (connectorName === "Unstoppable Domains") {
+        const userUD = await uauth.uauth.user()
+        setUser(userUD.sub)
+        console.log({ user })
+      }
+    }
+    void checkUDName()
+    return () => {
+      setUser("")
+    }
+  }, [])
 
   return (
     <div className="accountDetail">
@@ -45,7 +61,7 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
               generatedAvatarType="jazzicon"
             />
             <span className="address">
-              {account && shortenAddress(account)}
+              {user || (account && shortenAddress(account))}
             </span>
             {account && (
               <a
