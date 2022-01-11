@@ -110,8 +110,7 @@ async function getFraxData(
   chainId: ChainId,
   lpTokenPrice: BigNumber,
 ): Promise<[BigNumber, BigNumber]> {
-  if (library == null || lpTokenPrice.eq("0") || chainId !== ChainId.MAINNET)
-    return [Zero, Zero]
+  if (library == null || lpTokenPrice.eq("0")) return [Zero, Zero]
   const fetchFraxData = (): Promise<FraxCombinedData> =>
     fetch("https://api.frax.finance/combineddata/")
       .then((r) => r.json())
@@ -136,12 +135,7 @@ async function getKeepData(
   keepPrice = 0,
   accountId?: string | null,
 ): Promise<[BigNumber, BigNumber]> {
-  if (
-    library == null ||
-    lpTokenPrice.eq("0") ||
-    keepPrice === 0 ||
-    chainId !== ChainId.MAINNET
-  )
+  if (library == null || lpTokenPrice.eq("0") || keepPrice === 0)
     return [Zero, Zero]
 
   const rewardsContractAddress =
@@ -184,12 +178,7 @@ async function getSharedStakeData(
   accountId?: string | null,
 ): Promise<[BigNumber, BigNumber]> {
   // https://github.com/SharedStake/SharedStake-ui/blob/main/src/components/Earn/geyser.vue#L336
-  if (
-    library == null ||
-    lpTokenPrice.eq("0") ||
-    sgtPrice === 0 ||
-    chainId !== ChainId.MAINNET
-  )
+  if (library == null || lpTokenPrice.eq("0") || sgtPrice === 0)
     return [Zero, Zero]
   const ethcallProvider = await getMulticallProvider(library, chainId)
   const rewardsContract = new Contract(
@@ -249,12 +238,7 @@ async function getAlEthData(
   alcxPrice = 0,
   accountId?: string | null,
 ): Promise<[BigNumber, BigNumber]> {
-  if (
-    library == null ||
-    lpTokenPrice.eq("0") ||
-    alcxPrice === 0 ||
-    chainId !== ChainId.MAINNET
-  )
+  if (library == null || lpTokenPrice.eq("0") || alcxPrice === 0)
     return [Zero, Zero]
   const ethcallProvider = await getMulticallProvider(library, chainId)
   const rewardsContract = new Contract(

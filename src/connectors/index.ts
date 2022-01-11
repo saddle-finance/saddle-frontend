@@ -30,7 +30,7 @@ function createInjectedMetaMaskProvider() {
   return new InjectedConnector({
     // mainnet, ropsten, rinkeby, goerli, kovan, local buidler
     // see: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
-    supportedChainIds: [1, 3, 4, 5, 42, 42161, 31337, 80001],
+    supportedChainIds: [31337, 80001],
   })
 }
 
@@ -45,5 +45,5 @@ export const walletconnect = new WalletConnectConnector({
 
 export const walletlink = new WalletLinkConnector({
   url: NETWORK_URL,
-  appName: "Saddle",
+  appName: "Mune",
 })

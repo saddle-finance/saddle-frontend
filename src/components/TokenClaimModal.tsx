@@ -31,9 +31,7 @@ export default function TokenClaimModal(): ReactElement {
   const { t } = useTranslation()
   const { chainId } = useActiveWeb3React()
   const isClaimableNetwork =
-    chainId === ChainId.MAINNET ||
-    chainId === ChainId.HARDHAT ||
-    chainId === ChainId.ROPSTEN
+    chainId === ChainId.HARDHAT || chainId === ChainId.MATICMUMBAI
 
   const rewardBalances = useContext(RewardsBalancesContext)
   const {

@@ -72,7 +72,7 @@ export function useCalculateSwapPairs(): (token?: Token) => SwapData[] {
         poolsSortedByTVL,
         tokenToPoolsMapSorted,
         token,
-        [ChainId.MAINNET, ChainId.HARDHAT].includes(chainId as ChainId),
+        [ChainId.HARDHAT].includes(chainId as ChainId),
       )
       setPairCache((prevState) => ({ ...prevState, [token.symbol]: swapPairs }))
       return swapPairs

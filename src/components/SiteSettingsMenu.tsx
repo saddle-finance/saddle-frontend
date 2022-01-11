@@ -59,28 +59,6 @@ export const SUPPORTED_NETWORKS: {
     blockExplorerUrls: string[]
   }
 } = {
-  [ChainId.MAINNET]: {
-    chainId: "0x1",
-    chainName: "Ethereum",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
-    rpcUrls: ["https://mainnet.infura.io/v3"],
-    blockExplorerUrls: ["https://etherscan.com"],
-  },
-  [ChainId.ARBITRUM]: {
-    chainId: "0xA4B1",
-    chainName: "Arbitrum",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
-    rpcUrls: ["https://arb1.arbitrum.io/rpc"],
-    blockExplorerUrls: ["https://mainnet-arb-explorer.netlify.app"],
-  },
   [ChainId.MATICMUMBAI]: {
     chainId: "0x13881",
     chainName: "MaticMumbai",
@@ -97,10 +75,7 @@ function NetworkSection(): ReactElement {
   const { t } = useTranslation()
   const { chainId: activeChainId, library, account } = useActiveWeb3React()
   const [isNetworkVisible, setIsNetworkVisible] = useState(false)
-  const networks = [
-    ChainId.MAINNET,
-    ...(IS_L2_SUPPORTED ? [ChainId.ARBITRUM, ChainId.MATICMUMBAI] : []),
-  ]
+  const networks = [...(IS_L2_SUPPORTED ? [ChainId.MATICMUMBAI] : [])]
 
   return (
     <div data-testid="networkMenuContainer" className={styles.section}>
@@ -121,17 +96,7 @@ function NetworkSection(): ReactElement {
                 [styles.active]: activeChainId === chainId,
               })}
               onClick={() => {
-                if (chainId === ChainId.MAINNET) {
-                  void library?.send("wallet_switchEthereumChain", [
-                    { chainId: "0x1" },
-                    account,
-                  ])
-                } else {
-                  void library?.send("wallet_addEthereumChain", [
-                    params,
-                    account,
-                  ])
-                }
+                void library?.send("wallet_addEthereumChain", [params, account])
               }}
               key={chainId}
             >
