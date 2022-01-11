@@ -13,7 +13,7 @@ function Risk(): ReactElement {
         <h3 className="title">Risk</h3>
         <p data-testid="risk-intro">
           {t("riskIntro")}{" "}
-          <a href="https://github.com/saddle-finance/saddle-contract">
+          <a href="https://github.com/MuneFinance/MuneFinance">
             {t("riskIntro2")}
           </a>{" "}
           {t("riskIntro3")}
@@ -21,9 +21,7 @@ function Risk(): ReactElement {
         <h3>{t("audits")}</h3>
         <p data-testid="risk-audits">
           {t("riskAudits")}{" "}
-          <a href="https://github.com/saddle-finance/saddle-audits">
-            {t("riskAudits2")}
-          </a>
+          <a href="https://docs.mune.finance">{t("riskAudits2")}</a>
           {"."}
           <br />
           <br />
@@ -35,7 +33,13 @@ function Risk(): ReactElement {
         <h3>{t("adminKeys")}</h3>
         <p data-testid="risk-adminkeys">{t("riskAdminKeys")}</p>
         <h3>{t("lossOfPeg")}</h3>
-        <p data-testid="risk-lossofpeg">{t("riskLossOfPeg")}</p>
+        <p data-testid="risk-lossofpeg">
+          {t("riskLossOfPeg")}
+          <a href="https://www.thegivingblock.com">
+            {t("The Giving Block")}
+          </a>{" "}
+          {t("riskLossOfPeg2")}
+        </p>
         <h3>{t("unnecessaryApprovalAskQ")}</h3>
         <p>
           {t("unnecessaryApprovalAskA")} <br />

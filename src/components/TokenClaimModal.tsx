@@ -119,11 +119,11 @@ export default function TokenClaimModal(): ReactElement {
           {!isClaimableNetwork && (
             <p style={{ whiteSpace: "pre-line" }}>
               <Trans i18nKey="disableRewardContent">
-                SDL is currently only deployed on Ethereum Mainnet and is not
+                MUNE is currently only deployed on Polygon Mainnet and is not
                 yet claimable on this chain. We display the amount that will be
-                claimable once SDL is available on this network. See
+                claimable once MUNE is available on this network. See
                 <Link
-                  href="https://docs.saddle.finance/saddle-faq#why-cant-i-claim-my-sdl-on-arbitrum"
+                  href="https://www.mune.finance/"
                   color="secondary"
                   target="_blank"
                 >

@@ -39,7 +39,7 @@ function AddTokenSection(): ReactElement | null {
   return canAdd ? (
     <div className={styles.section}>
       <div className={styles.sectionTitle} onClick={() => addToken()}>
-        <span>{t("addSDL")}</span> <img src={logo} className={styles.logo} />
+        <span>{t("addMUNE")}</span> <img src={logo} className={styles.logo} />
       </div>
     </div>
   ) : null
