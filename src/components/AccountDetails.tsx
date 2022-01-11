@@ -96,7 +96,8 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
           </Box>
         </Box>
       </DialogContent>
-      <Box bgcolor="#dfdde3" p={3}>
+      {/* Change hardcoded color with theme color after definining design */}
+      <Box bgcolor={theme.palette.mode == "light" ? "#dfdde3" : "#333"} p={3}>
         <Transactions />
       </Box>
     </div>
