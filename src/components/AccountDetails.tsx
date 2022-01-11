@@ -94,6 +94,7 @@ export default function AccountDetail({
                 openOptions()
               }}
               startIcon={<ChangeIcon color={theme.palette.info.main} />}
+              data-testid="changeAccount"
             >
               <Typography>{t("changeAccount")}</Typography>
             </Button>

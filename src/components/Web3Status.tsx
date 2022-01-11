@@ -30,8 +30,12 @@ const Web3Status = (): ReactElement => {
   }, [modalOpen])
 
   return (
-    <div className="walletStatus">
-      <button type="button" onClick={(): void => setModalOpen(true)}>
+    <div className="walletStatus" data-testid="walletStatusContainer">
+      <button
+        type="button"
+        onClick={(): void => setModalOpen(true)}
+        data-testid="accountDetailButton"
+      >
         {account ? (
           <div className="hasAccount">
             <span className="address">
