@@ -11,8 +11,8 @@ const NOE_DISPLAY_FAMILY = ['"Noe Display"'].join(",")
 
 const typography: TypographyOptions = {
   fontFamily: SOURCE_CODE_PRO_FAMILY,
+  fontWeightLight: 300,
   fontWeightRegular: 400,
-  fontWeightMedium: 500,
   fontWeightBold: 700,
   h1: {
     fontFamily: NOE_DISPLAY_FAMILY,
