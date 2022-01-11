@@ -1,5 +1,3 @@
-import "./AccountDetails.scss"
-
 import {
   Box,
   Button,
@@ -50,6 +48,7 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
           display="grid"
           gridTemplateColumns="1fr 1fr"
           gridTemplateRows="auto auto"
+          rowGap={2}
         >
           {/* TODO change color with text color of theme after confirming */}
           <Typography variant="caption" color="#686868">
@@ -97,10 +96,9 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
           </Box>
         </Box>
       </DialogContent>
-
-      <div className="lowerSection">
+      <Box bgcolor="#dfdde3" p={3}>
         <Transactions />
-      </div>
+      </Box>
     </div>
   )
 }

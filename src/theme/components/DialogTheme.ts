@@ -3,6 +3,11 @@ import { Components, Theme } from "@mui/material"
 export default function DialogTheme(theme: Theme): Components {
   return {
     MuiDialog: {
+      defaultProps: {
+        BackdropProps: {
+          timeout: 500,
+        },
+      },
       styleOverrides: {
         paper: {
           borderRadius: 10,
