@@ -50,11 +50,11 @@ ul {
 :root {
   --primary-foreground: #000;
   --primary-background: #fff;
-  --background: #ffffe9;
+  --background: #ffffff;
   --background-lightgrey: #dfdde3;
   --background-element: rgba(255, 255, 244, 0.7);
   --background-element-hover: rgba(255, 255, 255, 0.88);
-  --background-main: #ffffe9 url("../assets/bg_light.svg") center/auto 60%
+  --background-main: #ffffff url("../assets/bg_light.svg") center/auto 60%
     no-repeat fixed;
   --background-logo: #{$primary};
   --secondary-button: #{$light-blue};
@@ -92,7 +92,7 @@ body.dark {
   --background-element-hover: rgba(0, 0, 0, 0.8);
   --background-main: #000 url("../assets/bg.svg") center/auto 60% no-repeat
     fixed;
-  --background-logo: #ffffe9;
+  --background-logo: #ffffff;
   --secondary-button: #{$dark-purple};
   --emphasis-1: #{$indigo3}; // passive state
   --emphasis-2: #{$indigo2}; // active state
@@ -103,10 +103,10 @@ body.dark {
   --tab: #{$white};
 
   --text: #fff;
-  --text-darker: #ffffe9;
+  --text-darker: #ffffff;
   --text-lighter: #bbbbbb;
   --text-lightest: #888888;
-  --text-title: #ffffe9;
+  --text-title: #ffffff;
   --text-primary: #{$primary};
   --text-selected: #{$primary};
   --text-secondary-button: #{$blue};

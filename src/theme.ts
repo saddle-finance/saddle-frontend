@@ -36,7 +36,7 @@ export const lightTheme = createTheme({
       main: "#3800d6",
     },
     background: {
-      default: "#ffffe9",
+      default: "#ffffff",
     },
   },
   spacing: 8,
@@ -47,7 +47,7 @@ export const lightTheme = createTheme({
       },
       styleOverrides: {
         colorInherit: {
-          backgroundColor: "#FFFFE9",
+          backgroundColor: "#ffffff",
           color: "#141414",
           boxShadow: "transparent",
           borderColor: "transparent",
