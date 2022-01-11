@@ -56,6 +56,7 @@ const Web3Status = (): ReactElement => {
         {account && walletView === WALLET_VIEWS.ACCOUNT ? (
           <AccountDetails
             openOptions={() => setWalletView(WALLET_VIEWS.OPTIONS)}
+            onClose={(): void => setModalOpen(false)}
           />
         ) : (
           <ConnectWallet onClose={(): void => setModalOpen(false)} />

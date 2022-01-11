@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   DialogContent,
-  DialogTitle,
   Stack,
   Typography,
   useTheme,
@@ -12,6 +11,7 @@ import { commify, formatBNToString } from "../utils"
 import { ReactComponent as ChangeIcon } from "../assets/icons/accountChange.svg"
 import Copy from "./Copy"
 import Davatar from "@davatar/react"
+import DialogTitle from "./DialogTitle"
 import LaunchIcon from "@mui/icons-material/Launch"
 import { SUPPORTED_WALLETS } from "../constants"
 import Transactions from "./Transactions"
@@ -25,9 +25,13 @@ import { useTranslation } from "react-i18next"
 
 interface Props {
   openOptions: () => void
+  onClose?: () => void
 }
 
-export default function AccountDetail({ openOptions }: Props): ReactElement {
+export default function AccountDetail({
+  openOptions,
+  onClose,
+}: Props): ReactElement {
   const { t } = useTranslation()
   const { account, connector } = useActiveWeb3React()
   const tokenBalances = usePoolTokenBalances()
@@ -40,7 +44,7 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
 
   return (
     <div className="accountDetail">
-      <DialogTitle>
+      <DialogTitle onClose={onClose}>
         <Typography variant="h3">{t("account")}</Typography>
       </DialogTitle>
       <DialogContent>
