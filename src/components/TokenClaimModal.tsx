@@ -149,10 +149,10 @@ export default function TokenClaimModal(): ReactElement {
         <div className={styles.info}>
           <span>
             <Trans i18nKey="saddleTokenInfo" t={t}>
-              SDL token is launched by Saddle Finance. Read more about token
+              MUNE token is launched by Mune Finance. Read more about token
               distribution{" "}
               <a
-                href="https://blog.saddle.finance/introducing-sdl"
+                href="https://www.mune.finance/"
                 target="_blank"
                 rel="noreferrer"
                 style={{ textDecoration: "underline" }}
