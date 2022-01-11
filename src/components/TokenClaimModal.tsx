@@ -93,6 +93,7 @@ export default function TokenClaimModal(): ReactElement {
               onClick={() => addToken()}
               color="primary"
               disabled={!isClaimableNetwork}
+              data-testid="tokenAddBtn"
             >
               <AddCircleOutlineIcon fontSize="large" />
             </IconButton>
