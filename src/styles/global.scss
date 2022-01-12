@@ -9,7 +9,7 @@
 * {
   box-sizing: border-box;
   margin: 0px;
-  font-family: "Source Code Pro", monospace, sans-serif;
+  font-family: "VT323", monospace, sans-serif;
 }
 
 button {
@@ -52,7 +52,7 @@ ul {
   --primary-background: #fff;
   --background: #ffffff;
   --background-lightgrey: #dfdde3;
-  --background-element: rgba(255, 255, 244, 0.7);
+  --background-element: rgba(255, 255, 255, 0.7);
   --background-element-hover: rgba(255, 255, 255, 0.88);
   --background-main: #ffffff url("../assets/bg_light.svg") center/auto 60%
     no-repeat fixed;
