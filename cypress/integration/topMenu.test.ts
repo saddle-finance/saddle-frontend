@@ -48,11 +48,5 @@ context("Top menu test", () => {
       .click()
     cy.get("[data-testid=swapNavLink]").contains("Swap")
     cy.get("[data-testid=languageMenu]").contains("∧").click().contains("∨")
-
-    cy.get("[data-testid=themeMenuOption]").click()
-    cy.get("body").should("have.css", "color", "rgba(0, 0, 0, 0.87)")
-    cy.get("[data-testid=settingsMenuBtn]").click()
-    // cy.get("[data-testid=themeMenuOption]").click()
-    // cy.get("body").should("have.css", "background-color", "rgba(0, 0, 0, 0.87)")
   })
 })
