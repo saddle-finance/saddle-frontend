@@ -189,6 +189,7 @@ const DepositPage = (props: Props): ReactElement => {
           <Stack direction="row" width="434px" pt={3} justifyContent="center">
             <Box width={["90%", "50%"]}>
               <Button
+                kind="primary"
                 onClick={(): void => {
                   setCurrentModal("review")
                 }}
