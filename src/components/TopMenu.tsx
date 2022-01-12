@@ -100,7 +100,8 @@ function RewardsButton({
       onClick={() => setCurrentModal("tokenClaim")}
       size="medium"
     >
-      {formattedTotal} <SaddleLogo width={24} height={24} />
+      {formattedTotal}{" "}
+      <SaddleLogo width={24} height={24} style={{ marginLeft: 8 }} />
     </Button>
   ) : null
 }
