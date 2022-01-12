@@ -11,9 +11,7 @@ import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
 
-export function useRewardsHelpers(
-  poolName: PoolName,
-): {
+export function useRewardsHelpers(poolName: PoolName): {
   approveAndStake: (amount: BigNumber) => Promise<void>
   unstake: (amount: BigNumber) => Promise<void>
   amountStaked: BigNumber

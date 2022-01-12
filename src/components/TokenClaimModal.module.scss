@@ -57,13 +57,8 @@
 div.tokenBalance {
   font-size: 48px;
   font-family: $font-family;
-  color: var(--primary-foreground);
   display: flex;
   align-items: center;
-  img {
-    margin-left: 16px;
-    cursor: pointer;
-  }
 }
 div.tokenBalanceHelpText {
   font-size: 12px;

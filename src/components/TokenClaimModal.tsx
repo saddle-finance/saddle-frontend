@@ -1,4 +1,5 @@
-import { POOLS_MAP, Pool, SDL_TOKEN } from "../constants"
+import { ChainId, POOLS_MAP, Pool, SDL_TOKEN } from "../constants"
+import { IconButton, Link } from "@mui/material"
 import React, {
   ReactElement,
   useCallback,
@@ -14,12 +15,12 @@ import {
   useRetroactiveVestingContract,
 } from "../hooks/useContract"
 
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
 import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
-import plusIcon from "../assets/icons/plus.svg"
 import styles from "./TokenClaimModal.module.scss"
 import { useActiveWeb3React } from "../hooks"
 import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
@@ -29,6 +30,11 @@ import { useRetroMerkleData } from "../hooks/useRetroMerkleData"
 export default function TokenClaimModal(): ReactElement {
   const { t } = useTranslation()
   const { chainId } = useActiveWeb3React()
+  const isClaimableNetwork =
+    chainId === ChainId.MAINNET ||
+    chainId === ChainId.HARDHAT ||
+    chainId === ChainId.ROPSTEN
+
   const rewardBalances = useContext(RewardsBalancesContext)
   const {
     claimsStatuses,
@@ -83,19 +89,21 @@ export default function TokenClaimModal(): ReactElement {
           {formattedUnclaimedTokenbalance}
 
           {canAdd && (
-            <img
-              data-testid="tokenAddBtn"
-              src={plusIcon}
-              className={styles.plus}
+            <IconButton
               onClick={() => addToken()}
-            />
+              color="primary"
+              disabled={!isClaimableNetwork}
+              data-testid="tokenAddBtn"
+            >
+              <AddCircleOutlineIcon fontSize="large" />
+            </IconButton>
           )}
         </div>
         <div className={styles.tokenBalanceHelpText}>
           {t("totalClaimableSDL")}
         </div>
         <ul data-testid="claimsListContainer" className={styles.claimsList}>
-          {rewardBalances.retroactive && (
+          {rewardBalances.retroactive && isClaimableNetwork && (
             <>
               <ClaimListItem
                 title={t("retroactiveDrop")}
@@ -110,6 +118,23 @@ export default function TokenClaimModal(): ReactElement {
                 <div style={{ height: "32px" }} />
               )}
             </>
+          )}
+          {!isClaimableNetwork && (
+            <p style={{ whiteSpace: "pre-line" }}>
+              <Trans i18nKey="disableRewardContent">
+                SDL is currently only deployed on Ethereum Mainnet and is not
+                yet claimable on this chain. We display the amount that will be
+                claimable once SDL is available on this network. See
+                <Link
+                  href="https://docs.saddle.finance/saddle-faq#why-cant-i-claim-my-sdl-on-arbitrum"
+                  color="secondary"
+                  target="_blank"
+                >
+                  this post
+                </Link>
+                for more information.
+              </Trans>
+            </p>
           )}
           {allPoolsWithRewards.map((pool, i, arr) => (
             <>

@@ -1,10 +1,9 @@
 import {
   ALETH_POOL_NAME,
-  BTC_POOL_NAME,
   ChainId,
   D4_POOL_NAME,
   PoolName,
-  TBTC_METAPOOL_NAME,
+  TBTC_METAPOOL_V2_NAME,
   VETH2_POOL_NAME,
 } from "../constants"
 import { AddressZero, Zero } from "@ethersproject/constants"
@@ -72,13 +71,12 @@ export async function getThirdPartyDataForPool(
       )
       result.aprs.sharedStake = { apr, symbol: rewardSymbol }
       result.amountsStaked.sharedStake = userStakedAmount
-    } else if (poolName === TBTC_METAPOOL_NAME) {
+    } else if (poolName === TBTC_METAPOOL_V2_NAME) {
       const rewardSymbol = "KEEP"
       const [apr, userStakedAmount] = await getKeepData(
         library,
         chainId,
         lpTokenPriceUSD,
-        TBTC_METAPOOL_NAME,
         tokenPricesUSD?.[rewardSymbol],
         accountId,
       )
@@ -122,17 +120,11 @@ async function getFraxData(
   return [apy, Zero]
 }
 
-type KeepPoolName = typeof BTC_POOL_NAME | typeof TBTC_METAPOOL_NAME
-
-// LPRewardsTBTCSaddle and LPRewardsTBTCv2Saddle have the same interface
-// https://github.com/keep-network/keep-ecdsa/blob/main/solidity/contracts/LPRewards.sol#L267
-// https://github.com/keep-network/tbtc-v2/blob/main/yearn/contracts/SaddleStrategy.sol#L42
-
+// https://etherscan.io/address/0xb4c35747c26e4ab5f1a7cdc7e875b5946efa6fa9#code
 async function getKeepData(
   library: Web3Provider,
   chainId: ChainId,
   lpTokenPrice: BigNumber,
-  keepPoolName: KeepPoolName,
   keepPrice = 0,
   accountId?: string | null,
 ): Promise<[BigNumber, BigNumber]> {
@@ -144,10 +136,7 @@ async function getKeepData(
   )
     return [Zero, Zero]
 
-  const rewardsContractAddress =
-    keepPoolName == BTC_POOL_NAME
-      ? "0x78aa83bd6c9de5de0a2231366900ab060a482edd" // v1 prod address
-      : "0x6aD9E8e5236C0E2cF6D755Bb7BE4eABCbC03f76d" // v2 prod address
+  const rewardsContractAddress = "0xb4c35747c26e4ab5f1a7cdc7e875b5946efa6fa9"
 
   const ethcallProvider = await getMulticallProvider(library, chainId)
   const rewardsContract = new Contract(
@@ -267,11 +256,8 @@ async function getAlEthData(
     rewardsContract.getPoolTotalDeposited(POOL_ID),
     rewardsContract.getStakeTotalDeposited(accountId || AddressZero, POOL_ID),
   ]
-  const [
-    alcxRewardPerBlock,
-    poolTotalDeposited,
-    userStakedAmount,
-  ] = await ethcallProvider.all(multicalls, {})
+  const [alcxRewardPerBlock, poolTotalDeposited, userStakedAmount] =
+    await ethcallProvider.all(multicalls, {})
   const alcxPerYear = alcxRewardPerBlock.mul(52 * 45000) // 1e18 // blocks/year rate from Alchemix's own logic
   const alcxPerYearUSD = alcxPerYear.mul(parseUnits(alcxPrice.toFixed(2), 2)) // 1e20
   const totalDepositedUSD = poolTotalDeposited.mul(lpTokenPrice) // 1e36

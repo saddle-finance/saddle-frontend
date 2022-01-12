@@ -1,4 +1,4 @@
-import { Box, Dialog, Typography } from "@mui/material"
+import { Dialog, DialogContent, Typography } from "@mui/material"
 import React, { ReactElement } from "react"
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
 import { Web3Provider } from "@ethersproject/providers"
@@ -15,12 +15,12 @@ export default function WrongNetworkModal({ open }: Props): ReactElement {
 
   return (
     <Dialog open={open ?? isUnsupportChainIdError} maxWidth="xs">
-      <Box padding={3}>
-        <Typography variant="h3" textAlign="center" mb={3}>
+      <DialogContent sx={{ whiteSpace: "pre-line" }}>
+        <Typography textAlign="center" mb={3} sx={{ fontSize: 48 }}>
           &#129325;
         </Typography>
-        {t("wrongNetworkContent")}
-      </Box>
+        <Typography>{t("wrongNetworkContent")}</Typography>
+      </DialogContent>
     </Dialog>
   )
 }
