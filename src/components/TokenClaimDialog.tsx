@@ -90,7 +90,6 @@ export default function TokenClaimDialog({
       open={open}
       scroll="body"
       onClose={onClose}
-      sx={{ overflow: "hidden" }}
       data-testid="tokenClaimDialog"
     >
       {/* TODO: Remove this button after update the modal */}
