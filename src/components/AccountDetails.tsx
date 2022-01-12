@@ -2,13 +2,14 @@ import {
   Box,
   Button,
   DialogContent,
+  Link,
   Stack,
   Typography,
   useTheme,
 } from "@mui/material"
 import React, { ReactElement } from "react"
 import { commify, formatBNToString } from "../utils"
-import { ReactComponent as ChangeIcon } from "../assets/icons/accountChange.svg"
+import ChangeIcon from "@mui/icons-material/ImportExport"
 import Copy from "./Copy"
 import Davatar from "@davatar/react"
 import DialogTitle from "./DialogTitle"
@@ -43,7 +44,7 @@ export default function AccountDetail({
   const theme = useTheme()
 
   return (
-    <div className="accountDetail" data-testid="accountDetailContainer">
+    <div data-testid="accountDetailContainer">
       <DialogTitle onClose={onClose}>
         <Typography variant="h3">{t("account")}</Typography>
       </DialogTitle>
@@ -55,11 +56,11 @@ export default function AccountDetail({
           rowGap={2}
         >
           {/* TODO change color with text color of theme after confirming */}
-          <Typography variant="caption" color="#686868">
+          <Typography variant="body2" color="text.secondary">
             {t("connectedWith")}&nbsp;
             {connectorName}
           </Typography>
-          <Typography variant="caption" color="#686868">
+          <Typography variant="body2" color="text.secondary">
             {t("balance")}
           </Typography>
 
@@ -69,40 +70,49 @@ export default function AccountDetail({
               address={account || ""}
               generatedAvatarType="jazzicon"
             />
-            <Typography>{account && shortenAddress(account)}</Typography>
+            <Typography variant="subtitle1">
+              {account && shortenAddress(account)}
+            </Typography>
             {account && (
-              <a
+              <Link
                 href={getEtherscanLink(account, "address")}
                 target="_blank"
                 rel="noreferrer"
               >
-                {/* link icon */}
                 <LaunchIcon fontSize="inherit" />
-              </a>
+              </Link>
             )}
           </Stack>
           <Box>
-            <Typography>{ethBalanceFormatted}&#926;</Typography>
+            <Typography variant="subtitle1">
+              {ethBalanceFormatted}&#926;
+            </Typography>
           </Box>
           <Box display="flex" alignItems="center">
             {account && <Copy toCopy={account}>{t("copyAddress")}</Copy>}
           </Box>
           <Box display="flex" alignItems="center">
             <Button
-              color="info"
               onClick={() => {
                 openOptions()
               }}
-              startIcon={<ChangeIcon color={theme.palette.info.main} />}
+              startIcon={<ChangeIcon />}
               data-testid="changeAccount"
             >
-              <Typography>{t("changeAccount")}</Typography>
+              {t("changeAccount")}
             </Button>
           </Box>
         </Box>
       </DialogContent>
       {/* Change hardcoded color with theme color after definining design */}
-      <Box bgcolor={theme.palette.mode == "light" ? "#dfdde3" : "#333"} p={3}>
+      <Box
+        bgcolor={
+          theme.palette.mode == "light"
+            ? theme.palette.background.paper
+            : "#333"
+        }
+        p={3}
+      >
         <Transactions />
       </Box>
     </div>

@@ -48,6 +48,10 @@ const lightPalette: PaletteOptions | undefined = {
   },
   background: {
     default: "#FFFFE9",
+    paper: "#FDFDF8",
+  },
+  text: {
+    secondary: "#252525",
   },
   grey: GREY_TONES,
 }
