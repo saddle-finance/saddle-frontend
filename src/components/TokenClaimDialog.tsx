@@ -91,12 +91,14 @@ export default function TokenClaimModal({
       scroll="body"
       onClose={onClose}
       sx={{ overflow: "hidden" }}
+      data-testid="tokenClaimDialog"
     >
       {/* TODO: Remove this button after update the modal */}
       <IconButton
         disableRipple
         onClick={onClose}
         sx={{ position: "absolute", top: 16, right: 24 }}
+        data-testid="dialogCloseBtn"
       >
         <Close />
       </IconButton>
