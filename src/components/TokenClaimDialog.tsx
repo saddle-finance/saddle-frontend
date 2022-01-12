@@ -29,14 +29,14 @@ import { useRetroMerkleData } from "../hooks/useRetroMerkleData"
 
 // TODO: update token launch link
 
-interface TokenClaimModalProps {
+interface TokenClaimDialogProps {
   open: boolean
   onClose?: () => void
 }
-export default function TokenClaimModal({
+export default function TokenClaimDialog({
   open,
   onClose,
-}: TokenClaimModalProps): ReactElement {
+}: TokenClaimDialogProps): ReactElement {
   const { t } = useTranslation()
   const { chainId } = useActiveWeb3React()
   const isClaimableNetwork =
