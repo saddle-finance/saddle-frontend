@@ -1,6 +1,13 @@
 import { PaletteOptions } from "@mui/material"
 import { alpha } from "@mui/material"
 
+declare module "@mui/material/styles/createPalette" {
+  interface PaletteOptions {
+    other?: {
+      divider: string
+    }
+  }
+}
 const saddleColors = {
   indigo: "#4B11F2",
   seafoam: "#06D7D7",
@@ -34,7 +41,6 @@ const GREY_TONES = {
   500: "#404040",
   700: "#252525",
 }
-
 const lightPalette: PaletteOptions | undefined = {
   mode: "light",
   primary: {
@@ -70,6 +76,9 @@ const darkPalette: PaletteOptions | undefined = {
   background: {
     default: saddleColors.black,
     paper: alpha(saddleColors.black, 0.7),
+  },
+  other: {
+    divider: "#E3D899",
   },
   grey: GREY_TONES,
 }
