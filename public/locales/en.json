@@ -34,7 +34,7 @@
   "confirmTransaction": "Confirm this transaction in your wallet",
   "confirmWithdraw": "Confirm Withdraw",
   "connectedWith": "Connected with",
-  "connectWallet": "Connect Wallet",
+  "connectWallet": "Connect",
   "copyAddress": "Copy Address",
   "crossAssetSwapsUseVirtualSwaps": "Cross-asset swaps use Virtual Swap.",
   "currencyReserves": "Currency reserves",
