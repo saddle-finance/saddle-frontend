@@ -35,14 +35,13 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
       if (connectorName === "Unstoppable Domains") {
         const userUD = await uauth.uauth.user()
         setUser(userUD.sub)
-        console.log({ user })
       }
     }
     void checkUDName()
     return () => {
       setUser("")
     }
-  }, [])
+  }, [connectorName])
 
   return (
     <div className="accountDetail">
