@@ -6,12 +6,11 @@ import React, { ReactElement, useContext, useRef, useState } from "react"
 
 import Button from "./Button"
 import { IS_SDL_LIVE } from "../constants"
-import Modal from "./Modal"
 import NetworkDisplay from "./NetworkDisplay"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
 import SiteSettingsMenu from "./SiteSettingsMenu"
-import TokenClaimModal from "./TokenClaimModal"
+import TokenClaimDialog from "./TokenClaimDialog"
 import Web3Status from "./Web3Status"
 import classNames from "classnames"
 import { formatBNToShortString } from "../utils"
@@ -75,12 +74,10 @@ function TopMenu(): ReactElement {
           <NetworkDisplayAndSettings />
           <IconButtonAndSettings />
         </div>
-        <Modal
-          isOpen={!!currentModal}
+        <TokenClaimDialog
+          open={currentModal === "tokenClaim"}
           onClose={(): void => setCurrentModal(null)}
-        >
-          {currentModal === "tokenClaim" && <TokenClaimModal />}
-        </Modal>
+        />
       </Toolbar>
     </AppBar>
   )
