@@ -111,7 +111,7 @@
   "reviewMigration": "Review Migration",
   "reviewSwap": "Review Swap",
   "risk": "Risk",
-  "riskAdminKeys": "The admin is capable of pausing new deposits and trades in case of technical emergencies. Users will always be able to withdraw their funds, regardless of new deposits being paused. The admin is also capable of changing the swap/withdrawal/admin fees, as well as the per pool/account deposit limits.",
+  "riskAdminKeys": "The admin is capable of pausing new deposits and trades in case of technical emergencies. Users will always be able to withdraw their funds, regardless of new deposits being paused. The admin is also capable of changing the swap/admin fees, as well as the per pool/account deposit limits.",
   "riskAudits": "Information can be found in our",
   "riskAudits2": "Docs",
   "riskAudits3": "Please keep in mind that security audits don’t completely eliminate risks. Do not supply assets that you cannot afford to lose to Mune as a liquidity provider.",
