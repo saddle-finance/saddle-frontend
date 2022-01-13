@@ -2,41 +2,12 @@
 @import "../styles/viewports";
 
 div.riskpage {
-  min-height: 100vh;
   background: var(--background-main);
-  padding-bottom: 80px;
-  box-sizing: border-box; // Make the padding included in height calculation
-
-  .content {
-    padding-top: 24px;
-    margin: 0 auto;
-    width: 888px;
-    color: var(--text-darker);
-    @include breakpoint(lg) {
-      display: flex;
-      flex-flow: column nowrap;
-      align-items: flex-start;
-      justify-content: center;
-      margin: 0 auto;
-      width: 90%;
-    }
-  }
-
-  h3 {
-    margin-top: 40px;
-    margin-bottom: 16px;
-    font-size: 20px;
-  }
 
   a {
     color: var(--text-selected);
-
     &:hover {
       text-decoration: underline;
     }
-  }
-
-  p {
-    line-height: 24px;
   }
 }
