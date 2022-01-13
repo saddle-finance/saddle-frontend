@@ -1,37 +1,19 @@
 import { PaletteOptions } from "@mui/material"
 import { alpha } from "@mui/material"
 
-declare module "@mui/material/styles/createPalette" {
-  interface PaletteOptions {
-    other?: {
-      divider: string
-    }
-  }
+// Define custom color types
+
+interface OtherColorTypes {
+  divider: string
+  border: string
 }
-const saddleColors = {
-  indigo: "#4B11F2",
-  seafoam: "#06D7D7",
-  seaweed: "#00F4D7",
-  sunburn: "#E6AD76",
-  gold: "#FAEA5D",
-  white: "#FFF",
-  black: "#000",
-  grey70: "#252525",
-  grey50: "#404040",
-  grey25: "#7D7D7D",
-  grey5: "#A7A7A7",
-  grey1: "#E4E4E4",
-  indigo2: "#311188",
-  indigo3: "#121334",
-  indigo4: "#070713",
-  seafoam2: "#126969",
-  sunset: "#D96A3B",
-  sand1: "#E3D899",
-  sand2: "#FAF3CE",
-  sand3: "#FDFDF8",
-  gold2: "#817F48",
-  cherry: "#FB5A5A",
-  cherry2: "#68282F",
+declare module "@mui/material/styles/createPalette" {
+  interface Palette {
+    other: OtherColorTypes
+  }
+  interface PaletteOptions {
+    other: OtherColorTypes
+  }
 }
 
 const GREY_TONES = {
@@ -44,10 +26,14 @@ const GREY_TONES = {
 const lightPalette: PaletteOptions | undefined = {
   mode: "light",
   primary: {
-    main: saddleColors.seafoam,
+    main: "#06D7D7",
+    dark: "#037777",
+    light: "#83EBEB",
   },
   secondary: {
-    main: saddleColors.sunburn,
+    main: "#E6AD76",
+    dark: "#D07647",
+    light: "#FAF3CE",
   },
   info: {
     main: "#4B11F2",
@@ -56,8 +42,24 @@ const lightPalette: PaletteOptions | undefined = {
     default: "#FFFFE9",
     paper: "#FDFDF8",
   },
+  success: {
+    main: "#06D7D7",
+  },
+  warning: {
+    main: "#FAEA5D",
+    dark: "#817F48",
+    light: "#FFEA91",
+  },
+  error: {
+    main: "#FB5A5A",
+    dark: "#68282F",
+  },
   text: {
     secondary: "#252525",
+  },
+  other: {
+    divider: "#E3D899",
+    border: "#7D7D7D",
   },
   grey: GREY_TONES,
 }
@@ -65,20 +67,25 @@ const lightPalette: PaletteOptions | undefined = {
 const darkPalette: PaletteOptions | undefined = {
   mode: "dark",
   primary: {
-    main: saddleColors.seafoam,
+    main: "#06D7D7",
+    dark: "#037777",
+    light: "#83EBEB",
   },
   secondary: {
-    main: saddleColors.sunburn,
+    main: "#E6AD76",
+    dark: "#D07647",
+    light: "#FAF3CE",
   },
   info: {
     main: "#00f4d7",
   },
   background: {
-    default: saddleColors.black,
-    paper: alpha(saddleColors.black, 0.7),
+    default: "#000000",
+    paper: alpha("#000000", 0.7),
   },
   other: {
     divider: "#E3D899",
+    border: "#7D7D7D",
   },
   grey: GREY_TONES,
 }

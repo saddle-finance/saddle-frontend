@@ -5,7 +5,6 @@ import {
   Link,
   Stack,
   Typography,
-  useTheme,
 } from "@mui/material"
 import React, { ReactElement } from "react"
 import { commify, formatBNToString } from "../utils"
@@ -22,6 +21,7 @@ import { getEtherscanLink } from "../utils/getEtherscanLink"
 import { shortenAddress } from "../utils/shortenAddress"
 import { useActiveWeb3React } from "../hooks"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
+import { useTheme } from "@mui/material/styles"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -42,6 +42,7 @@ export default function AccountDetail({
 
   const connectorName = find(SUPPORTED_WALLETS, ["connector", connector])?.name
   const theme = useTheme()
+  theme.palette.background
 
   return (
     <Box

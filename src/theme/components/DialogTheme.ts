@@ -14,7 +14,7 @@ export default function DialogTheme(theme: Theme): Components {
           // TDDO: remove this hardcoded color
           border:
             theme.palette.mode === "light"
-              ? "#E3D899"
+              ? `1px solid ${theme.palette.other.divider}`
               : `1px solid ${theme.palette.grey[500]}`,
           backgroundImage: "none",
           boxShadow: "none",
