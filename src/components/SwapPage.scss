@@ -10,7 +10,7 @@ div.swapPage {
   box-sizing: border-box;
 
   h3.swapTitle {
-    font-weight: 700;
+    font-weight: 500;
     font-size: 24px;
     line-height: 30px;
   }
@@ -51,6 +51,7 @@ div.swapPage {
     width: 550px;
     margin: 0 auto;
     padding-top: 40px;
+    padding: 24px 32px;
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;

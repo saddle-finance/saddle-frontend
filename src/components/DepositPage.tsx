@@ -190,7 +190,6 @@ const DepositPage = (props: Props): ReactElement => {
             <Box width={["90%", "50%"]}>
               <Button
                 kind="primary"
-                fullWidth
                 onClick={(): void => {
                   setCurrentModal("review")
                 }}
