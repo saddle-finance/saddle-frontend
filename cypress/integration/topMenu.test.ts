@@ -11,7 +11,7 @@ context("Top menu test", () => {
     cy.get("[data-testid=topMenuContainer]").should("be.visible")
   })
 
-  it("open token claim modal", () => {
+  it("open token claim dialog", () => {
     cy.get("[data-testid=rewardButton]").should("exist").click()
 
     cy.get("[data-testid=tknClaimContainer]")
@@ -19,9 +19,9 @@ context("Top menu test", () => {
       .find("[data-testid=tokenAddBtn]")
       .click()
     // cy.get("[data-testid=claimsListContainer]").find("Button").first().click()
-    cy.get("[data-testid=modalContainer]")
+    cy.get("[data-testid=tokenClaimDialog]")
       .should("be.visible")
-      .find("[data-testid=modalCloseBtn]")
+      .find("[data-testid=dialogCloseBtn]")
       .click()
       .should("not.exist")
   })
