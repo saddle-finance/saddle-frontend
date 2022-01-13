@@ -11,17 +11,17 @@ context("Top menu test", () => {
     cy.get("[data-testid=topMenuContainer]").should("be.visible")
   })
 
-  it("open token claim modal", () => {
+  it("open token claim dialog", () => {
     cy.get("[data-testid=rewardButton]").should("exist").click()
 
     cy.get("[data-testid=tknClaimContainer]")
       .should("exist")
       .find("[data-testid=tokenAddBtn]")
       .click()
-    cy.get("[data-testid=claimsListContainer]").find("Button").first().click()
-    cy.get("[data-testid=modalContainer]")
+    // cy.get("[data-testid=claimsListContainer]").find("Button").first().click()
+    cy.get("[data-testid=tokenClaimDialog]")
       .should("be.visible")
-      .find("[data-testid=modalCloseBtn]")
+      .find("[data-testid=dialogCloseBtn]")
       .click()
       .should("not.exist")
   })
@@ -48,10 +48,5 @@ context("Top menu test", () => {
       .click()
     cy.get("[data-testid=swapNavLink]").contains("Swap")
     cy.get("[data-testid=languageMenu]").contains("∧").click().contains("∨")
-
-    cy.get("[data-testid=themeMenuOption]").click()
-    cy.get("body").should("have.css", "color", "rgba(255, 255, 255, 0.92)")
-    cy.get("[data-testid=themeMenuOption]").click()
-    cy.get("body").should("have.css", "background-color", "rgb(255, 255, 255)")
   })
 })
