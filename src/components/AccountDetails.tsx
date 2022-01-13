@@ -44,7 +44,14 @@ export default function AccountDetail({
   const theme = useTheme()
 
   return (
-    <div data-testid="accountDetailContainer">
+    <Box
+      data-testid="accountDetailContainer"
+      bgcolor={
+        theme.palette.mode === "light"
+          ? theme.palette.common.white
+          : theme.palette.common.black
+      }
+    >
       <DialogTitle onClose={onClose}>
         <Typography variant="h3">{t("account")}</Typography>
       </DialogTitle>
@@ -55,7 +62,6 @@ export default function AccountDetail({
           gridTemplateRows="auto auto"
           rowGap={2}
         >
-          {/* TODO change color with text color of theme after confirming */}
           <Typography variant="body2" color="text.secondary">
             {t("connectedWith")}&nbsp;
             {connectorName}
@@ -115,6 +121,6 @@ export default function AccountDetail({
       >
         <Transactions />
       </Box>
-    </div>
+    </Box>
   )
 }
