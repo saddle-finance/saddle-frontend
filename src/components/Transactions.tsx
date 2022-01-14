@@ -1,4 +1,5 @@
 import "./Transactions.scss"
+import { Box, Button, Typography } from "@mui/material"
 import React, { ReactElement, useCallback, useEffect, useState } from "react"
 import { getEtherscanLink } from "../utils/getEtherscanLink"
 import { getFormattedShortTime } from "../utils/dateTime"
@@ -153,17 +154,18 @@ export default function Transactions(): ReactElement {
 
   return (
     <>
-      <div className="titleRow">
-        <h4 className="txn">{t("recentTransactions")}</h4>
-        <button
-          className="textStyle clear"
+      <Box display="flex" justifyContent="space-between" mb={3}>
+        <Typography variant="subtitle1">{t("recentTransactions")}</Typography>
+        <Button
           onClick={(): void => {
             setTransactionList([])
           }}
         >
-          {t("clear")}
-        </button>
-      </div>
+          <Typography variant="body2" color="CaptionText">
+            {t("clear")}
+          </Typography>
+        </Button>
+      </Box>
       <div className="transactionList">
         {transactionList.length !== 0 ? (
           transactionList.map((txn, index) => (
