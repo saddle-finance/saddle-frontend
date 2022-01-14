@@ -96,7 +96,7 @@ export default function AccountDetail({
             </Typography>
           </Box>
           <Box display="flex" alignItems="center">
-            {account && <Copy toCopy={account}>{t("copyAddress")}</Copy>}
+            {account && <Copy toCopy={account} />}
           </Box>
           <Box display="flex" alignItems="center">
             <Button
