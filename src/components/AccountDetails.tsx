@@ -104,7 +104,7 @@ export default function AccountDetail({
                 openOptions()
               }}
               startIcon={<ChangeIcon />}
-              data-testid="changeAccount"
+              data-testid="changeAccountBtn"
             >
               {t("changeAccount")}
             </Button>
