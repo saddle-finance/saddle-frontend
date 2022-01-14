@@ -11,7 +11,6 @@ export default function DialogTheme(theme: Theme): Components {
       styleOverrides: {
         paper: {
           borderRadius: 10,
-          // TDDO: remove this hardcoded color
           border:
             theme.palette.mode === "light"
               ? `1px solid ${theme.palette.other.divider}`

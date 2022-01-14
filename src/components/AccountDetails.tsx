@@ -42,7 +42,6 @@ export default function AccountDetail({
 
   const connectorName = find(SUPPORTED_WALLETS, ["connector", connector])?.name
   const theme = useTheme()
-  theme.palette.background
 
   return (
     <Box

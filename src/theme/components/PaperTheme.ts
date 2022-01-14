@@ -7,7 +7,7 @@ export default function PaperTheme(theme: Theme): Components {
         root: {
           border:
             theme.palette.mode === "light"
-              ? theme.palette.other?.divider
+              ? `1px solid theme.palette.other?.divider`
               : "1px solid #000000",
           boxShadow: "none",
           opacity: 1,
