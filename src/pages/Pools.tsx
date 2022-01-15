@@ -182,7 +182,7 @@ function Pools(): ReactElement | null {
         name: FRAX_ARB_USD_POOL_V2_NAME,
         poolData: fraxArbUsdPoolV2Data,
         userShareData: fraxArbUsdV2UserShareData,
-        poolRoute: "/pools/frax-arbusdv2",
+        poolRoute: "/pools/dai-usdv2",
       }
     } else {
       return {
