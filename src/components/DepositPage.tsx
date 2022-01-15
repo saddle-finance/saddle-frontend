@@ -186,27 +186,25 @@ const DepositPage = (props: Props): ReactElement => {
             </div>
           </div>
           <AdvancedOptions />
-          <div className="buttons">
-            <Stack direction="row" width="434px" pt={3} justifyContent="center">
-              <Box width={["90%", "50%"]}>
-                <Button
-                  kind="primary"
-                  onClick={(): void => {
-                    setCurrentModal("review")
-                  }}
-                  disabled={!validDepositAmount || poolData?.isPaused}
-                >
-                  {t("deposit")}
-                </Button>
-              </Box>
+          <Stack direction="row" width="434px" pt={3} justifyContent="center">
+            <Box width={["90%", "50%"]}>
+              <Button
+                kind="primary"
+                onClick={(): void => {
+                  setCurrentModal("review")
+                }}
+                disabled={!validDepositAmount || poolData?.isPaused}
+              >
+                {t("deposit")}
+              </Button>
+            </Box>
 
-              {/* <Box width={["90%", "50%"]} paddingTop={2}>
+            {/* <Box width={["90%", "50%"]} paddingTop={2}>
               <Button variant="primary" size="lg" width="100%">
                 {t("depositAndStake")}
               </Button>
             </Box> */}
-            </Stack>
-          </div>
+          </Stack>
         </div>
         <div>
           {poolData && (
