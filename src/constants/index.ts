@@ -435,6 +435,19 @@ export const ARB_USD_SWAP_TOKEN = new Token(
   true,
 )
 
+const FRAX_CONTRACT_ADDRESSES = buildAddresses({
+  [ChainId.HARDHAT]: "0x851356ae760d987E095750cCeb3bC6014560891C",
+  [ChainId.MATICMUMBAI]: "0x51A11656eD60Cc17752C4F1049240a9Fcf7a6d5E",
+})
+export const FRAX = new Token(
+  FRAX_CONTRACT_ADDRESSES,
+  18,
+  "FRAX",
+  "frax",
+  "Frax",
+  fraxLogo,
+)
+
 export const FRAX_ARB_USD_SWAP_V2_TOKEN = new Token(
   FRAX_ARB_USD_SWAP_V2_TOKEN_CONTRACT_ADDRESSES,
   18,
@@ -717,19 +730,6 @@ export const FEI = new Token(
   "fei-usd",
   "Fei Protocol",
   feiLogo,
-)
-
-const FRAX_CONTRACT_ADDRESSES = buildAddresses({
-  [ChainId.HARDHAT]: "0x851356ae760d987E095750cCeb3bC6014560891C",
-  [ChainId.MATICMUMBAI]: "0x51A11656eD60Cc17752C4F1049240a9Fcf7a6d5E",
-})
-export const FRAX = new Token(
-  FRAX_CONTRACT_ADDRESSES,
-  18,
-  "FRAX",
-  "frax",
-  "Frax",
-  fraxLogo,
 )
 
 export const FRAX_ARB_USD_POOL_V2_TOKENS = [DAI, USDC, USDT]
