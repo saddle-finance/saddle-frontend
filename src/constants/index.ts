@@ -318,7 +318,7 @@ export const SUSD_SWAP_TOKEN = new Token(
   SUSD_SWAP_TOKEN_CONTRACT_ADDRESSES,
   18,
   "muneFRAX",
-  "munefrax,
+  "munefrax",
   "Mune FRAX/muneUSD",
   saddleLPTokenLogo,
   false,
