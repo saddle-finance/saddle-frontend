@@ -582,6 +582,7 @@ export const MIM = new Token(
   mimLogo,
 )
 
+export const FRAX_ARB_USD_POOL_V2_TOKENS = [DAI, USDC, USDT]
 export const STABLECOIN_POOL_TOKENS = [DAI, USDC, USDT]
 export const SUSD_POOL_TOKENS = [FRAX, ...FRAX_ARB_USD_POOL_V2_TOKENS]
 export const SUSD_UNDERLYING_POOL_TOKENS = [FRAX, FRAX_ARB_USD_SWAP_V2_TOKEN]
@@ -731,8 +732,6 @@ export const FEI = new Token(
   "Fei Protocol",
   feiLogo,
 )
-
-export const FRAX_ARB_USD_POOL_V2_TOKENS = [DAI, USDC, USDT]
 
 const LUSD_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0x95401dc811bb5740090279Ba06cfA8fcF6113778",
