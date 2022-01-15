@@ -454,7 +454,7 @@ export const FRAX_ARB_USD_SWAP_V2_TOKEN = new Token(
   "muneUSD",
   "muneusd",
   "Mune DAI/USDC/USDT",
-  saddleLogo,
+  saddleLPTokenLogo,
   false,
   true,
 )
