@@ -203,7 +203,7 @@
   "withdrawPercentage": "Withdraw percentage",
   "withdrawSynth": "Withdraw <1></1> {{name}}",
   "withdrewNToken": "Withdrew {{amount}} {{name}}",
-  "wrongNetworkContent": "Oops, looks like you're trying to use Saddle while your wallet is connected to an unsupported network.\n\nPlease switch to Ethereum mainnet or another supported network.",
+  "wrongNetworkContent": "Oops, looks like you're trying to use Mune while your wallet is connected to an unsupported network.\n\nPlease switch to Polygon or another supported network.",
   "yes": "Yes",
   "yourRecentTransactions": "Your recent transactions will be here.",
   "youWillReceive": "You will receive"
