@@ -140,7 +140,7 @@ function Pools(): ReactElement | null {
         name: SUSD_METAPOOL_V2_NAME,
         poolData: susdPoolV2Data,
         userShareData: susdV2UserShareData,
-        poolRoute: "/pools/susdv2",
+        poolRoute: "/pools/munefrax",
       }
     } else if (poolName === TBTC_METAPOOL_NAME) {
       return {
@@ -182,7 +182,7 @@ function Pools(): ReactElement | null {
         name: FRAX_ARB_USD_POOL_V2_NAME,
         poolData: fraxArbUsdPoolV2Data,
         userShareData: fraxArbUsdV2UserShareData,
-        poolRoute: "/pools/dai-usdv2",
+        poolRoute: "/pools/muneusd",
       }
     } else {
       return {
