@@ -430,7 +430,7 @@ export const ARB_USD_SWAP_TOKEN = new Token(
   "saddleArbUSD",
   "saddlearbUSD",
   "Saddle nUSD/MIM/USDC/USDT",
-  saddleLogo,
+  saddleLPTokenLogo,
   false,
   true,
 )
