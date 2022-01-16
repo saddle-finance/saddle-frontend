@@ -1,11 +1,29 @@
-import { Components } from "@mui/material"
+import { Components, Theme } from "@mui/material"
 
-export default function ButtonTheme(): Components {
+declare module "@mui/material/Button" {
+  interface ButtonPropsColorOverrides {
+    secondaryLight: true
+  }
+}
+export default function ButtonTheme(theme: Theme): Components {
   return {
     MuiButton: {
+      variants: [
+        {
+          props: {
+            variant: "outlined",
+          },
+          style: {
+            "&:hover": {
+              backgroundColor: theme.palette.secondaryLight.main,
+            },
+          },
+        },
+      ],
       styleOverrides: {
         root: {
           textTransform: "none",
+          borderRadius: theme.spacing(1),
         },
       },
     },

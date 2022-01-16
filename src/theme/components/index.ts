@@ -11,7 +11,7 @@ import { merge } from "lodash"
 export default function componentsOverrides(theme: Theme): Components {
   return merge(
     AppBarTheme(theme),
-    ButtonTheme(),
+    ButtonTheme(theme),
     DialogTheme(theme),
     TooltipTheme(),
     BackdropTheme(),

@@ -1,4 +1,4 @@
-import { PaletteOptions } from "@mui/material"
+import { PaletteOptions, SimplePaletteColorOptions } from "@mui/material"
 import { alpha } from "@mui/material"
 
 // Define custom color types
@@ -9,9 +9,11 @@ interface OtherColorTypes {
 }
 declare module "@mui/material/styles/createPalette" {
   interface Palette {
+    secondaryLight: SimplePaletteColorOptions
     other: OtherColorTypes
   }
   interface PaletteOptions {
+    secondaryLight: SimplePaletteColorOptions
     other: OtherColorTypes
   }
 }
@@ -34,6 +36,9 @@ const lightPalette: PaletteOptions | undefined = {
     main: "#E6AD76",
     dark: "#D07647",
     light: "#FAF3CE",
+  },
+  secondaryLight: {
+    main: "#e3d899",
   },
   info: {
     main: "#4B11F2",
@@ -75,6 +80,9 @@ const darkPalette: PaletteOptions | undefined = {
     main: "#E6AD76",
     dark: "#D07647",
     light: "#FAF3CE",
+  },
+  secondaryLight: {
+    main: "#000",
   },
   info: {
     main: "#00f4d7",

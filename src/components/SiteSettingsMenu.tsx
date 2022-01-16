@@ -1,6 +1,7 @@
 import { ChainId, IS_L2_SUPPORTED, IS_SDL_LIVE, SDL_TOKEN } from "../constants"
 import React, { ReactElement, useState } from "react"
 
+import { Menu } from "@mui/material"
 import classnames from "classnames"
 import logo from "../assets/icons/logo.svg"
 import styles from "./SiteSettingsMenu.module.scss"
@@ -9,16 +10,25 @@ import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
 import { useThemeSettings } from "../providers/ThemeSettingsProvider"
 import { useTranslation } from "react-i18next"
 
-export default function SiteSettingsMenu(): ReactElement {
+interface SiteSettingsMenuProps {
+  anchorEl: Element
+  open: boolean
+}
+export default function SiteSettingsMenu({
+  anchorEl,
+  open,
+}: SiteSettingsMenuProps): ReactElement {
   return (
     <div data-testid="settingsMenuContainer" className={styles.container}>
-      {IS_L2_SUPPORTED && <NetworkSection key="network" />}
-      {IS_L2_SUPPORTED && <Divider />}
-      <LanguageSection key="language" />
-      <Divider />
-      <ThemeSection key="theme" />
-      {IS_SDL_LIVE && <Divider />}
-      {IS_SDL_LIVE && <AddTokenSection key="token" />}
+      <Menu open={open} anchorEl={anchorEl}>
+        {IS_L2_SUPPORTED && <NetworkSection key="network" />}
+        {IS_L2_SUPPORTED && <Divider />}
+        <LanguageSection key="language" />
+        <Divider />
+        <ThemeSection key="theme" />
+        {IS_SDL_LIVE && <Divider />}
+        {IS_SDL_LIVE && <AddTokenSection key="token" />}
+      </Menu>
     </div>
   )
 }

@@ -9,7 +9,7 @@ import { IS_SDL_LIVE } from "../constants"
 import NetworkDisplay from "./NetworkDisplay"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
-import SiteSettingsMenu from "./SiteSettingsMenu"
+// import SiteSettingsMenu from "./SiteSettingsMenu"
 import TokenClaimDialog from "./TokenClaimDialog"
 import Web3Status from "./Web3Status"
 import classNames from "classnames"
@@ -105,6 +105,8 @@ function RewardsButton({
 
 function NetworkDisplayAndSettings(): ReactElement {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  // const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+
   const wrapperRef = useRef(null)
   useDetectOutsideClick(
     wrapperRef,
@@ -117,7 +119,7 @@ function NetworkDisplayAndSettings(): ReactElement {
       <NetworkDisplay onClick={() => setIsDropdownOpen((state) => !state)} />
       {isDropdownOpen && (
         <div className="siteSettingsWrapper">
-          <SiteSettingsMenu key="networkSettings" />
+          {/* <SiteSettingsMenu key="networkSettings" /> */}
         </div>
       )}
     </div>
@@ -156,7 +158,7 @@ function IconButtonAndSettings(): ReactElement {
       </Button>
       {isDropdownOpen && (
         <div className="siteSettingsWrapper">
-          <SiteSettingsMenu key="buttonSettings" />
+          {/* <SiteSettingsMenu key="buttonSettings" /> */}
         </div>
       )}
     </div>
