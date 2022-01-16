@@ -1,10 +1,9 @@
 import "./TopMenu.scss"
 
-import { AppBar, Box, Hidden, Toolbar } from "@mui/material"
+import { AppBar, Box, Button, Hidden, Toolbar } from "@mui/material"
 import { Link, useLocation } from "react-router-dom"
 import React, { ReactElement, useContext, useRef, useState } from "react"
 
-import Button from "./Button"
 import { IS_SDL_LIVE } from "../constants"
 import NetworkDisplay from "./NetworkDisplay"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
@@ -92,13 +91,13 @@ function RewardsButton({
   const formattedTotal = formatBNToShortString(rewardBalances.total, 18)
   return IS_SDL_LIVE ? (
     <Button
+      variant="contained"
+      color="info"
       data-testid="rewardButton"
-      kind="secondary"
       onClick={() => setCurrentModal("tokenClaim")}
-      size="medium"
+      endIcon={<SaddleLogo width={24} height={24} />}
     >
       {formattedTotal}{" "}
-      <SaddleLogo width={24} height={24} style={{ marginLeft: 8 }} />
     </Button>
   ) : null
 }
@@ -139,7 +138,6 @@ function IconButtonAndSettings(): ReactElement {
     <div style={{ position: "relative" }} ref={wrapperRef}>
       <Button
         data-testid="settingsMenuBtn"
-        kind="ternary"
         size="medium"
         onClick={() => setIsDropdownOpen((state) => !state)}
       >
