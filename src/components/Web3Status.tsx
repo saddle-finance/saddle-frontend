@@ -1,10 +1,10 @@
 import "./Web3Status.scss"
 
+import { Button, Dialog, Typography } from "@mui/material"
 import React, { ReactElement, useEffect, useState } from "react"
 import AccountDetails from "./AccountDetails"
 import ConnectWallet from "./ConnectWallet"
 import Davatar from "@davatar/react"
-import { Dialog } from "@mui/material"
 import { shortenAddress } from "../utils/shortenAddress"
 import { useENS } from "../hooks/useENS"
 import { useTranslation } from "react-i18next"
@@ -30,27 +30,33 @@ const Web3Status = (): ReactElement => {
   }, [modalOpen])
 
   return (
-    <div className="walletStatus" data-testid="walletStatusContainer">
-      <button
-        type="button"
-        onClick={(): void => setModalOpen(true)}
+    <div data-testid="walletStatusContainer">
+      <Button
+        variant="contained"
+        fullWidth
+        color="secondaryLight"
         data-testid="accountDetailButton"
-      >
-        {account ? (
-          <div className="hasAccount">
-            <span className="address">
-              {ensName || shortenAddress(account)}
-            </span>
+        onClick={(): void => setModalOpen(true)}
+        endIcon={
+          account && (
             <Davatar
               size={24}
               address={account}
               generatedAvatarType="jazzicon"
             />
-          </div>
+          )
+        }
+      >
+        {account ? (
+          <Typography variant="body1" color="text.secondary">
+            {ensName || shortenAddress(account)}
+          </Typography>
         ) : (
-          <div className="noAccount">{t("connectWallet")}</div>
+          <Typography variant="body1" color="text.secondary">
+            {t("connectWallet")}
+          </Typography>
         )}
-      </button>
+      </Button>
       <Dialog
         open={modalOpen}
         onClose={(): void => setModalOpen(false)}

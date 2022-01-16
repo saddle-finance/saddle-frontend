@@ -19,6 +19,17 @@ export default function ButtonTheme(theme: Theme): Components {
             },
           },
         },
+        {
+          props: {
+            variant: "contained",
+          },
+          style: {
+            boxShadow: "none",
+            "&:hover": {
+              boxShadow: "none",
+            },
+          },
+        },
       ],
       styleOverrides: {
         root: {
