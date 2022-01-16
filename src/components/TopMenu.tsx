@@ -50,35 +50,38 @@ function TopMenu(): ReactElement {
               </Link>
             </Box>
           </Hidden>
-          <ul className="nav" style={{ textAlign: "center" }}>
-            <li>
-              <Link
-                data-testid="swapNavLink"
-                to="/"
-                className={classNames({ active: activeTab === "" })}
-              >
-                {t("swap")}
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/pools"
-                className={classNames({
-                  active: activeTab === "pools",
-                })}
-              >
-                {t("pools")}
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/risk"
-                className={classNames({ active: activeTab === "risk" })}
-              >
-                {t("risk")}
-              </Link>
-            </li>
-          </ul>
+          <Box>
+            <ul className="nav" style={{ textAlign: "center" }}>
+              <li>
+                <Link
+                  data-testid="swapNavLink"
+                  to="/"
+                  className={classNames({ active: activeTab === "" })}
+                >
+                  {t("swap")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/pools"
+                  className={classNames({
+                    active: activeTab === "pools",
+                  })}
+                >
+                  {t("pools")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/risk"
+                  className={classNames({ active: activeTab === "risk" })}
+                >
+                  {t("risk")}
+                </Link>
+              </li>
+            </ul>
+          </Box>
+
           <Stack direction="row" spacing={1} justifyContent="flex-end">
             <RewardsButton setCurrentModal={setCurrentModal} />
             <Web3Status />
@@ -92,6 +95,8 @@ function TopMenu(): ReactElement {
         <SiteSettingsMenu
           key="buttonSettings"
           anchorEl={anchorEl ?? undefined}
+          close={() => setAnchorEl(null)}
+          direction="left"
         />
 
         <TokenClaimDialog

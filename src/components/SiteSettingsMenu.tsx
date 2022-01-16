@@ -1,10 +1,17 @@
 import { ChainId, IS_L2_SUPPORTED, IS_SDL_LIVE, SDL_TOKEN } from "../constants"
+import {
+  Collapse,
+  Divider,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Paper,
+} from "@mui/material"
 import React, { ReactElement, useState } from "react"
+import CheckIcon from "@mui/icons-material/Check"
 
-import { Menu } from "@mui/material"
-import classnames from "classnames"
 import logo from "../assets/icons/logo.svg"
-import styles from "./SiteSettingsMenu.module.scss"
 import { useActiveWeb3React } from "../hooks"
 import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
 import { useThemeSettings } from "../providers/ThemeSettingsProvider"
@@ -12,26 +19,40 @@ import { useTranslation } from "react-i18next"
 
 interface SiteSettingsMenuProps {
   anchorEl?: Element
+  close?: () => void
+  direction: "right" | "left"
 }
 export default function SiteSettingsMenu({
   anchorEl,
+  close,
+  direction,
 }: SiteSettingsMenuProps): ReactElement {
   const open = Boolean(anchorEl)
   return (
-    <Menu open={open} anchorEl={anchorEl} data-testid="settingsMenuContainer">
-      {IS_L2_SUPPORTED && <NetworkSection key="network" />}
-      {IS_L2_SUPPORTED && <Divider />}
-      <LanguageSection key="language" />
-      <Divider />
-      <ThemeSection key="theme" />
-      {IS_SDL_LIVE && <Divider />}
-      {IS_SDL_LIVE && <AddTokenSection key="token" />}
+    <Menu
+      open={open}
+      anchorEl={anchorEl}
+      anchorOrigin={{
+        horizontal: direction,
+        vertical: "bottom",
+      }}
+      transformOrigin={{
+        vertical: "top",
+        horizontal: direction,
+      }}
+      data-testid="settingsMenuContainer"
+      onClose={close}
+    >
+      <Paper variant="outlined">
+        {IS_L2_SUPPORTED && <NetworkSection key="network" />}
+        <Divider />
+        <LanguageSection key="language" />
+        <Divider />
+        <ThemeSection key="theme" />
+        {IS_SDL_LIVE && <AddTokenSection key="token" />}
+      </Paper>
     </Menu>
   )
-}
-
-function Divider(): ReactElement {
-  return <div className={styles.divider}></div>
 }
 
 function AddTokenSection(): ReactElement | null {
@@ -42,11 +63,9 @@ function AddTokenSection(): ReactElement | null {
   const { t } = useTranslation()
 
   return canAdd ? (
-    <div className={styles.section}>
-      <div className={styles.sectionTitle} onClick={() => addToken()}>
-        <span>{t("addSDL")}</span> <img src={logo} className={styles.logo} />
-      </div>
-    </div>
+    <MenuItem onClick={() => addToken()}>
+      <span>{t("addSDL")}</span> <img src={logo} />
+    </MenuItem>
   ) : null
 }
 
@@ -97,23 +116,19 @@ function NetworkSection(): ReactElement {
   ]
 
   return (
-    <div data-testid="networkMenuContainer" className={styles.section}>
-      <div
+    <div data-testid="networkMenuContainer">
+      <MenuItem
         data-testid="networkMenuTitle"
-        className={styles.sectionTitle}
         onClick={() => setIsNetworkVisible((state) => !state)}
       >
         <span>{t("network")}</span> <span>{isNetworkVisible ? "∧" : "∨"}</span>
-      </div>
-      {isNetworkVisible &&
-        networks.map((chainId) => {
+      </MenuItem>
+      <Collapse in={isNetworkVisible}>
+        {networks.map((chainId) => {
           const params = SUPPORTED_NETWORKS[chainId]
 
           return (
-            <div
-              className={classnames(styles.sectionItem, {
-                [styles.active]: activeChainId === chainId,
-              })}
+            <MenuItem
               onClick={() => {
                 if (chainId === ChainId.MAINNET) {
                   void library?.send("wallet_switchEthereumChain", [
@@ -130,9 +145,11 @@ function NetworkSection(): ReactElement {
               key={chainId}
             >
               {params?.chainName}
-            </div>
+              {activeChainId === chainId && "c"}
+            </MenuItem>
           )
         })}
+      </Collapse>
     </div>
   )
 }
@@ -147,26 +164,27 @@ function LanguageSection(): ReactElement {
   ]
   const currentLanguage = i18n.language
   return (
-    <div data-testid="languageMenu" className={styles.section}>
-      <div
-        className={styles.sectionTitle}
+    <div>
+      <MenuItem
+        data-testid="languageMenu"
         onClick={() => setIsLanguageVisible((state) => !state)}
       >
-        <span>{t("language")}</span>{" "}
-        <span>{isLanguageVisible ? "∧" : "∨"}</span>
-      </div>
-      {isLanguageVisible &&
-        languageOptions.map(({ displayText, i18nKey }) => (
-          <div
-            className={classnames(styles.sectionItem, {
-              [styles.active]: currentLanguage === i18nKey,
-            })}
+        {t("language")}
+        {isLanguageVisible ? "∧" : "∨"}
+      </MenuItem>
+      <Collapse in={isLanguageVisible}>
+        {languageOptions.map(({ displayText, i18nKey }) => (
+          <MenuItem
             onClick={() => i18n.changeLanguage(i18nKey)}
             key={displayText}
           >
-            {displayText}
-          </div>
+            <ListItemText primary={displayText} />
+            <ListItemIcon>
+              {currentLanguage === i18nKey && <CheckIcon />}
+            </ListItemIcon>
+          </MenuItem>
         ))}
+      </Collapse>
     </div>
   )
 }
@@ -180,15 +198,8 @@ function ThemeSection(): ReactElement {
   }
 
   return (
-    <div className={styles.section}>
-      <div
-        data-testid="themeMenuOption"
-        className={styles.sectionTitle}
-        onClick={handleChangeMode}
-      >
-        <span>{t("theme")}</span>{" "}
-        <span>{themeMode === "dark" ? "☾" : "☀"}</span>
-      </div>
-    </div>
+    <MenuItem data-testid="themeMenuOption" onClick={handleChangeMode}>
+      {t("theme")} {themeMode === "dark" ? "☾" : "☀"}
+    </MenuItem>
   )
 }
