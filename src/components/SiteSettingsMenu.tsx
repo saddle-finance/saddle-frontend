@@ -11,25 +11,22 @@ import { useThemeSettings } from "../providers/ThemeSettingsProvider"
 import { useTranslation } from "react-i18next"
 
 interface SiteSettingsMenuProps {
-  anchorEl: Element
-  open: boolean
+  anchorEl?: Element
 }
 export default function SiteSettingsMenu({
   anchorEl,
-  open,
 }: SiteSettingsMenuProps): ReactElement {
+  const open = Boolean(anchorEl)
   return (
-    <div data-testid="settingsMenuContainer" className={styles.container}>
-      <Menu open={open} anchorEl={anchorEl}>
-        {IS_L2_SUPPORTED && <NetworkSection key="network" />}
-        {IS_L2_SUPPORTED && <Divider />}
-        <LanguageSection key="language" />
-        <Divider />
-        <ThemeSection key="theme" />
-        {IS_SDL_LIVE && <Divider />}
-        {IS_SDL_LIVE && <AddTokenSection key="token" />}
-      </Menu>
-    </div>
+    <Menu open={open} anchorEl={anchorEl} data-testid="settingsMenuContainer">
+      {IS_L2_SUPPORTED && <NetworkSection key="network" />}
+      {IS_L2_SUPPORTED && <Divider />}
+      <LanguageSection key="language" />
+      <Divider />
+      <ThemeSection key="theme" />
+      {IS_SDL_LIVE && <Divider />}
+      {IS_SDL_LIVE && <AddTokenSection key="token" />}
+    </Menu>
   )
 }
 

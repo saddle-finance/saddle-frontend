@@ -21,6 +21,19 @@ export default function ButtonTheme(theme: Theme): Components {
         },
         {
           props: {
+            size: "small",
+          },
+          style: {
+            minWidth: 32,
+            backgroundColor: theme.palette.secondaryLight.main,
+            color: "#000",
+            "&:hover": {
+              backgroundColor: theme.palette.secondaryLight.main,
+            },
+          },
+        },
+        {
+          props: {
             variant: "contained",
           },
           style: {

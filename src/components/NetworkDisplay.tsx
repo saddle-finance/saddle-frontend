@@ -6,10 +6,11 @@ import CircleTwoToneIcon from "@mui/icons-material/CircleTwoTone"
 import { NETWORK_LABEL } from "../constants/networks"
 import React from "react"
 
-type ButtonProps = React.HTMLProps<HTMLButtonElement>
-
-const NetworkDisplay = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  function NetworkDisplay(porps, ref) {
+interface NetworkDisplayProps extends React.ComponentPropsWithoutRef<"button"> {
+  onClick: React.MouseEventHandler<HTMLButtonElement>
+}
+const NetworkDisplay = React.forwardRef<HTMLButtonElement, NetworkDisplayProps>(
+  function NetworkDisplay({ onClick }, ref) {
     const { active, chainId, error } = useWeb3React()
     const networkLabel: string =
       (chainId ? NETWORK_LABEL[chainId as ChainId] : undefined) ?? "Ethereum"
@@ -21,6 +22,7 @@ const NetworkDisplay = React.forwardRef<HTMLButtonElement, ButtonProps>(
         data-testid="networkDisplayBtn"
         variant="outlined"
         color="secondaryLight"
+        onClick={onClick}
         startIcon={
           <CircleTwoToneIcon
             color={!isUnsupportChainIdError && active ? "success" : "error"}

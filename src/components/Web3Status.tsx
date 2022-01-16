@@ -1,5 +1,3 @@
-import "./Web3Status.scss"
-
 import { Button, Dialog, Typography } from "@mui/material"
 import React, { ReactElement, useEffect, useState } from "react"
 import AccountDetails from "./AccountDetails"

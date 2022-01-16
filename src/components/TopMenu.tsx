@@ -1,78 +1,99 @@
 import "./TopMenu.scss"
 
-import { AppBar, Box, Button, Hidden, Toolbar } from "@mui/material"
+import { AppBar, Box, Button, Hidden, Stack, Toolbar } from "@mui/material"
 import { Link, useLocation } from "react-router-dom"
-import React, { ReactElement, useContext, useRef, useState } from "react"
+import React, { ReactElement, useContext, useState } from "react"
 
 import { IS_SDL_LIVE } from "../constants"
+import { MoreVert } from "@mui/icons-material"
 import NetworkDisplay from "./NetworkDisplay"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
-// import SiteSettingsMenu from "./SiteSettingsMenu"
+import SiteSettingsMenu from "./SiteSettingsMenu"
 import TokenClaimDialog from "./TokenClaimDialog"
 import Web3Status from "./Web3Status"
 import classNames from "classnames"
 import { formatBNToShortString } from "../utils"
-import useDetectOutsideClick from "../hooks/useDetectOutsideClick"
 import { useTranslation } from "react-i18next"
 
 type ActiveTabType = "" | "pools" | "risk"
 
 function TopMenu(): ReactElement {
   const { t } = useTranslation()
+  const [anchorEl, setAnchorEl] = React.useState<Element | null>(null)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const { pathname } = useLocation()
   const activeTab = pathname.split("/")[1] as ActiveTabType
 
+  const handleSettingMenu = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    setAnchorEl(event.currentTarget)
+  }
   return (
     <AppBar position="static" elevation={0}>
       <Toolbar
         data-testid="topMenuContainer"
         sx={{ mx: { md: 7 }, mt: { md: 3 } }}
       >
-        <Hidden mdDown>
-          <Box flex={1} flexBasis="30%">
-            <Link to="/">
-              <SaddleLogo />
-            </Link>
-          </Box>
-        </Hidden>
+        <Box
+          display="grid"
+          gridTemplateColumns="1fr 1fr 1fr"
+          gridTemplateRows="auto auto auto"
+          width="100%"
+          alignItems="center"
+        >
+          <Hidden mdDown>
+            <Box flex={1} flexBasis="30%">
+              <Link to="/">
+                <SaddleLogo />
+              </Link>
+            </Box>
+          </Hidden>
+          <ul className="nav" style={{ textAlign: "center" }}>
+            <li>
+              <Link
+                data-testid="swapNavLink"
+                to="/"
+                className={classNames({ active: activeTab === "" })}
+              >
+                {t("swap")}
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/pools"
+                className={classNames({
+                  active: activeTab === "pools",
+                })}
+              >
+                {t("pools")}
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/risk"
+                className={classNames({ active: activeTab === "risk" })}
+              >
+                {t("risk")}
+              </Link>
+            </li>
+          </ul>
+          <Stack direction="row" spacing={1} justifyContent="flex-end">
+            <RewardsButton setCurrentModal={setCurrentModal} />
+            <Web3Status />
+            <NetworkDisplay onClick={handleSettingMenu} />
+            <Button size="small" onClick={handleSettingMenu}>
+              <MoreVert />
+            </Button>
+          </Stack>
+        </Box>
 
-        <ul className="nav">
-          <li>
-            <Link
-              data-testid="swapNavLink"
-              to="/"
-              className={classNames({ active: activeTab === "" })}
-            >
-              {t("swap")}
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/pools"
-              className={classNames({
-                active: activeTab === "pools",
-              })}
-            >
-              {t("pools")}
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/risk"
-              className={classNames({ active: activeTab === "risk" })}
-            >
-              {t("risk")}
-            </Link>
-          </li>
-        </ul>
-        <div className="walletWrapper">
-          <RewardsButton setCurrentModal={setCurrentModal} />
-          <Web3Status />
-          <NetworkDisplayAndSettings />
-          <IconButtonAndSettings />
-        </div>
+        <SiteSettingsMenu
+          key="buttonSettings"
+          anchorEl={anchorEl ?? undefined}
+        />
+
         <TokenClaimDialog
           open={currentModal === "tokenClaim"}
           onClose={(): void => setCurrentModal(null)}
@@ -102,64 +123,4 @@ function RewardsButton({
   ) : null
 }
 
-function NetworkDisplayAndSettings(): ReactElement {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  // const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-
-  const wrapperRef = useRef(null)
-  useDetectOutsideClick(
-    wrapperRef,
-    () => setIsDropdownOpen(false),
-    isDropdownOpen,
-  )
-
-  return (
-    <div style={{ position: "relative" }} ref={wrapperRef}>
-      <NetworkDisplay onClick={() => setIsDropdownOpen((state) => !state)} />
-      {isDropdownOpen && (
-        <div className="siteSettingsWrapper">
-          {/* <SiteSettingsMenu key="networkSettings" /> */}
-        </div>
-      )}
-    </div>
-  )
-}
-
-function IconButtonAndSettings(): ReactElement {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const wrapperRef = useRef(null)
-  useDetectOutsideClick(
-    wrapperRef,
-    () => setIsDropdownOpen(false),
-    isDropdownOpen,
-  )
-
-  return (
-    <div style={{ position: "relative" }} ref={wrapperRef}>
-      <Button
-        data-testid="settingsMenuBtn"
-        size="medium"
-        onClick={() => setIsDropdownOpen((state) => !state)}
-      >
-        <svg
-          width="6"
-          height="22"
-          viewBox="0 0 6 22"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className={"hamburger"}
-        >
-          <circle cx="3" cy="3" r="2.5" />
-          <circle cx="3" cy="10.5" r="2.5" />
-          <circle cx="3" cy="18" r="2.5" />
-        </svg>
-      </Button>
-      {isDropdownOpen && (
-        <div className="siteSettingsWrapper">
-          {/* <SiteSettingsMenu key="buttonSettings" /> */}
-        </div>
-      )}
-    </div>
-  )
-}
 export default TopMenu
