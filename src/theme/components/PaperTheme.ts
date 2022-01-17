@@ -5,6 +5,10 @@ export default function PaperTheme(theme: Theme): Components {
     MuiPaper: {
       styleOverrides: {
         root: {
+          backgroundColor:
+            theme.palette.mode === "light"
+              ? theme.palette.background.paper
+              : theme.palette.background.default,
           border:
             theme.palette.mode === "light"
               ? `1px solid theme.palette.other?.divider`

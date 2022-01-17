@@ -9,6 +9,8 @@ function pxToRem(value: number): string {
 const SOURCE_CODE_PRO_FAMILY = ['"Source Code Pro"', "monospace"].join(",")
 const NOE_DISPLAY_FAMILY = ['"Noe Display"'].join(",")
 
+declare module "@mui/material/styles/createPalette" {}
+
 const typography: TypographyOptions = {
   fontFamily: SOURCE_CODE_PRO_FAMILY,
   fontWeightLight: 300,
@@ -31,10 +33,8 @@ const typography: TypographyOptions = {
     fontSize: pxToRem(22),
   },
   h4: {
-    fontFamily: NOE_DISPLAY_FAMILY,
-    fontWeight: 700,
     fontSize: pxToRem(20),
-    lineHeight: 30 / 20,
+    lineHeight: 24 / 20,
   },
   h5: {
     fontWeight: 700,

@@ -38,6 +38,7 @@ export default function ButtonTheme(theme: Theme): Components {
           },
           style: {
             boxShadow: "none",
+            minHeight: 40,
             "&:hover": {
               boxShadow: "none",
             },

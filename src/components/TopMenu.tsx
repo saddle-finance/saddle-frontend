@@ -1,7 +1,14 @@
-import "./TopMenu.scss"
-
-import { AppBar, Box, Button, Hidden, Stack, Toolbar } from "@mui/material"
-import { Link, useLocation } from "react-router-dom"
+import {
+  AppBar,
+  Box,
+  Button,
+  Hidden,
+  Stack,
+  Toolbar,
+  styled,
+  useTheme,
+} from "@mui/material"
+import { NavLink, NavLinkProps, useLocation } from "react-router-dom"
 import React, { ReactElement, useContext, useState } from "react"
 
 import { IS_SDL_LIVE } from "../constants"
@@ -12,16 +19,27 @@ import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
 import SiteSettingsMenu from "./SiteSettingsMenu"
 import TokenClaimDialog from "./TokenClaimDialog"
 import Web3Status from "./Web3Status"
-import classNames from "classnames"
 import { formatBNToShortString } from "../utils"
 import { useTranslation } from "react-i18next"
 
 type ActiveTabType = "" | "pools" | "risk"
 
+const NavMenu = styled(NavLink)<NavLinkProps & { selected: boolean }>(
+  ({ theme, selected }) => {
+    return {
+      fontWeight: selected ? "bold" : "normal",
+      textDecoration: "none",
+      fontSize: 20,
+      color: theme.palette.text.primary,
+    }
+  },
+)
+
 function TopMenu(): ReactElement {
   const { t } = useTranslation()
   const [anchorEl, setAnchorEl] = React.useState<Element | null>(null)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
+  const theme = useTheme()
   const { pathname } = useLocation()
   const activeTab = pathname.split("/")[1] as ActiveTabType
 
@@ -45,49 +63,34 @@ function TopMenu(): ReactElement {
         >
           <Hidden mdDown>
             <Box flex={1} flexBasis="30%">
-              <Link to="/">
+              <NavLink to="/">
                 <SaddleLogo />
-              </Link>
+              </NavLink>
             </Box>
           </Hidden>
-          <Box>
-            <ul className="nav" style={{ textAlign: "center" }}>
-              <li>
-                <Link
-                  data-testid="swapNavLink"
-                  to="/"
-                  className={classNames({ active: activeTab === "" })}
-                >
-                  {t("swap")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/pools"
-                  className={classNames({
-                    active: activeTab === "pools",
-                  })}
-                >
-                  {t("pools")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/risk"
-                  className={classNames({ active: activeTab === "risk" })}
-                >
-                  {t("risk")}
-                </Link>
-              </li>
-            </ul>
-          </Box>
+          <Stack direction="row" spacing={5} justifyContent="center">
+            <NavMenu
+              data-testid="swapNavLink"
+              to="/"
+              selected={activeTab === ""}
+            >
+              {t("swap")}
+            </NavMenu>
 
+            <NavMenu to="/pools" selected={activeTab === "pools"}>
+              {t("pools")}
+            </NavMenu>
+
+            <NavMenu to="/risk" selected={activeTab === "risk"}>
+              {t("risk")}
+            </NavMenu>
+          </Stack>
           <Stack direction="row" spacing={1} justifyContent="flex-end">
             <RewardsButton setCurrentModal={setCurrentModal} />
             <Web3Status />
             <NetworkDisplay onClick={handleSettingMenu} />
             <Button size="small" onClick={handleSettingMenu}>
-              <MoreVert />
+              <MoreVert htmlColor={theme.palette.text.primary} />
             </Button>
           </Stack>
         </Box>
@@ -96,7 +99,6 @@ function TopMenu(): ReactElement {
           key="buttonSettings"
           anchorEl={anchorEl ?? undefined}
           close={() => setAnchorEl(null)}
-          direction="left"
         />
 
         <TokenClaimDialog

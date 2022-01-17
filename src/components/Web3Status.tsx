@@ -31,7 +31,6 @@ const Web3Status = (): ReactElement => {
     <div data-testid="walletStatusContainer">
       <Button
         variant="contained"
-        fullWidth
         color="secondaryLight"
         data-testid="accountDetailButton"
         onClick={(): void => setModalOpen(true)}
@@ -46,7 +45,7 @@ const Web3Status = (): ReactElement => {
         }
       >
         {account ? (
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body1">
             {ensName || shortenAddress(account)}
           </Typography>
         ) : (

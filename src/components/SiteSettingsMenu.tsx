@@ -5,27 +5,37 @@ import {
   ListItemIcon,
   ListItemText,
   Menu,
-  MenuItem,
-  Paper,
+  MenuItem as MuiMenuItem,
+  styled,
 } from "@mui/material"
+import {
+  ExpandLess,
+  ExpandMore,
+  LightMode,
+  NightlightRound,
+} from "@mui/icons-material"
 import React, { ReactElement, useState } from "react"
 import CheckIcon from "@mui/icons-material/Check"
 
-import logo from "../assets/icons/logo.svg"
+import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
 import { useActiveWeb3React } from "../hooks"
 import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
 import { useThemeSettings } from "../providers/ThemeSettingsProvider"
 import { useTranslation } from "react-i18next"
 
+const MenuItem = styled(MuiMenuItem)({
+  display: "flex",
+  justifyContent: "space-between",
+})
 interface SiteSettingsMenuProps {
   anchorEl?: Element
   close?: () => void
-  direction: "right" | "left"
+  direction?: "right" | "left"
 }
 export default function SiteSettingsMenu({
   anchorEl,
   close,
-  direction,
+  direction = "right",
 }: SiteSettingsMenuProps): ReactElement {
   const open = Boolean(anchorEl)
   return (
@@ -42,15 +52,14 @@ export default function SiteSettingsMenu({
       }}
       data-testid="settingsMenuContainer"
       onClose={close}
+      PaperProps={{ sx: { minWidth: 200 } }}
     >
-      <Paper variant="outlined">
-        {IS_L2_SUPPORTED && <NetworkSection key="network" />}
-        <Divider />
-        <LanguageSection key="language" />
-        <Divider />
-        <ThemeSection key="theme" />
-        {IS_SDL_LIVE && <AddTokenSection key="token" />}
-      </Paper>
+      {IS_L2_SUPPORTED && <NetworkSection key="network" />}
+      <Divider />
+      <LanguageSection key="language" />
+      <Divider />
+      <ThemeSection key="theme" />
+      {IS_SDL_LIVE && <AddTokenSection key="token" />}
     </Menu>
   )
 }
@@ -64,7 +73,7 @@ function AddTokenSection(): ReactElement | null {
 
   return canAdd ? (
     <MenuItem onClick={() => addToken()}>
-      <span>{t("addSDL")}</span> <img src={logo} />
+      <span>{t("addSDL")}</span> <SaddleLogo height={24} width={24} />
     </MenuItem>
   ) : null
 }
@@ -121,7 +130,7 @@ function NetworkSection(): ReactElement {
         data-testid="networkMenuTitle"
         onClick={() => setIsNetworkVisible((state) => !state)}
       >
-        <span>{t("network")}</span> <span>{isNetworkVisible ? "∧" : "∨"}</span>
+        {t("network")} {isNetworkVisible ? <ExpandLess /> : <ExpandMore />}
       </MenuItem>
       <Collapse in={isNetworkVisible}>
         {networks.map((chainId) => {
@@ -170,7 +179,7 @@ function LanguageSection(): ReactElement {
         onClick={() => setIsLanguageVisible((state) => !state)}
       >
         {t("language")}
-        {isLanguageVisible ? "∧" : "∨"}
+        {isLanguageVisible ? <ExpandLess /> : <ExpandMore />}
       </MenuItem>
       <Collapse in={isLanguageVisible}>
         {languageOptions.map(({ displayText, i18nKey }) => (
@@ -199,7 +208,7 @@ function ThemeSection(): ReactElement {
 
   return (
     <MenuItem data-testid="themeMenuOption" onClick={handleChangeMode}>
-      {t("theme")} {themeMode === "dark" ? "☾" : "☀"}
+      {t("theme")} {themeMode === "dark" ? <NightlightRound /> : <LightMode />}
     </MenuItem>
   )
 }

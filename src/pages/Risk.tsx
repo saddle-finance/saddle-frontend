@@ -1,6 +1,6 @@
 import "./Risk.scss"
 
-import { Container, Typography } from "@mui/material"
+import { Container, Paper, Typography } from "@mui/material"
 import React, { ReactElement } from "react"
 
 import { useTranslation } from "react-i18next"
@@ -60,6 +60,7 @@ function Risk(): ReactElement {
           </a>
         </p>
       </Container>
+      <Paper variant="outlined">this is test for paper</Paper>
     </div>
   )
 }

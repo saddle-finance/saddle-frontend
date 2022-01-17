@@ -5,6 +5,7 @@ import ButtonTheme from "./ButtonTheme"
 import { CssBaseLine } from "./CssBaseLine"
 import DialogTheme from "./DialogTheme"
 import IconButtonTheme from "./IconButtonTheme"
+import MenuTheme from "./MenuTheme"
 import PaperTheme from "./PaperTheme"
 import TooltipTheme from "./TooltipTheme"
 import { merge } from "lodash"
@@ -15,6 +16,7 @@ export default function componentsOverrides(theme: Theme): Components {
     ButtonTheme(theme),
     DialogTheme(theme),
     IconButtonTheme(),
+    MenuTheme(),
     TooltipTheme(),
     BackdropTheme(),
     PaperTheme(theme),
