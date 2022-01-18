@@ -80,7 +80,7 @@ export const SUPPORTED_NETWORKS: {
     blockExplorerUrls: ["https://mainnet-arb-explorer.netlify.app"],
   },
   [ChainId.OPTIMISM]: {
-    chainId: "0xA4B1", // TODO: Find correct chainId
+    chainId: "0xA",
     chainName: "Optimism",
     nativeCurrency: {
       name: "Ethereum",

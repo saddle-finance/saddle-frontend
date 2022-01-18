@@ -5,6 +5,7 @@ import {
   BTC_POOL_V2_NAME,
   D4_POOL_NAME,
   FRAX_ARB_USD_POOL_V2_NAME,
+  FRAX_OPT_USD_POOL_NAME,
   OPT_USD_POOL_NAME,
   POOLS_MAP,
   PoolName,
@@ -59,6 +60,9 @@ function Pools(): ReactElement | null {
   )
   const [arbUsdPoolData, arbUsdUserShareData] = usePoolData(ARB_USD_POOL_NAME)
   const [optUsdPoolData, optUsdUserShareData] = usePoolData(OPT_USD_POOL_NAME)
+  const [fraxOptUsdPoolData, fraxOptUsdUserShareData] = usePoolData(
+    FRAX_OPT_USD_POOL_NAME,
+  )
   const [fraxArbUsdPoolV2Data, fraxArbUsdV2UserShareData] = usePoolData(
     FRAX_ARB_USD_POOL_V2_NAME,
   )
@@ -185,6 +189,13 @@ function Pools(): ReactElement | null {
         poolData: optUsdPoolData,
         userShareData: optUsdUserShareData,
         poolRoute: "/pools/optusd",
+      }
+    } else if (poolName === FRAX_OPT_USD_POOL_NAME) {
+      return {
+        name: FRAX_OPT_USD_POOL_NAME,
+        poolData: fraxOptUsdPoolData,
+        userShareData: fraxOptUsdUserShareData,
+        poolRoute: "/pools/frax-optusd",
       }
     } else if (poolName === FRAX_ARB_USD_POOL_V2_NAME) {
       return {
