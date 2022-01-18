@@ -1,17 +1,17 @@
-import { Components, Theme } from "@mui/material"
+import { Components } from "@mui/material"
 
-export default function ButtonTheme(theme: Theme): Components {
+export default function ButtonTheme(): Components {
   return {
-    MuiDialog: {
+    MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 10,
+          textTransform: "none",
         },
-        paper: {
-          borderRadius: 10,
-          backgroundColor: theme.palette.background.default,
-          backgroundImage: "none",
-        },
+      },
+    },
+    MuiButtonBase: {
+      defaultProps: {
+        disableRipple: true,
       },
     },
   }

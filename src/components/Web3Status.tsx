@@ -4,7 +4,7 @@ import React, { ReactElement, useEffect, useState } from "react"
 import AccountDetails from "./AccountDetails"
 import ConnectWallet from "./ConnectWallet"
 import Davatar from "@davatar/react"
-import Modal from "./Modal"
+import { Dialog } from "@mui/material"
 import { shortenAddress } from "../utils/shortenAddress"
 import { useENS } from "../hooks/useENS"
 import { useTranslation } from "react-i18next"
@@ -30,8 +30,12 @@ const Web3Status = (): ReactElement => {
   }, [modalOpen])
 
   return (
-    <div className="walletStatus">
-      <button type="button" onClick={(): void => setModalOpen(true)}>
+    <div className="walletStatus" data-testid="walletStatusContainer">
+      <button
+        type="button"
+        onClick={(): void => setModalOpen(true)}
+        data-testid="accountDetailButton"
+      >
         {account ? (
           <div className="hasAccount">
             <span className="address">
@@ -47,15 +51,21 @@ const Web3Status = (): ReactElement => {
           <div className="noAccount">{t("connectWallet")}</div>
         )}
       </button>
-      <Modal isOpen={modalOpen} onClose={(): void => setModalOpen(false)}>
+      <Dialog
+        open={modalOpen}
+        onClose={(): void => setModalOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
         {account && walletView === WALLET_VIEWS.ACCOUNT ? (
           <AccountDetails
             openOptions={() => setWalletView(WALLET_VIEWS.OPTIONS)}
+            onClose={(): void => setModalOpen(false)}
           />
         ) : (
           <ConnectWallet onClose={(): void => setModalOpen(false)} />
         )}
-      </Modal>
+      </Dialog>
     </div>
   )
 }
