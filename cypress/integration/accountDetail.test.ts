@@ -7,10 +7,10 @@ context("Account detail test", () => {
   })
 
   it("renders account detail after click account avatar", () => {
-    cy.get(".walletStatus").should("exist")
-    cy.get(".walletStatus>button").click()
-    cy.get(".accountDetail").should("exist")
-    cy.get(".buttonGroup>button").contains("Change Account").click()
-    cy.get(".modal").should("exist")
+    cy.get("[data-testid=walletStatusContainer]").should("exist")
+    cy.get("[data-testid=accountDetailButton]").should("exist").click()
+    cy.get("[data-testid=accountDetailContainer]").should("exist")
+    cy.get("[data-testid=changeAccountBtn]").click()
+    cy.get("[data-testid=connectWalletContainer]").should("exist")
   })
 })
