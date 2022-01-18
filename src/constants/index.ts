@@ -387,7 +387,7 @@ export const SDL_TOKEN_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0x4EE6eCAD1c2Dae9f525404De8555724e3c35d07B",
   [ChainId.MAINNET]: "0xf1Dc500FdE233A4055e25e5BbF516372BC4F6871",
   [ChainId.ARBITRUM]: "0x75c9bc761d88f70156daf83aa010e84680baf131",
-  [ChainId.OPTIMISM]: "0x75c9bc761d88f70156daf83aa010e84680baf131", // TODO: Update address
+  [ChainId.OPTIMISM]: "0xa29b548056c3fd0f68bad9d4829ec4e66f22f796",
 })
 
 export const SDL_TOKEN = new Token(
