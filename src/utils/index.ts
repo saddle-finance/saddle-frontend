@@ -219,7 +219,7 @@ export async function getMulticallProvider(
       "0xab16069d3e9e352343b2040ce7d7715c585994f9"
   } else if (chainId === ChainId.OPTIMISM) {
     ethcallProvider.multicallAddress =
-      "0xab16069d3e9e352343b2040ce7d7715c585994f9" // TODO: add multicall address for optimism
+      "0x266557A864680A1401A3506c0eb72934BD13Bf59"
   }
   return ethcallProvider
 }

@@ -87,7 +87,7 @@ export const SUPPORTED_NETWORKS: {
       symbol: "ETH",
       decimals: 18,
     },
-    rpcUrls: ["https://mainnet.optimism.io"], // TODO: need private RPC endpoint
+    rpcUrls: ["https://mainnet.optimism.io"],
     blockExplorerUrls: ["https://optimistic.etherscan.io"],
   },
 }

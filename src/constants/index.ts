@@ -49,7 +49,7 @@ export const WCUSD_METAPOOL_NAME = "wCUSD Metapool"
 export const WCUSD_METAPOOL_V2_NAME = "wCUSD Metapool V2"
 export const ARB_USD_POOL_NAME = "arbUSD Pool"
 export const OPT_USD_POOL_NAME = "optUSD Pool"
-export const FRAX_OPT_USD_POOL_NAME = "frax-optUSD Pool"
+export const FRAX_OPT_USD_METAPOOL_NAME = "frax-optUSD Pool"
 export const FRAX_ARB_USD_POOL_V2_NAME = "frax-ArbUSD Pool V2"
 export type PoolName =
   | typeof BTC_POOL_NAME
@@ -67,7 +67,7 @@ export type PoolName =
   | typeof WCUSD_METAPOOL_V2_NAME
   | typeof ARB_USD_POOL_NAME
   | typeof OPT_USD_POOL_NAME
-  | typeof FRAX_OPT_USD_POOL_NAME
+  | typeof FRAX_OPT_USD_METAPOOL_NAME
   | typeof FRAX_ARB_USD_POOL_V2_NAME
 
 export enum ChainId {
@@ -280,13 +280,12 @@ export const ARB_USD_SWAP_ADDRESSES = buildAddresses({
   [ChainId.ARBITRUM]: "0xBea9F78090bDB9e662d8CB301A00ad09A5b756e9",
 })
 
-// TODO: Update address
 export const OPT_USD_SWAP_ADDRESSES = buildAddresses({
-  [ChainId.OPTIMISM]: "0xcCf860874cbF2d615192a4C4455580B4d622D3B9",
+  [ChainId.OPTIMISM]: "0x5847f8177221268d279Cf377D0E01aB3FD993628",
 })
 
 export const FRAX_OPT_USD_SWAP_ADDRESSES = buildAddresses({
-  [ChainId.OPTIMISM]: "0xfF5fa61Eb9b5cDD63bdFa16EF029d5313457925A",
+  [ChainId.OPTIMISM]: "0xc55E8C79e5A6c3216D4023769559D06fa9A7732e",
 })
 
 export const FRAX_ARB_USD_SWAP_V2_ADDRESSES = buildAddresses({
@@ -333,11 +332,11 @@ export const ARB_USD_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
 })
 
 export const OPT_USD_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
-  [ChainId.OPTIMISM]: "0x5847f8177221268d279Cf377D0E01aB3FD993628",
+  [ChainId.OPTIMISM]: "0xcCf860874cbF2d615192a4C4455580B4d622D3B9",
 })
 
 export const FRAX_OPT_USD_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
-  [ChainId.OPTIMISM]: "0xc55E8C79e5A6c3216D4023769559D06fa9A7732e",
+  [ChainId.OPTIMISM]: "0xfF5fa61Eb9b5cDD63bdFa16EF029d5313457925A",
 })
 
 export const FRAX_ARB_USD_SWAP_V2_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
@@ -1005,14 +1004,14 @@ export const POOLS_MAP: PoolsMap = {
     route: "optusd",
     rewardPids: buildPids({}),
   },
-  [FRAX_OPT_USD_POOL_NAME]: {
-    name: FRAX_OPT_USD_POOL_NAME,
-    addresses: FRAX_OPT_USD_SWAP_ADDRESSES,
+  [FRAX_OPT_USD_METAPOOL_NAME]: {
+    name: FRAX_OPT_USD_METAPOOL_NAME,
+    addresses: FRAX_OPT_USD_META_SWAP_DEPOSIT_ADDRESSES,
     lpToken: FRAX_OPT_USD_SWAP_TOKEN,
     poolTokens: FRAX_OPT_USD_POOL_TOKENS,
     isSynthetic: false,
     type: PoolTypes.USD,
-    metaSwapAddresses: FRAX_OPT_USD_META_SWAP_DEPOSIT_ADDRESSES,
+    metaSwapAddresses: FRAX_OPT_USD_SWAP_ADDRESSES,
     underlyingPoolTokens: FRAX_OPT_USD_UNDERLYING_POOL_TOKENS,
     underlyingPool: OPT_USD_POOL_NAME,
     route: "frax-optusd",
