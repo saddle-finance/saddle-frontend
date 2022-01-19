@@ -83,7 +83,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
 
   // Merge underlying token usd prices and tokenPricesUSD array
   const [underlyingPoolData] = usePoolData(POOL.underlyingPool)
-  let newTokenPricesUSD
+  let newTokenPricesUSD = tokenPricesUSD
   if (underlyingPoolData.lpTokenPriceUSD != Zero) {
     const underlyingTokenUSDValue = parseFloat(
       formatBNToString(poolData.lpTokenPriceUSD, 18, 2),
