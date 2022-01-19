@@ -16,7 +16,7 @@ function ConnectWallet({ onClose }: Props): ReactElement {
   const { activate } = useWeb3React()
 
   return (
-    <div className="connectWallet">
+    <div className="connectWallet" data-testid="connectWalletContainer">
       <h3>{t("connectWallet")}</h3>
       <div className="walletList">
         {map(SUPPORTED_WALLETS, (wallet, index) => (
