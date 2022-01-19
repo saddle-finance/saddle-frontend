@@ -313,10 +313,14 @@ function Pools(): ReactElement | null {
               logEvent("migrate", {
                 pool: activeMigration.poolName,
               })
-              await approveAndMigrate(
-                activeMigration.poolName,
-                activeMigration.lpTokenBalance,
-              )
+              try {
+                await approveAndMigrate(
+                  activeMigration.poolName,
+                  activeMigration.lpTokenBalance,
+                )
+              } catch (err) {
+                console.error(err)
+              }
               setCurrentModal(null)
               setActiveMigration({
                 poolName: null,
