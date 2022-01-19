@@ -1116,6 +1116,7 @@ export function isLegacySwapABIPool(poolName: string): boolean {
 }
 export function isMetaPool(poolName = ""): boolean {
   return new Set([
+    FRAX_OPT_USD_METAPOOL_NAME,
     SUSD_METAPOOL_NAME,
     SUSD_METAPOOL_V2_NAME,
     TBTC_METAPOOL_NAME,
