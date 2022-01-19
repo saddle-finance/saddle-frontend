@@ -11,9 +11,10 @@ export default function PaperTheme(theme: Theme): Components {
               : theme.palette.background.default,
           border:
             theme.palette.mode === "light"
-              ? `1px solid theme.palette.other?.divider`
+              ? `1px solid ${theme.palette.other.divider}`
               : "1px solid #000000",
           boxShadow: "none",
+          borderRadius: theme.spacing(1),
           opacity: 1,
         },
       },

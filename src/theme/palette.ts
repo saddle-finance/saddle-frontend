@@ -62,11 +62,12 @@ const lightPalette: PaletteOptions | undefined = {
   text: {
     secondary: "#252525",
   },
+  divider: "#E3D899",
+  grey: GREY_TONES,
   other: {
     divider: "#E3D899",
     border: "#7D7D7D",
   },
-  grey: GREY_TONES,
 }
 
 const darkPalette: PaletteOptions | undefined = {

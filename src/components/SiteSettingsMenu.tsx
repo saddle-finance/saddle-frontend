@@ -1,5 +1,5 @@
-import { ChainId, IS_L2_SUPPORTED, IS_SDL_LIVE, SDL_TOKEN } from "../constants"
 import {
+  Box,
   Collapse,
   Divider,
   ListItemIcon,
@@ -8,6 +8,7 @@ import {
   MenuItem as MuiMenuItem,
   styled,
 } from "@mui/material"
+import { ChainId, IS_L2_SUPPORTED, IS_SDL_LIVE, SDL_TOKEN } from "../constants"
 import {
   ExpandLess,
   ExpandMore,
@@ -52,14 +53,16 @@ export default function SiteSettingsMenu({
       }}
       data-testid="settingsMenuContainer"
       onClose={close}
-      PaperProps={{ sx: { minWidth: 200 } }}
+      PaperProps={{ sx: { minWidth: 240 } }}
     >
-      {IS_L2_SUPPORTED && <NetworkSection key="network" />}
-      <Divider />
-      <LanguageSection key="language" />
-      <Divider />
-      <ThemeSection key="theme" />
-      {IS_SDL_LIVE && <AddTokenSection key="token" />}
+      <Box>
+        {IS_L2_SUPPORTED && <NetworkSection key="network" />}
+        <Divider variant="middle" />
+        <LanguageSection key="language" />
+        <Divider variant="middle" />
+        <ThemeSection key="theme" />
+        {IS_SDL_LIVE && <AddTokenSection key="token" />}
+      </Box>
     </Menu>
   )
 }
@@ -133,31 +136,35 @@ function NetworkSection(): ReactElement {
         {t("network")} {isNetworkVisible ? <ExpandLess /> : <ExpandMore />}
       </MenuItem>
       <Collapse in={isNetworkVisible}>
-        {networks.map((chainId) => {
-          const params = SUPPORTED_NETWORKS[chainId]
+        <Box pl={5}>
+          {networks.map((chainId) => {
+            const params = SUPPORTED_NETWORKS[chainId]
 
-          return (
-            <MenuItem
-              onClick={() => {
-                if (chainId === ChainId.MAINNET) {
-                  void library?.send("wallet_switchEthereumChain", [
-                    { chainId: "0x1" },
-                    account,
-                  ])
-                } else {
-                  void library?.send("wallet_addEthereumChain", [
-                    params,
-                    account,
-                  ])
-                }
-              }}
-              key={chainId}
-            >
-              {params?.chainName}
-              {activeChainId === chainId && "c"}
-            </MenuItem>
-          )
-        })}
+            return (
+              <MenuItem
+                onClick={() => {
+                  if (chainId === ChainId.MAINNET) {
+                    void library?.send("wallet_switchEthereumChain", [
+                      { chainId: "0x1" },
+                      account,
+                    ])
+                  } else {
+                    void library?.send("wallet_addEthereumChain", [
+                      params,
+                      account,
+                    ])
+                  }
+                }}
+                key={chainId}
+              >
+                <ListItemIcon>
+                  {activeChainId === chainId && <CheckIcon fontSize="small" />}
+                </ListItemIcon>
+                <ListItemText primary={params?.chainName} />
+              </MenuItem>
+            )
+          })}
+        </Box>
       </Collapse>
     </div>
   )
@@ -182,17 +189,19 @@ function LanguageSection(): ReactElement {
         {isLanguageVisible ? <ExpandLess /> : <ExpandMore />}
       </MenuItem>
       <Collapse in={isLanguageVisible}>
-        {languageOptions.map(({ displayText, i18nKey }) => (
-          <MenuItem
-            onClick={() => i18n.changeLanguage(i18nKey)}
-            key={displayText}
-          >
-            <ListItemText primary={displayText} />
-            <ListItemIcon>
-              {currentLanguage === i18nKey && <CheckIcon />}
-            </ListItemIcon>
-          </MenuItem>
-        ))}
+        <Box pl={5}>
+          {languageOptions.map(({ displayText, i18nKey }) => (
+            <MenuItem
+              onClick={() => i18n.changeLanguage(i18nKey)}
+              key={displayText}
+            >
+              <ListItemIcon>
+                {currentLanguage === i18nKey && <CheckIcon fontSize="small" />}
+              </ListItemIcon>
+              <ListItemText primary={displayText} />
+            </MenuItem>
+          ))}
+        </Box>
       </Collapse>
     </div>
   )
