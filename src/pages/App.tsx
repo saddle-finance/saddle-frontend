@@ -34,6 +34,14 @@ import usePoller from "../hooks/usePoller"
 const VestingClaim = lazy(() => import("./VestingClaim"))
 const Risk = lazy(() => import("./Risk"))
 
+// const AppContainer = styled("div")(({ theme }) => {
+//   const gradientStart = theme.palette.mode === "light" ? "#FFF" : "#000"
+//   const gradientEnd = theme.palette.mode === "light" ? "#FAF3CE" : "#4B11F2"
+//   return {
+//     background: `linear-gradient(180deg, ${gradientStart},${gradientStart} 25%, ${gradientEnd} 50%,${gradientStart} 50%)`,
+//     minHeight: "100vh",
+//   }
+// })
 export default function App(): ReactElement {
   const { chainId } = useActiveWeb3React()
   const { userDarkMode } = useSelector((state: AppState) => state.user)
@@ -56,7 +64,6 @@ export default function App(): ReactElement {
           <PendingSwapsProvider>
             <RewardsBalancesProvider>
               <TopMenu />
-
               <Switch>
                 <Route exact path="/" component={Swap} />
                 <Route exact path="/pools" component={Pools} />

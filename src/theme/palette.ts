@@ -38,7 +38,7 @@ const lightPalette: PaletteOptions | undefined = {
     light: "#FAF3CE",
   },
   secondaryLight: {
-    main: "#e3d899",
+    main: "#FAF3CE",
   },
   info: {
     main: "#4B11F2",

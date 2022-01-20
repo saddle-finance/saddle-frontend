@@ -1,12 +1,12 @@
-import { Components, Theme } from "@mui/material"
+import { Components } from "@mui/material"
 
-export default function AppBarTheme(theme: Theme): Components {
+export default function AppBarTheme(): Components {
   return {
     MuiAppBar: {
       styleOverrides: {
         root: {
           borderColor: "transparent",
-          backgroundColor: theme.palette.background.default,
+          backgroundColor: "transparent",
         },
       },
     },

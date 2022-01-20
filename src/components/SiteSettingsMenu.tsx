@@ -2,6 +2,7 @@ import {
   Box,
   Collapse,
   Divider,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Menu,
@@ -136,35 +137,33 @@ function NetworkSection(): ReactElement {
         {t("network")} {isNetworkVisible ? <ExpandLess /> : <ExpandMore />}
       </MenuItem>
       <Collapse in={isNetworkVisible}>
-        <Box pl={5}>
-          {networks.map((chainId) => {
-            const params = SUPPORTED_NETWORKS[chainId]
+        {networks.map((chainId) => {
+          const params = SUPPORTED_NETWORKS[chainId]
 
-            return (
-              <MenuItem
-                onClick={() => {
-                  if (chainId === ChainId.MAINNET) {
-                    void library?.send("wallet_switchEthereumChain", [
-                      { chainId: "0x1" },
-                      account,
-                    ])
-                  } else {
-                    void library?.send("wallet_addEthereumChain", [
-                      params,
-                      account,
-                    ])
-                  }
-                }}
-                key={chainId}
-              >
-                <ListItemIcon>
-                  {activeChainId === chainId && <CheckIcon fontSize="small" />}
-                </ListItemIcon>
-                <ListItemText primary={params?.chainName} />
-              </MenuItem>
-            )
-          })}
-        </Box>
+          return (
+            <ListItemButton
+              onClick={() => {
+                if (chainId === ChainId.MAINNET) {
+                  void library?.send("wallet_switchEthereumChain", [
+                    { chainId: "0x1" },
+                    account,
+                  ])
+                } else {
+                  void library?.send("wallet_addEthereumChain", [
+                    params,
+                    account,
+                  ])
+                }
+              }}
+              key={chainId}
+            >
+              <ListItemIcon>
+                {activeChainId === chainId && <CheckIcon fontSize="small" />}
+              </ListItemIcon>
+              <ListItemText primary={params?.chainName} />
+            </ListItemButton>
+          )
+        })}
       </Collapse>
     </div>
   )
@@ -189,19 +188,17 @@ function LanguageSection(): ReactElement {
         {isLanguageVisible ? <ExpandLess /> : <ExpandMore />}
       </MenuItem>
       <Collapse in={isLanguageVisible}>
-        <Box pl={5}>
-          {languageOptions.map(({ displayText, i18nKey }) => (
-            <MenuItem
-              onClick={() => i18n.changeLanguage(i18nKey)}
-              key={displayText}
-            >
-              <ListItemIcon>
-                {currentLanguage === i18nKey && <CheckIcon fontSize="small" />}
-              </ListItemIcon>
-              <ListItemText primary={displayText} />
-            </MenuItem>
-          ))}
-        </Box>
+        {languageOptions.map(({ displayText, i18nKey }) => (
+          <ListItemButton
+            onClick={() => i18n.changeLanguage(i18nKey)}
+            key={displayText}
+          >
+            <ListItemIcon>
+              {currentLanguage === i18nKey && <CheckIcon fontSize="small" />}
+            </ListItemIcon>
+            <ListItemText primary={displayText} />
+          </ListItemButton>
+        ))}
       </Collapse>
     </div>
   )
