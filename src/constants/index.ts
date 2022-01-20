@@ -848,7 +848,7 @@ export const POOLS_MAP: PoolsMap = {
     type: PoolTypes.USD,
     route: "arbusd",
     isOutdated: true,
-    rewardPids: buildPids({ [ChainId.MATICMUMBAI]: 1 }),
+    rewardPids: buildPids({ [ChainId.MATICMUMBAI]: 3 }),
   },
   [FRAX_ARB_USD_POOL_V2_NAME]: {
     name: FRAX_ARB_USD_POOL_V2_NAME,
@@ -858,7 +858,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "muneusd",
-    rewardPids: buildPids({ [ChainId.MATICMUMBAI]: 2 }),
+    rewardPids: buildPids({ [ChainId.MATICMUMBAI]: 1 }),
   },
   [SUSD_METAPOOL_V2_NAME]: {
     name: SUSD_METAPOOL_V2_NAME,
@@ -871,7 +871,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: SUSD_UNDERLYING_POOL_TOKENS,
     underlyingPool: STABLECOIN_POOL_V2_NAME,
     route: "munefrax",
-    rewardPids: buildPids({ [ChainId.MATICMUMBAI]: 3 }),
+    rewardPids: buildPids({ [ChainId.MATICMUMBAI]: 2 }),
   },
   [SUSD_METAPOOL_NAME]: {
     name: SUSD_METAPOOL_NAME,
