@@ -848,7 +848,7 @@ export const POOLS_MAP: PoolsMap = {
     type: PoolTypes.USD,
     route: "arbusd",
     isOutdated: true,
-    rewardPids: buildPids({ [ChainId.MATICMUMBAI]: 3 }),
+    rewardPids: buildPids({}),
   },
   [FRAX_ARB_USD_POOL_V2_NAME]: {
     name: FRAX_ARB_USD_POOL_V2_NAME,
