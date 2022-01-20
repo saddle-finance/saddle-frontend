@@ -108,9 +108,10 @@ jobs:
         run: npm install @currents/cli
       # Run all Cypress tests
       - name: Run Cypress on Currents.dev
-        uses: cypress-io/github-action@v2
-        with:
-          command: npx start-test 3000 "npx currents run --record --key ${{ secrets.CURRENTS_RECORD_KEY }}"
+        # uses: cypress-io/github-action@v2
+      - run: npx start-test 3000 'npx currents run --record --key ${{ secrets.CURRENTS_RECORD_KEY }}'
+        # with:
+        #   command: 
       # - run: npm run cy:coverage
       #   env:
       #     CHOKIDAR_USEPOLLING: 1
