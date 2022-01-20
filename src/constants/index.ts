@@ -134,7 +134,6 @@ export const BRIDGE_CONTRACT_ADDRESSES = buildAddresses({})
 
 export const MINICHEF_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0x6a4A2B93D36899F2D21b76aFe1dd650119F883D2",
-  [ChainId.MATICMUMBAI]: "0xCe4A1FD31fAf87d9CB0C85B47F04b064ca6960DF",
 })
 
 export const RETROACTIVE_VESTING_CONTRACT_ADDRESSES = buildAddresses({
@@ -302,15 +301,14 @@ export const D4_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
 
 export const SDL_TOKEN_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0x2910E325cf29dd912E3476B61ef12F49cb931096",
-  [ChainId.MATICMUMBAI]: "0xCe4A1FD31fAf87d9CB0C85B47F04b064ca6960DF",
 })
 
 export const SDL_TOKEN = new Token(
   SDL_TOKEN_ADDRESSES,
   18,
-  "MUNE",
-  "mune-dao", // TBD
-  "Mune DAO",
+  "SDL",
+  "saddle-dao", // TBD
+  "Saddle DAO",
   saddleLogo,
   false,
   false,
@@ -850,7 +848,7 @@ export const POOLS_MAP: PoolsMap = {
     type: PoolTypes.USD,
     route: "arbusd",
     isOutdated: true,
-    rewardPids: buildPids({ [ChainId.MATICMUMBAI]: 3 }),
+    rewardPids: buildPids({ [ChainId.MATICMUMBAI]: 1 }),
   },
   [FRAX_ARB_USD_POOL_V2_NAME]: {
     name: FRAX_ARB_USD_POOL_V2_NAME,
@@ -860,7 +858,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "muneusd",
-    rewardPids: buildPids({ [ChainId.MATICMUMBAI]: 1 }),
+    rewardPids: buildPids({ [ChainId.MATICMUMBAI]: 2 }),
   },
   [SUSD_METAPOOL_V2_NAME]: {
     name: SUSD_METAPOOL_V2_NAME,
@@ -873,7 +871,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: SUSD_UNDERLYING_POOL_TOKENS,
     underlyingPool: STABLECOIN_POOL_V2_NAME,
     route: "munefrax",
-    rewardPids: buildPids({ [ChainId.MATICMUMBAI]: 2 }),
+    rewardPids: buildPids({ [ChainId.MATICMUMBAI]: 3 }),
   },
   [SUSD_METAPOOL_NAME]: {
     name: SUSD_METAPOOL_NAME,
