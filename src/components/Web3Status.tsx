@@ -37,7 +37,7 @@ const Web3Status = (): ReactElement => {
         endIcon={
           account && (
             <Davatar
-              size={24}
+              size={20}
               address={account}
               generatedAvatarType="jazzicon"
             />

@@ -86,7 +86,7 @@ const darkPalette: PaletteOptions | undefined = {
     main: "#000",
   },
   info: {
-    main: "#00f4d7",
+    main: "#4B11F2",
   },
   background: {
     default: "#000000",

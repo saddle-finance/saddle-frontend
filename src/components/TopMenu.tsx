@@ -85,12 +85,25 @@ function TopMenu(): ReactElement {
               {t("risk")}
             </NavMenu>
           </Stack>
-          <Stack direction="row" spacing={1} justifyContent="flex-end">
+          <Stack
+            direction="row"
+            spacing={1}
+            justifyContent="flex-end"
+            alignItems="center"
+          >
             <RewardsButton setCurrentModal={setCurrentModal} />
             <Web3Status />
             <NetworkDisplay onClick={handleSettingMenu} />
-            <Button size="small" onClick={handleSettingMenu}>
-              <MoreVert htmlColor={theme.palette.text.primary} />
+            <Button
+              color="secondaryLight"
+              variant="contained"
+              onClick={handleSettingMenu}
+              sx={{ minWidth: 0, padding: 0 }}
+            >
+              <MoreVert
+                htmlColor={theme.palette.text.primary}
+                fontSize="large"
+              />
             </Button>
           </Stack>
         </Box>
@@ -123,9 +136,9 @@ function RewardsButton({
       color="info"
       data-testid="rewardButton"
       onClick={() => setCurrentModal("tokenClaim")}
-      endIcon={<SaddleLogo width={24} height={24} />}
+      endIcon={<SaddleLogo width={20} height={20} />}
     >
-      {formattedTotal}{" "}
+      {formattedTotal}
     </Button>
   ) : null
 }

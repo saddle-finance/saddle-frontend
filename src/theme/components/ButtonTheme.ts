@@ -21,27 +21,33 @@ export default function ButtonTheme(theme: Theme): Components {
         },
         {
           props: {
-            size: "small",
+            variant: "contained",
           },
           style: {
-            minWidth: 32,
-            backgroundColor: theme.palette.secondaryLight.main,
-            color: "#000",
+            boxShadow: "none",
             "&:hover": {
-              backgroundColor: theme.palette.secondaryLight.main,
+              boxShadow: "none",
             },
           },
         },
         {
           props: {
-            variant: "contained",
+            size: "medium",
           },
           style: {
-            boxShadow: "none",
-            minHeight: 40,
-            "&:hover": {
-              boxShadow: "none",
-            },
+            lineHeight: 0,
+            maxHeight: 32,
+            padding: 8,
+          },
+        },
+        {
+          props: {
+            variant: "contained",
+            size: "small",
+          },
+          style: {
+            minWidth: 0,
+            padding: 1,
           },
         },
       ],
