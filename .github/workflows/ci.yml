@@ -103,25 +103,14 @@ jobs:
       # fix for forcing git to use https when pulling deps
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
       - run: npm ci
-      - run: npm run cy:coverage
-        env:
-          CHOKIDAR_USEPOLLING: 1
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-      # Save videos and screenshots as test artifacts
-      # https://github.com/actions/upload-artifact
-      - uses: actions/upload-artifact@master
+      # Run all Cypress tests
+      - name: Run Cypress on Currents.dev
+        uses: cypress-io/github-action@v2
         with:
-          name: screenshots
-          path: cypress/screenshots
-          # there might be no screenshots created when:
-          # - there are no test failures
-          # so only upload screenshots if previous step has failed
-          if: failure()
-      # video should always be generated
-      - uses: actions/upload-artifact@master
-        with:
-          name: videos
-          path: cypress/videos
+          command: npm run currents run --record --key ${{ secrets.CURRENTS_RECORD_KEY }}
+      # - run: npm run cy:coverage
+      #   env:
+      #     CHOKIDAR_USEPOLLING: 1
       - run: npx nyc report --reporter=text
       - uses: codecov/codecov-action@v1
         with:
