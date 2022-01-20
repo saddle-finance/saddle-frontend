@@ -104,10 +104,10 @@ jobs:
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
       - run: npm ci
       # Install Currents
-      - name: Install currents
-        run: npm install @currents/cli
+      # - name: Install currents
+      #   run: npm install @currents/cli
       # Run all Cypress tests
-      - name: Run Cypress on Currents.dev
+      # - name: Run Cypress on Currents.dev
         # uses: cypress-io/github-action@v2
       - run: npx start-test 3000 'npx currents run --record --key ${{ secrets.CURRENTS_RECORD_KEY }}'
         # with:
