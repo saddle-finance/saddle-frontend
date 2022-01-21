@@ -6,6 +6,7 @@ import {
   D4_POOL_NAME,
   FRAX_ARB_USD_POOL_V2_NAME,
   FRAX_OPT_USD_METAPOOL_NAME,
+  FTM_USD_POOL_NAME,
   OPT_USD_POOL_NAME,
   POOLS_MAP,
   PoolName,
@@ -59,6 +60,7 @@ function Pools(): ReactElement | null {
     WCUSD_METAPOOL_V2_NAME,
   )
   const [arbUsdPoolData, arbUsdUserShareData] = usePoolData(ARB_USD_POOL_NAME)
+  const [ftmUsdPoolData, ftmUsdUserShareData] = usePoolData(FTM_USD_POOL_NAME)
   const [optUsdPoolData, optUsdUserShareData] = usePoolData(OPT_USD_POOL_NAME)
   const [fraxOptUsdPoolData, fraxOptUsdUserShareData] = usePoolData(
     FRAX_OPT_USD_METAPOOL_NAME,
@@ -182,6 +184,13 @@ function Pools(): ReactElement | null {
         poolData: arbUsdPoolData,
         userShareData: arbUsdUserShareData,
         poolRoute: "/pools/arbusd",
+      }
+    } else if (poolName === FTM_USD_POOL_NAME) {
+      return {
+        name: FTM_USD_POOL_NAME,
+        poolData: ftmUsdPoolData,
+        userShareData: ftmUsdUserShareData,
+        poolRoute: "/pools/ftmusd",
       }
     } else if (poolName === OPT_USD_POOL_NAME) {
       return {

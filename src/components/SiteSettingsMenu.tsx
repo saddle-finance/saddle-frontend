@@ -90,6 +90,17 @@ export const SUPPORTED_NETWORKS: {
     rpcUrls: ["https://mainnet.optimism.io"],
     blockExplorerUrls: ["https://optimistic.etherscan.io"],
   },
+  [ChainId.FANTOM]: {
+    chainId: "0xFA",
+    chainName: "Fantom",
+    nativeCurrency: {
+      name: "Fantom",
+      symbol: "FTM",
+      decimals: 18,
+    },
+    rpcUrls: ["https://rpc.ftm.tools"],
+    blockExplorerUrls: ["https://ftmscan.com"],
+  },
 }
 function NetworkSection(): ReactElement {
   const { t } = useTranslation()
