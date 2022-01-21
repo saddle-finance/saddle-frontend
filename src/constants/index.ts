@@ -198,10 +198,6 @@ export const FRAX_OPT_USD_META_SWAP_DEPOSIT_ADDRESSES = buildAddresses({
   [ChainId.OPTIMISM]: "0x88Cc4aA0dd6Cf126b00C012dDa9f6F4fd9388b17",
 })
 
-export const FTM_USD_META_SWAP_DEPOSIT_ADDRESSES = buildAddresses({
-  [ChainId.FANTOM]: "",
-})
-
 export const TBTC_META_SWAP_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0xf74ebe6e5586275dc4CeD78F5DBEF31B1EfbE7a5",
   [ChainId.HARDHAT]: "0xA22D78bc37cE77FeE1c44F0C2C0d2524318570c3",
