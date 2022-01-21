@@ -46,6 +46,11 @@ const lightPalette: PaletteOptions | undefined = {
     default: "#FFFFE9",
     paper: "#FDFDF8",
   },
+  action: {
+    hover: "#FAF3CE",
+    active: "#FFEA91",
+    disabled: "#A7A7A7",
+  },
   success: {
     main: "#06D7D7",
   },
@@ -88,6 +93,12 @@ const darkPalette: PaletteOptions | undefined = {
     main: "#4B11F2",
     dark: "#2F099F",
     light: "#9B91FF",
+  },
+  action: {
+    hover: "#311188",
+    active: "#4B11F2",
+    disabled: "#A7A7A7",
+    disabledBackground: "#404040",
   },
   success: {
     main: "#06D7D7",

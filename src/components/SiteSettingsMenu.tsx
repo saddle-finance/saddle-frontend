@@ -157,7 +157,7 @@ function NetworkSection(): ReactElement {
               }}
               key={chainId}
             >
-              <ListItemIcon>
+              <ListItemIcon sx={{ ml: 2 }}>
                 {activeChainId === chainId && <CheckIcon fontSize="small" />}
               </ListItemIcon>
               <ListItemText primary={params?.chainName} />
@@ -193,7 +193,7 @@ function LanguageSection(): ReactElement {
             onClick={() => i18n.changeLanguage(i18nKey)}
             key={displayText}
           >
-            <ListItemIcon>
+            <ListItemIcon sx={{ ml: 2 }}>
               {currentLanguage === i18nKey && <CheckIcon fontSize="small" />}
             </ListItemIcon>
             <ListItemText primary={displayText} />

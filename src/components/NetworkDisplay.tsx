@@ -30,7 +30,7 @@ const NetworkDisplay = React.forwardRef<HTMLButtonElement, NetworkDisplayProps>(
           />
         }
       >
-        <Typography variant="body1" color="text.primary">
+        <Typography variant="body1" color="text.primary" noWrap>
           {networkLabel}
         </Typography>
       </Button>
