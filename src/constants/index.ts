@@ -539,7 +539,7 @@ export const FTM_USD_SWAP_TOKEN = new Token(
   18,
   "saddleFtmUSD",
   "saddleftmUSD",
-  "Saddle FRAX/USDC/DAI",
+  "Saddle FRAX/DAI/USDC",
   saddleLogo,
   false,
   true,
@@ -738,7 +738,7 @@ export const ARB_USD_POOL_TOKENS = [NUSD, MIM, USDC, USDT]
 export const OPT_USD_POOL_TOKENS = [DAI, USDC, USDT]
 export const FRAX_OPT_USD_POOL_TOKENS = [FRAX, ...OPT_USD_POOL_TOKENS]
 export const FRAX_OPT_USD_UNDERLYING_POOL_TOKENS = [FRAX, OPT_USD_SWAP_TOKEN]
-export const FTM_USD_POOL_TOKENS = [FRAX, USDC, DAI]
+export const FTM_USD_POOL_TOKENS = [FRAX, DAI, USDC]
 
 // Tokenized BTC
 const TBTC_CONTRACT_ADDRESSES = buildAddresses({
