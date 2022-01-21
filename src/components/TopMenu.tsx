@@ -29,7 +29,7 @@ const NavMenu = styled(NavLink)<NavLinkProps & { selected: boolean }>(
     return {
       fontWeight: selected ? "bold" : "normal",
       textDecoration: "none",
-      fontSize: 20,
+      fontSize: theme.typography.h3.fontSize,
       color: theme.palette.text.primary,
     }
   },

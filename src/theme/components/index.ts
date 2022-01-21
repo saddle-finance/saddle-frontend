@@ -18,7 +18,7 @@ export default function componentsOverrides(theme: Theme): Components {
     AppBarTheme(),
     ButtonTheme(theme),
     DialogTheme(theme),
-    IconButtonTheme(),
+    IconButtonTheme(theme),
     MenuTheme(theme),
     MenuItemTheme(),
     TooltipTheme(),
