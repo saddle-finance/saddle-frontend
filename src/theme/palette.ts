@@ -48,6 +48,7 @@ const lightPalette: PaletteOptions | undefined = {
   },
   action: {
     hover: "#FAF3CE",
+    hoverOpacity: 0.1,
     active: "#FFEA91",
     disabled: "#A7A7A7",
   },
@@ -87,18 +88,21 @@ const darkPalette: PaletteOptions | undefined = {
     light: "#FAF3CE",
   },
   secondaryLight: {
-    main: "#000",
+    light: "#9B91FF",
+    main: "#311188",
   },
   info: {
     main: "#4B11F2",
     dark: "#2F099F",
     light: "#9B91FF",
   },
+
   action: {
     hover: "#311188",
     active: "#4B11F2",
     disabled: "#A7A7A7",
     disabledBackground: "#404040",
+    hoverOpacity: 0.5,
   },
   success: {
     main: "#06D7D7",

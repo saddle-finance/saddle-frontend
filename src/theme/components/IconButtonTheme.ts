@@ -7,6 +7,17 @@ declare module "@mui/material/IconButton" {
 }
 export default function IconButtonTheme(): Components {
   return {
-    MuiIconButton: {},
+    MuiIconButton: {
+      defaultProps: {
+        disableRipple: true,
+      },
+      styleOverrides: {
+        root: {
+          ":hover": {
+            backgroundColor: "tranparent",
+          },
+        },
+      },
+    },
   }
 }

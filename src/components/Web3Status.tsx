@@ -30,8 +30,8 @@ const Web3Status = (): ReactElement => {
   return (
     <div data-testid="walletStatusContainer">
       <Button
-        variant="contained"
-        color="secondaryLight"
+        variant={account ? "contained" : "outlined"}
+        color={account ? "secondaryLight" : "secondary"}
         data-testid="accountDetailButton"
         onClick={(): void => setModalOpen(true)}
         endIcon={
@@ -49,9 +49,7 @@ const Web3Status = (): ReactElement => {
             {ensName || shortenAddress(account)}
           </Typography>
         ) : (
-          <Typography variant="body1" color="text.secondary" noWrap>
-            {t("connectWallet")}
-          </Typography>
+          t("connectWallet")
         )}
       </Button>
       <Dialog

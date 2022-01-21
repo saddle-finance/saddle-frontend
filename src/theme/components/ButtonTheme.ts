@@ -11,39 +11,6 @@ export default function ButtonTheme(theme: Theme): Components {
       variants: [
         {
           props: {
-            variant: "outlined",
-          },
-          style: {
-            "&:hover": {
-              backgroundColor: theme.palette.secondaryLight.main,
-            },
-          },
-        },
-        {
-          props: {
-            variant: "contained",
-          },
-          style: {
-            boxShadow: "none",
-            "&:hover": {
-              boxShadow: "none",
-            },
-          },
-        },
-        {
-          props: {
-            size: "medium",
-          },
-          style: {
-            lineHeight: 0,
-            minWidth: 70,
-            maxHeight: 32,
-            padding: 8,
-            font: theme.typography.body1.font,
-          },
-        },
-        {
-          props: {
             variant: "contained",
             size: "small",
           },
@@ -57,6 +24,24 @@ export default function ButtonTheme(theme: Theme): Components {
         root: {
           textTransform: "none",
           borderRadius: theme.spacing(1),
+        },
+        contained: {
+          boxShadow: "none",
+          "&:hover": {
+            boxShadow: "none",
+          },
+        },
+        outlined: {
+          "&:hover": {
+            backgroundColor: theme.palette.secondaryLight.main,
+          },
+        },
+        sizeMedium: {
+          lineHeight: 0,
+          minWidth: 70,
+          maxHeight: 32,
+          padding: 8,
+          font: theme.typography.body1.font,
         },
       },
     },
