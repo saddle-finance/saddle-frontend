@@ -5,6 +5,8 @@ import {
   BTC_POOL_V2_NAME,
   D4_POOL_NAME,
   FRAX_ARB_USD_POOL_V2_NAME,
+  FRAX_OPT_USD_METAPOOL_NAME,
+  OPT_USD_POOL_NAME,
   POOLS_MAP,
   PoolName,
   PoolTypes,
@@ -57,6 +59,10 @@ function Pools(): ReactElement | null {
     WCUSD_METAPOOL_V2_NAME,
   )
   const [arbUsdPoolData, arbUsdUserShareData] = usePoolData(ARB_USD_POOL_NAME)
+  const [optUsdPoolData, optUsdUserShareData] = usePoolData(OPT_USD_POOL_NAME)
+  const [fraxOptUsdPoolData, fraxOptUsdUserShareData] = usePoolData(
+    FRAX_OPT_USD_METAPOOL_NAME,
+  )
   const [fraxArbUsdPoolV2Data, fraxArbUsdV2UserShareData] = usePoolData(
     FRAX_ARB_USD_POOL_V2_NAME,
   )
@@ -177,6 +183,20 @@ function Pools(): ReactElement | null {
         userShareData: arbUsdUserShareData,
         poolRoute: "/pools/arbusd",
       }
+    } else if (poolName === OPT_USD_POOL_NAME) {
+      return {
+        name: OPT_USD_POOL_NAME,
+        poolData: optUsdPoolData,
+        userShareData: optUsdUserShareData,
+        poolRoute: "/pools/optusd",
+      }
+    } else if (poolName === FRAX_OPT_USD_METAPOOL_NAME) {
+      return {
+        name: FRAX_OPT_USD_METAPOOL_NAME,
+        poolData: fraxOptUsdPoolData,
+        userShareData: fraxOptUsdUserShareData,
+        poolRoute: "/pools/frax-optusd",
+      }
     } else if (poolName === FRAX_ARB_USD_POOL_V2_NAME) {
       return {
         name: FRAX_ARB_USD_POOL_V2_NAME,
@@ -293,10 +313,14 @@ function Pools(): ReactElement | null {
               logEvent("migrate", {
                 pool: activeMigration.poolName,
               })
-              await approveAndMigrate(
-                activeMigration.poolName,
-                activeMigration.lpTokenBalance,
-              )
+              try {
+                await approveAndMigrate(
+                  activeMigration.poolName,
+                  activeMigration.lpTokenBalance,
+                )
+              } catch (err) {
+                console.error(err)
+              }
               setCurrentModal(null)
               setActiveMigration({
                 poolName: null,
