@@ -4,6 +4,7 @@ import {
   POOLS_MAP,
   PoolName,
   TRANSACTION_TYPES,
+  TestPoolName,
 } from "../constants"
 import {
   formatBNToPercentString,
@@ -100,7 +101,7 @@ const emptyPoolData = {
 } as PoolDataType
 
 export default function usePoolData(
-  poolName?: PoolName,
+  poolName?: PoolName | TestPoolName,
 ): PoolDataHookReturnType {
   const { account, library, chainId } = useActiveWeb3React()
   const swapContract = useSwapContract(poolName)

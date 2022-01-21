@@ -51,6 +51,9 @@ export const ARB_USD_POOL_NAME = "arbUSD Pool"
 export const OPT_USD_POOL_NAME = "optUSD Pool"
 export const FRAX_OPT_USD_METAPOOL_NAME = "frax-optUSD Pool"
 export const FRAX_ARB_USD_POOL_V2_NAME = "frax-ArbUSD Pool V2"
+export type TestPoolName =
+  | typeof BTC_POOL_V2_NAME
+  | typeof STABLECOIN_POOL_V2_NAME
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof BTC_POOL_V2_NAME
@@ -898,6 +901,20 @@ export const D4_POOL_TOKENS = [ALUSD, FEI, FRAX, LUSD]
 export const WCUSD_POOL_TOKENS = [WCUSD, ...STABLECOIN_POOL_TOKENS]
 export const WCUSD_UNDERLYING_POOL_TOKENS = [WCUSD, STABLECOIN_SWAP_V2_TOKEN]
 
+export type TestPool = {
+  name: TestPoolName
+  lpToken: Token
+  poolTokens: Token[]
+  isSynthetic: boolean
+  addresses: { [chainId in ChainId]: string }
+  type: PoolTypes
+  route: string
+  metaSwapAddresses?: { [chainId in ChainId]: string }
+  underlyingPoolTokens?: Token[]
+  underlyingPool?: PoolName
+  isOutdated?: boolean // pool can be outdated but not have a migration target
+  rewardPids: { [chainId in ChainId]: number | null }
+}
 export type Pool = {
   name: PoolName
   lpToken: Token
@@ -914,6 +931,9 @@ export type Pool = {
 }
 export type PoolsMap = {
   [poolName: string]: Pool
+}
+export type TestPoolsMap = {
+  [poolName: string]: TestPool
 }
 export const POOLS_MAP: PoolsMap = {
   [BTC_POOL_NAME]: {
@@ -1107,6 +1127,28 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPool: STABLECOIN_POOL_V2_NAME,
     route: "wcusdv2",
     rewardPids: buildPids({ [ChainId.MAINNET]: 7 }),
+  },
+}
+export const TEST_POOLS_MAP: TestPoolsMap = {
+  [BTC_POOL_V2_NAME]: {
+    name: BTC_POOL_V2_NAME,
+    addresses: BTC_SWAP_V2_ADDRESSES,
+    lpToken: BTC_SWAP_V2_TOKEN,
+    poolTokens: BTC_POOL_V2_TOKENS,
+    isSynthetic: true,
+    type: PoolTypes.BTC,
+    route: "btcv2",
+    rewardPids: buildPids({ [ChainId.MAINNET]: 4, [ChainId.HARDHAT]: 4 }),
+  },
+  [STABLECOIN_POOL_V2_NAME]: {
+    name: STABLECOIN_POOL_V2_NAME,
+    addresses: STABLECOIN_SWAP_V2_ADDRESSES,
+    lpToken: STABLECOIN_SWAP_V2_TOKEN,
+    poolTokens: STABLECOIN_POOL_TOKENS,
+    isSynthetic: false,
+    type: PoolTypes.USD,
+    route: "usdv2",
+    rewardPids: buildPids({ [ChainId.MAINNET]: 3, [ChainId.HARDHAT]: 3 }),
   },
 }
 export function isLegacySwapABIPool(poolName: string): boolean {

@@ -2,7 +2,7 @@ import "../styles/global.scss"
 import "./NotifyStyle.scss"
 
 import { AppDispatch, AppState } from "../state"
-import { BLOCK_TIME, POOLS_MAP } from "../constants"
+import { BLOCK_TIME, POOLS_MAP, TEST_POOLS_MAP } from "../constants"
 import React, {
   ReactElement,
   Suspense,
@@ -16,10 +16,12 @@ import { isChainSupportedByNotify, notify } from "../utils/notifyHandler"
 import { useDispatch, useSelector } from "react-redux"
 
 import Deposit from "./Deposit"
+import { IS_TEST } from "../utils/environment"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import Swap from "./Swap"
+import TestPools from "./TestPools"
 import TopMenu from "../components/TopMenu"
 import Version from "../components/Version"
 import Web3ReactManager from "../components/Web3ReactManager"
@@ -45,7 +47,7 @@ export default function App(): ReactElement {
     })
   }, [chainId, userDarkMode])
   const pools = useMemo(() => {
-    return Object.values(POOLS_MAP).filter(
+    return Object.values(IS_TEST ? TEST_POOLS_MAP : POOLS_MAP).filter(
       ({ addresses }) => chainId && addresses[chainId],
     )
   }, [chainId])
@@ -59,7 +61,11 @@ export default function App(): ReactElement {
 
               <Switch>
                 <Route exact path="/" component={Swap} />
-                <Route exact path="/pools" component={Pools} />
+                <Route
+                  exact
+                  path="/pools"
+                  component={IS_TEST ? TestPools : Pools}
+                />
                 {pools.map(({ name, route }) => (
                   <Route
                     exact
