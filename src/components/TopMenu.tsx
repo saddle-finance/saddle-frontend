@@ -56,7 +56,7 @@ function TopMenu(): ReactElement {
       >
         <Box
           display="grid"
-          gridTemplateColumns="1fr 1fr 1fr"
+          gridTemplateColumns="1fr auto 1fr"
           gridTemplateRows="auto auto auto"
           width="100%"
           alignItems="center"

@@ -36,8 +36,10 @@ export default function ButtonTheme(theme: Theme): Components {
           },
           style: {
             lineHeight: 0,
+            minWidth: 70,
             maxHeight: 32,
             padding: 8,
+            font: theme.typography.body1.font,
           },
         },
         {

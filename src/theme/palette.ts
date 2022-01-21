@@ -1,5 +1,4 @@
 import { PaletteOptions, SimplePaletteColorOptions } from "@mui/material"
-import { alpha } from "@mui/material"
 
 // Define custom color types
 
@@ -87,13 +86,26 @@ const darkPalette: PaletteOptions | undefined = {
   },
   info: {
     main: "#4B11F2",
+    dark: "#2F099F",
+    light: "#9B91FF",
+  },
+  success: {
+    main: "#06D7D7",
+    dark: "#037777",
+    light: "#83EBEB",
+  },
+  error: {
+    main: "#FB5A5A",
+    dark: "#68282F",
+    light: "#FDA49A",
   },
   background: {
-    default: "#000000",
-    paper: alpha("#000000", 0.7),
+    default: "#222461",
+    paper: "#121334",
   },
+  divider: "#311188",
   other: {
-    divider: "#E3D899",
+    divider: "#311188",
     border: "#7D7D7D",
   },
   grey: GREY_TONES,
