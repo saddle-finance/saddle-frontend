@@ -288,7 +288,7 @@ export const OPT_USD_SWAP_ADDRESSES = buildAddresses({
 })
 
 export const FTM_USD_SWAP_ADDRESSES = buildAddresses({
-  [ChainId.FANTOM]: "",
+  [ChainId.FANTOM]: "0xBea9F78090bDB9e662d8CB301A00ad09A5b756e9",
 })
 
 export const FRAX_OPT_USD_SWAP_ADDRESSES = buildAddresses({
@@ -330,7 +330,7 @@ export const WCUSD_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
 })
 
 export const FTM_USD_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
-  [ChainId.FANTOM]: "",
+  [ChainId.FANTOM]: "0xc969dD0A7AB0F8a0C5A69C0839dB39b6C928bC08",
 })
 
 export const WCUSD_SWAP_TOKEN_V2_CONTRACT_ADDRESSES = buildAddresses({
