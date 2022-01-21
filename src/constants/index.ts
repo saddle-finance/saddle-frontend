@@ -134,6 +134,7 @@ export const BRIDGE_CONTRACT_ADDRESSES = buildAddresses({})
 
 export const MINICHEF_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0x6a4A2B93D36899F2D21b76aFe1dd650119F883D2",
+  [ChainId.MATICMUMBAI]: "0x7fd83d798Dd965F2E3830d4667fF0F562eEDa4F7",
 })
 
 export const RETROACTIVE_VESTING_CONTRACT_ADDRESSES = buildAddresses({
@@ -301,14 +302,15 @@ export const D4_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
 
 export const SDL_TOKEN_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0x2910E325cf29dd912E3476B61ef12F49cb931096",
+  [ChainId.MATICMUMBAI]: "0xe76baB0c6135631FBF87769fDD87e3EC1ab67E32",
 })
 
 export const SDL_TOKEN = new Token(
   SDL_TOKEN_ADDRESSES,
   18,
-  "SDL",
-  "saddle-dao", // TBD
-  "Saddle DAO",
+  "MUNE",
+  "mune-dao", // TBD
+  "Mune DAO",
   saddleLogo,
   false,
   false,
