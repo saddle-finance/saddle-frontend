@@ -108,6 +108,7 @@ function NetworkSection(): ReactElement {
   const [isNetworkVisible, setIsNetworkVisible] = useState(false)
   const networks = [
     ChainId.MAINNET,
+    ChainId.FANTOM,
     ...(IS_L2_SUPPORTED ? [ChainId.ARBITRUM, ChainId.OPTIMISM] : []),
   ]
 
