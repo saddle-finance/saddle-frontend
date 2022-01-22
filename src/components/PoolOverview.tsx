@@ -127,12 +127,12 @@ export default function PoolOverview({
             <div className="margin">
               <span className="label">
                 <a
-                  href="https://blog.saddle.finance/introducing-sdl"
+                  href="https://www.mune.finance/"
                   target="_blank"
                   rel="noreferrer"
                   style={{ textDecoration: "underline" }}
                 >
-                  SDL/24h
+                  MUNE/24h
                 </a>
               </span>
               <span>
