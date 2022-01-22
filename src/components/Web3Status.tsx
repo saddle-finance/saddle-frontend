@@ -1,10 +1,11 @@
 import "./Web3Status.scss"
 
 import React, { ReactElement, useEffect, useState } from "react"
+
 import AccountDetails from "./AccountDetails"
 import ConnectWallet from "./ConnectWallet"
-import Davatar from "@davatar/react"
 import { Dialog } from "@mui/material"
+import Identicon from "./Identicon"
 import { shortenAddress } from "../utils/shortenAddress"
 import { useENS } from "../hooks/useENS"
 import { useTranslation } from "react-i18next"
@@ -41,11 +42,7 @@ const Web3Status = (): ReactElement => {
             <span className="address">
               {ensName || shortenAddress(account)}
             </span>
-            <Davatar
-              size={24}
-              address={account}
-              generatedAvatarType="jazzicon"
-            />
+            <Identicon />
           </div>
         ) : (
           <div className="noAccount">{t("connectWallet")}</div>
