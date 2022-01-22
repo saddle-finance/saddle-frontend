@@ -8,10 +8,11 @@ import {
 } from "@mui/material"
 import React, { ReactElement } from "react"
 import { commify, formatBNToString } from "../utils"
+
 import ChangeIcon from "@mui/icons-material/ImportExport"
 import Copy from "./Copy"
-import Davatar from "@davatar/react"
 import DialogTitle from "./DialogTitle"
+import Identicon from "./Identicon"
 import LaunchIcon from "@mui/icons-material/Launch"
 import { SUPPORTED_WALLETS } from "../constants"
 import Transactions from "./Transactions"
@@ -71,11 +72,7 @@ export default function AccountDetail({
           </Typography>
 
           <Stack direction="row" spacing={1}>
-            <Davatar
-              size={24}
-              address={account || ""}
-              generatedAvatarType="jazzicon"
-            />
+            <Identicon />
             <Typography variant="subtitle1">
               {account && shortenAddress(account)}
             </Typography>
