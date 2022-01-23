@@ -19,7 +19,19 @@ export const useENS = (address: string | null | undefined): ReturnType => {
       ) {
         const provider = new ethers.providers.Web3Provider(library.provider)
         const ensName = await provider.lookupAddress(address)
+        console.log("ens name on net", ensName)
         if (ensName) setENSName(ensName)
+      } else if (
+        address &&
+        library &&
+        ethers.utils.isAddress(address) &&
+        chainId !== ChainId.MAINNET
+      ) {
+        // Get ens name from main chain when network is non-mainnet
+        const ensNameOnMainnet = await ethers
+          .getDefaultProvider()
+          .lookupAddress(address)
+        if (ensNameOnMainnet) setENSName(ensNameOnMainnet)
       }
     }
     resolveENS().catch(console.error)
