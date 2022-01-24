@@ -26,7 +26,7 @@ const containedStyle = (
     },
     style: {
       "&:hover": {
-        backgroundColor: theme.palette[color].light,
+        backgroundColor: theme.palette[color].states?.containedHoverBackground,
       },
     },
   }))
