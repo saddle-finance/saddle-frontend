@@ -20,7 +20,6 @@ import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import Swap from "./Swap"
-import Test from "./Test"
 import TopMenu from "../components/TopMenu"
 import Version from "../components/Version"
 import Web3ReactManager from "../components/Web3ReactManager"
@@ -98,7 +97,6 @@ export default function App(): ReactElement {
                   <Redirect from="/pools/:route/:action" to="/pools" />
                   <Route exact path="/risk" component={Risk} />
                   <Route exact path="/vesting-claim" component={VestingClaim} />
-                  <Route exact path="/test" component={Test} />
                 </Switch>
                 <WrongNetworkModal />
                 <Version />

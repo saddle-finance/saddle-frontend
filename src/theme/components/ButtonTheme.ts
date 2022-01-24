@@ -16,12 +16,15 @@ type ColorVariant = OverridableStringUnion<
   ButtonPropsColorOverrides
 >
 
+const buttonColorVariants: ColorVariant[] = ["primary", "secondary", "info"]
+
 const containedStyle = (
   colors: ColorVariant[],
   theme: Theme,
 ): ComponentsVariants["MuiButton"] =>
   colors.map((color) => ({
     props: {
+      variant: "contained",
       color: color,
     },
     style: {
@@ -30,12 +33,48 @@ const containedStyle = (
       },
     },
   }))
+
+const outlinedStyle = (
+  colors: ColorVariant[],
+  theme: Theme,
+): ComponentsVariants["MuiButton"] =>
+  colors.map((color) => ({
+    props: {
+      variant: "outlined",
+      color: color,
+    },
+    style: {
+      border: `1px solid ${
+        theme.palette[color].states?.outlinedRestingBorder ||
+        theme.palette[color].main
+      }`,
+      "&:hover": {
+        backgroundColor: theme.palette[color].states?.outlinedHoverBackground,
+      },
+    },
+  }))
+
+const textStyle = (
+  colors: ColorVariant[],
+  theme: Theme,
+): ComponentsVariants["MuiButton"] =>
+  colors.map((color) => ({
+    props: {
+      variant: "text",
+      color: color,
+    },
+    style: {
+      "&:hover": {
+        backgroundColor: theme.palette[color].states?.outlinedHoverBackground,
+      },
+    },
+  }))
 export default function ButtonTheme(theme: Theme): Components {
   return {
     MuiButton: {
-      variants: containedStyle(
-        ["primary", "secondary", "secondaryLight"],
-        theme,
+      variants: outlinedStyle(buttonColorVariants, theme)?.concat(
+        containedStyle(buttonColorVariants, theme) ?? [],
+        textStyle(buttonColorVariants, theme) ?? [],
       ),
       styleOverrides: {
         root: {
