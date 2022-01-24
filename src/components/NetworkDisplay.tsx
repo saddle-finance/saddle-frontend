@@ -14,7 +14,7 @@ const NetworkDisplay = React.forwardRef<HTMLButtonElement, NetworkDisplayProps>(
     const { active, chainId, error } = useWeb3React()
     const theme = useTheme()
     const networkLabel: string =
-      (chainId ? NETWORK_LABEL[chainId as ChainId] : undefined) ?? "Ethereum"
+      NETWORK_LABEL[chainId as ChainId] || "Ethereum"
     const isUnsupportChainIdError = error instanceof UnsupportedChainIdError
 
     return IS_L2_SUPPORTED ? (
