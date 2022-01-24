@@ -102,23 +102,32 @@ function TestPools(): ReactElement | null {
             // 2. active pools
             // 3. higher TVL pools
             if (
+              // @ts-ignore
               (a.userShareData?.usdBalance || Zero).gt(Zero) ||
+              // @ts-ignore
               (b.userShareData?.usdBalance || Zero).gt(Zero)
             ) {
+              // @ts-ignore
               return (a.userShareData?.usdBalance || Zero).gt(
+                // @ts-ignore
                 b.userShareData?.usdBalance || Zero,
               )
                 ? -1
                 : 1
             } else if (
+              // @ts-ignore
               a.poolData.isMigrated ||
+              // @ts-ignore
               b.poolData.isMigrated ||
               aIsOutdated ||
               bIsOutdated
             ) {
+              // @ts-ignore
               return a.poolData.isMigrated || aIsOutdated ? 1 : -1
             } else {
+              // @ts-ignore
               return (a.poolData?.reserve || Zero).gt(
+                // @ts-ignore
                 b.poolData?.reserve || Zero,
               )
                 ? -1
@@ -126,15 +135,21 @@ function TestPools(): ReactElement | null {
             }
           })
           .map(([poolProps]) => (
+            // @ts-ignore
             <PoolOverview
+              // @ts-ignore
               key={poolProps.name}
               {...poolProps}
               onClickMigrate={
+                // @ts-ignore
                 poolProps.poolData.isMigrated
                   ? () =>
                       handleClickMigrate(
+                        // @ts-ignore
                         TEST_POOLS_MAP[poolProps.poolData.name].name,
+                        // @ts-ignore
                         poolProps.userShareData?.lpTokenBalance ?? Zero,
+                        // @ts-ignore
                         TEST_POOLS_MAP[poolProps.poolData.name].lpToken.symbol,
                       )
                   : undefined
