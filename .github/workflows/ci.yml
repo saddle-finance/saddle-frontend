@@ -105,7 +105,7 @@ jobs:
       - run: npm ci
       - run: npx start-test 3000 'npx currents run --record --key ${{ secrets.CURRENTS_RECORD_KEY }}'
         env:
-          NODE_ENV: 'test'
+          DEBUG: cypress:* cypress run
       - run: npx nyc report --reporter=text
       - uses: codecov/codecov-action@v1
         with:
