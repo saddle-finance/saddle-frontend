@@ -29,3 +29,7 @@ interface Window {
   gtag?: (...args: any[]) => void
   web3?: unknown
 }
+
+declare module "@metamask/jazzicon" {
+  export default function (diameter: number, seed: number): HTMLElement
+}
