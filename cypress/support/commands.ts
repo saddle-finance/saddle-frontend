@@ -48,13 +48,16 @@ class CustomizedBridge extends _Eip1193Bridge {
       params = args[1]
     }
     console.log(`method: ${method}`)
+    console.time(`${method}`)
     function wrapResponse(result, error = null) {
       if (result == null && result == null) {
         error = new Error(`Something went wrong on result, result is${result}`)
       }
       if (isCallbackForm) {
+        console.timeEnd(`${method}`)
         callback(error, result ? { result } : null)
       } else {
+        console.timeEnd(`${method}`)
         return result ? Promise.resolve(result) : Promise.reject(error)
       }
     }
@@ -82,6 +85,7 @@ class CustomizedBridge extends _Eip1193Bridge {
       const result = await super.send(method, [argsObject, ...paramsRest])
       return wrapResponse(result)
     } catch (error) {
+      console.time(`${method}`)
       return wrapResponse(null, error)
     }
   }
