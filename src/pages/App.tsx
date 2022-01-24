@@ -1,3 +1,4 @@
+/* eslint-disable no-constant-condition */
 import "../styles/global.scss"
 import "./NotifyStyle.scss"
 
@@ -16,7 +17,7 @@ import { isChainSupportedByNotify, notify } from "../utils/notifyHandler"
 import { useDispatch, useSelector } from "react-redux"
 
 import Deposit from "./Deposit"
-import { IS_TEST } from "../utils/environment"
+// import { IS_TEST } from "../utils/environment"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
@@ -47,7 +48,7 @@ export default function App(): ReactElement {
     })
   }, [chainId, userDarkMode])
   const pools = useMemo(() => {
-    return Object.values(IS_TEST ? TEST_POOLS_MAP : POOLS_MAP).filter(
+    return Object.values(true ? TEST_POOLS_MAP : POOLS_MAP).filter(
       ({ addresses }) => chainId && addresses[chainId],
     )
   }, [chainId])
@@ -64,7 +65,7 @@ export default function App(): ReactElement {
                 <Route
                   exact
                   path="/pools"
-                  component={IS_TEST ? TestPools : Pools}
+                  component={true ? TestPools : Pools}
                 />
                 {pools.map(({ name, route }) => (
                   <Route
