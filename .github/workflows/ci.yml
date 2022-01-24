@@ -107,6 +107,7 @@ jobs:
       - run: npm run cy:coverage
         env:
           CHOKIDAR_USEPOLLING: 1
+          DEBUG: cypress:* cypress run
       - run: npx nyc report --reporter=text
       - uses: codecov/codecov-action@v1
         with:
