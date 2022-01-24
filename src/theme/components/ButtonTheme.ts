@@ -1,25 +1,42 @@
-import { Components, Theme } from "@mui/material"
+import {
+  ButtonPropsColorOverrides,
+  Components,
+  ComponentsVariants,
+  Theme,
+} from "@mui/material"
+import { OverridableStringUnion } from "@mui/types"
 
 declare module "@mui/material/Button" {
   interface ButtonPropsColorOverrides {
     secondaryLight: true
   }
 }
+type ColorVariant = OverridableStringUnion<
+  "primary" | "secondary" | "success" | "error" | "info" | "warning",
+  ButtonPropsColorOverrides
+>
+
+const containedStyle = (
+  colors: ColorVariant[],
+  theme: Theme,
+): ComponentsVariants["MuiButton"] =>
+  colors.map((color) => ({
+    props: {
+      color: color,
+    },
+    style: {
+      "&:hover": {
+        backgroundColor: theme.palette[color].light,
+      },
+    },
+  }))
 export default function ButtonTheme(theme: Theme): Components {
   return {
     MuiButton: {
-      variants: [
-        {
-          props: {
-            variant: "contained",
-            size: "small",
-          },
-          style: {
-            minWidth: 0,
-            padding: 1,
-          },
-        },
-      ],
+      variants: containedStyle(
+        ["primary", "secondary", "secondaryLight"],
+        theme,
+      ),
       styleOverrides: {
         root: {
           textTransform: "none",
@@ -31,17 +48,16 @@ export default function ButtonTheme(theme: Theme): Components {
             boxShadow: "none",
           },
         },
-        outlined: {
-          "&:hover": {
-            backgroundColor: theme.palette.secondaryLight.main,
-          },
-        },
         sizeMedium: {
           lineHeight: 0,
           minWidth: 70,
-          maxHeight: 32,
+          height: 32,
           padding: 8,
           font: theme.typography.body1.font,
+        },
+        sizeSmall: {
+          minWidth: 0,
+          padding: 1,
         },
       },
     },

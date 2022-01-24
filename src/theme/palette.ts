@@ -1,4 +1,4 @@
-import { PaletteOptions, SimplePaletteColorOptions } from "@mui/material"
+import { PaletteOptions } from "@mui/material"
 
 // Define custom color types
 
@@ -7,6 +7,20 @@ interface OtherColorTypes {
   border: string
 }
 declare module "@mui/material/styles/createPalette" {
+  interface SimplePaletteColorOptions {
+    states?: {
+      outlinedRestingBorder: string
+      outlinedHoverBackground: string
+      containedHoverBackground: string
+    }
+  }
+  interface PaletteColor {
+    states?: {
+      outlinedRestingBorder: string
+      outlinedHoverBackground: string
+      containedHoverBackground: string
+    }
+  }
   interface Palette {
     secondaryLight: SimplePaletteColorOptions
     other: OtherColorTypes
@@ -30,17 +44,34 @@ const lightPalette: PaletteOptions | undefined = {
     main: "#06D7D7",
     dark: "#037777",
     light: "#83EBEB",
+    states: {
+      outlinedRestingBorder: "#06D7D7",
+      outlinedHoverBackground: "#E6FFFF",
+      containedHoverBackground: "#037777",
+    },
   },
   secondary: {
     main: "#E6AD76",
     dark: "#D07647",
     light: "#FAF3CE",
+    states: {
+      outlinedRestingBorder: "#E6AD76",
+      outlinedHoverBackground: "#FAF3CE",
+      containedHoverBackground: "#D07647",
+    },
   },
   secondaryLight: {
-    main: "#FAF3CE",
+    main: "#E6AD76",
+    dark: "#D07647",
+    light: "#FAF3CE",
   },
   info: {
     main: "#4B11F2",
+    states: {
+      outlinedRestingBorder: "#4B11F2",
+      outlinedHoverBackground: "#C9B8FB",
+      containedHoverBackground: "#2F099F",
+    },
   },
   background: {
     default: "#FFFFE9",
@@ -81,11 +112,21 @@ const darkPalette: PaletteOptions | undefined = {
     main: "#06D7D7",
     dark: "#037777",
     light: "#83EBEB",
+    states: {
+      outlinedRestingBorder: "#06D7D7",
+      outlinedHoverBackground: "#037777",
+      containedHoverBackground: "#E6FFFF",
+    },
   },
   secondary: {
     main: "#E6AD76",
     dark: "#D07647",
     light: "#FAF3CE",
+    states: {
+      outlinedRestingBorder: "#E6AD76",
+      outlinedHoverBackground: "#D07647",
+      containedHoverBackground: "#FAF3CE",
+    },
   },
   secondaryLight: {
     light: "#9B91FF",
@@ -95,6 +136,11 @@ const darkPalette: PaletteOptions | undefined = {
     main: "#4B11F2",
     dark: "#2F099F",
     light: "#9B91FF",
+    states: {
+      outlinedRestingBorder: "#4B11F2",
+      outlinedHoverBackground: "#270782",
+      containedHoverBackground: "#C9B8FB",
+    },
   },
 
   action: {
