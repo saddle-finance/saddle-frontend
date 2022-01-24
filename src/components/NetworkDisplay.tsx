@@ -13,30 +13,31 @@ const NetworkDisplay = React.forwardRef<HTMLButtonElement, NetworkDisplayProps>(
   function NetworkDisplay({ onClick }, ref) {
     const { active, chainId, error } = useWeb3React()
     const theme = useTheme()
-    const networkLabel: string =
-      NETWORK_LABEL[chainId as ChainId] || "Ethereum"
+    const networkLabel: string = NETWORK_LABEL[chainId as ChainId] || "Ethereum"
     const isUnsupportChainIdError = error instanceof UnsupportedChainIdError
 
-    return IS_L2_SUPPORTED ? (
-      <Button
-        ref={ref}
-        data-testid="networkDisplayBtn"
-        variant="outlined"
-        color="secondaryLight"
-        onClick={onClick}
-        startIcon={
-          <CircleTwoToneIcon
-            color={!isUnsupportChainIdError && active ? "success" : "error"}
-            fontSize="small"
-          />
-        }
-        sx={{ border: `1px solid ${theme.palette.action.hover}` }}
-      >
-        <Typography variant="body1" color="text.primary" noWrap>
-          {networkLabel}
-        </Typography>
-      </Button>
-    ) : null
+    return (
+      IS_L2_SUPPORTED && (
+        <Button
+          ref={ref}
+          data-testid="networkDisplayBtn"
+          variant="outlined"
+          color="secondaryLight"
+          onClick={onClick}
+          startIcon={
+            <CircleTwoToneIcon
+              color={!isUnsupportChainIdError && active ? "success" : "error"}
+              fontSize="small"
+            />
+          }
+          sx={{ border: `1px solid ${theme.palette.action.hover}` }}
+        >
+          <Typography variant="body1" color="text.primary" noWrap>
+            {networkLabel}
+          </Typography>
+        </Button>
+      )
+    )
   },
 )
 export default NetworkDisplay
