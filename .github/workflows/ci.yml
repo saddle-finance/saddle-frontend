@@ -104,6 +104,8 @@ jobs:
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
       - run: npm ci
       - run: npx start-test 3000 'npx currents run --record --key ${{ secrets.CURRENTS_RECORD_KEY }}'
+        env:
+          NODE_ENV: 'test'
       - run: npx nyc report --reporter=text
       - uses: codecov/codecov-action@v1
         with:
