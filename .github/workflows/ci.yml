@@ -81,7 +81,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   coverage-cypress:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     services:
       saddle-contract:
         image: saddlefinance/contracts:latest
@@ -100,6 +100,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "12"
+          
       # fix for forcing git to use https when pulling deps
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
       - run: npm ci
