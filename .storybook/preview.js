@@ -13,7 +13,6 @@ export const parameters = {
   },
 }
 
-console.log("theme ==>", lightTheme)
 const theme = lightTheme
 theme.components = componentsOverrides(theme)
 export const decorators = [
