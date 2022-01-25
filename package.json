@@ -83,8 +83,12 @@
     "redux-devtools-extension": "^2.13.8",
     "sass": "^1.32.5",
     "start-server-and-test": "^1.12.1",
+    "storybook-addon-material-ui": "^0.9.0-alpha.24",
     "typechain": "^4.0.3",
     "typescript-plugin-css-modules": "^3.2.0"
+  },
+  "resolutions": {
+    "**/@emotion/styled": "^11.0.0"
   },
   "scripts": {
     "lint": "eslint --max-warnings=0 --ext ts,tsx src/ && prettier --list-different 'src/**/*.{ts,tsx,scss}'",

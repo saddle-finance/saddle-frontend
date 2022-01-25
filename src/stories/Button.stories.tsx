@@ -15,5 +15,6 @@ export const Primary = Template.bind({})
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 Primary.args = {
   variant: "contained",
-  children: "Primary",
+  children: "Button",
+  color: "secondary",
 }
