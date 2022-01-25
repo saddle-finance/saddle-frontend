@@ -6,7 +6,7 @@ import React from "react"
 // Check controls from https://storybook.js.org/docs/react/essentials/controls
 
 export default {
-  title: "Example/Button",
+  title: "Light components/Button",
   component: Button,
   argTypes: {
     variant: {
@@ -21,15 +21,19 @@ export default {
       options: [true, false],
       control: { type: "inline-radio" },
     },
+    size: {
+      options: ["small", "medium", "large"],
+      control: { type: "inline-radio" },
+    },
   },
 } as ComponentMeta<typeof Button>
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 const Template: ComponentStory<typeof Button> = (args) => <Button {...args} />
 
-export const Primary = Template.bind({})
+export const LightButton = Template.bind({})
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
-Primary.args = {
+LightButton.args = {
   variant: "contained",
   children: "Button",
   color: "secondary",

@@ -1,6 +1,6 @@
 import { ThemeProvider as MUIThemeProvider } from "@mui/material/styles"
 import { ThemeProvider } from "emotion-theming"
-import { lightTheme, darkTheme } from "../src/theme"
+import { lightTheme } from "../src/theme"
 import componentsOverrides from "../src/theme/components"
 
 export const parameters = {
