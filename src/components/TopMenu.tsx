@@ -95,7 +95,7 @@ function TopMenu(): ReactElement {
             <Web3Status />
             <NetworkDisplay onClick={handleSettingMenu} />
             <Button
-              color="secondaryLight"
+              color="mute"
               variant="contained"
               onClick={handleSettingMenu}
               sx={{ minWidth: 0, padding: 0 }}

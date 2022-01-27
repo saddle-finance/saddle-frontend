@@ -8,7 +8,7 @@ import { OverridableStringUnion } from "@mui/types"
 
 declare module "@mui/material/Button" {
   interface ButtonPropsColorOverrides {
-    secondaryLight: true
+    mute: true
   }
 }
 type ColorVariant = OverridableStringUnion<

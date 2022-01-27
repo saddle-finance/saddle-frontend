@@ -2,7 +2,7 @@ import { Components, Theme } from "@mui/material"
 
 declare module "@mui/material/IconButton" {
   interface ButtonPropsColorOverrides {
-    secondaryLight: true
+    mute: true
   }
 }
 export default function IconButtonTheme(theme: Theme): Components {
