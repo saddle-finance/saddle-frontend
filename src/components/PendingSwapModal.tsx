@@ -64,10 +64,8 @@ const PendingSwapModal = ({
     action: null,
     amount: Zero,
   })
-  const [
-    calculatedTokenAmount,
-    setCalculatedTokenAmount,
-  ] = useState<BigNumber | null>(null)
+  const [calculatedTokenAmount, setCalculatedTokenAmount] =
+    useState<BigNumber | null>(null)
   const [currentStep, setCurrentStep] = useState<ModalStep>(
     secondsRemaining === 0 ? "exchange" : "timer",
   )
@@ -95,6 +93,7 @@ const PendingSwapModal = ({
     void calcAmount()
   }, [bridgeContract, settlementState, itemId, swapType])
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const gasPrice = gasBNFromState(
     { gasStandard, gasFast, gasInstant },
     gasPriceSelected,
@@ -114,7 +113,7 @@ const PendingSwapModal = ({
   const handleConfirmSettlement = useCallback(async () => {
     try {
       setCurrentStep("confirmation")
-      const txnArgs = { gasPrice }
+      const txnArgs = {}
       let transaction
       if (settlementState.action === "withdraw") {
         transaction = await bridgeContract?.withdraw(
@@ -172,7 +171,6 @@ const PendingSwapModal = ({
     bridgeContract,
     itemId,
     calculatedTokenAmount,
-    gasPrice,
     onClose,
     slippageCustom,
     slippageSelected,
@@ -222,7 +220,7 @@ const PendingSwapModal = ({
             <div className={styles.about}>
               <InfoIcon />
               <a
-                href="https://docs.saddle.finance/faq#what-is-virtual-swap"
+                href="https://docs.saddle.finance/saddle-faq#what-is-virtual-swap"
                 target="_blank"
                 rel="noreferrer"
               >

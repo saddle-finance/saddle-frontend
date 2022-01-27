@@ -1,11 +1,12 @@
 @import "../styles/theme.scss";
 @import "../styles/viewports";
 
-div.withdraw {
+.withdraw {
   min-height: 100vh;
   background: var(--background-main);
   color: var(--text);
   padding-bottom: 80px;
+  width: 100vw;
   box-sizing: border-box; // Make the padding included in height calculation
 
   .content {
@@ -26,7 +27,6 @@ div.withdraw {
 
     .infoPanels {
       margin-top: 40px;
-      width: 434px;
       padding: 24px 32px;
       border: 1px solid var(--outline);
       border-radius: 10px;
@@ -113,6 +113,13 @@ div.withdraw {
         text-align: right;
         width: 100%;
       }
+    }
+
+    .infoPanels .divider {
+      width: 100%;
+      height: 1px;
+      background: $divider-red;
+      margin: 16px 0;
     }
 
     div.horizontalDisplay {
@@ -214,8 +221,4 @@ div.withdraw {
     width: 100%;
     height: 24px;
   }
-}
-
-div.noShare {
-  background: var(--background);
 }

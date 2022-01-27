@@ -7,6 +7,7 @@ import {
   isLegacySwapABIPool,
 } from "../constants"
 import { formatDeadlineToNumber, getContract } from "../utils"
+import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
 import {
   useAllContracts,
   useLPTokenContract,
@@ -26,7 +27,6 @@ import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
-import { notifyHandler } from "../utils/notifyHandler"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
@@ -103,7 +103,10 @@ export function useApproveAndDeposit(
       } else {
         gasPriceUnsafe = gasStandard
       }
-      const gasPrice = parseUnits(String(gasPriceUnsafe) || "45", 9)
+      const gasPrice = parseUnits(
+        gasPriceUnsafe ? String(gasPriceUnsafe) : "45",
+        9,
+      )
       const approveSingleToken = async (token: Token): Promise<void> => {
         const spendingValue = BigNumber.from(state[token.symbol].valueSafe)
         if (spendingValue.isZero()) return
@@ -139,13 +142,17 @@ export function useApproveAndDeposit(
         minToMint = BigNumber.from("0")
       } else {
         if (isLegacySwapABIPool(poolName)) {
-          minToMint = await (effectiveSwapContract as SwapFlashLoan).calculateTokenAmount(
+          minToMint = await (
+            effectiveSwapContract as SwapFlashLoan
+          ).calculateTokenAmount(
             account,
             poolTokens.map(({ symbol }) => state[symbol].valueSafe),
             true, // deposit boolean
           )
         } else {
-          minToMint = await (effectiveSwapContract as SwapFlashLoanNoWithdrawFee).calculateTokenAmount(
+          minToMint = await (
+            effectiveSwapContract as SwapFlashLoanNoWithdrawFee
+          ).calculateTokenAmount(
             poolTokens.map(({ symbol }) => state[symbol].valueSafe),
             true, // deposit boolean
           )
@@ -170,9 +177,6 @@ export function useApproveAndDeposit(
           minToMint,
           txnDeadline,
           [],
-          {
-            gasPrice,
-          },
         )
       } else {
         const swapFlashLoanContract = effectiveSwapContract as SwapFlashLoan
@@ -180,9 +184,6 @@ export function useApproveAndDeposit(
           txnAmounts,
           minToMint,
           txnDeadline,
-          {
-            gasPrice,
-          },
         )
       }
 
@@ -197,6 +198,7 @@ export function useApproveAndDeposit(
       return Promise.resolve()
     } catch (e) {
       console.error(e)
+      notifyCustomError(e as Error)
     }
   }
 }

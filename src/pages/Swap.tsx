@@ -4,6 +4,7 @@ import {
   PoolName,
   SWAP_TYPES,
   TOKENS_MAP,
+  TOKEN_TO_POOLS_MAP,
 } from "../constants"
 import React, {
   ReactElement,
@@ -42,6 +43,7 @@ import { formatGasToString } from "../utils/gas"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndSwap } from "../hooks/useApproveAndSwap"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
+import usePoolsStatuses from "../hooks/usePoolsStatuses"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 import { utils } from "ethers"
@@ -99,6 +101,7 @@ function Swap(): ReactElement {
   const { chainId } = useActiveWeb3React()
   const approveAndSwap = useApproveAndSwap()
   const tokenBalances = usePoolTokenBalances()
+  const poolsStatuses = usePoolsStatuses()
   const bridgeContract = useBridgeContract()
   const snxEchangeRatesContract = useSynthetixExchangeRatesContract()
   const calculateSwapPairs = useCalculateSwapPairs()
@@ -111,17 +114,35 @@ function Swap(): ReactElement {
   )
 
   const [formState, setFormState] = useState<FormState>(EMPTY_FORM_STATE)
-  const [prevFormState, setPrevFormState] = useState<FormState>(
-    EMPTY_FORM_STATE,
-  )
+  const [prevFormState, setPrevFormState] =
+    useState<FormState>(EMPTY_FORM_STATE)
+  useEffect(() => {
+    setFormState(EMPTY_FORM_STATE)
+    setPrevFormState(EMPTY_FORM_STATE)
+  }, [chainId])
 
   const swapContract = useSwapContract(
     formState.to.poolName as PoolName | undefined,
   )
   // build a representation of pool tokens for the UI
   const tokenOptions = useMemo(() => {
+    if (!chainId)
+      return {
+        from: [],
+        to: [],
+      }
     const allTokens = Object.values(TOKENS_MAP)
-      .filter(({ isLPToken }) => !isLPToken)
+      .filter(({ isLPToken, addresses }) => !isLPToken && addresses[chainId])
+      .filter(({ symbol }) => {
+        // get list of pools containing the token
+        const tokenPools = TOKEN_TO_POOLS_MAP[symbol]
+        // ensure at least one pool is unpaused to include token in swappable list
+        const hasAnyUnpaused = tokenPools.reduce((acc, poolName) => {
+          const poolStatus = poolsStatuses[poolName as PoolName]
+          return poolStatus ? Boolean(acc || !poolStatus.isPaused) : acc
+        }, false)
+        return hasAnyUnpaused
+      })
       .map(({ symbol, name, icon, decimals }) => {
         const amount = tokenBalances?.[symbol] || Zero
         return {
@@ -166,7 +187,13 @@ function Swap(): ReactElement {
       from: allTokens,
       to: toTokens,
     }
-  }, [tokenPricesUSD, tokenBalances, formState.currentSwapPairs])
+  }, [
+    tokenPricesUSD,
+    tokenBalances,
+    formState.currentSwapPairs,
+    chainId,
+    poolsStatuses,
+  ])
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const calculateSwapAmount = useCallback(
     debounce(async (formStateArg: FormState) => {
@@ -217,15 +244,13 @@ function Swap(): ReactElement {
       ) {
         const originPool = POOLS_MAP[formStateArg.from.poolName]
         const destinationPool = POOLS_MAP[formStateArg.to.poolName]
-        const [
-          amountOutSynth,
-          amountOutToken,
-        ] = await bridgeContract.calcTokenToToken(
-          [originPool.addresses[chainId], destinationPool.addresses[chainId]],
-          formStateArg.from.tokenIndex,
-          formStateArg.to.tokenIndex,
-          amountToGive,
-        )
+        const [amountOutSynth, amountOutToken] =
+          await bridgeContract.calcTokenToToken(
+            [originPool.addresses[chainId], destinationPool.addresses[chainId]],
+            formStateArg.from.tokenIndex,
+            formStateArg.to.tokenIndex,
+            amountToGive,
+          )
         amountToReceive = amountOutToken
         amountMediumSynth = amountOutSynth
       } else if (
@@ -233,15 +258,13 @@ function Swap(): ReactElement {
         bridgeContract != null
       ) {
         const destinationPool = POOLS_MAP[formStateArg.to.poolName]
-        const [
-          amountOutSynth,
-          amountOutToken,
-        ] = await bridgeContract.calcSynthToToken(
-          destinationPool.addresses[chainId],
-          utils.formatBytes32String(formStateArg.from.symbol),
-          formStateArg.to.tokenIndex,
-          amountToGive,
-        )
+        const [amountOutSynth, amountOutToken] =
+          await bridgeContract.calcSynthToToken(
+            destinationPool.addresses[chainId],
+            utils.formatBytes32String(formStateArg.from.symbol),
+            formStateArg.to.tokenIndex,
+            amountToGive,
+          )
         amountToReceive = amountOutToken
         amountMediumSynth = amountOutSynth
       } else if (
@@ -573,12 +596,14 @@ const sortTokenOptions = (a: TokenOption, b: TokenOption) => {
   if (a.swapType === SWAP_TYPES.INVALID || b.swapType === SWAP_TYPES.INVALID) {
     return a.swapType === SWAP_TYPES.INVALID ? 1 : -1
   }
-  if (a.valueUSD.eq(b.valueUSD)) {
+  if (a.valueUSD.gt(b.valueUSD)) {
+    // prefer largest wallet balance
+    return -1
+  } else if (a.valueUSD.gt(Zero) && a.valueUSD.eq(b.valueUSD)) {
     const amountA = shiftBNDecimals(a.amount, 18 - a.decimals)
     const amountB = shiftBNDecimals(b.amount, 18 - b.decimals)
     return amountA.gt(amountB) ? -1 : 1
-  } else if (a.valueUSD.gt(b.valueUSD)) {
-    return -1
   }
-  return 1
+  // prefer direct swaps
+  return a.swapType === SWAP_TYPES.DIRECT ? -1 : 1
 }

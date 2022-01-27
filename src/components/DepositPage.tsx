@@ -1,22 +1,23 @@
 import "./DepositPage.scss"
 
 import { ALETH_POOL_NAME, VETH2_POOL_NAME, isMetaPool } from "../constants"
-import { Button, Center } from "@chakra-ui/react"
+import { Box, Stack } from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
 import AdvancedOptions from "./AdvancedOptions"
+import Button from "./Button"
 import CheckboxInput from "./CheckboxInput"
 import ConfirmTransaction from "./ConfirmTransaction"
 import { DepositTransaction } from "../interfaces/transactions"
 import LPStakingBanner from "./LPStakingBanner"
 import Modal from "./Modal"
+import MyFarm from "./MyFarm"
 import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
 import ReviewDeposit from "./ReviewDeposit"
 import TokenInput from "./TokenInput"
-import TopMenu from "./TopMenu"
 import { Zero } from "@ethersproject/constants"
 import { formatBNToPercentString } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
@@ -58,13 +59,11 @@ const DepositPage = (props: Props): ReactElement => {
   } = props
 
   const [currentModal, setCurrentModal] = useState<string | null>(null)
-
   const validDepositAmount = transactionData.to.totalAmount.gt(0)
   const shouldDisplayWrappedOption = isMetaPool(poolData?.name)
 
   return (
     <div className="deposit">
-      <TopMenu activeTab={"deposit"} />
       {poolData?.aprs?.keep?.apr.gt(Zero) &&
         myShareData?.lpTokenBalance.gt(0) && (
           <LPStakingBanner
@@ -187,30 +186,46 @@ const DepositPage = (props: Props): ReactElement => {
             </div>
           </div>
           <AdvancedOptions />
-          <Center width="100%" py={6}>
-            <Button
-              variant="primary"
-              size="lg"
-              width="240px"
-              onClick={(): void => {
-                setCurrentModal("review")
+          <Stack direction="row" width="434px" pt={3} justifyContent="center">
+            <Box width={["90%", "50%"]}>
+              <Button
+                kind="primary"
+                fullWidth
+                onClick={(): void => {
+                  setCurrentModal("review")
+                }}
+                disabled={!validDepositAmount || poolData?.isPaused}
+              >
+                {t("deposit")}
+              </Button>
+            </Box>
+
+            {/* <Box width={["90%", "50%"]} paddingTop={2}>
+              <Button variant="primary" size="lg" width="100%">
+                {t("depositAndStake")}
+              </Button>
+            </Box> */}
+          </Stack>
+        </div>
+        <div>
+          {poolData && (
+            <MyFarm
+              lpWalletBalance={myShareData?.lpTokenBalance || Zero}
+              poolName={poolData.name}
+            />
+          )}
+          <div className="infoPanels">
+            <MyShareCard data={myShareData} />
+            <div
+              style={{
+                display: myShareData ? "block" : "none",
               }}
-              disabled={!validDepositAmount || poolData?.isPaused}
-            >
-              {t("deposit")}
-            </Button>
-          </Center>
+              className="divider"
+            ></div>{" "}
+            <PoolInfoCard data={poolData} />
+          </div>
         </div>
-        <div className="infoPanels">
-          <MyShareCard data={myShareData} />
-          <div
-            style={{
-              display: myShareData ? "block" : "none",
-            }}
-            className="divider"
-          ></div>{" "}
-          <PoolInfoCard data={poolData} />
-        </div>
+
         <Modal
           isOpen={!!currentModal}
           onClose={(): void => setCurrentModal(null)}

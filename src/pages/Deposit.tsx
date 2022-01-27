@@ -83,7 +83,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
 
   // Merge underlying token usd prices and tokenPricesUSD array
   const [underlyingPoolData] = usePoolData(POOL.underlyingPool)
-  let newTokenPricesUSD
+  let newTokenPricesUSD = tokenPricesUSD
   if (underlyingPoolData.lpTokenPriceUSD != Zero) {
     const underlyingTokenUSDValue = parseFloat(
       formatBNToString(poolData.lpTokenPriceUSD, 18, 2),
@@ -145,7 +145,9 @@ function Deposit({ poolName }: Props): ReactElement | null {
       let depositLPTokenAmount
       if (poolData.totalLocked.gt(0) && tokenInputSum.gt(0)) {
         if (isLegacySwapABIPool(poolData.name)) {
-          depositLPTokenAmount = await (swapContract as SwapFlashLoan).calculateTokenAmount(
+          depositLPTokenAmount = await (
+            swapContract as SwapFlashLoan
+          ).calculateTokenAmount(
             account,
             POOL.poolTokens.map(
               ({ symbol }) => tokenFormState[symbol].valueSafe,
@@ -162,7 +164,9 @@ function Deposit({ poolName }: Props): ReactElement | null {
               )
             : Zero
         } else {
-          depositLPTokenAmount = await (swapContract as SwapFlashLoanNoWithdrawFee).calculateTokenAmount(
+          depositLPTokenAmount = await (
+            swapContract as SwapFlashLoanNoWithdrawFee
+          ).calculateTokenAmount(
             POOL.poolTokens.map(
               ({ symbol }) => tokenFormState[symbol].valueSafe,
             ),
@@ -198,9 +202,8 @@ function Deposit({ poolName }: Props): ReactElement | null {
   ])
 
   // A represention of tokens used for UI
-  const tokens = (shouldDepositWrapped
-    ? POOL.underlyingPoolTokens || []
-    : POOL.poolTokens
+  const tokens = (
+    shouldDepositWrapped ? POOL.underlyingPoolTokens || [] : POOL.poolTokens
   ).map(({ symbol, name, icon, decimals }) => ({
     symbol,
     name,

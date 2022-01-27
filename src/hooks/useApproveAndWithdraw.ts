@@ -1,14 +1,15 @@
 import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
 import { addSlippage, subtractSlippage } from "../utils/slippage"
 import { formatUnits, parseUnits } from "@ethersproject/units"
+import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
 import { useLPTokenContract, useSwapContract } from "./useContract"
+
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import { GasPrices } from "../state/user"
 import { NumberInputState } from "../utils/numberInputState"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { formatDeadlineToNumber } from "../utils"
-import { notifyHandler } from "../utils/notifyHandler"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
 import { useDispatch } from "react-redux"
@@ -105,9 +106,6 @@ export function useApproveAndWithdraw(
             ),
           ),
           deadline,
-          {
-            gasPrice,
-          },
         )
       } else if (state.withdrawType === "IMBALANCE") {
         spendTransaction = await swapContract.removeLiquidityImbalance(
@@ -120,9 +118,6 @@ export function useApproveAndWithdraw(
             slippageCustom,
           ),
           deadline,
-          {
-            gasPrice,
-          },
         )
       } else {
         // state.withdrawType === [TokenSymbol]
@@ -139,9 +134,6 @@ export function useApproveAndWithdraw(
             slippageCustom,
           ),
           deadline,
-          {
-            gasPrice,
-          },
         )
       }
 
@@ -155,6 +147,7 @@ export function useApproveAndWithdraw(
       )
     } catch (e) {
       console.error(e)
+      notifyCustomError(e as Error)
     }
   }
 }

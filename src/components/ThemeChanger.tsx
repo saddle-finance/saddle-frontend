@@ -1,39 +1,23 @@
 import "./ThemeChanger.scss"
 
-import { AppDispatch, AppState } from "../state"
-import React, { ReactElement, useEffect } from "react"
-import { useDispatch, useSelector } from "react-redux"
-
-import { updateDarkMode } from "../state/user"
-import { useColorMode } from "@chakra-ui/react"
+import React, { ReactElement } from "react"
+import { useThemeSettings } from "../providers/ThemeSettingsProvider"
 
 const ThemeChanger = (): ReactElement => {
-  const dispatch = useDispatch<AppDispatch>()
-  const { colorMode, toggleColorMode } = useColorMode()
-  const { userDarkMode } = useSelector((state: AppState) => state.user)
+  const { themeMode, onChangeMode } = useThemeSettings()
 
-  useEffect(() => {
-    if (userDarkMode) {
-      document.body.classList.add("dark")
-    } else {
-      document.body.classList.remove("dark")
-    }
-  }, [userDarkMode])
+  const handleThemeChange = () => {
+    onChangeMode(themeMode === "light" ? "dark" : "light")
+  }
 
   return (
     <div className="themeChanger">
       <button
         onClick={(): void => {
-          dispatch(updateDarkMode(!userDarkMode))
-          if (
-            (userDarkMode && colorMode === "dark") ||
-            (!userDarkMode && colorMode === "light")
-          ) {
-            toggleColorMode()
-          }
+          handleThemeChange()
         }}
       >
-        {userDarkMode ? "☾" : "☀"}
+        {themeMode == "dark" ? "☾" : "☀"}
       </button>
     </div>
   )

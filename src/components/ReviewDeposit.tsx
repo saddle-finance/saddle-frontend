@@ -41,15 +41,14 @@ function ReviewDeposit({
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
-  const [
-    hasConfirmedHighPriceImpact,
-    setHasConfirmedHighPriceImpact,
-  ] = useState(false)
+  const [hasConfirmedHighPriceImpact, setHasConfirmedHighPriceImpact] =
+    useState(false)
   const isHighPriceImpactTxn = isHighPriceImpact(transactionData.priceImpact)
   const deadline = formatDeadlineToNumber(
     transactionDeadlineSelected,
     transactionDeadlineCustom,
   )
+  const shouldDisplayGas = !!gasStandard
   return (
     <div className="reviewDeposit">
       <h3>{t("reviewDeposit")}</h3>
@@ -109,18 +108,21 @@ function ReviewDeposit({
             {formatBNToPercentString(transactionData.shareOfPool, 18)}
           </span>
         </div>
-        <div className="depositInfoItem">
-          <span className="label">{t("gas")}</span>
-          <span className="value">
-            {formatGasToString(
-              { gasStandard, gasFast, gasInstant },
-              gasPriceSelected,
-              gasCustom,
-            )}{" "}
-            GWEI
-          </span>
-        </div>
-        {transactionData.txnGasCost?.valueUSD && (
+        {shouldDisplayGas && (
+          <div className="depositInfoItem">
+            <span className="label">{t("gas")}</span>
+            <span className="value">
+              {formatGasToString(
+                { gasStandard, gasFast, gasInstant },
+                gasPriceSelected,
+                gasCustom,
+              )}{" "}
+              GWEI
+            </span>
+          </div>
+        )}
+        {/* TODO: Create a light API to expose the cached BlockNative gas estimates. */}
+        {/* {transactionData.txnGasCost?.valueUSD && (
           <div className="depositInfoItem">
             <span className="label">{t("estimatedTxCost")}</span>
             <span className="value">
@@ -129,7 +131,7 @@ function ReviewDeposit({
               )}`}
             </span>
           </div>
-        )}
+        )} */}
         <div className="depositInfoItem">
           <span className="label">{t("maxSlippage")}</span>
           <span className="value">

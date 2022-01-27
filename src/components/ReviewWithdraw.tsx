@@ -1,13 +1,13 @@
 import "./ReviewWithdraw.scss"
 
 import React, { ReactElement, useState } from "react"
-import { commify, formatBNToString, formatDeadlineToNumber } from "../utils"
 
 import { AppState } from "../state/index"
 import Button from "./Button"
 import { GasPrices } from "../state/user"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { ReviewWithdrawData } from "./WithdrawPage"
+import { formatDeadlineToNumber } from "../utils"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import { isHighPriceImpact } from "../utils/priceImpact"
@@ -34,15 +34,15 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
-  const [
-    hasConfirmedHighPriceImpact,
-    setHasConfirmedHighPriceImpact,
-  ] = useState(false)
+  const [hasConfirmedHighPriceImpact, setHasConfirmedHighPriceImpact] =
+    useState(false)
   const isHighSlippageTxn = isHighPriceImpact(data.priceImpact)
   const deadline = formatDeadlineToNumber(
     transactionDeadlineSelected,
     transactionDeadlineCustom,
   )
+  const shouldDisplayGas = !!gasStandard
+
   return (
     <div className="reviewWithdraw">
       <h3>{t("youWillReceive")}</h3>
@@ -61,25 +61,28 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
           ))}
         </div>
         <div className="divider"></div>
-        <div className="withdrawInfoItem">
-          <span className="label">{t("gas")}</span>
-          <span className="value">
-            {formatGasToString(
-              { gasStandard, gasFast, gasInstant },
-              gasPriceSelected,
-              gasCustom,
-            )}{" "}
-            GWEI
-          </span>
-        </div>
-        {data.txnGasCost?.valueUSD && (
+        {shouldDisplayGas && (
+          <div className="withdrawInfoItem">
+            <span className="label">{t("gas")}</span>
+            <span className="value">
+              {formatGasToString(
+                { gasStandard, gasFast, gasInstant },
+                gasPriceSelected,
+                gasCustom,
+              )}{" "}
+              GWEI
+            </span>
+          </div>
+        )}
+        {/* TODO: Create a light API to expose the cached BlockNative gas estimates. */}
+        {/* {data.txnGasCost?.valueUSD && (
           <div className="withdrawInfoItem">
             <span className="label">{t("estimatedTxCost")}</span>
             <span className="value">
               {`≈$${commify(formatBNToString(data.txnGasCost.valueUSD, 2, 2))}`}{" "}
             </span>
           </div>
-        )}
+        )} */}
         <div className="withdrawInfoItem">
           <span className="label">{t("maxSlippage")}</span>
           <span className="value">

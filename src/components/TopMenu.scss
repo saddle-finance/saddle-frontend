@@ -1,7 +1,7 @@
 @import "../styles/theme";
 @import "../styles/viewports";
 
-header.top {
+.top {
   background-color: var(--background);
   height: 88px;
   padding-left: 56px;
@@ -13,91 +13,92 @@ header.top {
     padding-left: 56px;
     padding-right: 70px;
   }
+}
 
-  h1 {
-    width: 20%;
-    margin: 0;
-    margin-right: auto;
+ul.nav {
+  font-family: $font-family;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
 
-    .logo {
-      background-color: #ffffe9;
-      border-radius: 52px;
-      display: inline-block;
-      margin-right: 0.4em;
-      @include breakpoint(md) {
-        margin-right: 0.2em;
-      }
-      &:hover {
-        cursor: pointer;
-      }
+  & > li {
+    display: inline;
+    margin-right: 40px;
+    @include breakpoint(lg) {
+      margin-right: 32px;
     }
-  }
-
-  ul.nav {
-    font-family: $font-family;
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-
-    & > li {
-      display: inline;
-      margin-right: 40px;
+    @include breakpoint(md) {
+      margin-right: 24px;
+    }
+    @include breakpoint(sm) {
+      margin-right: 16px;
+    }
+    @include breakpoint(xs) {
+      margin-right: 12px;
+    }
+    &:last-child {
+      margin-right: 0;
+    }
+    a {
+      color: var(--text);
+      text-decoration: none;
+      font-style: normal;
+      font-weight: $normal;
+      font-size: 20px;
       @include breakpoint(lg) {
-        margin-right: 32px;
+        font-size: 18px;
       }
       @include breakpoint(md) {
-        margin-right: 24px;
+        font-size: 16px;
       }
       @include breakpoint(sm) {
-        margin-right: 16px;
+        font-size: 14px;
       }
-      @include breakpoint(xs) {
-        margin-right: 12px;
+      &:hover {
+        opacity: 1;
       }
-      &:last-child {
-        margin-right: 0;
-      }
-      a {
-        color: var(--text);
-        text-decoration: none;
-        font-style: normal;
-        font-weight: $normal;
-        font-size: 20px;
-        @include breakpoint(lg) {
-          font-size: 18px;
-        }
-        @include breakpoint(md) {
-          font-size: 16px;
-        }
-        @include breakpoint(sm) {
-          font-size: 14px;
-        }
-        &:hover {
-          opacity: 1;
-        }
 
-        &.active {
-          opacity: 1;
-          // color: var(--header-text);
-          font-weight: $bold;
-        }
+      &.active {
+        opacity: 1;
+        // color: var(--header-text);
+        font-weight: $bold;
       }
     }
   }
-  .walletStatus {
-    margin-left: auto;
-    width: 20%;
+}
+.walletStatus {
+  .connection {
+    // padding: 8px;
+    // border: 1px solid;
+    // border-radius: 10px;
+    &.success .indicator {
+      filter: invert(1);
+    }
+  }
+}
+.walletWrapper {
+  flex: 1;
+  flex-basis: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  > * {
+    margin-left: 8px;
+  }
+}
 
-    .connection {
-      // padding: 8px;
-      // border: 1px solid;
-      // border-radius: 10px;
-      &.success .indicator {
-        filter: invert(1);
-      }
-    }
-    img.logo {
-      height: 1.5em;
-    }
+.siteSettingsWrapper {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  z-index: 2;
+  box-shadow: var(--shadow);
+  width: 176px;
+}
+
+svg.hamburger {
+  circle {
+    fill: var(--primary-foreground);
   }
 }

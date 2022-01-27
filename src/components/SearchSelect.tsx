@@ -8,6 +8,7 @@ import React, {
 
 import Divider from "./Divider"
 import { SWAP_TYPES } from "../constants"
+import Tag from "./Tag"
 import type { TokenOption } from "../pages/Swap"
 import classnames from "classnames"
 import { commify } from "../utils"
@@ -136,12 +137,14 @@ function ListItem({
   swapType,
 }: TokenOption & { isActive: boolean }) {
   const { t } = useTranslation()
-  const isVirtualSwap = ([
-    SWAP_TYPES.SYNTH_TO_SYNTH,
-    SWAP_TYPES.SYNTH_TO_TOKEN,
-    SWAP_TYPES.TOKEN_TO_SYNTH,
-    SWAP_TYPES.TOKEN_TO_TOKEN,
-  ] as Array<SWAP_TYPES | null>).includes(swapType)
+  const isVirtualSwap = (
+    [
+      SWAP_TYPES.SYNTH_TO_SYNTH,
+      SWAP_TYPES.SYNTH_TO_TOKEN,
+      SWAP_TYPES.TOKEN_TO_SYNTH,
+      SWAP_TYPES.TOKEN_TO_TOKEN,
+    ] as Array<SWAP_TYPES | null>
+  ).includes(swapType)
   return (
     <div
       className={classnames(styles.listItem, {
@@ -155,10 +158,14 @@ function ListItem({
         <div className={styles.tagWrapper}>
           <b>{symbol}</b>
           {!isAvailable && (
-            <span className={styles.unavailableTag}>{t("unavailable")}</span>
+            <Tag size="small" kind="disabled">
+              {t("unavailable")}
+            </Tag>
           )}
           {isAvailable && isVirtualSwap && (
-            <span className={styles.virtualSwapTag}>{t("virtualSwap")}</span>
+            <Tag size="small" kind="primary">
+              {t("virtualSwap")}
+            </Tag>
           )}
         </div>
         <p className={styles.textMinor}>{name}</p>

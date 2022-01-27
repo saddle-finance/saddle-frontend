@@ -1,23 +1,23 @@
 import "./WithdrawPage.scss"
 
-import { Button, Center } from "@chakra-ui/react"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
+import Button from "./Button"
 import ConfirmTransaction from "./ConfirmTransaction"
 import Modal from "./Modal"
+import MyFarm from "./MyFarm"
 import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
 import RadioButton from "./RadioButton"
 import ReviewWithdraw from "./ReviewWithdraw"
+import { Stack } from "@mui/material"
 import TokenInput from "./TokenInput"
-import TopMenu from "./TopMenu"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import { Zero } from "@ethersproject/constants"
-import classNames from "classnames"
 import { formatBNToPercentString } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
 import { useSelector } from "react-redux"
@@ -82,8 +82,7 @@ const WithdrawPage = (props: Props): ReactElement => {
   const noShare = !myShareData || myShareData.lpTokenBalance.eq(Zero)
 
   return (
-    <div className={"withdraw " + classNames({ noShare: noShare })}>
-      <TopMenu activeTab={"withdraw"} />
+    <div className="withdraw">
       <div className="content">
         <div className="left">
           <div className="form">
@@ -91,7 +90,7 @@ const WithdrawPage = (props: Props): ReactElement => {
             <div className="percentage">
               <span>{`${t("withdrawPercentage")} (%):`}</span>
               <input
-                placeholder="100"
+                placeholder="0"
                 onChange={(e: React.FormEvent<HTMLInputElement>): void =>
                   onFormChange({
                     fieldName: "percentage",
@@ -129,6 +128,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                         value: t.symbol,
                       })
                     }
+                    disabled={poolData?.isPaused}
                     label={t.name}
                   />
                 )
@@ -146,6 +146,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                       tokenSymbol: token.symbol,
                     })
                   }
+                  disabled={poolData?.isPaused}
                 />
                 {index === tokensData.length - 1 ? (
                   ""
@@ -168,7 +169,6 @@ const WithdrawPage = (props: Props): ReactElement => {
                       (reviewData.priceImpact.gte(0) ? "bonus" : "slippage")
                     }
                   >
-                    {" "}
                     {formatBNToPercentString(reviewData.priceImpact, 18, 4)}
                   </span>
                 </div>
@@ -176,11 +176,9 @@ const WithdrawPage = (props: Props): ReactElement => {
             </div>
           </div>
           <AdvancedOptions />
-          <Center width="100%" py={6}>
+
+          <Stack direction="row" width="434px" pt={3} justifyContent="center">
             <Button
-              variant="primary"
-              size="lg"
-              width="240px"
               disabled={
                 noShare ||
                 !!formStateData.error ||
@@ -190,18 +188,28 @@ const WithdrawPage = (props: Props): ReactElement => {
             >
               {t("withdraw")}
             </Button>
-          </Center>
+          </Stack>
         </div>
-        <div className="infoPanels">
-          <MyShareCard data={myShareData} />
-          <div
-            style={{
-              display: myShareData ? "block" : "none",
-            }}
-            className="divider"
-          ></div>{" "}
-          <PoolInfoCard data={poolData} />
+
+        <div>
+          {poolData && (
+            <MyFarm
+              lpWalletBalance={myShareData?.lpTokenBalance || Zero}
+              poolName={poolData.name}
+            />
+          )}
+          <div className="infoPanels">
+            <MyShareCard data={myShareData} />
+            <div
+              style={{
+                display: myShareData ? "block" : "none",
+              }}
+              className="divider"
+            ></div>{" "}
+            <PoolInfoCard data={poolData} />
+          </div>
         </div>
+
         <Modal
           isOpen={!!currentModal}
           onClose={(): void => setCurrentModal(null)}

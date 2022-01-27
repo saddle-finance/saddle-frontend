@@ -1,9 +1,9 @@
 import { ChainId, NetworkContextName } from "../constants"
+import { injectedMetaMaskProvider, injectedTallyProvider } from "../connectors"
 import { useEffect, useState } from "react"
 
 import { Web3Provider } from "@ethersproject/providers"
 import { Web3ReactContextInterface } from "@web3-react/core/dist/types"
-import { injected } from "../connectors"
 import { isMobile } from "react-device-detect"
 import { useWeb3React as useWeb3ReactCore } from "@web3-react/core"
 
@@ -20,21 +20,43 @@ export function useEagerConnect(): boolean {
   const [tried, setTried] = useState(false)
 
   useEffect(() => {
-    void injected.isAuthorized().then((isAuthorized) => {
-      if (isAuthorized) {
-        activate(injected, undefined, true).catch(() => {
-          setTried(true)
+    if (window.ethereum) {
+      if (window.ethereum.isTally) {
+        void injectedTallyProvider.isAuthorized().then((isAuthorized) => {
+          if (isAuthorized) {
+            activate(injectedTallyProvider, undefined, true).catch(() => {
+              setTried(true)
+            })
+          } else {
+            if (isMobile && window.ethereum) {
+              activate(injectedTallyProvider, undefined, true).catch(() => {
+                setTried(true)
+              })
+            } else {
+              setTried(true)
+            }
+          }
         })
-      } else {
-        if (isMobile && window.ethereum) {
-          activate(injected, undefined, true).catch(() => {
-            setTried(true)
-          })
-        } else {
-          setTried(true)
-        }
+      } else if (window.ethereum?.isMetaMask) {
+        void injectedMetaMaskProvider.isAuthorized().then((isAuthorized) => {
+          if (isAuthorized) {
+            activate(injectedMetaMaskProvider, undefined, true).catch(() => {
+              setTried(true)
+            })
+          } else {
+            if (isMobile) {
+              activate(injectedMetaMaskProvider, undefined, true).catch(() => {
+                setTried(true)
+              })
+            } else {
+              setTried(true)
+            }
+          }
+        })
       }
-    })
+    } else {
+      setTried(true)
+    }
   }, [activate]) // intentionally only running on mount (make sure it's only mounted once :))
 
   // if the connection worked, wait until we get confirmation of that to flip the flag
@@ -60,18 +82,37 @@ export function useInactiveListener(suppress = false): void {
 
     if (ethereum && ethereum.on && !active && !error && !suppress) {
       const handleChainChanged = (): void => {
-        // eat errors
-        activate(injected, undefined, true).catch((error) => {
-          console.error("Failed to activate after chain changed", error)
-        })
+        if (ethereum.isTally) {
+          // eat errors
+          activate(injectedTallyProvider, undefined, true).catch((error) => {
+            console.error("Failed to activate after chain changed", error)
+          })
+        } else if (ethereum.isMetaMask) {
+          // eat errors
+          activate(injectedMetaMaskProvider, undefined, true).catch((error) => {
+            console.error("Failed to activate after chain changed", error)
+          })
+        }
       }
 
       const handleAccountsChanged = (accounts: string[]): void => {
         if (accounts.length > 0) {
-          // eat errors
-          activate(injected, undefined, true).catch((error) => {
-            console.error("Failed to activate after accounts changed", error)
-          })
+          if (ethereum.isTally) {
+            // eat errors
+            activate(injectedTallyProvider, undefined, true).catch((error) => {
+              console.error("Failed to activate after accounts changed", error)
+            })
+          } else if (ethereum.isMetaMask) {
+            // eat errors
+            activate(injectedMetaMaskProvider, undefined, true).catch(
+              (error) => {
+                console.error(
+                  "Failed to activate after accounts changed",
+                  error,
+                )
+              },
+            )
+          }
         }
       }
 

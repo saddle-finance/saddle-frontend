@@ -4,6 +4,7 @@ import {
   SYNTH_TRACKING_ID,
   TRANSACTION_TYPES,
 } from "../constants"
+import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
 import { useAllContracts, useSynthetixContract } from "./useContract"
 
 import { AppState } from "../state"
@@ -17,7 +18,6 @@ import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFla
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { formatDeadlineToNumber } from "../utils"
-import { notifyHandler } from "../utils/notifyHandler"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
@@ -89,7 +89,7 @@ export function useApproveAndSwap(): (
       } else {
         gasPrice = gasStandard
       }
-      gasPrice = parseUnits(String(gasPrice) || "45", 9)
+      gasPrice = parseUnits(gasPrice ? String(gasPrice) : "45", 9)
       if (tokenContract == null) return
       let addressToApprove = ""
       if (state.swapType === SWAP_TYPES.DIRECT) {
@@ -112,7 +112,6 @@ export function useApproveAndSwap(): (
           },
         },
       )
-      const txnArgs = { gasPrice }
       let swapTransaction
       if (state.swapType === SWAP_TYPES.TOKEN_TO_TOKEN) {
         const originPool = POOLS_MAP[state.from.poolName]
@@ -130,7 +129,6 @@ export function useApproveAndSwap(): (
             slippageSelected,
             slippageCustom,
           ), // subtract slippage from minSynth
-          txnArgs,
         ] as const
         console.debug("swap - tokenToToken", args)
         swapTransaction = await (state.bridgeContract as Bridge).tokenToToken(
@@ -148,7 +146,6 @@ export function useApproveAndSwap(): (
             slippageSelected,
             slippageCustom,
           ), // subtract slippage from minSynth
-          txnArgs,
         ] as const
         console.debug("swap - synthToToken", args)
         swapTransaction = await (state.bridgeContract as Bridge).synthToToken(
@@ -162,7 +159,6 @@ export function useApproveAndSwap(): (
           utils.formatBytes32String(state.to.symbol),
           state.from.amount,
           subtractSlippage(state.to.amount, slippageSelected, slippageCustom),
-          txnArgs,
         ] as const
         console.debug("swap - tokenToSynth", args)
         swapTransaction = await (state.bridgeContract as Bridge).tokenToSynth(
@@ -179,12 +175,13 @@ export function useApproveAndSwap(): (
           state.from.amount,
           subtractSlippage(state.to.amount, slippageSelected, slippageCustom),
           Math.round(new Date().getTime() / 1000 + 60 * deadline),
-          txnArgs,
         ] as const
         console.debug("swap - direct", args)
-        swapTransaction = await (state.swapContract as NonNullable<
-          typeof state.swapContract // we already check for nonnull above
-        >).swap(...args)
+        swapTransaction = await (
+          state.swapContract as NonNullable<
+            typeof state.swapContract // we already check for nonnull above
+          >
+        ).swap(...args)
       } else if (state.swapType === SWAP_TYPES.SYNTH_TO_SYNTH) {
         const args = [
           utils.formatBytes32String(state.from.symbol),
@@ -213,6 +210,7 @@ export function useApproveAndSwap(): (
       return Promise.resolve()
     } catch (e) {
       console.error(e)
+      notifyCustomError(e as Error)
     }
   }
 }

@@ -1,8 +1,8 @@
 import "./Risk.scss"
 
+import { Container, Typography } from "@mui/material"
 import React, { ReactElement } from "react"
 
-import TopMenu from "../components/TopMenu"
 import { useTranslation } from "react-i18next"
 
 function Risk(): ReactElement {
@@ -10,17 +10,21 @@ function Risk(): ReactElement {
 
   return (
     <div className="riskpage">
-      <TopMenu activeTab={t("risk")} />
-      <div className="content">
-        <p>
+      <Container maxWidth="md" sx={{ mb: 16 }}>
+        <Typography variant="h3" mt={5} mb={2}>
+          Risk
+        </Typography>
+        <Typography variant="body1" data-testid="risk-intro">
           {t("riskIntro")}{" "}
           <a href="https://github.com/saddle-finance/saddle-contract">
             {t("riskIntro2")}
           </a>{" "}
           {t("riskIntro3")}
-        </p>
-        <h3>{t("audits")}</h3>
-        <p>
+        </Typography>
+        <Typography variant="h3" mt={5} mb={2}>
+          {t("audits")}
+        </Typography>
+        <Typography variant="body1" data-testid="risk-audits">
           {t("riskAudits")}{" "}
           <a href="https://github.com/saddle-finance/saddle-audits">
             {t("riskAudits2")}
@@ -32,12 +36,30 @@ function Risk(): ReactElement {
           <br />
           <br />
           {t("riskAudits4")}
+        </Typography>
+        <Typography variant="h3" mt={5} mb={2}>
+          {t("adminKeys")}
+        </Typography>
+        <Typography variant="body1" data-testid="risk-adminkeys">
+          {t("riskAdminKeys")}
+        </Typography>
+        <Typography variant="h3" mt={5} mb={2}>
+          {t("lossOfPeg")}
+        </Typography>
+        <Typography variant="body1" data-testid="risk-lossofpeg">
+          {t("riskLossOfPeg")}
+        </Typography>
+        <Typography variant="h3" mt={5} mb={2}>
+          {t("unnecessaryApprovalAskQ")}
+        </Typography>
+        <p>
+          {t("unnecessaryApprovalAskA")} <br />
+          <br />
+          <a href="https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729">
+            ERC: Token standard · Issue #20 · ethereum/EIPs
+          </a>
         </p>
-        <h3>{t("adminKeys")}</h3>
-        <p>{t("riskAdminKeys")}</p>
-        <h3>{t("lossOfPeg")}</h3>
-        <p>{t("riskLossOfPeg")}</p>
-      </div>
+      </Container>
     </div>
   )
 }

@@ -8,8 +8,15 @@
 
 * {
   box-sizing: border-box;
+  margin: 0px;
+  font-family: "Source Code Pro", monospace, sans-serif;
 }
 
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
 p,
 b,
 span {
@@ -24,6 +31,10 @@ h3,
 h4,
 h5 {
   font-family: $font-family-title;
+}
+input {
+  border: none;
+  font-size: 100%;
 }
 
 svg,
@@ -47,6 +58,9 @@ ul {
     no-repeat fixed;
   --background-logo: #{$primary};
   --secondary-button: #{$light-blue};
+  --emphasis-1: #{$sand2}; // passive state
+  --emphasis-2: #{$sand1}; // active state
+  --primary-accent: #{$primary-blue};
   --outline: #000;
   --outline-gray: #{$black30};
   --option-hover: #{$primary-blue-light};
@@ -80,6 +94,9 @@ body.dark {
     fixed;
   --background-logo: #ffffe9;
   --secondary-button: #{$dark-purple};
+  --emphasis-1: #{$indigo3}; // passive state
+  --emphasis-2: #{$indigo2}; // active state
+  --primary-accent: #{$primary};
   --outline: #fff;
   --option-hover: #{$primary-blue-dark};
   --outline-gray: #{$white30};

@@ -1,6 +1,12 @@
 import "./PoolOverview.scss"
 
-import { POOLS_MAP, PoolTypes, TOKENS_MAP } from "../constants"
+import {
+  IS_SDL_LIVE,
+  POOLS_MAP,
+  PoolTypes,
+  TOKENS_MAP,
+  isMetaPool,
+} from "../constants"
 import { Partners, PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement } from "react"
 import {
@@ -11,9 +17,11 @@ import {
 
 import Button from "./Button"
 import { Link } from "react-router-dom"
+import Tag from "./Tag"
 import ToolTip from "./ToolTip"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
+import logo from "../assets/icons/logo.svg"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -55,6 +63,7 @@ export default function PoolOverview({
       userShareData?.usdBalance || Zero,
       18,
     ),
+    sdlPerDay: formatBNToShortString(poolData?.sdlPerDay || Zero, 18),
     tokens: poolData.tokens.map((coin) => {
       const token = TOKENS_MAP[coin.symbol]
       return {
@@ -66,6 +75,7 @@ export default function PoolOverview({
     }),
   }
   const hasShare = !!userShareData?.usdBalance.gt("0")
+  const isMetapool = isMetaPool(formattedData.name)
 
   return (
     <div
@@ -75,9 +85,23 @@ export default function PoolOverview({
     >
       <div className="left">
         <div className="titleAndTag">
-          <h4 className="title">{formattedData.name}</h4>
-          {(shouldMigrate || isOutdated) && <Tag kind="warning">OUTDATED</Tag>}
-          {poolData.isPaused && <Tag kind="error">PAUSED</Tag>}
+          {isMetapool ? (
+            <ToolTip content={t("metapool")}>
+              <h4 className="title underline">{formattedData.name}</h4>
+            </ToolTip>
+          ) : (
+            <h4 className="title">{formattedData.name}</h4>
+          )}
+          {(shouldMigrate || isOutdated) && (
+            <Tag kind="warning" size="large">
+              OUTDATED
+            </Tag>
+          )}
+          {poolData.isPaused && (
+            <Tag kind="error" size="large">
+              PAUSED
+            </Tag>
+          )}
         </div>
         {hasShare && (
           <div className="balance">
@@ -89,7 +113,7 @@ export default function PoolOverview({
           <span style={{ marginRight: "8px" }}>[</span>
           {formattedData.tokens.map(({ symbol, icon }) => (
             <div className="token" key={symbol}>
-              <img alt="icon" src={icon} />
+              <img alt="icon" className="tokenIcon" src={icon} />
               <span>{symbol}</span>
             </div>
           ))}
@@ -99,6 +123,24 @@ export default function PoolOverview({
 
       <div className="right">
         <div className="poolInfo">
+          {poolData.sdlPerDay != null && IS_SDL_LIVE && (
+            <div className="margin">
+              <span className="label">
+                <a
+                  href="https://blog.saddle.finance/introducing-sdl"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ textDecoration: "underline" }}
+                >
+                  SDL/24h
+                </a>
+              </span>
+              <span>
+                <img src={logo} className="tokenIcon" />
+                {formattedData.sdlPerDay}
+              </span>
+            </div>
+          )}
           {formattedData.apy && (
             <div className="margin">
               <span className="label">{`${t("apy")}`}</span>
@@ -136,7 +178,7 @@ export default function PoolOverview({
           )}
         </div>
         <div className="buttons">
-          <Link to={`${poolRoute}/withdraw`}>
+          <Link to={`${poolRoute}/withdraw`} style={{ textDecoration: "none" }}>
             <Button kind="secondary">{t("withdraw")}</Button>
           </Link>
           {shouldMigrate ? (
@@ -148,7 +190,10 @@ export default function PoolOverview({
               {t("migrate")}
             </Button>
           ) : (
-            <Link to={`${poolRoute}/deposit`}>
+            <Link
+              to={`${poolRoute}/deposit`}
+              style={{ textDecoration: "none" }}
+            >
               <Button
                 kind="primary"
                 disabled={poolData?.isPaused || isOutdated}
@@ -161,12 +206,4 @@ export default function PoolOverview({
       </div>
     </div>
   )
-}
-
-function Tag(props: {
-  children?: React.ReactNode
-  kind?: "warning" | "error"
-}) {
-  const { kind = "warning", ...tagProps } = props
-  return <span className={classNames("tag", kind)} {...tagProps} />
 }
