@@ -11,6 +11,7 @@ import ListItemIconTheme from "./ListItemIconTheme"
 import MenuItemTheme from "./MenuItemTheme"
 import MenuTheme from "./MenuTheme"
 import PaperTheme from "./PaperTheme"
+import ToggleButtonTheme from "./ToggleButtonTheme"
 import TooltipTheme from "./TooltipTheme"
 import { merge } from "lodash"
 
@@ -24,6 +25,7 @@ export default function componentsOverrides(theme: Theme): Components {
     MenuTheme(theme),
     MenuItemTheme(),
     TooltipTheme(theme),
+    ToggleButtonTheme(theme),
     BackdropTheme(),
     PaperTheme(theme),
     CssBaseLine(),

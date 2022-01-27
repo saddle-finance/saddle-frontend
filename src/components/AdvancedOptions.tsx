@@ -3,12 +3,11 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
-  Button,
-  ButtonGroup,
   Checkbox,
+  ToggleButton,
+  ToggleButtonGroup,
   Tooltip,
   Typography,
-  styled,
 } from "@mui/material"
 import { Deadlines, GasPrices, Slippages } from "../state/user"
 import React, { ReactElement } from "react"
@@ -49,12 +48,14 @@ export default function AdvancedOptions(): ReactElement {
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
-  const ParaButton = styled(Button)<{ active: boolean }>(
-    ({ theme, active }) => ({
-      backgroundColor: active ? theme.palette.primary.main : "inherit",
-    }),
-  )
 
+  const handleSlippage = (
+    event: React.MouseEvent<HTMLElement>,
+    slippageValue: Slippages,
+  ) => {
+    console.log("slippage value =>", slippageValue)
+    dispatch(updateSlippageSelected(slippageValue))
+  }
   return (
     <div data-testid="advOptionContainer" className={styles.advancedOptions}>
       <Accordion
@@ -96,31 +97,22 @@ export default function AdvancedOptions(): ReactElement {
                 className={styles.inputGroup}
               >
                 <Typography variant="body1">{t("maxSlippage")}: </Typography>
-                <ButtonGroup variant="contained" color="info" fullWidth>
-                  <ParaButton
-                    active={slippageSelected === Slippages.OneTenth}
-                    className={classNames({
-                      [styles.selected]:
-                        slippageSelected === Slippages.OneTenth,
-                    })}
-                    onClick={(): PayloadAction<Slippages> =>
-                      dispatch(updateSlippageSelected(Slippages.OneTenth))
-                    }
+                <ToggleButtonGroup
+                  size="small"
+                  fullWidth
+                  exclusive
+                  value={slippageSelected}
+                  onChange={handleSlippage}
+                >
+                  <ToggleButton
+                    value={Slippages.OneTenth}
+                    selected={slippageSelected === Slippages.OneTenth}
                   >
                     0.1%
-                  </ParaButton>
-                  <Button
-                    className={classNames({
-                      [styles.selected]: slippageSelected === Slippages.One,
-                    })}
-                    onClick={(): PayloadAction<Slippages> =>
-                      dispatch(updateSlippageSelected(Slippages.One))
-                    }
-                  >
-                    1%
-                  </Button>
-                  <Button>5%</Button>
-                </ButtonGroup>
+                  </ToggleButton>
+                  <ToggleButton value={Slippages.One}>1%</ToggleButton>
+                  <ToggleButton value={Slippages.Custom}>5%</ToggleButton>
+                </ToggleButtonGroup>
                 <div>
                   <input
                     value={slippageCustom?.valueRaw}
