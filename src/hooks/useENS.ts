@@ -19,7 +19,6 @@ export const useENS = (address: string | null | undefined): ReturnType => {
       ) {
         const provider = new ethers.providers.Web3Provider(library.provider)
         const ensName = await provider.lookupAddress(address)
-        console.log("ens name on net", ensName)
         if (ensName) setENSName(ensName)
       } else if (
         address &&
