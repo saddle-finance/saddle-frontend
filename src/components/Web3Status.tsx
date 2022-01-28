@@ -1,4 +1,4 @@
-import { Button, Dialog } from "@mui/material"
+import { Button, Dialog, Typography } from "@mui/material"
 import React, { ReactElement, useEffect, useState } from "react"
 
 import AccountDetails from "./AccountDetails"
@@ -38,7 +38,9 @@ const Web3Status = (): ReactElement => {
         endIcon={account && <Identicon />}
       >
         {account ? (
-          <div>{ensName || shortenAddress(account)}</div>
+          <Typography variant="body1">
+            {ensName || shortenAddress(account)}
+          </Typography>
         ) : (
           t("connectWallet")
         )}
