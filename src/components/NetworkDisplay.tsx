@@ -22,7 +22,7 @@ const NetworkDisplay = React.forwardRef<HTMLButtonElement, NetworkDisplayProps>(
           ref={ref}
           data-testid="networkDisplayBtn"
           variant="outlined"
-          color="secondaryLight"
+          color="mute"
           onClick={onClick}
           startIcon={
             <CircleTwoToneIcon

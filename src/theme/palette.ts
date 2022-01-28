@@ -9,24 +9,24 @@ interface OtherColorTypes {
 declare module "@mui/material/styles/createPalette" {
   interface SimplePaletteColorOptions {
     states?: {
-      outlinedRestingBorder: string
-      outlinedHoverBackground: string
-      containedHoverBackground: string
+      outlinedRestingBorder?: string
+      outlinedHoverBackground?: string
+      containedHoverBackground?: string
     }
   }
   interface PaletteColor {
     states?: {
-      outlinedRestingBorder: string
-      outlinedHoverBackground: string
-      containedHoverBackground: string
+      outlinedRestingBorder?: string
+      outlinedHoverBackground?: string
+      containedHoverBackground?: string
     }
   }
   interface Palette {
-    secondaryLight: SimplePaletteColorOptions
+    mute: SimplePaletteColorOptions
     other: OtherColorTypes
   }
   interface PaletteOptions {
-    secondaryLight: SimplePaletteColorOptions
+    mute: SimplePaletteColorOptions
     other: OtherColorTypes
   }
 }
@@ -60,10 +60,12 @@ const lightPalette: PaletteOptions | undefined = {
       containedHoverBackground: "#D07647",
     },
   },
-  secondaryLight: {
-    main: "#E6AD76",
-    dark: "#D07647",
-    light: "#FAF3CE",
+  mute: {
+    main: "#FAF3CE",
+    dark: "#FFEA91",
+    states: {
+      containedHoverBackground: "#FFEA91",
+    },
   },
   info: {
     main: "#4B11F2",
@@ -128,9 +130,12 @@ const darkPalette: PaletteOptions | undefined = {
       containedHoverBackground: "#FAF3CE",
     },
   },
-  secondaryLight: {
-    light: "#9B91FF",
+  mute: {
     main: "#311188",
+    light: "#4B11F2",
+    states: {
+      containedHoverBackground: "4B11F2",
+    },
   },
   info: {
     main: "#4B11F2",
