@@ -1,8 +1,9 @@
-import { Button, Dialog, Typography } from "@mui/material"
+import { Button, Dialog } from "@mui/material"
 import React, { ReactElement, useEffect, useState } from "react"
+
 import AccountDetails from "./AccountDetails"
 import ConnectWallet from "./ConnectWallet"
-import Davatar from "@davatar/react"
+import Identicon from "./Identicon"
 import { shortenAddress } from "../utils/shortenAddress"
 import { useENS } from "../hooks/useENS"
 import { useTranslation } from "react-i18next"
@@ -33,21 +34,14 @@ const Web3Status = (): ReactElement => {
         variant={account ? "contained" : "outlined"}
         color={account ? "mute" : "secondary"}
         data-testid="accountDetailButton"
-        onClick={(): void => setModalOpen(true)}
-        endIcon={
-          account && (
-            <Davatar
-              size={20}
-              address={account}
-              generatedAvatarType="jazzicon"
-            />
-          )
-        }
       >
         {account ? (
-          <Typography variant="body1">
-            {ensName || shortenAddress(account)}
-          </Typography>
+          <div className="hasAccount">
+            <span className="address">
+              {ensName || shortenAddress(account)}
+            </span>
+            <Identicon />
+          </div>
         ) : (
           t("connectWallet")
         )}
