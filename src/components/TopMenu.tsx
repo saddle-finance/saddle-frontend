@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Hidden,
+  IconButton,
   Stack,
   Toolbar,
   styled,
@@ -94,17 +95,20 @@ function TopMenu(): ReactElement {
             <RewardsButton setCurrentModal={setCurrentModal} />
             <Web3Status />
             <NetworkDisplay onClick={handleSettingMenu} />
-            <Button
-              color="mute"
-              variant="contained"
+            <IconButton
               onClick={handleSettingMenu}
-              sx={{ minWidth: 0, padding: 0 }}
+              sx={{
+                minWidth: 0,
+                padding: 0,
+                backgroundColor: theme.palette.background.default,
+                borderRadius: theme.spacing(1),
+              }}
             >
               <MoreVert
                 htmlColor={theme.palette.text.primary}
                 fontSize="large"
               />
-            </Button>
+            </IconButton>
           </Stack>
         </Box>
 
