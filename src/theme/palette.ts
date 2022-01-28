@@ -134,7 +134,7 @@ const darkPalette: PaletteOptions | undefined = {
     main: "#311188",
     light: "#4B11F2",
     states: {
-      containedHoverBackground: "4B11F2",
+      containedHoverBackground: "#4B11F2",
     },
   },
   info: {
