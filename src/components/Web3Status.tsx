@@ -1,4 +1,4 @@
-import { Button, Dialog } from "@mui/material"
+import { Button, Dialog, Typography } from "@mui/material"
 import React, { ReactElement, useEffect, useState } from "react"
 
 import AccountDetails from "./AccountDetails"
@@ -33,15 +33,14 @@ const Web3Status = (): ReactElement => {
       <Button
         variant={account ? "contained" : "outlined"}
         color={account ? "mute" : "secondary"}
+        onClick={(): void => setModalOpen(true)}
         data-testid="accountDetailButton"
+        endIcon={account && <Identicon />}
       >
         {account ? (
-          <div className="hasAccount">
-            <span className="address">
-              {ensName || shortenAddress(account)}
-            </span>
-            <Identicon />
-          </div>
+          <Typography variant="body1">
+            {ensName || shortenAddress(account)}
+          </Typography>
         ) : (
           t("connectWallet")
         )}

@@ -16,7 +16,12 @@ type ColorVariant = OverridableStringUnion<
   ButtonPropsColorOverrides
 >
 
-const buttonColorVariants: ColorVariant[] = ["primary", "secondary", "info"]
+const buttonColorVariants: ColorVariant[] = [
+  "primary",
+  "secondary",
+  "info",
+  "mute",
+]
 
 const containedStyle = (
   colors: ColorVariant[],

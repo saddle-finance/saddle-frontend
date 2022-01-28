@@ -210,7 +210,7 @@ function LanguageSection(): ReactElement {
         {t("language")}
         {isLanguageVisible ? <ExpandLess /> : <ExpandMore />}
       </MenuItem>
-      <Collapse in={isLanguageVisible}>
+      <Collapse in={isLanguageVisible} data-testid="languageMenuContainer">
         {languageOptions.map(({ displayText, i18nKey }) => (
           <ListItemButton
             onClick={() => i18n.changeLanguage(i18nKey)}
