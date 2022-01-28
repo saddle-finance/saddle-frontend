@@ -27,8 +27,10 @@ export const useENS = (address: string | null | undefined): ReturnType => {
         chainId !== ChainId.MAINNET
       ) {
         // Get ens name from main chain when network is non-mainnet
+
+        const NETWORK_URL = process.env.REACT_APP_NETWORK_URL
         const ensNameOnMainnet = await ethers
-          .getDefaultProvider()
+          .getDefaultProvider(NETWORK_URL)
           .lookupAddress(address)
         if (ensNameOnMainnet) setENSName(ensNameOnMainnet)
       }
