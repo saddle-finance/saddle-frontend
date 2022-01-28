@@ -33,15 +33,12 @@ const Web3Status = (): ReactElement => {
       <Button
         variant={account ? "contained" : "outlined"}
         color={account ? "mute" : "secondary"}
+        onClick={(): void => setModalOpen(true)}
         data-testid="accountDetailButton"
+        endIcon={account && <Identicon />}
       >
         {account ? (
-          <div className="hasAccount">
-            <span className="address">
-              {ensName || shortenAddress(account)}
-            </span>
-            <Identicon />
-          </div>
+          <div>{ensName || shortenAddress(account)}</div>
         ) : (
           t("connectWallet")
         )}
