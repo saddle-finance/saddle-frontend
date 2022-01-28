@@ -76,7 +76,7 @@ const lightPalette: PaletteOptions | undefined = {
     },
   },
   background: {
-    default: "#FFFFE9",
+    default: "#FAF3CE",
     paper: "#FDFDF8",
   },
   action: {
