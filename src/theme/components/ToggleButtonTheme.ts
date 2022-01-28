@@ -9,6 +9,12 @@ export default function ToggleButtonTheme(theme: Theme): Components {
           color: theme.palette.getContrastText(theme.palette.mute.main),
           "&.Mui-selected": {
             backgroundColor: theme.palette.action.active,
+            "&:hover": {
+              backgroundColor: theme.palette.action.active,
+            },
+          },
+          "&:hover": {
+            backgroundColor: theme.palette.mute.main,
           },
         },
       },
