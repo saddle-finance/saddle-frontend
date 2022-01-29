@@ -17,8 +17,8 @@ export default function SiteSettingsMenu(): ReactElement {
       <LanguageSection key="language" />
       <Divider />
       <ThemeSection key="theme" />
-      {/* <Divider /> */}
-      {/* <MainNet key="mainnet" /> */}
+      <Divider />
+      <LegacyApp key="LegacyApp" />
       {IS_SDL_LIVE && <Divider />}
       {IS_SDL_LIVE && <AddTokenSection key="token" />}
     </div>
@@ -70,12 +70,23 @@ export const SUPPORTED_NETWORKS: {
     rpcUrls: ["https://rpc-mumbai.maticvigil.com"],
     blockExplorerUrls: ["https://mumbai.polygonscan.com/"],
   },
+  [ChainId.POLYGON]: {
+    chainId: "0x89",
+    chainName: "Polygon",
+    nativeCurrency: {
+      name: "Matic",
+      symbol: "MATIC",
+      decimals: 18,
+    },
+    rpcUrls: ["https://polygon-rpc.com/"],
+    blockExplorerUrls: ["https://polygonscan.com/"],
+  },
 }
 function NetworkSection(): ReactElement {
   const { t } = useTranslation()
   const { chainId: activeChainId, library, account } = useActiveWeb3React()
   const [isNetworkVisible, setIsNetworkVisible] = useState(false)
-  const networks = [...(IS_L2_SUPPORTED ? [ChainId.MATICMUMBAI] : [])]
+  const networks = [...(IS_L2_SUPPORTED ? [ChainId.POLYGON] : [])]
 
   return (
     <div data-testid="networkMenuContainer" className={styles.section}>
@@ -164,21 +175,21 @@ function ThemeSection(): ReactElement {
   )
 }
 
-// function MainNet(): ReactElement {
-//   const { t } = useTranslation()
+function LegacyApp(): ReactElement {
+  const { t } = useTranslation()
 
-//   const handleRedirection = () => {
-//     window.open("https://saddle.exchange/#/")
-//   }
-//   return (
-//     <div className={styles.section}>
-//       <div
-//         data-testid="mainNetRedirect"
-//         className={styles.sectionTitle}
-//         onClick={handleRedirection}
-//       >
-//         <span>{t("mainnet")}</span>
-//       </div>
-//     </div>
-//   )
-// }
+  const handleRedirection = () => {
+    window.open("https://legacy.mune.finance/#/")
+  }
+  return (
+    <div className={styles.section}>
+      <div
+        data-testid="legacyAppRedirect"
+        className={styles.sectionTitle}
+        onClick={handleRedirection}
+      >
+        <span>{t("Legacy App")}</span>
+      </div>
+    </div>
+  )
+}

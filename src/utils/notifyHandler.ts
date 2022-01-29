@@ -1,9 +1,10 @@
 import Notify from "bnc-notify"
 import { getEtherscanLink } from "../utils/getEtherscanLink"
 import i18next from "i18next"
+import { truncate } from "lodash"
 
-const notifyNetworks = new Set([1, 3, 4, 5, 42, 56, 100])
-const chainId = parseInt(process.env.REACT_APP_CHAIN_ID ?? "80001")
+const notifyNetworks = new Set([1, 3, 4, 5, 42, 56, 100, 137])
+const chainId = parseInt(process.env.REACT_APP_CHAIN_ID ?? "137")
 
 export const notify = Notify({
   ...(isChainSupportedByNotify(chainId)
@@ -69,17 +70,16 @@ export function notifyHandler(
 }
 
 export function notifyCustomError(e: Error): void {
-  console.log("Placeholder", e.message)
-  // const truncatedMessage = e.message
-  //   .trim()
-  //   .split(/\s+/)
-  //   .map((word) => truncate(word, { length: 15 }))
-  //   .join(" ")
+  const truncatedMessage = e.message
+    .trim()
+    .split(/\s+/)
+    .map((word) => truncate(word, { length: 15 }))
+    .join(" ")
 
-  // notify.notification({
-  //   eventCode: "txFailed",
-  //   type: "error",
-  //   message: `Your transaction failed. ${truncatedMessage}`,
-  //   autoDismiss: 8000, // 8 seconds
-  // })
+  notify.notification({
+    eventCode: "txFailed",
+    type: "error",
+    message: `Your transaction failed. ${truncatedMessage}`,
+    autoDismiss: 8000, // 8 seconds
+  })
 }

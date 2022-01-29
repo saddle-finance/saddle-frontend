@@ -65,6 +65,7 @@ export type PoolName =
   | typeof FRAX_ARB_USD_POOL_V2_NAME
 
 export enum ChainId {
+  POLYGON = 137,
   HARDHAT = 31337,
   MATICMUMBAI = 80001,
 }
@@ -156,6 +157,7 @@ export const SUSD_META_SWAP_ADDRESSES = buildAddresses({
 export const SUSD_META_SWAP_V2_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0xdbC43Ba45381e02825b14322cDdd15eC4B3164E6",
   [ChainId.MATICMUMBAI]: "0x7263E49AB847Ab4F05457f7ECE71FAD2dE55462E",
+  [ChainId.POLYGON]: "0xfb91c44C3EA35Fe6c22D68Bc4D61b45A474c83Ab",
 })
 
 export const SUSD_META_SWAP_DEPOSIT_ADDRESSES = buildAddresses({
@@ -165,6 +167,7 @@ export const SUSD_META_SWAP_DEPOSIT_ADDRESSES = buildAddresses({
 export const SUSD_META_SWAP_V2_DEPOSIT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0xf433C50017d963b6082043445bCD0A54716DDC1d",
   [ChainId.MATICMUMBAI]: "0xB5f6c3307192f302d6DCCd8d79b7652454b7d1F2",
+  [ChainId.POLYGON]: "0x0336A39E68E2C46151adEd0E70d0CB85D1EA090b",
 })
 
 export const TBTC_META_SWAP_ADDRESSES = buildAddresses({
@@ -233,6 +236,7 @@ export const ARB_USD_SWAP_ADDRESSES = buildAddresses({
 
 export const FRAX_ARB_USD_SWAP_V2_ADDRESSES = buildAddresses({
   [ChainId.MATICMUMBAI]: "0x16a676BA365bdab3Fb47D25CC83c5de4De25E3dd",
+  [ChainId.POLYGON]: "0x63C0c411F591fB0F157E70c1129D632090E2F84e",
 })
 
 export const RETROACTIVE_SDL_MERKLETREE_DATA = buildAddresses({
@@ -246,6 +250,7 @@ export const SUSD_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
 export const SUSD_SWAP_TOKEN_V2_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0xb7c7142Cb2cBf105Eca46A00dDD0Fb3DD7698E8b",
   [ChainId.MATICMUMBAI]: "0xb84480f35932F2edF337Fadc74bD2c03Fe7D594f",
+  [ChainId.POLYGON]: "0x9E609CE41726DFDA0F12cbfAF7582A94488F7C3c",
 })
 
 export const STABLECOIN_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
@@ -270,6 +275,7 @@ export const ARB_USD_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
 
 export const FRAX_ARB_USD_SWAP_V2_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.MATICMUMBAI]: "0xe822644651422F0a298C5a936088B1e460e4CD69",
+  [ChainId.POLYGON]: "0x643cBbEfD3E6C8bFe19E0a58553aEeF5B60688e0",
 })
 
 export const BTC_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
@@ -440,6 +446,7 @@ export const ARB_USD_SWAP_TOKEN = new Token(
 const FRAX_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0x851356ae760d987E095750cCeb3bC6014560891C",
   [ChainId.MATICMUMBAI]: "0xBC7d5f9b67fb765812D56b680279831A2c94188F",
+  [ChainId.POLYGON]: "0x45c32fA6DF82ead1e2EF74d17b76547EDdFaFF89",
 })
 export const FRAX = new Token(
   FRAX_CONTRACT_ADDRESSES,
@@ -524,6 +531,7 @@ export const SUSD = new Token(
 const DAI_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
   [ChainId.MATICMUMBAI]: "0x4C7a7Ceb8AAacE3bdfDB351E34C35F4Fc796Ca12",
+  [ChainId.POLYGON]: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
 })
 export const DAI = new Token(
   DAI_CONTRACT_ADDRESSES,
@@ -537,6 +545,7 @@ export const DAI = new Token(
 const USDC_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0x9A676e781A523b5d0C0e43731313A708CB607508",
   [ChainId.MATICMUMBAI]: "0xd467fB36Bd20A38E186B85C1c326907f48Da2c2B",
+  [ChainId.POLYGON]: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
 })
 export const USDC = new Token(
   USDC_CONTRACT_ADDRESSES,
@@ -550,6 +559,7 @@ export const USDC = new Token(
 const USDT_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1",
   [ChainId.MATICMUMBAI]: "0x3a0a88979e635784cd5CA2C769a30D998907C03b",
+  [ChainId.POLYGON]: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
 })
 export const USDT = new Token(
   USDT_CONTRACT_ADDRESSES,
@@ -860,7 +870,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "muneusd",
-    rewardPids: buildPids({ [ChainId.MATICMUMBAI]: 1 }),
+    rewardPids: buildPids({ [ChainId.MATICMUMBAI]: 1, [ChainId.POLYGON]: 1 }),
   },
   [SUSD_METAPOOL_V2_NAME]: {
     name: SUSD_METAPOOL_V2_NAME,
@@ -873,7 +883,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: SUSD_UNDERLYING_POOL_TOKENS,
     underlyingPool: STABLECOIN_POOL_V2_NAME,
     route: "munefrax",
-    rewardPids: buildPids({ [ChainId.MATICMUMBAI]: 2 }),
+    rewardPids: buildPids({ [ChainId.MATICMUMBAI]: 2, [ChainId.POLYGON]: 2 }),
   },
   [SUSD_METAPOOL_NAME]: {
     name: SUSD_METAPOOL_NAME,

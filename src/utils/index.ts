@@ -214,6 +214,9 @@ export async function getMulticallProvider(
   } else if (chainId === ChainId.MATICMUMBAI) {
     ethcallProvider.multicallAddress =
       "0x45703EC9D8970323A7Bac5B3D1965cCb73da5abb"
+  } else if (chainId === ChainId.POLYGON) {
+    ethcallProvider.multicallAddress =
+      "0x9d6C7D9b9248E8589d69Ba9FE42B71b74b878a6b"
   }
   return ethcallProvider
 }

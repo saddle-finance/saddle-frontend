@@ -14,7 +14,7 @@ export default function NetworkDisplay({
 }): ReactElement | null {
   const { active, chainId, error } = useWeb3React()
   const networkLabel: string =
-    (chainId ? NETWORK_LABEL[chainId as ChainId] : undefined) ?? "MaticMumbai"
+    (chainId ? NETWORK_LABEL[chainId as ChainId] : undefined) ?? "Polygon"
   const isUnsupportChainIdError = error instanceof UnsupportedChainIdError
 
   return IS_L2_SUPPORTED ? (

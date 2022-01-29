@@ -61,7 +61,7 @@
   "highPriceImpactConfirmation": "Warning: There is a high Price Impact on this transaction due either to the transaction's size or insufficient liquidity, which will result in a loss of funds. Please confirm that you understand before submitting your transaction.",
   "iConfirm": "I CONFIRM",
   "infiniteApproval": "Infinite Approval",
-  "infiniteApprovalTooltip": "Allow Saddle to spend all of the selected tokens now and in the future. You will not need to approve again.",
+  "infiniteApprovalTooltip": "Allow Mune to spend all of the selected tokens now and in the future. You will not need to approve again.",
   "inputNotValid": "Not a valid input value",
   "instant": "Instant",
   "insufficientBalance": "Insufficient balance",
