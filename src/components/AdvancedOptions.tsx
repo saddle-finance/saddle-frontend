@@ -54,14 +54,16 @@ export default function AdvancedOptions(): ReactElement {
     event: React.MouseEvent<HTMLElement>,
     slippageValue: Slippages,
   ) => {
-    dispatch(updateSlippageSelected(slippageValue))
+    if (slippageValue) dispatch(updateSlippageSelected(slippageValue))
   }
 
   const handleDeadline = (
     event: React.MouseEvent<HTMLElement>,
     deadlineValue: Deadlines,
   ) => {
-    dispatch(updateTransactionDeadlineSelected(deadlineValue))
+    // toggle button return null value when toggle button is selected.
+    if (deadlineValue)
+      dispatch(updateTransactionDeadlineSelected(deadlineValue))
   }
   return (
     <Box width="100%" data-testid="advOptionContainer" mt={3}>
@@ -123,7 +125,6 @@ export default function AdvancedOptions(): ReactElement {
                     0.1%
                   </ToggleButton>
                   <ToggleButton value={Slippages.One}>1%</ToggleButton>
-                  <ToggleButton value={Slippages.Custom}>5%</ToggleButton>
                 </ToggleButtonGroup>
                 <TextField
                   value={slippageCustom?.valueRaw}
