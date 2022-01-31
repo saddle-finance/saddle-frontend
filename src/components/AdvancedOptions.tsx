@@ -4,6 +4,9 @@ import {
   AccordionSummary,
   Box,
   Checkbox,
+  InputAdornment,
+  Stack,
+  TextField,
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
@@ -25,7 +28,7 @@ import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
 import { AppState } from "../state/index"
-import { ExpandMore } from "@mui/icons-material"
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
 import { PayloadAction } from "@reduxjs/toolkit"
 import classNames from "classnames"
 import styles from "./AdvancedOptions.module.scss"
@@ -65,7 +68,7 @@ export default function AdvancedOptions(): ReactElement {
         }
         expanded={advanced}
       >
-        <AccordionSummary expandIcon={<ExpandMore />}>
+        <AccordionSummary expandIcon={<ArrowDropDownIcon color="primary" />}>
           <Typography color="primary" variant="subtitle1">
             {t("advancedOptions")}
           </Typography>
@@ -91,12 +94,14 @@ export default function AdvancedOptions(): ReactElement {
               </Tooltip>
             </Box>
 
-            <div className={styles.parameter}>
-              <div
+            <Box>
+              <Typography variant="body1">{t("maxSlippage")}: </Typography>
+              <Stack
+                direction="row"
+                spacing={2}
                 data-testid="maxSlippageInputGroup"
-                className={styles.inputGroup}
+                display="flex"
               >
-                <Typography variant="body1">{t("maxSlippage")}: </Typography>
                 <ToggleButtonGroup
                   size="small"
                   fullWidth
@@ -105,6 +110,7 @@ export default function AdvancedOptions(): ReactElement {
                   onChange={handleSlippage}
                 >
                   <ToggleButton
+                    size="small"
                     value={Slippages.OneTenth}
                     selected={slippageSelected === Slippages.OneTenth}
                   >
@@ -113,27 +119,27 @@ export default function AdvancedOptions(): ReactElement {
                   <ToggleButton value={Slippages.One}>1%</ToggleButton>
                   <ToggleButton value={Slippages.Custom}>5%</ToggleButton>
                 </ToggleButtonGroup>
-                <div>
-                  <input
-                    value={slippageCustom?.valueRaw}
-                    onChange={(
-                      e: React.ChangeEvent<HTMLInputElement>,
-                    ): void => {
-                      const value = e.target.value
-                      if (value && !isNaN(+value)) {
-                        dispatch(updateSlippageCustom(value))
-                        if (slippageSelected !== Slippages.Custom) {
-                          dispatch(updateSlippageSelected(Slippages.Custom))
-                        }
-                      } else {
-                        dispatch(updateSlippageSelected(Slippages.OneTenth))
+                <TextField
+                  value={slippageCustom?.valueRaw}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">%</InputAdornment>
+                    ),
+                  }}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
+                    const value = e.target.value
+                    if (value && !isNaN(+value)) {
+                      dispatch(updateSlippageCustom(value))
+                      if (slippageSelected !== Slippages.Custom) {
+                        dispatch(updateSlippageSelected(Slippages.Custom))
                       }
-                    }}
-                  />
-                  &nbsp;%
-                </div>
-              </div>
-            </div>
+                    } else {
+                      dispatch(updateSlippageSelected(Slippages.OneTenth))
+                    }
+                  }}
+                />
+              </Stack>
+            </Box>
             <div className={styles.parameter}>
               <div
                 data-testid="txnDeadlineInputGroup"
