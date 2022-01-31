@@ -94,7 +94,12 @@ export default function AdvancedOptions(): ReactElement {
                 }
                 placement="top"
               >
-                <Typography variant="body1">{t("infiniteApproval")}</Typography>
+                <Typography
+                  variant="body1"
+                  sx={{ textDecoration: "underline" }}
+                >
+                  {t("infiniteApproval")}
+                </Typography>
               </Tooltip>
             </Box>
 
