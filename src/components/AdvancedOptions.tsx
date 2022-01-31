@@ -61,7 +61,6 @@ export default function AdvancedOptions(): ReactElement {
     event: React.MouseEvent<HTMLElement>,
     deadlineValue: Deadlines,
   ) => {
-    console.log("deadline values=>", deadlineValue)
     dispatch(updateTransactionDeadlineSelected(deadlineValue))
   }
   return (

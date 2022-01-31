@@ -1,4 +1,5 @@
 import { Components, Theme } from "@mui/material"
+import AccordionTheme from "./AccordionTheme"
 import AppBarTheme from "./AppBarTheme"
 import BackdropTheme from "./BackdropTheme"
 import ButtonTheme from "./ButtonTheme"
@@ -19,6 +20,7 @@ import { merge } from "lodash"
 export default function componentsOverrides(theme: Theme): Components {
   return merge(
     AppBarTheme(),
+    AccordionTheme(),
     ButtonTheme(theme),
     CheckboxTheme(),
     DialogTheme(theme),
