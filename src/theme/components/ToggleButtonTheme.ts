@@ -28,6 +28,7 @@ export default function ToggleButtonTheme(theme: Theme): Components {
           borderRadius: 6,
         },
         grouped: {
+          border: 0,
           "&.Mui-disabled": {
             border: 0,
           },
