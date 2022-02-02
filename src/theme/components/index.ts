@@ -20,7 +20,7 @@ import { merge } from "lodash"
 export default function componentsOverrides(theme: Theme): Components {
   return merge(
     AppBarTheme(),
-    AccordionTheme(),
+    AccordionTheme(theme),
     ButtonTheme(theme),
     CheckboxTheme(),
     DialogTheme(theme),
