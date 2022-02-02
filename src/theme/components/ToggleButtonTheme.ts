@@ -1,7 +1,6 @@
 import { Components, Theme } from "@mui/material"
 
 export default function ToggleButtonTheme(theme: Theme): Components {
-  console.log("theme", theme)
   return {
     MuiToggleButton: {
       styleOverrides: {
@@ -19,7 +18,6 @@ export default function ToggleButtonTheme(theme: Theme): Components {
             backgroundColor: theme.palette.mute.main,
           },
         },
-        selected: {},
       },
     },
     MuiToggleButtonGroup: {
@@ -27,9 +25,9 @@ export default function ToggleButtonTheme(theme: Theme): Components {
         root: {
           backgroundColor: theme.palette.mute.main,
           maxHeight: 28,
+          borderRadius: 6,
         },
         grouped: {
-          border: 0,
           "&.Mui-disabled": {
             border: 0,
           },
@@ -37,11 +35,11 @@ export default function ToggleButtonTheme(theme: Theme): Components {
             borderLeft: `1px solid ${theme.palette.primary.main}`,
           },
           "&:not(:first-of-type)": {
-            borderRadius: theme.shape.borderRadius,
+            borderRadius: 6,
             marginLeft: theme.spacing(0.5),
           },
           "&:first-of-type": {
-            borderRadius: theme.shape.borderRadius,
+            borderRadius: 6,
           },
         },
       },

@@ -11,4 +11,7 @@ export const darkTheme = createTheme({
   palette: palette.darkPalette,
   typography: typography,
   spacing: 8,
+  shape: {
+    borderRadius: 8,
+  },
 })
