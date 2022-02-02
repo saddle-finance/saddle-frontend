@@ -10,7 +10,7 @@ export default function ToggleButtonTheme(theme: Theme): Components {
           color: theme.palette.getContrastText(theme.palette.mute.main),
           "&.Mui-selected": {
             backgroundColor: theme.palette.action.active,
-            border: `1px solid ${theme.palette.primary.main} !important`,
+            border: `1px solid ${theme.palette.primary.main}`,
             "&:hover": {
               backgroundColor: theme.palette.action.active,
             },
@@ -19,6 +19,7 @@ export default function ToggleButtonTheme(theme: Theme): Components {
             backgroundColor: theme.palette.mute.main,
           },
         },
+        selected: {},
       },
     },
     MuiToggleButtonGroup: {
@@ -28,15 +29,16 @@ export default function ToggleButtonTheme(theme: Theme): Components {
           maxHeight: 28,
         },
         grouped: {
-          marginLeft: theme.spacing(0.5),
-          marginRight: theme.spacing(0.5),
           border: 0,
           "&.Mui-disabled": {
             border: 0,
           },
+          "&.Mui-selected": {
+            borderLeft: `1px solid ${theme.palette.primary.main}`,
+          },
           "&:not(:first-of-type)": {
             borderRadius: theme.shape.borderRadius,
-            // borderLeft: `1px solid ${theme.palette.primary.main}`,
+            marginLeft: theme.spacing(0.5),
           },
           "&:first-of-type": {
             borderRadius: theme.shape.borderRadius,
