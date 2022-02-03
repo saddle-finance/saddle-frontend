@@ -19,6 +19,7 @@ import Deposit from "./Deposit"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
+import { SnackbarContextProvider } from "../providers/SnackbarProvider"
 import Swap from "./Swap"
 import TopMenu from "../components/TopMenu"
 import Version from "../components/Version"
@@ -55,33 +56,37 @@ export default function App(): ReactElement {
         <GasAndTokenPrices>
           <PendingSwapsProvider>
             <RewardsBalancesProvider>
-              <TopMenu />
+              <SnackbarContextProvider>
+                <TopMenu />
 
-              <Switch>
-                <Route exact path="/" component={Swap} />
-                <Route exact path="/pools" component={Pools} />
-                {pools.map(({ name, route }) => (
-                  <Route
-                    exact
-                    path={`/pools/${route}/deposit`}
-                    render={(props) => <Deposit {...props} poolName={name} />}
-                    key={`${name}-deposit`}
-                  />
-                ))}
-                {pools.map(({ name, route }) => (
-                  <Route
-                    exact
-                    path={`/pools/${route}/withdraw`}
-                    render={(props) => <Withdraw {...props} poolName={name} />}
-                    key={`${name}-withdraw`}
-                  />
-                ))}
-                <Redirect from="/pools/:route/:action" to="/pools" />
-                <Route exact path="/risk" component={Risk} />
-                <Route exact path="/vesting-claim" component={VestingClaim} />
-              </Switch>
-              <WrongNetworkModal />
-              <Version />
+                <Switch>
+                  <Route exact path="/" component={Swap} />
+                  <Route exact path="/pools" component={Pools} />
+                  {pools.map(({ name, route }) => (
+                    <Route
+                      exact
+                      path={`/pools/${route}/deposit`}
+                      render={(props) => <Deposit {...props} poolName={name} />}
+                      key={`${name}-deposit`}
+                    />
+                  ))}
+                  {pools.map(({ name, route }) => (
+                    <Route
+                      exact
+                      path={`/pools/${route}/withdraw`}
+                      render={(props) => (
+                        <Withdraw {...props} poolName={name} />
+                      )}
+                      key={`${name}-withdraw`}
+                    />
+                  ))}
+                  <Redirect from="/pools/:route/:action" to="/pools" />
+                  <Route exact path="/risk" component={Risk} />
+                  <Route exact path="/vesting-claim" component={VestingClaim} />
+                </Switch>
+                <WrongNetworkModal />
+                <Version />
+              </SnackbarContextProvider>
             </RewardsBalancesProvider>
           </PendingSwapsProvider>
         </GasAndTokenPrices>

@@ -7,7 +7,7 @@ import {
   isLegacySwapABIPool,
 } from "../constants"
 import { formatDeadlineToNumber, getContract } from "../utils"
-import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
+import { notificationHandler, notifyCustomError } from "../utils/notifyHandler"
 import {
   useAllContracts,
   useLPTokenContract,
@@ -41,6 +41,15 @@ export function useApproveAndDeposit(
   poolName: PoolName,
 ): (
   state: ApproveAndDepositStateArgument,
+  addSnackbar: ({
+    msg,
+    id,
+    type,
+  }: {
+    msg: string
+    id: string
+    type: string
+  }) => void,
   shouldDepositWrapped?: boolean,
 ) => Promise<void> {
   const dispatch = useDispatch()
@@ -75,6 +84,15 @@ export function useApproveAndDeposit(
 
   return async function approveAndDeposit(
     state: ApproveAndDepositStateArgument,
+    addSnackbar: ({
+      msg,
+      id,
+      type,
+    }: {
+      msg: string
+      id: string
+      type: string
+    }) => void,
     shouldDepositWrapped = false,
   ): Promise<void> {
     try {
@@ -187,7 +205,12 @@ export function useApproveAndDeposit(
         )
       }
 
-      notifyHandler(spendTransaction.hash, "deposit")
+      addSnackbar({
+        msg: spendTransaction.hash,
+        id: spendTransaction.hash,
+        type: "deposit",
+      })
+      notificationHandler(spendTransaction.hash, "deposit")
 
       await spendTransaction.wait()
       dispatch(

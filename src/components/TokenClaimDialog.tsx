@@ -9,7 +9,7 @@ import React, {
 } from "react"
 import { Trans, useTranslation } from "react-i18next"
 import { commify, formatBNToString } from "../utils"
-import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
+import { notificationHandler, notifyCustomError } from "../utils/notifyHandler"
 import {
   useMiniChefContract,
   useRetroactiveVestingContract,
@@ -274,7 +274,7 @@ function useRewardClaims() {
         if (pid === null) return
         updateClaimStatus(pool.name, STATUSES.PENDING)
         const txn = await rewardsContract.harvest(pid, account)
-        notifyHandler(txn?.hash, "claim")
+        notificationHandler(txn?.hash, "claim")
         await txn?.wait()
         updateClaimStatus(pool.name, STATUSES.SUCCESS)
       } catch (e) {
@@ -305,7 +305,7 @@ function useRewardClaims() {
       } else {
         throw new Error("Unable to claim retro reward")
       }
-      notifyHandler(txn?.hash, "claim")
+      notificationHandler(txn?.hash, "claim")
       await txn?.wait()
       updateClaimStatus("retroactive", STATUSES.SUCCESS)
     } catch (e) {
@@ -330,7 +330,7 @@ function useRewardClaims() {
           calls.map(({ data }) => data as string),
           false,
         )
-        notifyHandler(txn?.hash, "claim")
+        notificationHandler(txn?.hash, "claim")
         await txn?.wait()
         updateClaimStatus("all", STATUSES.SUCCESS)
       } catch (e) {

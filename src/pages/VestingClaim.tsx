@@ -2,7 +2,7 @@ import React, { ReactElement, useEffect, useState } from "react"
 import { SDL_TOKEN, SDL_TOKEN_ADDRESSES } from "../constants"
 import { Trans, useTranslation } from "react-i18next"
 import { commify, formatBNToString, getContract } from "../utils"
-import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
+import { notificationHandler, notifyCustomError } from "../utils/notifyHandler"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import Button from "../components/Button"
@@ -118,7 +118,7 @@ function VestingClaim(): ReactElement {
     if (!vestingContract) return
     try {
       const txn = await vestingContract.release()
-      notifyHandler(txn?.hash, "claim")
+      notificationHandler(txn?.hash, "claim")
       await txn?.wait()
       setClaimableVestedAmount(Zero)
     } catch (err) {

@@ -28,6 +28,7 @@ import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
 import { useSelector } from "react-redux"
+import { useSnackbarContext } from "../providers/SnackbarProvider"
 import { useSwapContract } from "../hooks/useContract"
 
 interface Props {
@@ -38,6 +39,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
   const POOL = POOLS_MAP[poolName]
   const { account, library, chainId } = useActiveWeb3React()
   const approveAndDeposit = useApproveAndDeposit(poolName)
+  const { addSnackbar } = useSnackbarContext()
   const [poolData, userShareData] = usePoolData(poolName)
   const swapContract = useSwapContract(poolName)
   const allTokens = useMemo(() => {
@@ -220,7 +222,8 @@ function Deposit({ poolName }: Props): ReactElement | null {
   })
 
   async function onConfirmTransaction(): Promise<void> {
-    await approveAndDeposit(tokenFormState, shouldDepositWrapped)
+    // addSnackbar({ msg: "bhu", id: 4 })
+    await approveAndDeposit(tokenFormState, addSnackbar, shouldDepositWrapped)
     // Clear input after deposit
     updateTokenFormState(
       allTokens.reduce(

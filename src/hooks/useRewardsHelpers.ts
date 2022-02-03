@@ -1,5 +1,5 @@
 import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
-import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
+import { notificationHandler, notifyCustomError } from "../utils/notifyHandler"
 import { useCallback, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useLPTokenContract, useMiniChefContract } from "./useContract"
@@ -45,7 +45,7 @@ export function useRewardsHelpers(poolName: PoolName): {
           BigNumber.from(1),
         )
         const txn = await rewardsContract.deposit(poolPid, amount, account)
-        notifyHandler(txn?.hash, "deposit")
+        notificationHandler(txn?.hash, "deposit")
         await txn.wait()
         dispatch(
           updateLastTransactionTimes({
@@ -73,7 +73,7 @@ export function useRewardsHelpers(poolName: PoolName): {
         return
       try {
         const txn = await rewardsContract.withdraw(poolPid, amount, account)
-        notifyHandler(txn?.hash, "withdraw")
+        notificationHandler(txn?.hash, "withdraw")
         await txn.wait()
         dispatch(
           updateLastTransactionTimes({
