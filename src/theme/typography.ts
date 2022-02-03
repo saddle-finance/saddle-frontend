@@ -9,7 +9,7 @@ function pxToRem(value: number): string {
 const SOURCE_CODE_PRO_FAMILY = ['"Source Code Pro"', "monospace"].join(",")
 const NOE_DISPLAY_FAMILY = ['"Noe Display"'].join(",")
 
-declare module "@mui/material/styles/createPalette" {}
+declare module "@mui/material/styles/createTypography" {}
 
 const typography: TypographyOptions = {
   fontFamily: SOURCE_CODE_PRO_FAMILY,
