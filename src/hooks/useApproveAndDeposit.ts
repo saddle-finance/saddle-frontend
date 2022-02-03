@@ -7,7 +7,7 @@ import {
   isLegacySwapABIPool,
 } from "../constants"
 import { formatDeadlineToNumber, getContract } from "../utils"
-import { notificationHandler, notifyCustomError } from "../utils/notifyHandler"
+import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
 import {
   useAllContracts,
   useLPTokenContract,
@@ -210,7 +210,7 @@ export function useApproveAndDeposit(
         id: spendTransaction.hash,
         type: "deposit",
       })
-      notificationHandler(spendTransaction.hash, "deposit")
+      notifyHandler(spendTransaction.hash, "deposit")
 
       await spendTransaction.wait()
       dispatch(

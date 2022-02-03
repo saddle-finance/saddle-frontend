@@ -8,7 +8,7 @@ import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { gasBNFromState } from "../utils/gas"
 import { getContract } from "../utils"
-import { notificationHandler } from "../utils/notifyHandler"
+import { notifyHandler } from "../utils/notifyHandler"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
 import { useGeneralizedSwapMigratorContract } from "./useContract"
@@ -73,7 +73,7 @@ export function useApproveAndMigrate(): (
           lpTokenBalance,
           lpTokenBalance.mul(1000 - 5).div(1000), // 50bps, 0.5%
         )
-        notificationHandler(migrateTransaction.hash, "migrate")
+        notifyHandler(migrateTransaction.hash, "migrate")
         await migrateTransaction.wait()
         dispatch(
           updateLastTransactionTimes({

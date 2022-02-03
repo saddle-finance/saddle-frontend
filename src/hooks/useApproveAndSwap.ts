@@ -4,7 +4,7 @@ import {
   SYNTH_TRACKING_ID,
   TRANSACTION_TYPES,
 } from "../constants"
-import { notificationHandler, notifyCustomError } from "../utils/notifyHandler"
+import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
 import { useAllContracts, useSynthetixContract } from "./useContract"
 
 import { AppState } from "../state"
@@ -198,7 +198,7 @@ export function useApproveAndSwap(): (
         throw new Error("Invalid Swap Type, or contract not loaded")
       }
       if (swapTransaction?.hash) {
-        notificationHandler(swapTransaction.hash, "swap")
+        notifyHandler(swapTransaction.hash, "swap")
       }
 
       await swapTransaction?.wait()

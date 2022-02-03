@@ -1,7 +1,7 @@
 import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
 import { addSlippage, subtractSlippage } from "../utils/slippage"
 import { formatUnits, parseUnits } from "@ethersproject/units"
-import { notificationHandler, notifyCustomError } from "../utils/notifyHandler"
+import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
 import { useLPTokenContract, useSwapContract } from "./useContract"
 
 import { AppState } from "../state"
@@ -137,7 +137,7 @@ export function useApproveAndWithdraw(
         )
       }
 
-      notificationHandler(spendTransaction.hash, "withdraw")
+      notifyHandler(spendTransaction.hash, "withdraw")
 
       await spendTransaction.wait()
       dispatch(

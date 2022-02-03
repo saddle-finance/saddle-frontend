@@ -22,55 +22,6 @@ export function isChainSupportedByNotify(chainId: number | undefined): boolean {
   return notifyNetworks.has(chainId)
 }
 
-// TODO: Delete this
-export function notificationHandler(
-  hash: string,
-  type: "deposit" | "withdraw" | "swap" | "tokenApproval" | "migrate" | "claim",
-): void {
-  console.log({ hash })
-  const { emitter } = notify.hash(hash)
-
-  emitter.on("txPool", (transaction) => {
-    if (transaction.hash) {
-      return {
-        message: i18next.t("txPool", { context: type }),
-        link: getEtherscanLink(transaction.hash, "tx"),
-      }
-    }
-  })
-  emitter.on("txSent", () => {
-    return {
-      message: i18next.t("txSent", { context: type }),
-    }
-  })
-  emitter.on("txConfirmed", () => {
-    return {
-      message: i18next.t("txConfirmed", { context: type }),
-    }
-  })
-  emitter.on("txSpeedUp", (transaction) => {
-    if (transaction.hash) {
-      return {
-        message: i18next.t("txSpeedUp", { context: type }),
-        link: getEtherscanLink(transaction.hash, "tx"),
-      }
-    }
-  })
-  emitter.on("txCancel", () => {
-    return {
-      message: i18next.t("txCancel", { context: type }),
-    }
-  })
-  emitter.on("txFailed", (transaction) => {
-    if (transaction.hash) {
-      return {
-        message: i18next.t("txFailed", { context: type }),
-        link: getEtherscanLink(transaction.hash, "tx"),
-      }
-    }
-  })
-}
-
 export function notifyHandler(
   hash: string,
   type: "deposit" | "withdraw" | "swap" | "tokenApproval" | "migrate" | "claim",
