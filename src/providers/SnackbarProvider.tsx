@@ -4,10 +4,10 @@ import CloseIcon from "@mui/icons-material/Close"
 import { getEtherscanLink } from "../utils/getEtherscanLink"
 
 type SnackbarContextProps = {
-  addSnackbar: (snackbar: { msg: string; id: string; type: string }) => void
+  enqueueSnackbar: (snackbar: { msg: string; id: string; type: string }) => void
 }
 const defaultValue: SnackbarContextProps = {
-  addSnackbar: () => undefined,
+  enqueueSnackbar: () => undefined,
 }
 const SnackbarContext = createContext(defaultValue)
 
@@ -25,7 +25,11 @@ export const SnackbarContextProvider = (
   >([])
   const [open, setOpen] = useState(false)
 
-  const addSnackbar = (snackbar: { msg: string; id: string; type: string }) => {
+  const enqueueSnackbar = (snackbar: {
+    msg: string
+    id: string
+    type: string
+  }) => {
     setSnackbars(
       (snackbars) =>
         [...snackbars, snackbar] as { msg: string; id: string; type: string }[],
@@ -44,7 +48,7 @@ export const SnackbarContextProvider = (
   }
 
   return (
-    <SnackbarContext.Provider value={{ addSnackbar }}>
+    <SnackbarContext.Provider value={{ enqueueSnackbar }}>
       {props.children}
       {snackbars.map((snackbar) => (
         <Snackbar

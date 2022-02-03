@@ -41,7 +41,7 @@ export function useApproveAndDeposit(
   poolName: PoolName,
 ): (
   state: ApproveAndDepositStateArgument,
-  addSnackbar: ({
+  enqueueSnackbar: ({
     msg,
     id,
     type,
@@ -51,7 +51,7 @@ export function useApproveAndDeposit(
     type: string
   }) => void,
   shouldDepositWrapped?: boolean,
-) => Promise<void> {
+) => Promise<string | undefined> {
   const dispatch = useDispatch()
   const swapContract = useSwapContract(poolName)
   const lpTokenContract = useLPTokenContract(poolName)
@@ -84,7 +84,7 @@ export function useApproveAndDeposit(
 
   return async function approveAndDeposit(
     state: ApproveAndDepositStateArgument,
-    addSnackbar: ({
+    enqueueSnackbar: ({
       msg,
       id,
       type,
@@ -94,7 +94,7 @@ export function useApproveAndDeposit(
       type: string
     }) => void,
     shouldDepositWrapped = false,
-  ): Promise<void> {
+  ): Promise<string | undefined> {
     try {
       if (!account) throw new Error("Wallet must be connected")
       if (
@@ -205,20 +205,23 @@ export function useApproveAndDeposit(
         )
       }
 
-      addSnackbar({
-        msg: spendTransaction.hash,
-        id: spendTransaction.hash,
-        type: "deposit",
-      })
+      console.log({ spendTransaction })
+      // enqueueSnackbar({
+      //   msg: spendTransaction.hash,
+      //   id: spendTransaction.hash,
+      //   type: "deposit",
+      // })
       notifyHandler(spendTransaction.hash, "deposit")
 
-      await spendTransaction.wait()
+      const waited = await spendTransaction.wait()
+      // TODO: use status value to build snackbar text
+      console.log({ waited })
       dispatch(
         updateLastTransactionTimes({
           [TRANSACTION_TYPES.DEPOSIT]: Date.now(),
         }),
       )
-      return Promise.resolve()
+      return Promise.resolve(spendTransaction.hash)
     } catch (e) {
       console.error(e)
       notifyCustomError(e as Error)

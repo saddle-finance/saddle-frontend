@@ -39,7 +39,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
   const POOL = POOLS_MAP[poolName]
   const { account, library, chainId } = useActiveWeb3React()
   const approveAndDeposit = useApproveAndDeposit(poolName)
-  const { addSnackbar } = useSnackbarContext()
+  const { enqueueSnackbar } = useSnackbarContext()
   const [poolData, userShareData] = usePoolData(poolName)
   const swapContract = useSwapContract(poolName)
   const allTokens = useMemo(() => {
@@ -222,8 +222,22 @@ function Deposit({ poolName }: Props): ReactElement | null {
   })
 
   async function onConfirmTransaction(): Promise<void> {
-    // addSnackbar({ msg: "bhu", id: 4 })
-    await approveAndDeposit(tokenFormState, addSnackbar, shouldDepositWrapped)
+    enqueueSnackbar({
+      msg: "Deposit transaction initiated",
+      id: "depositStart",
+      type: "deposit",
+    })
+    const res = await approveAndDeposit(
+      tokenFormState,
+      enqueueSnackbar,
+      shouldDepositWrapped,
+    )
+    enqueueSnackbar({
+      msg: "Deposit transaction succcessful",
+      id: "depositEnd",
+      type: "deposit",
+    })
+    console.log({ res })
     // Clear input after deposit
     updateTokenFormState(
       allTokens.reduce(
