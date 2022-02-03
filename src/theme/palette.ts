@@ -62,9 +62,9 @@ const lightPalette: PaletteOptions | undefined = {
   },
   mute: {
     main: "#FAF3CE",
-    dark: "#FFEA91",
+    dark: "#E3D899",
     states: {
-      containedHoverBackground: "#FFEA91",
+      containedHoverBackground: "#E3D899",
     },
   },
   info: {
