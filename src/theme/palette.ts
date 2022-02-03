@@ -154,6 +154,7 @@ const darkPalette: PaletteOptions | undefined = {
     disabled: "#A7A7A7",
     disabledBackground: "#404040",
     hoverOpacity: 0.5,
+    selected: "#4B11F2",
   },
   success: {
     main: "#06D7D7",
