@@ -26,6 +26,7 @@ import susdLogo from "../assets/icons/susd.svg"
 import tallyIcon from "../assets/icons/tally.svg"
 import tbtcLogo from "../assets/icons/tbtc.svg"
 import usdcLogo from "../assets/icons/usdc.svg"
+import usdsLogo from "../assets/icons/usds.png"
 import usdtLogo from "../assets/icons/usdt.svg"
 import veth2Logo from "../assets/icons/veth2.svg"
 import walletconnectIcon from "../assets/icons/walletconnect.svg"
@@ -762,10 +763,10 @@ export const FRAX = new Token(
 export const USDS = new Token(
   USDS_CONTRACT_ADDRESSES,
   18,
-  "USDS",
+  "USDs",
   "usds",
   "USDs",
-  fraxLogo,
+  usdsLogo,
 )
 
 export const FRAX_ARB_USD_POOL_V2_TOKENS = [FRAX, USDC, USDT]
