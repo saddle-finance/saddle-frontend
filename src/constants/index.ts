@@ -1100,7 +1100,7 @@ export const POOLS_MAP: PoolsMap = {
     type: PoolTypes.USD,
     metaSwapAddresses: USDS_ARB_USD_SWAP_ADDRESSES,
     underlyingPoolTokens: USDS_ARB_USD_UNDERLYING_POOL_TOKENS,
-    underlyingPool: ARB_USD_POOL_NAME,
+    underlyingPool: FRAX_ARB_USD_POOL_V2_NAME,
     route: "usds-arbusd",
     rewardPids: buildPids({}),
   },
