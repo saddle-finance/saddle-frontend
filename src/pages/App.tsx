@@ -19,7 +19,7 @@ import Deposit from "./Deposit"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
-import { SnackbarContextProvider } from "../providers/SnackbarProvider"
+import SnackbarProvider from "../providers/SnackbarProvider"
 import Swap from "./Swap"
 import TopMenu from "../components/TopMenu"
 import Version from "../components/Version"
@@ -56,7 +56,7 @@ export default function App(): ReactElement {
         <GasAndTokenPrices>
           <PendingSwapsProvider>
             <RewardsBalancesProvider>
-              <SnackbarContextProvider>
+              <SnackbarProvider>
                 <TopMenu />
 
                 <Switch>
@@ -86,7 +86,7 @@ export default function App(): ReactElement {
                 </Switch>
                 <WrongNetworkModal />
                 <Version />
-              </SnackbarContextProvider>
+              </SnackbarProvider>
             </RewardsBalancesProvider>
           </PendingSwapsProvider>
         </GasAndTokenPrices>

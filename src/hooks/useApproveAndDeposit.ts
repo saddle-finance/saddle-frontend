@@ -130,6 +130,12 @@ export function useApproveAndDeposit(
         if (spendingValue.isZero()) return
         const tokenContract = tokenContracts?.[token.symbol] as Erc20
         if (tokenContract == null) return
+        console.log({ IS_PRODUCTION })
+        enqueueSnackbar({
+          msg: `${token.name} init`,
+          id: `${token.name} finish`,
+          type: "deposit",
+        })
         await checkAndApproveTokenForTrade(
           tokenContract,
           effectiveSwapContract.address,
@@ -143,6 +149,11 @@ export function useApproveAndDeposit(
             },
           },
         )
+        enqueueSnackbar({
+          msg: `${token.name} finish`,
+          id: `${token.name} finish`,
+          type: "deposit",
+        })
         return
       }
       // For each token being deposited, check the allowance and approve it if necessary
@@ -213,9 +224,9 @@ export function useApproveAndDeposit(
       // })
       notifyHandler(spendTransaction.hash, "deposit")
 
-      const waited = await spendTransaction.wait()
+      const waitedTx = await spendTransaction.wait()
       // TODO: use status value to build snackbar text
-      console.log({ waited })
+      console.log({ waitedTx })
       dispatch(
         updateLastTransactionTimes({
           [TRANSACTION_TYPES.DEPOSIT]: Date.now(),
