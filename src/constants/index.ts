@@ -764,7 +764,7 @@ export const USDS = new Token(
   USDS_CONTRACT_ADDRESSES,
   18,
   "USDs",
-  "usds",
+  "sperax-usd",
   "USDs",
   usdsLogo,
 )
