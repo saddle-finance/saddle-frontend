@@ -49,10 +49,10 @@ export const TBTC_METAPOOL_V2_NAME = "tBTC Metapool V2"
 export const WCUSD_METAPOOL_NAME = "wCUSD Metapool"
 export const WCUSD_METAPOOL_V2_NAME = "wCUSD Metapool V2"
 export const ARB_USD_POOL_NAME = "arbUSD Pool"
-export const USDS_ARB_USD_METAPOOL_NAME = "usds-arbUSD Metapool"
+export const USDS_ARB_USD_METAPOOL_NAME = "usds-arbUSDV2 Metapool"
 export const OPT_USD_POOL_NAME = "optUSD Pool"
 export const FRAX_OPT_USD_METAPOOL_NAME = "frax-optUSD Pool"
-export const FRAX_ARB_USD_POOL_V2_NAME = "frax-ArbUSD Pool V2"
+export const FRAX_ARB_USD_POOL_V2_NAME = "arbUSDV2 Pool"
 export const FTM_USD_POOL_NAME = "ftmUSD Pool"
 export type PoolName =
   | typeof BTC_POOL_NAME
