@@ -20,6 +20,16 @@ const StyledPopper = styled(Popper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "light" ? "#fff" : "#1c2128",
 }))
 
+// interface Props {
+//   tokens: TokenOption[]
+//   selected: string
+//   inputValue: string
+//   inputValueUSD: BigNumber
+//   isSwapFrom: boolean
+//   onSelect?: (tokenSymbol: string) => void
+//   onChangeAmount?: (value: string) => void
+// }
+
 export default function SwapTokenInput() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [value, setValue] = React.useState<string>()
@@ -63,7 +73,9 @@ export default function SwapTokenInput() {
         borderRadius="6px"
         border="1px solid #F00"
       >
-        <SettingsIcon />
+        <Box paddingRight={1}>
+          <SettingsIcon />
+        </Box>
         <Box flexWrap="nowrap">
           <Button
             disableRipple
@@ -72,7 +84,9 @@ export default function SwapTokenInput() {
           >
             <span> {value || "Choose"} </span>
           </Button>
-          <Typography noWrap>Wrapped BTC</Typography>
+          <Typography noWrap paddingLeft={1}>
+            Wrapped BTC
+          </Typography>
         </Box>
         <Box flex={1}>
           <InputBase

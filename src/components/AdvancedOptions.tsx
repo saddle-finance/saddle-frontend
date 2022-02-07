@@ -152,8 +152,6 @@ export default function AdvancedOptions(): ReactElement {
                 />
               </Stack>
             </Box>
-            <TextField label="test" />
-            <TextField size="small" label="test" />
 
             <Typography variant="body1" mt={2} mb={1}>
               {t("deadline")}:{" "}

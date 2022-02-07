@@ -3,7 +3,7 @@ import React from "react"
 import SwapTokenInput from "../components/SwapTokenInput"
 
 export default {
-  title: "Light components/Button",
+  title: "Light components/SwapTokenInput",
   component: SwapTokenInput,
 } as ComponentMeta<typeof SwapTokenInput>
 
