@@ -14,8 +14,23 @@ export default function TextFieldTheme(): Components {
           paddingBottom: 14.5,
         },
         inputSizeSmall: {
-          paddingTop: 6.5,
-          paddingBottom: 6.5,
+          paddingTop: 4.5,
+          paddingBottom: 4.5,
+        },
+      },
+    },
+    MuiTextField: {
+      defaultProps: {
+        helperText: "",
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        outlined: {
+          top: "-5px",
+          "&.Mui-focused": {
+            top: 0,
+          },
         },
       },
     },
