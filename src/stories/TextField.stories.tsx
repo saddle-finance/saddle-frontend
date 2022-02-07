@@ -12,6 +12,10 @@ export default {
       options: ["standard", "outlined"],
       control: { type: "inline-radio" },
     },
+    size: {
+      options: ["small", "medium"],
+      control: { type: "inline-radio" },
+    },
   },
 } as ComponentMeta<typeof TextField>
 

@@ -24,7 +24,7 @@ export default function ToggleButtonTheme(theme: Theme): Components {
       styleOverrides: {
         root: {
           backgroundColor: theme.palette.mute.main,
-          maxHeight: 28,
+          maxHeight: 36,
           borderRadius: 6,
         },
         grouped: {
