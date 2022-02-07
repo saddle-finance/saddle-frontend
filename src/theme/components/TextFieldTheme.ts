@@ -10,6 +10,15 @@ export default function TextFieldTheme(): Components {
         },
         input: {
           paddingLeft: 8,
+          paddingTop: 2.5,
+          paddingBottom: 2.5,
+        },
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        outlined: {
+          top: -12,
         },
       },
     },

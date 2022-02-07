@@ -12,9 +12,8 @@ import { styled } from "@mui/material/styles"
 
 const StyledPopper = styled(Popper)(({ theme }) => ({
   border: `1px solid ${theme.palette.mode === "light" ? "#e1e4e8" : "#30363d"}`,
-  borderRadius: "0px 0px 6px 6px",
+  borderRadius: "6px",
   width: 300,
-  height: 300,
   zIndex: theme.zIndex.modal,
   fontSize: 13,
   color: theme.palette.mode === "light" ? "#24292e" : "#c9d1d9",
@@ -97,7 +96,7 @@ export default function SwapTokenInput() {
 
       <StyledPopper open={open} anchorEl={anchorEl} placement="bottom-start">
         <ClickAwayListener onClickAway={handleClose}>
-          <div>
+          <Box height="100%" borderRadius="6px" padding={2}>
             <Autocomplete
               open={open}
               options={top100Films}
@@ -105,14 +104,13 @@ export default function SwapTokenInput() {
               renderInput={(params) => (
                 <TextField
                   {...params}
+                  variant="standard"
                   ref={params.InputProps.ref}
                   InputProps={{
                     startAdornment: <Search />,
                   }}
                   inputProps={params.inputProps}
-                  variant="standard"
                   placeholder="movie"
-                  size="small"
                   autoFocus
                 />
               )}
@@ -128,13 +126,18 @@ export default function SwapTokenInput() {
                 setAnchorEl(null)
               }}
               renderOption={(props, option) => (
-                <li {...props}>
+                <li
+                  {...props}
+                  style={{ paddingLeft: 0, borderBottom: "1px solid #000" }}
+                >
                   {console.log(option)}
                   <Box>{option.label}</Box>
                 </li>
               )}
+              PopperComponent={(props) => <div {...props}></div>}
+              PaperComponent={(props) => <Box {...props} overflow="hidden" />}
             />
-          </div>
+          </Box>
         </ClickAwayListener>
       </StyledPopper>
     </React.Fragment>

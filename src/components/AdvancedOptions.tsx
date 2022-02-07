@@ -5,6 +5,7 @@ import {
   Box,
   Checkbox,
   InputAdornment,
+  OutlinedInput,
   Stack,
   TextField,
   ToggleButton,
@@ -128,10 +129,13 @@ export default function AdvancedOptions(): ReactElement {
                 </ToggleButtonGroup>
                 <TextField
                   value={slippageCustom?.valueRaw}
+                  size="small"
+                  label=""
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">%</InputAdornment>
                     ),
+                    notched: false,
                   }}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
                     const value = e.target.value
@@ -148,6 +152,8 @@ export default function AdvancedOptions(): ReactElement {
                 />
               </Stack>
             </Box>
+            <TextField label="test" />
+            <TextField size="small" label="test" />
 
             <Typography variant="body1" mt={2} mb={1}>
               {t("deadline")}:{" "}
@@ -168,15 +174,14 @@ export default function AdvancedOptions(): ReactElement {
                   40 {t("minutes")}
                 </ToggleButton>
               </ToggleButtonGroup>
-              <TextField
+              <OutlinedInput
                 type="text"
-                variant="outlined"
-                InputLabelProps={{ shrink: false }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">min</InputAdornment>
-                  ),
-                }}
+                size="small"
+                notched={false}
+                label=""
+                endAdornment={
+                  <InputAdornment position="end">min</InputAdornment>
+                }
                 placeholder="20"
                 onClick={(): PayloadAction<Deadlines> =>
                   dispatch(updateTransactionDeadlineSelected(Deadlines.Custom))
