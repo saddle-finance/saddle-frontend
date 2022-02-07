@@ -17,6 +17,7 @@ import {
   SUSD_METAPOOL_V2_NAME,
   TBTC_METAPOOL_NAME,
   TBTC_METAPOOL_V2_NAME,
+  USDS_ARB_USD_METAPOOL_NAME,
   VETH2_POOL_NAME,
   WCUSD_METAPOOL_NAME,
   WCUSD_METAPOOL_V2_NAME,
@@ -67,6 +68,9 @@ function Pools(): ReactElement | null {
   )
   const [fraxArbUsdPoolV2Data, fraxArbUsdV2UserShareData] = usePoolData(
     FRAX_ARB_USD_POOL_V2_NAME,
+  )
+  const [usdsArbUsdPoolData, usdsArbUsdUserShareData] = usePoolData(
+    USDS_ARB_USD_METAPOOL_NAME,
   )
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const approveAndMigrate = useApproveAndMigrate()
@@ -212,6 +216,13 @@ function Pools(): ReactElement | null {
         poolData: fraxArbUsdPoolV2Data,
         userShareData: fraxArbUsdV2UserShareData,
         poolRoute: "/pools/frax-arbusdv2",
+      }
+    } else if (poolName === USDS_ARB_USD_METAPOOL_NAME) {
+      return {
+        name: USDS_ARB_USD_METAPOOL_NAME,
+        poolData: usdsArbUsdPoolData,
+        userShareData: usdsArbUsdUserShareData,
+        poolRoute: "/pools/usds-arbusd",
       }
     } else {
       return {
