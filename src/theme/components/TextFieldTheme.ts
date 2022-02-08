@@ -19,20 +19,5 @@ export default function TextFieldTheme(): Components {
         },
       },
     },
-    MuiTextField: {
-      defaultProps: {
-        helperText: "",
-      },
-    },
-    MuiInputLabel: {
-      styleOverrides: {
-        outlined: {
-          top: "-5px",
-          "&.Mui-focused": {
-            top: 0,
-          },
-        },
-      },
-    },
   }
 }

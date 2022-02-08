@@ -30,7 +30,6 @@ MuiTextField.args = {
   variant: "outlined",
   name: "textField",
   label: "",
-  hiddenLabel: true,
   placeholder: "test",
   value: "",
   helperText: "",

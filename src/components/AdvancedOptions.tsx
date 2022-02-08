@@ -128,6 +128,11 @@ export default function AdvancedOptions(): ReactElement {
                 </ToggleButtonGroup>
                 <TextField
                   value={slippageCustom?.valueRaw}
+                  // TODO check after removing SCSS
+                  label=""
+                  InputLabelProps={{
+                    shrink: false,
+                  }}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">%</InputAdornment>
@@ -176,7 +181,11 @@ export default function AdvancedOptions(): ReactElement {
                 type="text"
                 variant="outlined"
                 size="small"
-                label="min"
+                // TODO check after removing SCSS
+                label=""
+                InputLabelProps={{
+                  shrink: false,
+                }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">min</InputAdornment>
