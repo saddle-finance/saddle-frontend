@@ -3,7 +3,6 @@
 
 div.deposit {
   min-height: 100vh;
-  background: var(--background-main);
   color: var(--text);
   padding-bottom: 80px;
   box-sizing: border-box; // Make the padding included in height calculation
@@ -30,7 +29,6 @@ div.deposit {
       padding: 24px 32px;
       border: 1px solid var(--outline);
       border-radius: 10px;
-      background: var(--background-element);
       box-sizing: border-box;
       @include breakpoint(lg) {
         margin: 40px auto 0;

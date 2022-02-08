@@ -2,11 +2,10 @@
 @import "../styles/viewports";
 
 div.swapPage {
-  background: var(--background-main);
   color: var(--text);
   font-size: 16px;
   padding-bottom: 80px;
-  min-height: 80vh;
+  height: 100%;
 
   h3.swapTitle {
     font-weight: 700;
@@ -47,7 +46,7 @@ div.swapPage {
   }
 
   .content {
-    width: 550px;
+    width: 460px;
     margin: 0 auto;
     padding-top: 40px;
     display: flex;
