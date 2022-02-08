@@ -22,7 +22,16 @@ context("Advanced option test", () => {
       })
     cy.wait(10000)
 
-    cy.get("[data-testid=advOptionContainer]").should("exist")
+    cy.get("[data-testid=advOptionContainer]")
+      .should("exist")
+      .should("be.visible")
+    cy.get("[data-testid=advTableContainer]").then(($tableContainer) => {
+      if ($tableContainer.is(":visible")) {
+        cy.log("container is visible")
+      } else {
+        cy.get("[data-testid=advOptionContainer]").click()
+      }
+    })
     cy.get("[data-testid=advTableContainer]").then(($table) => {
       const tableDisplay = $table.css("display")
       const isTableVisible = tableDisplay !== "none"
