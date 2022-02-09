@@ -1,5 +1,5 @@
+import { ComponentMeta, ComponentStory } from "@storybook/react"
 import { BigNumber } from "ethers"
-import { ComponentMeta } from "@storybook/react"
 import React from "react"
 import { SWAP_TYPES } from "../constants"
 import SwapTokenInput from "../components/SwapTokenInput"
@@ -10,8 +10,8 @@ export default {
   component: SwapTokenInput,
 } as ComponentMeta<typeof SwapTokenInput>
 
-export const SwapTokenInputComponent = () => (
-  <SwapTokenInput tokens={tokenOptionLists} />
+const Template: ComponentStory<typeof SwapTokenInput> = (args) => (
+  <SwapTokenInput {...args} />
 )
 
 const tokenOptionLists: TokenOption[] = [
@@ -176,3 +176,10 @@ const tokenOptionLists: TokenOption[] = [
     isAvailable: false,
   },
 ]
+export const SwapInput = Template.bind({})
+// More on args: https://storybook.js.org/docs/react/writing-stories/args
+SwapInput.args = {
+  inputValue: "23",
+  inputValueUSD: BigNumber.from("234245"),
+  tokens: tokenOptionLists,
+}

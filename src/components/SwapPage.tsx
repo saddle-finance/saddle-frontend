@@ -17,6 +17,7 @@ import PendingSwapModal from "./PendingSwapModal"
 import ReviewSwap from "./ReviewSwap"
 import { Slippages } from "../state/user"
 import SwapInput from "./SwapInput"
+import SwapTokenInput from "./SwapTokenInput"
 import type { TokenOption } from "../pages/Swap"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
@@ -138,6 +139,17 @@ const SwapPage = (props: Props): ReactElement => {
               isSwapFrom={true}
             />
           </div>
+
+          <SwapTokenInput
+            tokens={tokenOptions.to.filter(
+              ({ symbol }) => symbol !== fromState.symbol,
+            )}
+            selected={fromState.symbol}
+            inputValue={fromState.value}
+            inputValueUSD={fromState.valueUSD}
+            onSelect={onChangeFromToken}
+            onChangeAmount={onChangeFromAmount}
+          />
           <div style={{ height: "48px" }}></div>
           <div className="row">
             <h3 className="swapTitle">{t("to")}</h3>

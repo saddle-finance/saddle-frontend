@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { Button, InputBase, Stack, TextField, Typography } from "@mui/material"
 import { ReactElement, useRef, useState } from "react"
+import { commify, formatBNToString } from "../utils"
 import { styled, useTheme } from "@mui/material/styles"
 import { ArrowDropDown } from "@mui/icons-material"
 import Autocomplete from "@mui/material/Autocomplete"
@@ -11,23 +12,21 @@ import ClickAwayListener from "@mui/material/ClickAwayListener"
 import Popper from "@mui/material/Popper"
 import Search from "@mui/icons-material/Search"
 import { TokenOption } from "../pages/Swap"
-import { formatBNToString } from "../utils"
 
 const StyledPopper = styled(Popper)(({ theme }) => ({
-  border: `1px solid ${theme.palette.mode === "light" ? "#e1e4e8" : "#30363d"}`,
-  borderRadius: "6px",
+  border: `1px solid ${theme.palette.other.divider}`,
+  borderRadius: theme.shape.borderRadius,
   width: 400,
+  padding: theme.spacing(2),
   zIndex: theme.zIndex.modal,
-  fontSize: 13,
-  color: theme.palette.mode === "light" ? "#24292e" : "#c9d1d9",
   backgroundColor: theme.palette.background.paper,
 }))
 
 interface SwapTokenInputProps {
   tokens: TokenOption[]
   selected?: string
-  inputValue?: string
-  inputValueUSD?: BigNumber
+  inputValue: string
+  inputValueUSD: BigNumber
   isSwapFrom?: boolean
   onSelect?: (tokenSymbol: string) => void
   onChangeAmount?: (value: string) => void
@@ -44,11 +43,12 @@ export default function SwapTokenInput({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [value, setValue] = useState<TokenOption | null>(null)
   // const [inputValue, setInputValue] = React.useState<string>("")
-  const containerRef = useRef()
+  const containerRef = useRef<HTMLDivElement>(null)
   const theme = useTheme()
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget)
+  const handleClick = () => {
+    // setAnchorEl(event.currentTarget)
+    if (containerRef?.current) setAnchorEl(containerRef.current)
   }
 
   const handleClose = () => {
@@ -85,6 +85,7 @@ export default function SwapTokenInput({
         padding={1}
         borderRadius="6px"
         border={`1px solid ${theme.palette.other.border} `}
+        bgcolor={theme.palette.background.paper}
         ref={containerRef}
       >
         {value?.icon && (
@@ -98,6 +99,8 @@ export default function SwapTokenInput({
             disableRipple
             onClick={handleClick}
             endIcon={<ArrowDropDown />}
+            disableElevation
+            disableFocusRipple
           >
             <Typography variant="subtitle1">
               {value?.symbol || "Choose"}
@@ -107,7 +110,7 @@ export default function SwapTokenInput({
             variant="body2"
             noWrap
             paddingLeft={1}
-            color={theme.palette.grey[500]}
+            color="text.secondary"
           >
             {value?.name}
           </Typography>
@@ -134,18 +137,20 @@ export default function SwapTokenInput({
             fullWidth
           />
           <Typography variant="body2" color="text.secondary" textAlign="end">
-            {inputValueUSD ?? "0.0"}
+            ≈$
+            {commify(formatBNToString(inputValueUSD, 18, 2))}
           </Typography>
         </Box>
       </Box>
 
       <StyledPopper open={open} anchorEl={anchorEl} placement="bottom-start">
         <ClickAwayListener onClickAway={handleClose}>
-          <Box height="100%" borderRadius="6px" padding={2}>
+          <Box height="100%" borderRadius="6px">
             <Autocomplete
               open={open}
               options={tokens}
               popupIcon={null}
+              ListboxProps={{ style: { overflow: "visible" } }}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -155,7 +160,7 @@ export default function SwapTokenInput({
                     startAdornment: <Search />,
                   }}
                   inputProps={params.inputProps}
-                  placeholder="movie"
+                  placeholder="Search name"
                   autoFocus
                 />
               )}
@@ -179,6 +184,7 @@ export default function SwapTokenInput({
                   style={{
                     paddingLeft: 0,
                     borderBottom: `1px solid  ${theme.palette.other.border}`,
+                    overflow: "visible",
                   }}
                 >
                   <Stack direction="row" width="100%" alignItems="center">
@@ -186,14 +192,18 @@ export default function SwapTokenInput({
                       <img src={option.icon} alt={option.name} />
                     </Box>
                     <Box>
-                      <Typography>{option.symbol}</Typography>
-                      <Typography>{option.name}</Typography>
+                      <Typography color="text.primary">
+                        {option.symbol}
+                      </Typography>
+                      <Typography color="text.secondary">
+                        {option.name}
+                      </Typography>
                     </Box>
                     <Box flex={1} sx={{ marginRight: 0, textAlign: "end" }}>
-                      <Typography>
+                      <Typography color="text.primary">
                         {formatBNToString(option.amount, option.decimals)}
                       </Typography>
-                      <Typography>
+                      <Typography color="text.secondary">
                         {formatBNToString(option.valueUSD, option.decimals)}
                       </Typography>
                     </Box>
@@ -202,7 +212,7 @@ export default function SwapTokenInput({
               )}
               getOptionLabel={(option) => option.symbol}
               PopperComponent={(props) => <div {...props}></div>}
-              PaperComponent={(props) => <Box {...props} overflow="hidden" />}
+              PaperComponent={(props) => <Box {...props} marginRight={-2} />}
               noOptionsText={"No tokens found."}
             />
           </Box>
