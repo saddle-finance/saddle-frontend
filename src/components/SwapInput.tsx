@@ -29,7 +29,6 @@ export default function SwapInput({
   isSwapFrom,
   onChangeAmount,
 }: Props): ReactElement {
-  console.log("swap token input ==>", tokens)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const wrapperRef = useRef(null)
   const inputRef = useRef<HTMLInputElement>(null)

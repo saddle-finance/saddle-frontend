@@ -11,6 +11,7 @@ import Box from "@mui/material/Box"
 import ClickAwayListener from "@mui/material/ClickAwayListener"
 import Popper from "@mui/material/Popper"
 import Search from "@mui/icons-material/Search"
+import { TOKENS_MAP } from "../constants"
 import { TokenOption } from "../pages/Swap"
 
 const StyledPopper = styled(Popper)(({ theme }) => ({
@@ -34,18 +35,15 @@ interface SwapTokenInputProps {
 
 export default function SwapTokenInput({
   tokens,
-  // selected,
+  selected,
   inputValue,
   inputValueUSD,
   onSelect,
   onChangeAmount,
 }: SwapTokenInputProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const [value, setValue] = useState<TokenOption | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const theme = useTheme()
-
-  console.log("tokens ==>", tokens)
 
   const handleClick = () => {
     // setAnchorEl(event.currentTarget)
@@ -65,7 +63,6 @@ export default function SwapTokenInput({
     const re = /^[0-9]*[.,]?[0-9]*$/
     // if value is not blank, then test the regex
     if (e.target.value === "" || re.test(e.target.value)) {
-      // setInputValue(e.target.value)
       onChangeAmount?.(e.target.value)
     }
   }
@@ -77,7 +74,18 @@ export default function SwapTokenInput({
   }
 
   const open = Boolean(anchorEl)
+  const selectedToken =
+    typeof selected === "string" ? TOKENS_MAP[selected] : undefined
 
+  // const { t } = useTranslation()
+  // const isVirtualSwap = (
+  //   [
+  //     SWAP_TYPES.SYNTH_TO_SYNTH,
+  //     SWAP_TYPES.SYNTH_TO_TOKEN,
+  //     SWAP_TYPES.TOKEN_TO_SYNTH,
+  //     SWAP_TYPES.TOKEN_TO_TOKEN,
+  //   ] as Array<SWAP_TYPES | null>
+  // ).includes(swapType)
   return (
     <React.Fragment>
       <Box
@@ -89,11 +97,11 @@ export default function SwapTokenInput({
         bgcolor={theme.palette.background.paper}
         ref={containerRef}
       >
-        {value?.icon && (
+        {selectedToken?.icon && (
           <Box width={24} height={24} marginRight={1}>
             <img
-              src={value?.icon}
-              alt={value?.name}
+              src={selectedToken?.icon}
+              alt={selectedToken?.name}
               width="100%"
               height="100%"
             />
@@ -109,7 +117,7 @@ export default function SwapTokenInput({
             disableFocusRipple
           >
             <Typography variant="subtitle1">
-              {value?.symbol || "Choose"}
+              {selectedToken?.symbol || "Choose"}
             </Typography>
           </Button>
           <Typography
@@ -118,7 +126,7 @@ export default function SwapTokenInput({
             paddingLeft={1}
             color="text.secondary"
           >
-            {value?.name}
+            {selectedToken?.name}
           </Typography>
         </Box>
         <Box flex={1}>
@@ -177,7 +185,6 @@ export default function SwapTokenInput({
                 ) {
                   return
                 }
-                setValue(newValue)
                 setAnchorEl(null)
                 if (newValue?.symbol) {
                   onSelect?.(newValue?.symbol)
