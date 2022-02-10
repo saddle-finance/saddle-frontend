@@ -16,7 +16,6 @@ import { PendingSwap } from "../hooks/usePendingSwapData"
 import PendingSwapModal from "./PendingSwapModal"
 import ReviewSwap from "./ReviewSwap"
 import { Slippages } from "../state/user"
-import SwapInput from "./SwapInput"
 import SwapTokenInput from "./SwapTokenInput"
 import type { TokenOption } from "../pages/Swap"
 import { Zero } from "@ethersproject/constants"
@@ -126,19 +125,6 @@ const SwapPage = (props: Props): ReactElement => {
               </a>
             </div>
           </div>
-          <div className="row">
-            <SwapInput
-              tokens={tokenOptions.from.filter(
-                ({ symbol }) => symbol !== toState.symbol,
-              )}
-              onSelect={onChangeFromToken}
-              onChangeAmount={onChangeFromAmount}
-              selected={fromState.symbol}
-              inputValue={fromState.value}
-              inputValueUSD={fromState.valueUSD}
-              isSwapFrom={true}
-            />
-          </div>
 
           <SwapTokenInput
             tokens={tokenOptions.to.filter(
@@ -155,7 +141,7 @@ const SwapPage = (props: Props): ReactElement => {
             <h3 className="swapTitle">{t("to")}</h3>
           </div>
           <div className="row">
-            <SwapInput
+            <SwapTokenInput
               tokens={tokenOptions.to.filter(
                 ({ symbol }) => symbol !== fromState.symbol,
               )}
