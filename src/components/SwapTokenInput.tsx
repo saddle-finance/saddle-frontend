@@ -42,9 +42,10 @@ export default function SwapTokenInput({
 }: SwapTokenInputProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [value, setValue] = useState<TokenOption | null>(null)
-  // const [inputValue, setInputValue] = React.useState<string>("")
   const containerRef = useRef<HTMLDivElement>(null)
   const theme = useTheme()
+
+  console.log("tokens ==>", tokens)
 
   const handleClick = () => {
     // setAnchorEl(event.currentTarget)
@@ -89,8 +90,13 @@ export default function SwapTokenInput({
         ref={containerRef}
       >
         {value?.icon && (
-          <Box width={24} height={24} paddingRight={1}>
-            <img src={value?.icon} alt={value?.name} />
+          <Box width={24} height={24} marginRight={1}>
+            <img
+              src={value?.icon}
+              alt={value?.name}
+              width="100%"
+              height="100%"
+            />
           </Box>
         )}
 
@@ -150,7 +156,6 @@ export default function SwapTokenInput({
               open={open}
               options={tokens}
               popupIcon={null}
-              ListboxProps={{ style: { overflow: "visible" } }}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -189,7 +194,12 @@ export default function SwapTokenInput({
                 >
                   <Stack direction="row" width="100%" alignItems="center">
                     <Box mr={1} width={24} height={24}>
-                      <img src={option.icon} alt={option.name} />
+                      <img
+                        src={option.icon}
+                        alt={option.name}
+                        height="100%"
+                        width="100%"
+                      />
                     </Box>
                     <Box>
                       <Typography color="text.primary">
