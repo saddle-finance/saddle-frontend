@@ -96,7 +96,7 @@ export default function SwapTokenInput({
       ] as Array<SWAP_TYPES | null>
     ).includes(swapType)
   return (
-    <React.Fragment>
+    <div>
       <Box
         display="flex"
         alignItems="center"
@@ -273,6 +273,6 @@ export default function SwapTokenInput({
           </Box>
         </ClickAwayListener>
       </StyledPopper>
-    </React.Fragment>
+    </div>
   )
 }
