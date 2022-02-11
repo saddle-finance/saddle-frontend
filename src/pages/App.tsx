@@ -30,6 +30,7 @@ import fetchSwapStats from "../utils/getSwapStats"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import { styled } from "@mui/material"
 import { useActiveWeb3React } from "../hooks"
+import { useIntercom } from "react-use-intercom"
 import usePoller from "../hooks/usePoller"
 
 const VestingClaim = lazy(() => import("./VestingClaim"))
@@ -53,6 +54,7 @@ const AppContainer = styled("div")(({ theme }) => {
 export default function App(): ReactElement {
   const { chainId } = useActiveWeb3React()
   const { userDarkMode } = useSelector((state: AppState) => state.user)
+  const { boot } = useIntercom()
 
   useEffect(() => {
     notify?.config({
@@ -65,6 +67,11 @@ export default function App(): ReactElement {
       ({ addresses }) => chainId && addresses[chainId],
     )
   }, [chainId])
+
+  useEffect(() => {
+    boot()
+  }, [boot])
+
   return (
     <Suspense fallback={null}>
       <Web3ReactManager>
