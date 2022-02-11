@@ -1,11 +1,13 @@
+import { Box, Typography } from "@mui/material"
 import React, { ReactElement } from "react"
-import styles from "./Version.module.scss"
 
 function Version(): ReactElement | null {
   return (
-    <div className={styles.version}>
-      VERSION {process.env.REACT_APP_GIT_SHA}
-    </div>
+    <Box position="fixed" bottom={24} left={56}>
+      <Typography variant="body2">
+        VERSION {process.env.REACT_APP_GIT_SHA}
+      </Typography>
+    </Box>
   )
 }
 

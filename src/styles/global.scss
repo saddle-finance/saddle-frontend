@@ -54,8 +54,7 @@ ul {
   --background-lightgrey: #dfdde3;
   --background-element: rgba(255, 255, 244, 0.7);
   --background-element-hover: rgba(255, 255, 255, 0.88);
-  --background-main: #ffffe9 url("../assets/bg_light.svg") center/auto 60%
-    no-repeat fixed;
+  --background-main: linear-gradient(180deg, #ffffff 0%, #f9f2cd 98.96%);
   --background-logo: #{$primary};
   --secondary-button: #{$light-blue};
   --emphasis-1: #{$sand2}; // passive state
@@ -90,8 +89,7 @@ body.dark {
   --background-lightgrey: #{$black80};
   --background-element: rgba(0, 0, 0, 0.56);
   --background-element-hover: rgba(0, 0, 0, 0.8);
-  --background-main: #000 url("../assets/bg.svg") center/auto 60% no-repeat
-    fixed;
+  --background-main: linear-gradient(180deg, #010101 49.48%, #472db1 100%);
   --background-logo: #ffffe9;
   --secondary-button: #{$dark-purple};
   --emphasis-1: #{$indigo3}; // passive state

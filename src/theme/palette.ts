@@ -1,5 +1,4 @@
 import { PaletteOptions } from "@mui/material"
-import { alpha } from "@mui/material"
 
 // Define custom color types
 
@@ -8,10 +7,26 @@ interface OtherColorTypes {
   border: string
 }
 declare module "@mui/material/styles/createPalette" {
+  interface SimplePaletteColorOptions {
+    states?: {
+      outlinedRestingBorder?: string
+      outlinedHoverBackground?: string
+      containedHoverBackground?: string
+    }
+  }
+  interface PaletteColor {
+    states?: {
+      outlinedRestingBorder?: string
+      outlinedHoverBackground?: string
+      containedHoverBackground?: string
+    }
+  }
   interface Palette {
+    mute: SimplePaletteColorOptions
     other: OtherColorTypes
   }
   interface PaletteOptions {
+    mute: SimplePaletteColorOptions
     other: OtherColorTypes
   }
 }
@@ -29,18 +44,46 @@ const lightPalette: PaletteOptions | undefined = {
     main: "#06D7D7",
     dark: "#037777",
     light: "#83EBEB",
+    states: {
+      outlinedRestingBorder: "#06D7D7",
+      outlinedHoverBackground: "#E6FFFF",
+      containedHoverBackground: "#037777",
+    },
   },
   secondary: {
     main: "#E6AD76",
     dark: "#D07647",
     light: "#FAF3CE",
+    states: {
+      outlinedRestingBorder: "#E6AD76",
+      outlinedHoverBackground: "#FAF3CE",
+      containedHoverBackground: "#D07647",
+    },
+  },
+  mute: {
+    main: "#FAF3CE",
+    dark: "#E3D899",
+    states: {
+      containedHoverBackground: "#E3D899",
+    },
   },
   info: {
     main: "#4B11F2",
+    states: {
+      outlinedRestingBorder: "#4B11F2",
+      outlinedHoverBackground: "#C9B8FB",
+      containedHoverBackground: "#2F099F",
+    },
   },
   background: {
-    default: "#FFFFE9",
+    default: "#FAF3CE",
     paper: "#FDFDF8",
+  },
+  action: {
+    hover: "#FAF3CE",
+    hoverOpacity: 0.1,
+    active: "#FFEA91",
+    disabled: "#A7A7A7",
   },
   success: {
     main: "#06D7D7",
@@ -57,11 +100,12 @@ const lightPalette: PaletteOptions | undefined = {
   text: {
     secondary: "#252525",
   },
+  divider: "#E3D899",
+  grey: GREY_TONES,
   other: {
     divider: "#E3D899",
     border: "#7D7D7D",
   },
-  grey: GREY_TONES,
 }
 
 const darkPalette: PaletteOptions | undefined = {
@@ -70,21 +114,65 @@ const darkPalette: PaletteOptions | undefined = {
     main: "#06D7D7",
     dark: "#037777",
     light: "#83EBEB",
+    states: {
+      outlinedRestingBorder: "#06D7D7",
+      outlinedHoverBackground: "#037777",
+      containedHoverBackground: "#E6FFFF",
+    },
   },
   secondary: {
     main: "#E6AD76",
     dark: "#D07647",
     light: "#FAF3CE",
+    states: {
+      outlinedRestingBorder: "#E6AD76",
+      outlinedHoverBackground: "#D07647",
+      containedHoverBackground: "#FAF3CE",
+    },
+  },
+  mute: {
+    main: "#311188",
+    light: "#4B11F2",
+    states: {
+      containedHoverBackground: "#4B11F2",
+    },
   },
   info: {
-    main: "#00f4d7",
+    main: "#4B11F2",
+    dark: "#2F099F",
+    light: "#9B91FF",
+    states: {
+      outlinedRestingBorder: "#4B11F2",
+      outlinedHoverBackground: "#270782",
+      containedHoverBackground: "#C9B8FB",
+    },
+  },
+
+  action: {
+    hover: "#311188",
+    active: "#4B11F2",
+    disabled: "#A7A7A7",
+    disabledBackground: "#404040",
+    hoverOpacity: 0.5,
+    selected: "#4B11F2",
+  },
+  success: {
+    main: "#06D7D7",
+    dark: "#037777",
+    light: "#83EBEB",
+  },
+  error: {
+    main: "#FB5A5A",
+    dark: "#68282F",
+    light: "#FDA49A",
   },
   background: {
-    default: "#000000",
-    paper: alpha("#000000", 0.7),
+    default: "#222461",
+    paper: "#121334",
   },
+  divider: "#311188",
   other: {
-    divider: "#E3D899",
+    divider: "#311188",
     border: "#7D7D7D",
   },
   grey: GREY_TONES,
