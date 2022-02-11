@@ -127,7 +127,7 @@ const SwapPage = (props: Props): ReactElement => {
           </div>
 
           <SwapTokenInput
-            tokens={tokenOptions.to.filter(
+            tokens={tokenOptions.from.filter(
               ({ symbol }) => symbol !== fromState.symbol,
             )}
             selected={fromState.symbol}

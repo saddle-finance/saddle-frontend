@@ -251,10 +251,12 @@ export default function SwapTokenInput({
                       </Box>
                       <Box flex={1} sx={{ marginRight: 0, textAlign: "end" }}>
                         <Typography color="text.primary">
-                          {formatBNToString(option.amount, option.decimals)}
+                          {commify(
+                            formatBNToString(option.amount, option.decimals),
+                          )}
                         </Typography>
                         <Typography color="text.secondary">
-                          {formatBNToString(option.valueUSD, option.decimals)}
+                          ≈${commify(formatBNToString(option.valueUSD, 18, 2))}
                         </Typography>
                       </Box>
                     </Stack>
