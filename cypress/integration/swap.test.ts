@@ -14,7 +14,7 @@ context("Swap Flow", () => {
       it("shows all of the pool's tokens and balances in dropdown", () => {
         cy.react("SwapTokenInput")
           .eq(0)
-          .contains("Choose Token")
+          .contains("Choose")
           .as("dropdownButton")
           .click() // show
         poolTokenSymbols.forEach((tokenSymbol) => {
@@ -25,13 +25,18 @@ context("Swap Flow", () => {
         cy.get("@dropdownButton").click() // hide
       })
       it("dropdown shows correct search results", () => {
-        cy.react("SwapTokenInput")
-          .eq(0)
-          .contains("Choose Token")
-          .as("dropdownButton")
-          .click() // show
-        cy.react("SearchSelect").eq(0).find("input").type(poolTokenSymbols[0])
-        cy.react("ListItem").should("have.length", 1)
+        cy.get('[data-testid="searchTermInput"]').then(($searchInput) => {
+          if ($searchInput.is(":visible")) {
+            cy.get('[data-testid="searchTermInput"]')
+              .should("be.visible")
+              .type(poolTokenSymbols[0])
+          } else {
+            cy.get('[data-testid="tokenSelectBtn"]')
+              .should("exist")
+              .eq(0)
+              .click()
+          }
+        })
       })
       it("reflects token balance after selecting a token", () => {
         cy.react("ListItem").contains(poolTokenSymbols[0]).click()
@@ -42,17 +47,15 @@ context("Swap Flow", () => {
         cy.contains("Balance:").siblings("a").should("not.have", "0.0")
       })
       it("accepts user input and updates calculated amount", () => {
-        cy.react("SwapTokenInput")
+        cy.get('[data-testid="tokenValueInput"]').eq(0).type("1")
+        cy.get('[data-testId = "inputValueUSD"]')
           .eq(0)
-          .find("input")
-          .as("swapInputEl")
-          .type("1")
-        cy.get("@swapInputEl").siblings("p").should("not.have.text", "≈$0.0")
+          .should("not.have.text", "≈$0.0")
       })
       it("allows users to select only tokens in the same pool", () => {
         cy.react("SwapTokenInput")
           .eq(1)
-          .contains("Choose Token")
+          .contains("Choose")
           .as("dropdownButton")
           .click() // show
         cy.react("ListItem", { props: { isAvailable: false } }).should(

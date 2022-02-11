@@ -177,7 +177,6 @@ const tokenOptionLists: TokenOption[] = [
   },
 ]
 export const SwapInput = Template.bind({})
-// More on args: https://storybook.js.org/docs/react/writing-stories/args
 SwapInput.args = {
   inputValue: "23",
   inputValueUSD: BigNumber.from("234245"),
