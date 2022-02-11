@@ -8,11 +8,11 @@ context("Swap Flow", () => {
         cy.wait(3000)
       })
       it("starts in a neutral state", () => {
-        cy.react("SwapInput").eq(0).should("include.text", "Choose Token")
-        cy.react("SwapInput").eq(1).should("include.text", "Choose Token")
+        cy.react("SwapTokenInput").eq(0).should("include.text", "Choose")
+        cy.react("SwapTokenInput").eq(1).should("include.text", "Choose")
       })
       it("shows all of the pool's tokens and balances in dropdown", () => {
-        cy.react("SwapInput")
+        cy.react("SwapTokenInput")
           .eq(0)
           .contains("Choose Token")
           .as("dropdownButton")
@@ -25,7 +25,7 @@ context("Swap Flow", () => {
         cy.get("@dropdownButton").click() // hide
       })
       it("dropdown shows correct search results", () => {
-        cy.react("SwapInput")
+        cy.react("SwapTokenInput")
           .eq(0)
           .contains("Choose Token")
           .as("dropdownButton")
@@ -36,15 +36,21 @@ context("Swap Flow", () => {
       it("reflects token balance after selecting a token", () => {
         cy.react("ListItem").contains(poolTokenSymbols[0]).click()
         cy.react("SearchSelect").should("not.exist")
-        cy.react("SwapInput").eq(0).should("include.text", poolTokenSymbols[0])
+        cy.react("SwapTokenInput")
+          .eq(0)
+          .should("include.text", poolTokenSymbols[0])
         cy.contains("Balance:").siblings("a").should("not.have", "0.0")
       })
       it("accepts user input and updates calculated amount", () => {
-        cy.react("SwapInput").eq(0).find("input").as("swapInputEl").type("1")
+        cy.react("SwapTokenInput")
+          .eq(0)
+          .find("input")
+          .as("swapInputEl")
+          .type("1")
         cy.get("@swapInputEl").siblings("p").should("not.have.text", "≈$0.0")
       })
       it("allows users to select only tokens in the same pool", () => {
-        cy.react("SwapInput")
+        cy.react("SwapTokenInput")
           .eq(1)
           .contains("Choose Token")
           .as("dropdownButton")
@@ -63,7 +69,7 @@ context("Swap Flow", () => {
             el.click()
           }
         })
-        cy.react("SwapInput")
+        cy.react("SwapTokenInput")
           .eq(1)
           .find("input")
           .as("swapInputEl")

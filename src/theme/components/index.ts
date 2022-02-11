@@ -4,6 +4,7 @@ import AppBarTheme from "./AppBarTheme"
 import BackdropTheme from "./BackdropTheme"
 import ButtonTheme from "./ButtonTheme"
 import CheckboxTheme from "./CheckboxTheme"
+import ChipTheme from "./ChipTheme"
 import { CssBaseLine } from "./CssBaseLine"
 import DialogTheme from "./DialogTheme"
 import IconButtonTheme from "./IconButtonTheme"
@@ -23,6 +24,7 @@ export default function componentsOverrides(theme: Theme): Components {
     AccordionTheme(theme),
     ButtonTheme(theme),
     CheckboxTheme(),
+    ChipTheme(theme),
     DialogTheme(theme),
     IconButtonTheme(theme),
     MenuTheme(theme),

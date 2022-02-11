@@ -1,7 +1,15 @@
 import * as React from "react"
 
-import { Button, InputBase, Stack, TextField, Typography } from "@mui/material"
+import {
+  Button,
+  Chip,
+  InputBase,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material"
 import { ReactElement, useRef, useState } from "react"
+import { SWAP_TYPES, TOKENS_MAP } from "../constants"
 import { commify, formatBNToString } from "../utils"
 import { styled, useTheme } from "@mui/material/styles"
 import { ArrowDropDown } from "@mui/icons-material"
@@ -11,8 +19,8 @@ import Box from "@mui/material/Box"
 import ClickAwayListener from "@mui/material/ClickAwayListener"
 import Popper from "@mui/material/Popper"
 import Search from "@mui/icons-material/Search"
-import { TOKENS_MAP } from "../constants"
 import { TokenOption } from "../pages/Swap"
+import { useTranslation } from "react-i18next"
 
 const StyledPopper = styled(Popper)(({ theme }) => ({
   border: `1px solid ${theme.palette.other.divider}`,
@@ -77,15 +85,16 @@ export default function SwapTokenInput({
   const selectedToken =
     typeof selected === "string" ? TOKENS_MAP[selected] : undefined
 
-  // const { t } = useTranslation()
-  // const isVirtualSwap = (
-  //   [
-  //     SWAP_TYPES.SYNTH_TO_SYNTH,
-  //     SWAP_TYPES.SYNTH_TO_TOKEN,
-  //     SWAP_TYPES.TOKEN_TO_SYNTH,
-  //     SWAP_TYPES.TOKEN_TO_TOKEN,
-  //   ] as Array<SWAP_TYPES | null>
-  // ).includes(swapType)
+  const { t } = useTranslation()
+  const isVirtualSwap = (swapType: SWAP_TYPES | null) =>
+    (
+      [
+        SWAP_TYPES.SYNTH_TO_SYNTH,
+        SWAP_TYPES.SYNTH_TO_TOKEN,
+        SWAP_TYPES.TOKEN_TO_SYNTH,
+        SWAP_TYPES.TOKEN_TO_TOKEN,
+      ] as Array<SWAP_TYPES | null>
+    ).includes(swapType)
   return (
     <React.Fragment>
       <Box
@@ -190,47 +199,74 @@ export default function SwapTokenInput({
                   onSelect?.(newValue?.symbol)
                 }
               }}
-              renderOption={(props, option) => (
-                <li
-                  {...props}
-                  style={{
-                    paddingLeft: 0,
-                    borderBottom: `1px solid  ${theme.palette.other.border}`,
-                    overflow: "visible",
-                  }}
-                >
-                  <Stack direction="row" width="100%" alignItems="center">
-                    <Box mr={1} width={24} height={24}>
-                      <img
-                        src={option.icon}
-                        alt={option.name}
-                        height="100%"
-                        width="100%"
-                      />
-                    </Box>
-                    <Box>
-                      <Typography color="text.primary">
-                        {option.symbol}
-                      </Typography>
-                      <Typography color="text.secondary">
-                        {option.name}
-                      </Typography>
-                    </Box>
-                    <Box flex={1} sx={{ marginRight: 0, textAlign: "end" }}>
-                      <Typography color="text.primary">
-                        {formatBNToString(option.amount, option.decimals)}
-                      </Typography>
-                      <Typography color="text.secondary">
-                        {formatBNToString(option.valueUSD, option.decimals)}
-                      </Typography>
-                    </Box>
-                  </Stack>
-                </li>
-              )}
+              renderOption={(props, option) => {
+                /* eslint-disable */
+                const disabled = props["aria-disabled"]
+                return (
+                  <li
+                    {...props}
+                    style={{
+                      paddingLeft: 0,
+                      borderBottom: `1px solid  ${theme.palette.other.border}`,
+                      cursor: disabled ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    <Stack direction="row" width="100%" alignItems="center">
+                      <Box mr={1} width={24} height={24}>
+                        <img
+                          src={option.icon}
+                          alt={option.name}
+                          height="100%"
+                          width="100%"
+                        />
+                      </Box>
+                      <Box>
+                        <Box display="flex">
+                          <Typography color="text.primary">
+                            {option.symbol}
+                          </Typography>
+                          {!option.isAvailable && (
+                            <Chip
+                              variant="outlined"
+                              label={t("unavailable")}
+                              size="small"
+                              sx={{ marginLeft: 1 }}
+                            />
+                          )}
+                          {option.isAvailable &&
+                            isVirtualSwap(option.swapType) && (
+                              <Chip
+                                variant="outlined"
+                                color="primary"
+                                label={t("virtualSwap")}
+                                size="small"
+                                sx={{ marginLeft: 1 }}
+                              />
+                            )}
+                          {option.isAvailable}
+                        </Box>
+                        <Typography color="text.secondary">
+                          {option.name}
+                        </Typography>
+                      </Box>
+                      <Box flex={1} sx={{ marginRight: 0, textAlign: "end" }}>
+                        <Typography color="text.primary">
+                          {formatBNToString(option.amount, option.decimals)}
+                        </Typography>
+                        <Typography color="text.secondary">
+                          {formatBNToString(option.valueUSD, option.decimals)}
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  </li>
+                )
+              }}
               getOptionLabel={(option) => option.symbol}
+              getOptionDisabled={(option) => !option.isAvailable}
               PopperComponent={(props) => <div {...props}></div>}
               PaperComponent={(props) => <Box {...props} marginRight={-2} />}
               noOptionsText={"No tokens found."}
+              disabledItemsFocusable
             />
           </Box>
         </ClickAwayListener>

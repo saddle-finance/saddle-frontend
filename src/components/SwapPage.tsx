@@ -140,18 +140,17 @@ const SwapPage = (props: Props): ReactElement => {
           <div className="row">
             <h3 className="swapTitle">{t("to")}</h3>
           </div>
-          <div className="row">
-            <SwapTokenInput
-              tokens={tokenOptions.to.filter(
-                ({ symbol }) => symbol !== fromState.symbol,
-              )}
-              onSelect={onChangeToToken}
-              selected={toState.symbol}
-              inputValue={toState.value}
-              inputValueUSD={toState.valueUSD}
-              isSwapFrom={false}
-            />
-          </div>
+          <SwapTokenInput
+            tokens={tokenOptions.to.filter(
+              ({ symbol }) => symbol !== fromState.symbol,
+            )}
+            onSelect={onChangeToToken}
+            selected={toState.symbol}
+            inputValue={toState.value}
+            inputValueUSD={toState.valueUSD}
+            isSwapFrom={false}
+          />
+
           <div style={{ height: "24px" }}></div>
           {fromState.symbol && toState.symbol && (
             <div className="row">
