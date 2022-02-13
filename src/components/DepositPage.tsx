@@ -1,14 +1,13 @@
 import "./DepositPage.scss"
 
 import { ALETH_POOL_NAME, VETH2_POOL_NAME, isMetaPool } from "../constants"
-import { Box, Stack } from "@mui/material"
+import { Box, Checkbox, Stack } from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
 import AdvancedOptions from "./AdvancedOptions"
 import Button from "./Button"
-import CheckboxInput from "./CheckboxInput"
 import ConfirmTransaction from "./ConfirmTransaction"
 import { DepositTransaction } from "../interfaces/transactions"
 import LPStakingBanner from "./LPStakingBanner"
@@ -128,7 +127,7 @@ const DepositPage = (props: Props): ReactElement => {
               ))}
               {shouldDisplayWrappedOption && (
                 <div className="wrappedDeposit">
-                  <CheckboxInput
+                  <Checkbox
                     onChange={onToggleDepositWrapped}
                     checked={shouldDepositWrapped}
                   />
