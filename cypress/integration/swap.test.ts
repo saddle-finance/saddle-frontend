@@ -18,28 +18,25 @@ context("Swap Flow", () => {
           .as("dropdownButton")
           .click() // show
         poolTokenSymbols.forEach((tokenSymbol) => {
-          const el = cy.react("ListItem", { props: { symbol: tokenSymbol } })
-          el.should("exist")
-          el.should("not.include.text", "≈$0")
+          cy.get('[data-testid="dropdownContainer"]')
+            .contains(tokenSymbol)
+            .should("exist")
+            .should("not.include.text", "≈$0")
         })
         cy.get("@dropdownButton").click() // hide
       })
       it("dropdown shows correct search results", () => {
-        cy.get('[data-testid="searchTermInput"]').then(($searchInput) => {
-          if ($searchInput.is(":visible")) {
-            cy.get('[data-testid="searchTermInput"]')
-              .should("be.visible")
-              .type(poolTokenSymbols[0])
-          } else {
-            cy.get('[data-testid="tokenSelectBtn"]')
-              .should("exist")
-              .eq(0)
-              .click()
-          }
-        })
+        cy.get('[data-testid = "listOpenBtn"]').eq(0).click() //Dropdown show
+
+        cy.get('[data-testid="searchTermInput"]')
+          .should("be.visible")
+          .type(poolTokenSymbols[0])
+        cy.get('[data-testid="swapTokenItem"]').should("have.length", 1)
       })
       it("reflects token balance after selecting a token", () => {
-        cy.react("ListItem").contains(poolTokenSymbols[0]).click()
+        cy.get('[data-testid="dropdownContainer"]')
+          .contains(poolTokenSymbols[0])
+          .click()
         cy.react("SearchSelect").should("not.exist")
         cy.react("SwapTokenInput")
           .eq(0)
@@ -77,7 +74,8 @@ context("Swap Flow", () => {
           .find("input")
           .as("swapInputEl")
           .should("not.have", "0")
-        cy.get("@swapInputEl").siblings("p").should("not.have.text", "≈$0.0")
+        // cy.get("@swapInputEl").siblings("p").should("not.have.text", "≈$0.0")
+        cy.get('[data-testid="inputValueUSD"]').should("not.have.text", "≈$0.0")
       })
       it("shows information about the transaction", () => {
         cy.get("div").contains("Rate").as("rateEl").should("exist")

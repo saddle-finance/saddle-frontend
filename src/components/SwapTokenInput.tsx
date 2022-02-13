@@ -85,16 +85,6 @@ export default function SwapTokenInput({
   const selectedToken =
     typeof selected === "string" ? TOKENS_MAP[selected] : undefined
 
-  const { t } = useTranslation()
-  const isVirtualSwap = (swapType: SWAP_TYPES | null) =>
-    (
-      [
-        SWAP_TYPES.SYNTH_TO_SYNTH,
-        SWAP_TYPES.SYNTH_TO_TOKEN,
-        SWAP_TYPES.TOKEN_TO_SYNTH,
-        SWAP_TYPES.TOKEN_TO_TOKEN,
-      ] as Array<SWAP_TYPES | null>
-    ).includes(swapType)
   return (
     <div>
       <Box
@@ -122,6 +112,7 @@ export default function SwapTokenInput({
             disableRipple
             onClick={handleClick}
             endIcon={<ArrowDropDown />}
+            data-testid="listOpenBtn"
             disableElevation
             disableFocusRipple
           >
@@ -142,6 +133,7 @@ export default function SwapTokenInput({
           <InputBase
             placeholder="0.0"
             type="text"
+            data-testid="tokenValueInput"
             inputMode="decimal"
             autoComplete="off"
             autoCorrect="off"
@@ -159,7 +151,12 @@ export default function SwapTokenInput({
             onFocus={handleFocus}
             fullWidth
           />
-          <Typography variant="body2" color="text.secondary" textAlign="end">
+          <Typography
+            data-testid="inputValueUSD"
+            variant="body2"
+            color="text.secondary"
+            textAlign="end"
+          >
             ≈$
             {commify(formatBNToString(inputValueUSD, 18, 2))}
           </Typography>
@@ -177,6 +174,7 @@ export default function SwapTokenInput({
                 <TextField
                   {...params}
                   variant="standard"
+                  data-testid="searchTermInput"
                   ref={params.InputProps.ref}
                   InputProps={{
                     startAdornment: <Search />,
@@ -199,73 +197,14 @@ export default function SwapTokenInput({
                   onSelect?.(newValue?.symbol)
                 }
               }}
-              renderOption={(props, option) => {
-                /* eslint-disable */
-                const disabled = props["aria-disabled"]
-                return (
-                  <li
-                    {...props}
-                    style={{
-                      paddingLeft: 0,
-                      borderBottom: `1px solid  ${theme.palette.other.border}`,
-                      cursor: disabled ? "not-allowed" : "pointer",
-                    }}
-                  >
-                    <Stack direction="row" width="100%" alignItems="center">
-                      <Box mr={1} width={24} height={24}>
-                        <img
-                          src={option.icon}
-                          alt={option.name}
-                          height="100%"
-                          width="100%"
-                        />
-                      </Box>
-                      <Box>
-                        <Box display="flex">
-                          <Typography color="text.primary">
-                            {option.symbol}
-                          </Typography>
-                          {!option.isAvailable && (
-                            <Chip
-                              variant="outlined"
-                              label={t("unavailable")}
-                              size="small"
-                              sx={{ marginLeft: 1 }}
-                            />
-                          )}
-                          {option.isAvailable &&
-                            isVirtualSwap(option.swapType) && (
-                              <Chip
-                                variant="outlined"
-                                color="primary"
-                                label={t("virtualSwap")}
-                                size="small"
-                                sx={{ marginLeft: 1 }}
-                              />
-                            )}
-                          {option.isAvailable}
-                        </Box>
-                        <Typography color="text.secondary">
-                          {option.name}
-                        </Typography>
-                      </Box>
-                      <Box flex={1} sx={{ marginRight: 0, textAlign: "end" }}>
-                        <Typography color="text.primary">
-                          {commify(
-                            formatBNToString(option.amount, option.decimals),
-                          )}
-                        </Typography>
-                        <Typography color="text.secondary">
-                          ≈${commify(formatBNToString(option.valueUSD, 18, 2))}
-                        </Typography>
-                      </Box>
-                    </Stack>
-                  </li>
-                )
-              }}
+              renderOption={(props, option) => (
+                <ListItem listItemProps={props} {...option} />
+              )}
               getOptionLabel={(option) => option.symbol}
               getOptionDisabled={(option) => !option.isAvailable}
-              PopperComponent={(props) => <div {...props}></div>}
+              PopperComponent={(props) => (
+                <div {...props} data-testid="dropdownContainer"></div>
+              )}
               PaperComponent={(props) => <Box {...props} marginRight={-2} />}
               noOptionsText={"No tokens found."}
               disabledItemsFocusable
@@ -274,5 +213,77 @@ export default function SwapTokenInput({
         </ClickAwayListener>
       </StyledPopper>
     </div>
+  )
+}
+
+function ListItem({
+  amount,
+  valueUSD,
+  name,
+  icon,
+  symbol,
+  decimals,
+  isAvailable,
+  swapType,
+  listItemProps,
+}: TokenOption & {
+  listItemProps: React.HTMLAttributes<HTMLLIElement>
+}) {
+  const theme = useTheme()
+  const { t } = useTranslation()
+  const isVirtualSwap = (
+    [
+      SWAP_TYPES.SYNTH_TO_SYNTH,
+      SWAP_TYPES.SYNTH_TO_TOKEN,
+      SWAP_TYPES.TOKEN_TO_SYNTH,
+      SWAP_TYPES.TOKEN_TO_TOKEN,
+    ] as Array<SWAP_TYPES | null>
+  ).includes(swapType)
+  return (
+    <li
+      {...listItemProps}
+      data-testid="swapTokenItem"
+      style={{
+        paddingLeft: 0,
+        borderBottom: `1px solid  ${theme.palette.other.border}`,
+      }}
+    >
+      <Stack direction="row" width="100%" alignItems="center">
+        <Box mr={1} width={24} height={24}>
+          <img src={icon} alt={name} height="100%" width="100%" />
+        </Box>
+        <Box>
+          <Box display="flex">
+            <Typography color="text.primary">{symbol}</Typography>
+            {!isAvailable && (
+              <Chip
+                variant="outlined"
+                label={t("unavailable")}
+                size="small"
+                sx={{ marginLeft: 1 }}
+              />
+            )}
+            {isAvailable && isVirtualSwap && (
+              <Chip
+                variant="outlined"
+                color="primary"
+                label={t("virtualSwap")}
+                size="small"
+                sx={{ marginLeft: 1 }}
+              />
+            )}
+          </Box>
+          <Typography color="text.secondary">{name}</Typography>
+        </Box>
+        <Box flex={1} sx={{ marginRight: 0, textAlign: "end" }}>
+          <Typography color="text.primary">
+            {commify(formatBNToString(amount, decimals))}
+          </Typography>
+          <Typography color="text.secondary">
+            ≈${commify(formatBNToString(valueUSD, 18, 2))}
+          </Typography>
+        </Box>
+      </Stack>
+    </li>
   )
 }
