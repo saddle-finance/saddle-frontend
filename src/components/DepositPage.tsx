@@ -81,112 +81,123 @@ const DepositPage = (props: Props): ReactElement => {
 
       <div className="content">
         <div className="left">
-          <div className="form">
-            <h3>{t("addLiquidity")}</h3>
-            {exceedsWallet ? (
-              <div className="error">{t("depositBalanceExceeded")}</div>
-            ) : null}
-            {poolData?.isPaused && poolData?.name === VETH2_POOL_NAME ? (
-              <div className="error">
-                <Trans i18nKey="sgtPoolPaused" t={t}>
-                  This pool is paused, please see{" "}
-                  <a
-                    href="https://medium.com/immunefi/sharedstake-insider-exploit-postmortem-17fa93d5c90e"
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{ textDecoration: "underline" }}
-                  >
-                    this postmortem
-                  </a>{" "}
-                  for more information.
-                </Trans>
-              </div>
-            ) : null}
-            {tokens.map((token, index) => (
-              <div key={index}>
-                <TokenInput
-                  {...token}
-                  disabled={poolData?.isPaused}
-                  onChange={(value): void =>
-                    onChangeTokenInputValue(token.symbol, value)
-                  }
-                />
-                {index === tokens.length - 1 ? (
-                  ""
-                ) : (
-                  <div className="formSpace"></div>
-                )}
-              </div>
-            ))}
-            {shouldDisplayWrappedOption && (
-              <div className="wrappedDeposit">
-                <CheckboxInput
-                  onChange={onToggleDepositWrapped}
-                  checked={shouldDepositWrapped}
-                />
-                <span>{t("depositWrapped")}</span>
-              </div>
-            )}
-            <div className={"transactionInfoContainer"}>
-              <div className="transactionInfo">
-                {poolData?.aprs?.keep?.apr.gt(Zero) && (
-                  <div className="transactionInfoItem">
+          <Stack
+            direction="column"
+            width="434px"
+            justifyContent="center"
+            spacing={4}
+            alignItems="center"
+            marginX="auto"
+          >
+            <div className="form">
+              <h3>{t("addLiquidity")}</h3>
+              {exceedsWallet ? (
+                <div className="error">{t("depositBalanceExceeded")}</div>
+              ) : null}
+              {poolData?.isPaused && poolData?.name === VETH2_POOL_NAME ? (
+                <div className="error">
+                  <Trans i18nKey="sgtPoolPaused" t={t}>
+                    This pool is paused, please see{" "}
                     <a
-                      href="https://docs.saddle.finance/faq#what-are-saddles-liquidity-provider-rewards"
+                      href="https://medium.com/immunefi/sharedstake-insider-exploit-postmortem-17fa93d5c90e"
                       target="_blank"
-                      rel="noopener noreferrer"
+                      rel="noreferrer"
+                      style={{ textDecoration: "underline" }}
                     >
-                      <span>{`KEEP APR:`}</span>
+                      this postmortem
                     </a>{" "}
-                    <span className="value">
-                      {formatBNToPercentString(poolData.aprs.keep.apr, 18)}
-                    </span>
-                  </div>
-                )}
-                {poolData?.aprs?.sharedStake?.apr.gt(Zero) && (
+                    for more information.
+                  </Trans>
+                </div>
+              ) : null}
+              {tokens.map((token, index) => (
+                <div key={index}>
+                  <TokenInput
+                    {...token}
+                    disabled={poolData?.isPaused}
+                    onChange={(value): void =>
+                      onChangeTokenInputValue(token.symbol, value)
+                    }
+                  />
+                  {index === tokens.length - 1 ? (
+                    ""
+                  ) : (
+                    <div className="formSpace"></div>
+                  )}
+                </div>
+              ))}
+              {shouldDisplayWrappedOption && (
+                <div className="wrappedDeposit">
+                  <CheckboxInput
+                    onChange={onToggleDepositWrapped}
+                    checked={shouldDepositWrapped}
+                  />
+                  <span>{t("depositWrapped")}</span>
+                </div>
+              )}
+              <div className={"transactionInfoContainer"}>
+                <div className="transactionInfo">
+                  {poolData?.aprs?.keep?.apr.gt(Zero) && (
+                    <div className="transactionInfoItem">
+                      <a
+                        href="https://docs.saddle.finance/faq#what-are-saddles-liquidity-provider-rewards"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <span>{`KEEP APR:`}</span>
+                      </a>{" "}
+                      <span className="value">
+                        {formatBNToPercentString(poolData.aprs.keep.apr, 18)}
+                      </span>
+                    </div>
+                  )}
+                  {poolData?.aprs?.sharedStake?.apr.gt(Zero) && (
+                    <div className="transactionInfoItem">
+                      <a
+                        href="https://docs.saddle.finance/faq#what-are-saddles-liquidity-provider-rewards"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <span>{`SGT APR:`}</span>
+                      </a>{" "}
+                      <span className="value">
+                        {formatBNToPercentString(
+                          poolData.aprs.sharedStake.apr,
+                          18,
+                        )}
+                      </span>
+                    </div>
+                  )}
                   <div className="transactionInfoItem">
-                    <a
-                      href="https://docs.saddle.finance/faq#what-are-saddles-liquidity-provider-rewards"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    {transactionData.priceImpact.gte(0) ? (
+                      <span className="bonus">{`${t("bonus")}: `}</span>
+                    ) : (
+                      <span className="slippage">{t("priceImpact")}</span>
+                    )}
+                    <span
+                      className={
+                        "value " +
+                        (transactionData.priceImpact.gte(0)
+                          ? "bonus"
+                          : "slippage")
+                      }
                     >
-                      <span>{`SGT APR:`}</span>
-                    </a>{" "}
-                    <span className="value">
+                      {" "}
                       {formatBNToPercentString(
-                        poolData.aprs.sharedStake.apr,
+                        transactionData.priceImpact,
                         18,
+                        4,
                       )}
                     </span>
                   </div>
-                )}
-                <div className="transactionInfoItem">
-                  {transactionData.priceImpact.gte(0) ? (
-                    <span className="bonus">{`${t("bonus")}: `}</span>
-                  ) : (
-                    <span className="slippage">{t("priceImpact")}</span>
-                  )}
-                  <span
-                    className={
-                      "value " +
-                      (transactionData.priceImpact.gte(0)
-                        ? "bonus"
-                        : "slippage")
-                    }
-                  >
-                    {" "}
-                    {formatBNToPercentString(
-                      transactionData.priceImpact,
-                      18,
-                      4,
-                    )}
-                  </span>
                 </div>
               </div>
             </div>
-          </div>
-          <AdvancedOptions />
-          <Stack direction="row" width="434px" pt={3} justifyContent="center">
+
+            <Box px={[3, 3, 0]} width="100%">
+              <AdvancedOptions />
+            </Box>
+
             <Box width={["90%", "50%"]}>
               <Button
                 kind="primary"

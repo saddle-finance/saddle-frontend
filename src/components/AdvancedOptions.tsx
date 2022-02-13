@@ -67,7 +67,7 @@ export default function AdvancedOptions(): ReactElement {
       dispatch(updateTransactionDeadlineSelected(deadlineValue))
   }
   return (
-    <Box width="100%" data-testid="advOptionContainer" mt={3}>
+    <Box data-testid="advOptionContainer" mt={3} width="100%">
       <Accordion
         data-testid="advOptionTitle"
         onChange={(): PayloadAction<boolean> =>
@@ -156,9 +156,12 @@ export default function AdvancedOptions(): ReactElement {
             <Typography variant="body1" mt={2} mb={1}>
               {t("deadline")}:{" "}
             </Typography>
-            <Stack direction="row" spacing={2}>
+            <Stack
+              direction="row"
+              spacing={2}
+              data-testid="txnDeadlineInputGroup"
+            >
               <ToggleButtonGroup
-                data-testid="txnDeadlineInputGroup"
                 size="small"
                 fullWidth
                 exclusive
