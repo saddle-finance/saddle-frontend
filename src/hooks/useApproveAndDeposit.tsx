@@ -17,21 +17,28 @@ import { useDispatch, useSelector } from "react-redux"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
+import { Box } from "@mui/material"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { GasPrices } from "../state/user"
 import { IS_PRODUCTION } from "../utils/environment"
+import LaunchIcon from "@mui/icons-material/Launch"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { NumberInputState } from "../utils/numberInputState"
+import React from "react"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
+import { toast } from "react-toastify"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
 import { useMemo } from "react"
+import { useSnackbarContext } from "../providers/SnackbarProvider"
+
+// import { useSnackbar } from "notistack"
 
 interface ApproveAndDepositStateArgument {
   [tokenSymbol: string]: NumberInputState
@@ -41,21 +48,14 @@ export function useApproveAndDeposit(
   poolName: PoolName,
 ): (
   state: ApproveAndDepositStateArgument,
-  enqueueSnackbar: ({
-    msg,
-    id,
-    type,
-  }: {
-    msg: string
-    id: string
-    type: string
-  }) => void,
   shouldDepositWrapped?: boolean,
 ) => Promise<string | undefined> {
   const dispatch = useDispatch()
   const swapContract = useSwapContract(poolName)
   const lpTokenContract = useLPTokenContract(poolName)
   const tokenContracts = useAllContracts()
+  const { enqueueSnackbar } = useSnackbarContext()
+  // const { enqueueSnackbar } = useSnackbar()
   const { account, chainId, library } = useActiveWeb3React()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
@@ -84,15 +84,6 @@ export function useApproveAndDeposit(
 
   return async function approveAndDeposit(
     state: ApproveAndDepositStateArgument,
-    enqueueSnackbar: ({
-      msg,
-      id,
-      type,
-    }: {
-      msg: string
-      id: string
-      type: string
-    }) => void,
     shouldDepositWrapped = false,
   ): Promise<string | undefined> {
     try {
@@ -130,12 +121,7 @@ export function useApproveAndDeposit(
         if (spendingValue.isZero()) return
         const tokenContract = tokenContracts?.[token.symbol] as Erc20
         if (tokenContract == null) return
-        console.log({ IS_PRODUCTION })
-        enqueueSnackbar({
-          msg: `${token.name} init`,
-          id: `${token.name} finish`,
-          type: "deposit",
-        })
+        console.log({ IS_PRODUCTION, token })
         await checkAndApproveTokenForTrade(
           tokenContract,
           effectiveSwapContract.address,
@@ -145,15 +131,46 @@ export function useApproveAndDeposit(
           gasPrice,
           {
             onTransactionError: () => {
+              enqueueSnackbar({
+                msg: `${token.name} check and approve tx errors`,
+                id: `${token.name}CheckAndApprove`,
+                type: "error",
+              })
               throw new Error("Your transaction could not be completed")
             },
           },
         )
-        enqueueSnackbar({
-          msg: `${token.name} finish`,
-          id: `${token.name} finish`,
-          type: "deposit",
-        })
+        toast(
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <span>{token.name} check and approve token tx complete</span>
+            <LaunchIcon fontSize="inherit" />
+            {/* <a target="_blank" rel="noreferrer" href="https://www.google.com">
+              EtherScan
+            </a> */}
+          </Box>,
+          {
+            position: "top-right",
+            autoClose: 25000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          },
+        )
+        // enqueueSnackbar({
+        //   msg: `${token.name} check and approve token tx complete`,
+        //   id: `${token.name}CheckAndApprove`,
+        //   type: "success",
+        //   data: waitedTx || "",
+        // })
+        // console.log({ waitedTx })
         return
       }
       // For each token being deposited, check the allowance and approve it if necessary
@@ -217,16 +234,18 @@ export function useApproveAndDeposit(
       }
 
       console.log({ spendTransaction })
-      // enqueueSnackbar({
-      //   msg: spendTransaction.hash,
-      //   id: spendTransaction.hash,
-      //   type: "deposit",
-      // })
       notifyHandler(spendTransaction.hash, "deposit")
 
-      const waitedTx = await spendTransaction.wait()
+      await spendTransaction.wait()
+      // enqueueSnackbar(
+      //   waitedTx.status === 1 ? "Deposit Success" : "Deposit Failure",
+      //   {
+      //     id: "spendTransaction",
+      //     variant: waitedTx.status === 1 ? "success" : "error",
+      //   },
+      // )
       // TODO: use status value to build snackbar text
-      console.log({ waitedTx })
+      // console.log({ waitedTx })
       dispatch(
         updateLastTransactionTimes({
           [TRANSACTION_TYPES.DEPOSIT]: Date.now(),
