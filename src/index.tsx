@@ -8,6 +8,7 @@ import { logError, sendWebVitalsToGA } from "./utils/googleAnalytics"
 
 import App from "./pages/App"
 import { Integrations } from "@sentry/tracing"
+import { IntercomProvider } from "react-use-intercom"
 import { NetworkContextName } from "./constants"
 import { Provider } from "react-redux"
 import React from "react"
@@ -36,20 +37,24 @@ Sentry.init({
   tracesSampleRate: 0.1,
 })
 
+const intercomAppId = "tbghxgth"
+
 ReactDOM.render(
   <>
     <React.StrictMode>
-      <Web3ReactProvider getLibrary={getLibrary}>
-        <Web3ProviderNetwork getLibrary={getNetworkLibrary}>
-          <Provider store={store}>
-            <ThemeSettingsProvider>
-              <Router>
-                <App />
-              </Router>
-            </ThemeSettingsProvider>
-          </Provider>
-        </Web3ProviderNetwork>
-      </Web3ReactProvider>
+      <IntercomProvider appId={intercomAppId}>
+        <Web3ReactProvider getLibrary={getLibrary}>
+          <Web3ProviderNetwork getLibrary={getNetworkLibrary}>
+            <Provider store={store}>
+              <ThemeSettingsProvider>
+                <Router>
+                  <App />
+                </Router>
+              </ThemeSettingsProvider>
+            </Provider>
+          </Web3ProviderNetwork>
+        </Web3ReactProvider>
+      </IntercomProvider>
     </React.StrictMode>
   </>,
   document.getElementById("root"),
