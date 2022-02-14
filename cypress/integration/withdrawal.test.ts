@@ -142,7 +142,7 @@ context("Withdrawal Flow", () => {
       })
 
       // test combo withdraw by inputting values
-      cy.get('[data-testid="withDrawPercentageCombo"]').click()
+      cy.get('[data-testid="withdrawPercentageCombo"]').click()
       cy.get("#tokenInput input").then(($inputs) => {
         cy.wrap($inputs).each(($input) => {
           cy.wrap($input).type("2")
