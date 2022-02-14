@@ -144,7 +144,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                   value="ALL"
                   control={<Radio />}
                   label="Combo"
-                  data-testid="withDrawPercentageCombo"
+                  data-testid="withdrawPercentageCombo"
                 />
                 {tokensData.map((t) => {
                   return (
