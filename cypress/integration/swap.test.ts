@@ -68,7 +68,7 @@ context("Swap Flow", () => {
           .find("input")
           .as("swapInputEl")
           .should("not.have", "0")
-        cy.get('[data-testid="swapInputVAlueUSD"]')
+        cy.get('[data-testid="swapInputValueUSD"]')
           .eq(1)
           .should("not.have.text", "≈$0.0")
       })
