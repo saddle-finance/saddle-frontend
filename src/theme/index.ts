@@ -1,9 +1,8 @@
-import { createTheme } from "@mui/material/styles"
+import { ThemeOptions, createTheme } from "@mui/material/styles"
 import palette from "./palette"
 import typography from "./typography"
 
-export const lightTheme = createTheme({
-  palette: palette.lightPalette,
+const theme: ThemeOptions = {
   typography: typography,
   shape: {
     borderRadius: 8,
@@ -18,12 +17,12 @@ export const lightTheme = createTheme({
       xl: 1536,
     },
   },
+}
+export const lightTheme = createTheme({
+  palette: palette.lightPalette,
+  ...theme,
 })
 export const darkTheme = createTheme({
   palette: palette.darkPalette,
-  typography: typography,
-  spacing: 8,
-  shape: {
-    borderRadius: 8,
-  },
+  ...theme,
 })
