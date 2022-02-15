@@ -2,7 +2,7 @@ import "./HighPriceImpactConfirmation.scss"
 
 import React, { ReactElement } from "react"
 
-import CheckboxInput from "./CheckboxInput"
+import { Checkbox } from "@mui/material"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -19,7 +19,7 @@ export default function HighPriceImpactConfirmation({
       {t("highPriceImpactConfirmation")}
       <div className="confirmationBox">
         <span>{t("iConfirm")}</span>{" "}
-        <CheckboxInput checked={checked} onChange={onCheck} />
+        <Checkbox checked={checked} onChange={onCheck} />
       </div>
     </div>
   )
