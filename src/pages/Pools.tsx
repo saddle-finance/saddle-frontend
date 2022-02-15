@@ -22,6 +22,7 @@ import {
   WCUSD_METAPOOL_NAME,
   WCUSD_METAPOOL_V2_NAME,
 } from "../constants"
+import { Box, Button, Container, Stack, TextField } from "@mui/material"
 import React, { ReactElement, useEffect, useState } from "react"
 
 import { BigNumber } from "ethers"
@@ -29,6 +30,7 @@ import ConfirmTransaction from "../components/ConfirmTransaction"
 import Modal from "../components/Modal"
 import PoolOverview from "../components/PoolOverview"
 import ReviewMigration from "../components/ReviewMigration"
+import { Search } from "@mui/icons-material"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
 import { logEvent } from "../utils/googleAnalytics"
@@ -234,27 +236,45 @@ function Pools(): ReactElement | null {
     }
   }
   return (
-    <div className={styles.poolsPage}>
-      <ul className={styles.filters}>
-        {[
-          ["all", "ALL"] as const,
-          [PoolTypes.BTC, "BTC"] as const,
-          [PoolTypes.ETH, "ETH"] as const,
-          [PoolTypes.USD, "USD"] as const,
-          ["outdated", "OUTDATED"] as const,
-        ].map(([filterKey, text]) => (
-          <li
-            key={filterKey}
-            className={classNames(styles.filterTab, {
-              [styles.selected]: filter === filterKey,
-              [styles.outdated]: filterKey === "outdated",
-            })}
-            onClick={(): void => setFilter(filterKey)}
-          >
-            {text}
-          </li>
-        ))}
-      </ul>
+    <Container>
+      <Stack direction="row" alignItems="center">
+        <Box flex={1}>
+          <TextField
+            variant="standard"
+            placeholder="Pool or token"
+            InputProps={{
+              startAdornment: <Search />,
+            }}
+          />
+        </Box>
+        <ul className={styles.filters}>
+          {[
+            ["all", "ALL"] as const,
+            [PoolTypes.BTC, "BTC"] as const,
+            [PoolTypes.ETH, "ETH"] as const,
+            [PoolTypes.USD, "USD"] as const,
+            ["outdated", "OUTDATED"] as const,
+          ].map(([filterKey, text]) => (
+            <li
+              key={filterKey}
+              className={classNames(styles.filterTab, {
+                [styles.selected]: filter === filterKey,
+                [styles.outdated]: filterKey === "outdated",
+              })}
+              onClick={(): void => setFilter(filterKey)}
+            >
+              {text}
+            </li>
+          ))}
+        </ul>
+
+        <Box flex={1}>
+          <Button variant="contained" color="secondary" sx={{ float: "right" }}>
+            Create Pool
+          </Button>
+        </Box>
+      </Stack>
+
       <div className={styles.content}>
         {Object.values(POOLS_MAP)
           .filter(({ addresses }) => (chainId ? addresses[chainId] : false))
@@ -354,7 +374,7 @@ function Pools(): ReactElement | null {
         ) : null}
         {currentModal === "confirm" ? <ConfirmTransaction /> : null}
       </Modal>
-    </div>
+    </Container>
   )
 }
 

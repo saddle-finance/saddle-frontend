@@ -69,6 +69,8 @@ const lightPalette: PaletteOptions | undefined = {
   },
   info: {
     main: "#4B11F2",
+    dark: "#2F099F",
+    light: "#9B91FF",
     states: {
       outlinedRestingBorder: "#4B11F2",
       outlinedHoverBackground: "#C9B8FB",

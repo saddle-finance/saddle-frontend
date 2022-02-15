@@ -9,6 +9,15 @@ export const lightTheme = createTheme({
     borderRadius: 8,
   },
   spacing: 8,
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 544,
+      md: 768,
+      lg: 1024,
+      xl: 1536,
+    },
+  },
 })
 export const darkTheme = createTheme({
   palette: palette.darkPalette,
