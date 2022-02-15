@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: ["*"]
+    branches: [permissionless-pool]
   pull_request:
-    branches: ["*"]
+    branches: [permissionless-pool]
 
 jobs:
   lint:
