@@ -1,5 +1,6 @@
 import "./SwapPage.scss"
 
+import { Box, Button } from "@mui/material"
 import React, { ReactElement, useMemo, useState } from "react"
 import { SWAP_TYPES, getIsVirtualSwap } from "../constants"
 import { formatBNToPercentString, formatBNToString } from "../utils"
@@ -7,8 +8,6 @@ import { formatBNToPercentString, formatBNToString } from "../utils"
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
-import { Box } from "@mui/material"
-import Button from "./Button"
 import ConfirmTransaction from "./ConfirmTransaction"
 import { ReactComponent as InfoIcon } from "../assets/icons/info.svg"
 import Modal from "./Modal"
@@ -295,9 +294,12 @@ const SwapPage = (props: Props): ReactElement => {
             )
           })}
         </div>
-        <Box mt={3}>
+        <Box mt={3} width="100%">
           <Button
-            kind="primary"
+            variant="contained"
+            color="primary"
+            size="large"
+            fullWidth
             onClick={(): void => {
               setCurrentModal("review")
             }}
