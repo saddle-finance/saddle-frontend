@@ -17,22 +17,23 @@ import { useDispatch, useSelector } from "react-redux"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
-import { Box } from "@mui/material"
+// import { Box } from "@mui/material"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { GasPrices } from "../state/user"
 import { IS_PRODUCTION } from "../utils/environment"
-import LaunchIcon from "@mui/icons-material/Launch"
+// import LaunchIcon from "@mui/icons-material/Launch"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { NumberInputState } from "../utils/numberInputState"
-import React from "react"
+// import React from "react"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
-import { toast } from "react-toastify"
+import { toast } from "./utils"
+// import { toast } from "react-toastify"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
 import { useMemo } from "react"
@@ -140,30 +141,7 @@ export function useApproveAndDeposit(
             },
           },
         )
-        toast(
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <span>{token.name} check and approve token tx complete</span>
-            <LaunchIcon fontSize="inherit" />
-            {/* <a target="_blank" rel="noreferrer" href="https://www.google.com">
-              EtherScan
-            </a> */}
-          </Box>,
-          {
-            position: "top-right",
-            autoClose: 25000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          },
-        )
+        toast({ tokenName: token.name })
         // enqueueSnackbar({
         //   msg: `${token.name} check and approve token tx complete`,
         //   id: `${token.name}CheckAndApprove`,
