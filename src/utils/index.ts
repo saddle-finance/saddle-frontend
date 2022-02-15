@@ -217,6 +217,12 @@ export async function getMulticallProvider(
   } else if (chainId === ChainId.ARBITRUM) {
     ethcallProvider.multicallAddress =
       "0xab16069d3e9e352343b2040ce7d7715c585994f9"
+  } else if (chainId === ChainId.OPTIMISM) {
+    ethcallProvider.multicallAddress =
+      "0x266557A864680A1401A3506c0eb72934BD13Bf59"
+  } else if (chainId === ChainId.FANTOM) {
+    ethcallProvider.multicallAddress =
+      "0xc04d660976c923ddba750341fe5923e47900cf24"
   }
   return ethcallProvider
 }

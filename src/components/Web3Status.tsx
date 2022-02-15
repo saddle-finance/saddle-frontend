@@ -1,11 +1,9 @@
-import "./Web3Status.scss"
-
+import { Button, Dialog, Typography } from "@mui/material"
 import React, { ReactElement, useEffect, useState } from "react"
 
 import AccountDetails from "./AccountDetails"
 import ConnectWallet from "./ConnectWallet"
-import Davatar from "@davatar/react"
-import Modal from "./Modal"
+import Identicon from "./Identicon"
 import { SUPPORTED_WALLETS } from "../constants"
 import { find } from "lodash"
 import { shortenAddress } from "../utils/shortenAddress"
@@ -49,32 +47,37 @@ const Web3Status = (): ReactElement => {
   }, [modalOpen])
 
   return (
-    <div className="walletStatus">
-      <button type="button" onClick={(): void => setModalOpen(true)}>
+    <div data-testid="walletStatusContainer">
+      <Button
+        variant={account ? "contained" : "outlined"}
+        color={account ? "mute" : "secondary"}
+        onClick={(): void => setModalOpen(true)}
+        data-testid="accountDetailButton"
+        endIcon={account && <Identicon />}
+      >
         {account ? (
-          <div className="hasAccount">
-            <span className="address">
-              {user || ensName || shortenAddress(account)}
-            </span>
-            <Davatar
-              size={24}
-              address={account}
-              generatedAvatarType="jazzicon"
-            />
-          </div>
+          <Typography variant="body1">
+            {user || ensName || shortenAddress(account)}
+          </Typography>
         ) : (
-          <div className="noAccount">{t("connectWallet")}</div>
+          t("connectWallet")
         )}
-      </button>
-      <Modal isOpen={modalOpen} onClose={(): void => setModalOpen(false)}>
+      </Button>
+      <Dialog
+        open={modalOpen}
+        onClose={(): void => setModalOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
         {account && walletView === WALLET_VIEWS.ACCOUNT ? (
           <AccountDetails
             openOptions={() => setWalletView(WALLET_VIEWS.OPTIONS)}
+            onClose={(): void => setModalOpen(false)}
           />
         ) : (
           <ConnectWallet onClose={(): void => setModalOpen(false)} />
         )}
-      </Modal>
+      </Dialog>
     </div>
   )
 }

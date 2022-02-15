@@ -14,11 +14,14 @@ The UI is deployed on IPFS and accessible at
 $ npm install
 ```
 
-Create a `.env.local` file with a valid `REACT_APP_NETWORK_URL` (e.g. Alchemy,
-Infura):
+Create a `.env.local` file with 
+- a valid `REACT_APP_NETWORK_URL` (e.g. Alchemy,
+Infura)
+- a valid blocknative API key
 
 ```bash
 REACT_APP_NETWORK_URL="https://eth-mainnet.alchemyapi.io/v2/YOUR_KEY_HERE"
+REACT_APP_NOTIFY_DAPP_ID="block-native-api-key-here"
 ```
 
 ## Usage

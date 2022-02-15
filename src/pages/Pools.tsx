@@ -5,6 +5,9 @@ import {
   BTC_POOL_V2_NAME,
   D4_POOL_NAME,
   FRAX_ARB_USD_POOL_V2_NAME,
+  FRAX_OPT_USD_METAPOOL_NAME,
+  FTM_USD_POOL_NAME,
+  OPT_USD_POOL_NAME,
   POOLS_MAP,
   PoolName,
   PoolTypes,
@@ -14,6 +17,7 @@ import {
   SUSD_METAPOOL_V2_NAME,
   TBTC_METAPOOL_NAME,
   TBTC_METAPOOL_V2_NAME,
+  USDS_ARB_USD_METAPOOL_NAME,
   VETH2_POOL_NAME,
   WCUSD_METAPOOL_NAME,
   WCUSD_METAPOOL_V2_NAME,
@@ -57,8 +61,16 @@ function Pools(): ReactElement | null {
     WCUSD_METAPOOL_V2_NAME,
   )
   const [arbUsdPoolData, arbUsdUserShareData] = usePoolData(ARB_USD_POOL_NAME)
+  const [ftmUsdPoolData, ftmUsdUserShareData] = usePoolData(FTM_USD_POOL_NAME)
+  const [optUsdPoolData, optUsdUserShareData] = usePoolData(OPT_USD_POOL_NAME)
+  const [fraxOptUsdPoolData, fraxOptUsdUserShareData] = usePoolData(
+    FRAX_OPT_USD_METAPOOL_NAME,
+  )
   const [fraxArbUsdPoolV2Data, fraxArbUsdV2UserShareData] = usePoolData(
     FRAX_ARB_USD_POOL_V2_NAME,
+  )
+  const [usdsArbUsdPoolData, usdsArbUsdUserShareData] = usePoolData(
+    USDS_ARB_USD_METAPOOL_NAME,
   )
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const approveAndMigrate = useApproveAndMigrate()
@@ -177,12 +189,40 @@ function Pools(): ReactElement | null {
         userShareData: arbUsdUserShareData,
         poolRoute: "/pools/arbusd",
       }
+    } else if (poolName === FTM_USD_POOL_NAME) {
+      return {
+        name: FTM_USD_POOL_NAME,
+        poolData: ftmUsdPoolData,
+        userShareData: ftmUsdUserShareData,
+        poolRoute: "/pools/ftmusd",
+      }
+    } else if (poolName === OPT_USD_POOL_NAME) {
+      return {
+        name: OPT_USD_POOL_NAME,
+        poolData: optUsdPoolData,
+        userShareData: optUsdUserShareData,
+        poolRoute: "/pools/optusd",
+      }
+    } else if (poolName === FRAX_OPT_USD_METAPOOL_NAME) {
+      return {
+        name: FRAX_OPT_USD_METAPOOL_NAME,
+        poolData: fraxOptUsdPoolData,
+        userShareData: fraxOptUsdUserShareData,
+        poolRoute: "/pools/frax-optusd",
+      }
     } else if (poolName === FRAX_ARB_USD_POOL_V2_NAME) {
       return {
         name: FRAX_ARB_USD_POOL_V2_NAME,
         poolData: fraxArbUsdPoolV2Data,
         userShareData: fraxArbUsdV2UserShareData,
         poolRoute: "/pools/frax-arbusdv2",
+      }
+    } else if (poolName === USDS_ARB_USD_METAPOOL_NAME) {
+      return {
+        name: USDS_ARB_USD_METAPOOL_NAME,
+        poolData: usdsArbUsdPoolData,
+        userShareData: usdsArbUsdUserShareData,
+        poolRoute: "/pools/usds-arbusd",
       }
     } else {
       return {
@@ -293,10 +333,14 @@ function Pools(): ReactElement | null {
               logEvent("migrate", {
                 pool: activeMigration.poolName,
               })
-              await approveAndMigrate(
-                activeMigration.poolName,
-                activeMigration.lpTokenBalance,
-              )
+              try {
+                await approveAndMigrate(
+                  activeMigration.poolName,
+                  activeMigration.lpTokenBalance,
+                )
+              } catch (err) {
+                console.error(err)
+              }
               setCurrentModal(null)
               setActiveMigration({
                 poolName: null,

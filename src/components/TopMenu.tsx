@@ -1,86 +1,128 @@
-import "./TopMenu.scss"
+import {
+  AppBar,
+  Box,
+  Button,
+  Hidden,
+  IconButton,
+  Stack,
+  Toolbar,
+  styled,
+  useTheme,
+} from "@mui/material"
+import { NavLink, NavLinkProps, useLocation } from "react-router-dom"
+import React, { ReactElement, useContext, useState } from "react"
 
-import { AppBar, Box, Hidden, Toolbar } from "@mui/material"
-import { Link, useLocation } from "react-router-dom"
-import React, { ReactElement, useContext, useRef, useState } from "react"
-
-import Button from "./Button"
 import { IS_SDL_LIVE } from "../constants"
-import Modal from "./Modal"
+import { MoreVert } from "@mui/icons-material"
 import NetworkDisplay from "./NetworkDisplay"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
 import SiteSettingsMenu from "./SiteSettingsMenu"
-import TokenClaimModal from "./TokenClaimModal"
+import TokenClaimDialog from "./TokenClaimDialog"
 import Web3Status from "./Web3Status"
-import classNames from "classnames"
 import { formatBNToShortString } from "../utils"
-import useDetectOutsideClick from "../hooks/useDetectOutsideClick"
 import { useTranslation } from "react-i18next"
 
 type ActiveTabType = "" | "pools" | "risk"
 
+const NavMenu = styled(NavLink)<NavLinkProps & { selected: boolean }>(
+  ({ theme, selected }) => {
+    return {
+      fontWeight: selected ? "bold" : "normal",
+      textDecoration: "none",
+      fontSize: theme.typography.h3.fontSize,
+      color: theme.palette.text.primary,
+    }
+  },
+)
+
 function TopMenu(): ReactElement {
   const { t } = useTranslation()
+  const [anchorEl, setAnchorEl] = React.useState<Element | null>(null)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
+  const theme = useTheme()
   const { pathname } = useLocation()
   const activeTab = pathname.split("/")[1] as ActiveTabType
 
+  const handleSettingMenu = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    setAnchorEl(event.currentTarget)
+  }
   return (
     <AppBar position="static" elevation={0}>
       <Toolbar
         data-testid="topMenuContainer"
         sx={{ mx: { md: 7 }, mt: { md: 3 } }}
       >
-        <Hidden mdDown>
-          <Box flex={1} flexBasis="30%">
-            <Link to="/">
-              <SaddleLogo />
-            </Link>
-          </Box>
-        </Hidden>
-
-        <ul className="nav">
-          <li>
-            <Link
+        <Box
+          display="grid"
+          gridTemplateColumns="1fr auto 1fr"
+          gridTemplateRows="auto auto auto"
+          width="100%"
+          alignItems="center"
+        >
+          <Hidden mdDown>
+            <Box flex={1} flexBasis="30%">
+              <NavLink to="/">
+                <SaddleLogo />
+              </NavLink>
+            </Box>
+          </Hidden>
+          <Stack direction="row" spacing={5} justifyContent="center">
+            <NavMenu
               data-testid="swapNavLink"
               to="/"
-              className={classNames({ active: activeTab === "" })}
+              selected={activeTab === ""}
             >
               {t("swap")}
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/pools"
-              className={classNames({
-                active: activeTab === "pools",
-              })}
-            >
+            </NavMenu>
+
+            <NavMenu to="/pools" selected={activeTab === "pools"}>
               {t("pools")}
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/risk"
-              className={classNames({ active: activeTab === "risk" })}
-            >
+            </NavMenu>
+
+            <NavMenu to="/risk" selected={activeTab === "risk"}>
               {t("risk")}
-            </Link>
-          </li>
-        </ul>
-        <div className="walletWrapper">
-          <RewardsButton setCurrentModal={setCurrentModal} />
-          <Web3Status />
-          <NetworkDisplayAndSettings />
-          <IconButtonAndSettings />
-        </div>
-        <Modal
-          isOpen={!!currentModal}
+            </NavMenu>
+          </Stack>
+          <Stack
+            direction="row"
+            spacing={1}
+            justifyContent="flex-end"
+            alignItems="center"
+          >
+            <RewardsButton setCurrentModal={setCurrentModal} />
+            <Web3Status />
+            <NetworkDisplay onClick={handleSettingMenu} />
+            <IconButton
+              onClick={handleSettingMenu}
+              data-testId="settingsMenuBtn"
+              sx={{
+                minWidth: 0,
+                padding: 0,
+                backgroundColor: theme.palette.background.default,
+                borderRadius: theme.spacing(1),
+              }}
+            >
+              <MoreVert
+                htmlColor={theme.palette.text.primary}
+                fontSize="large"
+              />
+            </IconButton>
+          </Stack>
+        </Box>
+
+        <SiteSettingsMenu
+          key="buttonSettings"
+          anchorEl={anchorEl ?? undefined}
+          close={() => setAnchorEl(null)}
+        />
+
+        <TokenClaimDialog
+          open={currentModal === "tokenClaim"}
           onClose={(): void => setCurrentModal(null)}
-        >
-          {currentModal === "tokenClaim" && <TokenClaimModal />}
-        </Modal>
+        />
       </Toolbar>
     </AppBar>
   )
@@ -95,73 +137,15 @@ function RewardsButton({
   const formattedTotal = formatBNToShortString(rewardBalances.total, 18)
   return IS_SDL_LIVE ? (
     <Button
+      variant="contained"
+      color="info"
       data-testid="rewardButton"
-      kind="secondary"
       onClick={() => setCurrentModal("tokenClaim")}
-      size="medium"
+      endIcon={<SaddleLogo width={20} height={20} />}
     >
-      {formattedTotal} <SaddleLogo width={24} height={24} />
+      {formattedTotal}
     </Button>
   ) : null
 }
 
-function NetworkDisplayAndSettings(): ReactElement {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const wrapperRef = useRef(null)
-  useDetectOutsideClick(
-    wrapperRef,
-    () => setIsDropdownOpen(false),
-    isDropdownOpen,
-  )
-
-  return (
-    <div style={{ position: "relative" }} ref={wrapperRef}>
-      <NetworkDisplay onClick={() => setIsDropdownOpen((state) => !state)} />
-      {isDropdownOpen && (
-        <div className="siteSettingsWrapper">
-          <SiteSettingsMenu key="networkSettings" />
-        </div>
-      )}
-    </div>
-  )
-}
-
-function IconButtonAndSettings(): ReactElement {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const wrapperRef = useRef(null)
-  useDetectOutsideClick(
-    wrapperRef,
-    () => setIsDropdownOpen(false),
-    isDropdownOpen,
-  )
-
-  return (
-    <div style={{ position: "relative" }} ref={wrapperRef}>
-      <Button
-        data-testid="settingsMenuBtn"
-        kind="ternary"
-        size="medium"
-        onClick={() => setIsDropdownOpen((state) => !state)}
-      >
-        <svg
-          width="6"
-          height="22"
-          viewBox="0 0 6 22"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className={"hamburger"}
-        >
-          <circle cx="3" cy="3" r="2.5" />
-          <circle cx="3" cy="10.5" r="2.5" />
-          <circle cx="3" cy="18" r="2.5" />
-        </svg>
-      </Button>
-      {isDropdownOpen && (
-        <div className="siteSettingsWrapper">
-          <SiteSettingsMenu key="buttonSettings" />
-        </div>
-      )}
-    </div>
-  )
-}
 export default TopMenu
