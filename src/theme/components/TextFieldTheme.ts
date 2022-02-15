@@ -6,11 +6,13 @@ export default function TextFieldTheme(): Components {
       styleOverrides: {
         root: {
           borderRadius: 6,
-          height: 28,
           paddingRight: 8,
         },
         input: {
           paddingLeft: 8,
+        },
+        sizeSmall: {
+          height: 28,
         },
         notchedOutline: {
           top: "-10px",
