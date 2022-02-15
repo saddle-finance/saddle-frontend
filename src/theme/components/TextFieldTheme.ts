@@ -12,11 +12,11 @@ export default function TextFieldTheme(): Components {
           paddingLeft: 8,
         },
         sizeSmall: {
-          height: 28,
+          // height: 28,
         },
-        notchedOutline: {
-          top: "-10px",
-        },
+        // notchedOutline: {
+        //   top: "-10px",
+        // },
       },
     },
   }
