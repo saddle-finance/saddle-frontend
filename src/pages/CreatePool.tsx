@@ -6,6 +6,8 @@ import {
   Paper,
   Stack,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from "@mui/material"
 import React from "react"
@@ -25,9 +27,20 @@ export default function CreatePool(): React.ReactElement {
             <Typography variant="subtitle1">{t("addPoolName")}</Typography>
             <Divider />
             <Typography my={2}>{t("addPoolNameDescription")}</Typography>
-            <TextField size="medium" placeholder="Pool Name" />
-            <TextField size="medium" placeholder="Pool Symbol" />
+            <Stack direction={["column", "row"]}>
+              <TextField
+                size="medium"
+                placeholder="Pool Name"
+                sx={{ mr: [0, 1.5], flex: 1 }}
+              />
+              <TextField
+                size="medium"
+                placeholder="Pool Symbol"
+                sx={{ ml: [0, 1.5], flex: 1 }}
+              />
+            </Stack>
           </Box>
+
           <Box mt={4}>
             <Typography variant="subtitle1">{t("setParameters")}</Typography>
             <Divider />
@@ -48,28 +61,56 @@ export default function CreatePool(): React.ReactElement {
               </Box>
             </Stack>
           </Box>
+
           <Stack direction="row" spacing={3} my={4}>
-            <Box>
+            <Box flex={1}>
               <Typography variant="subtitle1">{t("createPoolType")}</Typography>
               <Divider />
-              <Typography>{t("createPoolTypeDescription")}</Typography>
+              <Typography mb={2}>{t("createPoolTypeDescription")}</Typography>
+              <ToggleButtonGroup
+                value="basePool"
+                color="secondary"
+                size="large"
+                fullWidth
+              >
+                <ToggleButton value="usdMetaPool">USD Metapool</ToggleButton>
+                <ToggleButton value="btcMetapool">USD Metapool</ToggleButton>
+                <ToggleButton value="basePool">USD Metapool</ToggleButton>
+              </ToggleButtonGroup>
             </Box>
-            <Box>
-              <Typography variant="subtitle1">{t("createPoolType")}</Typography>
+            <Box flex={1}>
+              <Typography variant="subtitle1">
+                {t("chooseAssetType")}
+              </Typography>
               <Divider />
-              <Typography>{t("createPoolTypeDescription")}</Typography>
+              <Typography mb={2}>{t("chooseAssetTypeDescription")}</Typography>
+              <ToggleButtonGroup value="usd" color="secondary" fullWidth>
+                <ToggleButton value="usd" color="secondary">
+                  USD
+                </ToggleButton>
+                <ToggleButton value="btcMetapool">ETH</ToggleButton>
+                <ToggleButton value="btc">BTC</ToggleButton>
+                <ToggleButton value="basePool">Others</ToggleButton>
+              </ToggleButtonGroup>
             </Box>
           </Stack>
+
           <Box>
-            <Typography>{t("addTokenAddress")}</Typography>
-            <Divider />
-            <Box mb={4}>
-              <TextField placeholder="Token 1" />{" "}
-              <Button variant="contained">Add Token</Button>
+            <Typography variant="subtitle1">{t("addTokenAddress")}</Typography>
+            <Divider sx={{ mb: 2 }} />
+            <Box display="flex" mb={4} alignItems="center">
+              <Box flex={1}>
+                <TextField placeholder="Token 1" fullWidth />
+              </Box>
+              <Box flex={1}>
+                <Button variant="contained" size="large" sx={{ ml: 3 }}>
+                  {t("addToken")}
+                </Button>
+              </Box>
             </Box>
           </Box>
-          <Button variant="contained" fullWidth>
-            Create Community Pool
+          <Button variant="contained" size="large" fullWidth>
+            {t("createCommunityPool")}
           </Button>
         </Box>
       </Paper>
