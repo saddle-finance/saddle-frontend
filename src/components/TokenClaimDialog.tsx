@@ -1,5 +1,5 @@
 import { ChainId, POOLS_MAP, Pool, SDL_TOKEN } from "../constants"
-import { Dialog, IconButton, Link } from "@mui/material"
+import { Dialog, Divider, IconButton, Link } from "@mui/material"
 import React, {
   ReactElement,
   useCallback,
@@ -205,8 +205,6 @@ export default function TokenClaimDialog({
     </Dialog>
   )
 }
-
-const Divider = (): ReactElement => <div className={styles.divider}></div>
 
 function ClaimListItem({
   title,
