@@ -6,7 +6,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material"
-import React, { ReactElement, useEffect, useState } from "react"
+import React, { ReactElement } from "react"
 import { commify, formatBNToString } from "../utils"
 
 import ChangeIcon from "@mui/icons-material/ImportExport"
@@ -20,11 +20,11 @@ import { Zero } from "@ethersproject/constants"
 import { find } from "lodash"
 import { getEtherscanLink } from "../utils/getEtherscanLink"
 import { shortenAddress } from "../utils/shortenAddress"
-import { uauth } from "../connectors"
 import { useActiveWeb3React } from "../hooks"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
 import { useTheme } from "@mui/material/styles"
 import { useTranslation } from "react-i18next"
+import { useUDName } from "../hooks/useUDName"
 
 interface Props {
   openOptions: () => void
@@ -38,24 +38,12 @@ export default function AccountDetail({
   const { t } = useTranslation()
   const { account, connector } = useActiveWeb3React()
   const tokenBalances = usePoolTokenBalances()
+  const udName = useUDName()
   const ethBalanceFormatted = commify(
     formatBNToString(tokenBalances?.ETH || Zero, 18, 6),
   )
-  const [user, setUser] = useState<string>("")
 
   const connectorName = find(SUPPORTED_WALLETS, ["connector", connector])?.name
-  useEffect(() => {
-    const checkUDName = async () => {
-      if (connectorName === "Unstoppable Domains") {
-        const userUD = await uauth.uauth.user()
-        setUser(userUD.sub)
-      }
-    }
-    void checkUDName()
-    return () => {
-      setUser("")
-    }
-  }, [connectorName])
   const theme = useTheme()
 
   return (
@@ -88,7 +76,7 @@ export default function AccountDetail({
           <Stack direction="row" spacing={1}>
             <Identicon />
             <Typography variant="subtitle1">
-              {user || (account && shortenAddress(account))}
+              {udName || (account && shortenAddress(account))}
             </Typography>
             {account && (
               <Link

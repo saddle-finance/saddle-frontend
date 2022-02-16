@@ -4,12 +4,10 @@ import React, { ReactElement, useEffect, useState } from "react"
 import AccountDetails from "./AccountDetails"
 import ConnectWallet from "./ConnectWallet"
 import Identicon from "./Identicon"
-import { SUPPORTED_WALLETS } from "../constants"
-import { find } from "lodash"
 import { shortenAddress } from "../utils/shortenAddress"
-import { uauth } from "../connectors"
 import { useENS } from "../hooks/useENS"
 import { useTranslation } from "react-i18next"
+import { useUDName } from "../hooks/useUDName"
 import { useWeb3React } from "@web3-react/core"
 
 const WALLET_VIEWS = {
@@ -18,26 +16,12 @@ const WALLET_VIEWS = {
 }
 
 const Web3Status = (): ReactElement => {
-  const { account, connector } = useWeb3React()
+  const { account } = useWeb3React()
   const [modalOpen, setModalOpen] = useState(false)
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT)
   const { t } = useTranslation()
   const { ensName } = useENS(account)
-  const [user, setUser] = useState<string>("")
-
-  const connectorName = find(SUPPORTED_WALLETS, ["connector", connector])?.name
-  useEffect(() => {
-    const checkUDName = async () => {
-      if (connectorName === "Unstoppable Domains") {
-        const userUD = await uauth.uauth.user()
-        setUser(userUD.sub)
-      }
-    }
-    void checkUDName()
-    return () => {
-      setUser("")
-    }
-  }, [connectorName])
+  const udName = useUDName()
 
   // always reset to account view
   useEffect(() => {
@@ -57,7 +41,7 @@ const Web3Status = (): ReactElement => {
       >
         {account ? (
           <Typography variant="body1">
-            {user || ensName || shortenAddress(account)}
+            {udName || ensName || shortenAddress(account)}
           </Typography>
         ) : (
           t("connectWallet")
