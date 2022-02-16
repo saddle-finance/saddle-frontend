@@ -7,26 +7,26 @@ import { useActiveWeb3React } from "."
 
 export const useUDName = (): string => {
   const { connector } = useActiveWeb3React()
-  const [udUser, setUdUser] = useState<string>("")
+  const [udUserName, setUdUserName] = useState<string>("")
   const connectorName = find(SUPPORTED_WALLETS, ["connector", connector])?.name
 
   useEffect(() => {
     const checkUDName = async () => {
       if (connectorName === "Unstoppable Domains") {
         try {
-          const udUserRes = await uauth.uauth.user()
-          setUdUser(udUserRes.sub)
+          const udUser = await uauth.uauth.user()
+          setUdUserName(udUser.sub)
         } catch (e) {
-          setUdUser("")
+          setUdUserName("")
         }
       }
     }
     void checkUDName()
 
     return () => {
-      setUdUser("")
+      setUdUserName("")
     }
   }, [connectorName])
 
-  return udUser
+  return udUserName
 }
