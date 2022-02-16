@@ -7,6 +7,7 @@ import Identicon from "./Identicon"
 import { shortenAddress } from "../utils/shortenAddress"
 import { useENS } from "../hooks/useENS"
 import { useTranslation } from "react-i18next"
+import { useUDName } from "../hooks/useUDName"
 import { useWeb3React } from "@web3-react/core"
 
 const WALLET_VIEWS = {
@@ -20,6 +21,7 @@ const Web3Status = (): ReactElement => {
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT)
   const { t } = useTranslation()
   const { ensName } = useENS(account)
+  const udName = useUDName()
 
   // always reset to account view
   useEffect(() => {
@@ -39,7 +41,7 @@ const Web3Status = (): ReactElement => {
       >
         {account ? (
           <Typography variant="body1">
-            {ensName || shortenAddress(account)}
+            {udName || ensName || shortenAddress(account)}
           </Typography>
         ) : (
           t("connectWallet")

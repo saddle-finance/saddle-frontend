@@ -1,6 +1,7 @@
 import {
   injectedMetaMaskProvider,
   injectedTallyProvider,
+  uauth,
   walletconnect,
   walletlink,
 } from "../connectors"
@@ -25,6 +26,7 @@ import sethLogo from "../assets/icons/seth.svg"
 import susdLogo from "../assets/icons/susd.svg"
 import tallyIcon from "../assets/icons/tally.svg"
 import tbtcLogo from "../assets/icons/tbtc.svg"
+import unstoppableDomainsLogo from "../assets/icons/unstoppableDomainsLogo.png"
 import usdcLogo from "../assets/icons/usdc.svg"
 import usdsLogo from "../assets/icons/usds.png"
 import usdtLogo from "../assets/icons/usdt.svg"
@@ -1324,6 +1326,11 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     name: "MetaMask",
     icon: metamaskIcon,
     connector: injectedMetaMaskProvider,
+  },
+  UNSTOPPABLE_DOMAINS: {
+    name: "Unstoppable Domains",
+    icon: unstoppableDomainsLogo,
+    connector: uauth,
   },
   WALLET_CONNECT: {
     name: "WalletConnect",
