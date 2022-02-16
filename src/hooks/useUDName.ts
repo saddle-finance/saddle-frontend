@@ -8,8 +8,8 @@ import { useActiveWeb3React } from "."
 export const useUDName = (): string => {
   const { connector } = useActiveWeb3React()
   const [udUser, setUdUser] = useState<string>("")
-
   const connectorName = find(SUPPORTED_WALLETS, ["connector", connector])?.name
+
   useEffect(() => {
     const checkUDName = async () => {
       if (connectorName === "Unstoppable Domains") {
