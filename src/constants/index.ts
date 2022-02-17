@@ -419,6 +419,21 @@ export const SDL_TOKEN_ADDRESSES = buildAddresses({
   [ChainId.FANTOM]: "",
 })
 
+export const SPA_TOKEN_ADDRESSES = buildAddresses({
+  [ChainId.ARBITRUM]: "0x5575552988A3A80504bBaeB1311674fCFd40aD4B",
+})
+
+export const SPA_TOKEN = new Token(
+  SPA_TOKEN_ADDRESSES,
+  18,
+  "SPA",
+  "sperax",
+  "Sperax",
+  saddleLogo,
+  false,
+  false,
+)
+
 export const SDL_TOKEN = new Token(
   SDL_TOKEN_ADDRESSES,
   18,

@@ -1,12 +1,13 @@
 import "./MyFarm.scss"
 
-import { IS_SDL_LIVE, PoolName } from "../constants"
+import { ChainId, IS_SDL_LIVE, PoolName } from "../constants"
 import React, { ReactElement } from "react"
 import { commify, formatBNToString } from "../utils"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { Box } from "@mui/material"
 import Button from "./Button"
+import { useActiveWeb3React } from "../hooks"
 import { useRewardsHelpers } from "../hooks/useRewardsHelpers"
 import { useTranslation } from "react-i18next"
 
@@ -18,14 +19,24 @@ export default function MyFarm({
   lpWalletBalance,
   poolName,
 }: Props): ReactElement | null {
-  const { approveAndStake, unstake, amountStaked, isPoolIncentivized } =
-    useRewardsHelpers(poolName as PoolName)
+  const {
+    approveAndStake,
+    claimSPA,
+    unstake,
+    amountStaked,
+    amountOfSpaClaimable,
+    isPoolIncentivized,
+  } = useRewardsHelpers(poolName as PoolName)
+  const { chainId } = useActiveWeb3React()
   const { t } = useTranslation()
   const formattedLpWalletBalance = commify(
     formatBNToString(lpWalletBalance, 18, 4),
   )
   const formattedLpStakedBalance = commify(
     formatBNToString(amountStaked, 18, 4),
+  )
+  const formattedSpaClaimableBalance = commify(
+    formatBNToString(amountOfSpaClaimable, 18, 4),
   )
   return isPoolIncentivized && IS_SDL_LIVE ? (
     <div className="myFarm">
@@ -60,6 +71,23 @@ export default function MyFarm({
           </Button>
         </Box>
       </div>
+      {chainId !== ChainId.ARBITRUM && (
+        <Box className="item" sx={{ mt: 2 }}>
+          <Box>
+            <p>{t("claimableSPA")}</p>
+            <p className="bold">{formattedSpaClaimableBalance}</p>
+          </Box>
+          <Box>
+            <Button
+              kind="outline"
+              disabled={amountOfSpaClaimable.isZero()}
+              onClick={claimSPA}
+            >
+              {t("Claim All")}
+            </Button>
+          </Box>
+        </Box>
+      )}
     </div>
   ) : null
 }
