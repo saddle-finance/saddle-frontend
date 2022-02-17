@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react"
+import { IconButton, InputAdornment, TextField } from "@mui/material"
+import { Delete } from "@mui/icons-material"
 import React from "react"
-import { TextField } from "@mui/material"
 
 // Check controls from https://storybook.js.org/docs/react/essentials/controls
 
@@ -29,11 +30,45 @@ export const MuiTextField = Template.bind({})
 MuiTextField.args = {
   variant: "outlined",
   name: "textField",
-  label: "",
+  placeholder: "test",
+  value: "",
+  label: "label is here",
+  helperText: "",
+  fullWidth: false,
+  disabled: false,
+  error: false,
+}
+
+export const MuiTextNoLabel = Template.bind({})
+// More on args: https://storybook.js.org/docs/react/writing-stories/args
+MuiTextNoLabel.args = {
+  variant: "outlined",
+  name: "textField",
   placeholder: "test",
   value: "",
   helperText: "",
   fullWidth: false,
   disabled: false,
   error: false,
+}
+export const TextFieldWithIcon = Template.bind({})
+// More on args: https://storybook.js.org/docs/react/writing-stories/args
+TextFieldWithIcon.args = {
+  variant: "outlined",
+  name: "textField",
+  placeholder: "test",
+  value: "",
+  helperText: "",
+  fullWidth: false,
+  disabled: false,
+  error: false,
+  InputProps: {
+    endAdornment: (
+      <InputAdornment position="end">
+        <IconButton>
+          <Delete />
+        </IconButton>
+      </InputAdornment>
+    ),
+  },
 }
