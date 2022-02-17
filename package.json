@@ -105,7 +105,7 @@
     "cy:open": "cypress open",
     "cy:startopen": "start-test 3000 'cypress open'",
     "cy:coverage": "start-test 3000 'cypress run --config video=false'",
-    "postinstall": "typechain --target ethers-v5 'src/constants/abis/*.json'",
+    "postinstall": "typechain --target ethers-v5 \"src/constants/abis/*.json\"",
     "prepare": "husky install",
     "missing-translations": "node scripts/missing-translations.js"
   },
