@@ -71,7 +71,7 @@ export default function MyFarm({
           </Button>
         </Box>
       </div>
-      {chainId !== ChainId.ARBITRUM && (
+      {chainId === ChainId.ARBITRUM && (
         <Box className="item" sx={{ mt: 2 }}>
           <Box>
             <p>{t("claimableSPA")}</p>
@@ -83,7 +83,7 @@ export default function MyFarm({
               disabled={amountOfSpaClaimable.isZero()}
               onClick={claimSPA}
             >
-              {t("Claim All")}
+              {t("claimAll")}
             </Button>
           </Box>
         </Box>

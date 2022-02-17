@@ -2,6 +2,7 @@
   "totalRetroactiveDrop": "Total Retroactive Drop (incl. unvested)",
   "totalClaimableSDL": "Total Claimable SDL",
   "retroactiveDrop": "Retroactive Drop",
+  "claimAll": "Claim All",
   "claimForAllPools": "Claim for all Pools",
   "claimableSPA": "Claimable SPA",
   "status": "Status",

@@ -23,6 +23,7 @@ import saddleLPTokenLogo from "../assets/icons/saddle_lp_token.svg"
 import saddleLogo from "../assets/icons/logo_24.svg"
 import sbtcLogo from "../assets/icons/sbtc.svg"
 import sethLogo from "../assets/icons/seth.svg"
+import speraxLogo from "../assets/icons/sperax.png"
 import susdLogo from "../assets/icons/susd.svg"
 import tallyIcon from "../assets/icons/tally.svg"
 import tbtcLogo from "../assets/icons/tbtc.svg"
@@ -429,7 +430,7 @@ export const SPA_TOKEN = new Token(
   "SPA",
   "sperax",
   "Sperax",
-  saddleLogo,
+  speraxLogo,
   false,
   false,
 )
