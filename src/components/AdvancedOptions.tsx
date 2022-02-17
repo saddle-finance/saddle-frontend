@@ -128,11 +128,7 @@ export default function AdvancedOptions(): ReactElement {
                 </ToggleButtonGroup>
                 <TextField
                   value={slippageCustom?.valueRaw}
-                  // TODO check after removing SCSS
-                  label=""
-                  InputLabelProps={{
-                    shrink: false,
-                  }}
+                  label="percent"
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">%</InputAdornment>
@@ -182,10 +178,6 @@ export default function AdvancedOptions(): ReactElement {
                 variant="outlined"
                 size="small"
                 // TODO check after removing SCSS
-                label=""
-                InputLabelProps={{
-                  shrink: false,
-                }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">min</InputAdornment>
@@ -280,6 +272,11 @@ export default function AdvancedOptions(): ReactElement {
             </div>
           </div>
         </AccordionDetails>
+        <Box display="flex">
+          <TextField label="test" />
+          <TextField />
+        </Box>
+        <TextField size="small" label="test" />
       </Accordion>
     </Box>
   )

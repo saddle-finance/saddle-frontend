@@ -19,5 +19,15 @@ export default function TextFieldTheme(): Components {
         },
       },
     },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          top: -3,
+        },
+        shrink: {
+          top: 0,
+        },
+      },
+    },
   }
 }
