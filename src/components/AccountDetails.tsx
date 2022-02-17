@@ -55,9 +55,7 @@ export default function AccountDetail({
           : theme.palette.common.black
       }
     >
-      <DialogTitle onClose={onClose}>
-        <Typography variant="h3">{t("account")}</Typography>
-      </DialogTitle>
+      <DialogTitle onClose={onClose}>{t("account")}</DialogTitle>
       <DialogContent>
         <Box
           display="grid"
