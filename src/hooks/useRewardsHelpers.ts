@@ -146,7 +146,7 @@ export function useRewardsHelpers(poolName: PoolName): {
           const token = getTokenByAddress(address, chainId)
           if (token) rewards[token.symbol] = tokenAmounts[i]
         })
-        setAmountOfSpaClaimable(rewards ? rewards.SPA : Zero)
+        setAmountOfSpaClaimable(rewards?.SPA || Zero)
       } catch (err) {
         console.error(err)
       }
