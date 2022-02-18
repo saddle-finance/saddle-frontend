@@ -1,4 +1,4 @@
-import { ChainId, TOKENS_MAP, VETH2_SWAP_ADDRESSES } from "../constants"
+import { ChainId, SPA, TOKENS_MAP, VETH2_SWAP_ADDRESSES } from "../constants"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 
 import { AppDispatch } from "../state"
@@ -25,6 +25,7 @@ const otherTokens = {
   KEEP: "keep-network",
   SGT: "sharedstake-governance-token",
   ALCX: "alchemix",
+  [SPA.symbol]: SPA.geckoId,
 }
 
 export default function fetchTokenPricesUSD(
