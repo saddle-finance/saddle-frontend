@@ -81,7 +81,7 @@ export default function MyFarm({
             <Button
               kind="outline"
               disabled={amountOfSpaClaimable.isZero()}
-              onClick={claimSPA}
+              onClick={() => claimSPA()}
             >
               {t("claimAll")}
             </Button>
