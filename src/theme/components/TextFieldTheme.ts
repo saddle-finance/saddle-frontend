@@ -22,7 +22,8 @@ export default function TextFieldTheme(): Components {
     MuiInputLabel: {
       styleOverrides: {
         root: {
-          top: -3,
+          top: -4,
+          opacity: 0.7,
         },
         shrink: {
           top: 0,
