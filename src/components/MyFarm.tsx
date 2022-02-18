@@ -1,13 +1,12 @@
 import "./MyFarm.scss"
 
-import { ChainId, IS_SDL_LIVE, PoolName } from "../constants"
+import { IS_SDL_LIVE, PoolName, USDS_ARB_USD_METAPOOL_NAME } from "../constants"
 import React, { ReactElement } from "react"
 import { commify, formatBNToString } from "../utils"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { Box } from "@mui/material"
 import Button from "./Button"
-import { useActiveWeb3React } from "../hooks"
 import { useRewardsHelpers } from "../hooks/useRewardsHelpers"
 import { useTranslation } from "react-i18next"
 
@@ -27,7 +26,6 @@ export default function MyFarm({
     amountOfSpaClaimable,
     isPoolIncentivized,
   } = useRewardsHelpers(poolName as PoolName)
-  const { chainId } = useActiveWeb3React()
   const { t } = useTranslation()
   const formattedLpWalletBalance = commify(
     formatBNToString(lpWalletBalance, 18, 4),
@@ -71,7 +69,7 @@ export default function MyFarm({
           </Button>
         </Box>
       </div>
-      {chainId === ChainId.ARBITRUM && (
+      {poolName === USDS_ARB_USD_METAPOOL_NAME && (
         <Box className="item" sx={{ mt: 2 }}>
           <Box>
             <p>{t("claimableSPA")}</p>
