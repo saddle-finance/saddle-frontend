@@ -424,7 +424,7 @@ export const SPA_TOKEN_ADDRESSES = buildAddresses({
   [ChainId.ARBITRUM]: "0x5575552988A3A80504bBaeB1311674fCFd40aD4B",
 })
 
-export const SPA_TOKEN = new Token(
+export const SPA = new Token(
   SPA_TOKEN_ADDRESSES,
   18,
   "SPA",

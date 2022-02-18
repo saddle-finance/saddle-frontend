@@ -1,4 +1,4 @@
-import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
+import { POOLS_MAP, PoolName, SPA, TRANSACTION_TYPES } from "../constants"
 import { getContract, getTokenByAddress } from "../utils"
 import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
 import { useCallback, useEffect, useState } from "react"
@@ -145,7 +145,11 @@ export function useRewardsHelpers(poolName: PoolName): {
         tokenAddresses.forEach((address, i) => {
           const token = getTokenByAddress(address, chainId)
           if (token) rewards[token.symbol] = tokenAmounts[i]
+          if (address.toLowerCase() === SPA.addresses[chainId].toLowerCase()) {
+            rewards[SPA.symbol] = tokenAmounts[i]
+          }
         })
+
         setAmountOfSpaClaimable(rewards?.SPA || Zero)
       } catch (err) {
         console.error(err)
