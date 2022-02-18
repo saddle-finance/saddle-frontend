@@ -1120,7 +1120,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: USDS_ARB_USD_UNDERLYING_POOL_TOKENS,
     underlyingPool: FRAX_ARB_USD_POOL_V2_NAME,
     route: "usds-arbusd",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.ARBITRUM]: 2 }),
   },
   [FRAX_ARB_USD_POOL_V2_NAME]: {
     name: FRAX_ARB_USD_POOL_V2_NAME,
