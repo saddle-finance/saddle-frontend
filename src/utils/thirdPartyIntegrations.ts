@@ -317,10 +317,10 @@ async function getSperaxData(
     ])
 
   const spaPerYear = spaRewardsPerSecond.mul(3600 * 24 * 365) // 1e18
-  const spaPerYearUSD = spaPerYear.mul(parseUnits(spaPrice.toFixed(3), 3)) // 1e21
-  const totalDepositedUSD = totalDeposited.mul(lpTokenPrice) // 1e37
+  const spaPerYearUSD = spaPerYear.mul(parseUnits(spaPrice.toFixed(3), 3)) // 1e18 + 3 = 1e21
+  const totalDepositedUSD = totalDeposited.mul(lpTokenPrice) // 1e36
   const spaApr = spaPerYearUSD
-    .mul(BigNumber.from(10).pow(34))
-    .div(totalDepositedUSD) // 1e18
+    .mul(BigNumber.from(10).pow(33))
+    .div(totalDepositedUSD)
   return [spaApr, userStakedData.amount]
 }
