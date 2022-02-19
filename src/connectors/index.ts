@@ -50,6 +50,7 @@ export const walletconnect = new WalletConnectConnector({
   rpc: { [NETWORK_CHAIN_ID]: NETWORK_URL },
   bridge: "https://bridge.walletconnect.org",
   qrcode: true,
+  // chainId: NETWORK_CHAIN_ID,
   // pollingInterval: POLLING_INTERVAL / 12000
 })
 
