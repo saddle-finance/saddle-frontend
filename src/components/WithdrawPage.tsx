@@ -3,6 +3,7 @@ import "./WithdrawPage.scss"
 import {
   Box,
   FormControlLabel,
+  Paper,
   Radio,
   RadioGroup,
   Stack,
@@ -106,99 +107,103 @@ const WithdrawPage = (props: Props): ReactElement => {
             alignItems="center"
             marginX="auto"
           >
-            <div className="form">
-              <h3>{t("withdraw")}</h3>
-              <Box display="flex">
-                <Box>
-                  <Typography variant="body1" noWrap>{`${t(
-                    "withdrawPercentage",
-                  )} (%):`}</Typography>
-                </Box>
-                <TextField
-                  placeholder="0"
-                  size="small"
-                  data-testid="withdrawPercentageInput"
-                  onChange={(e): void =>
-                    onFormChange({
-                      fieldName: "percentage",
-                      value: e.currentTarget.value,
-                    })
-                  }
-                  value={
-                    formStateData.percentage ? formStateData.percentage : ""
-                  }
-                />
-              </Box>
-              <Box textAlign="end" width="100%" minHeight="24px">
-                <Typography color="error">
-                  {formStateData.error?.message || ""}
+            <Paper>
+              <Box p={4}>
+                <Typography variant="h1" marginBottom={3}>
+                  {t("withdraw")}
                 </Typography>
-              </Box>
-              <RadioGroup
-                row
-                value={formStateData.withdrawType}
-                onChange={handleWithdrawChange}
-                sx={{ mb: 2 }}
-              >
-                <FormControlLabel
-                  value="ALL"
-                  control={<Radio />}
-                  label="Combo"
-                  data-testid="withdrawPercentageCombo"
-                />
-                {tokensData.map((t) => {
-                  return (
-                    <FormControlLabel
-                      key={t.symbol}
-                      control={<Radio />}
-                      value={t.symbol}
-                      disabled={poolData?.isPaused}
-                      label={t.name}
-                      data-testid="withdrawTokenRadio"
-                    />
-                  )
-                })}
-              </RadioGroup>
-              <Stack spacing={3}>
-                {tokensData.map((token, index) => (
-                  <div key={index}>
-                    <TokenInput
-                      {...token}
-                      // inputValue={parseFloat(token.inputValue).toFixed(5)}
-                      onChange={(value): void =>
-                        onFormChange({
-                          fieldName: "tokenInputs",
-                          value: value,
-                          tokenSymbol: token.symbol,
-                        })
-                      }
-                      disabled={poolData?.isPaused}
-                    />
-                  </div>
-                ))}
-              </Stack>
-              <Box mt={3}>
-                {reviewData.priceImpact.gte(0) ? (
-                  <Typography component="span" color="primary">
-                    {t("bonus")}:{" "}
+                <Box display="flex">
+                  <Box>
+                    <Typography variant="body1" noWrap>{`${t(
+                      "withdrawPercentage",
+                    )} (%):`}</Typography>
+                  </Box>
+                  <TextField
+                    placeholder="0"
+                    size="small"
+                    data-testid="withdrawPercentageInput"
+                    onChange={(e): void =>
+                      onFormChange({
+                        fieldName: "percentage",
+                        value: e.currentTarget.value,
+                      })
+                    }
+                    value={
+                      formStateData.percentage ? formStateData.percentage : ""
+                    }
+                  />
+                </Box>
+                <Box textAlign="end" width="100%" minHeight="24px">
+                  <Typography color="error">
+                    {formStateData.error?.message || ""}
                   </Typography>
-                ) : (
+                </Box>
+                <RadioGroup
+                  row
+                  value={formStateData.withdrawType}
+                  onChange={handleWithdrawChange}
+                  sx={{ mb: 2 }}
+                >
+                  <FormControlLabel
+                    value="ALL"
+                    control={<Radio />}
+                    label="Combo"
+                    data-testid="withdrawPercentageCombo"
+                  />
+                  {tokensData.map((t) => {
+                    return (
+                      <FormControlLabel
+                        key={t.symbol}
+                        control={<Radio />}
+                        value={t.symbol}
+                        disabled={poolData?.isPaused}
+                        label={t.name}
+                        data-testid="withdrawTokenRadio"
+                      />
+                    )
+                  })}
+                </RadioGroup>
+                <Stack spacing={3}>
+                  {tokensData.map((token, index) => (
+                    <div key={index}>
+                      <TokenInput
+                        {...token}
+                        // inputValue={parseFloat(token.inputValue).toFixed(5)}
+                        onChange={(value): void =>
+                          onFormChange({
+                            fieldName: "tokenInputs",
+                            value: value,
+                            tokenSymbol: token.symbol,
+                          })
+                        }
+                        disabled={poolData?.isPaused}
+                      />
+                    </div>
+                  ))}
+                </Stack>
+                <Box mt={3}>
+                  {reviewData.priceImpact.gte(0) ? (
+                    <Typography component="span" color="primary">
+                      {t("bonus")}:{" "}
+                    </Typography>
+                  ) : (
+                    <Typography
+                      component="span"
+                      color="error"
+                      whiteSpace="nowrap"
+                    >
+                      {t("priceImpact")}
+                    </Typography>
+                  )}
                   <Typography
                     component="span"
-                    color="error"
-                    whiteSpace="nowrap"
+                    color={reviewData.priceImpact.gte(0) ? "primary" : "error"}
                   >
-                    {t("priceImpact")}
+                    {formatBNToPercentString(reviewData.priceImpact, 18, 4)}
                   </Typography>
-                )}
-                <Typography
-                  component="span"
-                  color={reviewData.priceImpact.gte(0) ? "primary" : "error"}
-                >
-                  {formatBNToPercentString(reviewData.priceImpact, 18, 4)}
-                </Typography>
+                </Box>
               </Box>
-            </div>
+            </Paper>
             <Box px={[3, 3, 0]} width="100%">
               <AdvancedOptions />
             </Box>

@@ -1,5 +1,4 @@
-import "./MyShareCard.scss"
-
+import { Box, Stack, Typography } from "@mui/material"
 import { POOLS_MAP, PoolTypes, TOKENS_MAP } from "../constants"
 import { Partners, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement } from "react"
@@ -51,46 +50,48 @@ function MyShareCard({ data }: Props): ReactElement | null {
   }
 
   return (
-    <div className="myShareCard">
-      <h4>{t("myShare")}</h4>
-      <div className="info">
-        <div className="poolShare">
-          <span>
+    <Box>
+      <Typography variant="h1" mb={3}>
+        {t("myShare")}
+      </Typography>
+      <div>
+        <div>
+          <Typography component="span">
             {formattedData.share} {t("ofPool")}
-          </span>
+          </Typography>
         </div>
-        <div className="infoItem">
-          <span className="label bold">{`${t("usdBalance")}: `}</span>
-          <span className="value">{`$${formattedData.usdBalance}`}</span>
-        </div>
-        <div className="infoItem">
-          <span className="label bold">{`${t("totalAmount")}: `}</span>
-          <span className="value">{formattedData.amount}</span>
-          {Object.keys(data.amountsStaked).map((key) => {
-            return data.amountsStaked[key as Partners]?.gt(Zero) ? (
-              <span className="value">
-                &nbsp;
-                <a
-                  href={stakingUrls[key as Partners]}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  ({formattedData.amountsStaked[key as Partners]} {t("staked")})
-                </a>
-              </span>
-            ) : null
-          })}
-        </div>
+        <Box display="flex">
+          <Typography component="span">{`${t("usdBalance")}: `}</Typography>
+          <Typography component="span">{`$${formattedData.usdBalance}`}</Typography>
+        </Box>
+        <Box display="flex">
+          <Typography component="span">{`${t("totalAmount")}: `}</Typography>
+          <Typography component="span">{formattedData.amount}</Typography>
+        </Box>
+        {Object.keys(data.amountsStaked).map((key) => {
+          return data.amountsStaked[key as Partners]?.gt(Zero) ? (
+            <Typography component="span">
+              &nbsp;
+              <a
+                href={stakingUrls[key as Partners]}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                ({formattedData.amountsStaked[key as Partners]} {t("staked")})
+              </a>
+            </Typography>
+          ) : null
+        })}
       </div>
-      <div className="currency">
+      <Stack direction="row" spacing={4}>
         {formattedData.tokens.map((coin) => (
           <div key={coin.symbol}>
-            <span className="tokenName">{coin.symbol}</span>
-            <span className="tokenValue">{coin.value}</span>
+            <Typography variant="subtitle1">{coin.symbol}</Typography>
+            <Typography>{coin.value}</Typography>
           </div>
         ))}
-      </div>
-    </div>
+      </Stack>
+    </Box>
   )
 }
 

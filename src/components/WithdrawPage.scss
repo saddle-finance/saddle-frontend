@@ -47,31 +47,21 @@
       }
     }
 
-    .form {
-      width: 434px;
-      border: 1px solid var(--outline);
-      background: var(--background-element);
-      border-radius: 10px;
-      padding: 24px;
-      margin-top: 40px;
-      box-sizing: border-box;
-      @include breakpoint(lg) {
-        margin: 40px auto 0;
-      }
-      @include breakpoint(md) {
-        max-width: 90%;
-      }
-    }
-
-    .form h3 {
-      font-family: $font-family-title;
-      font-size: 30px;
-      margin-top: 0;
-      margin-bottom: 48px;
-      font-weight: $bold;
-      color: var(--text-darker);
-      text-align: center;
-    }
+    // .form {
+    //   width: 434px;
+    //   border: 1px solid var(--outline);
+    //   background: var(--background-element);
+    //   border-radius: 10px;
+    //   padding: 24px;
+    //   margin-top: 40px;
+    //   box-sizing: border-box;
+    //   @include breakpoint(lg) {
+    //     margin: 40px auto 0;
+    //   }
+    //   @include breakpoint(md) {
+    //     max-width: 90%;
+    //   }
+    // }
 
     .infoPanels .divider {
       width: 100%;

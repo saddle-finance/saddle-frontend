@@ -1,12 +1,9 @@
-import "./MyFarm.scss"
-
+import { Box, Button, Paper, Stack, Typography } from "@mui/material"
 import { ChainId, IS_SDL_LIVE, PoolName } from "../constants"
 import React, { ReactElement } from "react"
 import { commify, formatBNToString } from "../utils"
 
 import { BigNumber } from "@ethersproject/bignumber"
-import { Box } from "@mui/material"
-import Button from "./Button"
 import { Zero } from "@ethersproject/constants"
 import { useActiveWeb3React } from "../hooks"
 import { useRewardsHelpers } from "../hooks/useRewardsHelpers"
@@ -40,55 +37,69 @@ export default function MyFarm({
     formatBNToString(amountOfSpaClaimable, 18, 4),
   )
   return isPoolIncentivized && IS_SDL_LIVE ? (
-    <div className="myFarm">
-      <h4>{t("myFarm")}</h4>
-      <div className="item" style={{ marginBottom: 16 }}>
-        <div>
-          <p>{t("lpAvailable")}</p>
-          <p className="bold">{formattedLpWalletBalance}</p>
-        </div>
-        <Box>
-          <Button
-            kind="outline"
-            disabled={lpWalletBalance.isZero()}
-            onClick={() => approveAndStake(lpWalletBalance)}
-          >
-            {t("stakeAll")}
-          </Button>
-        </Box>
-      </div>
-      <div className="item">
-        <div>
-          <p>{t("lpStaked")}</p>
-          <p className="bold">{formattedLpStakedBalance}</p>
-        </div>
-        <Box>
-          <Button
-            kind="outline"
-            disabled={amountStaked.isZero()}
-            onClick={() => unstake(amountStaked)}
-          >
-            {t("unstakeAll")}
-          </Button>
-        </Box>
-      </div>
-      {chainId === ChainId.ARBITRUM && amountOfSpaClaimable.gt(Zero) && (
-        <Box className="item" sx={{ mt: 2 }}>
-          <Box>
-            <p>{t("claimableSPA")}</p>
-            <p className="bold">{formattedSpaClaimableBalance}</p>
+    <Paper>
+      <Stack spacing={2} p={4}>
+        <Typography variant="h1">{t("myFarm")}</Typography>
+        <Box display="flex" alignItems="center">
+          <Box flex={1}>
+            <Typography>{t("lpAvailable")}</Typography>
+            <Typography variant="subtitle1">
+              {formattedLpWalletBalance}
+            </Typography>
           </Box>
-          <Box>
+          <Box flex={1}>
             <Button
-              kind="outline"
-              disabled={amountOfSpaClaimable.isZero()}
-              onClick={() => claimSPA()}
+              variant="outlined"
+              size="large"
+              fullWidth
+              disabled={lpWalletBalance.isZero()}
+              onClick={() => approveAndStake(lpWalletBalance)}
             >
-              {t("claimAll")}
+              {t("stakeAll")}
             </Button>
           </Box>
         </Box>
-      )}
-    </div>
+        <Box display="flex" alignItems="center">
+          <Box flex={1}>
+            <Typography>{t("lpStaked")}</Typography>
+            <Typography variant="subtitle1">
+              {formattedLpStakedBalance}
+            </Typography>
+          </Box>
+          <Box flex={1}>
+            <Button
+              variant="outlined"
+              size="large"
+              fullWidth
+              disabled={amountStaked.isZero()}
+              onClick={() => unstake(amountStaked)}
+            >
+              {t("unstakeAll")}
+            </Button>
+          </Box>
+        </Box>
+        {chainId === ChainId.ARBITRUM && amountOfSpaClaimable.gt(Zero) && (
+          <Box display="flex" alignItems="center">
+            <Box flex={1}>
+              <Typography>{t("claimableSPA")}</Typography>
+              <Typography variant="subtitle1">
+                {formattedSpaClaimableBalance}
+              </Typography>
+            </Box>
+            <Box flex={1}>
+              <Button
+                variant="outlined"
+                size="large"
+                fullWidth
+                disabled={amountOfSpaClaimable.isZero()}
+                onClick={() => claimSPA()}
+              >
+                {t("claimAll")}
+              </Button>
+            </Box>
+          </Box>
+        )}
+      </Stack>
+    </Paper>
   ) : null
 }
