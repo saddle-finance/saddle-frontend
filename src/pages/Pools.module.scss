@@ -11,6 +11,9 @@ div.poolsPage {
     width: max-content;
     margin: 24px auto;
     display: flex;
+    @include breakpoint(sm) {
+      padding-left: 0px;
+    }
   }
 
   .filterTab {
