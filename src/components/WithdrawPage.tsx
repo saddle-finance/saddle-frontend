@@ -1,6 +1,6 @@
 import "./WithdrawPage.scss"
 
-import { Box, Stack } from "@mui/material"
+import { Box, Stack, Typography } from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 
@@ -116,7 +116,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                   <div className="error">{formStateData.error.message}</div>
                 )}
               </div>
-              <div className="horizontalDisplay">
+              <Stack direction="row" alignItems="center" spacing={1}>
                 <RadioButton
                   checked={formStateData.withdrawType === "ALL"}
                   onChange={(): void =>
@@ -143,47 +143,46 @@ const WithdrawPage = (props: Props): ReactElement => {
                     />
                   )
                 })}
-              </div>
-              {tokensData.map((token, index) => (
-                <div key={index}>
-                  <TokenInput
-                    {...token}
-                    // inputValue={parseFloat(token.inputValue).toFixed(5)}
-                    onChange={(value): void =>
-                      onFormChange({
-                        fieldName: "tokenInputs",
-                        value: value,
-                        tokenSymbol: token.symbol,
-                      })
-                    }
-                    disabled={poolData?.isPaused}
-                  />
-                  {index === tokensData.length - 1 ? (
-                    ""
-                  ) : (
-                    <div className="formSpace"></div>
-                  )}
-                </div>
-              ))}
-              <div className={"transactionInfoContainer"}>
-                <div className="transactionInfo">
-                  <div className="transactionInfoItem">
-                    {reviewData.priceImpact.gte(0) ? (
-                      <span className="bonus">{t("bonus")}: </span>
-                    ) : (
-                      <span className="slippage">{t("priceImpact")}</span>
-                    )}
-                    <span
-                      className={
-                        "value " +
-                        (reviewData.priceImpact.gte(0) ? "bonus" : "slippage")
+              </Stack>
+              <Stack spacing={3}>
+                {tokensData.map((token, index) => (
+                  <div key={index}>
+                    <TokenInput
+                      {...token}
+                      // inputValue={parseFloat(token.inputValue).toFixed(5)}
+                      onChange={(value): void =>
+                        onFormChange({
+                          fieldName: "tokenInputs",
+                          value: value,
+                          tokenSymbol: token.symbol,
+                        })
                       }
-                    >
-                      {formatBNToPercentString(reviewData.priceImpact, 18, 4)}
-                    </span>
+                      disabled={poolData?.isPaused}
+                    />
                   </div>
-                </div>
-              </div>
+                ))}
+              </Stack>
+              <Box mt={3}>
+                {reviewData.priceImpact.gte(0) ? (
+                  <Typography component="span" color="primary">
+                    {t("bonus")}:{" "}
+                  </Typography>
+                ) : (
+                  <Typography
+                    component="span"
+                    color="error"
+                    whiteSpace="nowrap"
+                  >
+                    {t("priceImpact")}
+                  </Typography>
+                )}
+                <Typography
+                  component="span"
+                  color={reviewData.priceImpact.gte(0) ? "primary" : "error"}
+                >
+                  {formatBNToPercentString(reviewData.priceImpact, 18, 4)}
+                </Typography>
+              </Box>
             </div>
             <Box px={[3, 3, 0]} width="100%">
               <AdvancedOptions />
