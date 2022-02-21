@@ -1,6 +1,14 @@
 import "./WithdrawPage.scss"
 
-import { Box, Stack, Typography } from "@mui/material"
+import {
+  Box,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 
@@ -13,7 +21,6 @@ import Modal from "./Modal"
 import MyFarm from "./MyFarm"
 import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
-import RadioButton from "./RadioButton"
 import ReviewWithdraw from "./ReviewWithdraw"
 import TokenInput from "./TokenInput"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
@@ -79,6 +86,12 @@ const WithdrawPage = (props: Props): ReactElement => {
   const onSubmit = (): void => {
     setCurrentModal("review")
   }
+  const handleWithdrawChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onFormChange({
+      fieldName: "withdrawType",
+      value: event.target.value,
+    })
+  }
   const noShare = !myShareData || myShareData.lpTokenBalance.eq(Zero)
 
   return (
@@ -95,55 +108,57 @@ const WithdrawPage = (props: Props): ReactElement => {
           >
             <div className="form">
               <h3>{t("withdraw")}</h3>
-              <div className="percentage">
-                <span>{`${t("withdrawPercentage")} (%):`}</span>
-                <input
+              <Box display="flex">
+                <Box>
+                  <Typography variant="body1" noWrap>{`${t(
+                    "withdrawPercentage",
+                  )} (%):`}</Typography>
+                </Box>
+                <TextField
                   placeholder="0"
-                  onChange={(e: React.FormEvent<HTMLInputElement>): void =>
+                  size="small"
+                  data-testid="withdrawPercentageInput"
+                  onChange={(e): void =>
                     onFormChange({
                       fieldName: "percentage",
                       value: e.currentTarget.value,
                     })
                   }
-                  onFocus={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                    e.target.select()
-                  }
                   value={
                     formStateData.percentage ? formStateData.percentage : ""
                   }
                 />
-                {formStateData.error && (
-                  <div className="error">{formStateData.error.message}</div>
-                )}
-              </div>
-              <Stack direction="row" alignItems="center" spacing={1}>
-                <RadioButton
-                  checked={formStateData.withdrawType === "ALL"}
-                  onChange={(): void =>
-                    onFormChange({
-                      fieldName: "withdrawType",
-                      value: "ALL",
-                    })
-                  }
+              </Box>
+              <Box textAlign="end" width="100%" minHeight="24px">
+                <Typography color="error">
+                  {formStateData.error?.message || ""}
+                </Typography>
+              </Box>
+              <RadioGroup
+                row
+                value={formStateData.withdrawType}
+                onChange={handleWithdrawChange}
+                sx={{ mb: 2 }}
+              >
+                <FormControlLabel
+                  value="ALL"
+                  control={<Radio />}
                   label="Combo"
+                  data-testid="withdrawPercentageCombo"
                 />
                 {tokensData.map((t) => {
                   return (
-                    <RadioButton
+                    <FormControlLabel
                       key={t.symbol}
-                      checked={formStateData.withdrawType === t.symbol}
-                      onChange={(): void =>
-                        onFormChange({
-                          fieldName: "withdrawType",
-                          value: t.symbol,
-                        })
-                      }
+                      control={<Radio />}
+                      value={t.symbol}
                       disabled={poolData?.isPaused}
                       label={t.name}
+                      data-testid="withdrawTokenRadio"
                     />
                   )
                 })}
-              </Stack>
+              </RadioGroup>
               <Stack spacing={3}>
                 {tokensData.map((token, index) => (
                   <div key={index}>
@@ -188,6 +203,7 @@ const WithdrawPage = (props: Props): ReactElement => {
               <AdvancedOptions />
             </Box>
             <Button
+              data-testid="withdrawBtn"
               disabled={
                 noShare ||
                 !!formStateData.error ||
