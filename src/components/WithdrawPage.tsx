@@ -1,7 +1,8 @@
-import "./WithdrawPage.scss"
-
 import {
   Box,
+  Button,
+  Container,
+  Divider,
   FormControlLabel,
   Paper,
   Radio,
@@ -9,6 +10,7 @@ import {
   Stack,
   TextField,
   Typography,
+  useTheme,
 } from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
@@ -16,7 +18,6 @@ import React, { ReactElement, useState } from "react"
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
-import Button from "./Button"
 import ConfirmTransaction from "./ConfirmTransaction"
 import Modal from "./Modal"
 import MyFarm from "./MyFarm"
@@ -83,6 +84,8 @@ const WithdrawPage = (props: Props): ReactElement => {
 
   const { gasPriceSelected } = useSelector((state: AppState) => state.user)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
+  const theme = useTheme()
+  theme
 
   const onSubmit = (): void => {
     setCurrentModal("review")
@@ -96,174 +99,169 @@ const WithdrawPage = (props: Props): ReactElement => {
   const noShare = !myShareData || myShareData.lpTokenBalance.eq(Zero)
 
   return (
-    <div className="withdraw">
-      <div className="content">
-        <div className="left">
-          <Stack
-            direction="column"
-            width="434px"
-            justifyContent="center"
-            spacing={4}
-            alignItems="center"
-            marginX="auto"
-          >
-            <Paper>
-              <Box p={4}>
-                <Typography variant="h1" marginBottom={3}>
-                  {t("withdraw")}
+    <Container maxWidth="lg" sx={{ marginTop: 5 }}>
+      <Stack
+        direction={{ xs: "column", lg: "row" }}
+        spacing={4}
+        alignItems={{ xs: "center", lg: "flex-start" }}
+      >
+        <Box
+          flex={1}
+          justifyContent="center"
+          alignItems="center"
+          marginX="auto"
+        >
+          <Paper>
+            <Box p={4}>
+              <Typography variant="h1" marginBottom={3}>
+                {t("withdraw")}
+              </Typography>
+              <Box display="flex">
+                <Box>
+                  <Typography variant="body1" noWrap>{`${t(
+                    "withdrawPercentage",
+                  )} (%):`}</Typography>
+                </Box>
+                <TextField
+                  placeholder="0"
+                  size="small"
+                  data-testid="withdrawPercentageInput"
+                  onChange={(e): void =>
+                    onFormChange({
+                      fieldName: "percentage",
+                      value: e.currentTarget.value,
+                    })
+                  }
+                  value={
+                    formStateData.percentage ? formStateData.percentage : ""
+                  }
+                />
+              </Box>
+              <Box textAlign="end" width="100%" minHeight="24px">
+                <Typography color="error">
+                  {formStateData.error?.message || ""}
                 </Typography>
-                <Box display="flex">
-                  <Box>
-                    <Typography variant="body1" noWrap>{`${t(
-                      "withdrawPercentage",
-                    )} (%):`}</Typography>
-                  </Box>
-                  <TextField
-                    placeholder="0"
-                    size="small"
-                    data-testid="withdrawPercentageInput"
-                    onChange={(e): void =>
-                      onFormChange({
-                        fieldName: "percentage",
-                        value: e.currentTarget.value,
-                      })
-                    }
-                    value={
-                      formStateData.percentage ? formStateData.percentage : ""
-                    }
-                  />
-                </Box>
-                <Box textAlign="end" width="100%" minHeight="24px">
-                  <Typography color="error">
-                    {formStateData.error?.message || ""}
+              </Box>
+              <RadioGroup
+                row
+                value={formStateData.withdrawType}
+                onChange={handleWithdrawChange}
+                sx={{ mb: 2 }}
+              >
+                <FormControlLabel
+                  value="ALL"
+                  control={<Radio />}
+                  label="Combo"
+                  data-testid="withdrawPercentageCombo"
+                />
+                {tokensData.map((t) => {
+                  return (
+                    <FormControlLabel
+                      key={t.symbol}
+                      control={<Radio />}
+                      value={t.symbol}
+                      disabled={poolData?.isPaused}
+                      label={t.name}
+                      data-testid="withdrawTokenRadio"
+                    />
+                  )
+                })}
+              </RadioGroup>
+              <Stack spacing={3}>
+                {tokensData.map((token, index) => (
+                  <div key={index}>
+                    <TokenInput
+                      {...token}
+                      // inputValue={parseFloat(token.inputValue).toFixed(5)}
+                      onChange={(value): void =>
+                        onFormChange({
+                          fieldName: "tokenInputs",
+                          value: value,
+                          tokenSymbol: token.symbol,
+                        })
+                      }
+                      disabled={poolData?.isPaused}
+                    />
+                  </div>
+                ))}
+              </Stack>
+              <Box mt={3}>
+                {reviewData.priceImpact.gte(0) ? (
+                  <Typography component="span" color="primary">
+                    {t("bonus")}:{" "}
                   </Typography>
-                </Box>
-                <RadioGroup
-                  row
-                  value={formStateData.withdrawType}
-                  onChange={handleWithdrawChange}
-                  sx={{ mb: 2 }}
-                >
-                  <FormControlLabel
-                    value="ALL"
-                    control={<Radio />}
-                    label="Combo"
-                    data-testid="withdrawPercentageCombo"
-                  />
-                  {tokensData.map((t) => {
-                    return (
-                      <FormControlLabel
-                        key={t.symbol}
-                        control={<Radio />}
-                        value={t.symbol}
-                        disabled={poolData?.isPaused}
-                        label={t.name}
-                        data-testid="withdrawTokenRadio"
-                      />
-                    )
-                  })}
-                </RadioGroup>
-                <Stack spacing={3}>
-                  {tokensData.map((token, index) => (
-                    <div key={index}>
-                      <TokenInput
-                        {...token}
-                        // inputValue={parseFloat(token.inputValue).toFixed(5)}
-                        onChange={(value): void =>
-                          onFormChange({
-                            fieldName: "tokenInputs",
-                            value: value,
-                            tokenSymbol: token.symbol,
-                          })
-                        }
-                        disabled={poolData?.isPaused}
-                      />
-                    </div>
-                  ))}
-                </Stack>
-                <Box mt={3}>
-                  {reviewData.priceImpact.gte(0) ? (
-                    <Typography component="span" color="primary">
-                      {t("bonus")}:{" "}
-                    </Typography>
-                  ) : (
-                    <Typography
-                      component="span"
-                      color="error"
-                      whiteSpace="nowrap"
-                    >
-                      {t("priceImpact")}
-                    </Typography>
-                  )}
+                ) : (
                   <Typography
                     component="span"
-                    color={reviewData.priceImpact.gte(0) ? "primary" : "error"}
+                    color="error"
+                    whiteSpace="nowrap"
                   >
-                    {formatBNToPercentString(reviewData.priceImpact, 18, 4)}
+                    {t("priceImpact")}
                   </Typography>
-                </Box>
+                )}
+                <Typography
+                  component="span"
+                  color={reviewData.priceImpact.gte(0) ? "primary" : "error"}
+                >
+                  {formatBNToPercentString(reviewData.priceImpact, 18, 4)}
+                </Typography>
               </Box>
-            </Paper>
-            <Box px={[3, 3, 0]} width="100%">
-              <AdvancedOptions />
             </Box>
-            <Button
-              data-testid="withdrawBtn"
-              disabled={
-                noShare ||
-                !!formStateData.error ||
-                formStateData.lpTokenAmountToSpend.isZero()
-              }
-              onClick={onSubmit}
-            >
-              {t("withdraw")}
-            </Button>
-          </Stack>
-        </div>
-
-        <div>
+          </Paper>
+          <AdvancedOptions />
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            data-testid="withdrawBtn"
+            disabled={
+              noShare ||
+              !!formStateData.error ||
+              formStateData.lpTokenAmountToSpend.isZero()
+            }
+            onClick={onSubmit}
+            sx={{ mt: 4 }}
+          >
+            {t("withdraw")}
+          </Button>
+        </Box>
+        <Stack direction="column" flex={1} spacing={4}>
           {poolData && (
             <MyFarm
               lpWalletBalance={myShareData?.lpTokenBalance || Zero}
               poolName={poolData.name}
             />
           )}
-          <div className="infoPanels">
-            <MyShareCard data={myShareData} />
-            <div
-              style={{
-                display: myShareData ? "block" : "none",
-              }}
-              className="divider"
-            ></div>{" "}
-            <PoolInfoCard data={poolData} />
-          </div>
-        </div>
+          <Paper>
+            <Box p={4}>
+              <MyShareCard data={myShareData} />
+              {myShareData && <Divider />}
+              <PoolInfoCard data={poolData} />
+            </Box>
+          </Paper>
+        </Stack>
+      </Stack>
 
-        <Modal
-          isOpen={!!currentModal}
-          onClose={(): void => setCurrentModal(null)}
-        >
-          {currentModal === "review" ? (
-            <ReviewWithdraw
-              data={reviewData}
-              gas={gasPriceSelected}
-              onConfirm={async (): Promise<void> => {
-                setCurrentModal("confirm")
-                logEvent(
-                  "withdraw",
-                  (poolData && { pool: poolData?.name }) || {},
-                )
-                await onConfirmTransaction?.()
-                setCurrentModal(null)
-              }}
-              onClose={(): void => setCurrentModal(null)}
-            />
-          ) : null}
-          {currentModal === "confirm" ? <ConfirmTransaction /> : null}
-        </Modal>
-      </div>
-    </div>
+      <Modal
+        isOpen={!!currentModal}
+        onClose={(): void => setCurrentModal(null)}
+      >
+        {currentModal === "review" ? (
+          <ReviewWithdraw
+            data={reviewData}
+            gas={gasPriceSelected}
+            onConfirm={async (): Promise<void> => {
+              setCurrentModal("confirm")
+              logEvent("withdraw", (poolData && { pool: poolData?.name }) || {})
+              await onConfirmTransaction?.()
+              setCurrentModal(null)
+            }}
+            onClose={(): void => setCurrentModal(null)}
+          />
+        ) : null}
+        {currentModal === "confirm" ? <ConfirmTransaction /> : null}
+      </Modal>
+    </Container>
   )
 }
 

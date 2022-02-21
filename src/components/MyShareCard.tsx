@@ -50,7 +50,7 @@ function MyShareCard({ data }: Props): ReactElement | null {
   }
 
   return (
-    <Box>
+    <Box mb={3}>
       <Typography variant="h1" mb={3}>
         {t("myShare")}
       </Typography>
