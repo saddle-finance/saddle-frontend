@@ -10,9 +10,10 @@ div.poolsPage {
   .filters {
     width: max-content;
     margin: 24px auto;
-    display: grid;
-    grid-template-columns: auto auto auto auto auto;
-    column-gap: 16px;
+    display: flex;
+    @include breakpoint(sm) {
+      padding-left: 0px;
+    }
   }
 
   .filterTab {

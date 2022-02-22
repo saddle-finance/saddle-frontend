@@ -3,7 +3,12 @@ import React, { ReactElement } from "react"
 
 function Version(): ReactElement | null {
   return (
-    <Box position="fixed" bottom={24} left={56}>
+    <Box
+      position={{ lg: "fixed" }}
+      display={{ xs: "none", lg: "block" }}
+      bottom={24}
+      left={56}
+    >
       <Typography variant="body2">
         VERSION {process.env.REACT_APP_GIT_SHA}
       </Typography>

@@ -39,13 +39,11 @@ const Web3Status = (): ReactElement => {
         data-testid="accountDetailButton"
         endIcon={account && <Identicon />}
       >
-        {account ? (
-          <Typography variant="body1">
-            {udName || ensName || shortenAddress(account)}
-          </Typography>
-        ) : (
-          t("connectWallet")
-        )}
+        <Typography variant="body1" whiteSpace="nowrap">
+          {account
+            ? udName || ensName || shortenAddress(account)
+            : t("connectWallet")}
+        </Typography>
       </Button>
       <Dialog
         open={modalOpen}

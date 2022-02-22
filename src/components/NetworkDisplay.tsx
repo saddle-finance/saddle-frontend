@@ -32,7 +32,12 @@ const NetworkDisplay = React.forwardRef<HTMLButtonElement, NetworkDisplayProps>(
           }
           sx={{ border: `1px solid ${theme.palette.action.hover}` }}
         >
-          <Typography variant="body1" color="text.primary" noWrap>
+          <Typography
+            display={{ xs: "none", sm: "block" }}
+            variant="body1"
+            color="text.primary"
+            noWrap
+          >
             {networkLabel}
           </Typography>
         </Button>
