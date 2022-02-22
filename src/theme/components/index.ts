@@ -12,6 +12,7 @@ import ListItemIconTheme from "./ListItemIconTheme"
 import MenuItemTheme from "./MenuItemTheme"
 import MenuTheme from "./MenuTheme"
 import PaperTheme from "./PaperTheme"
+import RadioButtonTheme from "./RadioButtonTheme"
 import TextFieldTheme from "./TextFieldTheme"
 import ToggleButtonTheme from "./ToggleButtonTheme"
 import TooltipTheme from "./TooltipTheme"
@@ -34,6 +35,7 @@ export default function componentsOverrides(theme: Theme): Components {
     CssBaseLine(),
     ListItemButtonTheme(theme),
     ListItemIconTheme(theme),
+    RadioButtonTheme(),
     TextFieldTheme(),
   ) as Components
 }
