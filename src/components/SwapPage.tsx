@@ -101,6 +101,8 @@ const SwapPage = (props: Props): ReactElement => {
     (slippageSelected === Slippages.Custom &&
       parseFloat(slippageCustom?.valueRaw || "0") < 0.5)
 
+  console.log("test")
+
   return (
     <Container>
       <div className="swapPage">
