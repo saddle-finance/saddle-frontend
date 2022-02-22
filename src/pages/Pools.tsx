@@ -26,6 +26,7 @@ import React, { ReactElement, useEffect, useState } from "react"
 
 import { BigNumber } from "ethers"
 import ConfirmTransaction from "../components/ConfirmTransaction"
+import { Container } from "@mui/material"
 import Modal from "../components/Modal"
 import PoolOverview from "../components/PoolOverview"
 import ReviewMigration from "../components/ReviewMigration"
@@ -234,127 +235,129 @@ function Pools(): ReactElement | null {
     }
   }
   return (
-    <div className={styles.poolsPage}>
-      <ul className={styles.filters}>
-        {[
-          ["all", "ALL"] as const,
-          [PoolTypes.BTC, "BTC"] as const,
-          [PoolTypes.ETH, "ETH"] as const,
-          [PoolTypes.USD, "USD"] as const,
-          ["outdated", "OUTDATED"] as const,
-        ].map(([filterKey, text]) => (
-          <li
-            key={filterKey}
-            className={classNames(styles.filterTab, {
-              [styles.selected]: filter === filterKey,
-              [styles.outdated]: filterKey === "outdated",
-            })}
-            onClick={(): void => setFilter(filterKey)}
-          >
-            {text}
-          </li>
-        ))}
-      </ul>
-      <div className={styles.content}>
-        {Object.values(POOLS_MAP)
-          .filter(({ addresses }) => (chainId ? addresses[chainId] : false))
-          .map(
-            ({ name, type, isOutdated }) =>
-              [getPropsForPool(name), isOutdated, type] as const,
-          )
-          .filter(
-            ([poolProps, isOutdated, type]) =>
-              filter === "all" ||
-              type === filter ||
-              (filter === "outdated" &&
-                (isOutdated || poolProps.poolData.isMigrated)),
-          )
-          .sort(([a, aIsOutdated], [b, bIsOutdated]) => {
-            // 1. user pools
-            // 2. active pools
-            // 3. higher TVL pools
-            if (
-              (a.userShareData?.usdBalance || Zero).gt(Zero) ||
-              (b.userShareData?.usdBalance || Zero).gt(Zero)
-            ) {
-              return (a.userShareData?.usdBalance || Zero).gt(
-                b.userShareData?.usdBalance || Zero,
-              )
-                ? -1
-                : 1
-            } else if (
-              a.poolData.isMigrated ||
-              b.poolData.isMigrated ||
-              aIsOutdated ||
-              bIsOutdated
-            ) {
-              return a.poolData.isMigrated || aIsOutdated ? 1 : -1
-            } else {
-              return (a.poolData?.reserve || Zero).gt(
-                b.poolData?.reserve || Zero,
-              )
-                ? -1
-                : 1
-            }
-          })
-          .map(([poolProps]) => (
-            <PoolOverview
-              key={poolProps.name}
-              {...poolProps}
-              onClickMigrate={
-                poolProps.poolData.isMigrated
-                  ? () =>
-                      handleClickMigrate(
-                        POOLS_MAP[poolProps.poolData.name].name,
-                        poolProps.userShareData?.lpTokenBalance ?? Zero,
-                        POOLS_MAP[poolProps.poolData.name].lpToken.symbol,
-                      )
-                  : undefined
-              }
-            />
+    <Container>
+      <div className={styles.poolsPage}>
+        <ul className={styles.filters}>
+          {[
+            ["all", "ALL"] as const,
+            [PoolTypes.BTC, "BTC"] as const,
+            [PoolTypes.ETH, "ETH"] as const,
+            [PoolTypes.USD, "USD"] as const,
+            ["outdated", "OUTDATED"] as const,
+          ].map(([filterKey, text]) => (
+            <li
+              key={filterKey}
+              className={classNames(styles.filterTab, {
+                [styles.selected]: filter === filterKey,
+                [styles.outdated]: filterKey === "outdated",
+              })}
+              onClick={(): void => setFilter(filterKey)}
+            >
+              {text}
+            </li>
           ))}
-      </div>
-      <Modal
-        isOpen={!!currentModal}
-        onClose={(): void => setCurrentModal(null)}
-      >
-        {currentModal === "migrate" ? (
-          <ReviewMigration
-            onClose={(): void => {
-              setCurrentModal(null)
-              setActiveMigration({
-                poolName: null,
-                lpTokenBalance: Zero,
-                lpTokenName: "",
-              })
-            }}
-            onConfirm={async (): Promise<void> => {
-              setCurrentModal("confirm")
-              logEvent("migrate", {
-                pool: activeMigration.poolName,
-              })
-              try {
-                await approveAndMigrate(
-                  activeMigration.poolName,
-                  activeMigration.lpTokenBalance,
+        </ul>
+        <div className={styles.content}>
+          {Object.values(POOLS_MAP)
+            .filter(({ addresses }) => (chainId ? addresses[chainId] : false))
+            .map(
+              ({ name, type, isOutdated }) =>
+                [getPropsForPool(name), isOutdated, type] as const,
+            )
+            .filter(
+              ([poolProps, isOutdated, type]) =>
+                filter === "all" ||
+                type === filter ||
+                (filter === "outdated" &&
+                  (isOutdated || poolProps.poolData.isMigrated)),
+            )
+            .sort(([a, aIsOutdated], [b, bIsOutdated]) => {
+              // 1. user pools
+              // 2. active pools
+              // 3. higher TVL pools
+              if (
+                (a.userShareData?.usdBalance || Zero).gt(Zero) ||
+                (b.userShareData?.usdBalance || Zero).gt(Zero)
+              ) {
+                return (a.userShareData?.usdBalance || Zero).gt(
+                  b.userShareData?.usdBalance || Zero,
                 )
-              } catch (err) {
-                console.error(err)
+                  ? -1
+                  : 1
+              } else if (
+                a.poolData.isMigrated ||
+                b.poolData.isMigrated ||
+                aIsOutdated ||
+                bIsOutdated
+              ) {
+                return a.poolData.isMigrated || aIsOutdated ? 1 : -1
+              } else {
+                return (a.poolData?.reserve || Zero).gt(
+                  b.poolData?.reserve || Zero,
+                )
+                  ? -1
+                  : 1
               }
-              setCurrentModal(null)
-              setActiveMigration({
-                poolName: null,
-                lpTokenBalance: Zero,
-                lpTokenName: "",
-              })
-            }}
-            lpTokenName={activeMigration.lpTokenName}
-            migrationAmount={activeMigration.lpTokenBalance}
-          />
-        ) : null}
-        {currentModal === "confirm" ? <ConfirmTransaction /> : null}
-      </Modal>
-    </div>
+            })
+            .map(([poolProps]) => (
+              <PoolOverview
+                key={poolProps.name}
+                {...poolProps}
+                onClickMigrate={
+                  poolProps.poolData.isMigrated
+                    ? () =>
+                        handleClickMigrate(
+                          POOLS_MAP[poolProps.poolData.name].name,
+                          poolProps.userShareData?.lpTokenBalance ?? Zero,
+                          POOLS_MAP[poolProps.poolData.name].lpToken.symbol,
+                        )
+                    : undefined
+                }
+              />
+            ))}
+        </div>
+        <Modal
+          isOpen={!!currentModal}
+          onClose={(): void => setCurrentModal(null)}
+        >
+          {currentModal === "migrate" ? (
+            <ReviewMigration
+              onClose={(): void => {
+                setCurrentModal(null)
+                setActiveMigration({
+                  poolName: null,
+                  lpTokenBalance: Zero,
+                  lpTokenName: "",
+                })
+              }}
+              onConfirm={async (): Promise<void> => {
+                setCurrentModal("confirm")
+                logEvent("migrate", {
+                  pool: activeMigration.poolName,
+                })
+                try {
+                  await approveAndMigrate(
+                    activeMigration.poolName,
+                    activeMigration.lpTokenBalance,
+                  )
+                } catch (err) {
+                  console.error(err)
+                }
+                setCurrentModal(null)
+                setActiveMigration({
+                  poolName: null,
+                  lpTokenBalance: Zero,
+                  lpTokenName: "",
+                })
+              }}
+              lpTokenName={activeMigration.lpTokenName}
+              migrationAmount={activeMigration.lpTokenBalance}
+            />
+          ) : null}
+          {currentModal === "confirm" ? <ConfirmTransaction /> : null}
+        </Modal>
+      </div>
+    </Container>
   )
 }
 

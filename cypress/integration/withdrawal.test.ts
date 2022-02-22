@@ -74,7 +74,7 @@ context("Withdrawal Flow", () => {
       // test single item
 
       const tokens = poolTokensFullName[poolName]
-      cy.get(".radio_wrapper .label").contains(tokens[0]).click()
+      cy.get('[data-testid="withdrawTokenRadio"]').contains(tokens[0]).click()
       cy.get("#tokenInput input").first().type("1")
       cy.wait(500)
       cy.get("button").contains("Withdraw").click()
@@ -107,8 +107,8 @@ context("Withdrawal Flow", () => {
       })
 
       // test combo withdraw through percentage option
-      cy.get(".radio_wrapper .label").contains("Combo").click()
-      cy.get(".percentage input").first().type("3")
+      cy.get('[data-testid="withdrawPercentageCombo"]').click()
+      cy.get('[data-testid="withdrawPercentageInput"]').type("3")
       cy.wait(500)
       cy.get("button").contains("Withdraw").click()
       cy.get("button").contains("Confirm Withdraw").click()
@@ -142,7 +142,7 @@ context("Withdrawal Flow", () => {
       })
 
       // test combo withdraw by inputting values
-      cy.get(".radio_wrapper .label").contains("Combo").click()
+      cy.get('[data-testid="withdrawPercentageCombo"]').click()
       cy.get("#tokenInput input").then(($inputs) => {
         cy.wrap($inputs).each(($input) => {
           cy.wrap($input).type("2")
