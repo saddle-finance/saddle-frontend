@@ -214,16 +214,10 @@ export function useApproveAndDeposit(
       console.log({ spendTransaction })
       notifyHandler(spendTransaction.hash, "deposit")
 
-      await spendTransaction.wait()
-      // enqueueSnackbar(
-      //   waitedTx.status === 1 ? "Deposit Success" : "Deposit Failure",
-      //   {
-      //     id: "spendTransaction",
-      //     variant: waitedTx.status === 1 ? "success" : "error",
-      //   },
-      // )
-      // TODO: use status value to build snackbar text
-      // console.log({ waitedTx })
+      const waitedTx = await spendTransaction.wait()
+      console.log({ waitedTx })
+      toast({ status: waitedTx.status })
+
       dispatch(
         updateLastTransactionTimes({
           [TRANSACTION_TYPES.DEPOSIT]: Date.now(),

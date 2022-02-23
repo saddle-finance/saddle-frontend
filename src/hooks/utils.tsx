@@ -5,9 +5,10 @@ import LaunchIcon from "@mui/icons-material/Launch"
 import { toast as toastify } from "react-toastify"
 
 interface toastData {
-  tokenName: string
+  tokenName?: string
+  status?: number
 }
-export const toast = (toastData: toastData): ReactText => {
+export const toast = (toastData?: toastData): ReactText => {
   return toastify(
     <Box
       sx={{
@@ -16,7 +17,14 @@ export const toast = (toastData: toastData): ReactText => {
         alignItems: "center",
       }}
     >
-      <span>{toastData.tokenName} check and approve token tx complete</span>
+      {toastData?.tokenName && (
+        <span>{toastData.tokenName} check and approve token tx complete</span>
+      )}
+      {toastData?.status && (
+        <Box>
+          {`${toastData.status === 1 ? "Successful" : "Failed"}`} transaction
+        </Box>
+      )}
       <LaunchIcon fontSize="inherit" />
       {/* <a target="_blank" rel="noreferrer" href="https://www.google.com">
               EtherScan
