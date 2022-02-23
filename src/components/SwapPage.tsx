@@ -125,35 +125,35 @@ const SwapPage = (props: Props): ReactElement => {
                 </a>
               </div>
             </div>
-            <div className="row">
-              <SwapTokenInput
-                tokens={tokenOptions.from.filter(
-                  ({ symbol }) => symbol !== toState.symbol,
-                )}
-                onSelect={onChangeFromToken}
-                onChangeAmount={onChangeFromAmount}
-                selected={fromState.symbol}
-                inputValue={fromState.value}
-                inputValueUSD={fromState.valueUSD}
-                isSwapFrom={true}
-              />
-            </div>
+
+            <SwapTokenInput
+              tokens={tokenOptions.from.filter(
+                ({ symbol }) => symbol !== toState.symbol,
+              )}
+              onSelect={onChangeFromToken}
+              onChangeAmount={onChangeFromAmount}
+              selected={fromState.symbol}
+              inputValue={fromState.value}
+              inputValueUSD={fromState.valueUSD}
+              isSwapFrom={true}
+            />
+
             <div style={{ height: "48px" }}></div>
             <div className="row">
               <h3 className="swapTitle">{t("to")}</h3>
             </div>
-            <div className="row">
-              <SwapTokenInput
-                tokens={tokenOptions.to.filter(
-                  ({ symbol }) => symbol !== fromState.symbol,
-                )}
-                onSelect={onChangeToToken}
-                selected={toState.symbol}
-                inputValue={toState.value}
-                inputValueUSD={toState.valueUSD}
-                isSwapFrom={false}
-              />
-            </div>
+
+            <SwapTokenInput
+              tokens={tokenOptions.to.filter(
+                ({ symbol }) => symbol !== fromState.symbol,
+              )}
+              onSelect={onChangeToToken}
+              selected={toState.symbol}
+              inputValue={toState.value}
+              inputValueUSD={toState.valueUSD}
+              isSwapFrom={false}
+            />
+
             <div style={{ height: "24px" }}></div>
             {fromState.symbol && toState.symbol && (
               <div className="row">
