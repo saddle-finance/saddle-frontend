@@ -46,6 +46,7 @@ export default function SwapTokenInput({
   selected,
   inputValue,
   inputValueUSD,
+  isSwapFrom,
   onSelect,
   onChangeAmount,
 }: SwapTokenInputProps): ReactElement {
@@ -138,7 +139,7 @@ export default function SwapTokenInput({
             autoComplete="off"
             autoCorrect="off"
             spellCheck="false"
-            value={inputValue}
+            value={isSwapFrom ? inputValue : commify(inputValue)}
             onChange={handleInputChange}
             inputProps={{
               style: {
@@ -150,6 +151,8 @@ export default function SwapTokenInput({
             }}
             onFocus={handleFocus}
             fullWidth
+            readOnly={!isSwapFrom}
+            tabIndex={isSwapFrom ? 0 : -1}
           />
           <Typography
             data-testid="inputValueUSD"

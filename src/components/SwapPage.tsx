@@ -135,6 +135,7 @@ const SwapPage = (props: Props): ReactElement => {
             inputValueUSD={fromState.valueUSD}
             onSelect={onChangeFromToken}
             onChangeAmount={onChangeFromAmount}
+            isSwapFrom={true}
           />
           <div style={{ height: "48px" }}></div>
           <div className="row">
