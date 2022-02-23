@@ -1,7 +1,7 @@
 import "./DepositPage.scss"
 
 import { ALETH_POOL_NAME, VETH2_POOL_NAME, isMetaPool } from "../constants"
-import { Box, Checkbox, Stack } from "@mui/material"
+import { Box, Checkbox, Paper, Stack } from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
@@ -217,24 +217,26 @@ const DepositPage = (props: Props): ReactElement => {
             </Box> */}
           </Stack>
         </div>
-        <div>
+        <Stack spacing={4}>
           {poolData && (
             <MyFarm
               lpWalletBalance={myShareData?.lpTokenBalance || Zero}
               poolName={poolData.name}
             />
           )}
-          <div className="infoPanels">
-            <MyShareCard data={myShareData} />
-            <div
-              style={{
-                display: myShareData ? "block" : "none",
-              }}
-              className="divider"
-            ></div>{" "}
-            <PoolInfoCard data={poolData} />
-          </div>
-        </div>
+          <Paper>
+            <Box p={4}>
+              <MyShareCard data={myShareData} />
+              <div
+                style={{
+                  display: myShareData ? "block" : "none",
+                }}
+                className="divider"
+              ></div>{" "}
+              <PoolInfoCard data={poolData} />
+            </Box>
+          </Paper>
+        </Stack>
 
         <Modal
           isOpen={!!currentModal}

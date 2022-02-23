@@ -48,11 +48,10 @@ div.deposit {
 
     .form {
       width: 434px;
-      border: 1px solid var(--outline);
-      background: var(--background-element);
+      border: 1px solid #311188; //TODO: remove hardcode
+      background: #121334; //TODO: remove hardcode
       border-radius: 10px;
       padding: 24px;
-      margin-top: 40px;
       box-sizing: border-box;
       @include breakpoint(lg) {
         margin: 40px auto 0;
