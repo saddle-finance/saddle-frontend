@@ -92,7 +92,7 @@ export default function SwapTokenInput({
     typeof selected === "string" ? TOKENS_MAP[selected] : undefined
 
   return (
-    <React.Fragment>
+    <div>
       <Box
         display="flex"
         alignItems="center"
@@ -222,7 +222,7 @@ export default function SwapTokenInput({
           </Box>
         </ClickAwayListener>
       </StyledPopper>
-    </React.Fragment>
+    </div>
   )
 }
 
