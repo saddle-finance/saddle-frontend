@@ -1,16 +1,21 @@
+import { IconButton, Typography, TypographyProps } from "@mui/material"
+import MuiDialogTitle, { DialogTitleProps } from "@mui/material/DialogTitle"
 import React, { PropsWithChildren, ReactElement } from "react"
 import { Close } from "@mui/icons-material"
-import { IconButton } from "@mui/material"
-import MuiDialogTitle from "@mui/material/DialogTitle"
 
-interface DialogTitleProps {
+interface Props {
   onClose?: () => void
 }
 
 export default function DialogTitle({
   children,
   onClose,
-}: PropsWithChildren<unknown> & DialogTitleProps): ReactElement {
+  variant = "h3",
+  ...props
+}: PropsWithChildren<unknown> &
+  Props &
+  DialogTitleProps &
+  TypographyProps): ReactElement {
   return (
     <MuiDialogTitle>
       <IconButton
@@ -19,7 +24,9 @@ export default function DialogTitle({
       >
         <Close />
       </IconButton>
-      {children}
+      <Typography component="span" variant={variant} {...props}>
+        {children}
+      </Typography>
     </MuiDialogTitle>
   )
 }
