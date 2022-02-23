@@ -14,24 +14,19 @@ export default function TextFieldTheme(): Components {
           paddingBottom: 14.5,
         },
         inputSizeSmall: {
-          paddingTop: 4,
-          paddingBottom: 5,
+          paddingTop: 4.5,
+          paddingBottom: 4.5,
         },
       },
     },
     MuiInputLabel: {
       styleOverrides: {
         root: {
-          top: -3,
+          top: -4,
+          opacity: 0.7,
         },
-      },
-    },
-    MuiInputBase: {
-      styleOverrides: {
-        input: {
-          paddingLeft: 8,
-          paddingTop: 14.5,
-          paddingBottom: 14.5,
+        shrink: {
+          top: 0,
         },
       },
     },
