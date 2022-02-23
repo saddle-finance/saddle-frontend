@@ -1,14 +1,13 @@
-import "./Web3Status.scss"
-
+import { Button, Dialog, Typography } from "@mui/material"
 import React, { ReactElement, useEffect, useState } from "react"
 
 import AccountDetails from "./AccountDetails"
 import ConnectWallet from "./ConnectWallet"
-import { Dialog } from "@mui/material"
 import Identicon from "./Identicon"
 import { shortenAddress } from "../utils/shortenAddress"
 import { useENS } from "../hooks/useENS"
 import { useTranslation } from "react-i18next"
+import { useUDName } from "../hooks/useUDName"
 import { useWeb3React } from "@web3-react/core"
 
 const WALLET_VIEWS = {
@@ -22,6 +21,7 @@ const Web3Status = (): ReactElement => {
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT)
   const { t } = useTranslation()
   const { ensName } = useENS(account)
+  const udName = useUDName()
 
   // always reset to account view
   useEffect(() => {
@@ -31,23 +31,20 @@ const Web3Status = (): ReactElement => {
   }, [modalOpen])
 
   return (
-    <div className="walletStatus" data-testid="walletStatusContainer">
-      <button
-        type="button"
+    <div data-testid="walletStatusContainer">
+      <Button
+        variant={account ? "contained" : "outlined"}
+        color={account ? "mute" : "secondary"}
         onClick={(): void => setModalOpen(true)}
         data-testid="accountDetailButton"
+        endIcon={account && <Identicon />}
       >
-        {account ? (
-          <div className="hasAccount">
-            <span className="address">
-              {ensName || shortenAddress(account)}
-            </span>
-            <Identicon />
-          </div>
-        ) : (
-          <div className="noAccount">{t("connectWallet")}</div>
-        )}
-      </button>
+        <Typography variant="body1" whiteSpace="nowrap">
+          {account
+            ? udName || ensName || shortenAddress(account)
+            : t("connectWallet")}
+        </Typography>
+      </Button>
       <Dialog
         open={modalOpen}
         onClose={(): void => setModalOpen(false)}

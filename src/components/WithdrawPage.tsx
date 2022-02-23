@@ -1,5 +1,14 @@
 import "./WithdrawPage.scss"
 
+import {
+  Box,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 
@@ -12,9 +21,7 @@ import Modal from "./Modal"
 import MyFarm from "./MyFarm"
 import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
-import RadioButton from "./RadioButton"
 import ReviewWithdraw from "./ReviewWithdraw"
-import { Stack } from "@mui/material"
 import TokenInput from "./TokenInput"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import { Zero } from "@ethersproject/constants"
@@ -79,106 +86,126 @@ const WithdrawPage = (props: Props): ReactElement => {
   const onSubmit = (): void => {
     setCurrentModal("review")
   }
+  const handleWithdrawChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onFormChange({
+      fieldName: "withdrawType",
+      value: event.target.value,
+    })
+  }
   const noShare = !myShareData || myShareData.lpTokenBalance.eq(Zero)
 
   return (
     <div className="withdraw">
       <div className="content">
         <div className="left">
-          <div className="form">
-            <h3>{t("withdraw")}</h3>
-            <div className="percentage">
-              <span>{`${t("withdrawPercentage")} (%):`}</span>
-              <input
-                placeholder="0"
-                onChange={(e: React.FormEvent<HTMLInputElement>): void =>
-                  onFormChange({
-                    fieldName: "percentage",
-                    value: e.currentTarget.value,
-                  })
-                }
-                onFocus={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                  e.target.select()
-                }
-                value={formStateData.percentage ? formStateData.percentage : ""}
-              />
-              {formStateData.error && (
-                <div className="error">{formStateData.error.message}</div>
-              )}
-            </div>
-            <div className="horizontalDisplay">
-              <RadioButton
-                checked={formStateData.withdrawType === "ALL"}
-                onChange={(): void =>
-                  onFormChange({
-                    fieldName: "withdrawType",
-                    value: "ALL",
-                  })
-                }
-                label="Combo"
-              />
-              {tokensData.map((t) => {
-                return (
-                  <RadioButton
-                    key={t.symbol}
-                    checked={formStateData.withdrawType === t.symbol}
-                    onChange={(): void =>
+          <Stack
+            direction="column"
+            width="434px"
+            justifyContent="center"
+            spacing={4}
+            alignItems="center"
+            marginX="auto"
+          >
+            <div className="form">
+              <h3>{t("withdraw")}</h3>
+              <Box display="flex">
+                <Box>
+                  <Typography variant="body1" noWrap>{`${t(
+                    "withdrawPercentage",
+                  )} (%):`}</Typography>
+                </Box>
+                <TextField
+                  placeholder="0"
+                  size="small"
+                  data-testid="withdrawPercentageInput"
+                  onChange={(e): void =>
+                    onFormChange({
+                      fieldName: "percentage",
+                      value: e.currentTarget.value,
+                    })
+                  }
+                  value={
+                    formStateData.percentage ? formStateData.percentage : ""
+                  }
+                />
+              </Box>
+              <Box textAlign="end" width="100%" minHeight="24px">
+                <Typography color="error">
+                  {formStateData.error?.message || ""}
+                </Typography>
+              </Box>
+              <RadioGroup
+                row
+                value={formStateData.withdrawType}
+                onChange={handleWithdrawChange}
+                sx={{ mb: 2 }}
+              >
+                <FormControlLabel
+                  value="ALL"
+                  control={<Radio />}
+                  label="Combo"
+                  data-testid="withdrawPercentageCombo"
+                />
+                {tokensData.map((t) => {
+                  return (
+                    <FormControlLabel
+                      key={t.symbol}
+                      control={<Radio />}
+                      value={t.symbol}
+                      disabled={poolData?.isPaused}
+                      label={t.name}
+                      data-testid="withdrawTokenRadio"
+                    />
+                  )
+                })}
+              </RadioGroup>
+
+              {tokensData.map((token, index) => (
+                <div key={index}>
+                  <TokenInput
+                    {...token}
+                    // inputValue={parseFloat(token.inputValue).toFixed(5)}
+                    onChange={(value): void =>
                       onFormChange({
-                        fieldName: "withdrawType",
-                        value: t.symbol,
+                        fieldName: "tokenInputs",
+                        value: value,
+                        tokenSymbol: token.symbol,
                       })
                     }
                     disabled={poolData?.isPaused}
-                    label={t.name}
                   />
-                )
-              })}
-            </div>
-            {tokensData.map((token, index) => (
-              <div key={index}>
-                <TokenInput
-                  {...token}
-                  // inputValue={parseFloat(token.inputValue).toFixed(5)}
-                  onChange={(value): void =>
-                    onFormChange({
-                      fieldName: "tokenInputs",
-                      value: value,
-                      tokenSymbol: token.symbol,
-                    })
-                  }
-                  disabled={poolData?.isPaused}
-                />
-                {index === tokensData.length - 1 ? (
-                  ""
-                ) : (
-                  <div className="formSpace"></div>
-                )}
-              </div>
-            ))}
-            <div className={"transactionInfoContainer"}>
-              <div className="transactionInfo">
-                <div className="transactionInfoItem">
-                  {reviewData.priceImpact.gte(0) ? (
-                    <span className="bonus">{t("bonus")}: </span>
+                  {index === tokensData.length - 1 ? (
+                    ""
                   ) : (
-                    <span className="slippage">{t("priceImpact")}</span>
+                    <div className="formSpace"></div>
                   )}
-                  <span
-                    className={
-                      "value " +
-                      (reviewData.priceImpact.gte(0) ? "bonus" : "slippage")
-                    }
-                  >
-                    {formatBNToPercentString(reviewData.priceImpact, 18, 4)}
-                  </span>
+                </div>
+              ))}
+              <div className={"transactionInfoContainer"}>
+                <div className="transactionInfo">
+                  <div className="transactionInfoItem">
+                    {reviewData.priceImpact.gte(0) ? (
+                      <span className="bonus">{t("bonus")}: </span>
+                    ) : (
+                      <span className="slippage">{t("priceImpact")}</span>
+                    )}
+                    <span
+                      className={
+                        "value " +
+                        (reviewData.priceImpact.gte(0) ? "bonus" : "slippage")
+                      }
+                    >
+                      {formatBNToPercentString(reviewData.priceImpact, 18, 4)}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <AdvancedOptions />
-
-          <Stack direction="row" width="434px" pt={3} justifyContent="center">
+            <Box px={[3, 3, 0]} width="100%">
+              <AdvancedOptions />
+            </Box>
             <Button
+              data-testid="withdrawBtn"
               disabled={
                 noShare ||
                 !!formStateData.error ||

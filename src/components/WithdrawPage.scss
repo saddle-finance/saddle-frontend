@@ -3,7 +3,6 @@
 
 .withdraw {
   min-height: 100vh;
-  background: var(--background-main);
   color: var(--text);
   padding-bottom: 80px;
   width: 100vw;
@@ -74,47 +73,6 @@
       text-align: center;
     }
 
-    .percentage {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-
-      span {
-        font-weight: $bold;
-        letter-spacing: -0.04em;
-      }
-
-      input {
-        height: 32px;
-        width: 112px;
-        display: block;
-        background: $white;
-        border: none;
-        border-radius: 0;
-
-        padding-left: 16px;
-        color: $text-black;
-        font-size: 16px;
-        font-family: $font-family;
-        font-style: normal;
-        font-weight: $normal;
-
-        &:focus {
-          outline: var(--outline) solid 1px;
-        }
-      }
-
-      .error {
-        margin-top: 8px;
-        color: $error;
-        font-size: 14px;
-        text-align: right;
-        width: 100%;
-      }
-    }
-
     .infoPanels .divider {
       width: 100%;
       height: 1px;
@@ -177,19 +135,6 @@
       color: var(--text-selected);
       font-weight: $medium;
       text-decoration: underline;
-    }
-
-    > input {
-      width: 64px;
-      height: 24px;
-      margin-left: 16px;
-      border: none;
-      border-radius: 0;
-      outline: 1px solid var(--outline);
-    }
-
-    > input.selected {
-      color: $text-black;
     }
   }
 

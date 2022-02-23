@@ -1,3 +1,17 @@
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Checkbox,
+  InputAdornment,
+  Stack,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  Tooltip,
+  Typography,
+} from "@mui/material"
 import { Deadlines, GasPrices, Slippages } from "../state/user"
 import React, { ReactElement } from "react"
 import {
@@ -14,11 +28,8 @@ import { useDispatch, useSelector } from "react-redux"
 
 import { AppDispatch } from "../state"
 import { AppState } from "../state/index"
-import CheckboxInput from "./CheckboxInput"
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
 import { PayloadAction } from "@reduxjs/toolkit"
-import ToolTip from "./ToolTip"
-import classNames from "classnames"
-import styles from "./AdvancedOptions.module.scss"
 import { useTranslation } from "react-i18next"
 
 export default function AdvancedOptions(): ReactElement {
@@ -39,87 +50,89 @@ export default function AdvancedOptions(): ReactElement {
     (state: AppState) => state.application,
   )
 
+  const handleSlippage = (
+    event: React.MouseEvent<HTMLElement>,
+    slippageValue: Slippages,
+  ) => {
+    if (slippageValue) dispatch(updateSlippageSelected(slippageValue))
+  }
+
+  const handleDeadline = (
+    event: React.MouseEvent<HTMLElement>,
+    deadlineValue: Deadlines,
+  ) => {
+    // toggle button return null value when toggle button is selected.
+    if (deadlineValue)
+      dispatch(updateTransactionDeadlineSelected(deadlineValue))
+  }
   return (
-    <div data-testid="advOptionContainer" className={styles.advancedOptions}>
-      <span
+    <Box data-testid="advOptionContainer" mt={3} width="100%">
+      <Accordion
         data-testid="advOptionTitle"
-        className={styles.title}
-        onClick={(): PayloadAction<boolean> =>
+        onChange={(): PayloadAction<boolean> =>
           dispatch(updatePoolAdvancedMode(!advanced))
         }
+        expanded={advanced}
       >
-        {t("advancedOptions")}
-        <svg
-          className={classNames(styles.triangle, {
-            [styles.upsideDown]: advanced,
-          })}
-          width="16"
-          height="10"
-          viewBox="0 0 16 10"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M14.8252 0C16.077 0 16.3783 0.827943 15.487 1.86207L8.80565 9.61494C8.35999 10.1321 7.63098 10.1246 7.19174 9.61494L0.510262 1.86207C-0.376016 0.833678 -0.0777447 0 1.17205 0L14.8252 0Z"
-            fill="#00f4d7"
-          />
-        </svg>
-      </span>
-      <div className={styles.divider}></div>
-      <div
-        data-testid="advTableContainer"
-        className={classNames(styles.tableContainer, {
-          [styles.show]: advanced,
-        })}
-      >
-        <div className={styles.parameter}>
-          <div
-            data-testid="infiniteApprovalContainer"
-            className={styles.infiniteApproval}
-          >
-            <CheckboxInput
-              checked={infiniteApproval}
-              onChange={(): PayloadAction<boolean> =>
-                dispatch(updateInfiniteApproval(!infiniteApproval))
-              }
-            />
-            <ToolTip content={t("infiniteApprovalTooltip")}>
-              <span className={styles.label}>{t("infiniteApproval")}</span>
-            </ToolTip>
-          </div>
-        </div>
-        <div className={styles.parameter}>
-          <div
-            data-testid="maxSlippageInputGroup"
-            className={styles.inputGroup}
-          >
-            <div className={styles.options}>
-              <div className={styles.label}>{t("maxSlippage")}: </div>
-              <button
-                className={classNames({
-                  [styles.selected]: slippageSelected === Slippages.OneTenth,
-                })}
-                onClick={(): PayloadAction<Slippages> =>
-                  dispatch(updateSlippageSelected(Slippages.OneTenth))
+        <AccordionSummary expandIcon={<ArrowDropDownIcon color="primary" />}>
+          <Typography color="primary" variant="subtitle1">
+            {t("advancedOptions")}
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <div data-testid="advTableContainer">
+            <Box display="flex" data-testid="infiniteApprovalContainer">
+              <Checkbox
+                checked={infiniteApproval}
+                onChange={(): PayloadAction<boolean> =>
+                  dispatch(updateInfiniteApproval(!infiniteApproval))
                 }
-              >
-                <span>0.1%</span>
-              </button>
-              <button
-                className={classNames({
-                  [styles.selected]: slippageSelected === Slippages.One,
-                })}
-                onClick={(): PayloadAction<Slippages> =>
-                  dispatch(updateSlippageSelected(Slippages.One))
+              />
+              <Tooltip
+                title={
+                  <React.Fragment>
+                    {t("infiniteApprovalTooltip")}
+                  </React.Fragment>
                 }
+                placement="top"
               >
-                <span>1%</span>
-              </button>
-              <div>
-                <input
+                <Typography
+                  variant="body1"
+                  sx={{ textDecoration: "underline" }}
+                >
+                  {t("infiniteApproval")}
+                </Typography>
+              </Tooltip>
+            </Box>
+
+            <Box mb={2}>
+              <Typography variant="body1" mt={2} mb={1}>
+                {t("maxSlippage")}:{" "}
+              </Typography>
+              <Stack
+                direction="row"
+                spacing={2}
+                data-testid="maxSlippageInputGroup"
+              >
+                <ToggleButtonGroup
+                  size="small"
+                  fullWidth
+                  exclusive
+                  value={slippageSelected}
+                  onChange={handleSlippage}
+                >
+                  <ToggleButton size="small" value={Slippages.OneTenth}>
+                    0.1%
+                  </ToggleButton>
+                  <ToggleButton value={Slippages.One}>1%</ToggleButton>
+                </ToggleButtonGroup>
+                <TextField
                   value={slippageCustom?.valueRaw}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">%</InputAdornment>
+                    ),
+                  }}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
                     const value = e.target.value
                     if (value && !isNaN(+value)) {
@@ -131,135 +144,132 @@ export default function AdvancedOptions(): ReactElement {
                       dispatch(updateSlippageSelected(Slippages.OneTenth))
                     }
                   }}
+                  sx={{ width: 150 }}
                 />
-                &nbsp;%
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className={styles.parameter}>
-          <div
-            data-testid="txnDeadlineInputGroup"
-            className={styles.inputGroup}
-          >
-            <div className={styles.options}>
-              <div className={styles.label}>{t("deadline")}: </div>
-              <button
-                className={classNames({
-                  [styles.selected]:
-                    transactionDeadlineSelected === Deadlines.Twenty,
-                })}
-                onClick={(): void => {
-                  dispatch(updateTransactionDeadlineSelected(Deadlines.Twenty))
-                }}
-              >
-                <span>20 {t("minutes")}</span>
-              </button>
-              <button
-                className={classNames({
-                  [styles.selected]:
-                    transactionDeadlineSelected === Deadlines.Forty,
-                })}
-                onClick={(): void => {
-                  dispatch(updateTransactionDeadlineSelected(Deadlines.Forty))
-                }}
-              >
-                <span>40 {t("minutes")}</span>
-              </button>
-              <div>
-                <input
-                  type="text"
-                  className={classNames({
-                    [styles.selected]:
-                      transactionDeadlineSelected === Deadlines.Custom,
-                  })}
-                  placeholder="20"
-                  onClick={(): PayloadAction<Deadlines> =>
-                    dispatch(
-                      updateTransactionDeadlineSelected(Deadlines.Custom),
-                    )
-                  }
-                  value={transactionDeadlineCustom}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
-                    const value = e.target.value
-                    if (value && !isNaN(+value)) {
-                      dispatch(updateTransactionDeadlineCustom(value))
-                      if (transactionDeadlineSelected !== Deadlines.Custom) {
-                        dispatch(
-                          updateTransactionDeadlineSelected(Deadlines.Custom),
-                        )
-                      }
-                    } else {
-                      dispatch(
-                        updateTransactionDeadlineSelected(Deadlines.Twenty),
-                      )
-                    }
-                  }}
-                />
-                &nbsp;{t("minutes")}
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className={styles.parameter} style={{ display: "none" }}>
-          <div className={styles.inputGroup}>
-            <div className={styles.options}>
-              <div className={styles.label}>{t("gas")}:</div>
-              {[GasPrices.Standard, GasPrices.Fast, GasPrices.Instant].map(
-                (gasPriceConst) => {
-                  let priceValue
-                  let text
-                  if (gasPriceConst === GasPrices.Standard) {
-                    priceValue = gasStandard
-                    text = t("standard")
-                  } else if (gasPriceConst === GasPrices.Fast) {
-                    priceValue = gasFast
-                    text = t("fast")
-                  } else {
-                    priceValue = gasInstant
-                    text = t("instant")
-                  }
+              </Stack>
+            </Box>
 
-                  return (
-                    <button
-                      key={gasPriceConst}
-                      className={classNames({
-                        [styles.selected]: gasPriceSelected === gasPriceConst,
-                      })}
-                      onClick={(): PayloadAction<GasPrices> =>
-                        dispatch(updateGasPriceSelected(gasPriceConst))
-                      }
-                    >
-                      <div>
-                        <div>{priceValue}</div>
-                        <div>{text}</div>
-                      </div>
-                    </button>
-                  )
-                },
-              )}
-              <input
+            <Typography variant="body1" mt={2} mb={1}>
+              {t("deadline")}:{" "}
+            </Typography>
+            <Stack
+              direction="row"
+              spacing={2}
+              data-testid="txnDeadlineInputGroup"
+            >
+              <ToggleButtonGroup
+                size="small"
+                fullWidth
+                exclusive
+                value={transactionDeadlineSelected}
+                onChange={handleDeadline}
+              >
+                <ToggleButton value={Deadlines.Twenty}>
+                  20 {t("minutes")}
+                </ToggleButton>
+                <ToggleButton value={Deadlines.Forty}>
+                  40 {t("minutes")}
+                </ToggleButton>
+              </ToggleButtonGroup>
+              <TextField
                 type="text"
-                className={classNames({
-                  [styles.selected]: gasPriceSelected === GasPrices.Custom,
-                })}
-                value={gasCustom?.valueRaw}
+                variant="outlined"
+                InputLabelProps={{ shrink: false }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">min</InputAdornment>
+                  ),
+                }}
+                placeholder="20"
+                onClick={(): PayloadAction<Deadlines> =>
+                  dispatch(updateTransactionDeadlineSelected(Deadlines.Custom))
+                }
+                value={transactionDeadlineCustom}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
                   const value = e.target.value
                   if (value && !isNaN(+value)) {
-                    dispatch(updateGasPriceCustom(value))
-                    if (gasPriceSelected !== GasPrices.Custom) {
-                      dispatch(updateGasPriceSelected(GasPrices.Custom))
+                    dispatch(updateTransactionDeadlineCustom(value))
+                    if (transactionDeadlineSelected !== Deadlines.Custom) {
+                      dispatch(
+                        updateTransactionDeadlineSelected(Deadlines.Custom),
+                      )
                     }
                   } else {
-                    dispatch(updateGasPriceSelected(GasPrices.Fast))
+                    dispatch(
+                      updateTransactionDeadlineSelected(Deadlines.Twenty),
+                    )
                   }
                 }}
+                sx={{ width: 150 }}
               />
+            </Stack>
+            <div style={{ display: "none" }}>
+              <div>
+                <Typography variant="body1">{t("gas")}:</Typography>
+                <Stack direction="row" spacing={2}>
+                  <ToggleButtonGroup
+                    size="small"
+                    value={gasPriceSelected}
+                    exclusive
+                    fullWidth
+                  >
+                    {[
+                      GasPrices.Standard,
+                      GasPrices.Fast,
+                      GasPrices.Instant,
+                    ].map((gasPriceConst) => {
+                      let priceValue
+                      let text
+                      if (gasPriceConst === GasPrices.Standard) {
+                        priceValue = gasStandard
+                        text = t("standard")
+                      } else if (gasPriceConst === GasPrices.Fast) {
+                        priceValue = gasFast
+                        text = t("fast")
+                      } else {
+                        priceValue = gasInstant
+                        text = t("instant")
+                      }
+
+                      return (
+                        <ToggleButton
+                          key={gasPriceConst}
+                          value={gasPriceConst}
+                          onClick={(): PayloadAction<GasPrices> =>
+                            dispatch(updateGasPriceSelected(gasPriceConst))
+                          }
+                        >
+                          <div>
+                            <div>{priceValue}</div>
+                            <div>{text}</div>
+                          </div>
+                        </ToggleButton>
+                      )
+                    })}
+                  </ToggleButtonGroup>
+                  <TextField
+                    type="text"
+                    value={gasCustom?.valueRaw}
+                    onChange={(
+                      e: React.ChangeEvent<HTMLInputElement>,
+                    ): void => {
+                      const value = e.target.value
+                      if (value && !isNaN(+value)) {
+                        dispatch(updateGasPriceCustom(value))
+                        if (gasPriceSelected !== GasPrices.Custom) {
+                          dispatch(updateGasPriceSelected(GasPrices.Custom))
+                        }
+                      } else {
+                        dispatch(updateGasPriceSelected(GasPrices.Fast))
+                      }
+                    }}
+                  />
+                </Stack>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+        </AccordionDetails>
+      </Accordion>
+    </Box>
   )
 }
