@@ -110,12 +110,9 @@ export default function SwapTokenInput({
 
         <Box flexWrap="nowrap">
           <Button
-            disableRipple
             onClick={handleClick}
             endIcon={<ArrowDropDown />}
             data-testid="listOpenBtn"
-            disableElevation
-            disableFocusRipple
           >
             <Typography variant="subtitle1">
               {selectedToken?.symbol || "Choose"}
