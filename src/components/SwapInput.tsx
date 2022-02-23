@@ -117,7 +117,7 @@ export default function SwapInput({
           readOnly={!isSwapFrom}
           tabIndex={isSwapFrom ? 0 : -1}
         />
-        <p className={styles.textMinor}>
+        <p className={styles.textMinor} data-testid="swapInputValueUSD">
           ≈${commify(formatBNToString(inputValueUSD, 18, 2))}
         </p>
       </div>

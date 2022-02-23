@@ -1,5 +1,5 @@
 import { ChainId, POOLS_MAP, Pool, SDL_TOKEN } from "../constants"
-import { Dialog, IconButton, Link } from "@mui/material"
+import { Dialog, Divider, IconButton, Link } from "@mui/material"
 import React, {
   ReactElement,
   useCallback,
@@ -19,6 +19,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
 import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
 import { Close } from "@mui/icons-material"
+import { ContractTransaction } from "@ethersproject/contracts"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
@@ -41,6 +42,7 @@ export default function TokenClaimDialog({
   const { chainId } = useActiveWeb3React()
   const isClaimableNetwork =
     chainId === ChainId.MAINNET ||
+    chainId === ChainId.ARBITRUM ||
     chainId === ChainId.HARDHAT ||
     chainId === ChainId.ROPSTEN
 
@@ -206,8 +208,6 @@ export default function TokenClaimDialog({
   )
 }
 
-const Divider = (): ReactElement => <div className={styles.divider}></div>
-
 function ClaimListItem({
   title,
   amount,
@@ -273,7 +273,12 @@ function useRewardClaims() {
         const pid = pool.rewardPids[chainId]
         if (pid === null) return
         updateClaimStatus(pool.name, STATUSES.PENDING)
-        const txn = await rewardsContract.harvest(pid, account)
+        let txn: ContractTransaction
+        if (chainId === ChainId.MAINNET) {
+          txn = await rewardsContract.harvest(pid, account)
+        } else {
+          txn = await rewardsContract.deposit(pid, Zero, account)
+        }
         notifyHandler(txn?.hash, "claim")
         await txn?.wait()
         updateClaimStatus(pool.name, STATUSES.SUCCESS)
@@ -322,7 +327,15 @@ function useRewardClaims() {
         const calls = await Promise.all(
           pools.map((pool) => {
             const pid = pool.rewardPids[chainId] as number
-            return rewardsContract.populateTransaction.harvest(pid, account)
+            if (chainId === ChainId.MAINNET) {
+              return rewardsContract.populateTransaction.harvest(pid, account)
+            } else {
+              return rewardsContract.populateTransaction.deposit(
+                pid,
+                Zero,
+                account,
+              )
+            }
           }),
         )
         updateClaimStatus("all", STATUSES.PENDING)

@@ -1,6 +1,7 @@
 import {
   injectedMetaMaskProvider,
   injectedTallyProvider,
+  uauth,
   walletconnect,
   walletlink,
 } from "../connectors"
@@ -22,9 +23,11 @@ import saddleLPTokenLogo from "../assets/icons/saddle_lp_token.svg"
 import saddleLogo from "../assets/icons/logo_24.svg"
 import sbtcLogo from "../assets/icons/sbtc.svg"
 import sethLogo from "../assets/icons/seth.svg"
+import speraxLogo from "../assets/icons/sperax.png"
 import susdLogo from "../assets/icons/susd.svg"
 import tallyIcon from "../assets/icons/tally.svg"
 import tbtcLogo from "../assets/icons/tbtc.svg"
+import unstoppableDomainsLogo from "../assets/icons/unstoppableDomainsLogo.png"
 import usdcLogo from "../assets/icons/usdc.svg"
 import usdsLogo from "../assets/icons/usds.png"
 import usdtLogo from "../assets/icons/usdt.svg"
@@ -149,7 +152,7 @@ export const SYNTHETIX_CONTRACT_ADDRESSES = buildAddresses({
 })
 
 export const SYNTHETIX_EXCHANGE_RATES_CONTRACT_ADDRESSES = buildAddresses({
-  [ChainId.MAINNET]: "0xd69b189020EF614796578AfE4d10378c5e7e1138",
+  [ChainId.MAINNET]: "0xF68ECd50de7733015318361295547D8E939F93E6",
 })
 
 export const BRIDGE_CONTRACT_ADDRESSES = buildAddresses({
@@ -416,6 +419,21 @@ export const SDL_TOKEN_ADDRESSES = buildAddresses({
   [ChainId.OPTIMISM]: "0xa29b548056c3fd0f68bad9d4829ec4e66f22f796",
   [ChainId.FANTOM]: "",
 })
+
+export const SPA_TOKEN_ADDRESSES = buildAddresses({
+  [ChainId.ARBITRUM]: "0x5575552988A3A80504bBaeB1311674fCFd40aD4B",
+})
+
+export const SPA = new Token(
+  SPA_TOKEN_ADDRESSES,
+  18,
+  "SPA",
+  "sperax",
+  "Sperax",
+  speraxLogo,
+  false,
+  false,
+)
 
 export const SDL_TOKEN = new Token(
   SDL_TOKEN_ADDRESSES,
@@ -1102,7 +1120,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: USDS_ARB_USD_UNDERLYING_POOL_TOKENS,
     underlyingPool: FRAX_ARB_USD_POOL_V2_NAME,
     route: "usds-arbusd",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.ARBITRUM]: 2 }),
   },
   [FRAX_ARB_USD_POOL_V2_NAME]: {
     name: FRAX_ARB_USD_POOL_V2_NAME,
@@ -1324,6 +1342,11 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     name: "MetaMask",
     icon: metamaskIcon,
     connector: injectedMetaMaskProvider,
+  },
+  UNSTOPPABLE_DOMAINS: {
+    name: "Unstoppable Domains",
+    icon: unstoppableDomainsLogo,
+    connector: uauth,
   },
   WALLET_CONNECT: {
     name: "WalletConnect",

@@ -176,7 +176,6 @@ export default function AdvancedOptions(): ReactElement {
                 type="text"
                 size="small"
                 variant="outlined"
-                InputLabelProps={{ shrink: false }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">min</InputAdornment>

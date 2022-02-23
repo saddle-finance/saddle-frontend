@@ -10,13 +10,24 @@ export default function TextFieldTheme(): Components {
         },
         input: {
           paddingLeft: 8,
+          paddingTop: 14.5,
+          paddingBottom: 14.5,
         },
-        sizeSmall: {
-          // height: 28,
+        inputSizeSmall: {
+          paddingTop: 4.5,
+          paddingBottom: 4.5,
         },
-        // notchedOutline: {
-        //   top: "-10px",
-        // },
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          top: -4,
+          opacity: 0.7,
+        },
+        shrink: {
+          top: 0,
+        },
       },
     },
   }
