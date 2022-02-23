@@ -1,5 +1,3 @@
-import * as React from "react"
-
 import {
   Button,
   Chip,
@@ -8,6 +6,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material"
+import React, { useEffect } from "react"
 import { ReactElement, useRef, useState } from "react"
 import { SWAP_TYPES, TOKENS_MAP } from "../constants"
 import { commify, formatBNToString } from "../utils"
@@ -52,7 +51,13 @@ export default function SwapTokenInput({
 }: SwapTokenInputProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const [popOverWidth, setPopOverWidth] = useState<number | undefined>()
   const theme = useTheme()
+
+  useEffect(() => {
+    const containerWidth = containerRef.current?.offsetWidth
+    setPopOverWidth(containerWidth)
+  }, [containerRef.current?.offsetWidth])
 
   const handleClick = () => {
     // setAnchorEl(event.currentTarget)
@@ -163,7 +168,12 @@ export default function SwapTokenInput({
         </Box>
       </Box>
 
-      <StyledPopper open={open} anchorEl={anchorEl} placement="bottom-start">
+      <StyledPopper
+        open={open}
+        anchorEl={anchorEl}
+        placement="bottom-start"
+        sx={{ width: popOverWidth ? popOverWidth : 400 }}
+      >
         <ClickAwayListener onClickAway={handleClose}>
           <Box height="100%" borderRadius="6px">
             <Autocomplete
