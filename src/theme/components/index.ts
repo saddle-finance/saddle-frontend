@@ -6,6 +6,7 @@ import ButtonTheme from "./ButtonTheme"
 import CheckboxTheme from "./CheckboxTheme"
 import { CssBaseLine } from "./CssBaseLine"
 import DialogTheme from "./DialogTheme"
+import DialogTitleTheme from "./DialogTitleTheme"
 import IconButtonTheme from "./IconButtonTheme"
 import ListItemButtonTheme from "./ListItemButtonTheme"
 import ListItemIconTheme from "./ListItemIconTheme"
@@ -25,6 +26,7 @@ export default function componentsOverrides(theme: Theme): Components {
     ButtonTheme(theme),
     CheckboxTheme(),
     DialogTheme(theme),
+    DialogTitleTheme(theme),
     IconButtonTheme(theme),
     MenuTheme(theme),
     MenuItemTheme(),
