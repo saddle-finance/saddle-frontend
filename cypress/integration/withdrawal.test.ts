@@ -58,10 +58,10 @@ context("Withdrawal Flow", () => {
 
       let beforeValue: { [key: string]: number } = {}
       poolTokens[poolName].forEach((token: string) => {
-        cy.get(".myShareCard .tokenName")
+        cy.get("[data-testid=tokenName]")
           .contains(token)
           .parent()
-          .find("span.tokenValue")
+          .find("[data-testid=tokenValue]")
           .then(($value) => {
             console.log($value)
             beforeValue = {
@@ -80,10 +80,10 @@ context("Withdrawal Flow", () => {
       cy.get("button").contains("Withdraw").click()
       cy.get("button").contains("Confirm Withdraw").click()
       cy.wait(10000).then(() => {
-        cy.get(".myShareCard .tokenName")
+        cy.get("[data-testid=tokenName]")
           .contains(poolTokens[poolName][0])
           .parent()
-          .find("span.tokenValue")
+          .find("[data-testid=tokenValue]")
           .then(($value) => {
             const afterValue = parseFloat($value.text().replace(",", ""))
             expect(afterValue).to.lessThan(beforeValue[poolTokens[poolName][0]])
@@ -93,10 +93,10 @@ context("Withdrawal Flow", () => {
       cy.wait(1000)
       beforeValue = {}
       poolTokens[poolName].forEach((token: string) => {
-        cy.get(".myShareCard .tokenName")
+        cy.get("[data-testid=tokenName]")
           .contains(token)
           .parent()
-          .find("span.tokenValue")
+          .find("[data-testid=tokenValue]")
           .then(($value) => {
             console.log($value)
             beforeValue = {
@@ -114,10 +114,10 @@ context("Withdrawal Flow", () => {
       cy.get("button").contains("Confirm Withdraw").click()
       cy.wait(10000).then(() => {
         poolTokens[poolName].forEach((token: string) => {
-          cy.get(".myShareCard .tokenName")
+          cy.get("[data-testid=tokenName]")
             .contains(token)
             .parent()
-            .find("span.tokenValue")
+            .find("[data-testid=tokenValue]")
             .then(($value) => {
               const afterValue = parseFloat($value.text().replace(",", ""))
               expect(afterValue).to.lessThan(beforeValue[token])
@@ -128,10 +128,10 @@ context("Withdrawal Flow", () => {
       cy.wait(1000)
       beforeValue = {}
       poolTokens[poolName].forEach((token: string) => {
-        cy.get(".myShareCard .tokenName")
+        cy.get("[data-testid=tokenName]")
           .contains(token)
           .parent()
-          .find("span.tokenValue")
+          .find("[data-testid=tokenValue]")
           .then(($value) => {
             console.log($value)
             beforeValue = {
@@ -157,7 +157,7 @@ context("Withdrawal Flow", () => {
           cy.get(".myShareCard .tokenName")
             .contains(token)
             .parent()
-            .find("span.tokenValue")
+            .find("[data-testid=tokenValue]")
             .then(($value) => {
               const afterValue = parseFloat($value.text().replace(",", ""))
               expect(afterValue).to.lessThan(beforeValue[token])

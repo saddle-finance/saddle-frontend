@@ -89,7 +89,7 @@ function MyShareCard({ data }: Props): ReactElement | null {
             <Typography variant="subtitle1" data-testid="tokenName">
               {coin.symbol}
             </Typography>
-            <Typography>{coin.value}</Typography>
+            <Typography data-testid="tokenValue">{coin.value}</Typography>
           </div>
         ))}
       </Stack>
