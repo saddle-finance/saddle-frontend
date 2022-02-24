@@ -1,5 +1,3 @@
-// import "./DepositPage.scss"
-
 import { ALETH_POOL_NAME, VETH2_POOL_NAME, isMetaPool } from "../constants"
 import {
   Box,
@@ -74,7 +72,7 @@ const DepositPage = (props: Props): ReactElement => {
   const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
 
   return (
-    <Container maxWidth={isLgDown ? "sm" : "lg"} sx={{ mt: 5 }}>
+    <Container maxWidth={isLgDown ? "sm" : "lg"} sx={{ pt: 5, pb: 10 }}>
       {poolData?.aprs?.keep?.apr.gt(Zero) &&
         myShareData?.lpTokenBalance.gt(0) && (
           <LPStakingBanner
@@ -107,10 +105,12 @@ const DepositPage = (props: Props): ReactElement => {
             <Box p={3}>
               <Typography variant="h2">{t("addLiquidity")}</Typography>
               {exceedsWallet ? (
-                <div className="error">{t("depositBalanceExceeded")}</div>
+                <Typography variant="body1" color="error" textAlign="center">
+                  {t("depositBalanceExceeded")}
+                </Typography>
               ) : null}
               {poolData?.isPaused && poolData?.name === VETH2_POOL_NAME ? (
-                <div className="error">
+                <Typography variant="body1" color="error" textAlign="center">
                   <Trans i18nKey="sgtPoolPaused" t={t}>
                     This pool is paused, please see{" "}
                     <a
@@ -123,7 +123,7 @@ const DepositPage = (props: Props): ReactElement => {
                     </a>{" "}
                     for more information.
                   </Trans>
-                </div>
+                </Typography>
               ) : null}
               <Stack direction="column" spacing={2}>
                 {tokens.map((token, index) => (
@@ -140,18 +140,22 @@ const DepositPage = (props: Props): ReactElement => {
               <Box
                 sx={{
                   display: shouldDisplayWrappedOption ? "block" : "none",
+                  mt: 2,
                 }}
               >
                 <Checkbox
                   onChange={onToggleDepositWrapped}
                   checked={shouldDepositWrapped}
                 />
-                <span>{t("depositWrapped")}</span>
+                <Typography component="span" variant="body1">
+                  {t("depositWrapped")}
+                </Typography>
               </Box>
               <div className={"transactionInfoContainer"}>
-                <div className="transactionInfo">
+                <Stack mt={4} spacing={1}>
+                  {/* TODO: Check the style of KEEP APR */}
                   {poolData?.aprs?.keep?.apr.gt(Zero) && (
-                    <div className="transactionInfoItem">
+                    <div>
                       <a
                         href="https://docs.saddle.finance/faq#what-are-saddles-liquidity-provider-rewards"
                         target="_blank"
@@ -159,13 +163,13 @@ const DepositPage = (props: Props): ReactElement => {
                       >
                         <span>{`KEEP APR:`}</span>
                       </a>{" "}
-                      <span className="value">
+                      <Typography component="span" variant="body1">
                         {formatBNToPercentString(poolData.aprs.keep.apr, 18)}
-                      </span>
+                      </Typography>
                     </div>
                   )}
                   {poolData?.aprs?.sharedStake?.apr.gt(Zero) && (
-                    <div className="transactionInfoItem">
+                    <div>
                       <a
                         href="https://docs.saddle.finance/faq#what-are-saddles-liquidity-provider-rewards"
                         target="_blank"
@@ -173,26 +177,34 @@ const DepositPage = (props: Props): ReactElement => {
                       >
                         <span>{`SGT APR:`}</span>
                       </a>{" "}
-                      <span className="value">
+                      <Typography component="span" variant="body1">
                         {formatBNToPercentString(
                           poolData.aprs.sharedStake.apr,
                           18,
                         )}
-                      </span>
+                      </Typography>
                     </div>
                   )}
-                  <div className="transactionInfoItem">
+                  <div>
                     {transactionData.priceImpact.gte(0) ? (
-                      <span className="bonus">{`${t("bonus")}: `}</span>
+                      <Typography
+                        component="span"
+                        variant="body1"
+                        color="primary"
+                      >{`${t("bonus")}: `}</Typography>
                     ) : (
-                      <span className="slippage">{t("priceImpact")}</span>
+                      <Typography
+                        component="span"
+                        variant="body1"
+                        color="error"
+                      >
+                        {t("priceImpact")}
+                      </Typography>
                     )}
-                    <span
-                      className={
-                        "value " +
-                        (transactionData.priceImpact.gte(0)
-                          ? "bonus"
-                          : "slippage")
+                    <Typography
+                      component="span"
+                      color={
+                        transactionData.priceImpact.gte(0) ? "primary" : "error"
                       }
                     >
                       {" "}
@@ -201,9 +213,9 @@ const DepositPage = (props: Props): ReactElement => {
                         18,
                         4,
                       )}
-                    </span>
+                    </Typography>
                   </div>
-                </div>
+                </Stack>
               </div>
             </Box>
           </Paper>
