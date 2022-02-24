@@ -8,7 +8,7 @@
     "@emotion/styled": "^11.6.0",
     "@metamask/jazzicon": "^2.0.0",
     "@mui/icons-material": "^5.2.1",
-    "@mui/material": "^5.2.3",
+    "@mui/material": "^5.4.0",
     "@reduxjs/toolkit": "^1.4.0",
     "@sentry/react": "^6.16.1",
     "@sentry/tracing": "^6.16.1",

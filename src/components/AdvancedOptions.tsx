@@ -133,6 +133,7 @@ export default function AdvancedOptions(): ReactElement {
                       <InputAdornment position="end">%</InputAdornment>
                     ),
                   }}
+                  size="small"
                   onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
                     const value = e.target.value
                     if (value && !isNaN(+value)) {
@@ -174,7 +175,7 @@ export default function AdvancedOptions(): ReactElement {
               <TextField
                 type="text"
                 variant="outlined"
-                InputLabelProps={{ shrink: false }}
+                size="small"
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">min</InputAdornment>
