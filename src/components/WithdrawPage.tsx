@@ -10,6 +10,7 @@ import {
   Stack,
   TextField,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
@@ -85,7 +86,7 @@ const WithdrawPage = (props: Props): ReactElement => {
   const { gasPriceSelected } = useSelector((state: AppState) => state.user)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const theme = useTheme()
-  theme
+  const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
 
   const onSubmit = (): void => {
     setCurrentModal("review")
@@ -99,7 +100,7 @@ const WithdrawPage = (props: Props): ReactElement => {
   const noShare = !myShareData || myShareData.lpTokenBalance.eq(Zero)
 
   return (
-    <Container maxWidth="lg" sx={{ marginTop: 5 }}>
+    <Container maxWidth={isLgDown ? "sm" : "lg"} sx={{ marginTop: 5 }}>
       <Stack
         direction={{ xs: "column", lg: "row" }}
         spacing={4}
@@ -225,7 +226,7 @@ const WithdrawPage = (props: Props): ReactElement => {
             {t("withdraw")}
           </Button>
         </Box>
-        <Stack direction="column" flex={1} spacing={4}>
+        <Stack direction="column" flex={1} spacing={4} width="100%">
           {poolData && (
             <MyFarm
               lpWalletBalance={myShareData?.lpTokenBalance || Zero}

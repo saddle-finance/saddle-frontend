@@ -1,13 +1,23 @@
-import "./DepositPage.scss"
+// import "./DepositPage.scss"
 
 import { ALETH_POOL_NAME, VETH2_POOL_NAME, isMetaPool } from "../constants"
-import { Box, Checkbox, Paper, Stack } from "@mui/material"
+import {
+  Box,
+  Button,
+  Checkbox,
+  Container,
+  Divider,
+  Paper,
+  Stack,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
 
 import AdvancedOptions from "./AdvancedOptions"
-import Button from "./Button"
 import ConfirmTransaction from "./ConfirmTransaction"
 import { DepositTransaction } from "../interfaces/transactions"
 import LPStakingBanner from "./LPStakingBanner"
@@ -60,9 +70,11 @@ const DepositPage = (props: Props): ReactElement => {
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const validDepositAmount = transactionData.to.totalAmount.gt(0)
   const shouldDisplayWrappedOption = isMetaPool(poolData?.name)
+  const theme = useTheme()
+  const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
 
   return (
-    <div className="deposit">
+    <Container maxWidth={isLgDown ? "sm" : "lg"} sx={{ mt: 5 }}>
       {poolData?.aprs?.keep?.apr.gt(Zero) &&
         myShareData?.lpTokenBalance.gt(0) && (
           <LPStakingBanner
@@ -78,18 +90,22 @@ const DepositPage = (props: Props): ReactElement => {
           <LPStakingBanner stakingLink={"https://app.alchemix.fi/farms"} />
         )}
 
-      <div className="content">
-        <div className="left">
-          <Stack
-            direction="column"
-            width="434px"
-            justifyContent="center"
-            spacing={4}
-            alignItems="center"
-            marginX="auto"
-          >
-            <div className="form">
-              <h3>{t("addLiquidity")}</h3>
+      <Stack
+        display="flex"
+        direction={{ xs: "column", lg: "row" }}
+        spacing={4}
+        alignItems={{ xs: "center", lg: "flex-start" }}
+      >
+        <Box
+          flex={1}
+          justifyContent="center"
+          alignItems="center"
+          marginX="auto"
+          width="100%"
+        >
+          <Paper>
+            <Box p={3}>
+              <Typography variant="h2">{t("addLiquidity")}</Typography>
               {exceedsWallet ? (
                 <div className="error">{t("depositBalanceExceeded")}</div>
               ) : null}
@@ -109,31 +125,29 @@ const DepositPage = (props: Props): ReactElement => {
                   </Trans>
                 </div>
               ) : null}
-              {tokens.map((token, index) => (
-                <div key={index}>
+              <Stack direction="column" spacing={2}>
+                {tokens.map((token, index) => (
                   <TokenInput
+                    key={index}
                     {...token}
                     disabled={poolData?.isPaused}
                     onChange={(value): void =>
                       onChangeTokenInputValue(token.symbol, value)
                     }
                   />
-                  {index === tokens.length - 1 ? (
-                    ""
-                  ) : (
-                    <div className="formSpace"></div>
-                  )}
-                </div>
-              ))}
-              {shouldDisplayWrappedOption && (
-                <div className="wrappedDeposit">
-                  <Checkbox
-                    onChange={onToggleDepositWrapped}
-                    checked={shouldDepositWrapped}
-                  />
-                  <span>{t("depositWrapped")}</span>
-                </div>
-              )}
+                ))}
+              </Stack>
+              <Box
+                sx={{
+                  display: shouldDisplayWrappedOption ? "block" : "none",
+                }}
+              >
+                <Checkbox
+                  onChange={onToggleDepositWrapped}
+                  checked={shouldDepositWrapped}
+                />
+                <span>{t("depositWrapped")}</span>
+              </Box>
               <div className={"transactionInfoContainer"}>
                 <div className="transactionInfo">
                   {poolData?.aprs?.keep?.apr.gt(Zero) && (
@@ -191,33 +205,31 @@ const DepositPage = (props: Props): ReactElement => {
                   </div>
                 </div>
               </div>
-            </div>
-
-            <Box px={[3, 3, 0]} width="100%">
-              <AdvancedOptions />
             </Box>
+          </Paper>
 
-            <Box width={["90%", "50%"]}>
-              <Button
-                kind="primary"
-                fullWidth
-                onClick={(): void => {
-                  setCurrentModal("review")
-                }}
-                disabled={!validDepositAmount || poolData?.isPaused}
-              >
-                {t("deposit")}
-              </Button>
-            </Box>
+          <AdvancedOptions />
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            onClick={(): void => {
+              setCurrentModal("review")
+            }}
+            disabled={!validDepositAmount || poolData?.isPaused}
+            sx={{ mt: 3 }}
+          >
+            {t("deposit")}
+          </Button>
+        </Box>
 
-            {/* <Box width={["90%", "50%"]} paddingTop={2}>
+        {/* <Box width={["90%", "50%"]} paddingTop={2}>
               <Button variant="primary" size="lg" width="100%">
                 {t("depositAndStake")}
               </Button>
             </Box> */}
-          </Stack>
-        </div>
-        <Stack spacing={4}>
+        {/* <Stack spacing={4} flex={1}> */}
+        <Stack direction="column" flex={1} spacing={4} width="100%">
           {poolData && (
             <MyFarm
               lpWalletBalance={myShareData?.lpTokenBalance || Zero}
@@ -227,40 +239,36 @@ const DepositPage = (props: Props): ReactElement => {
           <Paper>
             <Box p={4}>
               <MyShareCard data={myShareData} />
-              <div
-                style={{
+              <Divider
+                sx={{
                   display: myShareData ? "block" : "none",
                 }}
-                className="divider"
-              ></div>{" "}
+              />
               <PoolInfoCard data={poolData} />
             </Box>
           </Paper>
         </Stack>
+      </Stack>
 
-        <Modal
-          isOpen={!!currentModal}
-          onClose={(): void => setCurrentModal(null)}
-        >
-          {currentModal === "review" ? (
-            <ReviewDeposit
-              transactionData={transactionData}
-              onConfirm={async (): Promise<void> => {
-                setCurrentModal("confirm")
-                logEvent(
-                  "deposit",
-                  (poolData && { pool: poolData?.name }) || {},
-                )
-                await onConfirmTransaction?.()
-                setCurrentModal(null)
-              }}
-              onClose={(): void => setCurrentModal(null)}
-            />
-          ) : null}
-          {currentModal === "confirm" ? <ConfirmTransaction /> : null}
-        </Modal>
-      </div>
-    </div>
+      <Modal
+        isOpen={!!currentModal}
+        onClose={(): void => setCurrentModal(null)}
+      >
+        {currentModal === "review" ? (
+          <ReviewDeposit
+            transactionData={transactionData}
+            onConfirm={async (): Promise<void> => {
+              setCurrentModal("confirm")
+              logEvent("deposit", (poolData && { pool: poolData?.name }) || {})
+              await onConfirmTransaction?.()
+              setCurrentModal(null)
+            }}
+            onClose={(): void => setCurrentModal(null)}
+          />
+        ) : null}
+        {currentModal === "confirm" ? <ConfirmTransaction /> : null}
+      </Modal>
+    </Container>
   )
 }
 

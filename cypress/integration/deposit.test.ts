@@ -24,7 +24,7 @@ context("Deposit Flow", () => {
       // TODO: assert default state of the page
       // Get before value of each token in My Share section
       poolTokens[poolName].forEach((token: string) => {
-        cy.get(".tokenName")
+        cy.get("[data-testid=tokenName]")
           .contains(token)
           .parent()
           .find("span.tokenValue")

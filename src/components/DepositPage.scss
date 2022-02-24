@@ -46,31 +46,6 @@ div.deposit {
       }
     }
 
-    .form {
-      width: 434px;
-      border: 1px solid #311188; //TODO: remove hardcode
-      background: #121334; //TODO: remove hardcode
-      border-radius: 10px;
-      padding: 24px;
-      box-sizing: border-box;
-      @include breakpoint(lg) {
-        margin: 40px auto 0;
-      }
-      @include breakpoint(md) {
-        max-width: 90%;
-      }
-    }
-
-    .form h3 {
-      font-family: $font-family-title;
-      font-size: 30px;
-      margin-top: 0;
-      margin-bottom: 48px;
-      font-weight: $bold;
-      color: var(--text);
-      text-align: center;
-    }
-
     .infoPanels .divider {
       width: 100%;
       height: 1px;
