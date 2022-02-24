@@ -6,14 +6,27 @@ export default function TextFieldTheme(): Components {
       styleOverrides: {
         root: {
           borderRadius: 6,
-          height: 28,
           paddingRight: 8,
         },
         input: {
           paddingLeft: 8,
+          paddingTop: 14.5,
+          paddingBottom: 14.5,
         },
-        notchedOutline: {
-          top: "-10px",
+        inputSizeSmall: {
+          paddingTop: 4.5,
+          paddingBottom: 4.5,
+        },
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          top: -4,
+          opacity: 0.7,
+        },
+        shrink: {
+          top: 0,
         },
       },
     },
