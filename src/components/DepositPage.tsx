@@ -1,7 +1,7 @@
 import "./DepositPage.scss"
 
 import { ALETH_POOL_NAME, VETH2_POOL_NAME, isMetaPool } from "../constants"
-import { Box, Checkbox, Stack } from "@mui/material"
+import { Box, Checkbox, Dialog, Stack } from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
@@ -11,7 +11,6 @@ import Button from "./Button"
 import ConfirmTransaction from "./ConfirmTransaction"
 import { DepositTransaction } from "../interfaces/transactions"
 import LPStakingBanner from "./LPStakingBanner"
-import Modal from "./Modal"
 import MyFarm from "./MyFarm"
 import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
@@ -236,8 +235,8 @@ const DepositPage = (props: Props): ReactElement => {
           </div>
         </div>
 
-        <Modal
-          isOpen={!!currentModal}
+        <Dialog
+          open={!!currentModal}
           onClose={(): void => setCurrentModal(null)}
         >
           {currentModal === "review" ? (
@@ -256,7 +255,7 @@ const DepositPage = (props: Props): ReactElement => {
             />
           ) : null}
           {currentModal === "confirm" ? <ConfirmTransaction /> : null}
-        </Modal>
+        </Dialog>
       </div>
     </div>
   )

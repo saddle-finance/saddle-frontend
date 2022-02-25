@@ -2,6 +2,7 @@ import "./WithdrawPage.scss"
 
 import {
   Box,
+  Dialog,
   FormControlLabel,
   Radio,
   RadioGroup,
@@ -17,7 +18,6 @@ import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
 import ConfirmTransaction from "./ConfirmTransaction"
-import Modal from "./Modal"
 import MyFarm from "./MyFarm"
 import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
@@ -237,8 +237,8 @@ const WithdrawPage = (props: Props): ReactElement => {
           </div>
         </div>
 
-        <Modal
-          isOpen={!!currentModal}
+        <Dialog
+          open={!!currentModal}
           onClose={(): void => setCurrentModal(null)}
         >
           {currentModal === "review" ? (
@@ -258,7 +258,7 @@ const WithdrawPage = (props: Props): ReactElement => {
             />
           ) : null}
           {currentModal === "confirm" ? <ConfirmTransaction /> : null}
-        </Modal>
+        </Dialog>
       </div>
     </div>
   )
