@@ -238,6 +238,7 @@ const DepositPage = (props: Props): ReactElement => {
         <Dialog
           open={!!currentModal}
           onClose={(): void => setCurrentModal(null)}
+          scroll="body"
         >
           {currentModal === "review" ? (
             <ReviewDeposit
