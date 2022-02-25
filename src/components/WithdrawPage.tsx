@@ -170,20 +170,19 @@ const WithdrawPage = (props: Props): ReactElement => {
               </RadioGroup>
               <Stack spacing={3}>
                 {tokensData.map((token, index) => (
-                  <div key={index}>
-                    <TokenInput
-                      {...token}
-                      // inputValue={parseFloat(token.inputValue).toFixed(5)}
-                      onChange={(value): void =>
-                        onFormChange({
-                          fieldName: "tokenInputs",
-                          value: value,
-                          tokenSymbol: token.symbol,
-                        })
-                      }
-                      disabled={poolData?.isPaused}
-                    />
-                  </div>
+                  <TokenInput
+                    key={`tokenInput-${index}`}
+                    {...token}
+                    // inputValue={parseFloat(token.inputValue).toFixed(5)}
+                    onChange={(value): void =>
+                      onFormChange({
+                        fieldName: "tokenInputs",
+                        value: value,
+                        tokenSymbol: token.symbol,
+                      })
+                    }
+                    disabled={poolData?.isPaused}
+                  />
                 ))}
               </Stack>
               <Box mt={3}>
