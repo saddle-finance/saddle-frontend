@@ -190,10 +190,10 @@ const SwapPage = (props: Props): ReactElement => {
                 <span className="exchRate">{formattedExchangeRate}</span>
               </div>
             )}
-            <div className="row">
+            <Box display="flex" justifyContent="space-between">
               <span>{t("priceImpact")}</span>
               <span>{formattedPriceImpact}</span>
-            </div>
+            </Box>
             {formattedRoute && (
               <>
                 <div className="row">
