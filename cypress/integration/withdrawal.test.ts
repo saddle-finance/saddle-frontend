@@ -154,7 +154,8 @@ context("Withdrawal Flow", () => {
       })
       cy.wait(10000).then(() => {
         poolTokens[poolName].forEach((token: string) => {
-          cy.get(".myShareCard .tokenName")
+          cy.get("[data-testid=tokenName]")
+            .contains(token)
             .contains(token)
             .parent()
             .find("[data-testid=tokenValue]")
