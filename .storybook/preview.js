@@ -1,7 +1,7 @@
 import { Container } from "@mui/material"
 import { ThemeProvider as MUIThemeProvider } from "@mui/material/styles"
 import { ThemeProvider } from "emotion-theming"
-import { darkTheme, lightTheme } from "../src/theme"
+import { lightTheme } from "../src/theme"
 import componentsOverrides from "../src/theme/components"
 
 export const parameters = {
@@ -14,8 +14,7 @@ export const parameters = {
   },
 }
 
-// const theme = lightTheme
-const theme = darkTheme
+const theme = lightTheme
 theme.components = componentsOverrides(theme)
 export const decorators = [
   (Story) => (
