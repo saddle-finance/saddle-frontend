@@ -38,9 +38,12 @@ context("Swap Flow", () => {
           .contains(poolTokenSymbols[0])
           .click()
         cy.react("SearchSelect").should("not.exist")
-        cy.react("SwapTokenInput")
-          .eq(0)
-          .should("include.text", poolTokenSymbols[0])
+        // cy.react("SwapTokenInput")
+        //   .eq(0)
+        cy.get('[data-testid="swapTokenInputFrom"]').should(
+          "include.text",
+          poolTokenSymbols[0],
+        )
         cy.contains("Balance:").siblings("a").should("not.have", "0.0")
       })
       it("accepts user input and updates calculated amount", () => {
@@ -50,8 +53,7 @@ context("Swap Flow", () => {
           .should("not.have.text", "≈$0.0")
       })
       it("allows users to select only tokens in the same pool", () => {
-        cy.react("SwapTokenInput")
-          .eq(1)
+        cy.get('[data-testid="swapTokenInputTo"]')
           .contains("Choose")
           .as("dropdownButton")
           .click() // show

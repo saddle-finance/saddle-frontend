@@ -132,6 +132,7 @@ const SwapPage = (props: Props): ReactElement => {
                 </Box>
               </Box>
               <SwapTokenInput
+                data-testid="swapTokenInputFrom"
                 tokens={tokenOptions.from.filter(
                   ({ symbol }) => symbol !== toState.symbol,
                 )}
@@ -148,6 +149,7 @@ const SwapPage = (props: Props): ReactElement => {
             </Typography>
 
             <SwapTokenInput
+              data-testid="swapTokenInputTo"
               tokens={tokenOptions.to.filter(
                 ({ symbol }) => symbol !== fromState.symbol,
               )}

@@ -7,10 +7,10 @@ import {
   Typography,
 } from "@mui/material"
 import React, { useEffect } from "react"
-import { ReactElement, useRef, useState } from "react"
 import { SWAP_TYPES, TOKENS_MAP } from "../constants"
 import { commify, formatBNToString } from "../utils"
 import { styled, useTheme } from "@mui/material/styles"
+import { useRef, useState } from "react"
 import { ArrowDropDown } from "@mui/icons-material"
 import Autocomplete from "@mui/material/Autocomplete"
 import { BigNumber } from "ethers"
@@ -48,7 +48,8 @@ export default function SwapTokenInput({
   isSwapFrom,
   onSelect,
   onChangeAmount,
-}: SwapTokenInputProps): ReactElement {
+  ...rest
+}: SwapTokenInputProps): JSX.Element {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [popOverWidth, setPopOverWidth] = useState<number | undefined>()
@@ -92,7 +93,7 @@ export default function SwapTokenInput({
     typeof selected === "string" ? TOKENS_MAP[selected] : undefined
 
   return (
-    <div>
+    <div {...rest}>
       <Box
         display="flex"
         alignItems="center"
