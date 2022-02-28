@@ -8,8 +8,38 @@ interface toastData {
   tokenName?: string
   status?: number
 }
-export const toast = (toastData?: toastData): ReactText => {
-  return toastify(
+
+type toastStatus = "success" | "info" | "error"
+
+export const toastPromise = (promy: Promise<void>): Promise<unknown> => {
+  // let toastVariation: toastStatus
+  // if (!toastData?.status) toastVariation = toastStatus
+  // else toastVariation = toastData.status !== 1 ? "error" : toastStatus
+
+  return toastify.promise(promy, {
+    pending: "tx initiatiated",
+    success: {
+      render({ data }: { data: string }) {
+        return `response ${data}`
+      },
+    },
+    error: {
+      render({ data }: { data: string }) {
+        return `err ${data}`
+      },
+    },
+  })
+}
+
+export const toast = (
+  toastStatus: toastStatus,
+  toastData?: toastData,
+): ReactText => {
+  let toastVariation: toastStatus
+  if (!toastData?.status) toastVariation = toastStatus
+  else toastVariation = toastData.status !== 1 ? "error" : toastStatus
+
+  return toastify[toastVariation](
     <Box
       sx={{
         display: "flex",

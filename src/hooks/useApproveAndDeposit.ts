@@ -7,7 +7,8 @@ import {
   isLegacySwapABIPool,
 } from "../constants"
 import { formatDeadlineToNumber, getContract } from "../utils"
-import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
+import { toast, toastPromise } from "./utils"
+// import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
 import {
   useAllContracts,
   useLPTokenContract,
@@ -30,9 +31,9 @@ import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
+import { notifyCustomError } from "../utils/notifyHandler"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
-import { toast } from "./utils"
 // import { toast } from "react-toastify"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
@@ -83,6 +84,32 @@ export function useApproveAndDeposit(
     return null
   }, [chainId, library, POOL.metaSwapAddresses, account])
 
+  const enqueueToast = ({
+    tokenName,
+    hash,
+    type,
+  }: {
+    tokenName?: string
+    hash?: string
+    type?: string
+  }): void => {
+    if (type === "deposit") {
+      toast("info", { tokenName: "initiating deposit" })
+      if (hash) {
+        library?.once(hash, (tx: { status: number }) => {
+          console.log("tx mined", tx)
+          toast("success", { status: tx.status })
+        })
+      }
+    } else if (type === "tokenApproval") {
+      toast("success", { tokenName: tokenName })
+    }
+  }
+
+  const enqueuePromiseToast = async (promy: Promise<void>) => {
+    await toastPromise(promy)
+  }
+
   return async function approveAndDeposit(
     state: ApproveAndDepositStateArgument,
     shouldDepositWrapped = false,
@@ -122,8 +149,7 @@ export function useApproveAndDeposit(
         if (spendingValue.isZero()) return
         const tokenContract = tokenContracts?.[token.symbol] as Erc20
         if (tokenContract == null) return
-        console.log({ IS_PRODUCTION, token })
-        await checkAndApproveTokenForTrade(
+        const promy: Promise<void> = await checkAndApproveTokenForTrade(
           tokenContract,
           effectiveSwapContract.address,
           account,
@@ -141,7 +167,9 @@ export function useApproveAndDeposit(
             },
           },
         )
-        toast({ tokenName: token.name })
+        void enqueuePromiseToast(promy)
+        enqueueToast({ tokenName: token.name, type: "tokenApproval" })
+        // toast({ tokenName: token.name })
         // enqueueSnackbar({
         //   msg: `${token.name} check and approve token tx complete`,
         //   id: `${token.name}CheckAndApprove`,
@@ -212,11 +240,11 @@ export function useApproveAndDeposit(
       }
 
       console.log({ spendTransaction })
-      notifyHandler(spendTransaction.hash, "deposit")
+      enqueueToast({ hash: spendTransaction.hash, type: "deposit" })
+      // notifyHandler(spendTransaction.hash, "deposit")
 
       const waitedTx = await spendTransaction.wait()
       console.log({ waitedTx })
-      toast({ status: waitedTx.status })
 
       dispatch(
         updateLastTransactionTimes({
