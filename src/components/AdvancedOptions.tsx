@@ -130,7 +130,6 @@ export default function AdvancedOptions(): ReactElement {
                 <TextField
                   value={slippageCustom?.valueRaw}
                   size="small"
-                  label=""
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">%</InputAdornment>

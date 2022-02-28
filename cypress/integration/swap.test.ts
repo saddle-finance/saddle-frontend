@@ -48,7 +48,7 @@ context("Swap Flow", () => {
       })
       it("accepts user input and updates calculated amount", () => {
         cy.get('[data-testid="tokenValueInput"]').eq(0).type("1")
-        cy.get('[data-testId = "inputValueUSD"]')
+        cy.get('[data-testid = "inputValueUSD"]')
           .eq(0)
           .should("not.have.text", "≈$0.0")
       })
