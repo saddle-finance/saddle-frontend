@@ -34,7 +34,10 @@ const containedStyle = (
     },
     style: {
       "&:hover": {
-        backgroundColor: theme.palette[color].states?.containedHoverBackground,
+        backgroundColor:
+          theme.palette.mode === "dark"
+            ? theme.palette[color].light
+            : theme.palette[color].dark,
       },
     },
   }))

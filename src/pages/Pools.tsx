@@ -22,14 +22,15 @@ import {
   WCUSD_METAPOOL_NAME,
   WCUSD_METAPOOL_V2_NAME,
 } from "../constants"
+import { Box, Button, Container, Stack, TextField } from "@mui/material"
 import React, { ReactElement, useEffect, useState } from "react"
 
 import { BigNumber } from "ethers"
 import ConfirmTransaction from "../components/ConfirmTransaction"
-import { Container } from "@mui/material"
 import Modal from "../components/Modal"
 import PoolOverview from "../components/PoolOverview"
 import ReviewMigration from "../components/ReviewMigration"
+import { Search } from "@mui/icons-material"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
 import { logEvent } from "../utils/googleAnalytics"
@@ -236,7 +237,16 @@ function Pools(): ReactElement | null {
   }
   return (
     <Container>
-      <div className={styles.poolsPage}>
+      <Stack direction="row" alignItems="center">
+        <Box flex={1}>
+          <TextField
+            variant="standard"
+            placeholder="Pool or token"
+            InputProps={{
+              startAdornment: <Search />,
+            }}
+          />
+        </Box>
         <ul className={styles.filters}>
           {[
             ["all", "ALL"] as const,
@@ -257,6 +267,72 @@ function Pools(): ReactElement | null {
             </li>
           ))}
         </ul>
+
+        <Box flex={1}>
+          <Button variant="contained" color="secondary" sx={{ float: "right" }}>
+            Create Pool
+          </Button>
+        </Box>
+      </Stack>
+
+      <div className={styles.content}>
+        {Object.values(POOLS_MAP)
+          .filter(({ addresses }) => (chainId ? addresses[chainId] : false))
+          .map(
+            ({ name, type, isOutdated }) =>
+              [getPropsForPool(name), isOutdated, type] as const,
+          )
+          .filter(
+            ([poolProps, isOutdated, type]) =>
+              filter === "all" ||
+              type === filter ||
+              (filter === "outdated" &&
+                (isOutdated || poolProps.poolData.isMigrated)),
+          )
+          .sort(([a, aIsOutdated], [b, bIsOutdated]) => {
+            // 1. user pools
+            // 2. active pools
+            // 3. higher TVL pools
+            if (
+              (a.userShareData?.usdBalance || Zero).gt(Zero) ||
+              (b.userShareData?.usdBalance || Zero).gt(Zero)
+            ) {
+              return (a.userShareData?.usdBalance || Zero).gt(
+                b.userShareData?.usdBalance || Zero,
+              )
+                ? -1
+                : 1
+            } else if (
+              a.poolData.isMigrated ||
+              b.poolData.isMigrated ||
+              aIsOutdated ||
+              bIsOutdated
+            ) {
+              return a.poolData.isMigrated || aIsOutdated ? 1 : -1
+            } else {
+              return (a.poolData?.reserve || Zero).gt(
+                b.poolData?.reserve || Zero,
+              )
+                ? -1
+                : 1
+            }
+          })
+          .map(([poolProps]) => (
+            <PoolOverview
+              key={poolProps.name}
+              {...poolProps}
+              onClickMigrate={
+                poolProps.poolData.isMigrated
+                  ? () =>
+                      handleClickMigrate(
+                        POOLS_MAP[poolProps.poolData.name].name,
+                        poolProps.userShareData?.lpTokenBalance ?? Zero,
+                        POOLS_MAP[poolProps.poolData.name].lpToken.symbol,
+                      )
+                  : undefined
+              }
+            />
+          ))}
         <div className={styles.content}>
           {Object.values(POOLS_MAP)
             .filter(({ addresses }) => (chainId ? addresses[chainId] : false))

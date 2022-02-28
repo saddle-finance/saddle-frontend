@@ -2,11 +2,17 @@ name: CI
 
 on:
   push:
+<<<<<<< HEAD
     branches:
       - "**"
   pull_request:
     branches:
       - "**"
+=======
+    branches: [nikita/permissionless-pool]
+  pull_request:
+    branches: [nikita/permissionless-pool]
+>>>>>>> nikita/permissionless-pool
 
 jobs:
   lint:
