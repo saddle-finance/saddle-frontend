@@ -37,6 +37,7 @@ import { logEvent } from "../utils/googleAnalytics"
 import styles from "./Pools.module.scss"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndMigrate } from "../hooks/useApproveAndMigrate"
+import { useHistory } from "react-router-dom"
 import usePoolData from "../hooks/usePoolData"
 
 function Pools(): ReactElement | null {
@@ -90,6 +91,7 @@ function Pools(): ReactElement | null {
     setActiveMigration({ poolName, lpTokenBalance, lpTokenName })
     setCurrentModal("migrate")
   }
+  const hisotry = useHistory()
 
   useEffect(() => {
     setActiveMigration({
@@ -269,7 +271,12 @@ function Pools(): ReactElement | null {
         </ul>
 
         <Box flex={1}>
-          <Button variant="contained" color="secondary" sx={{ float: "right" }}>
+          <Button
+            variant="contained"
+            color="secondary"
+            sx={{ float: "right" }}
+            onClick={() => hisotry.replace("/pools/create")}
+          >
             Create Pool
           </Button>
         </Box>
