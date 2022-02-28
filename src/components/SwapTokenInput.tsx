@@ -256,7 +256,7 @@ function ListItem({
       data-testid="swapTokenItem"
       style={{
         paddingLeft: 0,
-        borderBottom: `1px solid  ${theme.palette.other.border}`,
+        borderBottom: `1px solid ${theme.palette.other.border}`,
       }}
     >
       <Stack direction="row" width="100%" alignItems="center">

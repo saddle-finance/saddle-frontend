@@ -134,7 +134,6 @@ export default function AdvancedOptions(): ReactElement {
                     endAdornment: (
                       <InputAdornment position="end">%</InputAdornment>
                     ),
-                    notched: false,
                   }}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
                     const value = e.target.value
@@ -177,8 +176,6 @@ export default function AdvancedOptions(): ReactElement {
               <OutlinedInput
                 type="text"
                 size="small"
-                notched={false}
-                label=""
                 endAdornment={
                   <InputAdornment position="end">min</InputAdornment>
                 }
