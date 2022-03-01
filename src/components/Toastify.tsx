@@ -87,7 +87,7 @@ export const enqueuePromiseToast = (
         },
       },
     },
-    { position: toastify.POSITION.TOP_LEFT, pauseOnFocusLoss: false },
+    { position: toastify.POSITION.TOP_LEFT },
   )
 }
 

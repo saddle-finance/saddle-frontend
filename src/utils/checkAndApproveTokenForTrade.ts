@@ -1,6 +1,4 @@
 import { BigNumber } from "@ethersproject/bignumber"
-import { ContractReceipt } from "ethers"
-import { ContractTransaction } from "@ethersproject/contracts"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
@@ -29,10 +27,6 @@ export default async function checkAndApproveTokenForTrade(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   gasPrice: BigNumber, // @dev unused
   callbacks: {
-    onTransactionStart?: (
-      transaction?: ContractTransaction,
-    ) => (() => void) | undefined
-    onTransactionSuccess?: (transaction: ContractReceipt) => () => void
     onTransactionError?: (error: Error | string) => () => void
   } = {},
 ): Promise<void> {
@@ -50,7 +44,6 @@ export default async function checkAndApproveTokenForTrade(
   if (existingAllowance.gte(spendingValue)) return
   async function approve(amount: BigNumber): Promise<void> {
     try {
-      const cleanupOnStart = callbacks.onTransactionStart?.()
       const approvalTransaction = await srcTokenContract.approve(
         spenderAddress,
         amount,
@@ -59,8 +52,6 @@ export default async function checkAndApproveTokenForTrade(
       await enqueuePromiseToast(confirmedTransaction, "tokenApproval", {
         tokenName,
       })
-      cleanupOnStart?.()
-      callbacks.onTransactionSuccess?.(await confirmedTransaction) // unused
     } catch (error) {
       callbacks.onTransactionError?.(error)
       throw error
