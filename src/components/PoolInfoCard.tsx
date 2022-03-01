@@ -9,6 +9,7 @@ import {
 import React, { ReactElement } from "react"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 
+import { Divider } from "@mui/material"
 import { PoolDataType } from "../hooks/usePoolData"
 import { Tooltip } from "@mui/material"
 import { commify } from "@ethersproject/units"
@@ -112,7 +113,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
           </div> */}
         </div>
       </div>
-      <div className="divider" />
+      <Divider />
       <div className="bottom">
         <h4>{t("currencyReserves")}</h4>
         <span>{`$${formattedData.reserve} ${t("inTotal")}`}</span>

@@ -1,5 +1,6 @@
 import "./PoolOverview.scss"
 
+import { Chip, Tooltip } from "@mui/material"
 import {
   IS_SDL_LIVE,
   POOLS_MAP,
@@ -17,8 +18,6 @@ import {
 
 import Button from "./Button"
 import { Link } from "react-router-dom"
-import Tag from "./Tag"
-import { Tooltip } from "@mui/material"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
 import logo from "../assets/icons/logo.svg"
@@ -93,14 +92,15 @@ export default function PoolOverview({
             <h4 className="title">{formattedData.name}</h4>
           )}
           {(shouldMigrate || isOutdated) && (
-            <Tag kind="warning" size="large">
-              OUTDATED
-            </Tag>
+            <Chip
+              variant="filled"
+              size="small"
+              label="OUTDATED"
+              color="secondary"
+            />
           )}
           {poolData.isPaused && (
-            <Tag kind="error" size="large">
-              PAUSED
-            </Tag>
+            <Chip variant="filled" size="small" label="PAUSED" color="error" />
           )}
         </div>
         {hasShare && (
