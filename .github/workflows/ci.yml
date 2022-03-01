@@ -2,9 +2,11 @@ name: CI
 
 on:
   push:
-    branches: [nikita/permissionless-pool]
+    branches:
+      - "**"
   pull_request:
-    branches: [nikita/permissionless-pool]
+    branches:
+      - "master"
 
 jobs:
   lint:

@@ -37,6 +37,7 @@ import { logEvent } from "../utils/googleAnalytics"
 import styles from "./Pools.module.scss"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndMigrate } from "../hooks/useApproveAndMigrate"
+import { useHistory } from "react-router-dom"
 import usePoolData from "../hooks/usePoolData"
 
 function Pools(): ReactElement | null {
@@ -90,6 +91,7 @@ function Pools(): ReactElement | null {
     setActiveMigration({ poolName, lpTokenBalance, lpTokenName })
     setCurrentModal("migrate")
   }
+  const hisotry = useHistory()
 
   useEffect(() => {
     setActiveMigration({
@@ -269,7 +271,12 @@ function Pools(): ReactElement | null {
         </ul>
 
         <Box flex={1}>
-          <Button variant="contained" color="secondary" sx={{ float: "right" }}>
+          <Button
+            variant="contained"
+            color="secondary"
+            sx={{ float: "right" }}
+            onClick={() => hisotry.replace("/pools/create")}
+          >
             Create Pool
           </Button>
         </Box>
@@ -333,47 +340,106 @@ function Pools(): ReactElement | null {
               }
             />
           ))}
-      </div>
-      <Modal
-        isOpen={!!currentModal}
-        onClose={(): void => setCurrentModal(null)}
-      >
-        {currentModal === "migrate" ? (
-          <ReviewMigration
-            onClose={(): void => {
-              setCurrentModal(null)
-              setActiveMigration({
-                poolName: null,
-                lpTokenBalance: Zero,
-                lpTokenName: "",
-              })
-            }}
-            onConfirm={async (): Promise<void> => {
-              setCurrentModal("confirm")
-              logEvent("migrate", {
-                pool: activeMigration.poolName,
-              })
-              try {
-                await approveAndMigrate(
-                  activeMigration.poolName,
-                  activeMigration.lpTokenBalance,
+        <div className={styles.content}>
+          {Object.values(POOLS_MAP)
+            .filter(({ addresses }) => (chainId ? addresses[chainId] : false))
+            .map(
+              ({ name, type, isOutdated }) =>
+                [getPropsForPool(name), isOutdated, type] as const,
+            )
+            .filter(
+              ([poolProps, isOutdated, type]) =>
+                filter === "all" ||
+                type === filter ||
+                (filter === "outdated" &&
+                  (isOutdated || poolProps.poolData.isMigrated)),
+            )
+            .sort(([a, aIsOutdated], [b, bIsOutdated]) => {
+              // 1. user pools
+              // 2. active pools
+              // 3. higher TVL pools
+              if (
+                (a.userShareData?.usdBalance || Zero).gt(Zero) ||
+                (b.userShareData?.usdBalance || Zero).gt(Zero)
+              ) {
+                return (a.userShareData?.usdBalance || Zero).gt(
+                  b.userShareData?.usdBalance || Zero,
                 )
-              } catch (err) {
-                console.error(err)
+                  ? -1
+                  : 1
+              } else if (
+                a.poolData.isMigrated ||
+                b.poolData.isMigrated ||
+                aIsOutdated ||
+                bIsOutdated
+              ) {
+                return a.poolData.isMigrated || aIsOutdated ? 1 : -1
+              } else {
+                return (a.poolData?.reserve || Zero).gt(
+                  b.poolData?.reserve || Zero,
+                )
+                  ? -1
+                  : 1
               }
-              setCurrentModal(null)
-              setActiveMigration({
-                poolName: null,
-                lpTokenBalance: Zero,
-                lpTokenName: "",
-              })
-            }}
-            lpTokenName={activeMigration.lpTokenName}
-            migrationAmount={activeMigration.lpTokenBalance}
-          />
-        ) : null}
-        {currentModal === "confirm" ? <ConfirmTransaction /> : null}
-      </Modal>
+            })
+            .map(([poolProps]) => (
+              <PoolOverview
+                key={poolProps.name}
+                {...poolProps}
+                onClickMigrate={
+                  poolProps.poolData.isMigrated
+                    ? () =>
+                        handleClickMigrate(
+                          POOLS_MAP[poolProps.poolData.name].name,
+                          poolProps.userShareData?.lpTokenBalance ?? Zero,
+                          POOLS_MAP[poolProps.poolData.name].lpToken.symbol,
+                        )
+                    : undefined
+                }
+              />
+            ))}
+        </div>
+        <Modal
+          isOpen={!!currentModal}
+          onClose={(): void => setCurrentModal(null)}
+        >
+          {currentModal === "migrate" ? (
+            <ReviewMigration
+              onClose={(): void => {
+                setCurrentModal(null)
+                setActiveMigration({
+                  poolName: null,
+                  lpTokenBalance: Zero,
+                  lpTokenName: "",
+                })
+              }}
+              onConfirm={async (): Promise<void> => {
+                setCurrentModal("confirm")
+                logEvent("migrate", {
+                  pool: activeMigration.poolName,
+                })
+                try {
+                  await approveAndMigrate(
+                    activeMigration.poolName,
+                    activeMigration.lpTokenBalance,
+                  )
+                } catch (err) {
+                  console.error(err)
+                }
+                setCurrentModal(null)
+                setActiveMigration({
+                  poolName: null,
+                  lpTokenBalance: Zero,
+                  lpTokenName: "",
+                })
+              }}
+              lpTokenName={activeMigration.lpTokenName}
+              migrationAmount={activeMigration.lpTokenBalance}
+            />
+          ) : null}
+          {currentModal === "confirm" ? <ConfirmTransaction /> : null}
+        </Modal>
+      </div>
     </Container>
   )
 }

@@ -55,21 +55,34 @@ function TopMenu(): ReactElement {
         data-testid="topMenuContainer"
         sx={{ mx: { md: 7 }, mt: { md: 3 } }}
       >
-        <Box
-          display="grid"
-          gridTemplateColumns="1fr auto 1fr"
-          gridTemplateRows="auto auto auto"
-          width="100%"
-          alignItems="center"
-        >
-          <Hidden mdDown>
-            <Box flex={1} flexBasis="30%">
+        <Box display="flex" width="100%" alignItems="center">
+          <Hidden lgDown>
+            <Box flex={{ xl: 1 }}>
               <NavLink to="/">
                 <SaddleLogo />
               </NavLink>
             </Box>
           </Hidden>
-          <Stack direction="row" spacing={5} justifyContent="center">
+          <Stack
+            position={{ xs: "fixed", lg: "static" }}
+            bottom={{ xs: theme.spacing(4) }}
+            right="50%"
+            flex={1}
+            direction="row"
+            spacing={5}
+            justifyContent="center"
+            sx={{
+              transform: { xs: "translate(50%, -50%)", lg: "none" },
+              zIndex: 1000,
+            }}
+            bgcolor={{ xs: theme.palette.background.paper, lg: "transparent" }}
+            border={{
+              xs: `1px solid ${theme.palette.other.divider}`,
+              lg: "none",
+            }}
+            borderRadius={1}
+            padding={theme.spacing(1, 3)}
+          >
             <NavMenu
               data-testid="swapNavLink"
               to="/"
@@ -89,7 +102,8 @@ function TopMenu(): ReactElement {
           <Stack
             direction="row"
             spacing={1}
-            justifyContent="flex-end"
+            flex={1}
+            justifyContent={{ xs: "center", lg: "flex-end" }}
             alignItems="center"
           >
             <RewardsButton setCurrentModal={setCurrentModal} />

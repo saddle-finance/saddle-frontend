@@ -24,6 +24,7 @@ import { useActiveWeb3React } from "../hooks"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
 import { useTheme } from "@mui/material/styles"
 import { useTranslation } from "react-i18next"
+import { useUDName } from "../hooks/useUDName"
 
 interface Props {
   openOptions: () => void
@@ -37,6 +38,7 @@ export default function AccountDetail({
   const { t } = useTranslation()
   const { account, connector } = useActiveWeb3React()
   const tokenBalances = usePoolTokenBalances()
+  const udName = useUDName()
   const ethBalanceFormatted = commify(
     formatBNToString(tokenBalances?.ETH || Zero, 18, 6),
   )
@@ -53,9 +55,7 @@ export default function AccountDetail({
           : theme.palette.common.black
       }
     >
-      <DialogTitle onClose={onClose}>
-        <Typography variant="h3">{t("account")}</Typography>
-      </DialogTitle>
+      <DialogTitle onClose={onClose}>{t("account")}</DialogTitle>
       <DialogContent>
         <Box
           display="grid"
@@ -74,7 +74,7 @@ export default function AccountDetail({
           <Stack direction="row" spacing={1}>
             <Identicon />
             <Typography variant="subtitle1">
-              {account && shortenAddress(account)}
+              {udName || (account && shortenAddress(account))}
             </Typography>
             {account && (
               <Link

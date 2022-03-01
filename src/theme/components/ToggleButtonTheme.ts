@@ -3,6 +3,20 @@ import { Components, Theme } from "@mui/material"
 export default function ToggleButtonTheme(theme: Theme): Components {
   return {
     MuiToggleButton: {
+      variants: [
+        {
+          props: { color: "secondary" },
+          style: {
+            "&.Mui-selected": {
+              color: theme.palette.text.primary,
+              backgroundColor: theme.palette.secondary.main,
+            },
+            "&:hover": {
+              backgroundColor: theme.palette.secondary.dark,
+            },
+          },
+        },
+      ],
       styleOverrides: {
         root: {
           textTransform: "none",
@@ -24,7 +38,7 @@ export default function ToggleButtonTheme(theme: Theme): Components {
       styleOverrides: {
         root: {
           backgroundColor: theme.palette.mute.main,
-          maxHeight: 28,
+          maxHeight: 32,
           borderRadius: 6,
         },
         grouped: {

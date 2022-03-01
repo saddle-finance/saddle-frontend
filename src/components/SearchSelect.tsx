@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react"
 
-import Divider from "./Divider"
+import { Divider } from "@mui/material"
 import { SWAP_TYPES } from "../constants"
 import Tag from "./Tag"
 import type { TokenOption } from "../pages/Swap"
