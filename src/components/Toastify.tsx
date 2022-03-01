@@ -6,7 +6,7 @@ import { getEtherscanLink } from "../utils/getEtherscanLink"
 import { toast as toastify } from "react-toastify"
 
 type toastStatus = "success" | "info" | "error"
-type txType = "tokenApproval" | "deposit"
+type txType = "tokenApproval" | "deposit" | "swap"
 
 export const enqueuePromiseToast = (
   promy: Promise<unknown>,
@@ -20,6 +20,8 @@ export const enqueuePromiseToast = (
       case "tokenApproval":
         // eslint-disable-next-line
         return `Approve ${additionalData?.tokenName} spend`
+      case "swap":
+        return "Swap Initiated"
       default:
         return "Transaction Initiated"
     }
@@ -33,7 +35,7 @@ export const enqueuePromiseToast = (
       case "deposit":
         return (
           <>
-            Deposit Successful on {additionalData?.poolName}
+            Deposit on {additionalData?.poolName} complete
             <Link
               // @ts-ignore
               href={getEtherscanLink(data?.transactionHash, "tx")}
@@ -48,7 +50,22 @@ export const enqueuePromiseToast = (
         return (
           <>
             {/* @ts-ignore */}
-            {additionalData?.tokenName} Approval Successful
+            {additionalData?.tokenName} approval complete
+            <Link
+              // @ts-ignore
+              href={getEtherscanLink(data?.transactionHash, "tx")}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <LaunchIcon fontSize="inherit" />
+            </Link>
+          </>
+        )
+      case "swap":
+        return (
+          <>
+            {/* @ts-ignore */}
+            Swap Complete
             <Link
               // @ts-ignore
               href={getEtherscanLink(data?.transactionHash, "tx")}
@@ -60,7 +77,7 @@ export const enqueuePromiseToast = (
           </>
         )
       default:
-        return "Success"
+        return "Transaction Complete"
     }
   }
 

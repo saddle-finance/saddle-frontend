@@ -4,7 +4,7 @@ import {
   SYNTH_TRACKING_ID,
   TRANSACTION_TYPES,
 } from "../constants"
-import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
+import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { useAllContracts, useSynthetixContract } from "./useContract"
 
 import { AppState } from "../state"
@@ -198,10 +198,11 @@ export function useApproveAndSwap(): (
         throw new Error("Invalid Swap Type, or contract not loaded")
       }
       if (swapTransaction?.hash) {
-        notifyHandler(swapTransaction.hash, "swap")
+        // notifyHandler(swapTransaction.hash, "swap")
+        await enqueuePromiseToast(swapTransaction.wait(), "swap")
       }
 
-      await swapTransaction?.wait()
+      // await swapTransaction?.wait()
       dispatch(
         updateLastTransactionTimes({
           [TRANSACTION_TYPES.SWAP]: Date.now(),
@@ -210,7 +211,8 @@ export function useApproveAndSwap(): (
       return Promise.resolve()
     } catch (e) {
       console.error(e)
-      notifyCustomError(e as Error)
+      // notifyCustomError(e as Error)
+      enqueueToast("error", e)
     }
   }
 }
