@@ -22,12 +22,11 @@ import {
   WCUSD_METAPOOL_NAME,
   WCUSD_METAPOOL_V2_NAME,
 } from "../constants"
+import { Container, Dialog } from "@mui/material"
 import React, { ReactElement, useEffect, useState } from "react"
 
 import { BigNumber } from "ethers"
 import ConfirmTransaction from "../components/ConfirmTransaction"
-import { Container } from "@mui/material"
-import Modal from "../components/Modal"
 import PoolOverview from "../components/PoolOverview"
 import ReviewMigration from "../components/ReviewMigration"
 import { Zero } from "@ethersproject/constants"
@@ -316,8 +315,8 @@ function Pools(): ReactElement | null {
               />
             ))}
         </div>
-        <Modal
-          isOpen={!!currentModal}
+        <Dialog
+          open={!!currentModal}
           onClose={(): void => setCurrentModal(null)}
         >
           {currentModal === "migrate" ? (
@@ -355,7 +354,7 @@ function Pools(): ReactElement | null {
             />
           ) : null}
           {currentModal === "confirm" ? <ConfirmTransaction /> : null}
-        </Modal>
+        </Dialog>
       </div>
     </Container>
   )

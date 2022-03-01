@@ -1,6 +1,6 @@
 import "./SwapPage.scss"
 
-import { Box, Button, Container } from "@mui/material"
+import { Box, Button, Container, Dialog } from "@mui/material"
 import React, { ReactElement, useMemo, useState } from "react"
 import { SWAP_TYPES, getIsVirtualSwap } from "../constants"
 import { formatBNToPercentString, formatBNToString } from "../utils"
@@ -10,7 +10,6 @@ import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
 import { ReactComponent as InfoIcon } from "../assets/icons/info.svg"
-import Modal from "./Modal"
 import { PendingSwap } from "../hooks/usePendingSwapData"
 import PendingSwapModal from "./PendingSwapModal"
 import ReviewSwap from "./ReviewSwap"
@@ -313,9 +312,10 @@ const SwapPage = (props: Props): ReactElement => {
           <div className={classNames({ showError: !!error }, "error")}>
             {error}
           </div>
-          <Modal
-            isOpen={!!currentModal}
+          <Dialog
+            open={!!currentModal}
             onClose={(): void => setCurrentModal(null)}
+            scroll="body"
           >
             {currentModal === "review" ? (
               <ReviewSwap
@@ -352,7 +352,7 @@ const SwapPage = (props: Props): ReactElement => {
                 }}
               />
             ) : null}
-          </Modal>
+          </Dialog>
         </div>
       </div>
     </Container>
