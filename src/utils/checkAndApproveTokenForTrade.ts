@@ -35,7 +35,7 @@ export default async function checkAndApproveTokenForTrade(
     onTransactionSuccess?: (transaction: ContractReceipt) => () => void
     onTransactionError?: (error: Error | string) => () => void
   } = {},
-): Promise<void> {
+): Promise<string | undefined> {
   if (srcTokenContract == null) return
   if (spendingValue.eq(0)) return
   const tokenName = await srcTokenContract.name()
@@ -69,6 +69,7 @@ export default async function checkAndApproveTokenForTrade(
     // Reset to 0 before updating approval
     await approve(Zero)
   }
+  await approve(infiniteApproval ? MaxUint256 : spendingValue)
   console.debug(`Approving ${tokenName} spend of ${spendingValue.toString()}`)
-  return approve(infiniteApproval ? MaxUint256 : spendingValue)
+  return tokenName
 }

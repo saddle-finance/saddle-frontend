@@ -94,11 +94,11 @@ export function useApproveAndDeposit(
     type?: string
   }): void => {
     if (type === "deposit") {
-      toast("info", { tokenName: "initiating deposit" })
+      // toast("info", { tokenName: "initiating deposit" })
       if (hash) {
         library?.once(hash, (tx: { status: number }) => {
           console.log("tx mined", tx)
-          toast("success", { status: tx.status })
+          toast("success", { status: tx.status, hash })
         })
       }
     } else if (type === "tokenApproval") {
@@ -106,7 +106,7 @@ export function useApproveAndDeposit(
     }
   }
 
-  const enqueuePromiseToast = async (promy: Promise<void>) => {
+  const enqueuePromiseToast = async (promy: Promise<unknown>) => {
     await toastPromise(promy)
   }
 
@@ -149,7 +149,7 @@ export function useApproveAndDeposit(
         if (spendingValue.isZero()) return
         const tokenContract = tokenContracts?.[token.symbol] as Erc20
         if (tokenContract == null) return
-        const promy: Promise<void> = await checkAndApproveTokenForTrade(
+        const promy = checkAndApproveTokenForTrade(
           tokenContract,
           effectiveSwapContract.address,
           account,
@@ -167,8 +167,9 @@ export function useApproveAndDeposit(
             },
           },
         )
-        void enqueuePromiseToast(promy)
-        enqueueToast({ tokenName: token.name, type: "tokenApproval" })
+        console.log({ promy })
+        await enqueuePromiseToast(promy)
+        // enqueueToast({ tokenName: token.name, type: "tokenApproval" })
         // toast({ tokenName: token.name })
         // enqueueSnackbar({
         //   msg: `${token.name} check and approve token tx complete`,
