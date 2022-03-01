@@ -1,13 +1,17 @@
-import "./WithdrawPage.scss"
-
 import {
   Box,
+  Button,
+  Container,
+  Divider,
   FormControlLabel,
+  Paper,
   Radio,
   RadioGroup,
   Stack,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
@@ -15,7 +19,6 @@ import React, { ReactElement, useState } from "react"
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
-import Button from "./Button"
 import ConfirmTransaction from "./ConfirmTransaction"
 import Modal from "./Modal"
 import MyFarm from "./MyFarm"
@@ -82,6 +85,8 @@ const WithdrawPage = (props: Props): ReactElement => {
 
   const { gasPriceSelected } = useSelector((state: AppState) => state.user)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
+  const theme = useTheme()
+  const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
 
   const onSubmit = (): void => {
     setCurrentModal("review")
@@ -95,19 +100,23 @@ const WithdrawPage = (props: Props): ReactElement => {
   const noShare = !myShareData || myShareData.lpTokenBalance.eq(Zero)
 
   return (
-    <div className="withdraw">
-      <div className="content">
-        <div className="left">
-          <Stack
-            direction="column"
-            width="434px"
-            justifyContent="center"
-            spacing={4}
-            alignItems="center"
-            marginX="auto"
-          >
-            <div className="form">
-              <h3>{t("withdraw")}</h3>
+    <Container maxWidth={isLgDown ? "sm" : "lg"} sx={{ marginTop: 5 }}>
+      <Stack
+        direction={{ xs: "column", lg: "row" }}
+        spacing={4}
+        alignItems={{ xs: "center", lg: "flex-start" }}
+      >
+        <Box
+          flex={1}
+          justifyContent="center"
+          alignItems="center"
+          marginX="auto"
+        >
+          <Paper>
+            <Box p={4}>
+              <Typography variant="h1" marginBottom={3}>
+                {t("withdraw")}
+              </Typography>
               <Box display="flex">
                 <Box>
                   <Typography variant="body1" noWrap>{`${t(
@@ -159,10 +168,10 @@ const WithdrawPage = (props: Props): ReactElement => {
                   )
                 })}
               </RadioGroup>
-
-              {tokensData.map((token, index) => (
-                <div key={index}>
+              <Stack spacing={3}>
+                {tokensData.map((token, index) => (
                   <TokenInput
+                    key={`tokenInput-${index}`}
                     {...token}
                     // inputValue={parseFloat(token.inputValue).toFixed(5)}
                     onChange={(value): void =>
@@ -174,93 +183,85 @@ const WithdrawPage = (props: Props): ReactElement => {
                     }
                     disabled={poolData?.isPaused}
                   />
-                  {index === tokensData.length - 1 ? (
-                    ""
-                  ) : (
-                    <div className="formSpace"></div>
-                  )}
-                </div>
-              ))}
-              <div className={"transactionInfoContainer"}>
-                <div className="transactionInfo">
-                  <div className="transactionInfoItem">
-                    {reviewData.priceImpact.gte(0) ? (
-                      <span className="bonus">{t("bonus")}: </span>
-                    ) : (
-                      <span className="slippage">{t("priceImpact")}</span>
-                    )}
-                    <span
-                      className={
-                        "value " +
-                        (reviewData.priceImpact.gte(0) ? "bonus" : "slippage")
-                      }
-                    >
-                      {formatBNToPercentString(reviewData.priceImpact, 18, 4)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <Box px={[3, 3, 0]} width="100%">
-              <AdvancedOptions />
+                ))}
+              </Stack>
+              <Box mt={3}>
+                {reviewData.priceImpact.gte(0) ? (
+                  <Typography component="span" color="primary">
+                    {t("bonus")}:{" "}
+                  </Typography>
+                ) : (
+                  <Typography
+                    component="span"
+                    color="error"
+                    whiteSpace="nowrap"
+                  >
+                    {t("priceImpact")}
+                  </Typography>
+                )}
+                <Typography
+                  component="span"
+                  color={reviewData.priceImpact.gte(0) ? "primary" : "error"}
+                >
+                  {formatBNToPercentString(reviewData.priceImpact, 18, 4)}
+                </Typography>
+              </Box>
             </Box>
-            <Button
-              data-testid="withdrawBtn"
-              disabled={
-                noShare ||
-                !!formStateData.error ||
-                formStateData.lpTokenAmountToSpend.isZero()
-              }
-              onClick={onSubmit}
-            >
-              {t("withdraw")}
-            </Button>
-          </Stack>
-        </div>
-
-        <div>
+          </Paper>
+          <AdvancedOptions />
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            data-testid="withdrawBtn"
+            disabled={
+              noShare ||
+              !!formStateData.error ||
+              formStateData.lpTokenAmountToSpend.isZero()
+            }
+            onClick={onSubmit}
+            sx={{ mt: 4 }}
+          >
+            {t("withdraw")}
+          </Button>
+        </Box>
+        <Stack direction="column" flex={1} spacing={4} width="100%">
           {poolData && (
             <MyFarm
               lpWalletBalance={myShareData?.lpTokenBalance || Zero}
               poolName={poolData.name}
             />
           )}
-          <div className="infoPanels">
-            <MyShareCard data={myShareData} />
-            <div
-              style={{
-                display: myShareData ? "block" : "none",
-              }}
-              className="divider"
-            ></div>{" "}
-            <PoolInfoCard data={poolData} />
-          </div>
-        </div>
+          <Paper>
+            <Box p={4}>
+              <MyShareCard data={myShareData} />
+              {myShareData && <Divider />}
+              <PoolInfoCard data={poolData} />
+            </Box>
+          </Paper>
+        </Stack>
+      </Stack>
 
-        <Modal
-          isOpen={!!currentModal}
-          onClose={(): void => setCurrentModal(null)}
-        >
-          {currentModal === "review" ? (
-            <ReviewWithdraw
-              data={reviewData}
-              gas={gasPriceSelected}
-              onConfirm={async (): Promise<void> => {
-                setCurrentModal("confirm")
-                logEvent(
-                  "withdraw",
-                  (poolData && { pool: poolData?.name }) || {},
-                )
-                await onConfirmTransaction?.()
-                setCurrentModal(null)
-              }}
-              onClose={(): void => setCurrentModal(null)}
-            />
-          ) : null}
-          {currentModal === "confirm" ? <ConfirmTransaction /> : null}
-        </Modal>
-      </div>
-    </div>
+      <Modal
+        isOpen={!!currentModal}
+        onClose={(): void => setCurrentModal(null)}
+      >
+        {currentModal === "review" ? (
+          <ReviewWithdraw
+            data={reviewData}
+            gas={gasPriceSelected}
+            onConfirm={async (): Promise<void> => {
+              setCurrentModal("confirm")
+              logEvent("withdraw", (poolData && { pool: poolData?.name }) || {})
+              await onConfirmTransaction?.()
+              setCurrentModal(null)
+            }}
+            onClose={(): void => setCurrentModal(null)}
+          />
+        ) : null}
+        {currentModal === "confirm" ? <ConfirmTransaction /> : null}
+      </Modal>
+    </Container>
   )
 }
 
