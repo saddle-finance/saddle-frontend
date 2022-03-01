@@ -13,10 +13,40 @@ interface toastData {
 
 type toastStatus = "success" | "info" | "error"
 
-export const toastPromise = (promy: Promise<unknown>): Promise<unknown> => {
-  // let toastVariation: toastStatus
-  // if (!toastData?.status) toastVariation = toastStatus
-  // else toastVariation = toastData.status !== 1 ? "error" : toastStatus
+export const enqueuePromiseToast = (
+  promy: Promise<unknown>,
+  type: string,
+): Promise<unknown> => {
+  const renderPendingContentBasedOnType = (type: string) => {
+    if (type === "deposit") {
+      return "Deposit Initiated"
+    } else if (type === "tokenApproval") {
+      return "Token Approval Initiated"
+    }
+  }
+
+  const renderSuccessContentBasedOnType = (
+    type: string,
+    data: unknown | undefined | string,
+  ) => {
+    if (type === "deposit") {
+      return (
+        <>
+          Deposit Successful
+          <Link
+            // @ts-ignore
+            href={getEtherscanLink(data.transactionHash, "tx")}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <LaunchIcon fontSize="inherit" />
+          </Link>
+        </>
+      )
+    } else if (type === "tokenApproval") {
+      return <span>{data} Approval Successful</span>
+    }
+  }
 
   return toastify.promise(
     promy,
@@ -25,41 +55,30 @@ export const toastPromise = (promy: Promise<unknown>): Promise<unknown> => {
         render(data) {
           console.log({ data })
           // eslint-disable-next-line
-          return `Token approval initiatiated`
+          return renderPendingContentBasedOnType(type)
         },
       },
       success: {
         render(data) {
           console.log({ data })
           // eslint-disable-next-line
-          // return `${data.data} approval success`
           return (
             <Box
               sx={{
                 display: "flex",
-                justifyContent: "space-between",
+                justifyContent: "space-around",
                 alignItems: "center",
               }}
             >
-              {data.data && (
-                <span>{data.data} check and approve token tx complete</span>
-              )}
-              <Link
-                href={getEtherscanLink("123", "tx")}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <LaunchIcon fontSize="inherit" />
-              </Link>
+              {renderSuccessContentBasedOnType(type, data.data)}
             </Box>
           )
         },
       },
       error: {
-        render(data) {
+        render({ data }: { data: { message: string } }) {
           console.log({ data })
-          // eslint-disable-next-line
-          return `${data.data} approval error`
+          return data.message
         },
       },
     },
@@ -67,7 +86,7 @@ export const toastPromise = (promy: Promise<unknown>): Promise<unknown> => {
   )
 }
 
-export const toast = (
+export const enqueueToast = (
   toastStatus: toastStatus,
   toastData?: toastData,
 ): ReactText => {

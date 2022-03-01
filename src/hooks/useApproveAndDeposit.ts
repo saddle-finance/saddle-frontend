@@ -7,8 +7,6 @@ import {
   isLegacySwapABIPool,
 } from "../constants"
 import { formatDeadlineToNumber, getContract } from "../utils"
-import { toast, toastPromise } from "./utils"
-// import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
 import {
   useAllContracts,
   useLPTokenContract,
@@ -18,29 +16,23 @@ import { useDispatch, useSelector } from "react-redux"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
-// import { Box } from "@mui/material"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { GasPrices } from "../state/user"
 import { IS_PRODUCTION } from "../utils/environment"
-// import LaunchIcon from "@mui/icons-material/Launch"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { NumberInputState } from "../utils/numberInputState"
-// import React from "react"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
+import { enqueuePromiseToast } from "./utils"
 import { notifyCustomError } from "../utils/notifyHandler"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
-// import { toast } from "react-toastify"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
 import { useMemo } from "react"
-import { useSnackbarContext } from "../providers/SnackbarProvider"
-
-// import { useSnackbar } from "notistack"
 
 interface ApproveAndDepositStateArgument {
   [tokenSymbol: string]: NumberInputState
@@ -51,13 +43,11 @@ export function useApproveAndDeposit(
 ): (
   state: ApproveAndDepositStateArgument,
   shouldDepositWrapped?: boolean,
-) => Promise<string | undefined> {
+) => Promise<void> {
   const dispatch = useDispatch()
   const swapContract = useSwapContract(poolName)
   const lpTokenContract = useLPTokenContract(poolName)
   const tokenContracts = useAllContracts()
-  const { enqueueSnackbar } = useSnackbarContext()
-  // const { enqueueSnackbar } = useSnackbar()
   const { account, chainId, library } = useActiveWeb3React()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
@@ -84,36 +74,32 @@ export function useApproveAndDeposit(
     return null
   }, [chainId, library, POOL.metaSwapAddresses, account])
 
-  const enqueueToast = ({
-    tokenName,
-    hash,
-    type,
-  }: {
-    tokenName?: string
-    hash?: string
-    type?: string
-  }): void => {
-    if (type === "deposit") {
-      // toast("info", { tokenName: "initiating deposit" })
-      if (hash) {
-        library?.once(hash, (tx: { status: number }) => {
-          console.log("tx mined", tx)
-          toast("success", { status: tx.status, hash })
-        })
-      }
-    } else if (type === "tokenApproval") {
-      toast("success", { tokenName: tokenName })
-    }
-  }
-
-  const enqueuePromiseToast = async (promy: Promise<unknown>) => {
-    await toastPromise(promy)
-  }
+  // const enqueueToast = ({
+  //   tokenName,
+  //   hash,
+  //   type,
+  // }: {
+  //   tokenName?: string
+  //   hash?: string
+  //   type?: string
+  // }): void => {
+  //   if (type === "deposit") {
+  //     // toast("info", { tokenName: "initiating deposit" })
+  //     if (hash) {
+  //       library?.once(hash, (tx: { status: number }) => {
+  //         console.log("tx mined", tx)
+  //         toast("success", { status: tx.status, hash })
+  //       })
+  //     }
+  //   } else if (type === "tokenApproval") {
+  //     toast("success", { tokenName: tokenName })
+  //   }
+  // }
 
   return async function approveAndDeposit(
     state: ApproveAndDepositStateArgument,
     shouldDepositWrapped = false,
-  ): Promise<string | undefined> {
+  ): Promise<void> {
     try {
       if (!account) throw new Error("Wallet must be connected")
       if (
@@ -149,7 +135,7 @@ export function useApproveAndDeposit(
         if (spendingValue.isZero()) return
         const tokenContract = tokenContracts?.[token.symbol] as Erc20
         if (tokenContract == null) return
-        const promy = checkAndApproveTokenForTrade(
+        const approveTokenPromise = checkAndApproveTokenForTrade(
           tokenContract,
           effectiveSwapContract.address,
           account,
@@ -158,26 +144,11 @@ export function useApproveAndDeposit(
           gasPrice,
           {
             onTransactionError: () => {
-              enqueueSnackbar({
-                msg: `${token.name} check and approve tx errors`,
-                id: `${token.name}CheckAndApprove`,
-                type: "error",
-              })
               throw new Error("Your transaction could not be completed")
             },
           },
         )
-        console.log({ promy })
-        await enqueuePromiseToast(promy)
-        // enqueueToast({ tokenName: token.name, type: "tokenApproval" })
-        // toast({ tokenName: token.name })
-        // enqueueSnackbar({
-        //   msg: `${token.name} check and approve token tx complete`,
-        //   id: `${token.name}CheckAndApprove`,
-        //   type: "success",
-        //   data: waitedTx || "",
-        // })
-        // console.log({ waitedTx })
+        await enqueuePromiseToast(approveTokenPromise, "tokenApproval")
         return
       }
       // For each token being deposited, check the allowance and approve it if necessary
@@ -239,20 +210,14 @@ export function useApproveAndDeposit(
           txnDeadline,
         )
       }
-
-      console.log({ spendTransaction })
-      enqueueToast({ hash: spendTransaction.hash, type: "deposit" })
-      // notifyHandler(spendTransaction.hash, "deposit")
-
-      const waitedTx = await spendTransaction.wait()
-      console.log({ waitedTx })
+      await enqueuePromiseToast(spendTransaction.wait(), "deposit")
 
       dispatch(
         updateLastTransactionTimes({
           [TRANSACTION_TYPES.DEPOSIT]: Date.now(),
         }),
       )
-      return Promise.resolve(spendTransaction.hash)
+      return Promise.resolve()
     } catch (e) {
       console.error(e)
       notifyCustomError(e as Error)
