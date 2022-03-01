@@ -12,8 +12,8 @@ export default function TooltipTheme(theme: Theme): Components {
           backgroundColor: theme.palette.primary.main,
           borderRadius: 4,
           color: theme.palette.primary.contrastText,
-          fontsize: 12,
           lineHeight: 16 / 12,
+          fontSize: theme.typography.body2.fontSize,
           fontWeight: 400,
         },
         arrow: {
