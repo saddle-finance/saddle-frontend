@@ -10,13 +10,14 @@ type toastStatus = "success" | "info" | "error"
 export const enqueuePromiseToast = (
   promy: Promise<unknown>,
   type: string,
-  additionalData?: { tokenName: string },
+  additionalData?: { tokenName?: string; poolName?: string },
 ): Promise<unknown> => {
   const renderPendingContentBasedOnType = (type: string) => {
     if (type === "deposit") {
       return "Deposit Initiated"
     } else if (type === "tokenApproval") {
-      return "Token Approval Initiated"
+      // eslint-disable-next-line
+      return `Approve ${additionalData?.tokenName} spend`
     }
   }
 
@@ -27,7 +28,7 @@ export const enqueuePromiseToast = (
     if (type === "deposit") {
       return (
         <>
-          Deposit Successful
+          Deposit Successful on {additionalData?.poolName}
           <Link
             // @ts-ignore
             href={getEtherscanLink(data?.transactionHash, "tx")}
@@ -86,7 +87,7 @@ export const enqueuePromiseToast = (
         },
       },
     },
-    { position: toastify.POSITION.TOP_LEFT },
+    { position: toastify.POSITION.TOP_LEFT, pauseOnFocusLoss: false },
   )
 }
 

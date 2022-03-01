@@ -126,7 +126,6 @@ export function useApproveAndDeposit(
             },
           },
         )
-        // await enqueuePromiseToast(approveTokenPromise, "tokenApproval")
         return
       }
       // For each token being deposited, check the allowance and approve it if necessary
@@ -188,7 +187,9 @@ export function useApproveAndDeposit(
           txnDeadline,
         )
       }
-      await enqueuePromiseToast(spendTransaction.wait(), "deposit")
+      await enqueuePromiseToast(spendTransaction.wait(), "deposit", {
+        poolName,
+      })
 
       dispatch(
         updateLastTransactionTimes({
