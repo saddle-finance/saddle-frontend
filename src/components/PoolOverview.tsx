@@ -1,5 +1,6 @@
 import "./PoolOverview.scss"
 
+import { Chip, Tooltip } from "@mui/material"
 import {
   IS_SDL_LIVE,
   POOLS_MAP,
@@ -16,9 +17,7 @@ import {
 } from "../utils"
 
 import Button from "./Button"
-import { Chip } from "@mui/material"
 import { Link } from "react-router-dom"
-import ToolTip from "./ToolTip"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
 import logo from "../assets/icons/logo.svg"
@@ -86,9 +85,9 @@ export default function PoolOverview({
       <div className="left">
         <div className="titleAndTag">
           {isMetapool ? (
-            <ToolTip content={t("metapool")}>
+            <Tooltip title={<React.Fragment>{t("metapool")}</React.Fragment>}>
               <h4 className="title underline">{formattedData.name}</h4>
-            </ToolTip>
+            </Tooltip>
           ) : (
             <h4 className="title">{formattedData.name}</h4>
           )}
@@ -154,9 +153,15 @@ export default function PoolOverview({
               <div className="margin Apr" key={symbol}>
                 {symbol.includes("/") ? (
                   <span className="label underline">
-                    <ToolTip content={symbol.replaceAll("/", "\n")}>
-                      Reward APR
-                    </ToolTip>
+                    <Tooltip
+                      title={
+                        <React.Fragment>
+                          {symbol.replaceAll("/", "\n")}
+                        </React.Fragment>
+                      }
+                    >
+                      <React.Fragment>Reward APR</React.Fragment>
+                    </Tooltip>
                   </span>
                 ) : (
                   <span className="label">{symbol} APR</span>
