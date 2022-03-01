@@ -6,54 +6,61 @@ import { getEtherscanLink } from "../utils/getEtherscanLink"
 import { toast as toastify } from "react-toastify"
 
 type toastStatus = "success" | "info" | "error"
+type txType = "tokenApproval" | "deposit"
 
 export const enqueuePromiseToast = (
   promy: Promise<unknown>,
-  type: string,
+  type: txType,
   additionalData?: { tokenName?: string; poolName?: string },
 ): Promise<unknown> => {
   const renderPendingContentBasedOnType = (type: string) => {
-    if (type === "deposit") {
-      return "Deposit Initiated"
-    } else if (type === "tokenApproval") {
-      // eslint-disable-next-line
-      return `Approve ${additionalData?.tokenName} spend`
+    switch (type) {
+      case "deposit":
+        return "Deposit Initiated"
+      case "tokenApproval":
+        // eslint-disable-next-line
+        return `Approve ${additionalData?.tokenName} spend`
+      default:
+        return "Transaction Initiated"
     }
   }
 
   const renderSuccessContentBasedOnType = (
-    type: string,
+    type: txType,
     data: undefined | string | unknown,
   ) => {
-    if (type === "deposit") {
-      return (
-        <>
-          Deposit Successful on {additionalData?.poolName}
-          <Link
-            // @ts-ignore
-            href={getEtherscanLink(data?.transactionHash, "tx")}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <LaunchIcon fontSize="inherit" />
-          </Link>
-        </>
-      )
-    } else if (type === "tokenApproval") {
-      return (
-        <>
-          {/* @ts-ignore */}
-          {additionalData?.tokenName} Approval Successful
-          <Link
-            // @ts-ignore
-            href={getEtherscanLink(data?.transactionHash, "tx")}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <LaunchIcon fontSize="inherit" />
-          </Link>
-        </>
-      )
+    switch (type) {
+      case "deposit":
+        return (
+          <>
+            Deposit Successful on {additionalData?.poolName}
+            <Link
+              // @ts-ignore
+              href={getEtherscanLink(data?.transactionHash, "tx")}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <LaunchIcon fontSize="inherit" />
+            </Link>
+          </>
+        )
+      case "tokenApproval":
+        return (
+          <>
+            {/* @ts-ignore */}
+            {additionalData?.tokenName} Approval Successful
+            <Link
+              // @ts-ignore
+              href={getEtherscanLink(data?.transactionHash, "tx")}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <LaunchIcon fontSize="inherit" />
+            </Link>
+          </>
+        )
+      default:
+        return "Success"
     }
   }
 
@@ -67,7 +74,6 @@ export const enqueuePromiseToast = (
       },
       success: {
         render(data) {
-          console.log({ data })
           return (
             <Box
               sx={{
