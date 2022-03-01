@@ -163,7 +163,7 @@ export default function TokenClaimDialog({
               </p>
             )}
             {allPoolsWithRewards.map((pool, i, arr) => (
-              <>
+              <React.Fragment key={pool.name}>
                 <ClaimListItem
                   title={pool.name}
                   amount={rewardBalances[pool.name] || Zero}
@@ -171,10 +171,9 @@ export default function TokenClaimDialog({
                   status={
                     claimsStatuses["allPools"] || claimsStatuses[pool.name]
                   }
-                  key={pool.name}
                 />
                 {i < arr.length - 1 && <Divider key={i} />}
-              </>
+              </React.Fragment>
             ))}
           </ul>
           <div className={styles.info}>

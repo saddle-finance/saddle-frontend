@@ -1,6 +1,6 @@
 import { POOLS_MAP, PoolName, SPA, TRANSACTION_TYPES } from "../constants"
+import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { getContract, getTokenByAddress } from "../utils"
-import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
 import { useCallback, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useLPTokenContract, useMiniChefContract } from "./useContract"
@@ -51,8 +51,9 @@ export function useRewardsHelpers(poolName: PoolName): {
           BigNumber.from(1),
         )
         const txn = await rewardsContract.deposit(poolPid, amount, account)
-        notifyHandler(txn?.hash, "deposit")
-        await txn.wait()
+        await enqueuePromiseToast(txn.wait(), "deposit", { poolName })
+        // notifyHandler(txn?.hash, "deposit")
+        // await txn.wait()
         dispatch(
           updateLastTransactionTimes({
             [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
@@ -60,7 +61,8 @@ export function useRewardsHelpers(poolName: PoolName): {
         )
       } catch (e) {
         console.error(e)
-        notifyCustomError({ ...(e as Error), message: "Unable to Stake" })
+        // notifyCustomError({ ...(e as Error), message: "Unable to Stake" })
+        enqueueToast("error", "Unable to Stake")
       }
     },
     [
@@ -70,6 +72,7 @@ export function useRewardsHelpers(poolName: PoolName): {
       infiniteApproval,
       poolPid,
       dispatch,
+      poolName,
     ],
   )
 
@@ -79,8 +82,9 @@ export function useRewardsHelpers(poolName: PoolName): {
         return
       try {
         const txn = await rewardsContract.withdraw(poolPid, amount, account)
-        notifyHandler(txn?.hash, "withdraw")
-        await txn.wait()
+        await enqueuePromiseToast(txn.wait(), "withdraw", { poolName })
+        // notifyHandler(txn?.hash, "withdraw")
+        // await txn.wait()
         dispatch(
           updateLastTransactionTimes({
             [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
@@ -88,10 +92,11 @@ export function useRewardsHelpers(poolName: PoolName): {
         )
       } catch (e) {
         console.error(e)
-        notifyCustomError({ ...(e as Error), message: "Unable to Unstake" })
+        // notifyCustomError({ ...(e as Error), message: "Unable to Unstake" })
+        enqueueToast("error", "Unable to Stake")
       }
     },
-    [lpTokenContract, rewardsContract, account, poolPid, dispatch],
+    [lpTokenContract, rewardsContract, account, poolPid, dispatch, poolName],
   )
 
   const claimSPA = useCallback(async () => {
@@ -101,8 +106,9 @@ export function useRewardsHelpers(poolName: PoolName): {
       // Calling `deposit` with 0 amount will claim all the SPA available. This is
       // a workaround having a token that we can't give away.
       const txn = await rewardsContract.deposit(poolPid, Zero, account)
-      notifyHandler(txn?.hash, "claim")
-      await txn.wait()
+      await enqueuePromiseToast(txn.wait(), "claim", { poolName })
+      // notifyHandler(txn?.hash, "claim")
+      // await txn.wait()
       dispatch(
         updateLastTransactionTimes({
           [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
@@ -110,9 +116,10 @@ export function useRewardsHelpers(poolName: PoolName): {
       )
     } catch (e) {
       console.error(e)
-      notifyCustomError({ ...(e as Error), message: "Unable to claim SPA" })
+      // notifyCustomError({ ...(e as Error), message: "Unable to claim SPA" })
+      enqueueToast("error", "Unable to claim SPA")
     }
-  }, [lpTokenContract, rewardsContract, account, poolPid, dispatch])
+  }, [lpTokenContract, rewardsContract, account, poolPid, dispatch, poolName])
 
   useEffect(() => {
     async function fetchAmount() {

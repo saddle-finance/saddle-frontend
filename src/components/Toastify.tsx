@@ -6,7 +6,7 @@ import { getEtherscanLink } from "../utils/getEtherscanLink"
 import { toast as toastify } from "react-toastify"
 
 type toastStatus = "success" | "info" | "error"
-type txType = "tokenApproval" | "deposit" | "swap"
+type txType = "tokenApproval" | "deposit" | "swap" | "withdraw" | "claim"
 
 export const enqueuePromiseToast = (
   promy: Promise<unknown>,
@@ -22,6 +22,10 @@ export const enqueuePromiseToast = (
         return `Approve ${additionalData?.tokenName} spend`
       case "swap":
         return "Swap Initiated"
+      case "withdraw":
+        return "Withdraw Initiated"
+      case "claim":
+        return "Claim Initiated"
       default:
         return "Transaction Initiated"
     }
@@ -66,6 +70,36 @@ export const enqueuePromiseToast = (
           <>
             {/* @ts-ignore */}
             Swap Complete
+            <Link
+              // @ts-ignore
+              href={getEtherscanLink(data?.transactionHash, "tx")}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <LaunchIcon fontSize="inherit" />
+            </Link>
+          </>
+        )
+      case "withdraw":
+        return (
+          <>
+            {/* @ts-ignore */}
+            Withdraw on {additionalData?.poolName} Complete
+            <Link
+              // @ts-ignore
+              href={getEtherscanLink(data?.transactionHash, "tx")}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <LaunchIcon fontSize="inherit" />
+            </Link>
+          </>
+        )
+      case "claim":
+        return (
+          <>
+            {/* @ts-ignore */}
+            Claim on {additionalData?.poolName} Complete
             <Link
               // @ts-ignore
               href={getEtherscanLink(data?.transactionHash, "tx")}
