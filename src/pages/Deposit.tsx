@@ -14,8 +14,6 @@ import usePoolData, { PoolDataType } from "../hooks/usePoolData"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
-// import LaunchIcon from "@mui/icons-material/Launch"
-// import { Link } from "@mui/material"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
@@ -25,14 +23,11 @@ import { Zero } from "@ethersproject/constants"
 import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { formatGasToString } from "../utils/gas"
-// import { getEtherscanLink } from "../utils/getEtherscanLink"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
 import { useSelector } from "react-redux"
-import { useSnackbarContext } from "../providers/SnackbarProvider"
-// import { useSnackbar } from "notistack"
 import { useSwapContract } from "../hooks/useContract"
 
 interface Props {
@@ -43,8 +38,6 @@ function Deposit({ poolName }: Props): ReactElement | null {
   const POOL = POOLS_MAP[poolName]
   const { account, library, chainId } = useActiveWeb3React()
   const approveAndDeposit = useApproveAndDeposit(poolName)
-  const { enqueueSnackbar } = useSnackbarContext()
-  // const { enqueueSnackbar } = useSnackbar()
   const [poolData, userShareData] = usePoolData(poolName)
   const swapContract = useSwapContract(poolName)
   const allTokens = useMemo(() => {
@@ -227,32 +220,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
   })
 
   async function onConfirmTransaction(): Promise<void> {
-    // enqueueSnackbar({
-    //   msg: "Deposit transaction initiated",
-    //   id: "depositStart",
-    //   type: "deposit",
-    // })
-    const res = await approveAndDeposit(tokenFormState, shouldDepositWrapped)
-    console.log({ res })
-    enqueueSnackbar({
-      msg: "Deposit tx complete",
-      id: "depositComplete",
-      type: "deposit",
-    })
-    // enqueueSnackbar("Deposit complete", {
-    //   id: "depositComplete",
-    //   variant: "success",
-    //   // action: () =>
-    //   //   res && (
-    //   //     <Link
-    //   //       target="_blank"
-    //   //       rel="noreferrer"
-    //   //       href={getEtherscanLink(res, "tx")}
-    //   //     >
-    //   //       <LaunchIcon fontSize="inherit" />
-    //   //     </Link>
-    //   //   ),
-    // })
+    await approveAndDeposit(tokenFormState, shouldDepositWrapped)
     // Clear input after deposit
     updateTokenFormState(
       allTokens.reduce(

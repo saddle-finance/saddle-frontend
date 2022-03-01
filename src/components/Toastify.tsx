@@ -5,17 +5,12 @@ import LaunchIcon from "@mui/icons-material/Launch"
 import { getEtherscanLink } from "../utils/getEtherscanLink"
 import { toast as toastify } from "react-toastify"
 
-interface toastData {
-  tokenName?: string
-  status?: number
-  hash?: string
-}
-
 type toastStatus = "success" | "info" | "error"
 
 export const enqueuePromiseToast = (
   promy: Promise<unknown>,
   type: string,
+  additionalData?: { tokenName: string },
 ): Promise<unknown> => {
   const renderPendingContentBasedOnType = (type: string) => {
     if (type === "deposit") {
@@ -27,7 +22,7 @@ export const enqueuePromiseToast = (
 
   const renderSuccessContentBasedOnType = (
     type: string,
-    data: unknown | undefined | string,
+    data: undefined | string | unknown,
   ) => {
     if (type === "deposit") {
       return (
@@ -35,7 +30,7 @@ export const enqueuePromiseToast = (
           Deposit Successful
           <Link
             // @ts-ignore
-            href={getEtherscanLink(data.transactionHash, "tx")}
+            href={getEtherscanLink(data?.transactionHash, "tx")}
             target="_blank"
             rel="noreferrer"
           >
@@ -44,7 +39,20 @@ export const enqueuePromiseToast = (
         </>
       )
     } else if (type === "tokenApproval") {
-      return <span>{data} Approval Successful</span>
+      return (
+        <>
+          {/* @ts-ignore */}
+          {additionalData?.tokenName} Approval Successful
+          <Link
+            // @ts-ignore
+            href={getEtherscanLink(data?.transactionHash, "tx")}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <LaunchIcon fontSize="inherit" />
+          </Link>
+        </>
+      )
     }
   }
 
@@ -52,16 +60,13 @@ export const enqueuePromiseToast = (
     promy,
     {
       pending: {
-        render(data) {
-          console.log({ data })
-          // eslint-disable-next-line
+        render() {
           return renderPendingContentBasedOnType(type)
         },
       },
       success: {
         render(data) {
           console.log({ data })
-          // eslint-disable-next-line
           return (
             <Box
               sx={{
@@ -77,7 +82,6 @@ export const enqueuePromiseToast = (
       },
       error: {
         render({ data }: { data: { message: string } }) {
-          console.log({ data })
           return data.message
         },
       },
@@ -88,44 +92,7 @@ export const enqueuePromiseToast = (
 
 export const enqueueToast = (
   toastStatus: toastStatus,
-  toastData?: toastData,
+  toastData: string,
 ): ReactText => {
-  let toastVariation: toastStatus
-  if (!toastData?.status) toastVariation = toastStatus
-  else toastVariation = toastData.status !== 1 ? "error" : toastStatus
-
-  return toastify[toastVariation](
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}
-    >
-      {toastData?.tokenName && (
-        <span>{toastData.tokenName} check and approve token tx complete</span>
-      )}
-      {toastData?.status && (
-        <Box>
-          Transaction {`${toastData.status === 1 ? "Successful" : "Failed"}`}
-        </Box>
-      )}
-      <Link
-        href={getEtherscanLink(toastData?.hash ?? "", "tx")}
-        target="_blank"
-        rel="noreferrer"
-      >
-        <LaunchIcon fontSize="inherit" />
-      </Link>
-    </Box>,
-    {
-      position: "top-left",
-      autoClose: 25_000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    },
-  )
+  return toastify[toastStatus](toastData)
 }

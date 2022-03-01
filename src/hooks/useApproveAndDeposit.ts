@@ -6,6 +6,7 @@ import {
   Token,
   isLegacySwapABIPool,
 } from "../constants"
+import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { formatDeadlineToNumber, getContract } from "../utils"
 import {
   useAllContracts,
@@ -26,7 +27,6 @@ import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
-import { enqueuePromiseToast } from "../components/Toastify"
 import { notifyCustomError } from "../utils/notifyHandler"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
@@ -74,28 +74,6 @@ export function useApproveAndDeposit(
     return null
   }, [chainId, library, POOL.metaSwapAddresses, account])
 
-  // const enqueueToast = ({
-  //   tokenName,
-  //   hash,
-  //   type,
-  // }: {
-  //   tokenName?: string
-  //   hash?: string
-  //   type?: string
-  // }): void => {
-  //   if (type === "deposit") {
-  //     // toast("info", { tokenName: "initiating deposit" })
-  //     if (hash) {
-  //       library?.once(hash, (tx: { status: number }) => {
-  //         console.log("tx mined", tx)
-  //         toast("success", { status: tx.status, hash })
-  //       })
-  //     }
-  //   } else if (type === "tokenApproval") {
-  //     toast("success", { tokenName: tokenName })
-  //   }
-  // }
-
   return async function approveAndDeposit(
     state: ApproveAndDepositStateArgument,
     shouldDepositWrapped = false,
@@ -135,7 +113,7 @@ export function useApproveAndDeposit(
         if (spendingValue.isZero()) return
         const tokenContract = tokenContracts?.[token.symbol] as Erc20
         if (tokenContract == null) return
-        const approveTokenPromise = checkAndApproveTokenForTrade(
+        await checkAndApproveTokenForTrade(
           tokenContract,
           effectiveSwapContract.address,
           account,
@@ -148,7 +126,7 @@ export function useApproveAndDeposit(
             },
           },
         )
-        await enqueuePromiseToast(approveTokenPromise, "tokenApproval")
+        // await enqueuePromiseToast(approveTokenPromise, "tokenApproval")
         return
       }
       // For each token being deposited, check the allowance and approve it if necessary
@@ -221,6 +199,7 @@ export function useApproveAndDeposit(
     } catch (e) {
       console.error(e)
       notifyCustomError(e as Error)
+      enqueueToast("error", e)
     }
   }
 }

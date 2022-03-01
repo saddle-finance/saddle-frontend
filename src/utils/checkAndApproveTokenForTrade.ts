@@ -6,7 +6,7 @@ import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import { MaxUint256 } from "@ethersproject/constants"
 import { Zero } from "@ethersproject/constants"
-// import { notifyHandler } from "../utils/notifyHandler"
+import { enqueuePromiseToast } from "../components/Toastify"
 
 /**
  * Checks if a spender is allowed to spend some amount of a token.
@@ -35,7 +35,7 @@ export default async function checkAndApproveTokenForTrade(
     onTransactionSuccess?: (transaction: ContractReceipt) => () => void
     onTransactionError?: (error: Error | string) => () => void
   } = {},
-): Promise<string | undefined> {
+): Promise<void> {
   if (srcTokenContract == null) return
   if (spendingValue.eq(0)) return
   const tokenName = await srcTokenContract.name()
@@ -55,11 +55,12 @@ export default async function checkAndApproveTokenForTrade(
         spenderAddress,
         amount,
       )
-      // Add notification
-      // notifyHandler(approvalTransaction.hash, "tokenApproval")
-      const confirmedTransaction = await approvalTransaction.wait()
+      const confirmedTransaction = approvalTransaction.wait()
+      await enqueuePromiseToast(confirmedTransaction, "tokenApproval", {
+        tokenName,
+      })
       cleanupOnStart?.()
-      callbacks.onTransactionSuccess?.(confirmedTransaction)
+      callbacks.onTransactionSuccess?.(await confirmedTransaction) // unused
     } catch (error) {
       callbacks.onTransactionError?.(error)
       throw error
@@ -71,5 +72,4 @@ export default async function checkAndApproveTokenForTrade(
   }
   await approve(infiniteApproval ? MaxUint256 : spendingValue)
   console.debug(`Approving ${tokenName} spend of ${spendingValue.toString()}`)
-  return tokenName
 }
