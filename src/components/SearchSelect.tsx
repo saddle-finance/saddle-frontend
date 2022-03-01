@@ -1,3 +1,4 @@
+import { Chip, Divider } from "@mui/material"
 import React, {
   ReactElement,
   useEffect,
@@ -6,9 +7,7 @@ import React, {
   useState,
 } from "react"
 
-import { Divider } from "@mui/material"
 import { SWAP_TYPES } from "../constants"
-import Tag from "./Tag"
 import type { TokenOption } from "../pages/Swap"
 import classnames from "classnames"
 import { commify } from "../utils"
@@ -158,14 +157,15 @@ function ListItem({
         <div className={styles.tagWrapper}>
           <b>{symbol}</b>
           {!isAvailable && (
-            <Tag size="small" kind="disabled">
-              {t("unavailable")}
-            </Tag>
+            <Chip size="small" variant="outlined" label={t("unavailable")} />
           )}
           {isAvailable && isVirtualSwap && (
-            <Tag size="small" kind="primary">
-              {t("virtualSwap")}
-            </Tag>
+            <Chip
+              size="small"
+              variant="outlined"
+              label={t("virtualSwap")}
+              color="info"
+            />
           )}
         </div>
         <p className={styles.textMinor}>{name}</p>
