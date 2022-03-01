@@ -4,6 +4,7 @@ import {
   Button,
   Checkbox,
   Container,
+  Dialog,
   Divider,
   Paper,
   Stack,
@@ -19,7 +20,6 @@ import AdvancedOptions from "./AdvancedOptions"
 import ConfirmTransaction from "./ConfirmTransaction"
 import { DepositTransaction } from "../interfaces/transactions"
 import LPStakingBanner from "./LPStakingBanner"
-import Modal from "./Modal"
 import MyFarm from "./MyFarm"
 import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
@@ -262,9 +262,10 @@ const DepositPage = (props: Props): ReactElement => {
         </Stack>
       </Stack>
 
-      <Modal
-        isOpen={!!currentModal}
+      <Dialog
+        open={!!currentModal}
         onClose={(): void => setCurrentModal(null)}
+        scroll="body"
       >
         {currentModal === "review" ? (
           <ReviewDeposit
@@ -279,7 +280,7 @@ const DepositPage = (props: Props): ReactElement => {
           />
         ) : null}
         {currentModal === "confirm" ? <ConfirmTransaction /> : null}
-      </Modal>
+      </Dialog>
     </Container>
   )
 }
