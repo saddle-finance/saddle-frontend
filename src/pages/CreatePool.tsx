@@ -154,7 +154,7 @@ export default function CreatePool(): React.ReactElement {
                   flexBasis={`calc(50% - ${theme.spacing(1.5)})`}
                 >
                   <TextField
-                    label={`Token ${index} `}
+                    label={`Token ${index}`}
                     fullWidth
                     margin="normal"
                   />

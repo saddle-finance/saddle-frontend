@@ -274,7 +274,7 @@ function Pools(): ReactElement | null {
             variant="contained"
             color="secondary"
             sx={{ float: "right" }}
-            onClick={() => history.replace("/pools/create")}
+            onClick={() => history.push("/pools/create")}
           >
             Create Pool
           </Button>
