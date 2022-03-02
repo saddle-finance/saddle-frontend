@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import { Box, Link } from "@mui/material"
 import React, { ReactText } from "react"
 
@@ -24,7 +25,6 @@ export const enqueuePromiseToast = (
       case "deposit":
         return "Deposit Initiated"
       case "tokenApproval":
-        // eslint-disable-next-line
         return `Approve ${additionalData?.tokenName} spend`
       case "swap":
         return "Swap Initiated"
@@ -39,100 +39,20 @@ export const enqueuePromiseToast = (
     }
   }
 
-  const renderSuccessContentBasedOnType = (
-    type: txType,
-    data: undefined | string | unknown,
-  ) => {
+  const renderSuccessContentBasedOnType = (type: txType) => {
     switch (type) {
       case "deposit":
-        return (
-          <>
-            Deposit on {additionalData?.poolName} complete
-            <Link
-              // @ts-ignore
-              href={getEtherscanLink(data?.transactionHash, "tx")}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <LaunchIcon fontSize="inherit" />
-            </Link>
-          </>
-        )
+        return `Deposit on ${additionalData?.poolName} complete`
       case "tokenApproval":
-        return (
-          <>
-            {/* @ts-ignore */}
-            {additionalData?.tokenName} approval complete
-            <Link
-              // @ts-ignore
-              href={getEtherscanLink(data?.transactionHash, "tx")}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <LaunchIcon fontSize="inherit" />
-            </Link>
-          </>
-        )
+        return `${additionalData?.tokenName} approval complete`
       case "swap":
-        return (
-          <>
-            {/* @ts-ignore */}
-            Swap Complete
-            <Link
-              // @ts-ignore
-              href={getEtherscanLink(data?.transactionHash, "tx")}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <LaunchIcon fontSize="inherit" />
-            </Link>
-          </>
-        )
+        return "Swap Complete"
       case "withdraw":
-        return (
-          <>
-            {/* @ts-ignore */}
-            Withdraw on {additionalData?.poolName} Complete
-            <Link
-              // @ts-ignore
-              href={getEtherscanLink(data?.transactionHash, "tx")}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <LaunchIcon fontSize="inherit" />
-            </Link>
-          </>
-        )
+        return `Withdraw on ${additionalData?.poolName} Complete`
       case "claim":
-        return (
-          <>
-            {/* @ts-ignore */}
-            Claim on {additionalData?.poolName} Complete
-            <Link
-              // @ts-ignore
-              href={getEtherscanLink(data?.transactionHash, "tx")}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <LaunchIcon fontSize="inherit" />
-            </Link>
-          </>
-        )
+        return `Claim on ${additionalData?.poolName} Complete`
       case "migrate":
-        return (
-          <>
-            {/* @ts-ignore */}
-            Migrate from {additionalData?.poolName} Complete
-            <Link
-              // @ts-ignore
-              href={getEtherscanLink(data?.transactionHash, "tx")}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <LaunchIcon fontSize="inherit" />
-            </Link>
-          </>
-        )
+        return `Migrate from ${additionalData?.poolName} Complete`
       default:
         return "Transaction Complete"
     }
@@ -154,7 +74,17 @@ export const enqueuePromiseToast = (
               alignItems: "center",
             }}
           >
-            {renderSuccessContentBasedOnType(type, data.data)}
+            <>
+              {renderSuccessContentBasedOnType(type)}
+              <Link
+                // @ts-ignore
+                href={getEtherscanLink(data?.transactionHash, "tx")}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <LaunchIcon fontSize="inherit" />
+              </Link>
+            </>
           </Box>
         )
       },
