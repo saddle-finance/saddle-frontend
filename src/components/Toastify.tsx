@@ -48,13 +48,13 @@ export const enqueuePromiseToast = (
       case "swap":
         return "Swap Complete"
       case "withdraw":
-        return `Withdraw on ${additionalData?.poolName} Complete`
+        return `Withdraw on ${additionalData?.poolName} complete`
       case "claim":
-        return `Claim on ${additionalData?.poolName} Complete`
+        return `Claim on ${additionalData?.poolName} complete`
       case "migrate":
-        return `Migrate from ${additionalData?.poolName} Complete`
+        return `Migrate from ${additionalData?.poolName} complete`
       default:
-        return "Transaction Complete"
+        return "Transaction complete"
     }
   }
 
