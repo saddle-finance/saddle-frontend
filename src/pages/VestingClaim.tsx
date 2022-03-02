@@ -87,28 +87,19 @@ function VestingClaim(): ReactElement {
             setRemainingAmount(remainingAmount)
           } catch (err) {
             console.error(err)
-            enqueueToast(
-              "error",
-              err instanceof Error ? err.message : "Transaction Failed",
-            )
+            enqueueToast("error", "Unable to get total pending amount")
           }
           try {
             const claimableVestedAmount = await vestingContract.vestedAmount()
             setClaimableVestedAmount(claimableVestedAmount)
           } catch (err) {
             console.error(err)
-            enqueueToast(
-              "error",
-              err instanceof Error ? err.message : "Transaction Failed",
-            )
+            enqueueToast("error", "Unable to get vested amount")
           }
         }
       } catch (err) {
         console.error(err)
-        enqueueToast(
-          "error",
-          err instanceof Error ? err.message : "Transaction Failed",
-        )
+        enqueueToast("error", "Unable to query for vesting contracts")
       }
     }
     void fetchBeneficiaries()
@@ -124,10 +115,7 @@ function VestingClaim(): ReactElement {
       setClaimableVestedAmount(Zero)
     } catch (err) {
       console.error(err)
-      enqueueToast(
-        "error",
-        err instanceof Error ? err.message : "Transaction Failed",
-      )
+      enqueueToast("error", "Unable to claim vested tokens")
     }
   }
 
