@@ -198,7 +198,10 @@ export function useApproveAndDeposit(
       return Promise.resolve()
     } catch (e) {
       console.error(e)
-      enqueueToast("error", e)
+      enqueueToast(
+        "error",
+        e instanceof Error ? e.message : "Transaction Failed",
+      )
     }
   }
 }

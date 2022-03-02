@@ -164,7 +164,10 @@ const PendingSwapModal = ({
       onClose()
     } catch (e) {
       console.error(e)
-      enqueueToast("error", e)
+      enqueueToast(
+        "error",
+        e instanceof Error ? e.message : "Transaction Failed",
+      )
     }
   }, [
     settlementState,

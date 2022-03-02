@@ -87,19 +87,28 @@ function VestingClaim(): ReactElement {
             setRemainingAmount(remainingAmount)
           } catch (err) {
             console.error(err)
-            enqueueToast("error", err)
+            enqueueToast(
+              "error",
+              err instanceof Error ? err.message : "Transaction Failed",
+            )
           }
           try {
             const claimableVestedAmount = await vestingContract.vestedAmount()
             setClaimableVestedAmount(claimableVestedAmount)
           } catch (err) {
             console.error(err)
-            enqueueToast("error", err)
+            enqueueToast(
+              "error",
+              err instanceof Error ? err.message : "Transaction Failed",
+            )
           }
         }
       } catch (err) {
         console.error(err)
-        enqueueToast("error", err)
+        enqueueToast(
+          "error",
+          err instanceof Error ? err.message : "Transaction Failed",
+        )
       }
     }
     void fetchBeneficiaries()
@@ -115,7 +124,10 @@ function VestingClaim(): ReactElement {
       setClaimableVestedAmount(Zero)
     } catch (err) {
       console.error(err)
-      enqueueToast("error", err)
+      enqueueToast(
+        "error",
+        err instanceof Error ? err.message : "Transaction Failed",
+      )
     }
   }
 
