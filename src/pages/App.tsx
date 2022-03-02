@@ -15,6 +15,7 @@ import { Redirect, Route, Switch } from "react-router-dom"
 import { isChainSupportedByNotify, notify } from "../utils/notifyHandler"
 import { useDispatch, useSelector } from "react-redux"
 
+import CreatePool from "./CreatePool"
 import Deposit from "./Deposit"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
@@ -102,6 +103,7 @@ export default function App(): ReactElement {
                     />
                   ))}
                   <Redirect from="/pools/:route/:action" to="/pools" />
+                  <Route exact path="/pools/create" component={CreatePool} />
                   <Route exact path="/risk" component={Risk} />
                   <Route exact path="/vesting-claim" component={VestingClaim} />
                 </Switch>
