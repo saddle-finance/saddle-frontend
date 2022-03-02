@@ -279,17 +279,11 @@ function useRewardClaims() {
           txn = await rewardsContract.deposit(pid, Zero, account)
         }
         await enqueuePromiseToast(txn.wait(), "claim", { poolName: pool.name })
-        // notifyHandler(txn?.hash, "claim")
-        // await txn?.wait()
         updateClaimStatus(pool.name, STATUSES.SUCCESS)
       } catch (e) {
         console.error(e)
         updateClaimStatus(pool.name, STATUSES.ERROR)
         enqueueToast("error", "Unable to claim reward")
-        // notifyCustomError({
-        //   ...(e as Error),
-        //   message: "Unable to claim reward",
-        // })
       }
     },
     [chainId, account, rewardsContract, updateClaimStatus],
@@ -314,14 +308,11 @@ function useRewardClaims() {
       await enqueuePromiseToast(txn.wait(), "claim", {
         poolName: "Retroactive",
       })
-      // notifyHandler(txn?.hash, "claim")
-      // await txn?.wait()
       updateClaimStatus("retroactive", STATUSES.SUCCESS)
     } catch (e) {
       console.error(e)
       updateClaimStatus("retroactive", STATUSES.ERROR)
       enqueueToast("error", "Unable to claim reward")
-      // notifyCustomError({ ...(e as Error), message: "Unable to claim reward" })
     }
   }, [retroRewardsContract, account, userMerkleData, updateClaimStatus])
 
@@ -351,17 +342,11 @@ function useRewardClaims() {
         await enqueuePromiseToast(txn.wait(), "claim", {
           poolName: "All Pools",
         })
-        // notifyHandler(txn?.hash, "claim")
-        // await txn?.wait()
         updateClaimStatus("all", STATUSES.SUCCESS)
       } catch (e) {
         console.error(e)
         updateClaimStatus("all", STATUSES.ERROR)
         enqueueToast("error", "Unable to claim reward")
-        // notifyCustomError({
-        //   ...(e as Error),
-        //   message: "Unable to claim reward",
-        // })
       }
     },
     [account, rewardsContract, chainId, updateClaimStatus],

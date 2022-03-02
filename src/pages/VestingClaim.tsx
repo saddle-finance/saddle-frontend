@@ -2,7 +2,7 @@ import React, { ReactElement, useEffect, useState } from "react"
 import { SDL_TOKEN, SDL_TOKEN_ADDRESSES } from "../constants"
 import { Trans, useTranslation } from "react-i18next"
 import { commify, formatBNToString, getContract } from "../utils"
-import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
+import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import Button from "../components/Button"
@@ -87,28 +87,19 @@ function VestingClaim(): ReactElement {
             setRemainingAmount(remainingAmount)
           } catch (err) {
             console.error(err)
-            notifyCustomError({
-              ...(err as Error),
-              message: "Unable to get total pending amount",
-            })
+            enqueueToast("error", err)
           }
           try {
             const claimableVestedAmount = await vestingContract.vestedAmount()
             setClaimableVestedAmount(claimableVestedAmount)
           } catch (err) {
             console.error(err)
-            notifyCustomError({
-              ...(err as Error),
-              message: "Unable to get vested amount",
-            })
+            enqueueToast("error", err)
           }
         }
       } catch (err) {
         console.error(err)
-        notifyCustomError({
-          ...(err as Error),
-          message: "Unable to query for vesting contracts",
-        })
+        enqueueToast("error", err)
       }
     }
     void fetchBeneficiaries()
@@ -118,15 +109,13 @@ function VestingClaim(): ReactElement {
     if (!vestingContract) return
     try {
       const txn = await vestingContract.release()
-      notifyHandler(txn?.hash, "claim")
-      await txn?.wait()
+      await enqueuePromiseToast(txn.wait(), "claim", {
+        poolName: "Vesting Contract",
+      })
       setClaimableVestedAmount(Zero)
     } catch (err) {
       console.error(err)
-      notifyCustomError({
-        ...(err as Error),
-        message: "Unable to claim vested tokens",
-      })
+      enqueueToast("error", err)
     }
   }
 

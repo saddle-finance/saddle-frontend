@@ -6,7 +6,13 @@ import { getEtherscanLink } from "../utils/getEtherscanLink"
 import { toast as toastify } from "react-toastify"
 
 type toastStatus = "success" | "info" | "error"
-type txType = "tokenApproval" | "deposit" | "swap" | "withdraw" | "claim"
+type txType =
+  | "tokenApproval"
+  | "deposit"
+  | "swap"
+  | "withdraw"
+  | "claim"
+  | "migrate"
 
 export const enqueuePromiseToast = (
   promy: Promise<unknown>,
@@ -26,6 +32,8 @@ export const enqueuePromiseToast = (
         return "Withdraw Initiated"
       case "claim":
         return "Claim Initiated"
+      case "migrate":
+        return "Migrate Initiated"
       default:
         return "Transaction Initiated"
     }
@@ -100,6 +108,21 @@ export const enqueuePromiseToast = (
           <>
             {/* @ts-ignore */}
             Claim on {additionalData?.poolName} Complete
+            <Link
+              // @ts-ignore
+              href={getEtherscanLink(data?.transactionHash, "tx")}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <LaunchIcon fontSize="inherit" />
+            </Link>
+          </>
+        )
+      case "migrate":
+        return (
+          <>
+            {/* @ts-ignore */}
+            Migrate from {additionalData?.poolName} Complete
             <Link
               // @ts-ignore
               href={getEtherscanLink(data?.transactionHash, "tx")}

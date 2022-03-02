@@ -1,7 +1,7 @@
 import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
 import { addSlippage, subtractSlippage } from "../utils/slippage"
+import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { formatUnits, parseUnits } from "@ethersproject/units"
-import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
 import { useLPTokenContract, useSwapContract } from "./useContract"
 
 import { AppState } from "../state"
@@ -120,7 +120,6 @@ export function useApproveAndWithdraw(
           deadline,
         )
       } else {
-        // state.withdrawType === [TokenSymbol]
         spendTransaction = await swapContract.removeLiquidityOneToken(
           state.lpTokenAmountToSpend,
           POOL.poolTokens.findIndex(
@@ -137,9 +136,9 @@ export function useApproveAndWithdraw(
         )
       }
 
-      notifyHandler(spendTransaction.hash, "withdraw")
-
-      await spendTransaction.wait()
+      await enqueuePromiseToast(spendTransaction.wait(), "withdraw", {
+        poolName,
+      })
       dispatch(
         updateLastTransactionTimes({
           [TRANSACTION_TYPES.WITHDRAW]: Date.now(),
@@ -147,7 +146,7 @@ export function useApproveAndWithdraw(
       )
     } catch (e) {
       console.error(e)
-      notifyCustomError(e as Error)
+      enqueueToast("error", e)
     }
   }
 }

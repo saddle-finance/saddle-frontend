@@ -6,6 +6,7 @@ import {
   formatBNToString,
   formatDeadlineToNumber,
 } from "../utils"
+import { enqueuePromiseToast, enqueueToast } from "./Toastify"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -20,7 +21,6 @@ import { Zero } from "@ethersproject/constants"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { formatUnits } from "@ethersproject/units"
 import { gasBNFromState } from "../utils/gas"
-import { notifyHandler } from "../utils/notifyHandler"
 import styles from "./PendingSwapModal.module.scss"
 import { subtractSlippage } from "../utils/slippage"
 import { useBridgeContract } from "../hooks/useContract"
@@ -160,11 +160,11 @@ const PendingSwapModal = ({
         ])
         return
       }
-      transaction && notifyHandler(transaction.hash, "swap")
-      await transaction?.wait()
+      transaction && (await enqueuePromiseToast(transaction.wait(), "swap"))
       onClose()
     } catch (e) {
       console.error(e)
+      enqueueToast("error", e)
     }
   }, [
     settlementState,

@@ -52,8 +52,6 @@ export function useRewardsHelpers(poolName: PoolName): {
         )
         const txn = await rewardsContract.deposit(poolPid, amount, account)
         await enqueuePromiseToast(txn.wait(), "deposit", { poolName })
-        // notifyHandler(txn?.hash, "deposit")
-        // await txn.wait()
         dispatch(
           updateLastTransactionTimes({
             [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
@@ -61,7 +59,6 @@ export function useRewardsHelpers(poolName: PoolName): {
         )
       } catch (e) {
         console.error(e)
-        // notifyCustomError({ ...(e as Error), message: "Unable to Stake" })
         enqueueToast("error", "Unable to Stake")
       }
     },
@@ -83,8 +80,6 @@ export function useRewardsHelpers(poolName: PoolName): {
       try {
         const txn = await rewardsContract.withdraw(poolPid, amount, account)
         await enqueuePromiseToast(txn.wait(), "withdraw", { poolName })
-        // notifyHandler(txn?.hash, "withdraw")
-        // await txn.wait()
         dispatch(
           updateLastTransactionTimes({
             [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
@@ -92,7 +87,6 @@ export function useRewardsHelpers(poolName: PoolName): {
         )
       } catch (e) {
         console.error(e)
-        // notifyCustomError({ ...(e as Error), message: "Unable to Unstake" })
         enqueueToast("error", "Unable to Stake")
       }
     },
@@ -107,8 +101,6 @@ export function useRewardsHelpers(poolName: PoolName): {
       // a workaround having a token that we can't give away.
       const txn = await rewardsContract.deposit(poolPid, Zero, account)
       await enqueuePromiseToast(txn.wait(), "claim", { poolName })
-      // notifyHandler(txn?.hash, "claim")
-      // await txn.wait()
       dispatch(
         updateLastTransactionTimes({
           [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
@@ -116,7 +108,6 @@ export function useRewardsHelpers(poolName: PoolName): {
       )
     } catch (e) {
       console.error(e)
-      // notifyCustomError({ ...(e as Error), message: "Unable to claim SPA" })
       enqueueToast("error", "Unable to claim SPA")
     }
   }, [lpTokenContract, rewardsContract, account, poolPid, dispatch, poolName])
