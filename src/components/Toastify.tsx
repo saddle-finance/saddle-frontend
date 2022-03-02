@@ -6,8 +6,8 @@ import LaunchIcon from "@mui/icons-material/Launch"
 import { getEtherscanLink } from "../utils/getEtherscanLink"
 import { toast as toastify } from "react-toastify"
 
-type toastStatus = "success" | "info" | "error"
-type txType =
+type ToastStatus = "success" | "info" | "error"
+type TxType =
   | "tokenApproval"
   | "deposit"
   | "swap"
@@ -17,7 +17,7 @@ type txType =
 
 export const enqueuePromiseToast = (
   promy: Promise<unknown>,
-  type: txType,
+  type: TxType,
   additionalData?: { tokenName?: string; poolName?: string },
 ): Promise<unknown> => {
   const renderPendingContentBasedOnType = (type: string) => {
@@ -39,7 +39,7 @@ export const enqueuePromiseToast = (
     }
   }
 
-  const renderSuccessContentBasedOnType = (type: txType) => {
+  const renderSuccessContentBasedOnType = (type: TxType) => {
     switch (type) {
       case "deposit":
         return `Deposit on ${additionalData?.poolName} complete`
@@ -98,7 +98,7 @@ export const enqueuePromiseToast = (
 }
 
 export const enqueueToast = (
-  toastStatus: toastStatus,
+  toastStatus: ToastStatus,
   toastData: string,
 ): ReactText => {
   return toastify[toastStatus](toastData)
