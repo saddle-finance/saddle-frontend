@@ -138,37 +138,33 @@ export const enqueuePromiseToast = (
     }
   }
 
-  return toastify.promise(
-    promy,
-    {
-      pending: {
-        render() {
-          return renderPendingContentBasedOnType(type)
-        },
-      },
-      success: {
-        render(data) {
-          return (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-around",
-                alignItems: "center",
-              }}
-            >
-              {renderSuccessContentBasedOnType(type, data.data)}
-            </Box>
-          )
-        },
-      },
-      error: {
-        render({ data }: { data: { message: string } }) {
-          return data.message
-        },
+  return toastify.promise(promy, {
+    pending: {
+      render() {
+        return renderPendingContentBasedOnType(type)
       },
     },
-    { position: toastify.POSITION.TOP_LEFT },
-  )
+    success: {
+      render(data) {
+        return (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-around",
+              alignItems: "center",
+            }}
+          >
+            {renderSuccessContentBasedOnType(type, data.data)}
+          </Box>
+        )
+      },
+    },
+    error: {
+      render({ data }: { data: { message: string } }) {
+        return data.message
+      },
+    },
+  })
 }
 
 export const enqueueToast = (
