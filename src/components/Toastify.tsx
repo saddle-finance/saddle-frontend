@@ -70,21 +70,20 @@ export const enqueuePromiseToast = (
           <Box
             sx={{
               display: "flex",
-              justifyContent: "space-around",
+              justifyContent: "space-between",
               alignItems: "center",
             }}
           >
-            <>
-              {renderSuccessContentBasedOnType(type)}
-              <Link
-                // @ts-ignore
-                href={getEtherscanLink(data?.transactionHash, "tx")}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <LaunchIcon fontSize="inherit" />
-              </Link>
-            </>
+            <span>{renderSuccessContentBasedOnType(type)}</span>
+            <Link
+              // @ts-ignore
+              href={getEtherscanLink(data?.transactionHash, "tx")}
+              target="_blank"
+              rel="noreferrer"
+              sx={{ alignItems: "center" }}
+            >
+              <LaunchIcon fontSize="inherit" />
+            </Link>
           </Box>
         )
       },
