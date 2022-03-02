@@ -59,7 +59,7 @@ export function useRewardsHelpers(poolName: PoolName): {
         )
       } catch (e) {
         console.error(e)
-        enqueueToast("error", "Unable to Stake")
+        enqueueToast("error", "Unable to stake")
       }
     },
     [
@@ -87,7 +87,7 @@ export function useRewardsHelpers(poolName: PoolName): {
         )
       } catch (e) {
         console.error(e)
-        enqueueToast("error", "Unable to Stake")
+        enqueueToast("error", "Unable to unstake")
       }
     },
     [lpTokenContract, rewardsContract, account, poolPid, dispatch, poolName],
