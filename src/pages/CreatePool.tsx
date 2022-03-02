@@ -3,6 +3,7 @@ import {
   Button,
   Container,
   Divider,
+  Link,
   Paper,
   Stack,
   TextField,
@@ -12,6 +13,8 @@ import {
   useTheme,
 } from "@mui/material"
 import React, { useState } from "react"
+import ArrowBackIcon from "@mui/icons-material/ArrowBack"
+import { Link as RouteLink } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
 export default function CreatePool(): React.ReactElement {
@@ -23,7 +26,22 @@ export default function CreatePool(): React.ReactElement {
     setTokenLists((prev) => [...prev, ""])
   }
   return (
-    <Container sx={{ pb: 5, pt: 7 }}>
+    <Container sx={{ pb: 5 }}>
+      <Link
+        component={RouteLink}
+        to="/pools"
+        color="inherit"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          textDecoration: "none",
+          my: 2,
+        }}
+      >
+        <ArrowBackIcon sx={{ mr: 1 }} />
+        Back to pools
+      </Link>
+
       <Paper>
         <Box p={3}>
           <Box>
