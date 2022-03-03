@@ -91,23 +91,25 @@ export default function PoolOverview({
   return (
     <Paper sx={{ p: theme.spacing(2, 3) }}>
       <Grid container alignItems="center">
-        <Grid item lg={3}>
+        <Grid item lg={4}>
           <Box>
             <Box>
-              <div className="titleAndTag">
+              <Box display="flex">
                 {isMetapool ? (
                   <Tooltip
                     title={<React.Fragment>{t("metapool")}</React.Fragment>}
                   >
                     <Typography
                       variant="h2"
-                      sx={{ borderBottom: "1px dotted" }}
+                      sx={{ borderBottom: "1px dotted", mr: 1 }}
                     >
                       {formattedData.name}
                     </Typography>
                   </Tooltip>
                 ) : (
-                  <Typography variant="h2">{formattedData.name}</Typography>
+                  <Typography variant="h2" sx={{ mr: 1 }}>
+                    {formattedData.name}
+                  </Typography>
                 )}
                 {(shouldMigrate || isOutdated) && (
                   <Chip
@@ -125,7 +127,7 @@ export default function PoolOverview({
                     color="error"
                   />
                 )}
-              </div>
+              </Box>
               {hasShare && (
                 <div className="balance">
                   <Typography component="span">{t("balance")}: </Typography>
@@ -158,7 +160,7 @@ export default function PoolOverview({
             </div>
           )}
         </Grid>
-        <Grid item lg={3}>
+        <Grid item lg={2}>
           {poolData.sdlPerDay != null && IS_SDL_LIVE && (
             <div className="margin">
               <Typography component="span" variant="subtitle1">
