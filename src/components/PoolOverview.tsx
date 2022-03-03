@@ -89,7 +89,15 @@ export default function PoolOverview({
   //   outdated: isOutdated || shouldMigrate,
   // })}
   return (
-    <Paper sx={{ p: theme.spacing(2, 3) }}>
+    <Paper
+      sx={{
+        p: theme.spacing(2, 3),
+        borderColor:
+          isOutdated || shouldMigrate
+            ? theme.palette.secondary.main
+            : theme.palette.other.divider,
+      }}
+    >
       <Grid container alignItems="center">
         <Grid item lg={4}>
           <Box>
