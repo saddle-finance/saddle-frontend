@@ -19,7 +19,7 @@ import {
   isMetaPool,
 } from "../constants"
 import { Partners, PoolDataType, UserShareType } from "../hooks/usePoolData"
-import React, { ReactElement, useMemo } from "react"
+import React, { ReactElement } from "react"
 import {
   formatBNToPercentString,
   formatBNToShortString,
@@ -28,7 +28,6 @@ import {
 
 import { Link } from "react-router-dom"
 import { Zero } from "@ethersproject/constants"
-// import classNames from "classnames"
 import logo from "../assets/icons/logo.svg"
 import { useTranslation } from "react-i18next"
 
@@ -50,48 +49,39 @@ export default function PoolOverview({
   const { type: poolType, isOutdated } = POOLS_MAP[poolData.name]
   const formattedDecimals = poolType === PoolTypes.USD ? 2 : 4
   const shouldMigrate = !!onClickMigrate
-  const formattedData = useMemo(
-    () => ({
-      name: poolData.name,
-      reserve: poolData.reserve
-        ? formatBNToShortString(poolData.reserve, 18)
-        : "-",
-      aprs: Object.keys(poolData.aprs).reduce((acc, key) => {
-        const apr = poolData.aprs[key as Partners]?.apr
-        return apr
-          ? {
-              ...acc,
-              [key]: formatBNToPercentString(apr, 18),
-            }
-          : acc
-      }, {} as Partial<Record<Partners, string>>),
-      apy: poolData.apy
-        ? `${formatBNToPercentString(poolData.apy, 18, 2)}`
-        : "-",
-      volume: poolData.volume
-        ? `$${formatBNToShortString(poolData.volume, 18)}`
-        : "-",
-      userBalanceUSD: formatBNToShortString(
-        userShareData?.usdBalance || Zero,
-        18,
-      ),
-      sdlPerDay: formatBNToShortString(poolData?.sdlPerDay || Zero, 18),
-      tokens: poolData.tokens.map((coin) => {
-        const token = TOKENS_MAP[coin.symbol]
-        return {
-          symbol: token.symbol,
-          name: token.name,
-          icon: token.icon,
-          value: formatBNToString(
-            coin.value,
-            token.decimals,
-            formattedDecimals,
-          ),
-        }
-      }),
+  const formattedData = {
+    name: poolData.name,
+    reserve: poolData.reserve
+      ? formatBNToShortString(poolData.reserve, 18)
+      : "-",
+    aprs: Object.keys(poolData.aprs).reduce((acc, key) => {
+      const apr = poolData.aprs[key as Partners]?.apr
+      return apr
+        ? {
+            ...acc,
+            [key]: formatBNToPercentString(apr, 18),
+          }
+        : acc
+    }, {} as Partial<Record<Partners, string>>),
+    apy: poolData.apy ? `${formatBNToPercentString(poolData.apy, 18, 2)}` : "-",
+    volume: poolData.volume
+      ? `$${formatBNToShortString(poolData.volume, 18)}`
+      : "-",
+    userBalanceUSD: formatBNToShortString(
+      userShareData?.usdBalance || Zero,
+      18,
+    ),
+    sdlPerDay: formatBNToShortString(poolData?.sdlPerDay || Zero, 18),
+    tokens: poolData.tokens.map((coin) => {
+      const token = TOKENS_MAP[coin.symbol]
+      return {
+        symbol: token.symbol,
+        name: token.name,
+        icon: token.icon,
+        value: formatBNToString(coin.value, token.decimals, formattedDecimals),
+      }
     }),
-    [poolData.tokens],
-  )
+  }
   const hasShare = !!userShareData?.usdBalance.gt("0")
   const isMetapool = isMetaPool(formattedData.name)
 
