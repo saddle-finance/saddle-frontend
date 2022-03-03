@@ -51,7 +51,7 @@ export function useRewardsHelpers(poolName: PoolName): {
           BigNumber.from(1),
         )
         const txn = await rewardsContract.deposit(poolPid, amount, account)
-        await enqueuePromiseToast(txn.wait(), "deposit", { poolName })
+        await enqueuePromiseToast(txn.wait(), "stake", { poolName })
         dispatch(
           updateLastTransactionTimes({
             [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
@@ -79,7 +79,7 @@ export function useRewardsHelpers(poolName: PoolName): {
         return
       try {
         const txn = await rewardsContract.withdraw(poolPid, amount, account)
-        await enqueuePromiseToast(txn.wait(), "withdraw", { poolName })
+        await enqueuePromiseToast(txn.wait(), "unstake", { poolName })
         dispatch(
           updateLastTransactionTimes({
             [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),

@@ -14,6 +14,8 @@ type TxType =
   | "withdraw"
   | "claim"
   | "migrate"
+  | "stake"
+  | "unstake"
 
 export const enqueuePromiseToast = (
   promy: Promise<unknown>,
@@ -34,6 +36,10 @@ export const enqueuePromiseToast = (
         return "Claim Initiated"
       case "migrate":
         return "Migrate Initiated"
+      case "stake":
+        return "Stake Initiated"
+      case "unstake":
+        return "Unstake Initiated"
       default:
         return "Transaction Initiated"
     }
@@ -53,6 +59,10 @@ export const enqueuePromiseToast = (
         return `Claim on ${additionalData?.poolName} complete`
       case "migrate":
         return `Migrate from ${additionalData?.poolName} complete`
+      case "stake":
+        return `Stake on ${additionalData?.poolName} complete`
+      case "unstake":
+        return `Unstake on ${additionalData?.poolName} complete`
       default:
         return "Transaction complete"
     }
