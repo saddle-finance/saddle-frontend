@@ -26,7 +26,7 @@ export function useApproveAndWithdraw(
 ): (state: ApproveAndWithdrawStateArgument) => Promise<void> {
   const dispatch = useDispatch()
   const swapContract = useSwapContract(poolName)
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -46,7 +46,7 @@ export function useApproveAndWithdraw(
     state: ApproveAndWithdrawStateArgument,
   ): Promise<void> {
     try {
-      if (!account) throw new Error("Wallet must be connected")
+      if (!account || !chainId) throw new Error("Wallet must be connected")
       if (!swapContract) throw new Error("Swap contract is not loaded")
       if (state.lpTokenAmountToSpend.isZero()) return
       if (lpTokenContract == null) return
@@ -81,6 +81,7 @@ export function useApproveAndWithdraw(
             throw new Error("Your transaction could not be completed")
           },
         },
+        chainId,
       )
 
       console.debug(
@@ -136,7 +137,7 @@ export function useApproveAndWithdraw(
         )
       }
 
-      await enqueuePromiseToast(spendTransaction.wait(), "withdraw", {
+      await enqueuePromiseToast(chainId, spendTransaction.wait(), "withdraw", {
         poolName,
       })
       dispatch(

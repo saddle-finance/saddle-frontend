@@ -1,4 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber"
+import { ChainId } from "../constants"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
@@ -29,6 +30,7 @@ export default async function checkAndApproveTokenForTrade(
   callbacks: {
     onTransactionError?: (error: Error | string) => () => void
   } = {},
+  chainId?: ChainId,
 ): Promise<void> {
   if (srcTokenContract == null) return
   if (spendingValue.eq(0)) return
@@ -49,9 +51,14 @@ export default async function checkAndApproveTokenForTrade(
         amount,
       )
       const confirmedTransaction = approvalTransaction.wait()
-      await enqueuePromiseToast(confirmedTransaction, "tokenApproval", {
-        tokenName,
-      })
+      await enqueuePromiseToast(
+        chainId || ChainId.MAINNET,
+        confirmedTransaction,
+        "tokenApproval",
+        {
+          tokenName,
+        },
+      )
     } catch (error) {
       callbacks.onTransactionError?.(error)
       throw error

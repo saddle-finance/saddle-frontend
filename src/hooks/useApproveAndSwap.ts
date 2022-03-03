@@ -111,6 +111,7 @@ export function useApproveAndSwap(): (
             throw new Error("Your transaction could not be completed")
           },
         },
+        chainId,
       )
       let swapTransaction
       if (state.swapType === SWAP_TYPES.TOKEN_TO_TOKEN) {
@@ -198,7 +199,7 @@ export function useApproveAndSwap(): (
         throw new Error("Invalid Swap Type, or contract not loaded")
       }
       if (swapTransaction?.hash) {
-        await enqueuePromiseToast(swapTransaction.wait(), "swap")
+        await enqueuePromiseToast(chainId, swapTransaction.wait(), "swap")
       }
 
       dispatch(

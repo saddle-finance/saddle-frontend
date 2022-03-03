@@ -78,7 +78,7 @@ export function useApproveAndDeposit(
     shouldDepositWrapped = false,
   ): Promise<void> {
     try {
-      if (!account) throw new Error("Wallet must be connected")
+      if (!account || !chainId) throw new Error("Wallet must be connected")
       if (
         !swapContract ||
         !lpTokenContract ||
@@ -124,6 +124,7 @@ export function useApproveAndDeposit(
               throw new Error("Your transaction could not be completed")
             },
           },
+          chainId,
         )
         return
       }
@@ -186,7 +187,7 @@ export function useApproveAndDeposit(
           txnDeadline,
         )
       }
-      await enqueuePromiseToast(spendTransaction.wait(), "deposit", {
+      await enqueuePromiseToast(chainId, spendTransaction.wait(), "deposit", {
         poolName,
       })
 

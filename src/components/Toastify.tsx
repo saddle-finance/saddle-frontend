@@ -2,8 +2,9 @@
 import { Box, Link } from "@mui/material"
 import React, { ReactText } from "react"
 
+import { ChainId } from "../constants"
 import LaunchIcon from "@mui/icons-material/Launch"
-import { getEtherscanLink } from "../utils/getEtherscanLink"
+import { getMultichainScanLink } from "../utils/getEtherscanLink"
 import i18n from "i18next"
 import { toast as toastify } from "react-toastify"
 
@@ -19,6 +20,7 @@ type TxType =
   | "unstake"
 
 export const enqueuePromiseToast = (
+  chainId: ChainId,
   promy: Promise<unknown>,
   type: TxType,
   additionalData?: { tokenName?: string; poolName?: string },
@@ -88,7 +90,7 @@ export const enqueuePromiseToast = (
       },
     },
     success: {
-      render(data) {
+      render(data: { transactionHash?: string }) {
         return (
           <Box
             sx={{
@@ -99,8 +101,11 @@ export const enqueuePromiseToast = (
           >
             <span>{renderSuccessContentBasedOnType(type)}</span>
             <Link
-              // @ts-ignore
-              href={getEtherscanLink(data?.transactionHash, "tx")}
+              href={getMultichainScanLink(
+                chainId,
+                data?.transactionHash ?? "",
+                "tx",
+              )}
               target="_blank"
               rel="noreferrer"
               sx={{ alignItems: "center" }}
