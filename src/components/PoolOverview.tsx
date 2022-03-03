@@ -19,7 +19,7 @@ import {
   isMetaPool,
 } from "../constants"
 import { Partners, PoolDataType, UserShareType } from "../hooks/usePoolData"
-import React, { ReactElement } from "react"
+import React, { ReactElement, useMemo } from "react"
 import {
   formatBNToPercentString,
   formatBNToShortString,
@@ -50,39 +50,48 @@ export default function PoolOverview({
   const { type: poolType, isOutdated } = POOLS_MAP[poolData.name]
   const formattedDecimals = poolType === PoolTypes.USD ? 2 : 4
   const shouldMigrate = !!onClickMigrate
-  const formattedData = {
-    name: poolData.name,
-    reserve: poolData.reserve
-      ? formatBNToShortString(poolData.reserve, 18)
-      : "-",
-    aprs: Object.keys(poolData.aprs).reduce((acc, key) => {
-      const apr = poolData.aprs[key as Partners]?.apr
-      return apr
-        ? {
-            ...acc,
-            [key]: formatBNToPercentString(apr, 18),
-          }
-        : acc
-    }, {} as Partial<Record<Partners, string>>),
-    apy: poolData.apy ? `${formatBNToPercentString(poolData.apy, 18, 2)}` : "-",
-    volume: poolData.volume
-      ? `$${formatBNToShortString(poolData.volume, 18)}`
-      : "-",
-    userBalanceUSD: formatBNToShortString(
-      userShareData?.usdBalance || Zero,
-      18,
-    ),
-    sdlPerDay: formatBNToShortString(poolData?.sdlPerDay || Zero, 18),
-    tokens: poolData.tokens.map((coin) => {
-      const token = TOKENS_MAP[coin.symbol]
-      return {
-        symbol: token.symbol,
-        name: token.name,
-        icon: token.icon,
-        value: formatBNToString(coin.value, token.decimals, formattedDecimals),
-      }
+  const formattedData = useMemo(
+    () => ({
+      name: poolData.name,
+      reserve: poolData.reserve
+        ? formatBNToShortString(poolData.reserve, 18)
+        : "-",
+      aprs: Object.keys(poolData.aprs).reduce((acc, key) => {
+        const apr = poolData.aprs[key as Partners]?.apr
+        return apr
+          ? {
+              ...acc,
+              [key]: formatBNToPercentString(apr, 18),
+            }
+          : acc
+      }, {} as Partial<Record<Partners, string>>),
+      apy: poolData.apy
+        ? `${formatBNToPercentString(poolData.apy, 18, 2)}`
+        : "-",
+      volume: poolData.volume
+        ? `$${formatBNToShortString(poolData.volume, 18)}`
+        : "-",
+      userBalanceUSD: formatBNToShortString(
+        userShareData?.usdBalance || Zero,
+        18,
+      ),
+      sdlPerDay: formatBNToShortString(poolData?.sdlPerDay || Zero, 18),
+      tokens: poolData.tokens.map((coin) => {
+        const token = TOKENS_MAP[coin.symbol]
+        return {
+          symbol: token.symbol,
+          name: token.name,
+          icon: token.icon,
+          value: formatBNToString(
+            coin.value,
+            token.decimals,
+            formattedDecimals,
+          ),
+        }
+      }),
     }),
-  }
+    [poolData.tokens],
+  )
   const hasShare = !!userShareData?.usdBalance.gt("0")
   const isMetapool = isMetaPool(formattedData.name)
 
@@ -137,17 +146,27 @@ export default function PoolOverview({
           </Box>
         </Grid>
         <Grid item lg={2}>
-          <Stack>
+          <Stack spacing={1}>
             {formattedData.tokens.map(({ symbol, icon }) => (
-              <div key={symbol}>
-                <img alt="icon" className="tokenIcon" src={icon} />
-                <Typography component="span">{symbol}</Typography>
-              </div>
+              <Box display="flex" alignItems="center" key={symbol}>
+                <img alt="icon" src={icon} width="24px" />
+                <Typography marginLeft={1}>{symbol}</Typography>
+              </Box>
             ))}
           </Stack>
         </Grid>
         <Grid item lg={2}>
-          Reserves
+          <Typography variant="subtitle1">TVL</Typography>
+          <Typography component="span">{`$${formattedData.reserve}`}</Typography>
+
+          {formattedData.volume && (
+            <div>
+              <Typography component="span" variant="subtitle1">{`${t(
+                "24HrVolume",
+              )}`}</Typography>
+              <Typography component="span">{formattedData.volume}</Typography>
+            </div>
+          )}
         </Grid>
         <Grid item lg={3}>
           {poolData.sdlPerDay != null && IS_SDL_LIVE && (
@@ -207,35 +226,19 @@ export default function PoolOverview({
               </div>
             ) : null
           })}
-          <div className="margin">
-            <Typography component="span" variant="subtitle1">
-              TVL
-            </Typography>
-            <Typography component="span">{`$${formattedData.reserve}`}</Typography>
-          </div>
-          {formattedData.volume && (
-            <div>
-              <Typography component="span" variant="subtitle1">{`${t(
-                "24HrVolume",
-              )}`}</Typography>
-              <Typography component="span">{formattedData.volume}</Typography>
-            </div>
-          )}
         </Grid>
         <Grid item lg={2}>
-          {/* <Link to={`${poolRoute}/deposit`} style={{ textDecoration: "none" }}> */}
-          <Button
-            LinkComponent={Link}
-            variant="contained"
-            color="primary"
-            fullWidth
-            href={`${poolRoute}/deposit`}
-            size="large"
-            disabled={poolData?.isPaused || isOutdated}
-          >
-            {t("deposit")}
-          </Button>
-          {/* </Link> */}
+          <Link to={`${poolRoute}/deposit`} style={{ textDecoration: "none" }}>
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              size="large"
+              disabled={poolData?.isPaused || isOutdated}
+            >
+              {t("deposit")}
+            </Button>
+          </Link>
           {shouldMigrate ? (
             <Button
               variant="contained"
@@ -248,11 +251,14 @@ export default function PoolOverview({
               {t("migrate")}
             </Button>
           ) : (
-            // <Link to={`${poolRoute}/deposit`} style={{ textDecoration: "none" }}>
-            //</Link>
-            <Button color="primary" fullWidth size="large">
-              {t("withdraw")}
-            </Button>
+            <Link
+              to={`${poolRoute}/withdraw`}
+              style={{ textDecoration: "none" }}
+            >
+              <Button color="primary" fullWidth size="large">
+                {t("withdraw")}
+              </Button>
+            </Link>
           )}
         </Grid>
       </Grid>
