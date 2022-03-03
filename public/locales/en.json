@@ -47,7 +47,7 @@
   "amplificationParameter": "Amplification parameter - controls tolerance for imbalance within the pool's assets. Higher A means greater tolerance.",
   "suggestedValue": "Suggested values:",
   "suggestedValue-1": "5-10: Uncollateralized algorithmic stablecoins",
-  "suggestedValue-2": "100: Non-redeemable, collateralized assets",
+  "suggestedValue-2": "100: Non-redeemable collateralized assets",
   "suggestedValue-3": "200-400: Redeemable assets",
   "setParameters": "Set Parameters",
   "setFeeDescription": "The minimum trading fee is 0.04% and the maximum is 1%.",
