@@ -47,27 +47,6 @@ div.poolOverview {
     margin-right: 16px;
   }
 
-  .balance {
-    grid-row: 3/4;
-  }
-  .tokens {
-    grid-row: 5/6;
-    display: flex;
-    flex-direction: row;
-    @include breakpoint(md) {
-      width: 100%;
-      justify-content: space-between;
-    }
-  }
-
-  div.token {
-    margin-right: 16px;
-
-    &:last-child {
-      margin-right: 0;
-    }
-  }
-
   img.tokenIcon {
     margin-right: 4px;
     vertical-align: sub;
@@ -102,11 +81,6 @@ div.poolOverview {
         width: 100%;
         justify-content: space-between;
       }
-    }
-    span.label {
-      display: block;
-      margin-bottom: 4px;
-      font-weight: $bold;
     }
 
     .plus {

@@ -1,6 +1,16 @@
-import "./PoolOverview.scss"
+// import "./PoolOverview.scss"
 
-import { Chip, Tooltip } from "@mui/material"
+import {
+  Box,
+  Button,
+  Chip,
+  Grid,
+  Paper,
+  Stack,
+  Tooltip,
+  Typography,
+  useTheme,
+} from "@mui/material"
 import {
   IS_SDL_LIVE,
   POOLS_MAP,
@@ -16,10 +26,9 @@ import {
   formatBNToString,
 } from "../utils"
 
-import Button from "./Button"
 import { Link } from "react-router-dom"
 import { Zero } from "@ethersproject/constants"
-import classNames from "classnames"
+// import classNames from "classnames"
 import logo from "../assets/icons/logo.svg"
 import { useTranslation } from "react-i18next"
 
@@ -37,6 +46,7 @@ export default function PoolOverview({
   onClickMigrate,
 }: Props): ReactElement | null {
   const { t } = useTranslation()
+  const theme = useTheme()
   const { type: poolType, isOutdated } = POOLS_MAP[poolData.name]
   const formattedDecimals = poolType === PoolTypes.USD ? 2 : 4
   const shouldMigrate = !!onClickMigrate
@@ -76,56 +86,73 @@ export default function PoolOverview({
   const hasShare = !!userShareData?.usdBalance.gt("0")
   const isMetapool = isMetaPool(formattedData.name)
 
+  // className={classNames("poolOverview", {
+  //   outdated: isOutdated || shouldMigrate,
+  // })}
   return (
-    <div
-      className={classNames("poolOverview", {
-        outdated: isOutdated || shouldMigrate,
-      })}
-    >
-      <div className="left">
-        <div className="titleAndTag">
-          {isMetapool ? (
-            <Tooltip title={<React.Fragment>{t("metapool")}</React.Fragment>}>
-              <h4 className="title underline">{formattedData.name}</h4>
-            </Tooltip>
-          ) : (
-            <h4 className="title">{formattedData.name}</h4>
-          )}
-          {(shouldMigrate || isOutdated) && (
-            <Chip
-              variant="filled"
-              size="small"
-              label="OUTDATED"
-              color="secondary"
-            />
-          )}
-          {poolData.isPaused && (
-            <Chip variant="filled" size="small" label="PAUSED" color="error" />
-          )}
-        </div>
-        {hasShare && (
-          <div className="balance">
-            <span>{t("balance")}: </span>
-            <span>{`$${formattedData.userBalanceUSD}`}</span>
-          </div>
-        )}
-        <div className="tokens">
-          <span style={{ marginRight: "8px" }}>[</span>
-          {formattedData.tokens.map(({ symbol, icon }) => (
-            <div className="token" key={symbol}>
-              <img alt="icon" className="tokenIcon" src={icon} />
-              <span>{symbol}</span>
-            </div>
-          ))}
-          <span style={{ marginLeft: "-8px" }}>]</span>
-        </div>
-      </div>
-
-      <div className="right">
-        <div className="poolInfo">
+    <Paper sx={{ p: theme.spacing(2, 3) }}>
+      <Grid container alignItems="center">
+        <Grid item lg={3}>
+          <Box>
+            <Box>
+              <div className="titleAndTag">
+                {isMetapool ? (
+                  <Tooltip
+                    title={<React.Fragment>{t("metapool")}</React.Fragment>}
+                  >
+                    <Typography
+                      variant="h2"
+                      sx={{ borderBottom: "1px dotted" }}
+                    >
+                      {formattedData.name}
+                    </Typography>
+                  </Tooltip>
+                ) : (
+                  <Typography variant="h2">{formattedData.name}</Typography>
+                )}
+                {(shouldMigrate || isOutdated) && (
+                  <Chip
+                    variant="filled"
+                    size="small"
+                    label="OUTDATED"
+                    color="secondary"
+                  />
+                )}
+                {poolData.isPaused && (
+                  <Chip
+                    variant="filled"
+                    size="small"
+                    label="PAUSED"
+                    color="error"
+                  />
+                )}
+              </div>
+              {hasShare && (
+                <div className="balance">
+                  <Typography component="span">{t("balance")}: </Typography>
+                  <Typography component="span">{`$${formattedData.userBalanceUSD}`}</Typography>
+                </div>
+              )}
+            </Box>
+          </Box>
+        </Grid>
+        <Grid item lg={2}>
+          <Stack>
+            {formattedData.tokens.map(({ symbol, icon }) => (
+              <div key={symbol}>
+                <img alt="icon" className="tokenIcon" src={icon} />
+                <Typography component="span">{symbol}</Typography>
+              </div>
+            ))}
+          </Stack>
+        </Grid>
+        <Grid item lg={2}>
+          Reserves
+        </Grid>
+        <Grid item lg={3}>
           {poolData.sdlPerDay != null && IS_SDL_LIVE && (
             <div className="margin">
-              <span className="label">
+              <Typography component="span" variant="subtitle1">
                 <a
                   href="https://blog.saddle.finance/introducing-sdl"
                   target="_blank"
@@ -134,17 +161,19 @@ export default function PoolOverview({
                 >
                   SDL/24h
                 </a>
-              </span>
-              <span>
-                <img src={logo} className="tokenIcon" />
+              </Typography>
+              <Typography component="span">
+                <img src={logo} className="tokenIcon" width="24px" />
                 {formattedData.sdlPerDay}
-              </span>
+              </Typography>
             </div>
           )}
           {formattedData.apy && (
             <div className="margin">
-              <span className="label">{`${t("apy")}`}</span>
-              <span>{formattedData.apy}</span>
+              <Typography component="span" variant="subtitle1">{`${t(
+                "apy",
+              )}`}</Typography>
+              <Typography component="span">{formattedData.apy}</Typography>
             </div>
           )}
           {Object.keys(poolData.aprs).map((key) => {
@@ -152,7 +181,11 @@ export default function PoolOverview({
             return poolData.aprs[key as Partners]?.apr.gt(Zero) ? (
               <div className="margin Apr" key={symbol}>
                 {symbol.includes("/") ? (
-                  <span className="label underline">
+                  <Typography
+                    component="span"
+                    variant="subtitle1"
+                    sx={{ borderBottom: "1px dotted" }}
+                  >
                     <Tooltip
                       title={
                         <React.Fragment>
@@ -162,54 +195,67 @@ export default function PoolOverview({
                     >
                       <React.Fragment>Reward APR</React.Fragment>
                     </Tooltip>
-                  </span>
+                  </Typography>
                 ) : (
-                  <span className="label">{symbol} APR</span>
+                  <Typography component="span" variant="subtitle1">
+                    {symbol} APR
+                  </Typography>
                 )}
-                <span className="plus">
+                <Typography>
                   {formattedData.aprs[key as Partners] as string}
-                </span>
+                </Typography>
               </div>
             ) : null
           })}
           <div className="margin">
-            <span className="label">TVL</span>
-            <span>{`$${formattedData.reserve}`}</span>
+            <Typography component="span" variant="subtitle1">
+              TVL
+            </Typography>
+            <Typography component="span">{`$${formattedData.reserve}`}</Typography>
           </div>
           {formattedData.volume && (
             <div>
-              <span className="label">{`${t("24HrVolume")}`}</span>
-              <span>{formattedData.volume}</span>
+              <Typography component="span" variant="subtitle1">{`${t(
+                "24HrVolume",
+              )}`}</Typography>
+              <Typography component="span">{formattedData.volume}</Typography>
             </div>
           )}
-        </div>
-        <div className="buttons">
-          <Link to={`${poolRoute}/withdraw`} style={{ textDecoration: "none" }}>
-            <Button kind="secondary">{t("withdraw")}</Button>
-          </Link>
+        </Grid>
+        <Grid item lg={2}>
+          {/* <Link to={`${poolRoute}/deposit`} style={{ textDecoration: "none" }}> */}
+          <Button
+            LinkComponent={Link}
+            variant="contained"
+            color="primary"
+            fullWidth
+            href={`${poolRoute}/deposit`}
+            size="large"
+            disabled={poolData?.isPaused || isOutdated}
+          >
+            {t("deposit")}
+          </Button>
+          {/* </Link> */}
           {shouldMigrate ? (
             <Button
-              kind="temporary"
+              variant="contained"
+              color="secondary"
+              fullWidth
+              size="large"
               onClick={onClickMigrate}
               disabled={!hasShare}
             >
               {t("migrate")}
             </Button>
           ) : (
-            <Link
-              to={`${poolRoute}/deposit`}
-              style={{ textDecoration: "none" }}
-            >
-              <Button
-                kind="primary"
-                disabled={poolData?.isPaused || isOutdated}
-              >
-                {t("deposit")}
-              </Button>
-            </Link>
+            // <Link to={`${poolRoute}/deposit`} style={{ textDecoration: "none" }}>
+            //</Link>
+            <Button color="primary" fullWidth size="large">
+              {t("withdraw")}
+            </Button>
           )}
-        </div>
-      </div>
-    </div>
+        </Grid>
+      </Grid>
+    </Paper>
   )
 }
