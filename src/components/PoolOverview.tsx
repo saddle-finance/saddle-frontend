@@ -220,38 +220,43 @@ export default function PoolOverview({
           })}
         </Grid>
         <Grid item lg={2}>
-          <Link to={`${poolRoute}/deposit`} style={{ textDecoration: "none" }}>
-            <Button
-              variant="contained"
-              color="primary"
-              fullWidth
-              size="large"
-              disabled={poolData?.isPaused || isOutdated}
-            >
-              {t("deposit")}
-            </Button>
-          </Link>
-          {shouldMigrate ? (
-            <Button
-              variant="contained"
-              color="secondary"
-              fullWidth
-              size="large"
-              onClick={onClickMigrate}
-              disabled={!hasShare}
-            >
-              {t("migrate")}
-            </Button>
-          ) : (
+          <Stack spacing={2}>
             <Link
-              to={`${poolRoute}/withdraw`}
+              to={`${poolRoute}/deposit`}
               style={{ textDecoration: "none" }}
             >
-              <Button color="primary" fullWidth size="large">
-                {t("withdraw")}
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                size="large"
+                disabled={poolData?.isPaused || isOutdated}
+              >
+                {t("deposit")}
               </Button>
             </Link>
-          )}
+            {shouldMigrate ? (
+              <Button
+                variant="contained"
+                color="secondary"
+                fullWidth
+                size="large"
+                onClick={onClickMigrate}
+                disabled={!hasShare}
+              >
+                {t("migrate")}
+              </Button>
+            ) : (
+              <Link
+                to={`${poolRoute}/withdraw`}
+                style={{ textDecoration: "none" }}
+              >
+                <Button color="primary" fullWidth size="large">
+                  {t("withdraw")}
+                </Button>
+              </Link>
+            )}
+          </Stack>
         </Grid>
       </Grid>
     </Paper>
