@@ -229,24 +229,10 @@ export default function PoolOverview({
         </Grid>
         <Grid item lg={2}>
           <Stack spacing={2}>
-            <Link
-              to={`${poolRoute}/deposit`}
-              style={{ textDecoration: "none" }}
-            >
-              <Button
-                variant="contained"
-                color="primary"
-                fullWidth
-                size="large"
-                disabled={poolData?.isPaused || isOutdated}
-              >
-                {t("deposit")}
-              </Button>
-            </Link>
             {shouldMigrate ? (
               <Button
                 variant="contained"
-                color="secondary"
+                color={isOutdated || shouldMigrate ? "secondary" : "primary"}
                 fullWidth
                 size="large"
                 onClick={onClickMigrate}
@@ -259,11 +245,29 @@ export default function PoolOverview({
                 to={`${poolRoute}/withdraw`}
                 style={{ textDecoration: "none" }}
               >
-                <Button color="primary" fullWidth size="large">
-                  {t("withdraw")}
+                <Button
+                  variant="contained"
+                  color={isOutdated || shouldMigrate ? "secondary" : "primary"}
+                  fullWidth
+                  size="large"
+                >
+                  {t("deposit")}
                 </Button>
               </Link>
             )}
+            <Link
+              to={`${poolRoute}/deposit`}
+              style={{ textDecoration: "none" }}
+            >
+              <Button
+                color={isOutdated || shouldMigrate ? "secondary" : "primary"}
+                fullWidth
+                size="large"
+                disabled={poolData?.isPaused || isOutdated}
+              >
+                {t("withdraw")}
+              </Button>
+            </Link>
           </Stack>
         </Grid>
       </Grid>
