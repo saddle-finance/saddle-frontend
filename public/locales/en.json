@@ -54,7 +54,7 @@
   "addTokenAddress": "Add Token Addresses",
   "createPoolType": "Choose Pool Type",
   "createPoolTypeDescription1": "USD Metapool consists of USDT/DAI/USDC and another USD-pegged token of your choice.",
-  "createPoolTypeDescription2": "BTC Metapool consists of WBTC/renBTC/sBTC, and another BTC-pegged token of your choice.",
+  "createPoolTypeDescription2": "BTC Metapool consists of WBTC/renBTC/sBTC and another BTC-pegged token of your choice.",
   "createPoolTypeDescription3": "Base pool allows you to choose any 2-4 tokens.",
   "chooseAssetType": "Choose Asset Type (Base pool only)",
   "chooseAssetTypeDescription": "Choose the asset type that your tokens best represent. If the tokens do not fit inside a specific category please choose the Others option.",
