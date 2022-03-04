@@ -214,7 +214,7 @@ export default function PoolOverview({
                         </React.Fragment>
                       }
                     >
-                      <React.Fragment>Reward APR</React.Fragment>
+                      <React.Fragment>Reward APR: </React.Fragment>
                     </Tooltip>
                   </Typography>
                 ) : (
