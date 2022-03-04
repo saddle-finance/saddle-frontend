@@ -95,27 +95,11 @@ export default function PoolOverview({
             : theme.palette.other.divider,
       }}
     >
-      <Grid container alignItems="center">
-        <Grid item lg={3.5}>
+      <Grid container alignItems="center" spacing={1}>
+        <Grid item lg={3}>
           <Box>
             <Box>
-              <Box display="flex">
-                {isMetapool ? (
-                  <Tooltip
-                    title={<React.Fragment>{t("metapool")}</React.Fragment>}
-                  >
-                    <Typography
-                      variant="h2"
-                      sx={{ borderBottom: "1px dotted", mr: 1 }}
-                    >
-                      {formattedData.name}
-                    </Typography>
-                  </Tooltip>
-                ) : (
-                  <Typography variant="h2" sx={{ mr: 1 }}>
-                    {formattedData.name}
-                  </Typography>
-                )}
+              <Box>
                 <div>
                   {(shouldMigrate || isOutdated) && (
                     <Chip
@@ -134,6 +118,26 @@ export default function PoolOverview({
                     />
                   )}
                 </div>
+                {isMetapool ? (
+                  <Tooltip
+                    title={<React.Fragment>{t("metapool")}</React.Fragment>}
+                  >
+                    <Typography
+                      variant="h2"
+                      sx={{
+                        borderBottom: "1px dotted",
+                        mr: 1,
+                        width: "fit-content",
+                      }}
+                    >
+                      {formattedData.name}
+                    </Typography>
+                  </Tooltip>
+                ) : (
+                  <Typography variant="h2" sx={{ mr: 1 }}>
+                    {formattedData.name}
+                  </Typography>
+                )}
               </Box>
               {hasShare && (
                 <div>
@@ -144,7 +148,7 @@ export default function PoolOverview({
             </Box>
           </Box>
         </Grid>
-        <Grid item lg={2}>
+        <Grid item lg={2.5}>
           <Stack spacing={1}>
             {formattedData.tokens.map(({ symbol, icon }) => (
               <Box display="flex" alignItems="center" key={symbol}>
@@ -180,15 +184,16 @@ export default function PoolOverview({
                   SDL/24h
                 </a>
               </Typography>
-              <img src={logo} className="tokenIcon" width="24px" />: &nbsp;
+              <img src={logo} className="tokenIcon" width="24px" />
+              :&nbsp;
               <Typography>{formattedData.sdlPerDay}</Typography>
             </Box>
           )}
           {formattedData.apy && (
             <div className="margin">
-              <Typography component="span" variant="subtitle1">{`${t(
-                "apy",
-              )}`}</Typography>
+              <Typography component="span" variant="subtitle1">
+                {`${t("apy")}`}:{" "}
+              </Typography>
               <Typography component="span">{formattedData.apy}</Typography>
             </div>
           )}
@@ -214,10 +219,10 @@ export default function PoolOverview({
                   </Typography>
                 ) : (
                   <Typography component="span" variant="subtitle1">
-                    {symbol} APR
+                    {symbol} APR: &nbsp;
                   </Typography>
                 )}
-                <Typography>
+                <Typography component="span">
                   {formattedData.aprs[key as Partners] as string}
                 </Typography>
               </div>
