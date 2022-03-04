@@ -85,9 +85,6 @@ export default function PoolOverview({
   const hasShare = !!userShareData?.usdBalance.gt("0")
   const isMetapool = isMetaPool(formattedData.name)
 
-  // className={classNames("poolOverview", {
-  //   outdated: isOutdated || shouldMigrate,
-  // })}
   return (
     <Paper
       sx={{
@@ -99,7 +96,7 @@ export default function PoolOverview({
       }}
     >
       <Grid container alignItems="center">
-        <Grid item lg={4}>
+        <Grid item lg={3.5}>
           <Box>
             <Box>
               <Box display="flex">
@@ -119,25 +116,27 @@ export default function PoolOverview({
                     {formattedData.name}
                   </Typography>
                 )}
-                {(shouldMigrate || isOutdated) && (
-                  <Chip
-                    variant="filled"
-                    size="small"
-                    label="OUTDATED"
-                    color="secondary"
-                  />
-                )}
-                {poolData.isPaused && (
-                  <Chip
-                    variant="filled"
-                    size="small"
-                    label="PAUSED"
-                    color="error"
-                  />
-                )}
+                <div>
+                  {(shouldMigrate || isOutdated) && (
+                    <Chip
+                      variant="filled"
+                      size="small"
+                      label="OUTDATED"
+                      color="secondary"
+                    />
+                  )}
+                  {poolData.isPaused && (
+                    <Chip
+                      variant="filled"
+                      size="small"
+                      label="PAUSED"
+                      color="error"
+                    />
+                  )}
+                </div>
               </Box>
               {hasShare && (
-                <div className="balance">
+                <div>
                   <Typography component="span">{t("balance")}: </Typography>
                   <Typography component="span">{`$${formattedData.userBalanceUSD}`}</Typography>
                 </div>
@@ -161,17 +160,17 @@ export default function PoolOverview({
 
           {formattedData.volume && (
             <div>
-              <Typography component="span" variant="subtitle1">{`${t(
+              <Typography variant="subtitle1">{`${t(
                 "24HrVolume",
               )}`}</Typography>
               <Typography component="span">{formattedData.volume}</Typography>
             </div>
           )}
         </Grid>
-        <Grid item lg={2}>
+        <Grid item lg={2.5}>
           {poolData.sdlPerDay != null && IS_SDL_LIVE && (
-            <div className="margin">
-              <Typography component="span" variant="subtitle1">
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography variant="subtitle1" mr={1}>
                 <a
                   href="https://blog.saddle.finance/introducing-sdl"
                   target="_blank"
@@ -181,11 +180,9 @@ export default function PoolOverview({
                   SDL/24h
                 </a>
               </Typography>
-              <Typography component="span">
-                <img src={logo} className="tokenIcon" width="24px" />
-                {formattedData.sdlPerDay}
-              </Typography>
-            </div>
+              <img src={logo} className="tokenIcon" width="24px" />: &nbsp;
+              <Typography>{formattedData.sdlPerDay}</Typography>
+            </Box>
           )}
           {formattedData.apy && (
             <div className="margin">
