@@ -262,6 +262,7 @@ export default function PoolOverview({
                   color={isOutdated || shouldMigrate ? "secondary" : "primary"}
                   fullWidth
                   size="large"
+                  disabled={poolData?.isPaused || isOutdated}
                 >
                   {t("deposit")}
                 </Button>
@@ -275,7 +276,6 @@ export default function PoolOverview({
                 color={isOutdated || shouldMigrate ? "secondary" : "primary"}
                 fullWidth
                 size="large"
-                disabled={poolData?.isPaused || isOutdated}
               >
                 {t("withdraw")}
               </Button>
