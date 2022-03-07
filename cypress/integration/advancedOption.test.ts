@@ -16,7 +16,7 @@ context("Advanced option test", () => {
     cy.visit(`${host}#/pools`)
     cy.wait(3000)
     cy.contains(poolName)
-      .parents(".poolOverview")
+      .get("[data-testid=poolOverview]")
       .within(() => {
         cy.get("button").contains("Withdraw").click()
       })

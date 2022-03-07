@@ -96,6 +96,7 @@ export default function PoolOverview({
             ? theme.palette.secondary.main
             : theme.palette.other.divider,
       }}
+      data-testid="poolOverview"
     >
       <Grid container alignItems="center" spacing={1}>
         <Grid item xs={12} lg={3}>
