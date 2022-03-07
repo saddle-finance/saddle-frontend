@@ -273,7 +273,6 @@ export default function PoolOverview({
               style={{ textDecoration: "none" }}
             >
               <Button
-                variant="outlined"
                 color={isOutdated || shouldMigrate ? "secondary" : "primary"}
                 fullWidth
                 size="large"
