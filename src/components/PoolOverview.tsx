@@ -86,7 +86,6 @@ export default function PoolOverview({
   const hasShare = !!userShareData?.usdBalance.gt("0")
   const isMetapool = isMetaPool(formattedData.name)
 
-  console.log("token lists ==>", formattedData.tokens)
   return (
     <Paper
       sx={{
@@ -98,8 +97,8 @@ export default function PoolOverview({
       }}
       data-testid="poolOverview"
     >
-      <Grid container alignItems="center" spacing={1}>
-        <Grid item xs={12} lg={3}>
+      <Grid container alignItems="center" spacing={0.5}>
+        <Grid item xs={12} lg={3.5}>
           <Box>
             <Box>
               <Box>
@@ -169,7 +168,7 @@ export default function PoolOverview({
             )}
           </Stack>
         </Grid>
-        <Grid item lg={2}>
+        <Grid item lg={1.5}>
           <Typography variant="subtitle1">TVL</Typography>
           <Typography component="span">{`$${formattedData.reserve}`}</Typography>
 
