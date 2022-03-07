@@ -101,7 +101,10 @@ export default function App(): ReactElement {
                 </Switch>
                 <WrongNetworkModal />
                 <Version />
-                <ToastContainer theme={userDarkMode ? "dark" : "light"} />
+                <ToastContainer
+                  theme={userDarkMode ? "dark" : "light"}
+                  position="top-left"
+                />
               </AppContainer>
             </RewardsBalancesProvider>
           </PendingSwapsProvider>
