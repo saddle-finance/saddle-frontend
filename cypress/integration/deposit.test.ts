@@ -15,7 +15,7 @@ context("Deposit Flow", () => {
     it(`successfully completes a deposit of all ${poolName} assets`, () => {
       let beforeValue: { [key: string]: number } = {}
       cy.contains(poolName)
-        .parents(".poolOverview")
+        .parents("[data-testid=poolOverview]")
         .within(() => {
           cy.get("button").contains("Deposit").click()
         })
@@ -47,6 +47,7 @@ context("Deposit Flow", () => {
         // Wait and assert after value of each token has been increased by 1
         cy.wait(10000).then(() => {
           poolTokens[poolName].forEach((token: string) => {
+            cy.log("token", token)
             cy.get("[data-testid=tokenName]")
               .contains(token)
               .parent()
