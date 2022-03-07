@@ -278,7 +278,9 @@ function useRewardClaims() {
         } else {
           txn = await rewardsContract.deposit(pid, Zero, account)
         }
-        await enqueuePromiseToast(txn.wait(), "claim", { poolName: pool.name })
+        await enqueuePromiseToast(chainId, txn.wait(), "claim", {
+          poolName: pool.name,
+        })
         updateClaimStatus(pool.name, STATUSES.SUCCESS)
       } catch (e) {
         console.error(e)
@@ -289,7 +291,7 @@ function useRewardClaims() {
     [chainId, account, rewardsContract, updateClaimStatus],
   )
   const claimRetroReward = useCallback(async () => {
-    if (!account || !retroRewardsContract) return
+    if (!account || !retroRewardsContract || !chainId) return
     try {
       updateClaimStatus("retroactive", STATUSES.PENDING)
       const userVesting = await retroRewardsContract.vestings(account)
@@ -305,7 +307,7 @@ function useRewardClaims() {
       } else {
         throw new Error("Unable to claim retro reward")
       }
-      await enqueuePromiseToast(txn.wait(), "claim", {
+      await enqueuePromiseToast(chainId, txn.wait(), "claim", {
         poolName: "Retroactive",
       })
       updateClaimStatus("retroactive", STATUSES.SUCCESS)
@@ -314,7 +316,13 @@ function useRewardClaims() {
       updateClaimStatus("retroactive", STATUSES.ERROR)
       enqueueToast("error", "Unable to claim reward")
     }
-  }, [retroRewardsContract, account, userMerkleData, updateClaimStatus])
+  }, [
+    retroRewardsContract,
+    account,
+    userMerkleData,
+    updateClaimStatus,
+    chainId,
+  ])
 
   const claimAllPoolsRewards = useCallback(
     async (pools: Pool[]) => {
@@ -339,7 +347,7 @@ function useRewardClaims() {
           calls.map(({ data }) => data as string),
           false,
         )
-        await enqueuePromiseToast(txn.wait(), "claim", {
+        await enqueuePromiseToast(chainId, txn.wait(), "claim", {
           poolName: "All Pools",
         })
         updateClaimStatus("all", STATUSES.SUCCESS)

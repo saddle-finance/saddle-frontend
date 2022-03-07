@@ -39,7 +39,13 @@ export function useRewardsHelpers(poolName: PoolName): {
 
   const approveAndStake = useCallback(
     async (amount: BigNumber) => {
-      if (!lpTokenContract || !rewardsContract || !account || poolPid === null)
+      if (
+        !lpTokenContract ||
+        !rewardsContract ||
+        !account ||
+        poolPid === null ||
+        !chainId
+      )
         return
       try {
         await checkAndApproveTokenForTrade(
@@ -49,9 +55,15 @@ export function useRewardsHelpers(poolName: PoolName): {
           amount,
           infiniteApproval,
           BigNumber.from(1),
+          {
+            onTransactionError: () => {
+              throw new Error("Your transaction could not be completed")
+            },
+          },
+          chainId,
         )
         const txn = await rewardsContract.deposit(poolPid, amount, account)
-        await enqueuePromiseToast(txn.wait(), "stake", { poolName })
+        await enqueuePromiseToast(chainId, txn.wait(), "stake", { poolName })
         dispatch(
           updateLastTransactionTimes({
             [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
@@ -63,6 +75,7 @@ export function useRewardsHelpers(poolName: PoolName): {
       }
     },
     [
+      chainId,
       lpTokenContract,
       rewardsContract,
       account,
@@ -75,11 +88,17 @@ export function useRewardsHelpers(poolName: PoolName): {
 
   const unstake = useCallback(
     async (amount: BigNumber) => {
-      if (!lpTokenContract || !rewardsContract || !account || poolPid === null)
+      if (
+        !lpTokenContract ||
+        !rewardsContract ||
+        !account ||
+        poolPid === null ||
+        !chainId
+      )
         return
       try {
         const txn = await rewardsContract.withdraw(poolPid, amount, account)
-        await enqueuePromiseToast(txn.wait(), "unstake", { poolName })
+        await enqueuePromiseToast(chainId, txn.wait(), "unstake", { poolName })
         dispatch(
           updateLastTransactionTimes({
             [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
@@ -90,17 +109,31 @@ export function useRewardsHelpers(poolName: PoolName): {
         enqueueToast("error", "Unable to unstake")
       }
     },
-    [lpTokenContract, rewardsContract, account, poolPid, dispatch, poolName],
+    [
+      lpTokenContract,
+      rewardsContract,
+      account,
+      poolPid,
+      dispatch,
+      poolName,
+      chainId,
+    ],
   )
 
   const claimSPA = useCallback(async () => {
-    if (!lpTokenContract || !rewardsContract || !account || poolPid === null)
+    if (
+      !lpTokenContract ||
+      !rewardsContract ||
+      !account ||
+      poolPid === null ||
+      !chainId
+    )
       return
     try {
       // Calling `deposit` with 0 amount will claim all the SPA available. This is
       // a workaround having a token that we can't give away.
       const txn = await rewardsContract.deposit(poolPid, Zero, account)
-      await enqueuePromiseToast(txn.wait(), "claim", { poolName })
+      await enqueuePromiseToast(chainId, txn.wait(), "claim", { poolName })
       dispatch(
         updateLastTransactionTimes({
           [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
@@ -110,7 +143,15 @@ export function useRewardsHelpers(poolName: PoolName): {
       console.error(e)
       enqueueToast("error", "Unable to claim SPA")
     }
-  }, [lpTokenContract, rewardsContract, account, poolPid, dispatch, poolName])
+  }, [
+    lpTokenContract,
+    rewardsContract,
+    account,
+    poolPid,
+    dispatch,
+    poolName,
+    chainId,
+  ])
 
   useEffect(() => {
     async function fetchAmount() {

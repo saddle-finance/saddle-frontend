@@ -64,6 +64,7 @@ export function useApproveAndMigrate(): (
             throw new Error("Your transaction could not be completed")
           },
         },
+        chainId,
       )
       try {
         const metaSwapAddress = pool.metaSwapAddresses?.[chainId]
@@ -73,9 +74,14 @@ export function useApproveAndMigrate(): (
           lpTokenBalance,
           lpTokenBalance.mul(1000 - 5).div(1000), // 50bps, 0.5%
         )
-        await enqueuePromiseToast(migrateTransaction.wait(), "migrate", {
-          poolName: pool.name,
-        })
+        await enqueuePromiseToast(
+          chainId,
+          migrateTransaction.wait(),
+          "migrate",
+          {
+            poolName: pool.name,
+          },
+        )
         dispatch(
           updateLastTransactionTimes({
             [TRANSACTION_TYPES.MIGRATE]: Date.now(),

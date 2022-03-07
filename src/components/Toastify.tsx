@@ -2,11 +2,13 @@
 import { Box, Link } from "@mui/material"
 import React, { ReactText } from "react"
 
+import { ChainId } from "../constants"
 import LaunchIcon from "@mui/icons-material/Launch"
-import { getEtherscanLink } from "../utils/getEtherscanLink"
+import { getMultichainScanLink } from "../utils/getEtherscanLink"
+import i18n from "i18next"
 import { toast as toastify } from "react-toastify"
 
-type ToastStatus = "success" | "info" | "error"
+type ToastVariation = "success" | "info" | "error"
 type TxType =
   | "tokenApproval"
   | "deposit"
@@ -18,6 +20,7 @@ type TxType =
   | "unstake"
 
 export const enqueuePromiseToast = (
+  chainId: ChainId,
   promy: Promise<unknown>,
   type: TxType,
   additionalData?: { tokenName?: string; poolName?: string },
@@ -25,46 +28,58 @@ export const enqueuePromiseToast = (
   const renderPendingContentBasedOnType = (type: string) => {
     switch (type) {
       case "deposit":
-        return "Deposit Initiated"
+        return i18n.t("depositInitiated")
       case "tokenApproval":
-        return `Approve ${additionalData?.tokenName} spend`
+        return i18n.t("approveSpend", { tokenName: additionalData?.tokenName })
       case "swap":
-        return "Swap Initiated"
+        return i18n.t("swapInitiated")
       case "withdraw":
-        return "Withdraw Initiated"
+        return i18n.t("withdrawInitiated")
       case "claim":
-        return "Claim Initiated"
+        return i18n.t("claimInitiated")
       case "migrate":
-        return "Migrate Initiated"
+        return i18n.t("migrateInitiated")
       case "stake":
-        return "Stake Initiated"
+        return i18n.t("stakeInitiated")
       case "unstake":
-        return "Unstake Initiated"
+        return i18n.t("unstakeInitiated")
       default:
-        return "Transaction Initiated"
+        return i18n.t("transactionInitiated")
     }
   }
 
   const renderSuccessContentBasedOnType = (type: TxType) => {
     switch (type) {
       case "deposit":
-        return `Deposit on ${additionalData?.poolName} complete`
+        return i18n.t("depositComplete", { poolName: additionalData?.poolName })
       case "tokenApproval":
-        return `${additionalData?.tokenName} approval complete`
+        return i18n.t("tokenApprovalComplete", {
+          tokenName: additionalData?.tokenName,
+        })
       case "swap":
-        return "Swap Complete"
+        return i18n.t("swapComplete")
       case "withdraw":
-        return `Withdraw on ${additionalData?.poolName} complete`
+        return i18n.t("withdrawComplete", {
+          poolName: additionalData?.poolName,
+        })
       case "claim":
-        return `Claim on ${additionalData?.poolName} complete`
+        return i18n.t("claimComplete", {
+          poolName: additionalData?.poolName,
+        })
       case "migrate":
-        return `Migrate from ${additionalData?.poolName} complete`
+        return i18n.t("migrateComplete", {
+          poolName: additionalData?.poolName,
+        })
       case "stake":
-        return `Stake on ${additionalData?.poolName} complete`
+        return i18n.t("stakeComplete", {
+          poolName: additionalData?.poolName,
+        })
       case "unstake":
-        return `Unstake on ${additionalData?.poolName} complete`
+        return i18n.t("unstakeComplete", {
+          poolName: additionalData?.poolName,
+        })
       default:
-        return "Transaction complete"
+        return i18n.t("transactionComplete")
     }
   }
 
@@ -75,7 +90,7 @@ export const enqueuePromiseToast = (
       },
     },
     success: {
-      render(data) {
+      render(data: { transactionHash?: string }) {
         return (
           <Box
             sx={{
@@ -86,8 +101,11 @@ export const enqueuePromiseToast = (
           >
             <span>{renderSuccessContentBasedOnType(type)}</span>
             <Link
-              // @ts-ignore
-              href={getEtherscanLink(data?.transactionHash, "tx")}
+              href={getMultichainScanLink(
+                chainId,
+                data?.transactionHash ?? "",
+                "tx",
+              )}
               target="_blank"
               rel="noreferrer"
               sx={{ alignItems: "center" }}
@@ -107,8 +125,8 @@ export const enqueuePromiseToast = (
 }
 
 export const enqueueToast = (
-  toastStatus: ToastStatus,
+  toastVariation: ToastVariation,
   toastData: string,
 ): ReactText => {
-  return toastify[toastStatus](toastData)
+  return toastify[toastVariation](toastData)
 }

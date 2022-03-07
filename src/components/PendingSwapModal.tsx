@@ -27,6 +27,7 @@ import { useBridgeContract } from "../hooks/useContract"
 import { useEffect } from "react"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
+import { useWeb3React } from "@web3-react/core"
 
 type ModalStep = "timer" | "exchange" | "review" | "confirmation"
 const PendingSwapModal = ({
@@ -45,6 +46,7 @@ const PendingSwapModal = ({
     swapType,
   } = pendingSwap
   const { t } = useTranslation()
+  const { chainId } = useWeb3React()
   const {
     slippageCustom,
     slippageSelected,
@@ -160,7 +162,9 @@ const PendingSwapModal = ({
         ])
         return
       }
-      transaction && (await enqueuePromiseToast(transaction.wait(), "swap"))
+      transaction &&
+        chainId &&
+        (await enqueuePromiseToast(chainId, transaction.wait(), "swap"))
       onClose()
     } catch (e) {
       console.error(e)
@@ -180,6 +184,7 @@ const PendingSwapModal = ({
     swapType,
     transactionDeadlineCustom,
     transactionDeadlineSelected,
+    chainId,
   ])
 
   const minutesRemaining = Math.max(Math.ceil(secondsRemaining / 60), 0)

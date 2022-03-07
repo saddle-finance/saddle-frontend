@@ -106,10 +106,10 @@ function VestingClaim(): ReactElement {
   }, [account, chainId, library])
 
   const onClaimClick: () => void = async () => {
-    if (!vestingContract) return
+    if (!vestingContract || !chainId) return
     try {
       const txn = await vestingContract.release()
-      await enqueuePromiseToast(txn.wait(), "claim", {
+      await enqueuePromiseToast(chainId, txn.wait(), "claim", {
         poolName: "Vesting Contract",
       })
       setClaimableVestedAmount(Zero)
