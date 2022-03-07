@@ -5,6 +5,7 @@ import {
   Button,
   Chip,
   Grid,
+  Link,
   Paper,
   Skeleton,
   Stack,
@@ -186,14 +187,14 @@ export default function PoolOverview({
           {poolData.sdlPerDay != null && IS_SDL_LIVE && (
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Typography variant="subtitle1" mr={1}>
-                <a
+                <Link
                   href="https://blog.saddle.finance/introducing-sdl"
                   target="_blank"
                   rel="noreferrer"
-                  style={{ textDecoration: "underline" }}
+                  sx={{ textDecoration: "underline" }}
                 >
                   SDL/24h
-                </a>
+                </Link>
               </Typography>
               <img src={logo} className="tokenIcon" width="24px" />
               :&nbsp;
