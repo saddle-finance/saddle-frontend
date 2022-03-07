@@ -4,14 +4,15 @@ export default function ChipTheme(theme: Theme): Components {
   return {
     MuiChip: {
       styleOverrides: {
+        root: {},
         sizeSmall: {
+          height: theme.spacing(2),
           borderRadius: theme.spacing(0.5),
         },
         labelSmall: {
-          padding: 2,
-        },
-        labelMedium: {
-          padding: "5px, 8px, 5px, 8px",
+          padding: "0px 2px 0px 2px",
+          fontSize: theme.typography.subtitle2.fontSize,
+          fontWeight: theme.typography.subtitle2.fontWeight,
         },
       },
     },
