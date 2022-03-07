@@ -23,11 +23,11 @@ import { formatUnits } from "@ethersproject/units"
 import { gasBNFromState } from "../utils/gas"
 import styles from "./PendingSwapModal.module.scss"
 import { subtractSlippage } from "../utils/slippage"
+import { useActiveWeb3React } from "../hooks"
 import { useBridgeContract } from "../hooks/useContract"
 import { useEffect } from "react"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
-import { useWeb3React } from "@web3-react/core"
 
 type ModalStep = "timer" | "exchange" | "review" | "confirmation"
 const PendingSwapModal = ({
@@ -46,7 +46,7 @@ const PendingSwapModal = ({
     swapType,
   } = pendingSwap
   const { t } = useTranslation()
-  const { chainId } = useWeb3React()
+  const { chainId } = useActiveWeb3React()
   const {
     slippageCustom,
     slippageSelected,
