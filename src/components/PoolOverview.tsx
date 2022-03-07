@@ -6,6 +6,7 @@ import {
   Chip,
   Grid,
   Paper,
+  Skeleton,
   Stack,
   Tooltip,
   Typography,
@@ -85,6 +86,7 @@ export default function PoolOverview({
   const hasShare = !!userShareData?.usdBalance.gt("0")
   const isMetapool = isMetaPool(formattedData.name)
 
+  console.log("token lists ==>", formattedData.tokens)
   return (
     <Paper
       sx={{
@@ -96,14 +98,14 @@ export default function PoolOverview({
       }}
     >
       <Grid container alignItems="center" spacing={1}>
-        <Grid item lg={3}>
+        <Grid item xs={12} lg={3}>
           <Box>
             <Box>
               <Box>
                 <div>
                   {(shouldMigrate || isOutdated) && (
                     <Chip
-                      variant="filled"
+                      variant="outlined"
                       size="small"
                       label="OUTDATED"
                       color="secondary"
@@ -111,7 +113,7 @@ export default function PoolOverview({
                   )}
                   {poolData.isPaused && (
                     <Chip
-                      variant="filled"
+                      variant="outlined"
                       size="small"
                       label="PAUSED"
                       color="error"
@@ -148,14 +150,22 @@ export default function PoolOverview({
             </Box>
           </Box>
         </Grid>
-        <Grid item lg={2.5}>
-          <Stack spacing={1}>
-            {formattedData.tokens.map(({ symbol, icon }) => (
-              <Box display="flex" alignItems="center" key={symbol}>
-                <img alt="icon" src={icon} width="24px" />
-                <Typography marginLeft={1}>{symbol}</Typography>
-              </Box>
-            ))}
+        <Grid item xs={12} lg={2.5}>
+          <Stack spacing={1} direction={{ xs: "row", lg: "column" }}>
+            {formattedData.tokens.length > 0 ? (
+              formattedData.tokens.map(({ symbol, icon }) => (
+                <Box display="flex" alignItems="center" key={symbol}>
+                  <img alt="icon" src={icon} width="24px" />
+                  <Typography marginLeft={1}>{symbol}</Typography>
+                </Box>
+              ))
+            ) : (
+              <div>
+                <Skeleton />
+                <Skeleton />
+                <Skeleton />
+              </div>
+            )}
           </Stack>
         </Grid>
         <Grid item lg={2}>
@@ -229,7 +239,7 @@ export default function PoolOverview({
             ) : null
           })}
         </Grid>
-        <Grid item lg={2}>
+        <Grid item xs={12} lg={2}>
           <Stack spacing={2}>
             {shouldMigrate ? (
               <Button
@@ -244,7 +254,7 @@ export default function PoolOverview({
               </Button>
             ) : (
               <Link
-                to={`${poolRoute}/withdraw`}
+                to={`${poolRoute}/deposit`}
                 style={{ textDecoration: "none" }}
               >
                 <Button
@@ -258,10 +268,11 @@ export default function PoolOverview({
               </Link>
             )}
             <Link
-              to={`${poolRoute}/deposit`}
+              to={`${poolRoute}/withdraw`}
               style={{ textDecoration: "none" }}
             >
               <Button
+                variant="outlined"
                 color={isOutdated || shouldMigrate ? "secondary" : "primary"}
                 fullWidth
                 size="large"
