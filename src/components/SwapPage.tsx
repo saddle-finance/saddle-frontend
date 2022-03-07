@@ -167,11 +167,13 @@ const SwapPage = (props: Props): ReactElement => {
             />
             <div style={{ height: "24px" }}></div>
             {fromState.symbol && toState.symbol && (
-              <div className="row">
+              <Box display="flex" justifyContent="space-between">
                 <div>
-                  <span>{t("rate")}</span>
+                  <Typography component="span">{t("rate")}</Typography>
                   &nbsp;
-                  <span>{exchangeRateInfo.pair}</span>
+                  <Typography component="span">
+                    {exchangeRateInfo.pair}
+                  </Typography>
                   &nbsp;
                   <button
                     className="exchange"
@@ -196,7 +198,7 @@ const SwapPage = (props: Props): ReactElement => {
                   </button>
                 </div>
                 <span className="exchRate">{formattedExchangeRate}</span>
-              </div>
+              </Box>
             )}
             <Box display="flex" justifyContent="space-between">
               <span>{t("priceImpact")}</span>
