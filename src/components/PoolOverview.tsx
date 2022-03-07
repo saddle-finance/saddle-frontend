@@ -27,9 +27,9 @@ import {
   formatBNToString,
 } from "../utils"
 
-import { Link } from "react-router-dom"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
+import { useHistory } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -85,6 +85,7 @@ export default function PoolOverview({
   }
   const hasShare = !!userShareData?.usdBalance.gt("0")
   const isMetapool = isMetaPool(formattedData.name)
+  const history = useHistory()
 
   return (
     <Paper
@@ -253,33 +254,25 @@ export default function PoolOverview({
                 {t("migrate")}
               </Button>
             ) : (
-              <Link
-                to={`${poolRoute}/deposit`}
-                style={{ textDecoration: "none" }}
-              >
-                <Button
-                  variant="contained"
-                  color={isOutdated || shouldMigrate ? "secondary" : "primary"}
-                  fullWidth
-                  size="large"
-                  disabled={poolData?.isPaused || isOutdated}
-                >
-                  {t("deposit")}
-                </Button>
-              </Link>
-            )}
-            <Link
-              to={`${poolRoute}/withdraw`}
-              style={{ textDecoration: "none" }}
-            >
               <Button
+                variant="contained"
                 color={isOutdated || shouldMigrate ? "secondary" : "primary"}
                 fullWidth
                 size="large"
+                disabled={poolData?.isPaused || isOutdated}
+                onClick={() => history.push(`${poolRoute}/deposit`)}
               >
-                {t("withdraw")}
+                {t("deposit")}
               </Button>
-            </Link>
+            )}
+            <Button
+              color={isOutdated || shouldMigrate ? "secondary" : "primary"}
+              fullWidth
+              size="large"
+              onClick={() => history.push(`${poolRoute}/withdraw`)}
+            >
+              {t("withdraw")}
+            </Button>
           </Stack>
         </Grid>
       </Grid>
