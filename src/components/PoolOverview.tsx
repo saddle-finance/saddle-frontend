@@ -153,13 +153,7 @@ export default function PoolOverview({
               <div className="margin Apr" key={symbol}>
                 {symbol.includes("/") ? (
                   <span className="label underline">
-                    <Tooltip
-                      title={
-                        <React.Fragment>
-                          {symbol.replaceAll("/", "\n")}
-                        </React.Fragment>
-                      }
-                    >
+                    <Tooltip title={symbol.replaceAll("/", "\n")}>
                       <React.Fragment>Reward APR</React.Fragment>
                     </Tooltip>
                   </span>
