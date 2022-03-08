@@ -270,6 +270,7 @@ const DepositPage = (props: Props): ReactElement => {
         {currentModal === "review" ? (
           <ReviewDeposit
             transactionData={transactionData}
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             onConfirm={async (): Promise<void> => {
               setCurrentModal("confirm")
               logEvent("deposit", (poolData && { pool: poolData?.name }) || {})
