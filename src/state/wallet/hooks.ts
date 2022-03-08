@@ -18,7 +18,7 @@ export function usePoolTokenBalances(): { [token: string]: BigNumber } | null {
     async function pollBalances(): Promise<void> {
       if (!library || !chainId || !account) return
 
-      const ethcallProvider = await getMulticallProvider(library, chainId)
+      const ethcallProvider = await getMulticallProvider(library)
       const tokens = Object.values(TOKENS_MAP).filter(
         ({ addresses }) => addresses[chainId],
       )
