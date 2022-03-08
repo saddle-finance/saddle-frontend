@@ -75,30 +75,25 @@ export default function App(): ReactElement {
               <AppContainer>
                 <TopMenu />
                 <Routes>
-                  <Route path="/" element={Swap} />
-                  <Route path="/pools" element={Pools} />
+                  <Route path="/" element={<Swap />} />
+                  <Route path="/pools" element={<Pools />} />
                   {pools.map(({ name, route }) => (
                     <Route
-                      path={`/pools/${route}/deposit`}
-                      element={(props: unknown) => (
-                        <Deposit {...props} poolName={name} />
-                      )}
-                      // render={(props) => <Deposit {...props} poolName={name} />}
-                      key={`${name}-deposit`}
-                    />
-                  ))}
-                  {pools.map(({ name, route }) => (
-                    <Route
-                      path={`/pools/${route}/withdraw`}
-                      element={(props: unknown) => (
-                        <Withdraw {...props} poolName={name} />
-                      )}
+                      path={`pools/${route}/withdraw`}
+                      element={<Withdraw poolName={name} />}
                       key={`${name}-withdraw`}
                     />
                   ))}
-                  {/* <Navigate replace from="/pools/:route/:action" to="/pools" /> */}
-                  <Route path="/risk" element={Risk} />
-                  <Route path="/vesting-claim" element={VestingClaim} />
+                  {pools.map(({ name, route }) => (
+                    <Route
+                      path={`pools/${route}/deposit`}
+                      element={<Deposit poolName={name} />}
+                      key={`${name}-deposit`}
+                    />
+                  ))}
+                  <Route path="pools/*" element={<Pools />} />
+                  <Route path="/risk" element={<Risk />} />
+                  <Route path="/vesting-claim" element={<VestingClaim />} />
                 </Routes>
                 <WrongNetworkModal />
                 <Version />

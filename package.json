@@ -4,6 +4,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
     "@metamask/jazzicon": "^2.0.0",
     "@mui/icons-material": "^5.5.0",
     "@mui/material": "^5.5.0",
@@ -88,7 +90,7 @@
   "scripts": {
     "lint": "eslint --max-warnings=0 --ext ts,tsx src/ && prettier --list-different 'src/**/*.{ts,tsx,scss}'",
     "lint:fix": "eslint --max-warnings=0 --ext ts,tsx --fix src/ && prettier --write 'src/**/*.{ts,tsx,scss}'",
-    "start": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-scripts -r @cypress/instrument-cra start",
+    "start": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` GENERATE_SOURCEMAP=false react-scripts -r @cypress/instrument-cra start",
     "build": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
@@ -131,17 +133,5 @@
   "license": "MIT",
   "lint-staged": {
     "*.{ts,tsx}": "eslint --cache --fix"
-  },
-  "eslintConfig": {
-    "overrides": [
-      {
-        "files": [
-          "**/*.stories.*"
-        ],
-        "rules": {
-          "import/no-anonymous-default-export": "off"
-        }
-      }
-    ]
   }
 }
