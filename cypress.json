@@ -10,5 +10,6 @@
     }
   },
   "defaultCommandTimeout": 10000,
-  "requestTimeout": 10000
+  "requestTimeout": 10000,
+  "experimentalSourceRewriting": false
 }
