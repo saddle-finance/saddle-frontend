@@ -99,29 +99,11 @@ export default function PoolOverview({
       }}
       data-testid="poolOverview"
     >
-      <Grid container alignItems="center" spacing={0.5}>
-        <Grid item xs={12} lg={3.5}>
+      <Grid container alignItems="center" spacing={1}>
+        <Grid item xs={12} lg={3}>
           <Box>
             <Box>
-              <Box>
-                <div>
-                  {(shouldMigrate || isOutdated) && (
-                    <Chip
-                      variant="outlined"
-                      size="small"
-                      label="OUTDATED"
-                      color="secondary"
-                    />
-                  )}
-                  {poolData.isPaused && (
-                    <Chip
-                      variant="outlined"
-                      size="small"
-                      label="PAUSED"
-                      color="error"
-                    />
-                  )}
-                </div>
+              <Box display="flex">
                 {isMetapool ? (
                   <Tooltip
                     title={<React.Fragment>{t("metapool")}</React.Fragment>}
@@ -142,6 +124,24 @@ export default function PoolOverview({
                     {formattedData.name}
                   </Typography>
                 )}
+                <Stack direction="column">
+                  {(shouldMigrate || isOutdated) && (
+                    <Chip
+                      variant="outlined"
+                      size="small"
+                      label="OUTDATED"
+                      color="secondary"
+                    />
+                  )}
+                  {poolData.isPaused && (
+                    <Chip
+                      variant="outlined"
+                      size="small"
+                      label="PAUSED"
+                      color="error"
+                    />
+                  )}
+                </Stack>
               </Box>
               {hasShare && (
                 <div>
@@ -170,7 +170,7 @@ export default function PoolOverview({
             )}
           </Stack>
         </Grid>
-        <Grid item lg={1.5}>
+        <Grid item lg={2}>
           <Typography variant="subtitle1">TVL</Typography>
           <Typography component="span">{`$${formattedData.reserve}`}</Typography>
 
