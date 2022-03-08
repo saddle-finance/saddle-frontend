@@ -127,7 +127,7 @@ export default function PoolOverview({
                 <Stack direction="column">
                   {(shouldMigrate || isOutdated) && (
                     <Chip
-                      variant="outlined"
+                      variant="filled"
                       size="small"
                       label="OUTDATED"
                       color="secondary"
@@ -135,7 +135,7 @@ export default function PoolOverview({
                   )}
                   {poolData.isPaused && (
                     <Chip
-                      variant="outlined"
+                      variant="filled"
                       size="small"
                       label="PAUSED"
                       color="error"
