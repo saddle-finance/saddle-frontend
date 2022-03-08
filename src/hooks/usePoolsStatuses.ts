@@ -34,7 +34,7 @@ export default function usePoolStatuses(): PoolStatuses {
       return
     async function fetchStatuses() {
       if (!library || !chainId) return
-      const ethcallProvider = await getMulticallProvider(library, chainId)
+      const ethcallProvider = await getMulticallProvider(library)
 
       const pools = Object.values(POOLS_MAP).filter(
         ({ addresses }) => addresses[chainId],

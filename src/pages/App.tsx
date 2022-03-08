@@ -11,7 +11,7 @@ import React, {
   useEffect,
   useMemo,
 } from "react"
-import { Redirect, Route, Switch } from "react-router-dom"
+import { Route, Routes } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 
 import Deposit from "./Deposit"
@@ -74,31 +74,32 @@ export default function App(): ReactElement {
             <RewardsBalancesProvider>
               <AppContainer>
                 <TopMenu />
-                <Switch>
-                  <Route exact path="/" component={Swap} />
-                  <Route exact path="/pools" component={Pools} />
+                <Routes>
+                  <Route path="/" element={Swap} />
+                  <Route path="/pools" element={Pools} />
                   {pools.map(({ name, route }) => (
                     <Route
-                      exact
                       path={`/pools/${route}/deposit`}
-                      render={(props) => <Deposit {...props} poolName={name} />}
+                      element={(props: unknown) => (
+                        <Deposit {...props} poolName={name} />
+                      )}
+                      // render={(props) => <Deposit {...props} poolName={name} />}
                       key={`${name}-deposit`}
                     />
                   ))}
                   {pools.map(({ name, route }) => (
                     <Route
-                      exact
                       path={`/pools/${route}/withdraw`}
-                      render={(props) => (
+                      element={(props: unknown) => (
                         <Withdraw {...props} poolName={name} />
                       )}
                       key={`${name}-withdraw`}
                     />
                   ))}
-                  <Redirect from="/pools/:route/:action" to="/pools" />
-                  <Route exact path="/risk" component={Risk} />
-                  <Route exact path="/vesting-claim" component={VestingClaim} />
-                </Switch>
+                  {/* <Navigate replace from="/pools/:route/:action" to="/pools" /> */}
+                  <Route path="/risk" element={Risk} />
+                  <Route path="/vesting-claim" element={VestingClaim} />
+                </Routes>
                 <WrongNetworkModal />
                 <Version />
                 <ToastContainer

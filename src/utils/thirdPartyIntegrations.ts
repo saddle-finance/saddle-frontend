@@ -155,7 +155,7 @@ async function getKeepData(
 
   const rewardsContractAddress = "0xb4c35747c26e4ab5f1a7cdc7e875b5946efa6fa9"
 
-  const ethcallProvider = await getMulticallProvider(library, chainId)
+  const ethcallProvider = await getMulticallProvider(library)
   const rewardsContract = new Contract(
     rewardsContractAddress,
     KEEP_REWARDS_ABI,
@@ -197,7 +197,7 @@ async function getSharedStakeData(
     chainId !== ChainId.MAINNET
   )
     return [Zero, Zero]
-  const ethcallProvider = await getMulticallProvider(library, chainId)
+  const ethcallProvider = await getMulticallProvider(library)
   const rewardsContract = new Contract(
     "0xcf91812631e37c01c443a4fa02dfb59ee2ddba7c", // prod address
     SGT_REWARDS_ABI,
@@ -262,7 +262,7 @@ async function getAlEthData(
     chainId !== ChainId.MAINNET
   )
     return [Zero, Zero]
-  const ethcallProvider = await getMulticallProvider(library, chainId)
+  const ethcallProvider = await getMulticallProvider(library)
   const rewardsContract = new Contract(
     "0xAB8e74017a8Cc7c15FFcCd726603790d26d7DeCa", // prod address
     ALCX_REWARDS_ABI,
