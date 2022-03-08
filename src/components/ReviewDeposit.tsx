@@ -1,5 +1,14 @@
-import "./ReviewDeposit.scss"
+// import "./ReviewDeposit.scss"
 
+import {
+  Box,
+  Button,
+  DialogActions,
+  DialogContent,
+  Divider,
+  Typography,
+  styled,
+} from "@mui/material"
 import React, { ReactElement, useState } from "react"
 import {
   commify,
@@ -9,8 +18,8 @@ import {
 } from "../utils"
 
 import { AppState } from "../state/index"
-import Button from "./Button"
 import { DepositTransaction } from "../interfaces/transactions"
+import DialogTitle from "./DialogTitle"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
@@ -49,80 +58,91 @@ function ReviewDeposit({
     transactionDeadlineCustom,
   )
   const shouldDisplayGas = !!gasStandard
+
+  const DepositeInfoItem = styled(Box)(({ theme }) => ({
+    display: "flex",
+    minWidth: "65%",
+    marginBottom: theme.spacing(2),
+    "&>:first-child": {
+      display: "flex",
+      width: "60%",
+    },
+  }))
+
   return (
-    <div className="reviewDeposit">
-      <h3>{t("reviewDeposit")}</h3>
-      <div className="table">
-        <h4>{t("depositing")}</h4>
-        <div className="tokenList">
-          {transactionData.from.items.map(({ token, amount }) => (
-            <div className="eachToken" key={token.symbol}>
-              <div className="token">
-                <img src={token.icon} alt="icon" />
-                <span>{token.symbol}</span>
-              </div>
-              <div className="value">
-                <span className="value">
+    <React.Fragment>
+      <DialogTitle variant="h2">{t("reviewDeposit")}</DialogTitle>
+      <DialogContent>
+        <Box>
+          <Typography variant="h3" mb={2}>
+            {t("depositing")}
+          </Typography>
+          <Box>
+            {transactionData.from.items.map(({ token, amount }) => (
+              <DepositeInfoItem key={token.name}>
+                <div>
+                  <img src={token.icon} width={24} height={24} alt="icon" />
+                  <Typography ml={1}>{token.symbol}</Typography>
+                </div>
+                <Typography>
                   {commify(formatBNToString(amount, token.decimals))}
-                </span>
-              </div>
-            </div>
-          ))}
-          <div className="eachToken">
-            <div className="token">
-              <b>{t("total")}</b>
-            </div>
-            <div className="value">
-              <b className="value">
+                </Typography>
+              </DepositeInfoItem>
+            ))}
+            <DepositeInfoItem>
+              <Typography variant="subtitle1">{t("total")}</Typography>
+              <Typography variant="subtitle1">
                 {commify(
                   formatBNToString(transactionData.from.totalAmount, 18),
                 )}
-              </b>
+              </Typography>
+            </DepositeInfoItem>
+          </Box>
+          <Divider />
+          <Typography variant="h3" my={2}>
+            {t("receiving")}
+          </Typography>
+          <DepositeInfoItem>
+            <div>
+              <img
+                src={transactionData.to.item.token.icon}
+                width={24}
+                height={24}
+                alt="icon"
+              />
+              <Typography>{transactionData.to.item.token.symbol}</Typography>
             </div>
-          </div>
-        </div>
-        <div className="divider" style={{ height: "1px", width: "100%" }}></div>
-        <h4>{t("receiving")}</h4>
-        <div className="tokenList">
-          <div className="eachToken" key={transactionData.to.item.token.symbol}>
-            <div className="token">
-              <img src={transactionData.to.item.token.icon} alt="icon" />
-              <span>{transactionData.to.item.token.symbol}</span>
-            </div>
-            <div className="value">
-              <span className="value">
-                {commify(
-                  formatBNToString(
-                    transactionData.to.item.amount,
-                    transactionData.to.item.token.decimals,
-                  ),
-                )}
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="divider" style={{ height: "1px", width: "100%" }}></div>
-        <div className="depositInfoItem">
-          <span className="label">{t("shareOfPool")}</span>
-          <span className="value">
-            {formatBNToPercentString(transactionData.shareOfPool, 18)}
-          </span>
-        </div>
-        {shouldDisplayGas && (
-          <div className="depositInfoItem">
-            <span className="label">{t("gas")}</span>
-            <span className="value">
-              {formatGasToString(
-                { gasStandard, gasFast, gasInstant },
-                gasPriceSelected,
-                gasCustom,
-              )}{" "}
-              GWEI
-            </span>
-          </div>
-        )}
-        {/* TODO: Create a light API to expose the cached BlockNative gas estimates. */}
-        {/* {transactionData.txnGasCost?.valueUSD && (
+            <Typography>
+              {commify(
+                formatBNToString(
+                  transactionData.to.item.amount,
+                  transactionData.to.item.token.decimals,
+                ),
+              )}
+            </Typography>
+          </DepositeInfoItem>
+          <Divider />
+          <DepositeInfoItem mt={2}>
+            <Typography>{t("shareOfPool")}</Typography>
+            <Typography>
+              {formatBNToPercentString(transactionData.shareOfPool, 18)}
+            </Typography>
+          </DepositeInfoItem>
+          {shouldDisplayGas && (
+            <DepositeInfoItem>
+              <Typography>{t("gas")}</Typography>
+              <Typography>
+                {formatGasToString(
+                  { gasStandard, gasFast, gasInstant },
+                  gasPriceSelected,
+                  gasCustom,
+                )}{" "}
+                GWEI
+              </Typography>
+            </DepositeInfoItem>
+          )}
+          {/* TODO: Create a light API to expose the cached BlockNative gas estimates. */}
+          {/* {transactionData.txnGasCost?.valueUSD && (
           <div className="depositInfoItem">
             <span className="label">{t("estimatedTxCost")}</span>
             <span className="value">
@@ -132,62 +152,66 @@ function ReviewDeposit({
             </span>
           </div>
         )} */}
-        <div className="depositInfoItem">
-          <span className="label">{t("maxSlippage")}</span>
-          <span className="value">
-            {formatSlippageToString(slippageSelected, slippageCustom)}%
-          </span>
-        </div>
-        <div className="depositInfoItem">
-          <span className="label">{t("deadline")}</span>
-          <span className="value">
-            {deadline} {t("minutes")}
-          </span>
-        </div>
-        <div className="depositInfoItem">
-          <span className="label">{t("rates")}</span>
-          <div className="rates value">
-            {transactionData.from.items.map(
-              ({ token, singleTokenPriceUSD }) => (
-                <span key={token.symbol}>
-                  1 {token.symbol} = $
-                  {commify(formatBNToString(singleTokenPriceUSD, 18, 2))}
-                </span>
-              ),
-            )}
-            {[transactionData.to.item].map(({ token, singleTokenPriceUSD }) => (
-              <span key={token.symbol}>
-                1 {token.symbol} = $
-                {commify(formatBNToString(singleTokenPriceUSD, 18, 2))}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-      {isHighPriceImpactTxn && (
-        <HighPriceImpactConfirmation
-          checked={hasConfirmedHighPriceImpact}
-          onCheck={(): void =>
-            setHasConfirmedHighPriceImpact((prevState) => !prevState)
-          }
-        />
-      )}
-      <div className="bottom">
-        <p>{t("estimatedOutput")}</p>
-        <div className="buttonWrapper">
-          <Button
-            onClick={onConfirm}
-            kind="primary"
-            disabled={isHighPriceImpactTxn && !hasConfirmedHighPriceImpact}
-          >
-            {t("confirmDeposit")}
-          </Button>
-          <Button onClick={onClose} kind="cancel">
-            {t("cancel")}
-          </Button>
-        </div>
-      </div>
-    </div>
+          <DepositeInfoItem>
+            <Typography>{t("maxSlippage")}</Typography>
+            <Typography>
+              {formatSlippageToString(slippageSelected, slippageCustom)}%
+            </Typography>
+          </DepositeInfoItem>
+          <DepositeInfoItem>
+            <Typography>{t("deadline")}</Typography>
+            <Typography>
+              {deadline} {t("minutes")}
+            </Typography>
+          </DepositeInfoItem>
+          <DepositeInfoItem>
+            <Typography>{t("rates")}</Typography>
+            <div>
+              {transactionData.from.items.map(
+                ({ token, singleTokenPriceUSD }) => (
+                  <Typography key={token.symbol}>
+                    1 {token.symbol} = $
+                    {commify(formatBNToString(singleTokenPriceUSD, 18, 2))}
+                  </Typography>
+                ),
+              )}
+              {[transactionData.to.item].map(
+                ({ token, singleTokenPriceUSD }) => (
+                  <Typography key={token.symbol}>
+                    1 {token.symbol} = $
+                    {commify(formatBNToString(singleTokenPriceUSD, 18, 2))}
+                  </Typography>
+                ),
+              )}
+            </div>
+          </DepositeInfoItem>
+        </Box>
+        {isHighPriceImpactTxn && (
+          <HighPriceImpactConfirmation
+            checked={hasConfirmedHighPriceImpact}
+            onCheck={(): void =>
+              setHasConfirmedHighPriceImpact((prevState) => !prevState)
+            }
+          />
+        )}
+        <Typography>{t("estimatedOutput")}</Typography>
+      </DialogContent>
+
+      <DialogActions>
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          onClick={onConfirm}
+          disabled={isHighPriceImpactTxn && !hasConfirmedHighPriceImpact}
+        >
+          {t("confirmDeposit")}
+        </Button>
+        <Button variant="outlined" size="large" onClick={onClose}>
+          {t("cancel")}
+        </Button>
+      </DialogActions>
+    </React.Fragment>
   )
 }
 
