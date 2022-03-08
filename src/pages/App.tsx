@@ -1,5 +1,5 @@
 import "../styles/global.scss"
-import "./NotifyStyle.scss"
+import "react-toastify/dist/ReactToastify.css"
 
 import { AppDispatch, AppState } from "../state"
 import { BLOCK_TIME, POOLS_MAP } from "../constants"
@@ -12,7 +12,6 @@ import React, {
   useMemo,
 } from "react"
 import { Redirect, Route, Switch } from "react-router-dom"
-import { isChainSupportedByNotify, notify } from "../utils/notifyHandler"
 import { useDispatch, useSelector } from "react-redux"
 
 import CreatePool from "./CreatePool"
@@ -21,6 +20,7 @@ import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import Swap from "./Swap"
+import { ToastContainer } from "react-toastify"
 import TopMenu from "../components/TopMenu"
 import Version from "../components/Version"
 import Web3ReactManager from "../components/Web3ReactManager"
@@ -57,12 +57,6 @@ export default function App(): ReactElement {
   const { userDarkMode } = useSelector((state: AppState) => state.user)
   const { boot } = useIntercom()
 
-  useEffect(() => {
-    notify?.config({
-      networkId: isChainSupportedByNotify(chainId) ? chainId : undefined,
-      darkMode: userDarkMode,
-    })
-  }, [chainId, userDarkMode])
   const pools = useMemo(() => {
     return Object.values(POOLS_MAP).filter(
       ({ addresses }) => chainId && addresses[chainId],
@@ -109,6 +103,10 @@ export default function App(): ReactElement {
                 </Switch>
                 <WrongNetworkModal />
                 <Version />
+                <ToastContainer
+                  theme={userDarkMode ? "dark" : "light"}
+                  position="top-left"
+                />
               </AppContainer>
             </RewardsBalancesProvider>
           </PendingSwapsProvider>
