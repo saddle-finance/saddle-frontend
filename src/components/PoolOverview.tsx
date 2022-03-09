@@ -170,7 +170,7 @@ export default function PoolOverview({
             )}
           </Stack>
         </Grid>
-        <Grid item lg={2}>
+        <Grid item xs={6} lg={2}>
           <Typography variant="subtitle1">TVL</Typography>
           <Typography component="span">{`$${formattedData.reserve}`}</Typography>
 
@@ -183,7 +183,7 @@ export default function PoolOverview({
             </div>
           )}
         </Grid>
-        <Grid item lg={2.5}>
+        <Grid item xs={6} lg={2.5}>
           {poolData.sdlPerDay != null && IS_SDL_LIVE && (
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Typography variant="subtitle1" mr={1}>
