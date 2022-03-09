@@ -221,9 +221,7 @@ export default function PoolOverview({
           )}
           {formattedData.apy && (
             <div>
-              <Typography component="span" variant="subtitle1">
-                {`${t("apy")}`}:{" "}
-              </Typography>
+              <Typography component="span">{`${t("apy")}`}: </Typography>
               <Typography component="span">{formattedData.apy}</Typography>
             </div>
           )}
@@ -232,21 +230,20 @@ export default function PoolOverview({
             return poolData.aprs[key as Partners]?.apr.gt(Zero) ? (
               <div key={symbol}>
                 {symbol.includes("/") ? (
-                  <Typography
-                    component="span"
-                    variant="subtitle1"
-                    sx={{ borderBottom: "1px dotted" }}
+                  <Tooltip
+                    title={
+                      <React.Fragment>
+                        {symbol.replaceAll("/", "\n")}
+                      </React.Fragment>
+                    }
                   >
-                    <Tooltip
-                      title={
-                        <React.Fragment>
-                          {symbol.replaceAll("/", "\n")}
-                        </React.Fragment>
-                      }
+                    <Typography
+                      component="span"
+                      sx={{ borderBottom: "1px dotted" }}
                     >
-                      <React.Fragment>Reward APR: </React.Fragment>
-                    </Tooltip>
-                  </Typography>
+                      Reward APR:&nbsp;
+                    </Typography>
+                  </Tooltip>
                 ) : (
                   <Typography component="span" variant="subtitle1">
                     {symbol} APR: &nbsp;
