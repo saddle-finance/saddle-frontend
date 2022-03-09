@@ -79,7 +79,7 @@ context("Withdrawal Flow", () => {
       cy.wait(1500)
       cy.get("button").contains("Withdraw").click()
       cy.get("button").contains("Confirm Withdraw").click()
-      cy.wait(13000).then(() => {
+      cy.wait(30000).then(() => {
         cy.get("[data-testid=tokenName]")
           .contains(poolTokens[poolName][0])
           .parent()
@@ -112,7 +112,7 @@ context("Withdrawal Flow", () => {
       cy.wait(1500)
       cy.get("button").contains("Withdraw").click()
       cy.get("button").contains("Confirm Withdraw").click()
-      cy.wait(13000).then(() => {
+      cy.wait(30000).then(() => {
         poolTokens[poolName].forEach((token: string) => {
           cy.get("[data-testid=tokenName]")
             .contains(token)
@@ -152,7 +152,7 @@ context("Withdrawal Flow", () => {
         cy.get("button").contains("Withdraw").click()
         cy.get("button").contains("Confirm Withdraw").click()
       })
-      cy.wait(15000).then(() => {
+      cy.wait(30000).then(() => {
         poolTokens[poolName].forEach((token: string) => {
           cy.get("[data-testid=tokenName]")
             .contains(token)
