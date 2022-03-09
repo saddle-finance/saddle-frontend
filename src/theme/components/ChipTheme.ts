@@ -6,7 +6,7 @@ export default function ChipTheme(theme: Theme): Components {
       styleOverrides: {
         root: {},
         sizeSmall: {
-          height: theme.spacing(2),
+          height: "auto",
           borderRadius: theme.spacing(0.5),
         },
         labelSmall: {

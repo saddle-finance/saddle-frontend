@@ -11,6 +11,7 @@ import {
   Stack,
   Tooltip,
   Typography,
+  styled,
   useTheme,
 } from "@mui/material"
 import {
@@ -21,7 +22,7 @@ import {
   isMetaPool,
 } from "../constants"
 import { Partners, PoolDataType, UserShareType } from "../hooks/usePoolData"
-import React, { ReactElement } from "react"
+import React, { ReactElement, useMemo } from "react"
 import {
   formatBNToPercentString,
   formatBNToShortString,
@@ -87,6 +88,22 @@ export default function PoolOverview({
   const hasShare = !!userShareData?.usdBalance.gt("0")
   const isMetapool = isMetaPool(formattedData.name)
   const history = useHistory()
+  const disableText = isOutdated || shouldMigrate || poolData.isPaused
+  const chipLabel = useMemo(() => {
+    if ((isOutdated || shouldMigrate) && poolData.isPaused) {
+      return (
+        <span>
+          OUTDATED <br />& PAUSED
+        </span>
+      )
+    } else if (isOutdated || shouldMigrate) {
+      return <span>OUTDATED</span>
+    } else if (poolData.isPaused) {
+      return <span>PAUSED</span>
+    } else {
+      return null
+    }
+  }, [isOutdated, shouldMigrate, poolData.isPaused])
 
   return (
     <Paper
@@ -103,10 +120,15 @@ export default function PoolOverview({
         <Grid item xs={12} lg={3}>
           <Box>
             <Box>
-              <Box display="flex">
+              <Box
+                display="flex"
+                color={disableText ? theme.palette.text.disabled : undefined}
+              >
                 {isMetapool ? (
                   <Tooltip
-                    title={<React.Fragment>{t("metapool")}</React.Fragment>}
+                    title={
+                      <Typography variant="body2">{t("metapool")}</Typography>
+                    }
                   >
                     <Typography
                       variant="h2"
@@ -125,22 +147,18 @@ export default function PoolOverview({
                   </Typography>
                 )}
                 <Stack direction="column">
-                  {(shouldMigrate || isOutdated) && (
-                    <Chip
-                      variant="filled"
-                      size="small"
-                      label="OUTDATED"
-                      color="secondary"
-                    />
-                  )}
-                  {poolData.isPaused && (
-                    <Chip
-                      variant="filled"
-                      size="small"
-                      label="PAUSED"
-                      color="error"
-                    />
-                  )}
+                  <div>
+                    {chipLabel && (
+                      <Chip
+                        variant="filled"
+                        size="small"
+                        label={chipLabel}
+                        color={
+                          isOutdated || shouldMigrate ? "secondary" : "error"
+                        }
+                      />
+                    )}
+                  </div>
                 </Stack>
               </Box>
               {hasShare && (
@@ -170,7 +188,7 @@ export default function PoolOverview({
             )}
           </Stack>
         </Grid>
-        <Grid item xs={6} lg={2}>
+        <StyledGrid item xs={6} lg={2} disabled={disableText}>
           <Typography variant="subtitle1">TVL</Typography>
           <Typography component="span">{`$${formattedData.reserve}`}</Typography>
 
@@ -182,8 +200,8 @@ export default function PoolOverview({
               <Typography component="span">{formattedData.volume}</Typography>
             </div>
           )}
-        </Grid>
-        <Grid item xs={6} lg={2.5}>
+        </StyledGrid>
+        <StyledGrid item xs={6} lg={2.5} disabled={disableText}>
           {poolData.sdlPerDay != null && IS_SDL_LIVE && (
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Typography variant="subtitle1" mr={1}>
@@ -196,13 +214,13 @@ export default function PoolOverview({
                   SDL/24h
                 </Link>
               </Typography>
-              <img src={logo} className="tokenIcon" width="24px" />
+              <img src={logo} width="24px" />
               :&nbsp;
               <Typography>{formattedData.sdlPerDay}</Typography>
             </Box>
           )}
           {formattedData.apy && (
-            <div className="margin">
+            <div>
               <Typography component="span" variant="subtitle1">
                 {`${t("apy")}`}:{" "}
               </Typography>
@@ -212,7 +230,7 @@ export default function PoolOverview({
           {Object.keys(poolData.aprs).map((key) => {
             const symbol = poolData.aprs[key as Partners]?.symbol as string
             return poolData.aprs[key as Partners]?.apr.gt(Zero) ? (
-              <div className="margin Apr" key={symbol}>
+              <div key={symbol}>
                 {symbol.includes("/") ? (
                   <Typography
                     component="span"
@@ -240,7 +258,7 @@ export default function PoolOverview({
               </div>
             ) : null
           })}
-        </Grid>
+        </StyledGrid>
         <Grid item xs={12} lg={2}>
           <Stack spacing={2}>
             {shouldMigrate ? (
@@ -280,3 +298,9 @@ export default function PoolOverview({
     </Paper>
   )
 }
+
+const StyledGrid = styled(Grid)<{ disabled?: boolean }>(
+  ({ theme, disabled }) => ({
+    color: disabled ? theme.palette.text.disabled : undefined,
+  }),
+)
