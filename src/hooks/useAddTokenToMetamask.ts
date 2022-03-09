@@ -1,5 +1,5 @@
 import { SUPPORTED_WALLETS, Token } from "../constants"
-import { SetStateAction, useCallback, useState } from "react"
+import { useCallback, useState } from "react"
 
 import { find } from "lodash"
 import { useActiveWeb3React } from "./index"
@@ -33,9 +33,7 @@ export default function useAddTokenToMetamask(token: Token | undefined): {
             },
           },
         })
-        .then((success: SetStateAction<boolean | undefined>) =>
-          setSuccess(success),
-        )
+        .then((success: boolean) => setSuccess(success))
         .catch(() => setSuccess(false))
     }
   }, [library, token, chainId, isMetaMask])

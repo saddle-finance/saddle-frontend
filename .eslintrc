@@ -31,10 +31,7 @@
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-misused-promises": [
       "error",
-      {
-        "checksVoidReturn": false,
-        "checksConditionals": false
-      }
+      { "checksVoidReturn": false }
     ],
     "no-invalid-this": 0,
     "no-unused-vars": "off",
