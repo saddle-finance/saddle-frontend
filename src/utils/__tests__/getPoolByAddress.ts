@@ -9,6 +9,6 @@ describe("getPoolByAddress", () => {
         "0x4f6A43Ad7cba042606dECaCA730d4CE0A57ac62e".toLowerCase(),
         ChainId.MAINNET,
       ),
-    ).toBe(POOLS_MAP["BTC Pool"])
+    ).toBe(POOLS_MAP["BTC"])
   })
 })
