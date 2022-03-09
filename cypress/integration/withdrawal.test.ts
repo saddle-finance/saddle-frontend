@@ -25,7 +25,7 @@ context("Withdrawal Flow", () => {
   function basicDeposit(poolName: PoolName) {
     const host = Cypress.env("DAPP_HOST") as string
     cy.visit(`${host}#/pools`)
-    cy.wait(3000)
+    cy.wait(8000)
     // we need a deposit before testing withdrawal
     cy.contains(poolName)
       .parents(".poolOverview")
@@ -33,13 +33,13 @@ context("Withdrawal Flow", () => {
         cy.get("button").contains("Deposit").click()
       })
 
-    cy.wait(3000)
+    cy.wait(8000)
 
     cy.get("#tokenInput input").then(($inputs) => {
       cy.wrap($inputs).each(($input) => {
         cy.wrap($input).type("100")
       })
-      cy.wait(500)
+      cy.wait(1500)
       cy.get("button").contains("Deposit").click()
       cy.get("button").contains("Confirm Deposit").click()
     })
@@ -76,10 +76,10 @@ context("Withdrawal Flow", () => {
       const tokens = poolTokensFullName[poolName]
       cy.get('[data-testid="withdrawTokenRadio"]').contains(tokens[0]).click()
       cy.get("#tokenInput input").first().type("1")
-      cy.wait(500)
+      cy.wait(1500)
       cy.get("button").contains("Withdraw").click()
       cy.get("button").contains("Confirm Withdraw").click()
-      cy.wait(10000).then(() => {
+      cy.wait(13000).then(() => {
         cy.get("[data-testid=tokenName]")
           .contains(poolTokens[poolName][0])
           .parent()
@@ -112,7 +112,7 @@ context("Withdrawal Flow", () => {
       cy.wait(500)
       cy.get("button").contains("Withdraw").click()
       cy.get("button").contains("Confirm Withdraw").click()
-      cy.wait(10000).then(() => {
+      cy.wait(13000).then(() => {
         poolTokens[poolName].forEach((token: string) => {
           cy.get("[data-testid=tokenName]")
             .contains(token)
@@ -152,7 +152,7 @@ context("Withdrawal Flow", () => {
         cy.get("button").contains("Withdraw").click()
         cy.get("button").contains("Confirm Withdraw").click()
       })
-      cy.wait(10000).then(() => {
+      cy.wait(15000).then(() => {
         poolTokens[poolName].forEach((token: string) => {
           cy.get("[data-testid=tokenName]")
             .contains(token)
