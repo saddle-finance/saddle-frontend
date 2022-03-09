@@ -27,8 +27,7 @@ context("Withdrawal Flow", () => {
     cy.wait(3000)
     // we need a deposit before testing withdrawal
     cy.contains(poolName)
-      .parent("[data-testid=poolOverview]")
-
+      .parents("[data-testid=poolOverview]")
       .within(() => {
         cy.get("button").contains("Deposit").click()
       })
@@ -49,7 +48,7 @@ context("Withdrawal Flow", () => {
     it(`successfully completes a withdrawal of all ${poolName} assets`, () => {
       cy.wait(10000)
       cy.contains(poolName)
-        .get("[data-testid=poolOverview]")
+        .parents("[data-testid=poolOverview]")
         .within(() => {
           cy.get("button").contains("Withdraw").click()
         })
