@@ -144,7 +144,7 @@ function usePoolsRewardBalances() {
     lastTransactionTimes[TRANSACTION_TYPES.STAKE_OR_CLAIM]
   const fetchBalances = useCallback(async () => {
     if (!library || !chainId || !account) return
-    const ethcallProvider = await getMulticallProvider(library)
+    const ethcallProvider = await getMulticallProvider(library, chainId)
     const pools = Object.values(POOLS_MAP).filter(
       ({ addresses, rewardPids }) =>
         chainId && rewardPids[chainId] !== null && addresses[chainId],
