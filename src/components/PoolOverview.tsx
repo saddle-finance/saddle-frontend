@@ -119,55 +119,37 @@ export default function PoolOverview({
       <Grid container alignItems="center" spacing={1}>
         <Grid item xs={12} lg={3}>
           <Box>
-            <Box>
-              <Box
-                display="flex"
-                color={disableText ? theme.palette.text.disabled : undefined}
-              >
-                {isMetapool ? (
-                  <Tooltip
-                    title={
-                      <Typography variant="body2">{t("metapool")}</Typography>
-                    }
-                  >
-                    <Typography
-                      variant="h2"
-                      sx={{
-                        borderBottom: "1px dotted",
-                        mr: 1,
-                        width: "fit-content",
-                      }}
-                    >
-                      {formattedData.name}
-                    </Typography>
-                  </Tooltip>
-                ) : (
-                  <Typography variant="h2" sx={{ mr: 1 }}>
-                    {formattedData.name}
-                  </Typography>
-                )}
-                <Stack direction="column">
-                  <div>
-                    {chipLabel && (
-                      <Chip
-                        variant="filled"
-                        size="small"
-                        label={chipLabel}
-                        color={
-                          isOutdated || shouldMigrate ? "secondary" : "error"
-                        }
-                      />
-                    )}
-                  </div>
-                </Stack>
-              </Box>
-              {hasShare && (
-                <div>
-                  <Typography component="span">{t("balance")}: </Typography>
-                  <Typography component="span">{`$${formattedData.userBalanceUSD}`}</Typography>
-                </div>
+            <Box
+              display="flex"
+              color={disableText ? theme.palette.text.disabled : undefined}
+            >
+              <Tooltip title={isMetapool ? <div>{t("metapool")}</div> : ""}>
+                <Typography
+                  variant="h2"
+                  sx={{
+                    borderBottom: isMetapool ? "1px dotted" : undefined,
+                    mr: 1,
+                    width: "fit-content",
+                  }}
+                >
+                  {formattedData.name}
+                </Typography>
+              </Tooltip>
+              {chipLabel && (
+                <Chip
+                  variant="filled"
+                  size="small"
+                  label={chipLabel}
+                  color={isOutdated || shouldMigrate ? "secondary" : "error"}
+                />
               )}
             </Box>
+            {hasShare && (
+              <div>
+                <Typography component="span">{t("balance")}: </Typography>
+                <Typography component="span">{`$${formattedData.userBalanceUSD}`}</Typography>
+              </div>
+            )}
           </Box>
         </Grid>
         <Grid item xs={12} lg={2.5}>
@@ -230,13 +212,7 @@ export default function PoolOverview({
             return poolData.aprs[key as Partners]?.apr.gt(Zero) ? (
               <div key={symbol}>
                 {symbol.includes("/") ? (
-                  <Tooltip
-                    title={
-                      <React.Fragment>
-                        {symbol.replaceAll("/", "\n")}
-                      </React.Fragment>
-                    }
-                  >
+                  <Tooltip title={symbol.replaceAll("/", "\n")}>
                     <Typography
                       component="span"
                       sx={{ borderBottom: "1px dotted" }}
@@ -245,9 +221,7 @@ export default function PoolOverview({
                     </Typography>
                   </Tooltip>
                 ) : (
-                  <Typography component="span" variant="subtitle1">
-                    {symbol} APR: &nbsp;
-                  </Typography>
+                  <Typography component="span">{symbol} APR: &nbsp;</Typography>
                 )}
                 <Typography component="span">
                   {formattedData.aprs[key as Partners] as string}
