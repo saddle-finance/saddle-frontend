@@ -1,7 +1,7 @@
 import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
 import { addSlippage, subtractSlippage } from "../utils/slippage"
+import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { formatUnits, parseUnits } from "@ethersproject/units"
-import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
 import { useLPTokenContract, useSwapContract } from "./useContract"
 
 import { AppState } from "../state"
@@ -26,7 +26,7 @@ export function useApproveAndWithdraw(
 ): (state: ApproveAndWithdrawStateArgument) => Promise<void> {
   const dispatch = useDispatch()
   const swapContract = useSwapContract(poolName)
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -46,7 +46,7 @@ export function useApproveAndWithdraw(
     state: ApproveAndWithdrawStateArgument,
   ): Promise<void> {
     try {
-      if (!account) throw new Error("Wallet must be connected")
+      if (!account || !chainId) throw new Error("Wallet must be connected")
       if (!swapContract) throw new Error("Swap contract is not loaded")
       if (state.lpTokenAmountToSpend.isZero()) return
       if (lpTokenContract == null) return
@@ -81,6 +81,7 @@ export function useApproveAndWithdraw(
             throw new Error("Your transaction could not be completed")
           },
         },
+        chainId,
       )
 
       console.debug(
@@ -120,7 +121,6 @@ export function useApproveAndWithdraw(
           deadline,
         )
       } else {
-        // state.withdrawType === [TokenSymbol]
         spendTransaction = await swapContract.removeLiquidityOneToken(
           state.lpTokenAmountToSpend,
           POOL.poolTokens.findIndex(
@@ -137,9 +137,9 @@ export function useApproveAndWithdraw(
         )
       }
 
-      notifyHandler(spendTransaction.hash, "withdraw")
-
-      await spendTransaction.wait()
+      await enqueuePromiseToast(chainId, spendTransaction.wait(), "withdraw", {
+        poolName,
+      })
       dispatch(
         updateLastTransactionTimes({
           [TRANSACTION_TYPES.WITHDRAW]: Date.now(),
@@ -147,7 +147,10 @@ export function useApproveAndWithdraw(
       )
     } catch (e) {
       console.error(e)
-      notifyCustomError(e as Error)
+      enqueueToast(
+        "error",
+        e instanceof Error ? e.message : "Transaction Failed",
+      )
     }
   }
 }

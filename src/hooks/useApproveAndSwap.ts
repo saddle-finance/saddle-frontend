@@ -4,7 +4,7 @@ import {
   SYNTH_TRACKING_ID,
   TRANSACTION_TYPES,
 } from "../constants"
-import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
+import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { useAllContracts, useSynthetixContract } from "./useContract"
 
 import { AppState } from "../state"
@@ -111,6 +111,7 @@ export function useApproveAndSwap(): (
             throw new Error("Your transaction could not be completed")
           },
         },
+        chainId,
       )
       let swapTransaction
       if (state.swapType === SWAP_TYPES.TOKEN_TO_TOKEN) {
@@ -198,10 +199,9 @@ export function useApproveAndSwap(): (
         throw new Error("Invalid Swap Type, or contract not loaded")
       }
       if (swapTransaction?.hash) {
-        notifyHandler(swapTransaction.hash, "swap")
+        await enqueuePromiseToast(chainId, swapTransaction.wait(), "swap")
       }
 
-      await swapTransaction?.wait()
       dispatch(
         updateLastTransactionTimes({
           [TRANSACTION_TYPES.SWAP]: Date.now(),
@@ -210,7 +210,10 @@ export function useApproveAndSwap(): (
       return Promise.resolve()
     } catch (e) {
       console.error(e)
-      notifyCustomError(e as Error)
+      enqueueToast(
+        "error",
+        e instanceof Error ? e.message : "Transaction Failed",
+      )
     }
   }
 }

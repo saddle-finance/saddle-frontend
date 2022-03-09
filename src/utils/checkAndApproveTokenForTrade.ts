@@ -1,12 +1,11 @@
 import { BigNumber } from "@ethersproject/bignumber"
-import { ContractReceipt } from "ethers"
-import { ContractTransaction } from "@ethersproject/contracts"
+import { ChainId } from "../constants"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import { MaxUint256 } from "@ethersproject/constants"
 import { Zero } from "@ethersproject/constants"
-import { notifyHandler } from "../utils/notifyHandler"
+import { enqueuePromiseToast } from "../components/Toastify"
 
 /**
  * Checks if a spender is allowed to spend some amount of a token.
@@ -29,12 +28,9 @@ export default async function checkAndApproveTokenForTrade(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   gasPrice: BigNumber, // @dev unused
   callbacks: {
-    onTransactionStart?: (
-      transaction?: ContractTransaction,
-    ) => (() => void) | undefined
-    onTransactionSuccess?: (transaction: ContractReceipt) => () => void
     onTransactionError?: (error: Error | string) => () => void
   } = {},
+  chainId?: ChainId,
 ): Promise<void> {
   if (srcTokenContract == null) return
   if (spendingValue.eq(0)) return
@@ -50,16 +46,19 @@ export default async function checkAndApproveTokenForTrade(
   if (existingAllowance.gte(spendingValue)) return
   async function approve(amount: BigNumber): Promise<void> {
     try {
-      const cleanupOnStart = callbacks.onTransactionStart?.()
       const approvalTransaction = await srcTokenContract.approve(
         spenderAddress,
         amount,
       )
-      // Add notification
-      notifyHandler(approvalTransaction.hash, "tokenApproval")
-      const confirmedTransaction = await approvalTransaction.wait()
-      cleanupOnStart?.()
-      callbacks.onTransactionSuccess?.(confirmedTransaction)
+      const confirmedTransaction = approvalTransaction.wait()
+      await enqueuePromiseToast(
+        chainId || ChainId.MAINNET,
+        confirmedTransaction,
+        "tokenApproval",
+        {
+          tokenName,
+        },
+      )
     } catch (error) {
       callbacks.onTransactionError?.(error)
       throw error
