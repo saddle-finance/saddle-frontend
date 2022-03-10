@@ -5,7 +5,6 @@ import {
   Checkbox,
   Container,
   Dialog,
-  Divider,
   Paper,
   Stack,
   Typography,
@@ -251,11 +250,6 @@ const DepositPage = (props: Props): ReactElement => {
           <Paper>
             <Box p={4}>
               <MyShareCard data={myShareData} />
-              <Divider
-                sx={{
-                  display: myShareData ? "block" : "none",
-                }}
-              />
               <PoolInfoCard data={poolData} />
             </Box>
           </Paper>

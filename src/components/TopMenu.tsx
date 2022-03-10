@@ -111,7 +111,7 @@ function TopMenu(): ReactElement {
             <NetworkDisplay onClick={handleSettingMenu} />
             <IconButton
               onClick={handleSettingMenu}
-              data-testId="settingsMenuBtn"
+              data-testid="settingsMenuBtn"
               sx={{
                 minWidth: 0,
                 padding: 0,
