@@ -6,8 +6,8 @@ import {
   Token,
   isLegacySwapABIPool,
 } from "../constants"
+import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { formatDeadlineToNumber, getContract } from "../utils"
-import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
 import {
   useAllContracts,
   useLPTokenContract,
@@ -78,7 +78,7 @@ export function useApproveAndDeposit(
     shouldDepositWrapped = false,
   ): Promise<void> {
     try {
-      if (!account) throw new Error("Wallet must be connected")
+      if (!account || !chainId) throw new Error("Wallet must be connected")
       if (
         !swapContract ||
         !lpTokenContract ||
@@ -124,6 +124,7 @@ export function useApproveAndDeposit(
               throw new Error("Your transaction could not be completed")
             },
           },
+          chainId,
         )
         return
       }
@@ -186,10 +187,10 @@ export function useApproveAndDeposit(
           txnDeadline,
         )
       }
+      await enqueuePromiseToast(chainId, spendTransaction.wait(), "deposit", {
+        poolName,
+      })
 
-      notifyHandler(spendTransaction.hash, "deposit")
-
-      await spendTransaction.wait()
       dispatch(
         updateLastTransactionTimes({
           [TRANSACTION_TYPES.DEPOSIT]: Date.now(),
@@ -198,7 +199,10 @@ export function useApproveAndDeposit(
       return Promise.resolve()
     } catch (e) {
       console.error(e)
-      notifyCustomError(e as Error)
+      enqueueToast(
+        "error",
+        e instanceof Error ? e.message : "Transaction Failed",
+      )
     }
   }
 }

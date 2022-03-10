@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { JsonRpcProvider } from "@ethersproject/providers"
 import { Wallet } from "@ethersproject/wallet"
-import { _Eip1193Bridge } from "@ethersproject/experimental/lib/eip1193-bridge"
+import { Eip1193Bridge } from "@ethersproject/experimental/lib/eip1193-bridge"
 
 // ***********************************************
 // This example commands.js shows you how to
@@ -29,7 +29,7 @@ import { _Eip1193Bridge } from "@ethersproject/experimental/lib/eip1193-bridge"
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-class CustomizedBridge extends _Eip1193Bridge {
+class CustomizedBridge extends Eip1193Bridge {
   async sendAsync(...args) {
     return this.send(...args)
   }
@@ -88,7 +88,9 @@ class CustomizedBridge extends _Eip1193Bridge {
 }
 Cypress.Commands.overwrite("visit", (original, url, options) => {
   return original(
-    url.startsWith("/") && url.length > 2 && !url.startsWith("/#")
+    url.method?.startsWith("/") &&
+      url.url.length > 2 &&
+      !url.method?.startsWith("/#")
       ? `/#${url}`
       : url,
     {

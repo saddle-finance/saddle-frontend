@@ -1,5 +1,5 @@
 import "../styles/global.scss"
-import "./NotifyStyle.scss"
+import "react-toastify/dist/ReactToastify.css"
 
 import { AppDispatch, AppState } from "../state"
 import { BLOCK_TIME, POOLS_MAP } from "../constants"
@@ -11,8 +11,7 @@ import React, {
   useEffect,
   useMemo,
 } from "react"
-import { Redirect, Route, Switch } from "react-router-dom"
-import { isChainSupportedByNotify, notify } from "../utils/notifyHandler"
+import { Route, Routes } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 
 import Deposit from "./Deposit"
@@ -20,6 +19,7 @@ import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import Swap from "./Swap"
+import { ToastContainer } from "react-toastify"
 import TopMenu from "../components/TopMenu"
 import Version from "../components/Version"
 import Web3ReactManager from "../components/Web3ReactManager"
@@ -56,12 +56,6 @@ export default function App(): ReactElement {
   const { userDarkMode } = useSelector((state: AppState) => state.user)
   const { boot } = useIntercom()
 
-  useEffect(() => {
-    notify?.config({
-      networkId: isChainSupportedByNotify(chainId) ? chainId : undefined,
-      darkMode: userDarkMode,
-    })
-  }, [chainId, userDarkMode])
   const pools = useMemo(() => {
     return Object.values(POOLS_MAP).filter(
       ({ addresses }) => chainId && addresses[chainId],
@@ -80,33 +74,33 @@ export default function App(): ReactElement {
             <RewardsBalancesProvider>
               <AppContainer>
                 <TopMenu />
-                <Switch>
-                  <Route exact path="/" component={Swap} />
-                  <Route exact path="/pools" component={Pools} />
+                <Routes>
+                  <Route path="/" element={<Swap />} />
+                  <Route path="/pools" element={<Pools />} />
                   {pools.map(({ name, route }) => (
                     <Route
-                      exact
-                      path={`/pools/${route}/deposit`}
-                      render={(props) => <Deposit {...props} poolName={name} />}
-                      key={`${name}-deposit`}
-                    />
-                  ))}
-                  {pools.map(({ name, route }) => (
-                    <Route
-                      exact
-                      path={`/pools/${route}/withdraw`}
-                      render={(props) => (
-                        <Withdraw {...props} poolName={name} />
-                      )}
+                      path={`pools/${route}/withdraw`}
+                      element={<Withdraw poolName={name} />}
                       key={`${name}-withdraw`}
                     />
                   ))}
-                  <Redirect from="/pools/:route/:action" to="/pools" />
-                  <Route exact path="/risk" component={Risk} />
-                  <Route exact path="/vesting-claim" component={VestingClaim} />
-                </Switch>
+                  {pools.map(({ name, route }) => (
+                    <Route
+                      path={`pools/${route}/deposit`}
+                      element={<Deposit poolName={name} />}
+                      key={`${name}-deposit`}
+                    />
+                  ))}
+                  <Route path="pools/*" element={<Pools />} />
+                  <Route path="/risk" element={<Risk />} />
+                  <Route path="/vesting-claim" element={<VestingClaim />} />
+                </Routes>
                 <WrongNetworkModal />
                 <Version />
+                <ToastContainer
+                  theme={userDarkMode ? "dark" : "light"}
+                  position="top-left"
+                />
               </AppContainer>
             </RewardsBalancesProvider>
           </PendingSwapsProvider>

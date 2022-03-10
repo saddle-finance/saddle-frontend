@@ -6,6 +6,7 @@ import {
   formatBNToString,
   formatDeadlineToNumber,
 } from "../utils"
+import { enqueuePromiseToast, enqueueToast } from "./Toastify"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -20,9 +21,9 @@ import { Zero } from "@ethersproject/constants"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { formatUnits } from "@ethersproject/units"
 import { gasBNFromState } from "../utils/gas"
-import { notifyHandler } from "../utils/notifyHandler"
 import styles from "./PendingSwapModal.module.scss"
 import { subtractSlippage } from "../utils/slippage"
+import { useActiveWeb3React } from "../hooks"
 import { useBridgeContract } from "../hooks/useContract"
 import { useEffect } from "react"
 import { useSelector } from "react-redux"
@@ -45,6 +46,7 @@ const PendingSwapModal = ({
     swapType,
   } = pendingSwap
   const { t } = useTranslation()
+  const { chainId } = useActiveWeb3React()
   const {
     slippageCustom,
     slippageSelected,
@@ -160,11 +162,16 @@ const PendingSwapModal = ({
         ])
         return
       }
-      transaction && notifyHandler(transaction.hash, "swap")
-      await transaction?.wait()
+      transaction &&
+        chainId &&
+        (await enqueuePromiseToast(chainId, transaction.wait(), "swap"))
       onClose()
     } catch (e) {
       console.error(e)
+      enqueueToast(
+        "error",
+        e instanceof Error ? e.message : "Transaction Failed",
+      )
     }
   }, [
     settlementState,
@@ -177,6 +184,7 @@ const PendingSwapModal = ({
     swapType,
     transactionDeadlineCustom,
     transactionDeadlineSelected,
+    chainId,
   ])
 
   const minutesRemaining = Math.max(Math.ceil(secondsRemaining / 60), 0)
