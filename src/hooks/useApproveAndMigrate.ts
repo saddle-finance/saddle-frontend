@@ -1,4 +1,5 @@
 import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
+import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { useDispatch, useSelector } from "react-redux"
 
 import { AppState } from "../state"
@@ -8,7 +9,6 @@ import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { gasBNFromState } from "../utils/gas"
 import { getContract } from "../utils"
-import { notifyHandler } from "../utils/notifyHandler"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
 import { useGeneralizedSwapMigratorContract } from "./useContract"
@@ -64,6 +64,7 @@ export function useApproveAndMigrate(): (
             throw new Error("Your transaction could not be completed")
           },
         },
+        chainId,
       )
       try {
         const metaSwapAddress = pool.metaSwapAddresses?.[chainId]
@@ -73,8 +74,14 @@ export function useApproveAndMigrate(): (
           lpTokenBalance,
           lpTokenBalance.mul(1000 - 5).div(1000), // 50bps, 0.5%
         )
-        notifyHandler(migrateTransaction.hash, "migrate")
-        await migrateTransaction.wait()
+        await enqueuePromiseToast(
+          chainId,
+          migrateTransaction.wait(),
+          "migrate",
+          {
+            poolName: pool.name,
+          },
+        )
         dispatch(
           updateLastTransactionTimes({
             [TRANSACTION_TYPES.MIGRATE]: Date.now(),
@@ -87,6 +94,10 @@ export function useApproveAndMigrate(): (
       return Promise.resolve()
     } catch (e) {
       console.error(e)
+      enqueueToast(
+        "error",
+        e instanceof Error ? e.message : "Transaction Failed",
+      )
     }
   }
 }

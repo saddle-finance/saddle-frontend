@@ -9,7 +9,7 @@ import React, {
 } from "react"
 import { Trans, useTranslation } from "react-i18next"
 import { commify, formatBNToString } from "../utils"
-import { notifyCustomError, notifyHandler } from "../utils/notifyHandler"
+import { enqueuePromiseToast, enqueueToast } from "./Toastify"
 import {
   useMiniChefContract,
   useRetroactiveVestingContract,
@@ -163,7 +163,7 @@ export default function TokenClaimDialog({
               </p>
             )}
             {allPoolsWithRewards.map((pool, i, arr) => (
-              <>
+              <React.Fragment key={pool.name}>
                 <ClaimListItem
                   title={pool.name}
                   amount={rewardBalances[pool.name] || Zero}
@@ -171,10 +171,9 @@ export default function TokenClaimDialog({
                   status={
                     claimsStatuses["allPools"] || claimsStatuses[pool.name]
                   }
-                  key={pool.name}
                 />
                 {i < arr.length - 1 && <Divider key={i} />}
-              </>
+              </React.Fragment>
             ))}
           </ul>
           <div className={styles.info}>
@@ -279,22 +278,20 @@ function useRewardClaims() {
         } else {
           txn = await rewardsContract.deposit(pid, Zero, account)
         }
-        notifyHandler(txn?.hash, "claim")
-        await txn?.wait()
+        await enqueuePromiseToast(chainId, txn.wait(), "claim", {
+          poolName: pool.name,
+        })
         updateClaimStatus(pool.name, STATUSES.SUCCESS)
       } catch (e) {
         console.error(e)
         updateClaimStatus(pool.name, STATUSES.ERROR)
-        notifyCustomError({
-          ...(e as Error),
-          message: "Unable to claim reward",
-        })
+        enqueueToast("error", "Unable to claim reward")
       }
     },
     [chainId, account, rewardsContract, updateClaimStatus],
   )
   const claimRetroReward = useCallback(async () => {
-    if (!account || !retroRewardsContract) return
+    if (!account || !retroRewardsContract || !chainId) return
     try {
       updateClaimStatus("retroactive", STATUSES.PENDING)
       const userVesting = await retroRewardsContract.vestings(account)
@@ -310,15 +307,22 @@ function useRewardClaims() {
       } else {
         throw new Error("Unable to claim retro reward")
       }
-      notifyHandler(txn?.hash, "claim")
-      await txn?.wait()
+      await enqueuePromiseToast(chainId, txn.wait(), "claim", {
+        poolName: "Retroactive",
+      })
       updateClaimStatus("retroactive", STATUSES.SUCCESS)
     } catch (e) {
       console.error(e)
       updateClaimStatus("retroactive", STATUSES.ERROR)
-      notifyCustomError({ ...(e as Error), message: "Unable to claim reward" })
+      enqueueToast("error", "Unable to claim reward")
     }
-  }, [retroRewardsContract, account, userMerkleData, updateClaimStatus])
+  }, [
+    retroRewardsContract,
+    account,
+    userMerkleData,
+    updateClaimStatus,
+    chainId,
+  ])
 
   const claimAllPoolsRewards = useCallback(
     async (pools: Pool[]) => {
@@ -343,16 +347,14 @@ function useRewardClaims() {
           calls.map(({ data }) => data as string),
           false,
         )
-        notifyHandler(txn?.hash, "claim")
-        await txn?.wait()
+        await enqueuePromiseToast(chainId, txn.wait(), "claim", {
+          poolName: "All Pools",
+        })
         updateClaimStatus("all", STATUSES.SUCCESS)
       } catch (e) {
         console.error(e)
         updateClaimStatus("all", STATUSES.ERROR)
-        notifyCustomError({
-          ...(e as Error),
-          message: "Unable to claim reward",
-        })
+        enqueueToast("error", "Unable to claim reward")
       }
     },
     [account, rewardsContract, chainId, updateClaimStatus],
