@@ -21,8 +21,18 @@ import "@cypress/code-coverage/support"
 // Alternatively you can use CommonJS syntax:
 // require("./commands")
 
+// Removes fetch/xhr logging noise.
+const app = window.top
+
+if (!app.document.head.querySelector("[data-hide-command-log-request]")) {
+  const style = app.document.createElement("style")
+  style.innerHTML = ".command-name-request, .command-name-xhr { display: none }"
+  style.setAttribute("data-hide-command-log-request", "")
+
+  app.document.head.appendChild(style)
+}
+
+// Returning false here prevents Cypress from failing the test.
 Cypress.on("uncaught:exception", () => {
-  // returning false here prevents Cypress from
-  // failing the test
   return false
 })
