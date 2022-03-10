@@ -8,7 +8,6 @@ div.poolInfoCard {
   h4 {
     width: 100%;
     font-family: $font-family-title;
-    margin-top: 24px;
     margin-right: 0;
     margin-bottom: 24px;
     font-size: 30px;
@@ -18,6 +17,7 @@ div.poolInfoCard {
 
   div.info {
     display: grid;
+    margin-bottom: 24px;
     grid-template-rows: auto;
     row-gap: 10px;
     .label {
@@ -35,6 +35,7 @@ div.poolInfoCard {
   .bottom {
     h4 {
       margin-bottom: 4px;
+      margin-top: 24px;
     }
   }
 

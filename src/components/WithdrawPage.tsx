@@ -3,7 +3,6 @@ import {
   Button,
   Container,
   Dialog,
-  Divider,
   FormControlLabel,
   Paper,
   Radio,
@@ -235,7 +234,6 @@ const WithdrawPage = (props: Props): ReactElement => {
           <Paper>
             <Box p={4}>
               <MyShareCard data={myShareData} />
-              {myShareData && <Divider />}
               <PoolInfoCard data={poolData} />
             </Box>
           </Paper>
