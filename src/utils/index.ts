@@ -224,5 +224,6 @@ export async function getMulticallProvider(
     ethcallProvider.multicallAddress =
       "0xc04d660976c923ddba750341fe5923e47900cf24"
   }
+
   return ethcallProvider
 }
