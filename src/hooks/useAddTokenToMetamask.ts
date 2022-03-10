@@ -33,7 +33,7 @@ export default function useAddTokenToMetamask(token: Token | undefined): {
             },
           },
         })
-        .then((success) => setSuccess(success))
+        .then((success: boolean) => setSuccess(success))
         .catch(() => setSuccess(false))
     }
   }, [library, token, chainId, isMetaMask])
