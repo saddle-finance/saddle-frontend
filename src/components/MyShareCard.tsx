@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from "@mui/material"
+import { Box, Divider, Stack, Typography } from "@mui/material"
 import { POOLS_MAP, PoolTypes, TOKENS_MAP } from "../constants"
 import { Partners, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement } from "react"
@@ -83,7 +83,7 @@ function MyShareCard({ data }: Props): ReactElement | null {
           ) : null
         })}
       </div>
-      <Stack direction="row" spacing={4}>
+      <Stack direction="row" spacing={4} mb={3}>
         {formattedData.tokens.map((coin) => (
           <div key={coin.symbol}>
             <Typography variant="subtitle1" data-testid="tokenName">
@@ -93,6 +93,7 @@ function MyShareCard({ data }: Props): ReactElement | null {
           </div>
         ))}
       </Stack>
+      <Divider />
     </Box>
   )
 }
