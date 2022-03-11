@@ -1,6 +1,6 @@
 import { PoolName } from "../../src/constants"
 
-xcontext("Advanced option test", () => {
+context("Advanced option test", () => {
   // have two seperate maps here since the naming convention is different throughout the page
   const pools = ["BTC Pool V2", "Stablecoin Pool V2"]
 
