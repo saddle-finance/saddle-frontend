@@ -42,6 +42,8 @@ context("Withdrawal Flow", () => {
       // cy.wait(500)
       cy.get("button").contains("Deposit").click()
       cy.get("button").contains("Confirm Deposit").click()
+      cy.visit(`${host}#/pools`)
+      cy.get(`[data-testid="${poolName}Balance"]`).contains("$")
     })
   }
 
@@ -77,6 +79,7 @@ context("Withdrawal Flow", () => {
       cy.get('[data-testid="withdrawTokenRadio"]').contains(tokens[0]).click()
       cy.get("#tokenInput input").first().type("1")
       // cy.wait(500)
+      // cy.get('[data-testid="withdrawBtn"]').should("not.be.disabled").click()
       cy.get('[data-testid="withdrawBtn"]').click()
       cy.get("button").contains("Confirm Withdraw").click()
       // cy.wait(10000).then(() => {

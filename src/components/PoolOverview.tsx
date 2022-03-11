@@ -106,7 +106,9 @@ export default function PoolOverview({
         {hasShare && (
           <div className="balance">
             <span>{t("balance")}: </span>
-            <span>{`$${formattedData.userBalanceUSD}`}</span>
+            <span
+              data-testid={`${formattedData.name}Balance`}
+            >{`$${formattedData.userBalanceUSD}`}</span>
           </div>
         )}
         <div className="tokens">
