@@ -5,7 +5,7 @@ const poolTokens: { [key: string]: string[] } = {
   "Stablecoin Pool V2": ["DAI", "USDC", "USDT"],
 }
 
-context("Deposit Flow", () => {
+xcontext("Deposit Flow", () => {
   beforeEach(() => {
     const host = Cypress.env("DAPP_HOST") as string
     cy.visit(`${host}#/pools`)

@@ -1,4 +1,4 @@
-context("Swap Flow", () => {
+xcontext("Swap Flow", () => {
   function testAssetSwap(poolName: string, poolTokenSymbols: string[]) {
     describe(`Swapping within ${poolName}`, () => {
       before(() => {
