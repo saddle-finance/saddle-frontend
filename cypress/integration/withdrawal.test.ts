@@ -50,9 +50,7 @@ context("Withdrawal Flow", () => {
       cy.get("#tokenInput input").first().type("1")
       // Following two statements are a weird hack I have to do to get the
       // Withdraw button to not be disabled.
-      cy.get('[data-testid="withdrawPriceImpactOrBonus').contains(
-        "Price" || "Bonus",
-      )
+      cy.get('[data-testid="withdrawPriceImpactOrBonus').contains(/Price|Bonus/)
       cy.get("#tokenInput input").first().type("{backspace}").type("1")
       cy.get('[data-testid="withdrawBtn"]').click()
       cy.get("[data-testid=tokenValue]")
