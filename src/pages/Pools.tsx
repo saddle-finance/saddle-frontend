@@ -317,6 +317,8 @@ function Pools(): ReactElement | null {
         </div>
         <Dialog
           open={!!currentModal}
+          maxWidth="xs"
+          fullWidth
           onClose={(): void => setCurrentModal(null)}
         >
           {currentModal === "migrate" ? (
