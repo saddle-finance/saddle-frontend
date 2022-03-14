@@ -259,7 +259,7 @@ const DepositPage = (props: Props): ReactElement => {
       <Dialog
         open={!!currentModal}
         onClose={(): void => setCurrentModal(null)}
-        maxWidth="xs"
+        maxWidth="sm"
         fullWidth
         scroll="body"
       >

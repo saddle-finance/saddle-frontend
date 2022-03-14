@@ -66,6 +66,7 @@ function ReviewDeposit({
     "&>:last-child": {
       marginLeft: "auto",
       marginRight: "0px",
+      width: "fit-content",
     },
   }))
 
@@ -169,7 +170,7 @@ function ReviewDeposit({
             </Typography>
           </DepositeInfoItem>
           <DepositeInfoItem>
-            <Typography>{t("rates")}</Typography>
+            <Typography mr={2}>{t("rates")}</Typography>
             <div>
               {transactionData.from.items.map(
                 ({ token, singleTokenPriceUSD }) => (
