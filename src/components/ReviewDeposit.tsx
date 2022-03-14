@@ -1,9 +1,6 @@
-// import "./ReviewDeposit.scss"
-
 import {
   Box,
   Button,
-  DialogActions,
   DialogContent,
   Divider,
   Typography,
@@ -61,20 +58,25 @@ function ReviewDeposit({
 
   const DepositeInfoItem = styled(Box)(({ theme }) => ({
     display: "flex",
-    minWidth: "65%",
+    minWidth: "100%",
     marginBottom: theme.spacing(2),
     "&>:first-child": {
       display: "flex",
-      width: "60%",
+    },
+    "&>:last-child": {
+      marginLeft: "auto",
+      marginRight: "0px",
     },
   }))
 
   return (
     <React.Fragment>
-      <DialogTitle variant="h2">{t("reviewDeposit")}</DialogTitle>
+      <DialogTitle variant="h1" onClose={onClose}>
+        {t("reviewDeposit")}
+      </DialogTitle>
       <DialogContent>
         <Box>
-          <Typography variant="h3" mb={2}>
+          <Typography variant="subtitle1" my={2}>
             {t("depositing")}
           </Typography>
           <Box>
@@ -110,7 +112,9 @@ function ReviewDeposit({
                 height={24}
                 alt="icon"
               />
-              <Typography>{transactionData.to.item.token.symbol}</Typography>
+              <Typography ml={1}>
+                {transactionData.to.item.token.symbol}
+              </Typography>
             </div>
             <Typography>
               {commify(
@@ -194,23 +198,21 @@ function ReviewDeposit({
             }
           />
         )}
-        <Typography>{t("estimatedOutput")}</Typography>
-      </DialogContent>
-
-      <DialogActions>
+        <Typography my={3}>{t("estimatedOutput")}</Typography>
         <Button
           variant="contained"
           color="primary"
           size="large"
+          fullWidth
           onClick={onConfirm}
           disabled={isHighPriceImpactTxn && !hasConfirmedHighPriceImpact}
         >
           {t("confirmDeposit")}
         </Button>
-        <Button variant="outlined" size="large" onClick={onClose}>
+        <Button size="large" fullWidth onClick={onClose}>
           {t("cancel")}
         </Button>
-      </DialogActions>
+      </DialogContent>
     </React.Fragment>
   )
 }
