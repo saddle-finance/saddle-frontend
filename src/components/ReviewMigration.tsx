@@ -59,30 +59,25 @@ function ReviewMigration({
           {t("migrationExplain")}
         </Alert>
         <Box my={3}>
-          <Box>
+          <Box display="flex">
+            <Typography component="span">{t("migrationAmount")}</Typography>
+            <Typography component="span" ml="auto" mr={0}>
+              {commify(
+                formatBNToString(migrationAmount || BigNumber.from("0"), 18, 2),
+              )}{" "}
+              {lpTokenName}
+            </Typography>
+          </Box>
+          {shouldDisplayGas && (
             <Box display="flex">
-              <Typography component="span">{t("migrationAmount")}</Typography>
+              <Typography component="span">{t("gas")}</Typography>
               <Typography component="span" ml="auto" mr={0}>
-                {commify(
-                  formatBNToString(
-                    migrationAmount || BigNumber.from("0"),
-                    18,
-                    2,
-                  ),
-                )}{" "}
-                {lpTokenName}
+                {gasPrice.toString()} GWEI
               </Typography>
             </Box>
-            {shouldDisplayGas && (
-              <Box display="flex">
-                <Typography component="span">{t("gas")}</Typography>
-                <Typography component="span" ml="auto" mr={0}>
-                  {gasPrice.toString()} GWEI
-                </Typography>
-              </Box>
-            )}
-            {/* TODO: Create a light API to expose the cached BlockNative gas estimates. */}
-            {/* {gasValueUSD && (
+          )}
+          {/* TODO: Create a light API to expose the cached BlockNative gas estimates. */}
+          {/* {gasValueUSD && (
             <div className="row">
               <Typography component = 'span' className="title">{t("estimatedTxCost")}</Typography>
               <Typography component = 'span' className="value floatRight">
@@ -90,12 +85,11 @@ function ReviewMigration({
               </Typography>
             </div>
           )} */}
-            <Box display="flex">
-              <Typography component="span">{t("maxSlippage")}</Typography>
-              <Typography component="span" ml="auto" mr={0}>
-                0.5%
-              </Typography>
-            </Box>
+          <Box display="flex">
+            <Typography component="span">{t("maxSlippage")}</Typography>
+            <Typography component="span" ml="auto" mr={0}>
+              0.5%
+            </Typography>
           </Box>
         </Box>
         <Divider />
