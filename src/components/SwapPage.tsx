@@ -316,6 +316,8 @@ const SwapPage = (props: Props): ReactElement => {
             open={!!currentModal}
             onClose={(): void => setCurrentModal(null)}
             scroll="body"
+            maxWidth="xs"
+            fullWidth
           >
             {currentModal === "review" ? (
               <ReviewSwap
