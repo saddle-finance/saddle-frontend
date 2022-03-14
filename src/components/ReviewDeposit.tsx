@@ -56,7 +56,7 @@ function ReviewDeposit({
   )
   const shouldDisplayGas = !!gasStandard
 
-  const DepositeInfoItem = styled(Box)(({ theme }) => ({
+  const DepositInfoItem = styled(Box)(({ theme }) => ({
     display: "flex",
     minWidth: "100%",
     marginBottom: theme.spacing(2),
