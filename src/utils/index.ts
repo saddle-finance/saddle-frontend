@@ -214,6 +214,10 @@ export async function getMulticallProvider(
       address: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
       block: 0,
     }
+    ethcallProvider.multicall = {
+      address: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+      block: 0,
+    }
   }
 
   return ethcallProvider
