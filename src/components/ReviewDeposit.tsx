@@ -30,6 +30,19 @@ interface Props {
   transactionData: DepositTransaction
 }
 
+const DepositeInfoItem = styled(Box)(({ theme }) => ({
+  display: "flex",
+  minWidth: "100%",
+  marginBottom: theme.spacing(2),
+  "&>:first-child": {
+    display: "flex",
+  },
+  "&>:last-child": {
+    marginLeft: "auto",
+    marginRight: "0px",
+    width: "fit-content",
+  },
+}))
 function ReviewDeposit({
   onClose,
   onConfirm,
@@ -55,20 +68,6 @@ function ReviewDeposit({
     transactionDeadlineCustom,
   )
   const shouldDisplayGas = !!gasStandard
-
-  const DepositInfoItem = styled(Box)(({ theme }) => ({
-    display: "flex",
-    minWidth: "100%",
-    marginBottom: theme.spacing(2),
-    "&>:first-child": {
-      display: "flex",
-    },
-    "&>:last-child": {
-      marginLeft: "auto",
-      marginRight: "0px",
-      width: "fit-content",
-    },
-  }))
 
   return (
     <React.Fragment>
