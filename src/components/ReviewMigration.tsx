@@ -55,7 +55,7 @@ function ReviewMigration({
         {t("reviewMigration")}
       </DialogTitle>
       <DialogContent>
-        <Alert variant="filled" severity="warning">
+        <Alert variant="filled" icon={false} severity="warning">
           {t("migrationExplain")}
         </Alert>
         <Box my={3}>
