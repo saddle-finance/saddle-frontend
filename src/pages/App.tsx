@@ -10,7 +10,7 @@ import React, {
   useEffect,
   useMemo,
 } from "react"
-import { Route, Routes } from "react-router-dom"
+import { Redirect, Route, Switch } from "react-router-dom"
 import { styled, useTheme } from "@mui/material"
 
 import { AppDispatch } from "../state"
@@ -74,27 +74,31 @@ export default function App(): ReactElement {
             <RewardsBalancesProvider>
               <AppContainer>
                 <TopMenu />
-                <Routes>
-                  <Route path="/" element={<Swap />} />
-                  <Route path="/pools" element={<Pools />} />
+                <Switch>
+                  <Route exact path="/" component={Swap} />
+                  <Route exact path="/pools" component={Pools} />
                   {pools.map(({ name, route }) => (
                     <Route
-                      path={`pools/${route}/withdraw`}
-                      element={<Withdraw poolName={name} />}
-                      key={`${name}-withdraw`}
-                    />
-                  ))}
-                  {pools.map(({ name, route }) => (
-                    <Route
-                      path={`pools/${route}/deposit`}
-                      element={<Deposit poolName={name} />}
+                      exact
+                      path={`/pools/${route}/deposit`}
+                      render={(props) => <Deposit {...props} poolName={name} />}
                       key={`${name}-deposit`}
                     />
                   ))}
-                  <Route path="pools/*" element={<Pools />} />
-                  <Route path="/risk" element={<Risk />} />
-                  <Route path="/vesting-claim" element={<VestingClaim />} />
-                </Routes>
+                  {pools.map(({ name, route }) => (
+                    <Route
+                      exact
+                      path={`/pools/${route}/withdraw`}
+                      render={(props) => (
+                        <Withdraw {...props} poolName={name} />
+                      )}
+                      key={`${name}-withdraw`}
+                    />
+                  ))}
+                  <Redirect from="/pools/:route/:action" to="/pools" />
+                  <Route exact path="/risk" component={Risk} />
+                  <Route exact path="/vesting-claim" component={VestingClaim} />
+                </Switch>
                 <WrongNetworkModal />
                 <Version />
                 <ToastContainer
