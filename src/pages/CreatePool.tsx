@@ -186,7 +186,7 @@ export default function CreatePool(): React.ReactElement {
         </Box>
       </Paper>
       <Dialog open={openModal}>
-        <DialogTitle onClose={() => setOpenModal(false)}>
+        <DialogTitle variant="h1" onClose={() => setOpenModal(false)}>
           Review Pool Creation
         </DialogTitle>
         <DialogContent>
@@ -197,24 +197,28 @@ export default function CreatePool(): React.ReactElement {
           </Alert>
           <Stack my={3} spacing={1}>
             <Box display="flex" justifyContent="space-between">
-              <Typography>Pool Name</Typography>
+              <Typography>{t("poolName")}</Typography>
               <Typography>vUSD</Typography>
             </Box>
             <Box display="flex" justifyContent="space-between">
-              <Typography>Pool Symbol</Typography>
+              <Typography>{t("poolSymbol")}</Typography>
               <Typography>Saddle-vUSD</Typography>
             </Box>
             <Box display="flex" justifyContent="space-between">
-              <Typography>Fee</Typography>
+              <Typography>{t("fee")}</Typography>
               <Typography>0.9%</Typography>
             </Box>
             <Box display="flex" justifyContent="space-between">
-              <Typography>A Parameter</Typography>
-              <Typography>Pool Type</Typography>
+              <Typography>{t("aParameter")}</Typography>
+              <Typography>120</Typography>
             </Box>
             <Box display="flex" justifyContent="space-between">
+              <Typography>{t("poolType")}</Typography>
               <Typography>USD MetaPool</Typography>
+            </Box>
+            <Box display="flex" justifyContent="space-between">
               <Typography>Tokens</Typography>
+              <Typography>vUSD</Typography>
             </Box>
           </Stack>
           <Divider />
