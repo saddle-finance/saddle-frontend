@@ -1,7 +1,6 @@
 import "../styles/global.scss"
 import "react-toastify/dist/ReactToastify.css"
 
-import { AppDispatch, AppState } from "../state"
 import { BLOCK_TIME, POOLS_MAP } from "../constants"
 import React, {
   ReactElement,
@@ -12,8 +11,9 @@ import React, {
   useMemo,
 } from "react"
 import { Redirect, Route, Switch } from "react-router-dom"
-import { useDispatch, useSelector } from "react-redux"
+import { styled, useTheme } from "@mui/material"
 
+import { AppDispatch } from "../state"
 import Deposit from "./Deposit"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
@@ -28,8 +28,8 @@ import WrongNetworkModal from "../components/WrongNetworkModal"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchSwapStats from "../utils/getSwapStats"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
-import { styled } from "@mui/material"
 import { useActiveWeb3React } from "../hooks"
+import { useDispatch } from "react-redux"
 import { useIntercom } from "react-use-intercom"
 import usePoller from "../hooks/usePoller"
 
@@ -53,7 +53,7 @@ const AppContainer = styled("div")(({ theme }) => {
 })
 export default function App(): ReactElement {
   const { chainId } = useActiveWeb3React()
-  const { userDarkMode } = useSelector((state: AppState) => state.user)
+  const theme = useTheme()
   const { boot } = useIntercom()
 
   const pools = useMemo(() => {
@@ -102,7 +102,7 @@ export default function App(): ReactElement {
                 <WrongNetworkModal />
                 <Version />
                 <ToastContainer
-                  theme={userDarkMode ? "dark" : "light"}
+                  theme={theme.palette.mode === "dark" ? "dark" : "light"}
                   position="top-left"
                 />
               </AppContainer>
