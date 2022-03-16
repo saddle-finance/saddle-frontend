@@ -1,5 +1,3 @@
-// import "./PoolOverview.scss"
-
 import {
   Box,
   Button,
@@ -31,7 +29,7 @@ import {
 
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
-import { useNavigate } from "react-router-dom"
+import { useHistory } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -87,7 +85,7 @@ export default function PoolOverview({
   }
   const hasShare = !!userShareData?.usdBalance.gt("0")
   const isMetapool = isMetaPool(formattedData.name)
-  const navigate = useNavigate()
+  const history = useHistory()
   const disableText = isOutdated || shouldMigrate || poolData.isPaused
   const chipLabel = useMemo(() => {
     if ((isOutdated || shouldMigrate) && poolData.isPaused) {
@@ -250,7 +248,7 @@ export default function PoolOverview({
                 fullWidth
                 size="large"
                 disabled={poolData?.isPaused || isOutdated}
-                onClick={() => navigate(`${poolRoute}/deposit`)}
+                onClick={() => history.push(`${poolRoute}/deposit`)}
               >
                 {t("deposit")}
               </Button>
@@ -259,7 +257,7 @@ export default function PoolOverview({
               color={isOutdated || shouldMigrate ? "secondary" : "primary"}
               fullWidth
               size="large"
-              onClick={() => navigate(`${poolRoute}/withdraw`)}
+              onClick={() => history.push(`${poolRoute}/withdraw`)}
             >
               {t("withdraw")}
             </Button>
