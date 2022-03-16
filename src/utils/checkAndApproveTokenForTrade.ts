@@ -60,7 +60,7 @@ export default async function checkAndApproveTokenForTrade(
         },
       )
     } catch (error) {
-      callbacks.onTransactionError?.(error as Error)
+      callbacks.onTransactionError?.(error)
       throw error
     }
   }
