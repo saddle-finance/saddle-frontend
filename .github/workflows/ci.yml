@@ -7,7 +7,7 @@ on:
     branches: [master]
 
 jobs:
-  lint:
+  build:
     runs-on: ubuntu-latest
 
     env:
@@ -27,13 +27,36 @@ jobs:
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
       - run: npm ci
       - run: npm run build --if-present
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: build/
+  lint:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "12"
+      # fix for forcing git to use https when pulling deps
+      - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
+      - run: npm ci
+      - uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: build/
       - run: npm run lint
 
   test:
     runs-on: ubuntu-latest
-
-    env:
-      REACT_APP_NOTIFY_DAPP_ID: ${{ secrets.REACT_APP_NOTIFY_DAPP_ID }}
+    needs: [build]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
@@ -45,19 +68,17 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "12"
-      # fix for forcing git to use https when pulling deps
-      - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
-      - run: npm ci
-      - run: npm run build --if-present
+      - uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: build/
       - run: npm test
         env:
           CI: true
 
   coverage:
     runs-on: ubuntu-latest
-
-    env:
-      REACT_APP_NOTIFY_DAPP_ID: ${{ secrets.REACT_APP_NOTIFY_DAPP_ID }}
+    needs: [build]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
@@ -69,10 +90,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "12"
-      # fix for forcing git to use https when pulling deps
-      - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
-      - run: npm ci
-      - run: npm run build --if-present
+      - uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: build/
       - run: npm test -- --coverage
         env:
           CI: true
@@ -82,14 +103,12 @@ jobs:
 
   coverage-cypress:
     runs-on: ubuntu-latest
+    needs: [build]
     services:
       saddle-contract:
         image: saddlefinance/contracts:latest
         ports:
           - 8545:8545
-
-    env:
-      REACT_APP_NOTIFY_DAPP_ID: ${{ secrets.REACT_APP_NOTIFY_DAPP_ID }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
@@ -101,9 +120,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "12"
-      # fix for forcing git to use https when pulling deps
-      - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
-      - run: npm ci
+      - uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: build/
       - run: npm run cy:coverage
         env:
           CHOKIDAR_USEPOLLING: 1

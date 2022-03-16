@@ -1,0 +1,21 @@
+{
+  "baseDir": "build",
+  "files": [
+    {
+      "path": "**/*.<hash>.{js,css,html}"
+    },
+    {
+      "path": "**/*.<hash>.{png,jpg,gif,svg,eot,ttf,woff,woff2}"
+    }
+  ],
+  "reportOutput": [
+    [
+      "github",
+      {
+        "checkRun": true,
+        "commitStatus": true,
+        "prComment": false
+      }
+    ]
+  ]
+}
