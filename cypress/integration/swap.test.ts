@@ -98,7 +98,7 @@ context("Swap Flow", () => {
   }
   const testConfigs: [string, string[]][] = [
     ["BTC V2", ["sBTC", "WBTC", "RENBTC"]],
-    ["USD Pool V2", ["DAI", "USDC", "USDT"]],
+    ["Stablecoin V2", ["DAI", "USDC", "USDT"]],
   ]
   testConfigs.forEach((info) => testAssetSwap(...info))
   // it("successfully completes a deposit of all assets", () => {
