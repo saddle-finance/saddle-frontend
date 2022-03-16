@@ -1,7 +1,10 @@
 import {
+  Alert,
   Box,
   Button,
   Container,
+  Dialog,
+  DialogContent,
   Divider,
   Link,
   Paper,
@@ -14,6 +17,7 @@ import {
 } from "@mui/material"
 import React, { useState } from "react"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
+import DialogTitle from "../components/DialogTitle"
 import { Link as RouteLink } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
@@ -175,6 +179,49 @@ export default function CreatePool(): React.ReactElement {
           </Button>
         </Box>
       </Paper>
+      <Dialog open={true}>
+        <DialogTitle>Review Pool Creation</DialogTitle>
+        <DialogContent>
+          <Alert icon={false}>
+            Double check the inputs for your pool are as you want it-- once a
+            pool is created, it can be modified but cannot be deleted
+            (it&lsquo;ll live on the blockchain forever!)
+          </Alert>
+          <Box my={3}>
+            <Box display="flex" justifyContent="space-between">
+              <Typography>Pool Name</Typography>
+              <Typography>vUSD</Typography>
+            </Box>
+            <Box display="flex" justifyContent="space-between">
+              <Typography>Pool Symbol</Typography>
+              <Typography>Saddle-vUSD</Typography>
+            </Box>
+            <Box display="flex" justifyContent="space-between">
+              <Typography>Fee</Typography>
+              <Typography>0.9%</Typography>
+            </Box>
+            <Box display="flex" justifyContent="space-between">
+              <Typography>A Parameter</Typography>
+              <Typography>Pool Type</Typography>
+            </Box>
+            <Box display="flex" justifyContent="space-between">
+              <Typography>USD MetaPool</Typography>
+              <Typography>Tokens</Typography>
+            </Box>
+          </Box>
+          <Divider />
+          <Typography my={3}>
+            Output is estimated. If the price changes by more than max slippage
+            your transaction will revert.
+          </Typography>
+          <Stack spacing={1}>
+            <Button variant="contained" size="large">
+              Create Pool
+            </Button>
+            <Button size="large">Go back to edit</Button>
+          </Stack>
+        </DialogContent>
+      </Dialog>
     </Container>
   )
 }
