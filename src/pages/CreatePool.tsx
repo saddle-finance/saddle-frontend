@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next"
 export default function CreatePool(): React.ReactElement {
   const { t } = useTranslation()
   const theme = useTheme()
+  const [openModal, setOpenModal] = useState<boolean>(false)
   const [tokenLists, setTokenLists] = useState<string[]>([""])
 
   const handleAddTokenList = () => {
@@ -174,20 +175,27 @@ export default function CreatePool(): React.ReactElement {
           >
             {t("addToken")}
           </Button>
-          <Button variant="contained" size="large" fullWidth>
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            onClick={() => setOpenModal(true)}
+          >
             {t("createCommunityPool")}
           </Button>
         </Box>
       </Paper>
-      <Dialog open={true}>
-        <DialogTitle>Review Pool Creation</DialogTitle>
+      <Dialog open={openModal}>
+        <DialogTitle onClose={() => setOpenModal(false)}>
+          Review Pool Creation
+        </DialogTitle>
         <DialogContent>
-          <Alert icon={false}>
+          <Alert icon={false} color="warning">
             Double check the inputs for your pool are as you want it-- once a
             pool is created, it can be modified but cannot be deleted
             (it&lsquo;ll live on the blockchain forever!)
           </Alert>
-          <Box my={3}>
+          <Stack my={3} spacing={1}>
             <Box display="flex" justifyContent="space-between">
               <Typography>Pool Name</Typography>
               <Typography>vUSD</Typography>
@@ -208,7 +216,7 @@ export default function CreatePool(): React.ReactElement {
               <Typography>USD MetaPool</Typography>
               <Typography>Tokens</Typography>
             </Box>
-          </Box>
+          </Stack>
           <Divider />
           <Typography my={3}>
             Output is estimated. If the price changes by more than max slippage
