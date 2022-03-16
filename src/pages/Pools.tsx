@@ -239,15 +239,17 @@ function Pools(): ReactElement | null {
   return (
     <Container sx={{ pb: 5 }}>
       <Stack direction="row" alignItems="center">
-        <Box flex={1}>
-          <TextField
-            variant="standard"
-            placeholder="Pool or token"
-            InputProps={{
-              startAdornment: <Search />,
-            }}
-          />
-        </Box>
+        {false && (
+          <Box flex={1}>
+            <TextField
+              variant="standard"
+              placeholder="Pool or token"
+              InputProps={{
+                startAdornment: <Search />,
+              }}
+            />
+          </Box>
+        )}
         <ul className={styles.filters}>
           {[
             ["all", "ALL"] as const,
@@ -269,16 +271,18 @@ function Pools(): ReactElement | null {
           ))}
         </ul>
 
-        <Box flex={1}>
-          <Button
-            variant="contained"
-            color="secondary"
-            sx={{ float: "right" }}
-            onClick={() => history.push("/pools/create")}
-          >
-            Create Pool
-          </Button>
-        </Box>
+        {false && (
+          <Box flex={1}>
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{ float: "right" }}
+              onClick={() => history.push("/pools/create")}
+            >
+              Create Pool
+            </Button>
+          </Box>
+        )}
       </Stack>
 
       <Stack spacing={3}>
