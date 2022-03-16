@@ -30,7 +30,7 @@ interface Props {
   transactionData: DepositTransaction
 }
 
-const DepositeInfoItem = styled(Box)(({ theme }) => ({
+const DepositInfoItem = styled(Box)(({ theme }) => ({
   display: "flex",
   minWidth: "100%",
   marginBottom: theme.spacing(2),
@@ -81,7 +81,7 @@ function ReviewDeposit({
           </Typography>
           <Box>
             {transactionData.from.items.map(({ token, amount }) => (
-              <DepositeInfoItem key={token.name}>
+              <DepositInfoItem key={token.name}>
                 <div>
                   <img src={token.icon} width={24} height={24} alt="icon" />
                   <Typography ml={1}>{token.symbol}</Typography>
@@ -89,22 +89,22 @@ function ReviewDeposit({
                 <Typography>
                   {commify(formatBNToString(amount, token.decimals))}
                 </Typography>
-              </DepositeInfoItem>
+              </DepositInfoItem>
             ))}
-            <DepositeInfoItem>
+            <DepositInfoItem>
               <Typography variant="subtitle1">{t("total")}</Typography>
               <Typography variant="subtitle1">
                 {commify(
                   formatBNToString(transactionData.from.totalAmount, 18),
                 )}
               </Typography>
-            </DepositeInfoItem>
+            </DepositInfoItem>
           </Box>
           <Divider />
           <Typography variant="h3" my={2}>
             {t("receiving")}
           </Typography>
-          <DepositeInfoItem>
+          <DepositInfoItem>
             <div>
               <img
                 src={transactionData.to.item.token.icon}
@@ -124,16 +124,16 @@ function ReviewDeposit({
                 ),
               )}
             </Typography>
-          </DepositeInfoItem>
+          </DepositInfoItem>
           <Divider />
-          <DepositeInfoItem mt={2}>
+          <DepositInfoItem mt={2}>
             <Typography>{t("shareOfPool")}</Typography>
             <Typography>
               {formatBNToPercentString(transactionData.shareOfPool, 18)}
             </Typography>
-          </DepositeInfoItem>
+          </DepositInfoItem>
           {shouldDisplayGas && (
-            <DepositeInfoItem>
+            <DepositInfoItem>
               <Typography>{t("gas")}</Typography>
               <Typography>
                 {formatGasToString(
@@ -143,7 +143,7 @@ function ReviewDeposit({
                 )}{" "}
                 GWEI
               </Typography>
-            </DepositeInfoItem>
+            </DepositInfoItem>
           )}
           {/* TODO: Create a light API to expose the cached BlockNative gas estimates. */}
           {/* {transactionData.txnGasCost?.valueUSD && (
@@ -156,19 +156,19 @@ function ReviewDeposit({
             </span>
           </div>
         )} */}
-          <DepositeInfoItem>
+          <DepositInfoItem>
             <Typography>{t("maxSlippage")}</Typography>
             <Typography>
               {formatSlippageToString(slippageSelected, slippageCustom)}%
             </Typography>
-          </DepositeInfoItem>
-          <DepositeInfoItem>
+          </DepositInfoItem>
+          <DepositInfoItem>
             <Typography>{t("deadline")}</Typography>
             <Typography>
               {deadline} {t("minutes")}
             </Typography>
-          </DepositeInfoItem>
-          <DepositeInfoItem>
+          </DepositInfoItem>
+          <DepositInfoItem>
             <Typography mr={2}>{t("rates")}</Typography>
             <div>
               {transactionData.from.items.map(
@@ -188,7 +188,7 @@ function ReviewDeposit({
                 ),
               )}
             </div>
-          </DepositeInfoItem>
+          </DepositInfoItem>
         </Box>
         {isHighPriceImpactTxn && (
           <HighPriceImpactConfirmation
