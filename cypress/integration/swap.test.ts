@@ -101,7 +101,6 @@ context("Swap Flow", () => {
     ["Stablecoin V2", ["DAI", "USDC", "USDT"]],
   ]
   testConfigs.forEach((info) => testAssetSwap(...info))
-  // temp
   // it("successfully completes a deposit of all assets", () => {
   //   // attempt to wait for pool data to load
   //   cy.get("input").first({ timeout: 10000 }).should("be.enabled")
