@@ -281,62 +281,65 @@ function Pools(): ReactElement | null {
         </Box>
       </Stack>
 
-      {Object.values(POOLS_MAP)
-        .filter(({ addresses }) => (chainId ? addresses[chainId] : false))
-        .map(
-          ({ name, type, isOutdated }) =>
-            [getPropsForPool(name), isOutdated, type] as const,
-        )
-        .filter(
-          ([poolProps, isOutdated, type]) =>
-            filter === "all" ||
-            type === filter ||
-            (filter === "outdated" &&
-              (isOutdated || poolProps.poolData.isMigrated)),
-        )
-        .sort(([a, aIsOutdated], [b, bIsOutdated]) => {
-          // 1. user pools
-          // 2. active pools
-          // 3. higher TVL pools
-          if (
-            (a.userShareData?.usdBalance || Zero).gt(Zero) ||
-            (b.userShareData?.usdBalance || Zero).gt(Zero)
-          ) {
-            return (a.userShareData?.usdBalance || Zero).gt(
-              b.userShareData?.usdBalance || Zero,
-            )
-              ? -1
-              : 1
-          } else if (
-            a.poolData.isMigrated ||
-            b.poolData.isMigrated ||
-            aIsOutdated ||
-            bIsOutdated
-          ) {
-            return a.poolData.isMigrated || aIsOutdated ? 1 : -1
-          } else {
-            return (a.poolData?.reserve || Zero).gt(b.poolData?.reserve || Zero)
-              ? -1
-              : 1
-          }
-        })
-        .map(([poolProps]) => (
-          <PoolOverview
-            key={poolProps.name}
-            {...poolProps}
-            onClickMigrate={
-              poolProps.poolData.isMigrated
-                ? () =>
-                    handleClickMigrate(
-                      POOLS_MAP[poolProps.poolData.name].name,
-                      poolProps.userShareData?.lpTokenBalance ?? Zero,
-                      POOLS_MAP[poolProps.poolData.name].lpToken.symbol,
-                    )
-                : undefined
+      <Stack spacing={3}>
+        {Object.values(POOLS_MAP)
+          .filter(({ addresses }) => (chainId ? addresses[chainId] : false))
+          .map(
+            ({ name, type, isOutdated }) =>
+              [getPropsForPool(name), isOutdated, type] as const,
+          )
+          .filter(
+            ([poolProps, isOutdated, type]) =>
+              filter === "all" ||
+              type === filter ||
+              (filter === "outdated" &&
+                (isOutdated || poolProps.poolData.isMigrated)),
+          )
+          .sort(([a, aIsOutdated], [b, bIsOutdated]) => {
+            // 1. user pools
+            // 2. active pools
+            // 3. higher TVL pools
+            if (
+              (a.userShareData?.usdBalance || Zero).gt(Zero) ||
+              (b.userShareData?.usdBalance || Zero).gt(Zero)
+            ) {
+              return (a.userShareData?.usdBalance || Zero).gt(
+                b.userShareData?.usdBalance || Zero,
+              )
+                ? -1
+                : 1
+            } else if (
+              a.poolData.isMigrated ||
+              b.poolData.isMigrated ||
+              aIsOutdated ||
+              bIsOutdated
+            ) {
+              return a.poolData.isMigrated || aIsOutdated ? 1 : -1
+            } else {
+              return (a.poolData?.reserve || Zero).gt(
+                b.poolData?.reserve || Zero,
+              )
+                ? -1
+                : 1
             }
-          />
-        ))}
-
+          })
+          .map(([poolProps]) => (
+            <PoolOverview
+              key={poolProps.name}
+              {...poolProps}
+              onClickMigrate={
+                poolProps.poolData.isMigrated
+                  ? () =>
+                      handleClickMigrate(
+                        POOLS_MAP[poolProps.poolData.name].name,
+                        poolProps.userShareData?.lpTokenBalance ?? Zero,
+                        POOLS_MAP[poolProps.poolData.name].lpToken.symbol,
+                      )
+                  : undefined
+              }
+            />
+          ))}
+      </Stack>
       <Dialog open={!!currentModal} onClose={(): void => setCurrentModal(null)}>
         {currentModal === "migrate" ? (
           <ReviewMigration
