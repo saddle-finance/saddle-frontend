@@ -94,9 +94,9 @@
     "**/@emotion/styled": "^11.0.0"
   },
   "scripts": {
-    "analyze": "source-map-explorer 'build/static/js/*.js'",
     "build-storybook": "build-storybook -s public",
     "build": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-scripts build",
+    "bundlemon": "bundlemon --subProject no-compression --defaultCompression none && bundlemon --subProject gzip-compression --defaultCompression gzip",
     "cy:coverage": "start-test 3000 'cypress run --config video=false'",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
