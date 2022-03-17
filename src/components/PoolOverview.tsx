@@ -1,6 +1,17 @@
-import "./PoolOverview.scss"
-
-import { Chip, Tooltip } from "@mui/material"
+import {
+  Box,
+  Button,
+  Chip,
+  Grid,
+  Link,
+  Paper,
+  Skeleton,
+  Stack,
+  Tooltip,
+  Typography,
+  styled,
+  useTheme,
+} from "@mui/material"
 import {
   IS_SDL_LIVE,
   POOLS_MAP,
@@ -9,18 +20,16 @@ import {
   isMetaPool,
 } from "../constants"
 import { Partners, PoolDataType, UserShareType } from "../hooks/usePoolData"
-import React, { ReactElement } from "react"
+import React, { ReactElement, useMemo } from "react"
 import {
   formatBNToPercentString,
   formatBNToShortString,
   formatBNToString,
 } from "../utils"
 
-import Button from "./Button"
-import { Link } from "react-router-dom"
 import { Zero } from "@ethersproject/constants"
-import classNames from "classnames"
 import logo from "../assets/icons/logo.svg"
+import { useHistory } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -37,6 +46,7 @@ export default function PoolOverview({
   onClickMigrate,
 }: Props): ReactElement | null {
   const { t } = useTranslation()
+  const theme = useTheme()
   const { type: poolType, isOutdated } = POOLS_MAP[poolData.name]
   const formattedDecimals = poolType === PoolTypes.USD ? 2 : 4
   const shouldMigrate = !!onClickMigrate
@@ -75,135 +85,191 @@ export default function PoolOverview({
   }
   const hasShare = !!userShareData?.usdBalance.gt("0")
   const isMetapool = isMetaPool(formattedData.name)
+  const history = useHistory()
+  const disableText = isOutdated || shouldMigrate || poolData.isPaused
+  const chipLabel = useMemo(() => {
+    if ((isOutdated || shouldMigrate) && poolData.isPaused) {
+      return (
+        <span>
+          OUTDATED <br />& PAUSED
+        </span>
+      )
+    } else if (isOutdated || shouldMigrate) {
+      return <span>OUTDATED</span>
+    } else if (poolData.isPaused) {
+      return <span>PAUSED</span>
+    } else {
+      return null
+    }
+  }, [isOutdated, shouldMigrate, poolData.isPaused])
 
   return (
-    <div
-      className={classNames("poolOverview", {
-        outdated: isOutdated || shouldMigrate,
-      })}
+    <Paper
+      sx={{
+        p: theme.spacing(2, 3),
+        borderColor:
+          isOutdated || shouldMigrate
+            ? theme.palette.secondary.main
+            : theme.palette.other.divider,
+      }}
+      data-testid="poolOverview"
     >
-      <div className="left">
-        <div className="titleAndTag">
-          {isMetapool ? (
-            <Tooltip title={<React.Fragment>{t("metapool")}</React.Fragment>}>
-              <h4 className="title underline">{formattedData.name}</h4>
-            </Tooltip>
-          ) : (
-            <h4 className="title">{formattedData.name}</h4>
-          )}
-          {(shouldMigrate || isOutdated) && (
-            <Chip
-              variant="filled"
-              size="small"
-              label="OUTDATED"
-              color="secondary"
-            />
-          )}
-          {poolData.isPaused && (
-            <Chip variant="filled" size="small" label="PAUSED" color="error" />
-          )}
-        </div>
-        {hasShare && (
-          <div className="balance">
-            <span>{t("balance")}: </span>
-            <span>{`$${formattedData.userBalanceUSD}`}</span>
-          </div>
-        )}
-        <div className="tokens">
-          <span style={{ marginRight: "8px" }}>[</span>
-          {formattedData.tokens.map(({ symbol, icon }) => (
-            <div className="token" key={symbol}>
-              <img alt="icon" className="tokenIcon" src={icon} />
-              <span>{symbol}</span>
-            </div>
-          ))}
-          <span style={{ marginLeft: "-8px" }}>]</span>
-        </div>
-      </div>
+      <Grid container alignItems="center" spacing={1}>
+        <Grid item xs={12} lg={3}>
+          <Box>
+            <Box
+              display="flex"
+              color={disableText ? theme.palette.text.disabled : undefined}
+            >
+              <Tooltip title={isMetapool ? <div>{t("metapool")}</div> : ""}>
+                <Typography
+                  variant="h2"
+                  sx={{
+                    borderBottom: isMetapool ? "1px dotted" : undefined,
+                    mr: 1,
+                    width: "fit-content",
+                  }}
+                >
+                  {formattedData.name}
+                </Typography>
+              </Tooltip>
+              {chipLabel && (
+                <Chip
+                  variant="filled"
+                  size="small"
+                  label={chipLabel}
+                  color={isOutdated || shouldMigrate ? "secondary" : "error"}
+                />
+              )}
+            </Box>
+            {hasShare && (
+              <div>
+                <Typography component="span">{t("balance")}: </Typography>
+                <Typography component="span">{`$${formattedData.userBalanceUSD}`}</Typography>
+              </div>
+            )}
+          </Box>
+        </Grid>
+        <Grid item xs={12} lg={2.5}>
+          <Stack spacing={1} direction={{ xs: "row", lg: "column" }}>
+            {formattedData.tokens.length > 0 ? (
+              formattedData.tokens.map(({ symbol, icon }) => (
+                <Box display="flex" alignItems="center" key={symbol}>
+                  <img alt="icon" src={icon} width="24px" />
+                  <Typography marginLeft={1}>{symbol}</Typography>
+                </Box>
+              ))
+            ) : (
+              <div>
+                <Skeleton />
+                <Skeleton />
+                <Skeleton />
+              </div>
+            )}
+          </Stack>
+        </Grid>
+        <StyledGrid item xs={6} lg={2} disabled={disableText}>
+          <Typography variant="subtitle1">TVL</Typography>
+          <Typography component="span">{`$${formattedData.reserve}`}</Typography>
 
-      <div className="right">
-        <div className="poolInfo">
+          {formattedData.volume && (
+            <div>
+              <Typography variant="subtitle1">{`${t(
+                "24HrVolume",
+              )}`}</Typography>
+              <Typography component="span">{formattedData.volume}</Typography>
+            </div>
+          )}
+        </StyledGrid>
+        <StyledGrid item xs={6} lg={2.5} disabled={disableText}>
           {poolData.sdlPerDay != null && IS_SDL_LIVE && (
-            <div className="margin">
-              <span className="label">
-                <a
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography variant="subtitle1" mr={1}>
+                <Link
                   href="https://blog.saddle.finance/introducing-sdl"
                   target="_blank"
                   rel="noreferrer"
-                  style={{ textDecoration: "underline" }}
+                  sx={{ textDecoration: "underline" }}
                 >
                   SDL/24h
-                </a>
-              </span>
-              <span>
-                <img src={logo} className="tokenIcon" />
-                {formattedData.sdlPerDay}
-              </span>
-            </div>
+                </Link>
+              </Typography>
+              <img src={logo} width="24px" />
+              :&nbsp;
+              <Typography>{formattedData.sdlPerDay}</Typography>
+            </Box>
           )}
           {formattedData.apy && (
-            <div className="margin">
-              <span className="label">{`${t("apy")}`}</span>
-              <span>{formattedData.apy}</span>
+            <div>
+              <Typography component="span">{`${t("apy")}`}: </Typography>
+              <Typography component="span">{formattedData.apy}</Typography>
             </div>
           )}
           {Object.keys(poolData.aprs).map((key) => {
             const symbol = poolData.aprs[key as Partners]?.symbol as string
             return poolData.aprs[key as Partners]?.apr.gt(Zero) ? (
-              <div className="margin Apr" key={symbol}>
+              <div key={symbol}>
                 {symbol.includes("/") ? (
-                  <span className="label underline">
-                    <Tooltip title={symbol.replaceAll("/", "\n")}>
-                      <React.Fragment>Reward APR</React.Fragment>
-                    </Tooltip>
-                  </span>
+                  <Tooltip title={symbol.replaceAll("/", "\n")}>
+                    <Typography
+                      component="span"
+                      sx={{ borderBottom: "1px dotted" }}
+                    >
+                      Reward APR:&nbsp;
+                    </Typography>
+                  </Tooltip>
                 ) : (
-                  <span className="label">{symbol} APR</span>
+                  <Typography component="span">{symbol} APR: &nbsp;</Typography>
                 )}
-                <span className="plus">
+                <Typography component="span">
                   {formattedData.aprs[key as Partners] as string}
-                </span>
+                </Typography>
               </div>
             ) : null
           })}
-          <div className="margin">
-            <span className="label">TVL</span>
-            <span>{`$${formattedData.reserve}`}</span>
-          </div>
-          {formattedData.volume && (
-            <div>
-              <span className="label">{`${t("24HrVolume")}`}</span>
-              <span>{formattedData.volume}</span>
-            </div>
-          )}
-        </div>
-        <div className="buttons">
-          <Link to={`${poolRoute}/withdraw`} style={{ textDecoration: "none" }}>
-            <Button kind="secondary">{t("withdraw")}</Button>
-          </Link>
-          {shouldMigrate ? (
-            <Button
-              kind="temporary"
-              onClick={onClickMigrate}
-              disabled={!hasShare}
-            >
-              {t("migrate")}
-            </Button>
-          ) : (
-            <Link
-              to={`${poolRoute}/deposit`}
-              style={{ textDecoration: "none" }}
-            >
+        </StyledGrid>
+        <Grid item xs={12} lg={2}>
+          <Stack spacing={2}>
+            {shouldMigrate ? (
               <Button
-                kind="primary"
+                variant="contained"
+                color={isOutdated || shouldMigrate ? "secondary" : "primary"}
+                fullWidth
+                size="large"
+                onClick={onClickMigrate}
+                disabled={!hasShare}
+              >
+                {t("migrate")}
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                color={isOutdated || shouldMigrate ? "secondary" : "primary"}
+                fullWidth
+                size="large"
                 disabled={poolData?.isPaused || isOutdated}
+                onClick={() => history.push(`${poolRoute}/deposit`)}
               >
                 {t("deposit")}
               </Button>
-            </Link>
-          )}
-        </div>
-      </div>
-    </div>
+            )}
+            <Button
+              color={isOutdated || shouldMigrate ? "secondary" : "primary"}
+              fullWidth
+              size="large"
+              onClick={() => history.push(`${poolRoute}/withdraw`)}
+            >
+              {t("withdraw")}
+            </Button>
+          </Stack>
+        </Grid>
+      </Grid>
+    </Paper>
   )
 }
+
+const StyledGrid = styled(Grid)<{ disabled?: boolean }>(
+  ({ theme, disabled }) => ({
+    color: disabled ? theme.palette.text.disabled : undefined,
+  }),
+)
