@@ -22,7 +22,7 @@ import {
   WCUSD_METAPOOL_NAME,
   WCUSD_METAPOOL_V2_NAME,
 } from "../constants"
-import { Container, Dialog } from "@mui/material"
+import { Container, Dialog, Stack } from "@mui/material"
 import React, { ReactElement, useEffect, useState } from "react"
 
 import { BigNumber } from "ethers"
@@ -256,7 +256,7 @@ function Pools(): ReactElement | null {
             </li>
           ))}
         </ul>
-        <div className={styles.content}>
+        <Stack spacing={3}>
           {Object.values(POOLS_MAP)
             .filter(({ addresses }) => (chainId ? addresses[chainId] : false))
             .map(
@@ -314,7 +314,7 @@ function Pools(): ReactElement | null {
                 }
               />
             ))}
-        </div>
+        </Stack>
         <Dialog
           open={!!currentModal}
           onClose={(): void => setCurrentModal(null)}
