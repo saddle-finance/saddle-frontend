@@ -55,11 +55,11 @@ function ReviewMigration({
         {t("reviewMigration")}
       </DialogTitle>
       <DialogContent>
-        <Alert variant="filled" icon={false} severity="warning">
+        <Alert icon={false} severity="warning">
           {t("migrationExplain")}
         </Alert>
         <Box my={3}>
-          <Box display="flex">
+          <Box display="flex" justifyContent="space-between">
             <Typography>{t("migrationAmount")}</Typography>
             <Typography>
               {commify(
@@ -69,7 +69,7 @@ function ReviewMigration({
             </Typography>
           </Box>
           {shouldDisplayGas && (
-            <Box display="flex">
+            <Box display="flex" justifyContent="space-between">
               <Typography>{t("gas")}</Typography>
               <Typography>{gasPrice.toString()} GWEI</Typography>
             </Box>
@@ -83,7 +83,7 @@ function ReviewMigration({
               </Typography>
             </div>
           )} */}
-          <Box display="flex">
+          <Box display="flex" justifyContent="space-between">
             <Typography>{t("maxSlippage")}</Typography>
             <Typography>0.5%</Typography>
           </Box>

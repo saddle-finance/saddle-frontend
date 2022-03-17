@@ -17,7 +17,9 @@ const standardStyle = (
       severity: color,
     },
     style: {
-      color: theme.palette.getContrastText(theme.palette[color].main),
+      color: theme.palette.getContrastText(
+        theme.palette[color].alert?.background || theme.palette[color].main,
+      ),
       backgroundColor: theme.palette[color].alert?.background,
       borderColor: theme.palette[color].main,
       borderWidth: 1,
