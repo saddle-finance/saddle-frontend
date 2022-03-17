@@ -60,6 +60,8 @@ interface Props {
   onClickReverseExchangeDirection: () => void
 }
 
+console.log("ci test")
+
 const SwapPage = (props: Props): ReactElement => {
   const { t } = useTranslation()
   const { account } = useActiveWeb3React()
