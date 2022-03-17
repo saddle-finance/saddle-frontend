@@ -206,23 +206,19 @@ export async function getMulticallProvider(
   library: Web3Provider,
   chainId: ChainId,
 ): Promise<MulticallProvider> {
-  const ethcallProvider = new Provider() as MulticallProvider
+  const ethcallProvider = new Provider() as unknown as MulticallProvider
   await ethcallProvider.init(library)
   if (chainId === ChainId.HARDHAT) {
-    ethcallProvider.multicallAddress =
-      "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f"
-  } else if (chainId === ChainId.ROPSTEN) {
-    ethcallProvider.multicallAddress =
-      "0x53c43764255c17bd724f74c4ef150724ac50a3ed"
-  } else if (chainId === ChainId.ARBITRUM) {
-    ethcallProvider.multicallAddress =
-      "0xab16069d3e9e352343b2040ce7d7715c585994f9"
-  } else if (chainId === ChainId.OPTIMISM) {
-    ethcallProvider.multicallAddress =
-      "0x266557A864680A1401A3506c0eb72934BD13Bf59"
-  } else if (chainId === ChainId.FANTOM) {
-    ethcallProvider.multicallAddress =
-      "0xc04d660976c923ddba750341fe5923e47900cf24"
+    // @ts-ignore
+    ethcallProvider.multicall3 = {
+      address: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+      block: 0,
+    }
+    ethcallProvider.multicall = {
+      address: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+      block: 0,
+    }
   }
+
   return ethcallProvider
 }
