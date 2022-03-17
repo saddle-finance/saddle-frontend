@@ -47,11 +47,8 @@ context("Withdrawal Flow", () => {
       // test single item
       const tokens = poolTokensFullName[poolName]
       cy.get('[data-testid="withdrawTokenRadio"]').contains(tokens[0]).click()
+      cy.get('[data-testid="myFarmLpBalance"]').should("not.have.text", "0.0")
       cy.get("#tokenInput input").first().type("1")
-      // Following two statements are a weird hack I have to do to get the
-      // Withdraw button to not be disabled.
-      cy.get('[data-testid="withdrawPriceImpactOrBonus').contains(/Price|Bonus/)
-      cy.get("#tokenInput input").first().type("{backspace}").type("1")
       cy.get('[data-testid="withdrawBtn"]').click()
       cy.get("[data-testid=tokenValue]")
         .first()
@@ -66,10 +63,6 @@ context("Withdrawal Flow", () => {
       // test combo withdraw through percentage option
       cy.get('[data-testid="withdrawPercentageCombo"]').click()
       cy.get('[data-testid="withdrawPercentageInput"]').type("3")
-      cy.get('[data-testid="withdrawPriceImpactOrBonus').contains(/Price|Bonus/)
-      cy.get('[data-testid="withdrawPercentageInput"]')
-        .type("{backspace}")
-        .type("3")
       cy.get("button").contains("Withdraw").click()
       cy.get("[data-testid=tokenValue]")
         .first()
