@@ -60,8 +60,8 @@ function ReviewMigration({
         </Alert>
         <Box my={3}>
           <Box display="flex">
-            <Typography component="span">{t("migrationAmount")}</Typography>
-            <Typography component="span" ml="auto" mr={0}>
+            <Typography>{t("migrationAmount")}</Typography>
+            <Typography>
               {commify(
                 formatBNToString(migrationAmount || BigNumber.from("0"), 18, 2),
               )}{" "}
@@ -70,10 +70,8 @@ function ReviewMigration({
           </Box>
           {shouldDisplayGas && (
             <Box display="flex">
-              <Typography component="span">{t("gas")}</Typography>
-              <Typography component="span" ml="auto" mr={0}>
-                {gasPrice.toString()} GWEI
-              </Typography>
+              <Typography>{t("gas")}</Typography>
+              <Typography>{gasPrice.toString()} GWEI</Typography>
             </Box>
           )}
           {/* TODO: Create a light API to expose the cached BlockNative gas estimates. */}
@@ -86,10 +84,8 @@ function ReviewMigration({
             </div>
           )} */}
           <Box display="flex">
-            <Typography component="span">{t("maxSlippage")}</Typography>
-            <Typography component="span" ml="auto" mr={0}>
-              0.5%
-            </Typography>
+            <Typography>{t("maxSlippage")}</Typography>
+            <Typography>0.5%</Typography>
           </Box>
         </Box>
         <Divider />
