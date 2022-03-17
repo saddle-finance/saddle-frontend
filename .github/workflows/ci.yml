@@ -28,6 +28,7 @@ jobs:
         run: zip build-artifact -r ./build ./node_modules
       - uses: actions/upload-artifact@v3
         with:
+          name: build-artifact
           path: ./build-artifact.zip
   lint:
     runs-on: ubuntu-latest
@@ -39,8 +40,8 @@ jobs:
           node-version: "12"
       - uses: actions/download-artifact@v3
         with:
-          path: ./build-artifact.zip
-      - run: unzip build-artifact.zip .
+          name: build-artifact
+      - run: unzip build-artifact.zip
       - run: npm run lint
 
   test:
@@ -53,8 +54,8 @@ jobs:
           node-version: "12"
       - uses: actions/download-artifact@v3
         with:
-          path: ./build-artifact.zip
-      - run: unzip build-artifact.zip .
+          name: build-artifact
+      - run: unzip build-artifact.zip
       - run: npm test
         env:
           CI: true
@@ -69,8 +70,8 @@ jobs:
           node-version: "12"
       - uses: actions/download-artifact@v3
         with:
-          path: ./build-artifact.zip
-      - run: unzip build-artifact.zip .
+          name: build-artifact
+      - run: unzip build-artifact.zip
       - run: npm test -- --coverage
         env:
           CI: true
@@ -95,8 +96,8 @@ jobs:
           node-version: "12"
       - uses: actions/download-artifact@v3
         with:
-          path: ./build-artifact.zip
-      - run: unzip build-artifact.zip .
+          name: build-artifact
+      - run: unzip build-artifact.zip
       - run: npm run cy:coverage
         env:
           CHOKIDAR_USEPOLLING: 1
