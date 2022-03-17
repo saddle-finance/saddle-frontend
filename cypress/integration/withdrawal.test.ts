@@ -63,6 +63,7 @@ context("Withdrawal Flow", () => {
       // test combo withdraw through percentage option
       cy.get('[data-testid="withdrawPercentageCombo"]').click()
       cy.get('[data-testid="withdrawPercentageInput"]').type("3")
+      cy.get('[data-testid="withdrawBtn"]').should("not.be.disabled")
       cy.get("button").contains("Withdraw").click()
       cy.get("[data-testid=tokenValue]")
         .first()
@@ -84,6 +85,7 @@ context("Withdrawal Flow", () => {
             cy.wrap($inputs).each(($input) => {
               cy.wrap($input).type("2")
             })
+            cy.get('[data-testid="withdrawBtn"]').should("not.be.disabled")
             cy.get("button").contains("Withdraw").click()
             cy.get("button").contains("Confirm Withdraw").click()
             cy.get("[data-testid=tokenValue]")
