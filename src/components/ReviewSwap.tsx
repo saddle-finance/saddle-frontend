@@ -18,7 +18,7 @@ import DoubleArrowDown from "@mui/icons-material/KeyboardDoubleArrowDown"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { ReactComponent as ThinArrowDown } from "../assets/icons/thinArrowDown.svg"
 import classnames from "classnames"
-import { formatGasToString } from "../utils/gas"
+// import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import { isHighPriceImpact } from "../utils/priceImpact"
 import { useSelector } from "react-redux"
@@ -49,14 +49,14 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
   const {
     slippageCustom,
     slippageSelected,
-    gasPriceSelected,
-    gasCustom,
+    // gasPriceSelected,
+    // gasCustom,
     transactionDeadlineSelected,
     transactionDeadlineCustom,
   } = useSelector((state: AppState) => state.user)
-  const { gasStandard, gasFast, gasInstant } = useSelector(
-    (state: AppState) => state.application,
-  )
+  // const { gasStandard, gasFast, gasInstant } = useSelector(
+  //   (state: AppState) => state.application,
+  // )
   const [hasConfirmedHighPriceImpact, setHasConfirmedHighPriceImpact] =
     useState(false)
   const isHighPriceImpactTxn = isHighPriceImpact(
@@ -118,7 +118,8 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
               {formatBNToString(data.exchangeRateInfo.exchangeRate, 18, 6)}
             </Typography>
           </Box>
-          <Box display="flex">
+          {/* Hide gas because we don't have curretnly too way of estimating this value. */}
+          {/* <Box display="none">
             <Typography component="span">{t("gas")}</Typography>
             <Typography ml="auto" mr={0}>
               {formatGasToString(
@@ -128,7 +129,7 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
               )}{" "}
               GWEI
             </Typography>
-          </Box>
+          </Box> */}
           {/* TODO: Create a light API to expose the cached BlockNative gas estimates. */}
           {/* {data.txnGasCost?.valueUSD && (
             <div className="row">
