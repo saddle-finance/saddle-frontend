@@ -156,7 +156,7 @@ function usePoolsRewardBalances() {
       ),
     )
     try {
-      const fetchedBalances = await ethcallProvider.all(pendingSDLCalls, {})
+      const fetchedBalances = await ethcallProvider.all(pendingSDLCalls)
       setBalances(
         fetchedBalances.reduce((acc, balance, i) => {
           const { name } = pools[i]
