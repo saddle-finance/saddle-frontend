@@ -16,9 +16,13 @@ type Props = { open: boolean; onClose?: () => void }
 
 export default function ReviewCreatePool({
   open,
-  onClose,
+  onClose = () => null,
 }: Props): JSX.Element {
   const { t } = useTranslation()
+
+  const handleCreatePool = () => {
+    onClose()
+  }
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -63,7 +67,7 @@ export default function ReviewCreatePool({
           your transaction will revert.
         </Typography>
         <Stack spacing={1}>
-          <Button variant="contained" size="large">
+          <Button variant="contained" size="large" onClick={handleCreatePool}>
             Create Pool
           </Button>
           <Button size="large">Go back to edit</Button>
