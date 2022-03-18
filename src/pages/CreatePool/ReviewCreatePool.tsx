@@ -12,14 +12,19 @@ import DialogTitle from "../../components/DialogTitle"
 import React from "react"
 import { useTranslation } from "react-i18next"
 
-type Props = { open: boolean }
+type Props = { open: boolean; onClose?: () => void }
 
-export default function ReviewCreatePool({ open = true }: Props): JSX.Element {
+export default function ReviewCreatePool({
+  open = true,
+  onClose,
+}: Props): JSX.Element {
   const { t } = useTranslation()
 
   return (
     <Dialog open={open}>
-      <DialogTitle variant="h1">Review Pool Creation</DialogTitle>
+      <DialogTitle variant="h1" onClose={onClose}>
+        Review Pool Creation
+      </DialogTitle>
       <DialogContent>
         <Alert icon={false} color="warning">
           Double check the inputs for your pool are as you want it-- once a pool

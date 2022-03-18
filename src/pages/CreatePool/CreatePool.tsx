@@ -21,7 +21,7 @@ import { useTranslation } from "react-i18next"
 export default function CreatePool(): React.ReactElement {
   const { t } = useTranslation()
   const theme = useTheme()
-  const [openModal, setOpenModal] = useState<boolean>(false)
+  const [openCreatePoolDlg, setOpenCreatePoolDlg] = useState<boolean>(false)
   const [tokenLists, setTokenLists] = useState<string[]>([""])
 
   const handleAddTokenList = () => {
@@ -176,13 +176,16 @@ export default function CreatePool(): React.ReactElement {
             variant="contained"
             size="large"
             fullWidth
-            onClick={() => setOpenModal(true)}
+            onClick={() => setOpenCreatePoolDlg(true)}
           >
             {t("createCommunityPool")}
           </Button>
         </Box>
       </Paper>
-      <ReviewCreatePool open={openModal} />
+      <ReviewCreatePool
+        open={openCreatePoolDlg}
+        onClose={() => setOpenCreatePoolDlg(false)}
+      />
     </Container>
   )
 }
