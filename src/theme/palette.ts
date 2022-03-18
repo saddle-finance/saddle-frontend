@@ -123,6 +123,7 @@ const lightPalette: PaletteOptions | undefined = {
   },
   text: {
     secondary: "#252525",
+    disabled: "#A7A7A7",
   },
   divider: "#E3D899",
   grey: GREY_TONES,
@@ -204,6 +205,9 @@ const darkPalette: PaletteOptions | undefined = {
       content: "#000000",
       background: "#FFF3C8",
     },
+  },
+  text: {
+    disabled: "#7D7D7D",
   },
   background: {
     default: "#222461",
