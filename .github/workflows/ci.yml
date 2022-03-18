@@ -7,72 +7,68 @@ on:
     branches: [master]
 
 jobs:
-  lint:
+  build:
     runs-on: ubuntu-latest
-
-    env:
-      REACT_APP_NOTIFY_DAPP_ID: ${{ secrets.REACT_APP_NOTIFY_DAPP_ID }}
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
       - uses: actions/setup-node@v2
         with:
-          node-version: "12"
+          node-version: "16"
+          cache: "npm"
       # fix for forcing git to use https when pulling deps
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
       - run: npm ci
       - run: npm run build --if-present
+      - name: Run BundleMon
+        run: npm run bundlemon
+        env:
+          BUNDLEMON_PROJECT_ID: 62325f451d1b50bea48f41fb
+          CI_COMMIT_SHA: ${{github.event.pull_request.head.sha || github.sha}} # important!
+      # Keeping in case we ever want to save build artifacts
+      # - name: Zip artifact
+      #   run: zip build-artifact -r ./build ./node_modules
+      # - uses: actions/upload-artifact@v3
+      #   with:
+      #     name: build-artifact
+      #     path: ./build-artifact.zip
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: "npm"
+      # fix for forcing git to use https when pulling deps
+      - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
+      - run: npm ci
       - run: npm run lint
 
   test:
     runs-on: ubuntu-latest
-
-    env:
-      REACT_APP_NOTIFY_DAPP_ID: ${{ secrets.REACT_APP_NOTIFY_DAPP_ID }}
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
       - uses: actions/setup-node@v2
         with:
-          node-version: "12"
+          node-version: "16"
+          cache: "npm"
       # fix for forcing git to use https when pulling deps
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
       - run: npm ci
-      - run: npm run build --if-present
       - run: npm test
         env:
           CI: true
 
   coverage:
     runs-on: ubuntu-latest
-
-    env:
-      REACT_APP_NOTIFY_DAPP_ID: ${{ secrets.REACT_APP_NOTIFY_DAPP_ID }}
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
       - uses: actions/setup-node@v2
         with:
-          node-version: "12"
+          node-version: "16"
       # fix for forcing git to use https when pulling deps
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
       - run: npm ci
-      - run: npm run build --if-present
       - run: npm test -- --coverage
         env:
           CI: true
@@ -81,26 +77,20 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   coverage-cypress:
+    env:
+      REACT_APP_NOTIFY_DAPP_ID: ${{ secrets.REACT_APP_NOTIFY_DAPP_ID }}
     runs-on: ubuntu-latest
     services:
       saddle-contract:
         image: saddlefinance/contracts:latest
         ports:
           - 8545:8545
-
-    env:
-      REACT_APP_NOTIFY_DAPP_ID: ${{ secrets.REACT_APP_NOTIFY_DAPP_ID }}
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
       - uses: actions/setup-node@v2
         with:
-          node-version: "12"
+          node-version: "16"
+          cache: "npm"
       # fix for forcing git to use https when pulling deps
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
       - run: npm ci
