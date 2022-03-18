@@ -17,9 +17,9 @@ export default function DialogTitle({
   DialogTitleProps &
   TypographyProps): ReactElement {
   return (
-    <MuiDialogTitle>
+    <MuiDialogTitle sx={{ mb: 2 }}>
       <IconButton
-        sx={{ position: "absolute", right: 24, top: 16 }}
+        sx={{ position: "absolute", right: 16, top: 16 }}
         onClick={onClose}
       >
         <Close />
