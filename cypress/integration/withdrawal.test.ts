@@ -48,7 +48,7 @@ context("Withdrawal Flow", () => {
       cy.get('[data-testid="withdrawTokenRadio"]').contains(tokens[0]).click()
       cy.get('[data-testid="myFarmLpBalance"]').should("not.have.text", "0.0")
       cy.get("#tokenInput input").first().type("1")
-      cy.wait(500)
+      cy.log("tokens", tokens, poolName, poolTokensFullName)
       cy.get('[data-testid="withdrawBtn"]').click()
       cy.get("[data-testid=tokenValue]")
         .first()
