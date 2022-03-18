@@ -105,6 +105,7 @@ context("Withdrawal Flow", () => {
           })
       })
 
+      cy.wait(500)
       // test combo withdraw through percentage option
       cy.get('[data-testid="withdrawPercentageCombo"]').click()
       cy.get('[data-testid="withdrawPercentageInput"]').type("3")
