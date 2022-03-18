@@ -108,7 +108,7 @@ const SwapPage = (props: Props): ReactElement => {
       parseFloat(slippageCustom?.valueRaw || "0") < 0.5)
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 5, mb: 20 }}>
+    <Container maxWidth="sm" sx={{ pt: 5, pb: 20 }}>
       <div className="swapPage">
         <Paper>
           <Box p={{ xs: 3, md: 4 }} flex={1}>
