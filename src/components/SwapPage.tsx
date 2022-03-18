@@ -60,8 +60,6 @@ interface Props {
   onClickReverseExchangeDirection: () => void
 }
 
-console.log("ci test")
-
 const SwapPage = (props: Props): ReactElement => {
   const { t } = useTranslation()
   const { account } = useActiveWeb3React()
@@ -208,10 +206,10 @@ const SwapPage = (props: Props): ReactElement => {
             </Box>
             {formattedRoute && (
               <>
-                <div className="row">
+                <Box display="flex" justifyContent="space-between">
                   <span>{t("route")}</span>
                   <span>{formattedRoute}</span>
-                </div>
+                </Box>
                 {isVirtualSwap && (
                   <div className="row">
                     <span></span>
