@@ -14,7 +14,7 @@ import {
 } from "@mui/material"
 import React, { useState } from "react"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
-import ReviewCreatePool from "./ReviewCreatePool"
+import ReviewCreatePool from "./CreatePoolDialog"
 import { Link as RouteLink } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 

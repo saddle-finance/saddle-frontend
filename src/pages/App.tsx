@@ -14,7 +14,7 @@ import { Redirect, Route, Switch } from "react-router-dom"
 import { styled, useTheme } from "@mui/material"
 
 import { AppDispatch } from "../state"
-import { CreatePool } from "./CreatePool"
+import CreatePool from "./CreatePool"
 import Deposit from "./Deposit"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
