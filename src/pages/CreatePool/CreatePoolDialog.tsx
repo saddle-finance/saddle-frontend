@@ -15,13 +15,13 @@ import { useTranslation } from "react-i18next"
 type Props = { open: boolean; onClose?: () => void }
 
 export default function ReviewCreatePool({
-  open = true,
+  open,
   onClose,
 }: Props): JSX.Element {
   const { t } = useTranslation()
 
   return (
-    <Dialog open={open}>
+    <Dialog open={open} onClose={onClose}>
       <DialogTitle variant="h1" onClose={onClose}>
         Review Pool Creation
       </DialogTitle>
