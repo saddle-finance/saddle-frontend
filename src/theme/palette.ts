@@ -13,12 +13,20 @@ declare module "@mui/material/styles/createPalette" {
       outlinedHoverBackground?: string
       containedHoverBackground?: string
     }
+    alert?: {
+      content?: string
+      background?: string
+    }
   }
   interface PaletteColor {
     states?: {
       outlinedRestingBorder?: string
       outlinedHoverBackground?: string
       containedHoverBackground?: string
+    }
+    alert?: {
+      content?: string
+      background?: string
     }
   }
   interface Palette {
@@ -74,6 +82,9 @@ const lightPalette: PaletteOptions | undefined = {
       outlinedHoverBackground: "#C9B8FB",
       containedHoverBackground: "#2F099F",
     },
+    alert: {
+      background: "#C9B8FB",
+    },
   },
   background: {
     default: "#FAF3CE",
@@ -87,15 +98,28 @@ const lightPalette: PaletteOptions | undefined = {
   },
   success: {
     main: "#06D7D7",
+    dark: "#037777",
+    light: "#83EBEB",
+    alert: {
+      background: "#E6FFFF",
+    },
+  },
+  error: {
+    main: "#FB5A5A",
+    dark: "#68282F",
+    light: "#FDA49A",
+    alert: {
+      background: "#FEECEB",
+    },
   },
   warning: {
     main: "#FAEA5D",
     dark: "#817F48",
     light: "#FFEA91",
-  },
-  error: {
-    main: "#FB5A5A",
-    dark: "#68282F",
+    alert: {
+      content: "#000000",
+      background: "#FFF3C8",
+    },
   },
   text: {
     secondary: "#252525",
@@ -161,11 +185,26 @@ const darkPalette: PaletteOptions | undefined = {
     main: "#06D7D7",
     dark: "#037777",
     light: "#83EBEB",
+    alert: {
+      background: "#E6FFFF",
+    },
   },
   error: {
     main: "#FB5A5A",
     dark: "#68282F",
     light: "#FDA49A",
+    alert: {
+      background: "#FEECEB",
+    },
+  },
+  warning: {
+    main: "#FAEA5D",
+    dark: "#817F48",
+    light: "#FFEA91",
+    alert: {
+      content: "#000000",
+      background: "#FFF3C8",
+    },
   },
   text: {
     disabled: "#7D7D7D",
