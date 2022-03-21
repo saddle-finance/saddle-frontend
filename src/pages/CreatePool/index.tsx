@@ -182,7 +182,7 @@ export default function CreatePool(): React.ReactElement {
                     margin="normal"
                     InputProps={{
                       endAdornment: (
-                        <div>
+                        <>
                           {index > 1 && (
                             <IconButton
                               onClick={() =>
@@ -196,7 +196,7 @@ export default function CreatePool(): React.ReactElement {
                               <DeleteForeverIcon />
                             </IconButton>
                           )}
-                        </div>
+                        </>
                       ),
                     }}
                   />
