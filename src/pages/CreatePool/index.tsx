@@ -3,6 +3,7 @@ import {
   Button,
   Container,
   Divider,
+  IconButton,
   Link,
   Paper,
   Stack,
@@ -14,17 +15,25 @@ import {
 } from "@mui/material"
 import React, { useState } from "react"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever"
+import ReviewCreatePool from "./CreatePoolDialog"
 import { Link as RouteLink } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
 export default function CreatePool(): React.ReactElement {
   const { t } = useTranslation()
   const theme = useTheme()
-  const [tokenLists, setTokenLists] = useState<string[]>([""])
+  const [openCreatePoolDlg, setOpenCreatePoolDlg] = useState<boolean>(false)
+  const [poolName, setPoolName] = useState<string>("")
+  const [tokenLists, setTokenLists] = useState<string[]>(["", ""])
+  const [fee, setFee] = useState<string>("")
 
   const handleAddTokenList = () => {
     setTokenLists((prev) => [...prev, ""])
   }
+
+  const digitRegex = /^\d*(\.\d+)?$/.exec(fee)
+
   return (
     <Container sx={{ pb: 5 }}>
       <Link
@@ -60,6 +69,13 @@ export default function CreatePool(): React.ReactElement {
                 <TextField
                   size="medium"
                   label="Pool Name"
+                  value={poolName}
+                  onChange={(e) => setPoolName(e.target.value)}
+                  error={poolName.length > 14}
+                  helperText={
+                    poolName.length > 14 &&
+                    "Pool name length should less than 14 characters"
+                  }
                   fullWidth
                   sx={{ mr: [0, 1.5], flex: 1 }}
                 />
@@ -81,7 +97,14 @@ export default function CreatePool(): React.ReactElement {
             <Stack direction="row" spacing={3} mt={2}>
               <Box flex={1}>
                 <Typography mb={2}>{t("setFeeDescription")}</Typography>
-                <TextField label={`${t("fee")} (%)`} fullWidth />
+                <TextField
+                  label={`${t("fee")} (%)`}
+                  fullWidth
+                  value={fee}
+                  error={!digitRegex}
+                  onChange={(e) => setFee(e.target.value)}
+                  helperText={!digitRegex && "Fee should be number"}
+                />
               </Box>
               <Box flex={1}>
                 <Typography mb={2}>{t("amplificationParameter")}</Typography>
@@ -157,6 +180,25 @@ export default function CreatePool(): React.ReactElement {
                     label={`Token ${index}`}
                     fullWidth
                     margin="normal"
+                    InputProps={{
+                      endAdornment: (
+                        <>
+                          {index > 1 && (
+                            <IconButton
+                              onClick={() =>
+                                setTokenLists((prev) =>
+                                  prev.filter(
+                                    (value, tokenIndex) => index !== tokenIndex,
+                                  ),
+                                )
+                              }
+                            >
+                              <DeleteForeverIcon />
+                            </IconButton>
+                          )}
+                        </>
+                      ),
+                    }}
                   />
                 </Box>
               ))}
@@ -166,15 +208,25 @@ export default function CreatePool(): React.ReactElement {
             variant="outlined"
             size="large"
             onClick={handleAddTokenList}
+            disabled={tokenLists.length > 3}
             sx={{ mb: 4 }}
           >
             {t("addToken")}
           </Button>
-          <Button variant="contained" size="large" fullWidth>
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            onClick={() => setOpenCreatePoolDlg(true)}
+          >
             {t("createCommunityPool")}
           </Button>
         </Box>
       </Paper>
+      <ReviewCreatePool
+        open={openCreatePoolDlg}
+        onClose={() => setOpenCreatePoolDlg(false)}
+      />
     </Container>
   )
 }

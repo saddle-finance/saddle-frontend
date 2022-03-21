@@ -97,9 +97,7 @@ export default function App(): ReactElement {
                     />
                   ))}
                   <Redirect from="/pools/:route/:action" to="/pools" />
-                  {false && (
-                    <Route exact path="/pools/create" component={CreatePool} />
-                  )}
+                  <Route exact path="/pools/create" component={CreatePool} />
                   <Route exact path="/risk" component={Risk} />
                   <Route exact path="/vesting-claim" component={VestingClaim} />
                 </Switch>
