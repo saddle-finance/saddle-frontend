@@ -3,6 +3,7 @@ import {
   Button,
   Container,
   Divider,
+  IconButton,
   Link,
   Paper,
   Stack,
@@ -14,6 +15,7 @@ import {
 } from "@mui/material"
 import React, { useState } from "react"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever"
 import ReviewCreatePool from "./CreatePoolDialog"
 import { Link as RouteLink } from "react-router-dom"
 import { useTranslation } from "react-i18next"
@@ -27,6 +29,7 @@ export default function CreatePool(): React.ReactElement {
   const handleAddTokenList = () => {
     setTokenLists((prev) => [...prev, ""])
   }
+
   return (
     <Container sx={{ pb: 5 }}>
       <Link
@@ -159,6 +162,25 @@ export default function CreatePool(): React.ReactElement {
                     label={`Token ${index}`}
                     fullWidth
                     margin="normal"
+                    InputProps={{
+                      endAdornment: (
+                        <div>
+                          {index > 1 && (
+                            <IconButton
+                              onClick={() =>
+                                setTokenLists((prev) =>
+                                  prev.filter(
+                                    (value, tokenIndex) => index !== tokenIndex,
+                                  ),
+                                )
+                              }
+                            >
+                              <DeleteForeverIcon />
+                            </IconButton>
+                          )}
+                        </div>
+                      ),
+                    }}
                   />
                 </Box>
               ))}
@@ -168,6 +190,7 @@ export default function CreatePool(): React.ReactElement {
             variant="outlined"
             size="large"
             onClick={handleAddTokenList}
+            disabled={tokenLists.length > 3}
             sx={{ mb: 4 }}
           >
             {t("addToken")}
