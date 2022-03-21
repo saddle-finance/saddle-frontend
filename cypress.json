@@ -10,5 +10,6 @@
     }
   },
   "defaultCommandTimeout": 20000,
-  "requestTimeout": 20000
+  "requestTimeout": 20000,
+  "screenshotOnRunFailure": false
 }
