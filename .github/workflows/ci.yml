@@ -102,7 +102,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
       - uses: actions/upload-artifact@v2
-        if: always()
+        if: failure()
         with:
           name: screenshots
           path: |

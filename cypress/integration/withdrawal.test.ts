@@ -53,6 +53,7 @@ context("Withdrawal Flow", () => {
         .contains(/Price|Bonus/)
         .click()
       cy.get("#tokenInput input").first().type("{backspace}").type("1").click()
+      cy.wait(10000)
       cy.get('[data-testid="withdrawBtn"]').click()
       cy.get("[data-testid=tokenValue]")
         .first()
