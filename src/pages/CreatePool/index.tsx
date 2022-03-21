@@ -24,6 +24,7 @@ export default function CreatePool(): React.ReactElement {
   const { t } = useTranslation()
   const theme = useTheme()
   const [openCreatePoolDlg, setOpenCreatePoolDlg] = useState<boolean>(false)
+  const [poolName, setPoolName] = useState<string>("")
   const [tokenLists, setTokenLists] = useState<string[]>([""])
   const [fee, setFee] = useState<string>("")
 
@@ -66,6 +67,13 @@ export default function CreatePool(): React.ReactElement {
                 <TextField
                   size="medium"
                   label="Pool Name"
+                  value={poolName}
+                  onChange={(e) => setPoolName(e.target.value)}
+                  error={poolName.length > 14}
+                  helperText={
+                    poolName.length > 14 &&
+                    "Pool name length should less than 14 characters"
+                  }
                   fullWidth
                   sx={{ mr: [0, 1.5], flex: 1 }}
                 />
