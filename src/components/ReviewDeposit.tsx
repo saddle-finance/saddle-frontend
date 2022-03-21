@@ -209,7 +209,7 @@ function ReviewDeposit({
         >
           {t("confirmDeposit")}
         </Button>
-        <Button size="large" fullWidth onClick={onClose}>
+        <Button size="large" fullWidth onClick={onClose} sx={{ mt: 1 }}>
           {t("cancel")}
         </Button>
       </DialogContent>
