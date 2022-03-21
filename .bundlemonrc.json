@@ -1,0 +1,29 @@
+{
+  "baseDir": "build",
+  "files": [
+    {
+      "path": "index.html"
+    },
+    {
+      "path": "**/*.<hash>.chunk.{js,css}"
+    }
+  ],
+  "groups": [
+    {
+      "path": "**/*.<hash>.{png,jpg,gif,svg}"
+    },
+    {
+      "path": "**/*.<hash>.{eot,ttf,woff,woff2}"
+    }
+  ],
+  "reportOutput": [
+    [
+      "github",
+      {
+        "checkRun": true,
+        "commitStatus": true,
+        "prComment": false
+      }
+    ]
+  ]
+}

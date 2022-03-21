@@ -8,45 +8,53 @@ context("Swap Flow", () => {
         cy.wait(3000)
       })
       it("starts in a neutral state", () => {
-        cy.react("SwapInput").eq(0).should("include.text", "Choose Token")
-        cy.react("SwapInput").eq(1).should("include.text", "Choose Token")
+        cy.react("SwapTokenInput").eq(0).should("include.text", "Choose")
+        cy.react("SwapTokenInput").eq(1).should("include.text", "Choose")
       })
       it("shows all of the pool's tokens and balances in dropdown", () => {
-        cy.react("SwapInput")
+        cy.react("SwapTokenInput")
           .eq(0)
-          .contains("Choose Token")
+          .contains("Choose")
           .as("dropdownButton")
           .click() // show
         poolTokenSymbols.forEach((tokenSymbol) => {
-          const el = cy.react("ListItem", { props: { symbol: tokenSymbol } })
-          el.should("exist")
-          el.should("not.include.text", "≈$0")
+          cy.get('[data-testid="dropdownContainer"]')
+            .contains(tokenSymbol)
+            .should("exist")
+            .should("not.include.text", "≈$0")
         })
         cy.get("@dropdownButton").click() // hide
       })
       it("dropdown shows correct search results", () => {
-        cy.react("SwapInput")
-          .eq(0)
-          .contains("Choose Token")
-          .as("dropdownButton")
-          .click() // show
-        cy.react("SearchSelect").eq(0).find("input").type(poolTokenSymbols[0])
-        cy.react("ListItem").should("have.length", 1)
+        cy.get('[data-testid = "listOpenBtn"]').eq(0).click() //Dropdown show
+
+        cy.get('[data-testid="searchTermInput"]')
+          .should("be.visible")
+          .type(poolTokenSymbols[0])
+        cy.get('[data-testid="swapTokenItem"]').should("have.length", 1)
       })
       it("reflects token balance after selecting a token", () => {
-        cy.react("ListItem").contains(poolTokenSymbols[0]).click()
+        cy.get('[data-testid="dropdownContainer"]')
+          .contains(poolTokenSymbols[0])
+          .click()
         cy.react("SearchSelect").should("not.exist")
-        cy.react("SwapInput").eq(0).should("include.text", poolTokenSymbols[0])
+        // cy.react("SwapTokenInput")
+        //   .eq(0)
+        cy.get('[data-testid="swapTokenInputFrom"]').should(
+          "include.text",
+          poolTokenSymbols[0],
+        )
         cy.contains("Balance:").siblings("a").should("not.have", "0.0")
       })
       it("accepts user input and updates calculated amount", () => {
-        cy.react("SwapInput").eq(0).find("input").as("swapInputEl").type("1")
-        cy.get("@swapInputEl").siblings("p").should("not.have.text", "≈$0.0")
+        cy.get('[data-testid="tokenValueInput"]').eq(0).type("1")
+        cy.get('[data-testid = "inputValueUSD"]')
+          .eq(0)
+          .should("not.have.text", "≈$0.0")
       })
       it("allows users to select only tokens in the same pool", () => {
-        cy.react("SwapInput")
-          .eq(1)
-          .contains("Choose Token")
+        cy.get('[data-testid="swapTokenInputTo"]')
+          .contains("Choose")
           .as("dropdownButton")
           .click() // show
         cy.react("ListItem", { props: { isAvailable: false } }).should(
@@ -63,14 +71,13 @@ context("Swap Flow", () => {
             el.click()
           }
         })
-        cy.react("SwapInput")
+        cy.react("SwapTokenInput")
           .eq(1)
           .find("input")
           .as("swapInputEl")
           .should("not.have", "0")
-        cy.get('[data-testid="swapInputValueUSD"]')
-          .eq(1)
-          .should("not.have.text", "≈$0.0")
+        // cy.get("@swapInputEl").siblings("p").should("not.have.text", "≈$0.0")
+        cy.get('[data-testid="inputValueUSD"]').should("not.have.text", "≈$0.0")
       })
       it("shows information about the transaction", () => {
         cy.get("div").contains("Rate").as("rateEl").should("exist")
@@ -98,7 +105,7 @@ context("Swap Flow", () => {
   }
   const testConfigs: [string, string[]][] = [
     ["BTC V2", ["sBTC", "WBTC", "RENBTC"]],
-    ["USD Pool V2", ["DAI", "USDC", "USDT"]],
+    ["Stablecoin V2", ["DAI", "USDC", "USDT"]],
   ]
   testConfigs.forEach((info) => testAssetSwap(...info))
   // it("successfully completes a deposit of all assets", () => {

@@ -8,7 +8,7 @@ import { BigNumber } from "ethers"
 import Button from "./Button"
 import { PendingSwap } from "../hooks/usePendingSwapData"
 import { SWAP_TYPES } from "../constants"
-import SwapInput from "./SwapInput"
+import SwapTokenInput from "./SwapTokenInput"
 import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
 import styles from "./PendingSwapExchange.module.scss"
@@ -81,7 +81,7 @@ const PendingSwapExchange = ({
           </b>
         </p>
       </div>
-      <SwapInput
+      <SwapTokenInput
         tokens={[]}
         onChangeAmount={(newValue) =>
           setInputState((prevState) => {

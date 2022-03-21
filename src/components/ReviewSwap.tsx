@@ -1,18 +1,25 @@
-import "./ReviewSwap.scss"
-
+import {
+  Box,
+  Button,
+  DialogContent,
+  Divider,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material"
 import React, { ReactElement, useState } from "react"
 import { SWAP_TYPES, TOKENS_MAP, getIsVirtualSwap } from "../constants"
 import { formatBNToString, formatDeadlineToNumber } from "../utils"
 
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
-import Button from "./Button"
+import DialogTitle from "./DialogTitle"
+import DoubleArrowDown from "@mui/icons-material/KeyboardDoubleArrowDown"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { ReactComponent as ThinArrowDown } from "../assets/icons/thinArrowDown.svg"
 import classnames from "classnames"
-import { formatGasToString } from "../utils/gas"
+// import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
-import iconDown from "../assets/icons/icon_down.svg"
 import { isHighPriceImpact } from "../utils/priceImpact"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
@@ -42,14 +49,14 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
   const {
     slippageCustom,
     slippageSelected,
-    gasPriceSelected,
-    gasCustom,
+    // gasPriceSelected,
+    // gasCustom,
     transactionDeadlineSelected,
     transactionDeadlineCustom,
   } = useSelector((state: AppState) => state.user)
-  const { gasStandard, gasFast, gasInstant } = useSelector(
-    (state: AppState) => state.application,
-  )
+  // const { gasStandard, gasFast, gasInstant } = useSelector(
+  //   (state: AppState) => state.application,
+  // )
   const [hasConfirmedHighPriceImpact, setHasConfirmedHighPriceImpact] =
     useState(false)
   const isHighPriceImpactTxn = isHighPriceImpact(
@@ -62,30 +69,34 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
   )
 
   return (
-    <div className="reviewSwap">
-      <h3>{t("reviewSwap")}</h3>
-      <div className="swapTable">
+    <Paper>
+      <DialogTitle variant="h1" onClose={onClose}>
+        {t("reviewSwap")}
+      </DialogTitle>
+      <DialogContent>
         {isVirtualSwap ? (
           <VirtualSwapTokens data={data} />
         ) : (
           <DirectSwapTokens data={data} />
         )}
         {data.swapType === SWAP_TYPES.SYNTH_TO_SYNTH && (
-          <div className="row">
+          <Box display="flex">
             <span className="aside">
               {t("virtualSwapSynthToSynthInfo")}{" "}
               <a href="https://blog.synthetix.io/how-fee-reclamation-rebates-work/">
                 {t("learnMore")}
               </a>
             </span>
-          </div>
+          </Box>
         )}
-        <div className="divider" style={{ height: "1px", width: "100%" }} />
-        <div className="swapInfo">
-          <div className="priceTable">
-            <span className="title">{t("price")} </span>
-            <span className="pair">{data.exchangeRateInfo.pair}</span>
-            <button className="exchange">
+        <Divider />
+        <Stack my={3} spacing={1}>
+          <Box display="flex">
+            <Typography component="span">{t("price")} </Typography>
+            <Typography component="span" ml={1}>
+              {data.exchangeRateInfo.pair}
+            </Typography>
+            <button>
               <svg
                 width="24"
                 height="20"
@@ -103,21 +114,22 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
                 />
               </svg>
             </button>
-            <span className="value floatRight">
+            <Typography component="span" ml="auto" mr={0}>
               {formatBNToString(data.exchangeRateInfo.exchangeRate, 18, 6)}
-            </span>
-          </div>
-          <div className="row">
-            <span className="title">{t("gas")}</span>
-            <span className="value floatRight">
+            </Typography>
+          </Box>
+          {/* Hide gas because we don't have curretnly too way of estimating this value. */}
+          {/* <Box display="none">
+            <Typography component="span">{t("gas")}</Typography>
+            <Typography ml="auto" mr={0}>
               {formatGasToString(
                 { gasStandard, gasFast, gasInstant },
                 gasPriceSelected,
                 gasCustom,
               )}{" "}
               GWEI
-            </span>
-          </div>
+            </Typography>
+          </Box> */}
           {/* TODO: Create a light API to expose the cached BlockNative gas estimates. */}
           {/* {data.txnGasCost?.valueUSD && (
             <div className="row">
@@ -129,48 +141,49 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
               </span>
             </div>
           )} */}
-          <div className="row">
-            <span className="title">{t("maxSlippage")}</span>
-            <span className="value floatRight">
+          <Box display="flex">
+            <Typography component="span">{t("maxSlippage")}</Typography>
+            <Typography component="span" ml="auto" mr={0}>
               {formatSlippageToString(slippageSelected, slippageCustom)}%
-            </span>
-          </div>
+            </Typography>
+          </Box>
           {!isVirtualSwap && (
-            <div className="row">
-              <span className="title">{t("deadline")}</span>
-              <span className="value floatRight">
+            <Box display="flex">
+              <Typography component="span">{t("deadline")}</Typography>
+              <Typography ml="auto" mr={0}>
                 {deadline} {t("minutes")}
-              </span>
-            </div>
+              </Typography>
+            </Box>
           )}
           {isHighPriceImpactTxn && (
-            <div className="row">
-              <HighPriceImpactConfirmation
-                checked={hasConfirmedHighPriceImpact}
-                onCheck={(): void =>
-                  setHasConfirmedHighPriceImpact((prevState) => !prevState)
-                }
-              />
-            </div>
+            <HighPriceImpactConfirmation
+              checked={hasConfirmedHighPriceImpact}
+              onCheck={(): void =>
+                setHasConfirmedHighPriceImpact((prevState) => !prevState)
+              }
+            />
           )}
-        </div>
-      </div>
-      <div className="bottom">
-        <p>{t("estimatedOutput")}</p>
-        <div className="buttonWrapper">
+        </Stack>
+        <Divider />
+        <Typography variant="body2" my={3}>
+          {t("estimatedOutput")}
+        </Typography>
+        <Stack spacing={1}>
           <Button
+            variant="contained"
+            size="large"
+            fullWidth
             onClick={onConfirm}
-            kind="primary"
             disabled={isHighPriceImpactTxn && !hasConfirmedHighPriceImpact}
           >
             {t("confirmSwap")}
           </Button>
-          <Button onClick={onClose} kind="cancel">
+          <Button onClick={onClose} size="large" fullWidth>
             {t("cancel")}
           </Button>
-        </div>
-      </div>
-    </div>
+        </Stack>
+      </DialogContent>
+    </Paper>
   )
 }
 
@@ -178,28 +191,27 @@ function DirectSwapTokens({ data }: { data: Props["data"] }) {
   const fromToken = TOKENS_MAP[data.from.symbol]
   const toToken = TOKENS_MAP[data.to.symbol]
   return (
-    <>
-      <div className="row">
-        <div>
-          <img className="tokenIcon" src={fromToken.icon} alt="icon" />
-          <span className="tokenName">{data.from.symbol}</span>
-        </div>
-        <div>
-          <span>{data.from.value}</span>
-        </div>
-      </div>
-      <img src={iconDown} alt="to" className="arrowDown" />
-      <div className="row">
-        <div>
-          <img className="tokenIcon" src={toToken.icon} alt="icon" />
-          <span className="tokenName">{data.to.symbol}</span>
-        </div>
-
-        <div>
-          <span>{data.to.value}</span>
-        </div>
-      </div>
-    </>
+    <Stack mb={3} spacing={1}>
+      <Box display="flex" alignItems="center">
+        <img src={fromToken.icon} alt="icon" width={20} height={20} />
+        <Typography component="span" ml={1}>
+          {data.from.symbol}
+        </Typography>
+        <Typography component="span" ml="auto" mr={0}>
+          {data.from.value}
+        </Typography>
+      </Box>
+      <DoubleArrowDown color="primary" />
+      <Box display="flex" alignItems="center">
+        <img src={toToken.icon} alt="icon" />
+        <Typography component="span" ml={1}>
+          {data.to.symbol}
+        </Typography>
+        <Typography component="span" ml="auto" mr={0}>
+          {data.to.value}
+        </Typography>
+      </Box>
+    </Stack>
   )
 }
 
