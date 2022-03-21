@@ -101,10 +101,10 @@ jobs:
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: screenshots
+          name: E2E Failures
           path: |
             cypress/screenshots/
             cypress/videos/
