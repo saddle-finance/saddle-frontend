@@ -32,6 +32,8 @@ export default function CreatePool(): React.ReactElement {
     setTokenLists((prev) => [...prev, ""])
   }
 
+  const digitRegex = /^\d*(\.\d+)?$/.exec(fee)
+
   return (
     <Container sx={{ pb: 5 }}>
       <Link
@@ -99,11 +101,9 @@ export default function CreatePool(): React.ReactElement {
                   label={`${t("fee")} (%)`}
                   fullWidth
                   value={fee}
-                  error={/^\d*(\.\d+)?$/.exec(fee) === null}
+                  error={!digitRegex}
                   onChange={(e) => setFee(e.target.value)}
-                  helperText={
-                    /^\d*(\.\d+)?$/.exec(fee) === null && "Fee should be number"
-                  }
+                  helperText={!digitRegex && "Fee should be number"}
                 />
               </Box>
               <Box flex={1}>
