@@ -20,16 +20,22 @@ import ReviewCreatePool from "./CreatePoolDialog"
 import { Link as RouteLink } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
+type Token = {
+  tokenAddress: string
+}
 export default function CreatePool(): React.ReactElement {
   const { t } = useTranslation()
   const theme = useTheme()
   const [openCreatePoolDlg, setOpenCreatePoolDlg] = useState<boolean>(false)
   const [poolName, setPoolName] = useState<string>("")
-  const [tokenLists, setTokenLists] = useState<string[]>(["", ""])
+  const [tokenLists, setTokenLists] = useState<Token[]>([
+    { tokenAddress: "" },
+    { tokenAddress: "" },
+  ])
   const [fee, setFee] = useState<string>("")
 
   const handleAddTokenList = () => {
-    setTokenLists((prev) => [...prev, ""])
+    setTokenLists((prev) => [...prev, { tokenAddress: "" }])
   }
 
   const digitRegex = /^\d*(\.\d+)?$/.exec(fee)
