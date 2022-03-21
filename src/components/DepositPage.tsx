@@ -234,12 +234,6 @@ const DepositPage = (props: Props): ReactElement => {
           </Button>
         </Box>
 
-        {/* <Box width={["90%", "50%"]} paddingTop={2}>
-              <Button variant="primary" size="lg" width="100%">
-                {t("depositAndStake")}
-              </Button>
-            </Box> */}
-        {/* <Stack spacing={4} flex={1}> */}
         <Stack direction="column" flex={1} spacing={4} width="100%">
           {poolData && (
             <MyFarm
@@ -259,6 +253,8 @@ const DepositPage = (props: Props): ReactElement => {
       <Dialog
         open={!!currentModal}
         onClose={(): void => setCurrentModal(null)}
+        maxWidth="sm"
+        fullWidth
         scroll="body"
       >
         {currentModal === "review" ? (

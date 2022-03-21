@@ -1,12 +1,17 @@
-import "./ReviewMigration.scss"
-
+import {
+  Alert,
+  Box,
+  Button,
+  DialogContent,
+  Divider,
+  Typography,
+} from "@mui/material"
 import React, { ReactElement } from "react"
 import { commify, formatBNToString } from "../utils"
 
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
-import Button from "./Button"
-import Warning from "./Warning"
+import DialogTitle from "./DialogTitle"
 import { gasBNFromState } from "../utils/gas"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
@@ -45,55 +50,63 @@ function ReviewMigration({
   const shouldDisplayGas = !!gasStandard
 
   return (
-    <div className="reviewMigration">
-      <h3>{t("reviewMigration")}</h3>
-      <div className="migrateTop">
-        <Warning>{t("migrationExplain")}</Warning>
-        <div className="info">
-          <div className="row">
-            <span className="title">{t("migrationAmount")}</span>
-            <span className="value floatRight">
+    <React.Fragment>
+      <DialogTitle variant="h1" onClose={onClose}>
+        {t("reviewMigration")}
+      </DialogTitle>
+      <DialogContent>
+        <Alert icon={false} severity="warning">
+          {t("migrationExplain")}
+        </Alert>
+        <Box my={3}>
+          <Box display="flex" justifyContent="space-between">
+            <Typography>{t("migrationAmount")}</Typography>
+            <Typography>
               {commify(
                 formatBNToString(migrationAmount || BigNumber.from("0"), 18, 2),
               )}{" "}
               {lpTokenName}
-            </span>
-          </div>
+            </Typography>
+          </Box>
           {shouldDisplayGas && (
-            <div className="row">
-              <span className="title">{t("gas")}</span>
-              <span className="value floatRight">
-                {gasPrice.toString()} GWEI
-              </span>
-            </div>
+            <Box display="flex" justifyContent="space-between">
+              <Typography>{t("gas")}</Typography>
+              <Typography>{gasPrice.toString()} GWEI</Typography>
+            </Box>
           )}
           {/* TODO: Create a light API to expose the cached BlockNative gas estimates. */}
           {/* {gasValueUSD && (
             <div className="row">
-              <span className="title">{t("estimatedTxCost")}</span>
-              <span className="value floatRight">
+              <Typography component = 'span' className="title">{t("estimatedTxCost")}</Typography>
+              <Typography component = 'span' className="value floatRight">
                 {`≈$${commify(formatBNToString(gasValueUSD, 2, 2))}`}
-              </span>
+              </Typography>
             </div>
           )} */}
-          <div className="row">
-            <span className="title">{t("maxSlippage")}</span>
-            <span className="value floatRight">0.5%</span>
-          </div>
-        </div>
-      </div>
-      <div className="bottom">
-        <p>{t("estimatedOutput")}</p>
-        <div className="buttonWrapper">
-          <Button onClick={onConfirm} kind="temporary">
-            {t("confirmMigrate")}
-          </Button>
-          <Button onClick={onClose} kind="cancel">
-            {t("cancel")}
-          </Button>
-        </div>
-      </div>
-    </div>
+          <Box display="flex" justifyContent="space-between">
+            <Typography>{t("maxSlippage")}</Typography>
+            <Typography>0.5%</Typography>
+          </Box>
+        </Box>
+        <Divider />
+        <Typography variant="body2" my={3}>
+          {t("estimatedOutput")}
+        </Typography>
+
+        <Button
+          variant="contained"
+          color="secondary"
+          size="large"
+          fullWidth
+          onClick={onConfirm}
+        >
+          {t("confirmMigrate")}
+        </Button>
+        <Button color="secondary" size="large" fullWidth onClick={onClose}>
+          {t("cancel")}
+        </Button>
+      </DialogContent>
+    </React.Fragment>
   )
 }
 

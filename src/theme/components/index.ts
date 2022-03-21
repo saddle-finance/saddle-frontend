@@ -1,5 +1,6 @@
 import { Components, Theme } from "@mui/material"
 import AccordionTheme from "./AccordionTheme"
+import AlertTheme from "./AlertTheme"
 import AppBarTheme from "./AppBarTheme"
 import BackdropTheme from "./BackdropTheme"
 import ButtonTheme from "./ButtonTheme"
@@ -24,6 +25,7 @@ export default function componentsOverrides(theme: Theme): Components {
   return merge(
     AppBarTheme(),
     AccordionTheme(theme),
+    AlertTheme(theme),
     ButtonTheme(theme),
     CheckboxTheme(),
     ChipTheme(theme),
