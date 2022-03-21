@@ -25,7 +25,7 @@ export default function CreatePool(): React.ReactElement {
   const theme = useTheme()
   const [openCreatePoolDlg, setOpenCreatePoolDlg] = useState<boolean>(false)
   const [poolName, setPoolName] = useState<string>("")
-  const [tokenLists, setTokenLists] = useState<string[]>([""])
+  const [tokenLists, setTokenLists] = useState<string[]>(["", ""])
   const [fee, setFee] = useState<string>("")
 
   const handleAddTokenList = () => {
