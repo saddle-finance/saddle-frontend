@@ -25,6 +25,7 @@ export default function CreatePool(): React.ReactElement {
   const theme = useTheme()
   const [openCreatePoolDlg, setOpenCreatePoolDlg] = useState<boolean>(false)
   const [tokenLists, setTokenLists] = useState<string[]>([""])
+  const [fee, setFee] = useState<string>("")
 
   const handleAddTokenList = () => {
     setTokenLists((prev) => [...prev, ""])
@@ -86,7 +87,16 @@ export default function CreatePool(): React.ReactElement {
             <Stack direction="row" spacing={3} mt={2}>
               <Box flex={1}>
                 <Typography mb={2}>{t("setFeeDescription")}</Typography>
-                <TextField label={`${t("fee")} (%)`} fullWidth />
+                <TextField
+                  label={`${t("fee")} (%)`}
+                  fullWidth
+                  value={fee}
+                  error={/^\d*(\.\d+)?$/.exec(fee) === null}
+                  onChange={(e) => setFee(e.target.value)}
+                  helperText={
+                    /^\d*(\.\d+)?$/.exec(fee) === null && "Fee should be number"
+                  }
+                />
               </Box>
               <Box flex={1}>
                 <Typography mb={2}>{t("amplificationParameter")}</Typography>
