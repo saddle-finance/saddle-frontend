@@ -184,7 +184,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                   />
                 ))}
               </Stack>
-              <Box mt={3} data-testid="withdrawPriceImpactOrBonus">
+              <Box mt={3}>
                 {reviewData.priceImpact.gte(0) ? (
                   <Typography component="span" color="primary">
                     {t("bonus")}:{" "}
