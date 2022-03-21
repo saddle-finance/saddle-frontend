@@ -19,6 +19,5 @@ module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
   require("@cypress/code-coverage/task")(on, config)
-  require("cypress-log-to-output").install(on)
   return config
 }
