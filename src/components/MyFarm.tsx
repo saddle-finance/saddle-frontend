@@ -43,7 +43,7 @@ export default function MyFarm({
         <Box display="flex" alignItems="center">
           <Box flex={1}>
             <Typography>{t("lpAvailable")}</Typography>
-            <Typography variant="subtitle1">
+            <Typography variant="subtitle1" data-testid="myFarmLpBalance">
               {formattedLpWalletBalance}
             </Typography>
           </Box>
