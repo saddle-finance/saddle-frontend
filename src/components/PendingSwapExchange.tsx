@@ -83,7 +83,6 @@ const PendingSwapExchange = ({
         </p>
       </div>
       <SwapTokenInput
-        data-testid="settlement-input"
         tokens={[]}
         onChangeAmount={(newValue) =>
           setInputState((prevState) => {
