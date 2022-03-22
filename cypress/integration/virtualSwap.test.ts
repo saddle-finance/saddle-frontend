@@ -35,22 +35,12 @@ context("Virtual Swap Flow", { env: { NETWORK_ID: 1 } }, () => {
         cy.waitForReact()
         cy.wait(3000)
       })
-      // initial swap interface
+
       it("shows pairs for direct and virtual swaps", () => {
-        // show "from" token options
-        cy.react("SwapInput")
-          .eq(0)
-          .contains("Choose Token")
-          .as("dropdownButton")
-          .click()
-        // click our chosen from token
+        cy.get("[data-testid=swapTokenInputFromListOpenBtn]").click()
         cy.react("ListItem").contains(from).click()
         // show "to" token options
-        cy.react("SwapInput")
-          .eq(1)
-          .contains("Choose Token")
-          .as("dropdownButton")
-          .click()
+        cy.get("[data-testid=swapTokenInputToListOpenBtn]").click()
         cy.react("ListItem", { props: { isAvailable: true } })
           .contains("Virtual Swap")
           .should("have.length.above", 0)
@@ -58,29 +48,23 @@ context("Virtual Swap Flow", { env: { NETWORK_ID: 1 } }, () => {
         cy.react("ListItem").contains(to).click()
       })
       it("accepts user input and updates calculated amount", () => {
-        cy.react("SwapInput").eq(0).find("input").as("swapInputEl").type("1")
-        cy.get("@swapInputEl").siblings("p").should("not.have.text", "≈$0.0")
+        cy.get("[data-testid=tokenValueInput]").eq(0).type("1")
+        cy.get("[data-testid=tokenValueInput]")
+          .eq(0)
+          .siblings("p")
+          .should("not.have.text", "≈$0.0")
       })
       it("informs the user of the route and virtual swap", () => {
-        cy.get(".swapForm > .row") // get rows
-          .eq(-1) // get last row
-          .find("span")
-          .eq(1)
-          .should("contain.text", "Virtual Swap")
-        cy.get(".swapForm > .row") // get rows
-          .eq(-2)
-          .find("span")
-          .eq(1)
+        cy.get("[data-testid=virtualSwapLinkText]").contains("Virtual Swap")
+        cy.get("[data-testid=formattedRouteText]")
           .invoke("text")
           .then((text) => {
             swapRouteLength = text.match(/\w+/g).length // count the symbols in the route
           })
       })
       it("shows review modal with further info", () => {
-        // open advanced options
-        cy.get("[data-testid=advanced-options]").click()
-        // set slippage
-        cy.get("[data-testid=custom-slippage]").type("0.8")
+        cy.get("[data-testid=advancedOptions]").click()
+        cy.get("[data-testid=customSlippage]").type("0.8")
         cy.get("[data-testid=swap-btn]").should("not.be.disabled").click()
         cy.react("ReviewSwap")
           .find(".swapTable > .row")
@@ -97,7 +81,7 @@ context("Virtual Swap Flow", { env: { NETWORK_ID: 1 } }, () => {
               $input.click()
             }
           })
-        cy.get("@reviewSwap").find("button").contains("Confirm Swap").click()
+        cy.get("reviewSwapConfirmSwapBtn").click()
         // this will fail if an error is logged to the console
       }) // https://dev.to/tylerben/catching-console-error-statements-in-cypress-1b4g
       // pending swap interface
@@ -156,7 +140,7 @@ context("Virtual Swap Flow", { env: { NETWORK_ID: 1 } }, () => {
         // settles in the output currency
         cy.get(".pendingSwapItem").should("have.length", 0)
         // deducts the amount from the previous total
-        cy.react("SwapInput").eq(0).next().as("dropdownButton").click()
+        cy.react("SwapTokenInput").eq(0).next().as("dropdownButton").click()
         cy.react("ListItem")
           .contains(to)
           .invoke("val")

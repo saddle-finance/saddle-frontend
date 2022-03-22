@@ -138,7 +138,7 @@ const SwapPage = (props: Props): ReactElement => {
                 </Box>
               </Box>
               <SwapTokenInput
-                data-testid="swapTokenInputFrom"
+                dataTestid="swapTokenInputFrom"
                 tokens={tokenOptions.from.filter(
                   ({ symbol }) => symbol !== toState.symbol,
                 )}
@@ -155,7 +155,7 @@ const SwapPage = (props: Props): ReactElement => {
             </Typography>
 
             <SwapTokenInput
-              data-testid="swapTokenInputTo"
+              dataTestid="swapTokenInputTo"
               tokens={tokenOptions.to.filter(
                 ({ symbol }) => symbol !== fromState.symbol,
               )}
@@ -208,21 +208,19 @@ const SwapPage = (props: Props): ReactElement => {
               <>
                 <Box display="flex" justifyContent="space-between">
                   <span>{t("route")}</span>
-                  <span>{formattedRoute}</span>
+                  <span data-testid="formattedRouteText">{formattedRoute}</span>
                 </Box>
                 {isVirtualSwap && (
                   <div className="row">
-                    <span></span>
-                    <span>
-                      <a
-                        href="https://docs.saddle.finance/saddle-faq#what-is-virtual-swap"
-                        style={{ textDecoration: "underline" }}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        ({t("virtualSwap")})
-                      </a>
-                    </span>
+                    <a
+                      data-testid="virtualSwapLinkText"
+                      href="https://docs.saddle.finance/saddle-faq#what-is-virtual-swap"
+                      style={{ textDecoration: "underline" }}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      ({t("virtualSwap")})
+                    </a>
                   </div>
                 )}
                 {isVirtualSwap && isHighSlippage && (

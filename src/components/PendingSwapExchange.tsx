@@ -112,6 +112,7 @@ const PendingSwapExchange = ({
         inputValue={inputState.value}
         inputValueUSD={inputState.valueUSD}
         isSwapFrom={true}
+        dataTestid="pendingSwapTokenInput"
       />
       {inputState.error && (
         <div className={styles.error}>{inputState.error}</div>

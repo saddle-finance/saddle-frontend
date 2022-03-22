@@ -39,6 +39,7 @@ interface SwapTokenInputProps {
   isSwapFrom?: boolean
   onSelect?: (tokenSymbol: string) => void
   onChangeAmount?: (value: string) => void
+  dataTestid: string
 }
 
 export default function SwapTokenInput({
@@ -49,12 +50,15 @@ export default function SwapTokenInput({
   isSwapFrom,
   onSelect,
   onChangeAmount,
+  dataTestid,
   ...rest
 }: SwapTokenInputProps): JSX.Element {
+  console.log(dataTestid)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [popOverWidth, setPopOverWidth] = useState<number | undefined>()
   const theme = useTheme()
+  const { t } = useTranslation()
 
   useEffect(() => {
     const containerWidth = containerRef.current?.offsetWidth
@@ -119,10 +123,10 @@ export default function SwapTokenInput({
           <Button
             onClick={handleClick}
             endIcon={<ArrowDropDown />}
-            data-testid="listOpenBtn"
+            data-testid={`${dataTestid}ListOpenBtn`}
           >
             <Typography variant="subtitle1">
-              {selectedToken?.symbol || "Choose"}
+              {selectedToken?.symbol || t("chooseToken")}
             </Typography>
           </Button>
           <Typography

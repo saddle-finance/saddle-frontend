@@ -75,7 +75,10 @@ export default function AdvancedOptions(): ReactElement {
         }
         expanded={advanced}
       >
-        <AccordionSummary expandIcon={<ArrowDropDownIcon color="primary" />}>
+        <AccordionSummary
+          data-testid="advancedOptions"
+          expandIcon={<ArrowDropDownIcon color="primary" />}
+        >
           <Typography color="primary" variant="subtitle1">
             {t("advancedOptions")}
           </Typography>
@@ -128,7 +131,7 @@ export default function AdvancedOptions(): ReactElement {
                   <ToggleButton value={Slippages.One}>1%</ToggleButton>
                 </ToggleButtonGroup>
                 <TextField
-                  data-testid="custom-slippage"
+                  data-testid="customSlippage"
                   value={slippageCustom?.valueRaw}
                   size="small"
                   InputProps={{
