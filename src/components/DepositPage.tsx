@@ -72,9 +72,6 @@ const DepositPage = (props: Props): ReactElement => {
 
   return (
     <Container maxWidth={isLgDown ? "sm" : "lg"} sx={{ pt: 5, pb: 10 }}>
-      <LPStakingBanner
-        stakingLink={"https://dashboard.keep.network/liquidity"}
-      />
       {poolData?.aprs?.keep?.apr.gt(Zero) &&
         myShareData?.lpTokenBalance.gt(0) && (
           <LPStakingBanner
