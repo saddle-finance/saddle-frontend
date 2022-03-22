@@ -170,6 +170,7 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
         </Typography>
         <Stack spacing={1}>
           <Button
+            data-testid="reviewSwapConfirmSwapBtn"
             variant="contained"
             size="large"
             fullWidth

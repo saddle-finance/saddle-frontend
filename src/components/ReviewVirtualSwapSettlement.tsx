@@ -76,7 +76,7 @@ function ReviewVirtualSwapSettlement({
   const shouldDisplayGas = !!gasStandard
   const isWithdrawAction = !data.from
   return (
-    <div className="reviewSwap">
+    <div className="reviewSwap" data-testid="settlement-review-modal">
       <h3>
         {isWithdrawAction ? t("Review Withdraw") : t("Review Settlement")}
       </h3>
@@ -164,6 +164,7 @@ function ReviewVirtualSwapSettlement({
         <p>{t("estimatedOutput")}</p>
         <div className="buttonWrapper">
           <Button
+            data-testid="settlement-confirm-swap-btn"
             onClick={onConfirm}
             kind="primary"
             disabled={isHighPriceImpactTxn && !hasConfirmedHighPriceImpact}

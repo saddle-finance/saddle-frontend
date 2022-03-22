@@ -9,7 +9,7 @@ function ConfirmTransaction(): ReactElement {
   const theme = useTheme()
 
   return (
-    <Box p={8} textAlign="center">
+    <Box data-testid="confirm-transaction" p={8} textAlign="center">
       <Box
         width="240px"
         height="240px"
