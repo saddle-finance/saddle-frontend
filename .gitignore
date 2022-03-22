@@ -25,6 +25,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.ignore
 
 # typechain
 types/ethers-contracts
@@ -32,3 +33,6 @@ types/ethers-contracts
 # vscode
 .vscode
 .vscode/settings.json
+
+# idea
+.idea

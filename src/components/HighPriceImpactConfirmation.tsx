@@ -1,8 +1,6 @@
-import "./HighPriceImpactConfirmation.scss"
-
+import { Box, Checkbox, Typography } from "@mui/material"
 import React, { ReactElement } from "react"
 
-import CheckboxInput from "./CheckboxInput"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -15,12 +13,14 @@ export default function HighPriceImpactConfirmation({
 }: Props): ReactElement {
   const { t } = useTranslation()
   return (
-    <div className="highPriceImpactConfirmation">
+    <Box bgcolor="error.main" p={2}>
       {t("highPriceImpactConfirmation")}
-      <div className="confirmationBox">
-        <span>{t("iConfirm")}</span>{" "}
-        <CheckboxInput checked={checked} onChange={onCheck} />
-      </div>
-    </div>
+      <Box mt={2}>
+        <Typography component="span" mr={1}>
+          {t("iConfirm")}
+        </Typography>
+        <Checkbox checked={checked} onChange={onCheck} />
+      </Box>
+    </Box>
   )
 }

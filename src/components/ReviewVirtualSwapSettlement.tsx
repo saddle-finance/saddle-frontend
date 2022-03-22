@@ -3,17 +3,15 @@ import "./ReviewSwap.scss"
 import React, { ReactElement, useState } from "react"
 import { SWAP_TYPES, TOKENS_MAP } from "../constants"
 import { commify, formatBNToString, formatDeadlineToNumber } from "../utils"
-import { formatGasToString, gasBNFromState } from "../utils/gas"
 
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { ReactComponent as ThinArrowDown } from "../assets/icons/thinArrowDown.svg"
-import { calculateGasEstimate } from "../utils/gasEstimate"
+import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import { isHighPriceImpact } from "../utils/priceImpact"
-import { parseUnits } from "@ethersproject/units"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
@@ -46,13 +44,11 @@ function ReviewVirtualSwapSettlement({
     transactionDeadlineSelected,
     transactionDeadlineCustom,
   } = useSelector((state: AppState) => state.user)
-  const { tokenPricesUSD, gasStandard, gasFast, gasInstant } = useSelector(
+  const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
-  const [
-    hasConfirmedHighPriceImpact,
-    setHasConfirmedHighPriceImpact,
-  ] = useState(false)
+  const [hasConfirmedHighPriceImpact, setHasConfirmedHighPriceImpact] =
+    useState(false)
   const fromToken = TOKENS_MAP[data.from.symbol]
   const toToken = data.to ? TOKENS_MAP[data.to.symbol] : null
   const isHighPriceImpactTxn = Boolean(
@@ -64,19 +60,19 @@ function ReviewVirtualSwapSettlement({
     transactionDeadlineSelected,
     transactionDeadlineCustom,
   )
-  const gasPrice = gasBNFromState(
-    { gasStandard, gasFast, gasInstant },
-    gasPriceSelected,
-    gasCustom,
-  )
-  const gasAmount = calculateGasEstimate("virtualSwapSettleOrWithdraw").mul(
-    gasPrice,
-  )
-  const gasValueUSD = tokenPricesUSD?.ETH
-    ? parseUnits(tokenPricesUSD.ETH.toFixed(2), 18) // USD / ETH  * 10^18
-        .mul(gasAmount) // GWEI
-        .div(BigNumber.from(10).pow(25)) // USD / ETH * GWEI * ETH / GWEI = USD
-    : null
+  // const gasPrice = gasBNFromState(
+  //   { gasStandard, gasFast, gasInstant },
+  //   gasPriceSelected,
+  //   gasCustom,
+  // )
+  // const gasAmount = calculateGasEstimate("virtualSwapSettleOrWithdraw").mul(
+  //   gasPrice,
+  // )
+  // const gasValueUSD = tokenPricesUSD?.ETH
+  //   ? parseUnits(tokenPricesUSD.ETH.toFixed(2), 18) // USD / ETH  * 10^18
+  //       .mul(gasAmount) // GWEI
+  //       .div(BigNumber.from(10).pow(25)) // USD / ETH * GWEI * ETH / GWEI = USD
+  //   : null
   const shouldDisplayGas = !!gasStandard
   const isWithdrawAction = !data.from
   return (
@@ -131,14 +127,15 @@ function ReviewVirtualSwapSettlement({
               </span>
             </div>
           )}
-          {gasValueUSD && (
+          {/* TODO: Create a light API to expose the cached BlockNative gas estimates. */}
+          {/* {gasValueUSD && (
             <div className="row">
-              <span className="title">{t("estimatedTxCost")}</span>
+              <span className="title">{t("estimatedTxCost")}</span> 
               <span className="value floatRight">
                 {`≈$${commify(formatBNToString(gasValueUSD, 2, 2))}`}
               </span>
             </div>
-          )}
+          )} */}
           <div className="row">
             <span className="title">{t("maxSlippage")}</span>
             <span className="value floatRight">

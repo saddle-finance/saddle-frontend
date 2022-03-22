@@ -1,11 +1,13 @@
-import "./Web3Status.scss"
-
+import { Button, Dialog, Typography } from "@mui/material"
 import React, { ReactElement, useEffect, useState } from "react"
+
 import AccountDetails from "./AccountDetails"
 import ConnectWallet from "./ConnectWallet"
 import Identicon from "./Identicon"
-import Modal from "./Modal"
+import { shortenAddress } from "../utils/shortenAddress"
+import { useENS } from "../hooks/useENS"
 import { useTranslation } from "react-i18next"
+import { useUDName } from "../hooks/useUDName"
 import { useWeb3React } from "@web3-react/core"
 
 const WALLET_VIEWS = {
@@ -18,6 +20,8 @@ const Web3Status = (): ReactElement => {
   const [modalOpen, setModalOpen] = useState(false)
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT)
   const { t } = useTranslation()
+  const { ensName } = useENS(account)
+  const udName = useUDName()
 
   // always reset to account view
   useEffect(() => {
@@ -27,30 +31,35 @@ const Web3Status = (): ReactElement => {
   }, [modalOpen])
 
   return (
-    <div className="walletStatus">
-      <button type="button" onClick={(): void => setModalOpen(true)}>
-        {account ? (
-          <div className="hasAccount">
-            <span className="address">
-              {account.substring(0, 6)}...
-              {account.substring(account.length - 4, account.length)}
-            </span>
-
-            <Identicon />
-          </div>
-        ) : (
-          <div className="noAccount">{t("connectWallet")}</div>
-        )}
-      </button>
-      <Modal isOpen={modalOpen} onClose={(): void => setModalOpen(false)}>
+    <div data-testid="walletStatusContainer">
+      <Button
+        variant={account ? "contained" : "outlined"}
+        color={account ? "mute" : "secondary"}
+        onClick={(): void => setModalOpen(true)}
+        data-testid="accountDetailButton"
+        endIcon={account && <Identicon />}
+      >
+        <Typography variant="body1" whiteSpace="nowrap">
+          {account
+            ? udName || ensName || shortenAddress(account)
+            : t("connectWallet")}
+        </Typography>
+      </Button>
+      <Dialog
+        open={modalOpen}
+        onClose={(): void => setModalOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
         {account && walletView === WALLET_VIEWS.ACCOUNT ? (
           <AccountDetails
             openOptions={() => setWalletView(WALLET_VIEWS.OPTIONS)}
+            onClose={(): void => setModalOpen(false)}
           />
         ) : (
           <ConnectWallet onClose={(): void => setModalOpen(false)} />
         )}
-      </Modal>
+      </Dialog>
     </div>
   )
 }

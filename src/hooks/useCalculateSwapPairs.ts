@@ -12,7 +12,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { intersection } from "../utils/index"
 import { useActiveWeb3React } from "."
-import usePoolTVLs from "./usePoolsTVL"
+import usePoolsStatuses from "./usePoolsStatuses"
 
 // swaptypes in order of least to most preferred (aka expensive)
 const SWAP_TYPES_ORDERED_ASC = [
@@ -31,14 +31,15 @@ type TokenToPoolsMap = {
 type TokenToSwapDataMap = { [symbol: string]: SwapData[] }
 export function useCalculateSwapPairs(): (token?: Token) => SwapData[] {
   const [pairCache, setPairCache] = useState<TokenToSwapDataMap>({})
-  const poolTVLs = usePoolTVLs()
+  const poolsStatuses = usePoolsStatuses()
   const { chainId } = useActiveWeb3React()
   const [poolsSortedByTVL, tokenToPoolsMapSorted] = useMemo(() => {
     const sortedPools = Object.values(POOLS_MAP)
       .filter((pool) => (chainId ? pool.addresses[chainId] : false)) // filter by pools available in the chain
+      .filter((pool) => !poolsStatuses[pool.name]?.isPaused) // paused pools can't swap
       .sort((a, b) => {
-        const aTVL = poolTVLs[a.name]
-        const bTVL = poolTVLs[b.name]
+        const aTVL = poolsStatuses[a.name]?.tvl
+        const bTVL = poolsStatuses[b.name]?.tvl
         if (aTVL && bTVL) {
           return aTVL.gt(bTVL) ? -1 : 1
         }
@@ -53,7 +54,7 @@ export function useCalculateSwapPairs(): (token?: Token) => SwapData[] {
       return newAcc
     }, {} as TokenToPoolsMap)
     return [sortedPools, tokenToPools]
-  }, [poolTVLs, chainId])
+  }, [poolsStatuses, chainId])
 
   useEffect(() => {
     // @dev clear cache when moving chains

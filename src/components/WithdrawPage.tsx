@@ -1,6 +1,18 @@
-import "./WithdrawPage.scss"
-
-import { Button, Center } from "@chakra-ui/react"
+import {
+  Box,
+  Button,
+  Container,
+  Dialog,
+  FormControlLabel,
+  Paper,
+  Radio,
+  RadioGroup,
+  Stack,
+  TextField,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 
@@ -8,17 +20,13 @@ import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
-import Modal from "./Modal"
 import MyFarm from "./MyFarm"
 import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
-import RadioButton from "./RadioButton"
 import ReviewWithdraw from "./ReviewWithdraw"
 import TokenInput from "./TokenInput"
-import TopMenu from "./TopMenu"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import { Zero } from "@ethersproject/constants"
-import classNames from "classnames"
 import { formatBNToPercentString } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
 import { useSelector } from "react-redux"
@@ -76,168 +84,183 @@ const WithdrawPage = (props: Props): ReactElement => {
 
   const { gasPriceSelected } = useSelector((state: AppState) => state.user)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
+  const theme = useTheme()
+  const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
 
   const onSubmit = (): void => {
     setCurrentModal("review")
   }
+  const handleWithdrawChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onFormChange({
+      fieldName: "withdrawType",
+      value: event.target.value,
+    })
+  }
   const noShare = !myShareData || myShareData.lpTokenBalance.eq(Zero)
 
   return (
-    <div className={"withdraw " + classNames({ noShare: noShare })}>
-      <TopMenu activeTab={"withdraw"} />
-      <div className="content">
-        <div className="left">
-          <div className="form">
-            <h3>{t("withdraw")}</h3>
-            <div className="percentage">
-              <span>{`${t("withdrawPercentage")} (%):`}</span>
-              <input
-                placeholder="100"
-                onChange={(e: React.FormEvent<HTMLInputElement>): void =>
-                  onFormChange({
-                    fieldName: "percentage",
-                    value: e.currentTarget.value,
-                  })
-                }
-                onFocus={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                  e.target.select()
-                }
-                value={formStateData.percentage ? formStateData.percentage : ""}
-              />
-              {formStateData.error && (
-                <div className="error">{formStateData.error.message}</div>
-              )}
-            </div>
-            <div className="horizontalDisplay">
-              <RadioButton
-                checked={formStateData.withdrawType === "ALL"}
-                onChange={(): void =>
-                  onFormChange({
-                    fieldName: "withdrawType",
-                    value: "ALL",
-                  })
-                }
-                label="Combo"
-              />
-              {tokensData.map((t) => {
-                return (
-                  <RadioButton
-                    key={t.symbol}
-                    checked={formStateData.withdrawType === t.symbol}
-                    onChange={(): void =>
+    <Container maxWidth={isLgDown ? "sm" : "lg"} sx={{ marginTop: 5 }}>
+      <Stack
+        direction={{ xs: "column", lg: "row" }}
+        spacing={4}
+        alignItems={{ xs: "center", lg: "flex-start" }}
+      >
+        <Box
+          flex={1}
+          justifyContent="center"
+          alignItems="center"
+          marginX="auto"
+        >
+          <Paper>
+            <Box p={4}>
+              <Typography variant="h1" marginBottom={3}>
+                {t("withdraw")}
+              </Typography>
+              <Box display="flex">
+                <Box>
+                  <Typography variant="body1" noWrap>{`${t(
+                    "withdrawPercentage",
+                  )} (%):`}</Typography>
+                </Box>
+                <TextField
+                  placeholder="0"
+                  size="small"
+                  data-testid="withdrawPercentageInput"
+                  onChange={(e): void =>
+                    onFormChange({
+                      fieldName: "percentage",
+                      value: e.currentTarget.value,
+                    })
+                  }
+                  value={
+                    formStateData.percentage ? formStateData.percentage : ""
+                  }
+                />
+              </Box>
+              <Box textAlign="end" width="100%" minHeight="24px">
+                <Typography color="error">
+                  {formStateData.error?.message || ""}
+                </Typography>
+              </Box>
+              <RadioGroup
+                row
+                value={formStateData.withdrawType}
+                onChange={handleWithdrawChange}
+                sx={{ mb: 2 }}
+              >
+                <FormControlLabel
+                  value="ALL"
+                  control={<Radio />}
+                  label="Combo"
+                  data-testid="withdrawPercentageCombo"
+                />
+                {tokensData.map((t) => {
+                  return (
+                    <FormControlLabel
+                      key={t.symbol}
+                      control={<Radio />}
+                      value={t.symbol}
+                      disabled={poolData?.isPaused}
+                      label={t.name}
+                      data-testid="withdrawTokenRadio"
+                    />
+                  )
+                })}
+              </RadioGroup>
+              <Stack spacing={3}>
+                {tokensData.map((token, index) => (
+                  <TokenInput
+                    key={`tokenInput-${index}`}
+                    {...token}
+                    // inputValue={parseFloat(token.inputValue).toFixed(5)}
+                    onChange={(value): void =>
                       onFormChange({
-                        fieldName: "withdrawType",
-                        value: t.symbol,
+                        fieldName: "tokenInputs",
+                        value: value,
+                        tokenSymbol: token.symbol,
                       })
                     }
                     disabled={poolData?.isPaused}
-                    label={t.name}
                   />
-                )
-              })}
-            </div>
-            {tokensData.map((token, index) => (
-              <div key={index}>
-                <TokenInput
-                  {...token}
-                  // inputValue={parseFloat(token.inputValue).toFixed(5)}
-                  onChange={(value): void =>
-                    onFormChange({
-                      fieldName: "tokenInputs",
-                      value: value,
-                      tokenSymbol: token.symbol,
-                    })
-                  }
-                  disabled={poolData?.isPaused}
-                />
-                {index === tokensData.length - 1 ? (
-                  ""
+                ))}
+              </Stack>
+              <Box mt={3}>
+                {reviewData.priceImpact.gte(0) ? (
+                  <Typography component="span" color="primary">
+                    {t("bonus")}:{" "}
+                  </Typography>
                 ) : (
-                  <div className="formSpace"></div>
-                )}
-              </div>
-            ))}
-            <div className={"transactionInfoContainer"}>
-              <div className="transactionInfo">
-                <div className="transactionInfoItem">
-                  {reviewData.priceImpact.gte(0) ? (
-                    <span className="bonus">{t("bonus")}: </span>
-                  ) : (
-                    <span className="slippage">{t("priceImpact")}</span>
-                  )}
-                  <span
-                    className={
-                      "value " +
-                      (reviewData.priceImpact.gte(0) ? "bonus" : "slippage")
-                    }
+                  <Typography
+                    component="span"
+                    color="error"
+                    whiteSpace="nowrap"
                   >
-                    {formatBNToPercentString(reviewData.priceImpact, 18, 4)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+                    {t("priceImpact")}
+                  </Typography>
+                )}
+                <Typography
+                  component="span"
+                  color={reviewData.priceImpact.gte(0) ? "primary" : "error"}
+                >
+                  {formatBNToPercentString(reviewData.priceImpact, 18, 4)}
+                </Typography>
+              </Box>
+            </Box>
+          </Paper>
           <AdvancedOptions />
-          <Center width="100%" py={6}>
-            <Button
-              variant="primary"
-              size="lg"
-              width="240px"
-              disabled={
-                noShare ||
-                !!formStateData.error ||
-                formStateData.lpTokenAmountToSpend.isZero()
-              }
-              onClick={onSubmit}
-            >
-              {t("withdraw")}
-            </Button>
-          </Center>
-        </div>
-
-        <div>
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            data-testid="withdrawBtn"
+            disabled={
+              noShare ||
+              !!formStateData.error ||
+              formStateData.lpTokenAmountToSpend.isZero()
+            }
+            onClick={onSubmit}
+            sx={{ mt: 4 }}
+          >
+            {t("withdraw")}
+          </Button>
+        </Box>
+        <Stack direction="column" flex={1} spacing={4} width="100%">
           {poolData && (
             <MyFarm
               lpWalletBalance={myShareData?.lpTokenBalance || Zero}
               poolName={poolData.name}
             />
           )}
-          <div className="infoPanels">
-            <MyShareCard data={myShareData} />
-            <div
-              style={{
-                display: myShareData ? "block" : "none",
-              }}
-              className="divider"
-            ></div>{" "}
-            <PoolInfoCard data={poolData} />
-          </div>
-        </div>
+          <Paper>
+            <Box p={4}>
+              <MyShareCard data={myShareData} />
+              <PoolInfoCard data={poolData} />
+            </Box>
+          </Paper>
+        </Stack>
+      </Stack>
 
-        <Modal
-          isOpen={!!currentModal}
-          onClose={(): void => setCurrentModal(null)}
-        >
-          {currentModal === "review" ? (
-            <ReviewWithdraw
-              data={reviewData}
-              gas={gasPriceSelected}
-              onConfirm={async (): Promise<void> => {
-                setCurrentModal("confirm")
-                logEvent(
-                  "withdraw",
-                  (poolData && { pool: poolData?.name }) || {},
-                )
-                await onConfirmTransaction?.()
-                setCurrentModal(null)
-              }}
-              onClose={(): void => setCurrentModal(null)}
-            />
-          ) : null}
-          {currentModal === "confirm" ? <ConfirmTransaction /> : null}
-        </Modal>
-      </div>
-    </div>
+      <Dialog
+        open={!!currentModal}
+        onClose={(): void => setCurrentModal(null)}
+        scroll="body"
+      >
+        {currentModal === "review" ? (
+          <ReviewWithdraw
+            data={reviewData}
+            gas={gasPriceSelected}
+            onConfirm={async (): Promise<void> => {
+              setCurrentModal("confirm")
+              logEvent("withdraw", (poolData && { pool: poolData?.name }) || {})
+              await onConfirmTransaction?.()
+              setCurrentModal(null)
+            }}
+            onClose={(): void => setCurrentModal(null)}
+          />
+        ) : null}
+        {currentModal === "confirm" ? <ConfirmTransaction /> : null}
+      </Dialog>
+    </Container>
   )
 }
 

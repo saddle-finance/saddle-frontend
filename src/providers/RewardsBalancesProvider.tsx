@@ -44,10 +44,8 @@ export default function RewardsBalancesProvider({
     retroactiveTotal: Zero,
   })
   const poolsRewardsBalances = usePoolsRewardBalances()
-  const {
-    vested: retroBalanceVested,
-    total: retroBalanceTotal,
-  } = useRetroactiveRewardBalance()
+  const { vested: retroBalanceVested, total: retroBalanceTotal } =
+    useRetroactiveRewardBalance()
 
   useMemo(() => {
     const total = Object.values({
@@ -81,13 +79,7 @@ function useRetroactiveRewardBalance() {
   const userMerkleData = useRetroMerkleData()
 
   const fetchBalance = useCallback(async () => {
-    if (
-      !library ||
-      !chainId ||
-      !account ||
-      !retroRewardsContract ||
-      !userMerkleData
-    ) {
+    if (!library || !chainId || !account || !retroRewardsContract) {
       return
     }
 
@@ -109,16 +101,17 @@ function useRetroactiveRewardBalance() {
         if (startTimeMs.gt(nowMs)) return
 
         // Scale by 1e18 for more accurate percentage
+        const userMerkleAmount = userMerkleData?.amount || Zero
         const vestedPercent = nowMs
           .sub(startTimeMs)
           .mul(BigNumber.from(10).pow(18))
           .div(twoYearsMs)
-        const vestedAmount = userMerkleData.amount
+        const vestedAmount = userMerkleAmount
           .mul(vestedPercent)
           .div(BigNumber.from(10).pow(18))
         setBalances({
           vested: vestedAmount || Zero,
-          total: userMerkleData.amount || Zero,
+          total: userMerkleAmount,
         })
       }
     } catch (e) {
@@ -163,7 +156,7 @@ function usePoolsRewardBalances() {
       ),
     )
     try {
-      const fetchedBalances = await ethcallProvider.all(pendingSDLCalls, {})
+      const fetchedBalances = await ethcallProvider.all(pendingSDLCalls)
       setBalances(
         fetchedBalances.reduce((acc, balance, i) => {
           const { name } = pools[i]

@@ -54,6 +54,8 @@ export function useEagerConnect(): boolean {
           }
         })
       }
+    } else {
+      setTried(true)
     }
   }, [activate]) // intentionally only running on mount (make sure it's only mounted once :))
 

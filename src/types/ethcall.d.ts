@@ -14,8 +14,7 @@ export type MulticallContract<ContractType> = {
       ? V // if ReturnType is a Promise, unwrap it
       : ReturnType<ContractType[Fn]>
   >
-} &
-  Contract
+} & Contract
 export class MulticallProvider extends Provider {
   /**
    *  TODO: TS can't infer tuple types
@@ -26,28 +25,54 @@ export class MulticallProvider extends Provider {
    *  */
   all<A extends MulticallCall>(
     calls: readonly [A],
-    overrides: CallOverrides,
+    block?: number,
   ): Promise<[A["outputs"]]>
   all<A extends MulticallCall, B extends MulticallCall>(
     calls: readonly [A, B],
-    overrides: CallOverrides,
+    block?: number,
   ): Promise<[A["outputs"], B["outputs"]]>
   all<
     A extends MulticallCall,
     B extends MulticallCall,
-    C extends MulticallCall
+    C extends MulticallCall,
   >(
     calls: readonly [A, B, C],
-    overrides: CallOverrides,
+    block?: number,
   ): Promise<[A["outputs"], B["outputs"], C["outputs"]]>
   all<
     A extends MulticallCall,
     B extends MulticallCall,
     C extends MulticallCall,
-    D extends MulticallCall
+    D extends MulticallCall,
   >(
     calls: readonly [A, B, C, D],
-    overrides: CallOverrides,
+    block?: number,
   ): Promise<[A["outputs"], B["outputs"], C["outputs"], D["outputs"]]>
-  all<O>(calls: MulticallCall<I, O>[], overrides: CallOverrides): Promise<O[]> // fallthrough to array type
+  all<O>(calls: MulticallCall<I, O>[], block?: number): Promise<O[]> // fallthrough to array type
+  tryEach<A extends MulticallCall>(
+    calls: readonly [A],
+    block?: number,
+  ): Promise<[A["outputs"]]>
+  tryEach<A extends MulticallCall, B extends MulticallCall>(
+    calls: readonly [A, B],
+    block?: number,
+  ): Promise<[A["outputs"], B["outputs"]]>
+  tryEach<
+    A extends MulticallCall,
+    B extends MulticallCall,
+    C extends MulticallCall,
+  >(
+    calls: readonly [A, B, C],
+    block?: number,
+  ): Promise<[A["outputs"], B["outputs"], C["outputs"]]>
+  tryEach<
+    A extends MulticallCall,
+    B extends MulticallCall,
+    C extends MulticallCall,
+    D extends MulticallCall,
+  >(
+    calls: readonly [A, B, C, D],
+    block?: number,
+  ): Promise<[A["outputs"], B["outputs"], C["outputs"], D["outputs"]]>
+  tryEach<O>(calls: MulticallCall<I, O>[], block?: number): Promise<O[]> // fallthrough to array type
 }

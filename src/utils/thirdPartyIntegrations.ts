@@ -1,21 +1,27 @@
 import {
   ALETH_POOL_NAME,
-  BTC_POOL_NAME,
   ChainId,
   D4_POOL_NAME,
+  MINICHEF_CONTRACT_ADDRESSES,
+  POOLS_MAP,
   PoolName,
-  TBTC_METAPOOL_NAME,
+  TBTC_METAPOOL_V2_NAME,
+  USDS_ARB_USD_METAPOOL_NAME,
   VETH2_POOL_NAME,
 } from "../constants"
 import { AddressZero, Zero } from "@ethersproject/constants"
-import { getMulticallProvider, shiftBNDecimals } from "../utils"
+import { getContract, getMulticallProvider, shiftBNDecimals } from "../utils"
 
 import ALCX_REWARDS_ABI from "../constants/abis/alchemixStakingPools.json"
 import { AlchemixStakingPools } from "../../types/ethers-contracts/AlchemixStakingPools"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "ethcall"
+import IREWARDER_ABI from "../constants/abis/IRewarder.json"
+import { IRewarder } from "../../types/ethers-contracts/IRewarder"
 import KEEP_REWARDS_ABI from "../constants/abis/keepRewards.json"
 import { KeepRewards } from "../../types/ethers-contracts/KeepRewards"
+import LP_TOKEN_ABI from "../constants/abis/lpTokenUnguarded.json"
+import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import { MulticallContract } from "../types/ethcall"
 import SGT_REWARDS_ABI from "../constants/abis/sharedStakeStakingRewards.json"
 import { SharedStakeStakingRewards } from "../../types/ethers-contracts/SharedStakeStakingRewards"
@@ -23,7 +29,7 @@ import { TokenPricesUSD } from "../state/application"
 import { Web3Provider } from "@ethersproject/providers"
 import { parseUnits } from "@ethersproject/units"
 
-export type Partners = "keep" | "sharedStake" | "alchemix" | "frax"
+export type Partners = "keep" | "sharedStake" | "alchemix" | "frax" | "sperax"
 
 type ThirdPartyData = {
   aprs: Partial<
@@ -72,13 +78,12 @@ export async function getThirdPartyDataForPool(
       )
       result.aprs.sharedStake = { apr, symbol: rewardSymbol }
       result.amountsStaked.sharedStake = userStakedAmount
-    } else if (poolName === TBTC_METAPOOL_NAME) {
+    } else if (poolName === TBTC_METAPOOL_V2_NAME) {
       const rewardSymbol = "KEEP"
       const [apr, userStakedAmount] = await getKeepData(
         library,
         chainId,
         lpTokenPriceUSD,
-        TBTC_METAPOOL_NAME,
         tokenPricesUSD?.[rewardSymbol],
         accountId,
       )
@@ -95,6 +100,16 @@ export async function getThirdPartyDataForPool(
       )
       result.aprs.frax = { apr, symbol: rewardSymbol }
       result.amountsStaked.frax = userStakedAmount
+    } else if (poolName === USDS_ARB_USD_METAPOOL_NAME) {
+      const rewardSymbol = "SPA"
+      const [apr, userStakedAmount] = await getSperaxData(
+        library,
+        chainId,
+        lpTokenPriceUSD,
+        tokenPricesUSD?.[rewardSymbol],
+      )
+      result.aprs.sperax = { apr, symbol: rewardSymbol }
+      result.amountsStaked.sperax = userStakedAmount
     }
   } catch (e) {
     console.error(e)
@@ -122,17 +137,11 @@ async function getFraxData(
   return [apy, Zero]
 }
 
-type KeepPoolName = typeof BTC_POOL_NAME | typeof TBTC_METAPOOL_NAME
-
-// LPRewardsTBTCSaddle and LPRewardsTBTCv2Saddle have the same interface
-// https://github.com/keep-network/keep-ecdsa/blob/main/solidity/contracts/LPRewards.sol#L267
-// https://github.com/keep-network/tbtc-v2/blob/main/yearn/contracts/SaddleStrategy.sol#L42
-
+// https://etherscan.io/address/0xb4c35747c26e4ab5f1a7cdc7e875b5946efa6fa9#code
 async function getKeepData(
   library: Web3Provider,
   chainId: ChainId,
   lpTokenPrice: BigNumber,
-  keepPoolName: KeepPoolName,
   keepPrice = 0,
   accountId?: string | null,
 ): Promise<[BigNumber, BigNumber]> {
@@ -144,10 +153,7 @@ async function getKeepData(
   )
     return [Zero, Zero]
 
-  const rewardsContractAddress =
-    keepPoolName == BTC_POOL_NAME
-      ? "0x78aa83bd6c9de5de0a2231366900ab060a482edd" // v1 prod address
-      : "0x6aD9E8e5236C0E2cF6D755Bb7BE4eABCbC03f76d" // v2 prod address
+  const rewardsContractAddress = "0xb4c35747c26e4ab5f1a7cdc7e875b5946efa6fa9"
 
   const ethcallProvider = await getMulticallProvider(library, chainId)
   const rewardsContract = new Contract(
@@ -161,7 +167,6 @@ async function getKeepData(
   ]
   const [rewardRate, totalStaked, userStakedAmount] = await ethcallProvider.all(
     multicalls,
-    {},
   )
   const WEEKS_IN_YEAR = 52
   const WEEK_IN_SECONDS = 604800
@@ -209,8 +214,7 @@ async function getSharedStakeData(
     sgtRewardsPerPeriod,
     totalStaked,
     userStakedAmount,
-  ] = await ethcallProvider.all(multicalls, {})
-
+  ] = await ethcallProvider.all(multicalls)
   const nowSeconds = BigNumber.from(Math.floor(Date.now() / 1000))
   const remainingDays = until.sub(nowSeconds).div(60 * 60 * 24) // 1e0
   const rewardsDurationDays = rewardsDuration.div(60 * 60 * 24) // 1e0
@@ -267,11 +271,8 @@ async function getAlEthData(
     rewardsContract.getPoolTotalDeposited(POOL_ID),
     rewardsContract.getStakeTotalDeposited(accountId || AddressZero, POOL_ID),
   ]
-  const [
-    alcxRewardPerBlock,
-    poolTotalDeposited,
-    userStakedAmount,
-  ] = await ethcallProvider.all(multicalls, {})
+  const [alcxRewardPerBlock, poolTotalDeposited, userStakedAmount] =
+    await ethcallProvider.all(multicalls)
   const alcxPerYear = alcxRewardPerBlock.mul(52 * 45000) // 1e18 // blocks/year rate from Alchemix's own logic
   const alcxPerYearUSD = alcxPerYear.mul(parseUnits(alcxPrice.toFixed(2), 2)) // 1e20
   const totalDepositedUSD = poolTotalDeposited.mul(lpTokenPrice) // 1e36
@@ -279,4 +280,45 @@ async function getAlEthData(
     .mul(BigNumber.from(10).pow(34))
     .div(totalDepositedUSD) // 1e18
   return [alcxApr, userStakedAmount]
+}
+
+async function getSperaxData(
+  library: Web3Provider,
+  chainId: ChainId,
+  lpTokenPrice: BigNumber,
+  spaPrice = 0,
+  accountId?: string | null,
+): Promise<[BigNumber, BigNumber]> {
+  if (
+    library == null ||
+    lpTokenPrice.eq("0") ||
+    spaPrice === 0 ||
+    chainId !== ChainId.ARBITRUM
+  )
+    return [Zero, Zero]
+  const rewardsContract = getContract(
+    "0x1e35ebF875f8A2185EDf22da02e7dBCa0F5558aB", // prod address
+    IREWARDER_ABI,
+    library,
+  ) as IRewarder
+  const pool = POOLS_MAP[USDS_ARB_USD_METAPOOL_NAME]
+  const lpTokenContract = getContract(
+    pool.lpToken.addresses[chainId],
+    LP_TOKEN_ABI,
+    library,
+  ) as LpTokenUnguarded
+  const [totalDeposited, spaRewardsPerSecond, userStakedData] =
+    await Promise.all([
+      lpTokenContract.balanceOf(MINICHEF_CONTRACT_ADDRESSES[chainId]),
+      rewardsContract.rewardPerSecond(),
+      rewardsContract.userInfo(accountId || AddressZero),
+    ])
+
+  const spaPerYear = spaRewardsPerSecond.mul(3600 * 24 * 365) // 1e18
+  const spaPerYearUSD = spaPerYear.mul(parseUnits(spaPrice.toFixed(3), 3)) // 1e18 + 3 = 1e21
+  const totalDepositedUSD = totalDeposited.mul(lpTokenPrice) // 1e36
+  const spaApr = spaPerYearUSD
+    .mul(BigNumber.from(10).pow(33))
+    .div(totalDepositedUSD)
+  return [spaApr, userStakedData.amount]
 }

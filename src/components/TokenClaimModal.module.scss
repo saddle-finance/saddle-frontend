@@ -57,19 +57,21 @@
 div.tokenBalance {
   font-size: 48px;
   font-family: $font-family;
-  color: var(--primary-foreground);
   display: flex;
   align-items: center;
-  img {
-    margin-left: 16px;
-    cursor: pointer;
-  }
 }
 div.tokenBalanceHelpText {
   font-size: 12px;
   font-family: $font-family;
   color: var(--primary-foreground);
   padding-bottom: 24px;
+  a {
+    color: var(--text-selected);
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 .claimsList {
@@ -101,4 +103,10 @@ div.tokenBalanceHelpText {
   height: 1px;
   width: 100%;
   border-top: 1px solid var(--emphasis-2);
+}
+
+.amountContainer {
+  display: flex;
+  align-items: center;
+  padding-bottom: 24px;
 }

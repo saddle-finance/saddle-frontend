@@ -2,61 +2,8 @@
 @import "../styles/viewports";
 
 div.swapPage {
-  min-height: 100vh;
-  background: var(--background-main);
-  color: var(--text);
-  font-size: 16px;
-  padding-bottom: 80px;
-
-  h3.swapTitle {
-    font-weight: 700;
-    font-size: 24px;
-    line-height: 30px;
-  }
-
   button:hover {
     cursor: pointer;
-  }
-
-  .swapForm {
-    width: 100%;
-    background: var(--background-element);
-    border: 1px solid var(--outline);
-    border-radius: 10px;
-    padding: 24px;
-    .row {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 8px;
-      width: 100%;
-      align-items: baseline;
-    }
-    .balanceContainer {
-      span,
-      a {
-        font-size: 12px;
-      }
-      a {
-        font-weight: 700;
-        color: var(--text-selected);
-        &:hover {
-          cursor: pointer;
-        }
-      }
-    }
-  }
-
-  .content {
-    width: 550px;
-    margin: 0 auto;
-    padding-top: 40px;
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
-    align-items: center;
-    @include breakpoint(sm) {
-      width: 100%;
-    }
   }
 
   button.exchange {
@@ -107,38 +54,6 @@ div.swapPage {
         &.upsideDown {
           transform: rotate(-180deg);
         }
-      }
-    }
-  }
-
-  .advancedOptions {
-    width: 100%;
-    margin-bottom: 32px;
-
-    .tableContainer {
-      display: none;
-      &.show {
-        display: block;
-      }
-    }
-
-    .table {
-      width: 100%;
-      background: var(--background-element);
-      margin-top: 16px;
-      border: 1px solid var(--outline);
-      border-radius: 10px;
-      padding: 16px 24px;
-
-      display: flex;
-      flex-flow: column wrap;
-      justify-content: flex-start;
-      align-items: flex-start;
-      .parameter {
-        margin: 2px 0;
-      }
-      .parameter .options {
-        margin-top: 10px;
       }
     }
   }

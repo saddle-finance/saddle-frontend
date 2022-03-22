@@ -1,6 +1,13 @@
 import "./SwapPage.scss"
 
-import { Button, Center } from "@chakra-ui/react"
+import {
+  Box,
+  Button,
+  Container,
+  Dialog,
+  Paper,
+  Typography,
+} from "@mui/material"
 import React, { ReactElement, useMemo, useState } from "react"
 import { SWAP_TYPES, getIsVirtualSwap } from "../constants"
 import { formatBNToPercentString, formatBNToString } from "../utils"
@@ -10,14 +17,12 @@ import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
 import { ReactComponent as InfoIcon } from "../assets/icons/info.svg"
-import Modal from "./Modal"
 import { PendingSwap } from "../hooks/usePendingSwapData"
 import PendingSwapModal from "./PendingSwapModal"
 import ReviewSwap from "./ReviewSwap"
 import { Slippages } from "../state/user"
-import SwapInput from "./SwapInput"
+import SwapTokenInput from "./SwapTokenInput"
 import type { TokenOption } from "../pages/Swap"
-import TopMenu from "./TopMenu"
 import { Zero } from "@ethersproject/constants"
 import classNames from "classnames"
 import { commify } from "../utils"
@@ -103,48 +108,54 @@ const SwapPage = (props: Props): ReactElement => {
       parseFloat(slippageCustom?.valueRaw || "0") < 0.5)
 
   return (
-    <div className="swapPage">
-      <TopMenu activeTab={"swap"} />
-      <div className="content">
-        <div className="swapForm">
-          <div className="row">
-            <h3 className="swapTitle">{t("from")}</h3>
-            <div className="balanceContainer">
-              <span>{t("balance")}:</span>
-              &nbsp;
-              <a
-                onClick={() => {
-                  if (fromToken == null) return
-                  const amtStr = formatBNToString(
-                    fromToken.amount,
-                    fromToken.decimals || 0,
-                  )
-                  onChangeFromAmount(amtStr)
-                }}
-              >
-                {formattedBalance}
-              </a>
-            </div>
-          </div>
-          <div className="row">
-            <SwapInput
-              tokens={tokenOptions.from.filter(
-                ({ symbol }) => symbol !== toState.symbol,
-              )}
-              onSelect={onChangeFromToken}
-              onChangeAmount={onChangeFromAmount}
-              selected={fromState.symbol}
-              inputValue={fromState.value}
-              inputValueUSD={fromState.valueUSD}
-              isSwapFrom={true}
-            />
-          </div>
-          <div style={{ height: "48px" }}></div>
-          <div className="row">
-            <h3 className="swapTitle">{t("to")}</h3>
-          </div>
-          <div className="row">
-            <SwapInput
+    <Container maxWidth="sm" sx={{ pt: 5, pb: 20 }}>
+      <div className="swapPage">
+        <Paper>
+          <Box p={{ xs: 3, md: 4 }} flex={1}>
+            <Box mb={5}>
+              <Box display="flex">
+                <Typography variant="subtitle1" component="span">
+                  {t("from").toLocaleUpperCase()}
+                </Typography>
+                <Box width="max-content" mr={0} ml="auto">
+                  <Typography variant="subtitle2" component="span">
+                    {t("balance")}:
+                  </Typography>
+                  &nbsp;
+                  <Button
+                    size="small"
+                    onClick={() => {
+                      if (fromToken == null) return
+                      const amtStr = formatBNToString(
+                        fromToken.amount,
+                        fromToken.decimals || 0,
+                      )
+                      onChangeFromAmount(amtStr)
+                    }}
+                  >
+                    {formattedBalance}
+                  </Button>
+                </Box>
+              </Box>
+              <SwapTokenInput
+                data-testid="swapTokenInputFrom"
+                tokens={tokenOptions.from.filter(
+                  ({ symbol }) => symbol !== toState.symbol,
+                )}
+                onSelect={onChangeFromToken}
+                onChangeAmount={onChangeFromAmount}
+                selected={fromState.symbol}
+                inputValue={fromState.value}
+                inputValueUSD={fromState.valueUSD}
+                isSwapFrom={true}
+              />
+            </Box>
+            <Typography variant="subtitle1">
+              {t("to").toLocaleUpperCase()}
+            </Typography>
+
+            <SwapTokenInput
+              data-testid="swapTokenInputTo"
               tokens={tokenOptions.to.filter(
                 ({ symbol }) => symbol !== fromState.symbol,
               )}
@@ -154,73 +165,75 @@ const SwapPage = (props: Props): ReactElement => {
               inputValueUSD={toState.valueUSD}
               isSwapFrom={false}
             />
-          </div>
-          <div style={{ height: "24px" }}></div>
-          {fromState.symbol && toState.symbol && (
-            <div className="row">
-              <div>
-                <span>{t("rate")}</span>
-                &nbsp;
-                <span>{exchangeRateInfo.pair}</span>
-                &nbsp;
-                <button
-                  className="exchange"
-                  onClick={onClickReverseExchangeDirection}
-                >
-                  <svg
-                    width="24"
-                    height="20"
-                    viewBox="0 0 24 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+            <div style={{ height: "24px" }}></div>
+            {fromState.symbol && toState.symbol && (
+              <Box display="flex" justifyContent="space-between">
+                <div>
+                  <Typography component="span">{t("rate")}</Typography>
+                  &nbsp;
+                  <Typography component="span">
+                    {exchangeRateInfo.pair}
+                  </Typography>
+                  &nbsp;
+                  <button
+                    className="exchange"
+                    onClick={onClickReverseExchangeDirection}
                   >
-                    <path
-                      d="M17.4011 12.4196C17.4011 13.7551 16.5999 13.8505 16.4472 13.8505H6.62679L9.14986 11.3274L8.47736 10.6501L5.13869 13.9888C5.04986 14.0782 5 14.1991 5 14.3251C5 14.4511 5.04986 14.572 5.13869 14.6613L8.47736 18L9.14986 17.3275L6.62679 14.8044H16.4472C17.1054 14.8044 18.355 14.3274 18.355 12.4196V10.9888H17.4011V12.4196Z"
-                      fill="#3800D6"
-                    />
-                    <path
-                      d="M5.9539 7.58511C5.9539 6.24965 6.75519 6.15426 6.90781 6.15426H16.7283L14.2052 8.67733L14.8777 9.34984L18.2164 6.01117C18.3052 5.92181 18.355 5.80092 18.355 5.67492C18.355 5.54891 18.3052 5.42803 18.2164 5.33867L14.8777 2L14.2004 2.67727L16.7283 5.20035H6.90781C6.24962 5.20035 5 5.6773 5 7.58511V9.01597H5.9539V7.58511Z"
-                      fill="#3800D6"
-                    />
-                  </svg>
-                </button>
-              </div>
-              <span className="exchRate">{formattedExchangeRate}</span>
-            </div>
-          )}
-          <div className="row">
-            <span>{t("priceImpact")}</span>
-            <span>{formattedPriceImpact}</span>
-          </div>
-          {formattedRoute && (
-            <>
-              <div className="row">
-                <span>{t("route")}</span>
-                <span>{formattedRoute}</span>
-              </div>
-              {isVirtualSwap && (
-                <div className="row">
-                  <span></span>
-                  <span>
-                    <a
-                      href="https://docs.saddle.finance/saddle-faq#what-is-virtual-swap"
-                      style={{ textDecoration: "underline" }}
-                      target="_blank"
-                      rel="noreferrer"
+                    <svg
+                      width="24"
+                      height="20"
+                      viewBox="0 0 24 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      ({t("virtualSwap")})
-                    </a>
-                  </span>
+                      <path
+                        d="M17.4011 12.4196C17.4011 13.7551 16.5999 13.8505 16.4472 13.8505H6.62679L9.14986 11.3274L8.47736 10.6501L5.13869 13.9888C5.04986 14.0782 5 14.1991 5 14.3251C5 14.4511 5.04986 14.572 5.13869 14.6613L8.47736 18L9.14986 17.3275L6.62679 14.8044H16.4472C17.1054 14.8044 18.355 14.3274 18.355 12.4196V10.9888H17.4011V12.4196Z"
+                        fill="#3800D6"
+                      />
+                      <path
+                        d="M5.9539 7.58511C5.9539 6.24965 6.75519 6.15426 6.90781 6.15426H16.7283L14.2052 8.67733L14.8777 9.34984L18.2164 6.01117C18.3052 5.92181 18.355 5.80092 18.355 5.67492C18.355 5.54891 18.3052 5.42803 18.2164 5.33867L14.8777 2L14.2004 2.67727L16.7283 5.20035H6.90781C6.24962 5.20035 5 5.6773 5 7.58511V9.01597H5.9539V7.58511Z"
+                        fill="#3800D6"
+                      />
+                    </svg>
+                  </button>
                 </div>
-              )}
-              {isVirtualSwap && isHighSlippage && (
-                <div className="exchangeWarning">
-                  {t("lowSlippageVirtualSwapWarning")}
-                </div>
-              )}
-            </>
-          )}
-        </div>
+                <span className="exchRate">{formattedExchangeRate}</span>
+              </Box>
+            )}
+            <Box display="flex" justifyContent="space-between">
+              <span>{t("priceImpact")}</span>
+              <span>{formattedPriceImpact}</span>
+            </Box>
+            {formattedRoute && (
+              <>
+                <Box display="flex" justifyContent="space-between">
+                  <span>{t("route")}</span>
+                  <span>{formattedRoute}</span>
+                </Box>
+                {isVirtualSwap && (
+                  <div className="row">
+                    <span></span>
+                    <span>
+                      <a
+                        href="https://docs.saddle.finance/saddle-faq#what-is-virtual-swap"
+                        style={{ textDecoration: "underline" }}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        ({t("virtualSwap")})
+                      </a>
+                    </span>
+                  </div>
+                )}
+                {isVirtualSwap && isHighSlippage && (
+                  <div className="exchangeWarning">
+                    {t("lowSlippageVirtualSwapWarning")}
+                  </div>
+                )}
+              </>
+            )}
+          </Box>
+        </Paper>
         {account && isHighPriceImpact(exchangeRateInfo.priceImpact) ? (
           <div className="exchangeWarning">
             {t("highPriceImpact", {
@@ -296,12 +309,13 @@ const SwapPage = (props: Props): ReactElement => {
             )
           })}
         </div>
-        <Center width="100%" py={6}>
+        <Box mt={3} width="100%">
           <Button
             data-testid="swap-btn"
-            variant="primary"
-            size="lg"
-            width="240px"
+            variant="contained"
+            color="primary"
+            size="large"
+            fullWidth
             onClick={(): void => {
               setCurrentModal("review")
             }}
@@ -309,13 +323,15 @@ const SwapPage = (props: Props): ReactElement => {
           >
             {t("swap")}
           </Button>
-        </Center>
+        </Box>
+
         <div className={classNames({ showError: !!error }, "error")}>
           {error}
         </div>
-        <Modal
-          isOpen={!!currentModal}
+        <Dialog
+          open={!!currentModal}
           onClose={(): void => setCurrentModal(null)}
+          scroll="body"
         >
           {currentModal === "review" ? (
             <ReviewSwap
@@ -352,9 +368,9 @@ const SwapPage = (props: Props): ReactElement => {
               }}
             />
           ) : null}
-        </Modal>
+        </Dialog>
       </div>
-    </div>
+    </Container>
   )
 }
 

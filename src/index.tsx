@@ -1,17 +1,20 @@
 import "./index.css"
 import "./i18n"
 
-import { ChakraProvider, ColorModeScript } from "@chakra-ui/react"
+import * as Sentry from "@sentry/react"
+
 import { Web3ReactProvider, createWeb3ReactRoot } from "@web3-react/core"
 import { logError, sendWebVitalsToGA } from "./utils/googleAnalytics"
 
 import App from "./pages/App"
+import { Integrations } from "@sentry/tracing"
+import { IntercomProvider } from "react-use-intercom"
 import { NetworkContextName } from "./constants"
 import { Provider } from "react-redux"
 import React from "react"
 import ReactDOM from "react-dom"
 import { HashRouter as Router } from "react-router-dom"
-import chakraTheme from "./theme/"
+import { ThemeSettingsProvider } from "./providers/ThemeSettingsProvider"
 import getLibrary from "./utils/getLibrary"
 import { getNetworkLibrary } from "./connectors"
 import reportWebVitals from "./reportWebVitals"
@@ -25,21 +28,33 @@ if (window && window.ethereum) {
 
 window.addEventListener("error", logError)
 
+// This Sentry DSN only works with production origin URLs and will discard everything else
+// TODO: If we like Sentry, add support for other environments and move the DSN configuration into .env
+Sentry.init({
+  dsn: "https://aa2638e61b14430385cc4be7023ba621@o1107900.ingest.sentry.io/6135183",
+  integrations: [new Integrations.BrowserTracing()],
+  release: process.env.REACT_APP_GIT_SHA,
+  tracesSampleRate: 0.1,
+})
+
+const intercomAppId = "tbghxgth"
+
 ReactDOM.render(
   <>
-    <ColorModeScript initialColorMode={chakraTheme.config.initialColorMode} />
     <React.StrictMode>
-      <ChakraProvider theme={chakraTheme}>
+      <IntercomProvider appId={intercomAppId}>
         <Web3ReactProvider getLibrary={getLibrary}>
           <Web3ProviderNetwork getLibrary={getNetworkLibrary}>
             <Provider store={store}>
-              <Router>
-                <App />
-              </Router>
+              <ThemeSettingsProvider>
+                <Router>
+                  <App />
+                </Router>
+              </ThemeSettingsProvider>
             </Provider>
           </Web3ProviderNetwork>
         </Web3ReactProvider>
-      </ChakraProvider>
+      </IntercomProvider>
     </React.StrictMode>
   </>,
   document.getElementById("root"),

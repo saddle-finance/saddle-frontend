@@ -2,7 +2,7 @@ import { PoolName } from "../../src/constants"
 
 context("Advanced option test", () => {
   // have two seperate maps here since the naming convention is different throughout the page
-  const pools = ["BTC Pool V2", "Stablecoin Pool V2"]
+  const pools = ["BTC V2", "Stablecoin V2"]
 
   beforeEach(() => {
     const host = Cypress.env("DAPP_HOST") as string
@@ -16,13 +16,22 @@ context("Advanced option test", () => {
     cy.visit(`${host}#/pools`)
     cy.wait(3000)
     cy.contains(poolName)
-      .parents(".poolOverview")
+      .parents("[data-testid=poolOverview]")
       .within(() => {
         cy.get("button").contains("Withdraw").click()
       })
     cy.wait(10000)
 
-    cy.get("[data-testid=advOptionContainer]").should("exist")
+    cy.get("[data-testid=advOptionContainer]")
+      .should("exist")
+      .should("be.visible")
+    cy.get("[data-testid=advTableContainer]").then(($tableContainer) => {
+      if ($tableContainer.is(":visible")) {
+        cy.log("container is visible")
+      } else {
+        cy.get("[data-testid=advOptionContainer]").click()
+      }
+    })
     cy.get("[data-testid=advTableContainer]").then(($table) => {
       const tableDisplay = $table.css("display")
       const isTableVisible = tableDisplay !== "none"

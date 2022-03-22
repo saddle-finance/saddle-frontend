@@ -1,16 +1,8 @@
 import React, { ReactElement, useEffect, useRef } from "react"
 
+import { Box } from "@mui/material"
 import Jazzicon from "@metamask/jazzicon"
-import styled from "@emotion/styled"
 import { useActiveWeb3React } from "../hooks"
-
-const StyledIdenticonContainer = styled.div`
-  height: 24px;
-  width: 24px;
-  border-radius: 1.125rem;
-  display: inline-block;
-  vertical-align: text-bottom;
-`
 
 export default function Identicon(): ReactElement {
   const ref = useRef<HTMLDivElement>()
@@ -27,6 +19,11 @@ export default function Identicon(): ReactElement {
 
   // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/30451
   return (
-    <StyledIdenticonContainer ref={ref as React.RefObject<HTMLDivElement>} />
+    <Box
+      height={24}
+      width={24}
+      display={"inline-block"}
+      ref={ref as React.RefObject<HTMLDivElement>}
+    />
   )
 }

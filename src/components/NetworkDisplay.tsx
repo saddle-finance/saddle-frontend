@@ -1,29 +1,48 @@
-import React, { ReactElement } from "react"
+import { Button, Typography, useTheme } from "@mui/material"
+import { ChainId, IS_L2_SUPPORTED } from "../constants"
+import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
 
-import Button from "./Button"
-import { IS_L2_SUPPORTED } from "../constants"
+import CircleTwoToneIcon from "@mui/icons-material/CircleTwoTone"
 import { NETWORK_LABEL } from "../constants/networks"
-import classnames from "classnames"
-import styles from "./NetworkDisplay.module.scss"
-import { useActiveWeb3React } from "../hooks"
-import { useTranslation } from "react-i18next"
+import React from "react"
 
-export default function NetworkDisplay({
-  onClick,
-}: {
-  onClick: () => void
-}): ReactElement | null {
-  const { chainId, active } = useActiveWeb3React()
-  const { t } = useTranslation()
-  const networkLabel: string =
-    (chainId ? NETWORK_LABEL[chainId] : undefined) || t("unknown")
-
-  return IS_L2_SUPPORTED ? (
-    <Button kind="ghost" size="medium" onClick={onClick}>
-      <div
-        className={classnames(styles.circle, { [styles.active]: active })}
-      ></div>{" "}
-      {networkLabel}
-    </Button>
-  ) : null
+interface NetworkDisplayProps extends React.ComponentPropsWithoutRef<"button"> {
+  onClick: React.MouseEventHandler<HTMLButtonElement>
 }
+const NetworkDisplay = React.forwardRef<HTMLButtonElement, NetworkDisplayProps>(
+  function NetworkDisplay({ onClick }, ref) {
+    const { active, chainId, error } = useWeb3React()
+    const theme = useTheme()
+    const networkLabel: string = NETWORK_LABEL[chainId as ChainId] || "Ethereum"
+    const isUnsupportChainIdError = error instanceof UnsupportedChainIdError
+
+    return (
+      IS_L2_SUPPORTED && (
+        <Button
+          ref={ref}
+          data-testid="networkDisplayBtn"
+          variant="outlined"
+          color="mute"
+          onClick={onClick}
+          startIcon={
+            <CircleTwoToneIcon
+              color={!isUnsupportChainIdError && active ? "success" : "error"}
+              fontSize="small"
+            />
+          }
+          sx={{ border: `1px solid ${theme.palette.action.hover}` }}
+        >
+          <Typography
+            display={{ xs: "none", sm: "block" }}
+            variant="body1"
+            color="text.primary"
+            noWrap
+          >
+            {networkLabel}
+          </Typography>
+        </Button>
+      )
+    )
+  },
+)
+export default NetworkDisplay

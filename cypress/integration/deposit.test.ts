@@ -1,8 +1,8 @@
 import { PoolName } from "../../src/constants"
 
 const poolTokens: { [key: string]: string[] } = {
-  "BTC Pool V2": ["WBTC", "RENBTC", "sBTC"],
-  "Stablecoin Pool V2": ["DAI", "USDC", "USDT"],
+  "BTC V2": ["WBTC", "RENBTC", "sBTC"],
+  "Stablecoin V2": ["DAI", "USDC", "USDT"],
 }
 
 context("Deposit Flow", () => {
@@ -15,7 +15,7 @@ context("Deposit Flow", () => {
     it(`successfully completes a deposit of all ${poolName} assets`, () => {
       let beforeValue: { [key: string]: number } = {}
       cy.contains(poolName)
-        .parents(".poolOverview")
+        .parents("[data-testid=poolOverview]")
         .within(() => {
           cy.get("button").contains("Deposit").click()
         })
@@ -24,10 +24,10 @@ context("Deposit Flow", () => {
       // TODO: assert default state of the page
       // Get before value of each token in My Share section
       poolTokens[poolName].forEach((token: string) => {
-        cy.get(".tokenName")
+        cy.get("[data-testid=tokenName]")
           .contains(token)
           .parent()
-          .find("span.tokenValue")
+          .find("[data-testid=tokenValue]")
           .then(($value) => {
             beforeValue = { ...beforeValue, [token]: parseInt($value.text()) }
           })
@@ -47,10 +47,11 @@ context("Deposit Flow", () => {
         // Wait and assert after value of each token has been increased by 1
         cy.wait(10000).then(() => {
           poolTokens[poolName].forEach((token: string) => {
-            cy.get(".tokenName")
+            cy.log("token", token)
+            cy.get("[data-testid=tokenName]")
               .contains(token)
               .parent()
-              .find("span.tokenValue")
+              .find("[data-testid=tokenValue]")
               .then(($value) => {
                 const afterValue = parseInt($value.text())
                 expect(afterValue).to.eq(beforeValue[token] + 1)
@@ -60,5 +61,5 @@ context("Deposit Flow", () => {
       })
     })
   }
-  ;["BTC Pool V2", "Stablecoin Pool V2"].forEach(testPoolDeposit)
+  ;["BTC V2", "Stablecoin V2"].forEach(testPoolDeposit)
 })

@@ -9,8 +9,9 @@ import {
 import React, { ReactElement } from "react"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 
+import { Divider } from "@mui/material"
 import { PoolDataType } from "../hooks/usePoolData"
-import ToolTip from "./ToolTip"
+import { Tooltip } from "@mui/material"
 import { commify } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
@@ -62,9 +63,9 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
   return (
     <div className="poolInfoCard">
       {underlyingPool ? (
-        <ToolTip content={t("metapool")}>
+        <Tooltip title={<React.Fragment>{t("metapool")}</React.Fragment>}>
           <h4 className="underline">{formattedData.name}</h4>
-        </ToolTip>
+        </Tooltip>
       ) : (
         <h4>{formattedData.name}</h4>
       )}
@@ -80,11 +81,13 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
           <span className="value">{formattedData.swapFee}</span>
         </div>
         <div className="infoItem">
-          <ToolTip content={t("aParameterTooltip")}>
+          <Tooltip
+            title={<React.Fragment>{t("aParameterTooltip")}</React.Fragment>}
+          >
             <span className="label bold underline">{`${t(
               "aParameter",
             )}:`}</span>
-          </ToolTip>
+          </Tooltip>
           <span className="value">{formattedData.aParameter}</span>
         </div>
         <div className="infoItem">
@@ -110,7 +113,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
           </div> */}
         </div>
       </div>
-      <div className="divider" />
+      <Divider />
       <div className="bottom">
         <h4>{t("currencyReserves")}</h4>
         <span>{`$${formattedData.reserve} ${t("inTotal")}`}</span>
