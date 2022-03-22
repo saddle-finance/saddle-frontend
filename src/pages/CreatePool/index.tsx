@@ -141,8 +141,8 @@ export default function CreatePool(): React.ReactElement {
                 <ToggleButton value="usdMetaPool" size="large">
                   USD Metapool
                 </ToggleButton>
-                <ToggleButton value="btcMetapool">USD Metapool</ToggleButton>
-                <ToggleButton value="basePool">USD Metapool</ToggleButton>
+                <ToggleButton value="btcMetapool">BTC Metapool</ToggleButton>
+                <ToggleButton value="basePool">Base Metapool</ToggleButton>
               </ToggleButtonGroup>
             </Box>
             <Box flex={1}>

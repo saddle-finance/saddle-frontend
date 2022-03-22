@@ -37,7 +37,7 @@ export default function ToggleButtonTheme(theme: Theme): Components {
           },
           "&:not(:first-of-type)": {
             borderRadius: 6,
-            marginLeft: theme.spacing(0.5),
+            marginLeft: 1,
           },
           "&:first-of-type": {
             borderRadius: 6,
