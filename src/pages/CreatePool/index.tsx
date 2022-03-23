@@ -181,7 +181,10 @@ export default function CreatePool(): React.ReactElement {
                 <ToggleButton value="baseMetapool">Base Metapool</ToggleButton>
               </ToggleButtonGroup>
             </Box>
-            <Box flex={1}>
+            <Box
+              flex={1}
+              display={poolType === "baseMetapool" ? "block" : "none"}
+            >
               <Typography variant="subtitle1">
                 {t("chooseAssetType")}
               </Typography>
