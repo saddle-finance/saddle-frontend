@@ -23,6 +23,11 @@ import { useTranslation } from "react-i18next"
 type Token = {
   tokenAddress: string
 }
+
+type PoolType = "usdMetapool" | "btcMetapool" | "baseMetapool"
+
+type AssetType = "USD" | "ETH" | "BTC" | "OTHERS"
+
 export default function CreatePool(): React.ReactElement {
   const { t } = useTranslation()
   const theme = useTheme()
@@ -30,6 +35,8 @@ export default function CreatePool(): React.ReactElement {
   const [poolName, setPoolName] = useState<string>("")
   const [poolSymbol, setPoolSymbol] = useState<string>("")
   const [parameter, setParameter] = useState<string>("")
+  const [poolType, setPoolType] = useState<PoolType>("usdMetapool")
+  const [assetType, setAssetType] = useState<AssetType>("USD")
   const [tokenLists, setTokenLists] = useState<Token[]>([
     { tokenAddress: "" },
     { tokenAddress: "" },
@@ -160,16 +167,18 @@ export default function CreatePool(): React.ReactElement {
               <Typography mb={2}>{t("createPoolTypeDescription2")}</Typography>
               <Typography mb={2}>{t("createPoolTypeDescription3")}</Typography>
               <ToggleButtonGroup
-                value="basePool"
+                value={poolType}
                 color="secondary"
                 size="large"
+                exclusive
+                onChange={(event, value) => setPoolType(value)}
                 fullWidth
               >
-                <ToggleButton value="usdMetaPool" size="large">
+                <ToggleButton value="usdMetapool" size="large">
                   USD Metapool
                 </ToggleButton>
                 <ToggleButton value="btcMetapool">BTC Metapool</ToggleButton>
-                <ToggleButton value="basePool">Base Metapool</ToggleButton>
+                <ToggleButton value="baseMetapool">Base Metapool</ToggleButton>
               </ToggleButtonGroup>
             </Box>
             <Box flex={1}>
@@ -179,17 +188,19 @@ export default function CreatePool(): React.ReactElement {
               <Divider />
               <Typography my={2}>{t("chooseAssetTypeDescription")}</Typography>
               <ToggleButtonGroup
-                value="usd"
+                value={assetType}
                 color="secondary"
                 fullWidth
+                exclusive
+                onChange={(event, value) => setAssetType(value)}
                 size="large"
               >
-                <ToggleButton value="usd" color="secondary">
+                <ToggleButton value="USD" color="secondary">
                   USD
                 </ToggleButton>
-                <ToggleButton value="btcMetapool">ETH</ToggleButton>
-                <ToggleButton value="btc">BTC</ToggleButton>
-                <ToggleButton value="basePool">Others</ToggleButton>
+                <ToggleButton value="ETH">ETH</ToggleButton>
+                <ToggleButton value="BTC">BTC</ToggleButton>
+                <ToggleButton value="OTHERS">Others</ToggleButton>
               </ToggleButtonGroup>
             </Box>
           </Stack>
