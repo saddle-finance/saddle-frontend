@@ -28,6 +28,8 @@ export default function CreatePool(): React.ReactElement {
   const theme = useTheme()
   const [openCreatePoolDlg, setOpenCreatePoolDlg] = useState<boolean>(false)
   const [poolName, setPoolName] = useState<string>("")
+  const [poolSymbol, setPoolSymbol] = useState<string>("")
+  const [parameter, setParameter] = useState<string>("")
   const [tokenLists, setTokenLists] = useState<Token[]>([
     { tokenAddress: "" },
     { tokenAddress: "" },
@@ -77,10 +79,10 @@ export default function CreatePool(): React.ReactElement {
                   label="Pool Name"
                   value={poolName}
                   onChange={(e) => setPoolName(e.target.value)}
-                  error={poolName.length > 14}
+                  error={poolName.length > 10}
                   helperText={
-                    poolName.length > 14 &&
-                    "Pool name length should less than 14 characters"
+                    poolName.length > 10 &&
+                    "Pool name length should less than 10 characters"
                   }
                   fullWidth
                   sx={{ mr: [0, 1.5], flex: 1 }}
@@ -91,6 +93,12 @@ export default function CreatePool(): React.ReactElement {
                   size="medium"
                   label="Pool Symbol"
                   fullWidth
+                  error={poolSymbol.length > 14}
+                  helperText={
+                    poolSymbol.length > 14 &&
+                    "Pool symbol should less than 14 characters"
+                  }
+                  onChange={(e) => setPoolSymbol(e.target.value)}
                   sx={{ ml: [0, 1.5], flex: 1 }}
                 />
               </Box>
@@ -107,9 +115,16 @@ export default function CreatePool(): React.ReactElement {
                   label={`${t("fee")} (%)`}
                   fullWidth
                   value={fee}
-                  error={!digitRegex}
+                  error={
+                    !digitRegex || parseFloat(fee) > 1 || parseFloat(fee) < 0.04
+                  }
                   onChange={(e) => setFee(e.target.value)}
-                  helperText={!digitRegex && "Fee should be number"}
+                  helperText={
+                    (!digitRegex ||
+                      parseFloat(fee) > 1 ||
+                      parseFloat(fee) < 0.04) &&
+                    "Fee should be number between 0.04 and 1"
+                  }
                 />
               </Box>
               <Box flex={1}>
@@ -120,7 +135,19 @@ export default function CreatePool(): React.ReactElement {
                   <li>{t("suggestedValue-2")}</li>
                   <li>{t("suggestedValue-3")}</li>
                 </Typography>
-                <TextField label="A parameter" fullWidth />
+                <TextField
+                  label="A parameter"
+                  onChange={(e) => setParameter(e.target.value)}
+                  error={
+                    parseFloat(parameter) < 100 || parseFloat(parameter) > 400
+                  }
+                  helperText={
+                    (parseFloat(parameter) < 100 ||
+                      parseFloat(parameter) > 400) &&
+                    "Parameter should be number between 100 and 400"
+                  }
+                  fullWidth
+                />
               </Box>
             </Stack>
           </Box>
