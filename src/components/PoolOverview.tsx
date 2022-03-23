@@ -145,7 +145,10 @@ export default function PoolOverview({
             {hasShare && (
               <div>
                 <Typography component="span">{t("balance")}: </Typography>
-                <Typography component="span">{`$${formattedData.userBalanceUSD}`}</Typography>
+                <Typography
+                  component="span"
+                  data-testid={`${formattedData.name}Balance`}
+                >{`$${formattedData.userBalanceUSD}`}</Typography>
               </div>
             )}
           </Box>

@@ -1,5 +1,4 @@
-import "./LPStakingBanner.scss"
-
+import { Alert, Link, Typography } from "@mui/material"
 import React, { ReactElement } from "react"
 
 import { useTranslation } from "react-i18next"
@@ -12,15 +11,15 @@ function LPStakingBanner({ stakingLink }: Props): ReactElement {
   const { t } = useTranslation()
 
   return (
-    <div className="lpStakingBanner">
-      <p>
+    <Alert icon={false} sx={{ mb: 2 }}>
+      <Typography>
         {t("lpMustStakeForRewards")} &lt;
-        <a href={stakingLink} target="_blank" rel="noopener noreferrer">
+        <Link href={stakingLink} target="_blank" rel="noopener noreferrer">
           {t("stakeHere")}
-        </a>
+        </Link>
         &gt;
-      </p>
-    </div>
+      </Typography>
+    </Alert>
   )
 }
 
