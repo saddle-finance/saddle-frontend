@@ -47,9 +47,9 @@ context("Withdrawal Flow", () => {
       const tokens = poolTokensFullName[poolName]
       cy.get('[data-testid="withdrawTokenRadio"]').contains(tokens[0]).click()
       cy.get('[data-testid="myFarmLpBalance"]').should("not.have.text", "0.0")
-      cy.wait(10000)
+      // cy.wait(10000)
       cy.get("#tokenInput input").first().type("1")
-      cy.wait(10000)
+      // cy.wait(10000)
       cy.get('[data-testid="withdrawBtn"]').click()
       cy.get("[data-testid=tokenValue]")
         .first()
@@ -64,7 +64,7 @@ context("Withdrawal Flow", () => {
       // test combo withdraw through percentage option
       cy.get('[data-testid="withdrawPercentageCombo"]').click()
       cy.get('[data-testid="withdrawPercentageInput"]').type("3")
-      cy.wait(10000)
+      // cy.wait(10000)
       cy.get("button").contains("Withdraw").click()
       cy.get("[data-testid=tokenValue]")
         .first()
@@ -94,7 +94,7 @@ context("Withdrawal Flow", () => {
               "not.have.text",
               "0.0",
             )
-            cy.wait(10000)
+            // cy.wait(10000)
             cy.get("button").contains("Withdraw").click()
             cy.get("button").contains("Confirm Withdraw").click()
             cy.get("[data-testid=tokenValue]")
