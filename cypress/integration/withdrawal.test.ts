@@ -6,7 +6,8 @@ const poolTokensFullName: { [key: string]: string[] } = {
   // "Stablecoin V2": ["Dai", "USDC Coin", "Tether"],
 }
 
-const pools = ["BTC V2", "Stablecoin V2"]
+// const pools = ["BTC V2", "Stablecoin V2"]
+const pools = ["BTC V2"]
 context("Withdrawal Flow", () => {
   beforeEach(() => {
     const host = Cypress.env("DAPP_HOST") as string
