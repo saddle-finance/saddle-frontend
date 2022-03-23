@@ -152,7 +152,7 @@ export default function CreatePool(): React.ReactElement {
                   label="A parameter"
                   onChange={(e) => setParameter(e.target.value)}
                   error={
-                    isNumber(parameter) ||
+                    !isNumber(parameter) ||
                     parseFloat(parameter) < 100 ||
                     parseFloat(parameter) > 400
                   }
