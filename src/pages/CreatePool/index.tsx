@@ -47,7 +47,11 @@ export default function CreatePool(): React.ReactElement {
     setTokenLists((prev) => [...prev, { tokenAddress: "" }])
   }
 
-  const digitRegex = /^\d*(\.\d+)?$/.exec(fee)
+  const isNumber = (text: string) => {
+    const digitRegex = /^\d*(\.\d+)?$/
+
+    return digitRegex.exec(text)
+  }
 
   return (
     <Container sx={{ pb: 5 }}>
@@ -123,11 +127,13 @@ export default function CreatePool(): React.ReactElement {
                   fullWidth
                   value={fee}
                   error={
-                    !digitRegex || parseFloat(fee) > 1 || parseFloat(fee) < 0.04
+                    !isNumber(fee) ||
+                    parseFloat(fee) > 1 ||
+                    parseFloat(fee) < 0.04
                   }
                   onChange={(e) => setFee(e.target.value)}
                   helperText={
-                    (!digitRegex ||
+                    (!isNumber(fee) ||
                       parseFloat(fee) > 1 ||
                       parseFloat(fee) < 0.04) &&
                     "Fee should be a number between 0.04 and 1"
@@ -146,10 +152,13 @@ export default function CreatePool(): React.ReactElement {
                   label="A parameter"
                   onChange={(e) => setParameter(e.target.value)}
                   error={
-                    parseFloat(parameter) < 100 || parseFloat(parameter) > 400
+                    isNumber(parameter) ||
+                    parseFloat(parameter) < 100 ||
+                    parseFloat(parameter) > 400
                   }
                   helperText={
-                    (parseFloat(parameter) < 100 ||
+                    (isNumber(parameter) ||
+                      parseFloat(parameter) < 100 ||
                       parseFloat(parameter) > 400) &&
                     "Parameter should be a number between 100 and 400"
                   }
