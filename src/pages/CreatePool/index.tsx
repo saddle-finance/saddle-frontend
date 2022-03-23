@@ -130,7 +130,7 @@ export default function CreatePool(): React.ReactElement {
                     (!digitRegex ||
                       parseFloat(fee) > 1 ||
                       parseFloat(fee) < 0.04) &&
-                    "Fee should be number between 0.04 and 1"
+                    "Fee should be a number between 0.04 and 1"
                   }
                 />
               </Box>
@@ -151,7 +151,7 @@ export default function CreatePool(): React.ReactElement {
                   helperText={
                     (parseFloat(parameter) < 100 ||
                       parseFloat(parameter) > 400) &&
-                    "Parameter should be number between 100 and 400"
+                    "Parameter should be a number between 100 and 400"
                   }
                   fullWidth
                 />
