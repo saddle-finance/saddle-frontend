@@ -5,7 +5,6 @@ const poolTokensFullName: { [key: string]: string[] } = {
   "BTC V2": ["WBTC", "renBTC", "sBTC"],
   "Stablecoin V2": ["Dai", "USDC Coin", "Tether"],
 }
-
 const pools = ["BTC V2", "Stablecoin V2"]
 
 context("Withdrawal Flow", () => {
