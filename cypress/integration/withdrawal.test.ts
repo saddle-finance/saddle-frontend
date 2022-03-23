@@ -3,14 +3,14 @@ import { PoolName } from "../../src/constants"
 // have two seperate maps here since the naming convention is different throughout the page
 const poolTokensFullName: { [key: string]: string[] } = {
   "BTC V2": ["WBTC", "renBTC", "sBTC"],
+  "Stablecoin V2": ["Dai", "USDC Coin", "Tether"],
 }
 
-const pools = ["BTC V2"]
+const pools = ["BTC V2", "Stablecoin V2"]
 context("Withdrawal Flow", () => {
   beforeEach(() => {
     const host = Cypress.env("DAPP_HOST") as string
     cy.visit(`${host}#/pools`)
-    pools.forEach(basicDeposit)
   })
 
   function basicDeposit(poolName: PoolName) {
@@ -27,12 +27,16 @@ context("Withdrawal Flow", () => {
       })
       cy.get("button").contains("Deposit").click()
       cy.get("button").contains("Confirm Deposit").click()
+      cy.get(".Toastify").contains(`Deposit on ${poolName} complete`)
       cy.visit(`${host}#/pools`)
       cy.get(`[data-testid="${poolName}Balance"]`).contains("$")
     })
   }
 
   function testPoolWithdraw(poolName: PoolName) {
+    it(`prepares the ${poolName} pool by adding assets to it`, () => {
+      basicDeposit(poolName)
+    })
     it(`successfully completes a withdrawal of all ${poolName} assets`, () => {
       cy.contains(poolName)
         .parents("[data-testid=poolOverview]")
