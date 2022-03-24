@@ -107,7 +107,7 @@ export default function CreatePool(): React.ReactElement {
                   error={poolSymbol.length > 14}
                   helperText={
                     poolSymbol.length > 14 &&
-                    "Pool symbol should less than 14 characters"
+                    "Pool Symbol should be less than 14 characters"
                   }
                   onChange={(e) => setPoolSymbol(e.target.value)}
                   sx={{ ml: [0, 1.5], flex: 1 }}
