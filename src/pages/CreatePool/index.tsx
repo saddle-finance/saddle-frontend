@@ -13,16 +13,19 @@ import {
   Typography,
   useTheme,
 } from "@mui/material"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever"
+import ERC20_ABI from "../../constants/abis/erc20.json"
 import ReviewCreatePool from "./CreatePoolDialog"
 import { Link as RouteLink } from "react-router-dom"
+import { getContract } from "../../utils"
+import { useActiveWeb3React } from "../../hooks"
 import { useTranslation } from "react-i18next"
 
-type Token = {
-  tokenAddress: string
-}
+// type Token = {
+//   tokenAddress: string
+// }
 
 type PoolType = "usdMetapool" | "btcMetapool" | "basepool"
 
@@ -37,14 +40,12 @@ export default function CreatePool(): React.ReactElement {
   const [parameter, setParameter] = useState<string>("")
   const [poolType, setPoolType] = useState<PoolType>("usdMetapool")
   const [assetType, setAssetType] = useState<AssetType>("USD")
-  const [tokenLists, setTokenLists] = useState<Token[]>([
-    { tokenAddress: "" },
-    { tokenAddress: "" },
-  ])
+  const [tokenLists, setTokenLists] = useState<string[]>(["", ""])
   const [fee, setFee] = useState<string>("")
+  const { account, library } = useActiveWeb3React()
 
   const handleAddTokenList = () => {
-    setTokenLists((prev) => [...prev, { tokenAddress: "" }])
+    setTokenLists((prev) => [...prev, ""])
   }
 
   const isNumber = (text: string) => {
@@ -52,6 +53,29 @@ export default function CreatePool(): React.ReactElement {
 
     return digitRegex.exec(text)
   }
+  const getUserTokenInputContract = (addr: string) => {
+    if (!library || !account) return
+    const tokenData = getContract(addr, ERC20_ABI, library, account)
+    console.log({ tokenData })
+    return tokenData
+  }
+
+  useEffect(() => {
+    const getTokenData = async () => {
+      const res = getUserTokenInputContract(
+        "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      )
+      // eslint-disable-next-line
+      const name = await res?.name()
+      // eslint-disable-next-line
+      const symbol = await res?.symbol()
+      // eslint-disable-next-line
+      const decimals = await res?.decimals()
+      // eslint-disable-next-line
+      console.log({ name, symbol, decimals, res })
+    }
+    void getTokenData()
+  }, [])
 
   return (
     <Container sx={{ pb: 5 }}>
@@ -236,6 +260,7 @@ export default function CreatePool(): React.ReactElement {
                     label={`Token ${index}`}
                     fullWidth
                     margin="normal"
+                    // onBlur={getUserTokenInputContract(tokenLists[0])}
                     InputProps={{
                       endAdornment: (
                         <>
