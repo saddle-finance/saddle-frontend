@@ -5,38 +5,38 @@ const poolTokensFullName: { [key: string]: string[] } = {
   "BTC V2": ["WBTC", "renBTC", "sBTC"],
   "Stablecoin V2": ["Dai", "USDC Coin", "Tether"],
 }
-
 const pools = ["BTC V2", "Stablecoin V2"]
+
 context("Withdrawal Flow", () => {
   beforeEach(() => {
     const host = Cypress.env("DAPP_HOST") as string
-    pools.forEach(basicDeposit)
-
     cy.visit(`${host}#/pools`)
   })
 
   function basicDeposit(poolName: PoolName) {
     const host = Cypress.env("DAPP_HOST") as string
-    cy.visit(`${host}#/pools`)
     // we need a deposit before testing withdrawal
     cy.contains(poolName)
       .parents("[data-testid=poolOverview]")
       .within(() => {
         cy.get("button").contains("Deposit").click()
       })
-
     cy.get("#tokenInput input").then(($inputs) => {
       cy.wrap($inputs).each(($input) => {
         cy.wrap($input).type("100")
       })
       cy.get("button").contains("Deposit").click()
       cy.get("button").contains("Confirm Deposit").click()
+      cy.get(".Toastify").contains(`Deposit on ${poolName} complete`)
       cy.visit(`${host}#/pools`)
       cy.get(`[data-testid="${poolName}Balance"]`).contains("$")
     })
   }
 
   function testPoolWithdraw(poolName: PoolName) {
+    it(`prepares the ${poolName} pool by adding assets to it`, () => {
+      basicDeposit(poolName)
+    })
     it(`successfully completes a withdrawal of all ${poolName} assets`, () => {
       cy.contains(poolName)
         .parents("[data-testid=poolOverview]")
