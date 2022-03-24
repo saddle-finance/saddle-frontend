@@ -93,7 +93,7 @@ export default function CreatePool(): React.ReactElement {
                   error={poolName.length > 10}
                   helperText={
                     poolName.length > 10 &&
-                    "Pool name length should less than 10 characters"
+                    "Pool Name length should be less than 10 characters"
                   }
                   fullWidth
                   sx={{ mr: [0, 1.5], flex: 1 }}
