@@ -24,7 +24,7 @@ type Token = {
   tokenAddress: string
 }
 
-type PoolType = "usdMetapool" | "btcMetapool" | "baseMetapool"
+type PoolType = "usdMetapool" | "btcMetapool" | "basepool"
 
 type AssetType = "USD" | "ETH" | "BTC" | "OTHERS"
 
@@ -126,6 +126,8 @@ export default function CreatePool(): React.ReactElement {
                   label={`${t("fee")} (%)`}
                   fullWidth
                   value={fee}
+                  type="text"
+                  inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                   error={
                     !isNumber(fee) ||
                     parseFloat(fee) > 1 ||
@@ -150,6 +152,7 @@ export default function CreatePool(): React.ReactElement {
                 </Typography>
                 <TextField
                   label="A parameter"
+                  inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                   onChange={(e) => setParameter(e.target.value)}
                   error={
                     !isNumber(parameter) ||
@@ -187,13 +190,10 @@ export default function CreatePool(): React.ReactElement {
                   USD Metapool
                 </ToggleButton>
                 <ToggleButton value="btcMetapool">BTC Metapool</ToggleButton>
-                <ToggleButton value="basePool">Base Pool</ToggleButton>
+                <ToggleButton value="basepool">Base Pool</ToggleButton>
               </ToggleButtonGroup>
             </Box>
-            <Box
-              flex={1}
-              display={poolType === "baseMetapool" ? "block" : "none"}
-            >
+            <Box flex={1} display={poolType === "basepool" ? "block" : "none"}>
               <Typography variant="subtitle1">
                 {t("chooseAssetType")}
               </Typography>
