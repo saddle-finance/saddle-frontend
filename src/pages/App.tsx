@@ -45,6 +45,7 @@ const AppContainer = styled("div")(({ theme }) => {
     backgroundImage:
       theme.palette.mode === "light" ? lightBackground : darkBackground,
     minHeight: "100vh",
+    minWidth: "100vw",
     backgroundAttachment: "fixed",
     backgroundPosition: "center center",
     backgroundRepeat: "no-repeat",
