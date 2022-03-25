@@ -101,10 +101,7 @@ export default function CreatePool(): React.ReactElement {
                   value={poolName}
                   onChange={(e) => setPoolName(e.target.value)}
                   error={poolNameError}
-                  helperText={
-                    poolNameError &&
-                    "Pool Name length should be less than 10 characters"
-                  }
+                  helperText={poolNameError && t("poolNameError")}
                   fullWidth
                   sx={{ mr: [0, 1.5], flex: 1 }}
                 />
@@ -115,10 +112,7 @@ export default function CreatePool(): React.ReactElement {
                   label="Pool Symbol"
                   fullWidth
                   error={poolSymbolError}
-                  helperText={
-                    poolSymbolError &&
-                    "Pool Symbol should be less than 14 characters"
-                  }
+                  helperText={poolSymbolError && t("poolSymbolError")}
                   onChange={(e) => setPoolSymbol(e.target.value)}
                   sx={{ ml: [0, 1.5], flex: 1 }}
                 />
@@ -140,9 +134,7 @@ export default function CreatePool(): React.ReactElement {
                   inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                   error={feeError}
                   onChange={(e) => setFee(e.target.value)}
-                  helperText={
-                    feeError && "Fee should be a number between 0.04 and 1"
-                  }
+                  helperText={feeError && t("feeError")}
                 />
               </Box>
               <Box flex={1}>
@@ -158,10 +150,7 @@ export default function CreatePool(): React.ReactElement {
                   inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                   onChange={(e) => setParameter(e.target.value)}
                   error={parameterError}
-                  helperText={
-                    parameterError &&
-                    "Parameter should be a number between 100 and 400"
-                  }
+                  helperText={parameterError && t("parameterError")}
                   fullWidth
                 />
               </Box>
