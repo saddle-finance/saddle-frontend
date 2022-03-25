@@ -77,7 +77,7 @@ export default function CreatePool(): React.ReactElement {
         }}
       >
         <ArrowBackIcon sx={{ mr: 1 }} />
-        Back to pools
+        {t("backToPools")}
       </Link>
 
       <Paper>
@@ -97,7 +97,7 @@ export default function CreatePool(): React.ReactElement {
               <Box flex={1} mt={2}>
                 <TextField
                   size="medium"
-                  label="Pool Name"
+                  label={t("poolName")}
                   value={poolName}
                   onChange={(e) => setPoolName(e.target.value)}
                   error={poolNameError}
@@ -109,7 +109,7 @@ export default function CreatePool(): React.ReactElement {
               <Box flex={1} mt={2}>
                 <TextField
                   size="medium"
-                  label="Pool Symbol"
+                  label={t("poolSymbol")}
                   fullWidth
                   error={poolSymbolError}
                   helperText={poolSymbolError && t("poolSymbolError")}
@@ -146,7 +146,7 @@ export default function CreatePool(): React.ReactElement {
                   <li>{t("suggestedValue-3")}</li>
                 </Typography>
                 <TextField
-                  label="A parameter"
+                  label={t("aParameter")}
                   inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                   onChange={(e) => setParameter(e.target.value)}
                   error={parameterError}
@@ -173,10 +173,12 @@ export default function CreatePool(): React.ReactElement {
                 fullWidth
               >
                 <ToggleButton value="usdMetapool" size="large">
-                  USD Metapool
+                  {t("usdBalance")}
                 </ToggleButton>
-                <ToggleButton value="btcMetapool">BTC Metapool</ToggleButton>
-                <ToggleButton value="basepool">Base Pool</ToggleButton>
+                <ToggleButton value="btcMetapool">
+                  {t("btcMetapool")}
+                </ToggleButton>
+                <ToggleButton value="basepool">{t("basepool")}</ToggleButton>
               </ToggleButtonGroup>
             </Box>
             <Box flex={1} display={poolType === "basepool" ? "block" : "none"}>
@@ -198,7 +200,7 @@ export default function CreatePool(): React.ReactElement {
                 </ToggleButton>
                 <ToggleButton value="ETH">ETH</ToggleButton>
                 <ToggleButton value="BTC">BTC</ToggleButton>
-                <ToggleButton value="OTHERS">Others</ToggleButton>
+                <ToggleButton value="OTHERS">{t("others")}</ToggleButton>
               </ToggleButtonGroup>
             </Box>
           </Stack>
@@ -219,7 +221,7 @@ export default function CreatePool(): React.ReactElement {
                   flexBasis={`calc(50% - ${theme.spacing(1.5)})`}
                 >
                   <TextField
-                    label={`Token ${index}`}
+                    label={`${t("token")} ${index}`}
                     fullWidth
                     margin="normal"
                     InputProps={{
