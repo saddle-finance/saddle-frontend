@@ -48,12 +48,6 @@ export default function CreatePool(): React.ReactElement {
     setTokenLists((prev) => [...prev, { tokenAddress: "" }])
   }
 
-  const handleSubmit = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
-    event.preventDefault()
-    setOpenCreatePoolDlg(true)
-  }
   const isNumber = (text: string) => {
     const digitRegex = /^\d*(\.\d+)?$/
 
@@ -127,7 +121,6 @@ export default function CreatePool(): React.ReactElement {
                     size="medium"
                     label={t("poolName")}
                     value={poolName}
-                    required
                     onChange={(e) => setPoolName(e.target.value)}
                     error={poolNameError}
                     helperText={poolNameError && t("poolNameError")}
@@ -140,7 +133,6 @@ export default function CreatePool(): React.ReactElement {
                     size="medium"
                     label={t("poolSymbol")}
                     fullWidth
-                    required
                     error={poolSymbolError}
                     helperText={poolSymbolError && t("poolSymbolError")}
                     onChange={(e) => setPoolSymbol(e.target.value)}
@@ -305,11 +297,10 @@ export default function CreatePool(): React.ReactElement {
             </Button>
             <Button
               variant="contained"
-              type="submit"
               size="large"
               fullWidth
               disabled={disableCreatePool}
-              onClick={handleSubmit}
+              onClick={() => setOpenCreatePoolDlg(true)}
             >
               {t("createCommunityPool")}
             </Button>
