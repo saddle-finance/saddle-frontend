@@ -3,6 +3,7 @@ import {
   Button,
   Container,
   Divider,
+  Grow,
   IconButton,
   Link,
   Paper,
@@ -211,33 +212,32 @@ export default function CreatePool(): React.ReactElement {
                   <ToggleButton value="basepool">{t("basepool")}</ToggleButton>
                 </ToggleButtonGroup>
               </Box>
-              <Box
-                flex={1}
-                display={poolType === "basepool" ? "block" : "none"}
-              >
-                <Typography variant="subtitle1">
-                  {t("chooseAssetType")}
-                </Typography>
-                <Divider />
-                <Typography my={2}>
-                  {t("chooseAssetTypeDescription")}
-                </Typography>
-                <ToggleButtonGroup
-                  value={assetType}
-                  color="secondary"
-                  fullWidth
-                  exclusive
-                  onChange={(event, value) => setAssetType(value)}
-                  size="large"
-                >
-                  <ToggleButton value="USD" color="secondary">
-                    USD
-                  </ToggleButton>
-                  <ToggleButton value="ETH">ETH</ToggleButton>
-                  <ToggleButton value="BTC">BTC</ToggleButton>
-                  <ToggleButton value="OTHERS">{t("others")}</ToggleButton>
-                </ToggleButtonGroup>
-              </Box>
+              <Grow in={poolType === "basepool"}>
+                <Box flex={1}>
+                  <Typography variant="subtitle1">
+                    {t("chooseAssetType")}
+                  </Typography>
+                  <Divider />
+                  <Typography my={2}>
+                    {t("chooseAssetTypeDescription")}
+                  </Typography>
+                  <ToggleButtonGroup
+                    value={assetType}
+                    color="secondary"
+                    fullWidth
+                    exclusive
+                    onChange={(event, value) => setAssetType(value)}
+                    size="large"
+                  >
+                    <ToggleButton value="USD" color="secondary">
+                      USD
+                    </ToggleButton>
+                    <ToggleButton value="ETH">ETH</ToggleButton>
+                    <ToggleButton value="BTC">BTC</ToggleButton>
+                    <ToggleButton value="OTHERS">{t("others")}</ToggleButton>
+                  </ToggleButtonGroup>
+                </Box>
+              </Grow>
             </Stack>
 
             <Box>
