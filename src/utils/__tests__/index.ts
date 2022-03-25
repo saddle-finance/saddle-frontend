@@ -3,6 +3,7 @@ import {
   calculateExchangeRate,
   calculatePrice,
   commify,
+  enumerate,
   formatBNToShortString,
   formatDeadlineToNumber,
   getTokenByAddress,
@@ -14,6 +15,27 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { Deadlines } from "../../state/user"
 import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
+
+describe("enumerate", () => {
+  const testCases = [
+    [[0, undefined], []],
+    [[1, undefined], [0]],
+    [
+      [3, undefined],
+      [0, 1, 2],
+    ],
+    [
+      [3, 2],
+      [2, 3, 4],
+    ],
+  ] as [[number, number?], number[]][]
+  testCases.forEach(([args, expected]) => {
+    const argsString = args[1] ? `${args[0]}, ${args[1]}` : args[0]
+    it(`correctly formats ${argsString}`, () => {
+      expect(enumerate(...args)).toEqual(expected)
+    })
+  })
+})
 
 describe("formatBNToShortString", () => {
   const testCases = [

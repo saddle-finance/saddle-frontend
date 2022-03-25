@@ -2,6 +2,7 @@ import {
   BRIDGE_CONTRACT_ADDRESSES,
   BTC_POOL_NAME,
   GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES,
+  MASTER_REGISTRY_CONTRACT_ADDRESSES,
   MINICHEF_CONTRACT_ADDRESSES,
   POOLS_MAP,
   PoolName,
@@ -13,7 +14,9 @@ import {
   isLegacySwapABIPool,
   isMetaPool,
 } from "../constants"
+import { useEffect, useMemo, useState } from "react"
 
+import { AddressZero } from "@ethersproject/constants"
 import BRIDGE_CONTRACT_ABI from "../constants/abis/bridge.json"
 import { Bridge } from "../../types/ethers-contracts/Bridge"
 import { Contract } from "@ethersproject/contracts"
@@ -25,10 +28,14 @@ import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
+import MASTER_REGISTRY_ABI from "../constants/abis/masterRegistry.json"
 import META_SWAP_DEPOSIT_ABI from "../constants/abis/metaSwapDeposit.json"
 import MINICHEF_CONTRACT_ABI from "../constants/abis/miniChef.json"
+import { MasterRegistry } from "../../types/ethers-contracts/MasterRegistry"
 import { MetaSwapDeposit } from "../../types/ethers-contracts/MetaSwapDeposit"
 import { MiniChef } from "../../types/ethers-contracts/MiniChef"
+import POOL_REGISTRY_ABI from "../constants/abis/poolRegistry.json"
+import { PoolRegistry } from "../../types/ethers-contracts/PoolRegistry"
 import RETROACTIVE_VESTING_CONTRACT_ABI from "../constants/abis/retroactiveVesting.json"
 import { RetroactiveVesting } from "../../types/ethers-contracts/RetroactiveVesting"
 import SWAP_FLASH_LOAN_ABI from "../constants/abis/swapFlashLoan.json"
@@ -41,9 +48,9 @@ import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFla
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import { SynthetixExchangeRate } from "../../types/ethers-contracts/SynthetixExchangeRate"
 import { SynthetixNetworkToken } from "../../types/ethers-contracts/SynthetixNetworkToken"
+import { formatBytes32String } from "@ethersproject/strings"
 import { getContract } from "../utils"
 import { useActiveWeb3React } from "./index"
-import { useMemo } from "react"
 
 // returns null on errors
 function useContract(
@@ -67,6 +74,48 @@ function useContract(
       return null
     }
   }, [address, ABI, library, withSignerIfPossible, account])
+}
+
+export function useMasterRegistry(): MasterRegistry | null {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress = chainId
+    ? MASTER_REGISTRY_CONTRACT_ADDRESSES[chainId]
+    : undefined
+  return useContract(contractAddress, MASTER_REGISTRY_ABI) as MasterRegistry
+}
+
+export const POOL_REGISTRY_NAME = formatBytes32String("PoolRegistry")
+export function usePoolRegistry(): PoolRegistry | null {
+  const { account, library } = useActiveWeb3React()
+  const masterRegistryContract = useMasterRegistry()
+  const [contractAddress, setContractAddress] = useState<string | undefined>()
+  useEffect(() => {
+    if (masterRegistryContract) {
+      masterRegistryContract
+        ?.resolveNameToLatestAddress(POOL_REGISTRY_NAME)
+        .then((contractAddress) => {
+          if (contractAddress !== AddressZero) {
+            setContractAddress(contractAddress)
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+          setContractAddress(undefined)
+        })
+    } else {
+      setContractAddress(undefined)
+    }
+  }, [masterRegistryContract])
+
+  return useMemo(() => {
+    if (!library || !account || !contractAddress) return null
+    return getContract(
+      contractAddress,
+      POOL_REGISTRY_ABI,
+      library,
+      account,
+    ) as PoolRegistry
+  }, [contractAddress, library, account])
 }
 
 export function useGeneralizedSwapMigratorContract(): GeneralizedSwapMigrator | null {
