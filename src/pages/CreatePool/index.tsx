@@ -51,9 +51,8 @@ export default function CreatePool(): React.ReactElement {
   const handleSubmit = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
-    // event.preventDefault()
-    console.log(event)
-    // setOpenCreatePoolDlg(true)
+    event.preventDefault()
+    setOpenCreatePoolDlg(true)
   }
   const isNumber = (text: string) => {
     const digitRegex = /^\d*(\.\d+)?$/
@@ -309,10 +308,7 @@ export default function CreatePool(): React.ReactElement {
               type="submit"
               size="large"
               fullWidth
-              disabled={
-                // poolNameError || poolSymbolError || feeError || parameterError
-                disableCreatePool
-              }
+              disabled={disableCreatePool}
               onClick={handleSubmit}
             >
               {t("createCommunityPool")}
