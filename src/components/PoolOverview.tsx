@@ -114,7 +114,7 @@ export default function PoolOverview({
       }}
       data-testid="poolOverview"
     >
-      <Grid container alignItems="center" spacing={1}>
+      <Grid container alignItems="center" spacing={2}>
         <Grid item xs={12} lg={3}>
           <Box>
             <Box
@@ -159,7 +159,9 @@ export default function PoolOverview({
               formattedData.tokens.map(({ symbol, icon }) => (
                 <Box display="flex" alignItems="center" key={symbol}>
                   <img alt="icon" src={icon} width="24px" />
-                  <Typography marginLeft={1}>{symbol}</Typography>
+                  <Typography marginLeft={1} sx={{ wordBreak: "break-all" }}>
+                    {symbol}
+                  </Typography>
                 </Box>
               ))
             ) : (
