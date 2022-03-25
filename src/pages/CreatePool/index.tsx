@@ -15,8 +15,10 @@ import {
 } from "@mui/material"
 import React, { useEffect, useState } from "react"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
+import CircularProgress from "@mui/material/CircularProgress"
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever"
 import ERC20_ABI from "../../constants/abis/erc20.json"
+import { Erc20 } from "../../../types/ethers-contracts/Erc20"
 import ReviewCreatePool from "./CreatePoolDialog"
 import { Link as RouteLink } from "react-router-dom"
 import { getContract } from "../../utils"
@@ -31,21 +33,45 @@ type PoolType = "usdMetapool" | "btcMetapool" | "basepool"
 
 type AssetType = "USD" | "ETH" | "BTC" | "OTHERS"
 
+type TextFieldColors =
+  | "primary"
+  | "secondary"
+  | "error"
+  | "info"
+  | "success"
+  | "warning"
+
 export default function CreatePool(): React.ReactElement {
   const { t } = useTranslation()
   const theme = useTheme()
   const [openCreatePoolDlg, setOpenCreatePoolDlg] = useState<boolean>(false)
+  const [inputLoading, setInputLoading] = useState<boolean>(false)
   const [poolName, setPoolName] = useState<string>("")
   const [poolSymbol, setPoolSymbol] = useState<string>("")
   const [parameter, setParameter] = useState<string>("")
   const [poolType, setPoolType] = useState<PoolType>("usdMetapool")
   const [assetType, setAssetType] = useState<AssetType>("USD")
-  const [tokenLists, setTokenLists] = useState<string[]>(["", ""])
+  const [tokenInputs, setTokenInputs] = useState<string[]>(["", ""])
+  const [tokenInfo, setTokenInfo] = useState<
+    {
+      name: string
+      symbol: string
+      decimals: number
+      checkResult: TextFieldColors
+    }[]
+  >([
+    {
+      name: "",
+      symbol: "",
+      decimals: 0,
+      checkResult: "primary",
+    },
+  ])
   const [fee, setFee] = useState<string>("")
   const { account, library } = useActiveWeb3React()
 
-  const handleAddTokenList = () => {
-    setTokenLists((prev) => [...prev, ""])
+  const handleAddToken = () => {
+    setTokenInputs((prev) => [...prev, ""])
   }
 
   const isNumber = (text: string) => {
@@ -53,26 +79,59 @@ export default function CreatePool(): React.ReactElement {
 
     return digitRegex.exec(text)
   }
-  const getUserTokenInputContract = (addr: string) => {
-    if (!library || !account) return
-    const tokenData = getContract(addr, ERC20_ABI, library, account)
-    console.log({ tokenData })
-    return tokenData
+
+  const getUserTokenInputContract = async (
+    addr: string,
+  ): Promise<
+    | { name: string; symbol: string; decimals: number; checkResult: string }
+    | undefined
+  > => {
+    if (!library || !account || !addr) return
+    let tokenContractResult
+    let name
+    let symbol
+    let decimals
+    let checkResult
+
+    try {
+      tokenContractResult = getContract(
+        addr,
+        ERC20_ABI,
+        library,
+        account,
+      ) as Erc20
+      checkResult = "success"
+      name = await tokenContractResult?.name()
+      symbol = await tokenContractResult?.symbol()
+      decimals = await tokenContractResult?.decimals()
+    } catch (err) {
+      name = ""
+      symbol = ""
+      decimals = 0
+      checkResult = "error"
+    }
+
+    return {
+      name,
+      symbol,
+      decimals,
+      checkResult,
+    }
   }
 
   useEffect(() => {
     const getTokenData = async () => {
-      const res = getUserTokenInputContract(
-        "0xdac17f958d2ee523a2206206994597c13d831ec7",
-      )
+      // const res = await getUserTokenInputContract(
+      //   "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      // )
       // eslint-disable-next-line
-      const name = await res?.name()
+      // const name = res?.name()
       // eslint-disable-next-line
-      const symbol = await res?.symbol()
+      // const symbol = res?.symbol()
       // eslint-disable-next-line
-      const decimals = await res?.decimals()
+      // const decimals = res?.decimals()
       // eslint-disable-next-line
-      console.log({ name, symbol, decimals, res })
+      // console.log({ res })
     }
     void getTokenData()
   }, [])
@@ -251,7 +310,7 @@ export default function CreatePool(): React.ReactElement {
               justifyContent="space-between"
               flexWrap="wrap"
             >
-              {tokenLists.map((token, index) => (
+              {tokenInputs.map((tokenInput, index) => (
                 <Box
                   key={`token-input-${index}`}
                   flexBasis={`calc(50% - ${theme.spacing(1.5)})`}
@@ -259,22 +318,72 @@ export default function CreatePool(): React.ReactElement {
                   <TextField
                     label={`Token ${index}`}
                     fullWidth
+                    color={tokenInfo[index].checkResult ?? "primary"}
                     margin="normal"
-                    // onBlur={getUserTokenInputContract(tokenLists[0])}
+                    onBlur={async (e) => {
+                      if (!e.target.value) return
+                      let tokenData
+                      tokenInputs[index] = e.target.value
+                      setTokenInputs(tokenInputs)
+                      setInputLoading(true)
+                      try {
+                        tokenData = await getUserTokenInputContract(
+                          tokenInputs[index],
+                        )
+                      } catch (err) {
+                        tokenData = {
+                          name: "",
+                          symbol: "",
+                          decimals: 0,
+                          checkResult: "error",
+                        }
+                      }
+                      setInputLoading(false)
+                      tokenInfo[index] = {
+                        name: tokenData?.name ?? "",
+                        symbol: tokenData?.symbol ?? "",
+                        decimals: tokenData?.decimals ?? 0,
+                        checkResult: "success",
+                      }
+                      setTokenInfo(tokenInfo)
+                      console.log({ tokenInfo, tokenInputs })
+                    }}
+                    helperText={tokenInfo[index]?.name}
                     InputProps={{
                       endAdornment: (
                         <>
                           {index > 1 && (
                             <IconButton
                               onClick={() =>
-                                setTokenLists((prev) =>
+                                setTokenInputs((prev) =>
                                   prev.filter(
                                     (value, tokenIndex) => index !== tokenIndex,
                                   ),
                                 )
                               }
                             >
-                              <DeleteForeverIcon />
+                              {inputLoading ? (
+                                <CircularProgress />
+                              ) : (
+                                <DeleteForeverIcon />
+                              )}
+                            </IconButton>
+                          )}
+                          {index <= 1 && (
+                            <IconButton
+                              onClick={() =>
+                                setTokenInputs((prev) =>
+                                  prev.filter(
+                                    (value, tokenIndex) => index !== tokenIndex,
+                                  ),
+                                )
+                              }
+                            >
+                              {inputLoading ? (
+                                <CircularProgress />
+                              ) : (
+                                <DeleteForeverIcon />
+                              )}
                             </IconButton>
                           )}
                         </>
@@ -288,8 +397,8 @@ export default function CreatePool(): React.ReactElement {
           <Button
             variant="outlined"
             size="large"
-            onClick={handleAddTokenList}
-            disabled={tokenLists.length > 3}
+            onClick={handleAddToken}
+            disabled={tokenInputs.length > 3}
             sx={{ mb: 4 }}
           >
             {t("addToken")}
