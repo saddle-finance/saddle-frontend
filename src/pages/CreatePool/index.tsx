@@ -53,6 +53,16 @@ export default function CreatePool(): React.ReactElement {
     return digitRegex.exec(text)
   }
 
+  const poolNameError = poolName.length > 10
+  const poolSymbolError = poolSymbol.length > 14
+  const parameterError =
+    !isNumber(parameter) ||
+    parseFloat(parameter) < 100 ||
+    parseFloat(parameter) > 400
+
+  const feeError =
+    !isNumber(fee) || parseFloat(fee) > 1 || parseFloat(fee) < 0.04
+
   return (
     <Container sx={{ pb: 5 }}>
       <Link
@@ -90,9 +100,9 @@ export default function CreatePool(): React.ReactElement {
                   label="Pool Name"
                   value={poolName}
                   onChange={(e) => setPoolName(e.target.value)}
-                  error={poolName.length > 10}
+                  error={poolNameError}
                   helperText={
-                    poolName.length > 10 &&
+                    poolNameError &&
                     "Pool Name length should be less than 10 characters"
                   }
                   fullWidth
@@ -104,9 +114,9 @@ export default function CreatePool(): React.ReactElement {
                   size="medium"
                   label="Pool Symbol"
                   fullWidth
-                  error={poolSymbol.length > 14}
+                  error={poolSymbolError}
                   helperText={
-                    poolSymbol.length > 14 &&
+                    poolSymbolError &&
                     "Pool Symbol should be less than 14 characters"
                   }
                   onChange={(e) => setPoolSymbol(e.target.value)}
@@ -128,17 +138,10 @@ export default function CreatePool(): React.ReactElement {
                   value={fee}
                   type="text"
                   inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-                  error={
-                    !isNumber(fee) ||
-                    parseFloat(fee) > 1 ||
-                    parseFloat(fee) < 0.04
-                  }
+                  error={feeError}
                   onChange={(e) => setFee(e.target.value)}
                   helperText={
-                    (!isNumber(fee) ||
-                      parseFloat(fee) > 1 ||
-                      parseFloat(fee) < 0.04) &&
-                    "Fee should be a number between 0.04 and 1"
+                    feeError && "Fee should be a number between 0.04 and 1"
                   }
                 />
               </Box>
@@ -154,15 +157,9 @@ export default function CreatePool(): React.ReactElement {
                   label="A parameter"
                   inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                   onChange={(e) => setParameter(e.target.value)}
-                  error={
-                    !isNumber(parameter) ||
-                    parseFloat(parameter) < 100 ||
-                    parseFloat(parameter) > 400
-                  }
+                  error={parameterError}
                   helperText={
-                    (isNumber(parameter) ||
-                      parseFloat(parameter) < 100 ||
-                      parseFloat(parameter) > 400) &&
+                    parameterError &&
                     "Parameter should be a number between 100 and 400"
                   }
                   fullWidth
@@ -273,6 +270,9 @@ export default function CreatePool(): React.ReactElement {
             variant="contained"
             size="large"
             fullWidth
+            disabled={
+              poolNameError || poolSymbolError || feeError || parameterError
+            }
             onClick={() => setOpenCreatePoolDlg(true)}
           >
             {t("createCommunityPool")}
