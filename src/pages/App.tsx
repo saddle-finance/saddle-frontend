@@ -46,6 +46,7 @@ const AppContainer = styled("div")(({ theme }) => {
       theme.palette.mode === "light" ? lightBackground : darkBackground,
     minHeight: "100vh",
     minWidth: "100vw",
+    marginRight: "calc(-1 * (100vw - 100%))",
     backgroundAttachment: "fixed",
     backgroundPosition: "center center",
     backgroundRepeat: "no-repeat",

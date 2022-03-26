@@ -4,7 +4,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   /* prevent screen shaking due to the appearing of scrollbar */
   overflow-x: hidden;
-  overflow-y: scroll;
   padding-right: calc(-1 * (100vw - 100%));
 }
 
