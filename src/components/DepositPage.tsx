@@ -1,10 +1,17 @@
-import { ALETH_POOL_NAME, VETH2_POOL_NAME, isMetaPool } from "../constants"
 import {
+  ALETH_POOL_NAME,
+  TBTC_METAPOOL_V2_NAME,
+  VETH2_POOL_NAME,
+  isMetaPool,
+} from "../constants"
+import {
+  Alert,
   Box,
   Button,
   Checkbox,
   Container,
   Dialog,
+  Link,
   Paper,
   Stack,
   Typography,
@@ -80,6 +87,21 @@ const DepositPage = (props: Props): ReactElement => {
         myShareData?.lpTokenBalance.gt(0) && (
           <LPStakingBanner stakingLink={"https://app.alchemix.fi/farms"} />
         )}
+      {poolData?.name === TBTC_METAPOOL_V2_NAME && (
+        <Alert icon={false} sx={{ mb: 2 }}>
+          <Typography>
+            {t("incentivesMigratedFromKeepToT")} &lt;
+            <Link
+              href="https://forum.keep.network/t/repurpose-saddle-tbtc-pool-liquidity-incentives-and-move-incentives-to-t/404"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t("learnMore")}
+            </Link>
+            &gt;
+          </Typography>
+        </Alert>
+      )}
 
       <Stack
         display="flex"
