@@ -93,34 +93,24 @@ export default function CreatePool(): React.ReactElement {
         name: "",
         symbol: "",
         decimals: 0,
-        checkResult: "error" as TextFieldColors,
+        checkResult: "primary" as TextFieldColors,
       }
-    let tokenContractResult
-    let checkResult: TextFieldColors
 
-    try {
-      tokenContractResult = getContract(
-        addr,
-        ERC20_ABI,
-        library,
-        account,
-      ) as Erc20
-      checkResult = "success"
-    } catch (err) {
-      checkResult = "error"
-    }
-
-    const name = (await tokenContractResult?.name()) ?? ""
-    const symbol = (await tokenContractResult?.symbol()) ?? ""
-    const decimals = (await tokenContractResult?.decimals()) ?? 0
+    const tokenContractResult = getContract(
+      addr,
+      ERC20_ABI,
+      library,
+      account,
+    ) as Erc20
 
     return {
-      name,
-      symbol,
-      decimals,
-      checkResult,
+      name: (await tokenContractResult?.name()) ?? "",
+      symbol: (await tokenContractResult?.symbol()) ?? "",
+      decimals: (await tokenContractResult?.decimals()) ?? 0,
+      checkResult: "success",
     }
   }
+
   const poolNameError = poolName.length > 10
   const poolSymbolError = poolSymbol.length > 14
   const parameterError =
