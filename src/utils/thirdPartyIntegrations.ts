@@ -314,9 +314,13 @@ async function getThresholdData(
       rewardsContract.userInfo(accountId || AddressZero),
     ])
 
-  const spaPerYear = thresholdRewardsPerSecond.mul(3600 * 24 * 365) // 1e18
-  const spaPerYearUSD = spaPerYear.mul(parseUnits(thresholdPrice.toFixed(3), 3)) // 1e18 + 3 = 1e21
+  const thresholdPerYear = thresholdRewardsPerSecond.mul(3600 * 24 * 365) // 1e18
+  const thresholdPerYearUSD = thresholdPerYear.mul(
+    parseUnits(thresholdPrice.toFixed(3), 3),
+  ) // 1e18 + 3 = 1e21
   const totalDepositedUSD = totalDeposited.mul(lpTokenPrice) // 1e18 + 1e18 = 1e36
-  const spaApr = shiftBNDecimals(spaPerYearUSD, 33).div(totalDepositedUSD) // (1e21 + 1e33 = 1e54) / 1e36 = 1e18
-  return [spaApr, userStakedData.amount]
+  const thresholdApr = shiftBNDecimals(thresholdPerYearUSD, 33).div(
+    totalDepositedUSD,
+  ) // (1e21 + 1e33 = 1e54) / 1e36 = 1e18
+  return [thresholdApr, userStakedData.amount]
 }
