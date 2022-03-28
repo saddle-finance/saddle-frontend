@@ -42,10 +42,10 @@ export default function CreatePool(): React.ReactElement {
   const { t } = useTranslation()
   const theme = useTheme()
   const [openCreatePoolDlg, setOpenCreatePoolDlg] = useState<boolean>(false)
-  const [inputLoading, setInputLoading] = useState<boolean>(false)
+  const [inputLoading, setInputLoading] = useState<boolean[]>([false])
   const [poolName, setPoolName] = useState<string>("")
   const [poolSymbol, setPoolSymbol] = useState<string>("")
-  const [parameter, setParameter] = useState<string>("")
+  const [aParameter, setAParameter] = useState<string>("")
   const [poolType, setPoolType] = useState<PoolType>("usdMetapool")
   const [assetType, setAssetType] = useState<AssetType>("USD")
   const [tokenInputs, setTokenInputs] = useState<string[]>([""])
@@ -93,9 +93,6 @@ export default function CreatePool(): React.ReactElement {
         checkResult: "error" as TextFieldColors,
       }
     let tokenContractResult
-    let name
-    let symbol
-    let decimals
     let checkResult: TextFieldColors
 
     try {
@@ -105,16 +102,14 @@ export default function CreatePool(): React.ReactElement {
         library,
         account,
       ) as Erc20
-      name = await tokenContractResult?.name()
-      symbol = await tokenContractResult?.symbol()
-      decimals = await tokenContractResult?.decimals()
       checkResult = "success"
     } catch (err) {
-      name = ""
-      symbol = ""
-      decimals = 0
       checkResult = "error"
     }
+
+    const name = (await tokenContractResult?.name()) ?? ""
+    const symbol = (await tokenContractResult?.symbol()) ?? ""
+    const decimals = (await tokenContractResult?.decimals()) ?? 0
 
     return {
       name,
@@ -224,16 +219,16 @@ export default function CreatePool(): React.ReactElement {
                 <TextField
                   label="A parameter"
                   inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-                  onChange={(e) => setParameter(e.target.value)}
+                  onChange={(e) => setAParameter(e.target.value)}
                   error={
-                    !isNumber(parameter) ||
-                    parseFloat(parameter) < 100 ||
-                    parseFloat(parameter) > 400
+                    !isNumber(aParameter) ||
+                    parseFloat(aParameter) < 100 ||
+                    parseFloat(aParameter) > 400
                   }
                   helperText={
-                    (isNumber(parameter) ||
-                      parseFloat(parameter) < 100 ||
-                      parseFloat(parameter) > 400) &&
+                    (isNumber(aParameter) ||
+                      parseFloat(aParameter) < 100 ||
+                      parseFloat(aParameter) > 400) &&
                     "Parameter should be a number between 100 and 400"
                   }
                   fullWidth
@@ -329,7 +324,8 @@ export default function CreatePool(): React.ReactElement {
                         return
                       }
 
-                      setInputLoading(true)
+                      inputLoading[index] = true
+                      setInputLoading([...inputLoading])
                       let tokenData
                       try {
                         tokenData = await getUserTokenInputContract(
@@ -343,13 +339,14 @@ export default function CreatePool(): React.ReactElement {
                           checkResult: "error" as TextFieldColors,
                         }
                       }
-                      setInputLoading(false)
+                      inputLoading[index] = false
+                      setInputLoading([...inputLoading])
                       tokenInfo[index] = tokenData
                       setTokenInfo([...tokenInfo])
                     }}
                     helperText={
-                      tokenInfo[index].name
-                        ? `${tokenInfo[index].name} (${tokenInfo[index].symbol}: ${tokenInfo[index].decimals} decimals)`
+                      tokenInfo[index]?.name
+                        ? `${tokenInfo[index]?.name} (${tokenInfo[index]?.symbol}: ${tokenInfo[index]?.decimals} decimals)`
                         : " "
                     }
                     InputProps={{
@@ -365,14 +362,14 @@ export default function CreatePool(): React.ReactElement {
                                 )
                               }
                             >
-                              {inputLoading ? (
+                              {inputLoading[index] ? (
                                 <CircularProgress size={20} />
                               ) : (
                                 <DeleteForeverIcon />
                               )}
                             </IconButton>
                           )}
-                          {index <= 1 && inputLoading && (
+                          {index <= 1 && inputLoading[index] && (
                             <CircularProgress size={20} />
                           )}
                         </InputAdornment>
