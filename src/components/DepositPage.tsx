@@ -72,12 +72,6 @@ const DepositPage = (props: Props): ReactElement => {
 
   return (
     <Container maxWidth={isLgDown ? "sm" : "lg"} sx={{ pt: 5, pb: 10 }}>
-      {poolData?.aprs?.keep?.apr.gt(Zero) &&
-        myShareData?.lpTokenBalance.gt(0) && (
-          <LPStakingBanner
-            stakingLink={"https://dashboard.keep.network/liquidity"}
-          />
-        )}
       {poolData?.name === VETH2_POOL_NAME &&
         myShareData?.lpTokenBalance.gt(0) && (
           <LPStakingBanner stakingLink={"https://www.sharedstake.org/earn"} />
@@ -152,18 +146,20 @@ const DepositPage = (props: Props): ReactElement => {
               </Box>
               <div className={"transactionInfoContainer"}>
                 <Stack mt={4} spacing={1}>
-                  {/* TODO: Check the style of KEEP APR */}
-                  {poolData?.aprs?.keep?.apr.gt(Zero) && (
+                  {poolData?.aprs?.threshold?.apr.gt(Zero) && (
                     <div>
                       <a
                         href="https://docs.saddle.finance/faq#what-are-saddles-liquidity-provider-rewards"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <span>{`KEEP APR:`}</span>
+                        <span>{`Threshold APR:`}</span>
                       </a>{" "}
                       <Typography component="span" variant="body1">
-                        {formatBNToPercentString(poolData.aprs.keep.apr, 18)}
+                        {formatBNToPercentString(
+                          poolData.aprs.threshold.apr,
+                          18,
+                        )}
                       </Typography>
                     </div>
                   )}
