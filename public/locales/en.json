@@ -234,7 +234,7 @@
   "unnecessaryApprovalAskA": "As some tokens (eg. USDT) do not comply to ERC20 standards for `approve` function, when using limited approvals, you may have to reset the approvals to 0 before changing to another value. If gas usage is your concern, we recommend using unlimited approvals. Otherwise, we recommend using limited approvals for added security.",
   "unnecessaryApprovalAskQ": "Reset token approval to 0 when having partial approval beforehand.",
   "unstakeAll": "Unstake All",
-  "usdBalance": "USD balance",
+  "usdMetapool": "USD Metapool",
   "btcMetapool": "BTC Metapool",
   "basepool": "Base Pool",
   "unstakeComplete": "Unstake on {{poolName}} complete",

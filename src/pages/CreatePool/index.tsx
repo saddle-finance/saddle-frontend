@@ -263,7 +263,7 @@ export default function CreatePool(): React.ReactElement {
                   fullWidth
                 >
                   <ToggleButton value="usdMetapool" size="large">
-                    {t("usdBalance")}
+                    {t("usdMetapool")}
                   </ToggleButton>
                   <ToggleButton value="btcMetapool">
                     {t("btcMetapool")}
