@@ -70,6 +70,7 @@ const lightPalette: PaletteOptions | undefined = {
   },
   mute: {
     main: "#FAF3CE",
+    light: "#FAF3CE",
     dark: "#E3D899",
     states: {
       containedHoverBackground: "#E3D899",
@@ -158,6 +159,7 @@ const darkPalette: PaletteOptions | undefined = {
   mute: {
     main: "#311188",
     light: "#4B11F2",
+    dark: "#200B5B",
     states: {
       containedHoverBackground: "#4B11F2",
     },
