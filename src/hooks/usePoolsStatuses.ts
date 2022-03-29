@@ -58,11 +58,11 @@ export default function usePoolStatuses(): PoolStatuses {
       try {
         const tvls = await ethcallProvider.tryEach(
           supplyCalls,
-          supplyCalls.map(() => true),
+          supplyCalls.map(() => false),
         )
         const pausedStatuses = await ethcallProvider.tryEach(
           pausedCalls,
-          pausedCalls.map(() => true),
+          pausedCalls.map(() => false),
         )
         const tvlsUSD = pools.map((pool, i) => {
           const tvlAmount = tvls[i]

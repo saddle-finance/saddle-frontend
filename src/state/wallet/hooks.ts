@@ -32,7 +32,7 @@ export function usePoolTokenBalances(): { [token: string]: BigNumber } | null {
         .map((c) => c.balanceOf(account))
       const balances = await ethcallProvider.tryEach(
         balanceCalls,
-        balanceCalls.map(() => true),
+        balanceCalls.map(() => false),
       )
 
       const ethBalance = await library.getBalance(account)

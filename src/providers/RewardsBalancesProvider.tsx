@@ -158,7 +158,7 @@ function usePoolsRewardBalances() {
     try {
       const fetchedBalances = await ethcallProvider.tryEach(
         pendingSDLCalls,
-        pendingSDLCalls.map(() => true),
+        pendingSDLCalls.map(() => false),
       )
       setBalances(
         fetchedBalances.reduce((acc, balance, i) => {
