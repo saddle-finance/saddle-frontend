@@ -20,6 +20,10 @@ export function isAddress(value: string): string | false {
   }
 }
 
+export function enumerate(length: number, start = 0): number[] {
+  return Array.from(Array(length).keys()).map((x) => x + start)
+}
+
 // account is not optional
 export function getSigner(
   library: Web3Provider,
