@@ -77,6 +77,8 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   coverage-cypress-stateless:
+    env:
+      REACT_APP_NOTIFY_DAPP_ID: ${{ secrets.REACT_APP_NOTIFY_DAPP_ID }}
     runs-on: ubuntu-latest
     services:
       saddle-contract:
@@ -95,7 +97,7 @@ jobs:
           install: true
           start: npm run cy:coveragestateless
           wait-on: 'http://localhost:3000'
-          wait-on-timeout: 120
+          wait-on-timeout: 240
           browser: chrome
           spec: cypress/integration/stateless/*
       - run: npx nyc report --reporter=text
@@ -109,8 +111,6 @@ jobs:
           path: |
             cypress/screenshots/
             cypress/videos/
-    env:
-      REACT_APP_NOTIFY_DAPP_ID: ${{ secrets.REACT_APP_NOTIFY_DAPP_ID }}
 
   coverage-cypress-stateful:
     env:

@@ -9,6 +9,6 @@
       "root": "#root"
     }
   },
-  "defaultCommandTimeout": 40000,
-  "requestTimeout": 40000
+  "defaultCommandTimeout": 60000,
+  "requestTimeout": 60000
 }
