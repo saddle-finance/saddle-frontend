@@ -5,13 +5,14 @@ import {
   Box,
   Checkbox,
   InputAdornment,
+  ToggleButton as MuiToggleButton,
   OutlinedInput,
   Stack,
   TextField,
-  ToggleButton,
   ToggleButtonGroup,
   Tooltip,
   Typography,
+  styled,
 } from "@mui/material"
 import { Deadlines, GasPrices, Slippages } from "../state/user"
 import React, { ReactElement } from "react"
@@ -32,6 +33,12 @@ import { AppState } from "../state/index"
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
 import { PayloadAction } from "@reduxjs/toolkit"
 import { useTranslation } from "react-i18next"
+
+const ToggleButton = styled(MuiToggleButton)(({ theme }) => ({
+  "&.Mui-selected": {
+    border: `1px solid ${theme.palette.primary.main} !important`,
+  },
+}))
 
 export default function AdvancedOptions(): ReactElement {
   const { t } = useTranslation()
@@ -119,6 +126,7 @@ export default function AdvancedOptions(): ReactElement {
                   size="small"
                   fullWidth
                   exclusive
+                  color="mute"
                   value={slippageSelected}
                   onChange={handleSlippage}
                 >
@@ -163,6 +171,7 @@ export default function AdvancedOptions(): ReactElement {
                 size="small"
                 fullWidth
                 exclusive
+                color="mute"
                 value={transactionDeadlineSelected}
                 onChange={handleDeadline}
               >
