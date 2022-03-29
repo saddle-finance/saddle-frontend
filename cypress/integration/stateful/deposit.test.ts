@@ -1,4 +1,4 @@
-import { PoolName } from "../../src/constants"
+import { PoolName } from "../../../src/constants"
 
 const poolTokens: { [key: string]: string[] } = {
   "BTC V2": ["WBTC", "RENBTC", "sBTC"],
