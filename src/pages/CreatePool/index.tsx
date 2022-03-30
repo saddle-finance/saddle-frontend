@@ -46,7 +46,7 @@ export default function CreatePool(): React.ReactElement {
   const [inputLoading, setInputLoading] = useState<boolean[]>([false])
   const [poolName, setPoolName] = useState<string>("")
   const [poolSymbol, setPoolSymbol] = useState<string>("")
-  const [parameter, setParameter] = useState<string>("")
+  const [aParameter, setAParameter] = useState<string>("")
   const [poolType, setPoolType] = useState<PoolType>("usdMetapool")
   const [assetType, setAssetType] = useState<AssetType>("USD")
   const [tokenInputs, setTokenInputs] = useState<string[]>([""])
@@ -112,28 +112,25 @@ export default function CreatePool(): React.ReactElement {
 
   const poolNameError = poolName.length > 10
   const poolSymbolError = poolSymbol.length > 14
-  const parameterError =
-    !isNumber(parameter) ||
-    parseFloat(parameter) < 1 ||
-    parseFloat(parameter) > 400
+  const aParameterError = !isNumber(aParameter) || parseFloat(aParameter) < 1
 
   const feeError =
     !isNumber(fee) || parseFloat(fee) > 1 || parseFloat(fee) < 0.04
 
   useEffect(() => {
-    const ishavingErrorField =
-      poolNameError || poolSymbolError || parameterError || feeError
-    const ishavingAllValue =
+    const hasFieldError =
+      poolNameError || poolSymbolError || aParameterError || feeError
+    const hasAllValues =
       poolName.length > 0 &&
       poolSymbol.length > 0 &&
       fee.length > 0 &&
-      parameter.length > 0
-    setDisableCreatePool(ishavingErrorField || !ishavingAllValue)
+      aParameter.length > 0
+    setDisableCreatePool(hasFieldError || !hasAllValues)
   }, [
     fee.length,
     feeError,
-    parameter.length,
-    parameterError,
+    aParameter.length,
+    aParameterError,
     poolName.length,
     poolNameError,
     poolSymbol.length,
@@ -209,7 +206,6 @@ export default function CreatePool(): React.ReactElement {
                     fullWidth
                     value={fee}
                     type="text"
-                    inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                     error={feeError}
                     onChange={(e) => setFee(e.target.value)}
                     helperText={feeError && t("feeError")}
@@ -225,10 +221,9 @@ export default function CreatePool(): React.ReactElement {
                   </Typography>
                   <TextField
                     label={t("aParameter")}
-                    inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-                    onChange={(e) => setParameter(e.target.value)}
-                    error={parameterError}
-                    helperText={parameterError && t("parameterError")}
+                    onChange={(e) => setAParameter(e.target.value)}
+                    error={aParameterError}
+                    helperText={aParameterError && t("aParameterError")}
                     fullWidth
                   />
                 </Box>

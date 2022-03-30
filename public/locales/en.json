@@ -131,7 +131,7 @@
   "noTokensFound": "No tokens found.",
   "others": "Others",
   "ofPool": "of pool",
-  "parameterError": "Parameter should be a number between 1 and 400",
+  "aParameterError": "Parameter should be a number greater than 0",
   "poolIsNotAcceptingDeposits": "Pool is not accepting additional deposits at this time",
   "poolName": "Pool Name",
   "poolNameError": "Pool Name length should be less than 10 characters",
