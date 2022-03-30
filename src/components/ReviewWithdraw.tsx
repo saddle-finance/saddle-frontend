@@ -1,9 +1,14 @@
-import "./ReviewWithdraw.scss"
-
+import {
+  Box,
+  Button,
+  DialogContent,
+  Divider,
+  Typography,
+  styled,
+} from "@mui/material"
 import React, { ReactElement, useState } from "react"
 
 import { AppState } from "../state/index"
-import Button from "./Button"
 import { GasPrices } from "../state/user"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { ReviewWithdrawData } from "./WithdrawPage"
@@ -20,6 +25,11 @@ interface Props {
   data: ReviewWithdrawData
   gas: GasPrices
 }
+
+const WithdrawInfoItem = styled(Box)(() => ({
+  display: "flex",
+  justifyContent: "space-between",
+}))
 
 function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
   const { t } = useTranslation()
@@ -44,94 +54,104 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
   const shouldDisplayGas = !!gasStandard
 
   return (
-    <div className="reviewWithdraw">
-      <h3>{t("youWillReceive")}</h3>
-      <div className="table">
-        <div className="tokenList">
-          {data.withdraw.map((token, index) => (
-            <div className="eachToken" key={index}>
-              <div className="value">
-                <span className="value">{token.value}</span>
-              </div>
-              <div className="token">
-                <img src={token.icon} alt="icon" />
-                <span>{token.name}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="divider"></div>
-        {shouldDisplayGas && (
-          <div className="withdrawInfoItem">
-            <span className="label">{t("gas")}</span>
-            <span className="value">
-              {formatGasToString(
-                { gasStandard, gasFast, gasInstant },
-                gasPriceSelected,
-                gasCustom,
-              )}{" "}
-              GWEI
-            </span>
-          </div>
-        )}
-        {/* TODO: Create a light API to expose the cached BlockNative gas estimates. */}
-        {/* {data.txnGasCost?.valueUSD && (
-          <div className="withdrawInfoItem">
-            <span className="label">{t("estimatedTxCost")}</span>
-            <span className="value">
+    <DialogContent>
+      <Typography variant="h1">{t("reviewWithdraw")}</Typography>
+      {/* <Typography variant="subtitle1" my={2}>
+        {t("withdrawing")}
+      </Typography> */}
+      <Typography variant="subtitle1" my={2}>
+        {t("receiving")}
+      </Typography>
+      <Box>
+        {data.withdraw.map((token, index) => (
+          <WithdrawInfoItem key={index} mb={1}>
+            <Box display="flex" alignItems="center">
+              <img src={token.icon} alt="icon" width={20} height={20} />
+              <Typography ml={0.5}>{token.name}</Typography>
+            </Box>
+
+            <Typography variant="body1">{token.value}</Typography>
+          </WithdrawInfoItem>
+        ))}
+        {/* <WithdrawInfoItem>
+          <Typography variant="body1">{t("total")}</Typography>
+          <Typography></Typography>
+        </WithdrawInfoItem> */}
+      </Box>
+      <Divider sx={{ my: 3 }} />
+      {shouldDisplayGas && (
+        <WithdrawInfoItem>
+          <Typography variant="body1">{t("gas")}</Typography>
+          <Typography variant="body1">
+            {formatGasToString(
+              { gasStandard, gasFast, gasInstant },
+              gasPriceSelected,
+              gasCustom,
+            )}{" "}
+            GWEI
+          </Typography>
+        </WithdrawInfoItem>
+      )}
+      {/* TODO: Create a light API to expose the cached BlockNative gas estimates. */}
+      {/* {data.txnGasCost?.valueUSD && (
+          <WithdrawInfoItem>
+            <Typography variant="body1">{t("estimatedTxCost")}</Typography>
+            <Typography variant="body1">
               {`≈$${commify(formatBNToString(data.txnGasCost.valueUSD, 2, 2))}`}{" "}
-            </span>
-          </div>
+            </Typography>
+          
         )} */}
-        <div className="withdrawInfoItem">
-          <span className="label">{t("maxSlippage")}</span>
-          <span className="value">
-            {formatSlippageToString(slippageSelected, slippageCustom)}%
-          </span>
-        </div>
-        <div className="withdrawInfoItem">
-          <span className="label">{t("deadline")}</span>
-          <span className="value">
-            {deadline} {t("minutes")}
-          </span>
-        </div>
-        <div className="withdrawInfoItem">
-          <span className="label">{`${t("rates")}:`}</span>
-          <div className="rates value">
-            {data.rates.map((rate, index) => (
-              <span key={index}>
-                1 {rate.name} = ${rate.rate}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
+      <WithdrawInfoItem>
+        <Typography variant="body1">{t("maxSlippage")}</Typography>
+        <Typography variant="body1">
+          {formatSlippageToString(slippageSelected, slippageCustom)}%
+        </Typography>
+      </WithdrawInfoItem>
+      <WithdrawInfoItem>
+        <Typography variant="body1">{t("deadline")}</Typography>
+        <Typography variant="body1">
+          {deadline} {t("minutes")}
+        </Typography>
+      </WithdrawInfoItem>
+      <WithdrawInfoItem>
+        <Typography variant="body1">{`${t("rates")}:`}</Typography>
+        <Box>
+          {data.rates.map((rate, index) => (
+            <Typography key={index}>
+              1 {rate.name} = ${rate.rate}
+            </Typography>
+          ))}
+        </Box>
+      </WithdrawInfoItem>
       {isHighSlippageTxn && (
-        <div className="withdrawInfoItem">
+        <WithdrawInfoItem>
           <HighPriceImpactConfirmation
             checked={hasConfirmedHighPriceImpact}
             onCheck={(): void =>
               setHasConfirmedHighPriceImpact((prevState) => !prevState)
             }
           />
-        </div>
+        </WithdrawInfoItem>
       )}
-      <div className="bottom">
-        <p>{t("estimatedOutput")}</p>
-        <div className="buttonWrapper">
-          <Button
-            onClick={onConfirm}
-            kind="primary"
-            disabled={isHighSlippageTxn && !hasConfirmedHighPriceImpact}
-          >
-            {t("confirmWithdraw")}
-          </Button>
-          <Button onClick={onClose} kind="cancel">
-            {t("cancel")}
-          </Button>
-        </div>
+      <Divider />
+      <Typography variant="body2" my={1}>
+        {t("estimatedOutput")}
+      </Typography>
+      <div>
+        <Button
+          variant="contained"
+          size="large"
+          fullWidth
+          onClick={onConfirm}
+          disabled={isHighSlippageTxn && !hasConfirmedHighPriceImpact}
+        >
+          {t("confirmWithdraw")}
+        </Button>
+        <Button size="large" fullWidth onClick={onClose} sx={{ mt: 1 }}>
+          {t("cancel")}
+        </Button>
       </div>
-    </div>
+    </DialogContent>
   )
 }
 
