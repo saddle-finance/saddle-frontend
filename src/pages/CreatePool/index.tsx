@@ -27,11 +27,11 @@ import { getContract } from "../../utils"
 import { useActiveWeb3React } from "../../hooks"
 import { useTranslation } from "react-i18next"
 
-type PoolType = "usdMetapool" | "btcMetapool" | "basepool"
+export type PoolType = "usdMetapool" | "btcMetapool" | "basepool"
 
-type AssetType = "USD" | "ETH" | "BTC" | "OTHERS"
+export type AssetType = "USD" | "ETH" | "BTC" | "OTHERS"
 
-type TextFieldColors =
+export type TextFieldColors =
   | "primary"
   | "secondary"
   | "error"
@@ -118,8 +118,20 @@ export default function CreatePool(): React.ReactElement {
     !isNumber(fee) || parseFloat(fee) > 1 || parseFloat(fee) < 0.04
 
   useEffect(() => {
+    const tokenInfoErrors = tokenInfo.map((token) => {
+      console.log({ token })
+      if (token.checkResult === "success") {
+        return "success"
+      }
+      return "error"
+    })
+    console.log({ tokenInfoErrors })
     const hasFieldError =
-      poolNameError || poolSymbolError || aParameterError || feeError
+      poolNameError ||
+      poolSymbolError ||
+      aParameterError ||
+      feeError ||
+      tokenInfoErrors.includes("error")
     const hasAllValues =
       poolName.length > 0 &&
       poolSymbol.length > 0 &&
@@ -135,6 +147,7 @@ export default function CreatePool(): React.ReactElement {
     poolNameError,
     poolSymbol.length,
     poolSymbolError,
+    tokenInfo,
   ])
 
   return (
@@ -421,6 +434,16 @@ export default function CreatePool(): React.ReactElement {
         </form>
       </Paper>
       <ReviewCreatePool
+        poolData={{
+          poolName,
+          poolSymbol,
+          aParameter,
+          poolType,
+          assetType,
+          tokenInputs,
+          tokenInfo,
+          fee,
+        }}
         open={openCreatePoolDlg}
         onClose={() => setOpenCreatePoolDlg(false)}
       />

@@ -8,24 +8,46 @@ import {
   Stack,
   Typography,
 } from "@mui/material"
+import { AssetType, PoolType, TextFieldColors } from "."
 import DialogTitle from "../../components/DialogTitle"
 import React from "react"
 import { useTranslation } from "react-i18next"
 
-type Props = { open: boolean; onClose?: () => void }
+type Props = {
+  open: boolean
+  onClose?: () => void
+  poolData: {
+    poolName: string
+    poolSymbol: string
+    aParameter: string
+    poolType: PoolType
+    fee: string
+    assetType: AssetType
+    tokenInputs: string[]
+    tokenInfo: {
+      name: string
+      symbol: string
+      decimals: number
+      checkResult: TextFieldColors
+    }[]
+  }
+}
 
 export default function ReviewCreatePool({
   open,
   onClose = () => null,
+  poolData,
 }: Props): JSX.Element {
   const { t } = useTranslation()
 
   const handleCreatePool = () => {
+    // Make contract call handleCreatePool.
+    // Then reset the state data on Pool Creation Page.
     onClose()
   }
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open}>
       <DialogTitle variant="h1" onClose={onClose}>
         Review Pool Creation
       </DialogTitle>
@@ -38,27 +60,31 @@ export default function ReviewCreatePool({
         <Stack my={3} spacing={1}>
           <Box display="flex" justifyContent="space-between">
             <Typography>{t("poolName")}</Typography>
-            <Typography>vUSD</Typography>
+            <Typography>{poolData.poolName}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography>{t("poolSymbol")}</Typography>
-            <Typography>Saddle-vUSD</Typography>
+            <Typography>{poolData.poolSymbol}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography>{t("fee")}</Typography>
-            <Typography>0.9%</Typography>
+            <Typography>{poolData.fee}%</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography>{t("aParameter")}</Typography>
-            <Typography>120</Typography>
+            <Typography>{poolData.aParameter}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography>{t("poolType")}</Typography>
-            <Typography>USD MetaPool</Typography>
+            <Typography>{poolData.poolType}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography>Tokens</Typography>
-            <Typography>vUSD</Typography>
+            <Typography>
+              {poolData.tokenInfo.map(
+                (token, i) => (i ? ", " : "") + token.name,
+              )}
+            </Typography>
           </Box>
         </Stack>
         <Divider />
@@ -70,7 +96,9 @@ export default function ReviewCreatePool({
           <Button variant="contained" size="large" onClick={handleCreatePool}>
             Create Pool
           </Button>
-          <Button size="large">Go back to edit</Button>
+          <Button onClick={onClose} size="large">
+            Go back to edit
+          </Button>
         </Stack>
       </DialogContent>
     </Dialog>
