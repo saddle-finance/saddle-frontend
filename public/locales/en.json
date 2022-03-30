@@ -48,7 +48,7 @@
   "addPoolNameAndSymbol": "Add pool name and symbol",
   "addPoolNameExample": "Pool name example: alETH pool, MIM Metapool.",
   "addPoolSymbolExample": "Pool Symbol example: saddle-alETH, saddle-MIM-3pool.",
-  "amplificationParameter": "Amplification parameter - controls tolerance for imbalance within the pool's assets. Higher A means lower tolerance for imbalance.",
+  "amplificationParameter": "Amplification parameter - controls tolerance for imbalance within the pool's assets. Higher A means a more stable and less change in price.",
   "suggestedValue": "Suggested values:",
   "suggestedValue-1": "5-10: Uncollateralized algorithmic stablecoins",
   "suggestedValue-2": "100: Non-redeemable collateralized assets",
