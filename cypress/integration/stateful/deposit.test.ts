@@ -9,7 +9,7 @@ context("Deposit Flow", () => {
   beforeEach(() => {
     const host = Cypress.env("DAPP_HOST") as string
     cy.visit(`${host}#/pools`)
-    cy.wait(3000)
+    cy.wait(5000)
   })
   function testPoolDeposit(poolName: PoolName) {
     it(`successfully completes a deposit of all ${poolName} assets`, () => {
