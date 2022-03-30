@@ -213,9 +213,8 @@ export async function getMulticallProvider(
   const ethcallProvider = new Provider() as unknown as MulticallProvider
   await ethcallProvider.init(library)
   if (chainId === ChainId.HARDHAT) {
-    // @ts-ignore
     ethcallProvider.multicall3 = {
-      address: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+      address: "0xcA11bde05977b3631167028862bE2a173976CA11",
       block: 0,
     }
     ethcallProvider.multicall = {

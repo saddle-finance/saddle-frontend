@@ -30,7 +30,10 @@ export function usePoolTokenBalances(): { [token: string]: BigNumber } | null {
           ) as MulticallContract<Erc20>
         })
         .map((c) => c.balanceOf(account))
-      const balances = await ethcallProvider.all(balanceCalls)
+      const balances = await ethcallProvider.tryEach(
+        balanceCalls,
+        balanceCalls.map(() => false),
+      )
 
       const ethBalance = await library.getBalance(account)
       setBalances(
