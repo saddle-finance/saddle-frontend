@@ -1,4 +1,4 @@
-import { PoolName } from "../../src/constants"
+import { PoolName } from "../../../src/constants"
 
 // have two seperate maps here since the naming convention is different throughout the page
 const poolTokensFullName: { [key: string]: string[] } = {

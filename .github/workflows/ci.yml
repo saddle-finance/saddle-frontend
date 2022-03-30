@@ -58,7 +58,7 @@ jobs:
       - run: npm test
         env:
           CI: true
-
+  
   coverage:
     runs-on: ubuntu-latest
     steps:
@@ -76,7 +76,43 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-  coverage-cypress:
+  coverage-cypress-stateless:
+    env:
+      REACT_APP_NOTIFY_DAPP_ID: ${{ secrets.REACT_APP_NOTIFY_DAPP_ID }}
+    runs-on: ubuntu-latest
+    services:
+      saddle-contract:
+        image: saddlefinance/contracts:latest
+        ports:
+          - 8545:8545
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+          
+      - name: 'UI Tests - Stateless'
+        uses: cypress-io/github-action@v2
+        with: 
+          install: true
+          start: npm run cy:coveragestateless
+          wait-on: 'http://localhost:3000'
+          wait-on-timeout: 240
+          browser: chrome
+          spec: cypress/integration/stateless/*
+      - run: npx nyc report --reporter=text
+      - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: E2E Failures
+          path: |
+            cypress/screenshots/
+            cypress/videos/
+
+  coverage-cypress-stateful:
     env:
       REACT_APP_NOTIFY_DAPP_ID: ${{ secrets.REACT_APP_NOTIFY_DAPP_ID }}
     runs-on: ubuntu-latest
@@ -94,7 +130,7 @@ jobs:
       # fix for forcing git to use https when pulling deps
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
       - run: npm ci
-      - run: npm run cy:coverage
+      - run: npm run cy:coveragestateful
         env:
           CHOKIDAR_USEPOLLING: 1
       - run: npx nyc report --reporter=text
