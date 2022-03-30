@@ -3,7 +3,6 @@ import {
   Button,
   Container,
   Divider,
-  Grow,
   IconButton,
   InputAdornment,
   Link,
@@ -271,32 +270,38 @@ export default function CreatePool(): React.ReactElement {
                   <ToggleButton value="basepool">{t("basepool")}</ToggleButton>
                 </ToggleButtonGroup>
               </Box>
-              <Grow in={poolType === "basepool"}>
-                <Box flex={1}>
-                  <Typography variant="subtitle1">
-                    {t("chooseAssetType")}
-                  </Typography>
-                  <Divider />
-                  <Typography my={2}>
-                    {t("chooseAssetTypeDescription")}
-                  </Typography>
-                  <ToggleButtonGroup
-                    value={assetType}
-                    color="secondary"
-                    fullWidth
-                    exclusive
-                    onChange={(event, value) => setAssetType(value)}
-                    size="large"
-                  >
-                    <ToggleButton value="USD" color="secondary">
-                      USD
-                    </ToggleButton>
-                    <ToggleButton value="ETH">ETH</ToggleButton>
-                    <ToggleButton value="BTC">BTC</ToggleButton>
-                    <ToggleButton value="OTHERS">{t("others")}</ToggleButton>
-                  </ToggleButtonGroup>
-                </Box>
-              </Grow>
+
+              <Box
+                flex={1}
+                sx={{
+                  opacity: poolType === "basepool" ? 1 : 0.5,
+                  cursor: poolType === "basepool" ? "default" : "not-allowed",
+                }}
+              >
+                <Typography variant="subtitle1">
+                  {t("chooseAssetType")}
+                </Typography>
+                <Divider />
+                <Typography my={2}>
+                  {t("chooseAssetTypeDescription")}
+                </Typography>
+                <ToggleButtonGroup
+                  value={assetType}
+                  color="secondary"
+                  fullWidth
+                  exclusive
+                  onChange={(event, value) => setAssetType(value)}
+                  size="large"
+                  disabled={poolType !== "basepool"}
+                >
+                  <ToggleButton value="USD" color="secondary">
+                    USD
+                  </ToggleButton>
+                  <ToggleButton value="ETH">ETH</ToggleButton>
+                  <ToggleButton value="BTC">BTC</ToggleButton>
+                  <ToggleButton value="OTHERS">{t("others")}</ToggleButton>
+                </ToggleButtonGroup>
+              </Box>
             </Stack>
 
             <Box>

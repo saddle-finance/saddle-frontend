@@ -71,6 +71,13 @@ const toggleButtonStyle = (
             ? theme.palette[color].dark
             : theme.palette[color].main,
       },
+      "&.MuiToggleButtonGroup-grouped": {
+        border: 0,
+        "&.Mui-disabled": {
+          border: 0,
+          cursor: "not-allowed",
+        },
+      },
     },
   }))
 
@@ -99,10 +106,6 @@ export default function ToggleButtonTheme(theme: Theme): Components {
           borderRadius: 6,
         },
         grouped: {
-          border: 0,
-          "&.Mui-disabled": {
-            border: 0,
-          },
           "&:not(:first-of-type)": {
             borderRadius: 6,
             marginLeft: 1,
