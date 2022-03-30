@@ -115,7 +115,7 @@ export default function CreatePool(): React.ReactElement {
   const poolSymbolError = poolSymbol.length > 14
   const parameterError =
     !isNumber(parameter) ||
-    parseFloat(parameter) < 100 ||
+    parseFloat(parameter) < 1 ||
     parseFloat(parameter) > 400
 
   const feeError =
