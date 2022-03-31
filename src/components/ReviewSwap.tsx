@@ -3,6 +3,7 @@ import {
   Button,
   DialogContent,
   Divider,
+  Link,
   Paper,
   Stack,
   Typography,
@@ -12,12 +13,11 @@ import { SWAP_TYPES, TOKENS_MAP, getIsVirtualSwap } from "../constants"
 import { formatBNToString, formatDeadlineToNumber } from "../utils"
 
 import { AppState } from "../state/index"
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
 import { BigNumber } from "@ethersproject/bignumber"
 import DialogTitle from "./DialogTitle"
 import DoubleArrowDown from "@mui/icons-material/KeyboardDoubleArrowDown"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
-import { ReactComponent as ThinArrowDown } from "../assets/icons/thinArrowDown.svg"
-import classnames from "classnames"
 // import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import { isHighPriceImpact } from "../utils/priceImpact"
@@ -80,23 +80,23 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
           <DirectSwapTokens data={data} />
         )}
         {data.swapType === SWAP_TYPES.SYNTH_TO_SYNTH && (
-          <Box display="flex">
-            <span className="aside">
+          <Box>
+            <Typography>
               {t("virtualSwapSynthToSynthInfo")}{" "}
-              <a href="https://blog.synthetix.io/how-fee-reclamation-rebates-work/">
+              <Link href="https://blog.synthetix.io/how-fee-reclamation-rebates-work/">
                 {t("learnMore")}
-              </a>
-            </span>
+              </Link>
+            </Typography>
           </Box>
         )}
-        <Divider />
-        <Stack my={3} spacing={1}>
+        <Divider sx={{ my: 3 }} />
+        <Stack mb={3} spacing={1}>
           <Box display="flex">
             <Typography component="span">{t("price")} </Typography>
-            <Typography component="span" ml={1}>
+            <Typography component="span" mx={1}>
               {data.exchangeRateInfo.pair}
             </Typography>
-            <button>
+            <Button variant="contained" size="small">
               <svg
                 width="24"
                 height="20"
@@ -113,7 +113,7 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
                   fill="#D67A0A"
                 />
               </svg>
-            </button>
+            </Button>
             <Typography component="span" ml="auto" mr={0}>
               {formatBNToString(data.exchangeRateInfo.exchangeRate, 18, 6)}
             </Typography>
@@ -225,30 +225,37 @@ function VirtualSwapTokens({ data }: { data: Props["data"] }) {
         const isLast = i === data.exchangeRateInfo.route.length - 1
         const token = TOKENS_MAP[symbol]
         return (
-          <div className="row" key={symbol}>
-            <div>
-              {!isFirst && !isLast && <ThinArrowDown className="stepArrow" />}
-              <img className="tokenIcon" src={token.icon} alt="icon" />
-              <span className={classnames("tokenName", { grey: isLast })}>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            key={symbol}
+            mb={1}
+          >
+            <Stack direction="row" spacing={1}>
+              {!isFirst && !isLast && <ArrowDownwardIcon />}
+              <img src={token.icon} alt="icon" />
+              <Typography color={isLast ? "text.secondary" : "text.primary"}>
                 {token.symbol}
-              </span>
+              </Typography>
 
               {(isFirst || isLast) && (
-                <span className="aside">
-                  {" "}
+                <Typography>
                   (
                   {t("stepN", {
                     step: isFirst ? 1 : 2,
                   })}
                   )
-                </span>
+                </Typography>
+              )}
+            </Stack>
+            <div>
+              {isFirst && <Typography>{data.from.value}</Typography>}
+              {isLast && (
+                <Typography color="text.secondary">{data.to.value}</Typography>
               )}
             </div>
-            <div>
-              {isFirst && <span>{data.from.value}</span>}
-              {isLast && <span className="grey">{data.to.value}</span>}
-            </div>
-          </div>
+          </Box>
         )
       })}
     </>
