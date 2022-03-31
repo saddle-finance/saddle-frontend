@@ -242,7 +242,7 @@ const WithdrawPage = (props: Props): ReactElement => {
 
       <Dialog
         open={!!currentModal}
-        maxWidth="sm"
+        maxWidth="xs"
         fullWidth
         onClose={(): void => setCurrentModal(null)}
         scroll="body"
