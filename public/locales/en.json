@@ -1,5 +1,6 @@
 {
   "approveSpend": "Approve {{tokenName}} spend",
+  "available": "Available",
   "totalRetroactiveDrop": "Total Retroactive Drop (incl. unvested)",
   "totalClaimableSDL": "Total Claimable SDL",
   "retroactiveDrop": "Retroactive Drop",
@@ -131,6 +132,7 @@
   "noTokensFound": "No tokens found.",
   "others": "Others",
   "ofPool": "of pool",
+  "OR": "OR",
   "parameterError": "Parameter should be a number between 1 and 400",
   "poolIsNotAcceptingDeposits": "Pool is not accepting additional deposits at this time",
   "poolName": "Pool Name",
