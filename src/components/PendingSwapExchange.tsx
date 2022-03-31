@@ -120,6 +120,7 @@ const PendingSwapExchange = ({
       <Button
         variant="contained"
         fullWidth
+        color="primary"
         size="large"
         onClick={settle}
         disabled={
@@ -138,13 +139,14 @@ const PendingSwapExchange = ({
       <Button
         variant="contained"
         fullWidth
+        color="secondary"
         size="large"
         onClick={withdraw}
         disabled={!inputState.value || !!inputState.error}
       >
         <Trans t={t} i18nKey="withdrawSynth">
-          Withdraw <img src={synthTokenFrom.icon} />{" "}
-          {{ name: synthTokenFrom.symbol }}
+          Withdraw as
+          <img src={synthTokenFrom.icon} /> {{ name: synthTokenFrom.symbol }}
         </Trans>
       </Button>
 
