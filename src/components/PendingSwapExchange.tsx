@@ -155,7 +155,7 @@ const PendingSwapExchange = ({
         {synthTokenFrom.symbol}
       </Button>
 
-      <AdvancedOptions />
+      <AdvancedOptions isOutlined />
     </Box>
   )
 }
