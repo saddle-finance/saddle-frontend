@@ -56,8 +56,14 @@ export default function usePoolStatuses(): PoolStatuses {
         })
         .map((c) => c.paused())
       try {
-        const tvls = await ethcallProvider.all(supplyCalls)
-        const pausedStatuses = await ethcallProvider.all(pausedCalls)
+        const tvls = await ethcallProvider.tryEach(
+          supplyCalls,
+          supplyCalls.map(() => false),
+        )
+        const pausedStatuses = await ethcallProvider.tryEach(
+          pausedCalls,
+          pausedCalls.map(() => false),
+        )
         const tvlsUSD = pools.map((pool, i) => {
           const tvlAmount = tvls[i]
           let tokenValue = 0

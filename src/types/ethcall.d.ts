@@ -51,10 +51,12 @@ export class MulticallProvider extends Provider {
   all<O>(calls: MulticallCall<I, O>[], block?: number): Promise<O[]> // fallthrough to array type
   tryEach<A extends MulticallCall>(
     calls: readonly [A],
+    canFail: boolean[],
     block?: number,
   ): Promise<[A["outputs"]]>
   tryEach<A extends MulticallCall, B extends MulticallCall>(
     calls: readonly [A, B],
+    canFail: boolean[],
     block?: number,
   ): Promise<[A["outputs"], B["outputs"]]>
   tryEach<
@@ -63,6 +65,7 @@ export class MulticallProvider extends Provider {
     C extends MulticallCall,
   >(
     calls: readonly [A, B, C],
+    canFail: boolean[],
     block?: number,
   ): Promise<[A["outputs"], B["outputs"], C["outputs"]]>
   tryEach<
@@ -72,7 +75,12 @@ export class MulticallProvider extends Provider {
     D extends MulticallCall,
   >(
     calls: readonly [A, B, C, D],
+    canFail: boolean[],
     block?: number,
   ): Promise<[A["outputs"], B["outputs"], C["outputs"], D["outputs"]]>
-  tryEach<O>(calls: MulticallCall<I, O>[], block?: number): Promise<O[]> // fallthrough to array type
+  tryEach<O>(
+    calls: MulticallCall<I, O>[],
+    canFail: boolean[],
+    block?: number,
+  ): Promise<O[]> // fallthrough to array type
 }
