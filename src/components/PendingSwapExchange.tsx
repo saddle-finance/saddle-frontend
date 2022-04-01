@@ -1,6 +1,5 @@
 import { Box, Button, Typography } from "@mui/material"
 import React, { ReactElement, useCallback, useState } from "react"
-import { Trans, useTranslation } from "react-i18next"
 import { calculatePrice, commify, formatBNToString } from "../utils"
 
 import AdvancedOptions from "./AdvancedOptions"
@@ -12,6 +11,7 @@ import SwapTokenInput from "./SwapTokenInput"
 import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
 import { useSelector } from "react-redux"
+import { useTranslation } from "react-i18next"
 
 const PendingSwapExchange = ({
   pendingSwap,
@@ -129,9 +129,12 @@ const PendingSwapExchange = ({
         }
         sx={{ mt: 2 }}
       >
-        <Trans t={t} i18nKey="settleAsToken">
-          Settle as <img src={tokenTo.icon} /> {{ name: tokenTo.symbol }}
-        </Trans>
+        {t("settleAsToken")}
+        <img
+          src={tokenTo.icon}
+          style={{ marginLeft: "8px", marginRight: "8px" }}
+        />
+        {tokenTo.symbol}
       </Button>
       <Typography textAlign="center" my={1}>
         {t("OR")}
@@ -144,10 +147,12 @@ const PendingSwapExchange = ({
         onClick={withdraw}
         disabled={!inputState.value || !!inputState.error}
       >
-        <Trans t={t} i18nKey="withdrawSynth">
-          Withdraw as
-          <img src={synthTokenFrom.icon} /> {{ name: synthTokenFrom.symbol }}
-        </Trans>
+        {t("withdrawSynth")}
+        <img
+          src={synthTokenFrom.icon}
+          style={{ marginLeft: "8px", marginRight: "8px" }}
+        />
+        {synthTokenFrom.symbol}
       </Button>
 
       <AdvancedOptions />
