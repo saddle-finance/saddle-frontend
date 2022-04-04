@@ -114,8 +114,8 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
         </Typography>
       </WithdrawInfoItem>
       <WithdrawInfoItem>
-        <Typography variant="body1">{`${t("rates")}:`}</Typography>
-        <Box>
+        <Typography variant="body1">{`${t("rates")}`}</Typography>
+        <Box textAlign="right">
           {data.rates.map((rate, index) => (
             <Typography key={index}>
               1 {rate.name} = ${rate.rate}
@@ -133,11 +133,9 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
           />
         </WithdrawInfoItem>
       )}
-      <Divider />
-      <Typography variant="body2" my={1}>
-        {t("estimatedOutput")}
-      </Typography>
-      <div>
+      <Divider sx={{ my: 3 }} />
+      <Typography variant="body2">{t("estimatedOutput")}</Typography>
+      <Box mt={2}>
         <Button
           variant="contained"
           size="large"
@@ -150,7 +148,7 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
         <Button size="large" fullWidth onClick={onClose} sx={{ mt: 1 }}>
           {t("cancel")}
         </Button>
-      </div>
+      </Box>
     </DialogContent>
   )
 }
