@@ -91,6 +91,9 @@ export default function AdvancedOptions({
         sx={{
           padding: 0,
           border: isOutlined ? "unset" : `1px solid ${theme.palette.divider}`,
+          background: isOutlined
+            ? "transparent"
+            : theme.palette.background.paper,
         }}
       >
         <AccordionSummary
