@@ -1,5 +1,6 @@
 import "./PoolInfoCard.scss"
 
+import { Box, Divider, Typography, styled } from "@mui/material"
 import {
   POOLS_MAP,
   POOL_FEE_PRECISION,
@@ -9,7 +10,6 @@ import {
 import React, { ReactElement } from "react"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 
-import { Divider } from "@mui/material"
 import { PoolDataType } from "../hooks/usePoolData"
 import { Tooltip } from "@mui/material"
 import { commify } from "@ethersproject/units"
@@ -18,6 +18,8 @@ import { useTranslation } from "react-i18next"
 interface Props {
   data: PoolDataType | null
 }
+
+const InfoItem = styled(Box)(() => ({}))
 
 function PoolInfoCard({ data }: Props): ReactElement | null {
   const { t } = useTranslation()
@@ -64,21 +66,36 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
     <div className="poolInfoCard">
       {underlyingPool ? (
         <Tooltip title={<React.Fragment>{t("metapool")}</React.Fragment>}>
-          <h4 className="underline">{formattedData.name}</h4>
+          <Typography
+            variant="h1"
+            sx={{
+              borderBottom: "1px dashed",
+              width: "fit-content",
+              cursor: "help",
+            }}
+          >
+            {formattedData.name}
+          </Typography>
         </Tooltip>
       ) : (
-        <h4>{formattedData.name}</h4>
+        <Typography variant="h1">{formattedData.name}</Typography>
       )}
+      <div>
+        <Typography>{`${t("totalLocked")}:`}</Typography>
+        <Typography component="span" variant="subtitle1">
+          {`$${formattedData.reserve}`}
+        </Typography>
+      </div>
       <div className="info">
-        <div className="infoItem">
-          <span className="label bold">{`${t("status")}:`}</span>
-          <span className="value">{`${
+        <div>
+          <Typography component="span">{`${t("status")}:`}</Typography>
+          <Typography component="span">{`${
             data?.isPaused ? t("paused") : t("active")
-          }`}</span>
+          }`}</Typography>
         </div>
-        <div className="infoItem">
-          <span className="label bold">{`${t("fee")}:`}</span>
-          <span className="value">{formattedData.swapFee}</span>
+        <div>
+          <span>{`${t("fee")}:`}</span>
+          <span>{formattedData.swapFee}</span>
         </div>
         <div className="infoItem">
           <Tooltip
@@ -90,17 +107,13 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
           </Tooltip>
           <span className="value">{formattedData.aParameter}</span>
         </div>
-        <div className="infoItem">
+        <InfoItem>
           <span className="label bold">{`${t("virtualPrice")}:`}</span>
           <span className="value">{formattedData.virtualPrice}</span>
-        </div>
+        </InfoItem>
         <div className="infoItem">
           <span className="label bold">{`${t("utilization")}:`}</span>
           <span className="value">{formattedData.utilization}</span>
-        </div>
-        <div className="infoItem">
-          <span className="label bold">{`${t("totalLocked")}:`}</span>
-          <span className="value">{`$${formattedData.reserve}`}</span>
         </div>
         <div className="twoColumn">
           <div className="infoItem">
