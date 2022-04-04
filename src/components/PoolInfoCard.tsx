@@ -19,7 +19,12 @@ interface Props {
   data: PoolDataType | null
 }
 
-const InfoItem = styled(Box)(() => ({}))
+const InfoItem = styled(Box)(() => ({
+  display: "flex",
+  alignItems: "center",
+  flexDirection: "row",
+  minWidth: "50%",
+}))
 
 function PoolInfoCard({ data }: Props): ReactElement | null {
   const { t } = useTranslation()
@@ -69,7 +74,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
           <Typography
             variant="h1"
             sx={{
-              borderBottom: "1px dashed",
+              borderBottom: "1px dotted",
               width: "fit-content",
               cursor: "help",
             }}
@@ -80,55 +85,58 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
       ) : (
         <Typography variant="h1">{formattedData.name}</Typography>
       )}
-      <div>
+      <InfoItem>
+        <Typography>{`${t("status")}:`}</Typography>
+        <Typography>{`${
+          data?.isPaused ? t("paused") : t("active")
+        }`}</Typography>
+      </InfoItem>
+      <InfoItem>
         <Typography>{`${t("totalLocked")}:`}</Typography>
-        <Typography component="span" variant="subtitle1">
-          {`$${formattedData.reserve}`}
-        </Typography>
-      </div>
-      <div className="info">
-        <div>
-          <Typography component="span">{`${t("status")}:`}</Typography>
-          <Typography component="span">{`${
-            data?.isPaused ? t("paused") : t("active")
-          }`}</Typography>
-        </div>
-        <div>
-          <span>{`${t("fee")}:`}</span>
-          <span>{formattedData.swapFee}</span>
-        </div>
-        <div className="infoItem">
+        <Typography variant="subtitle1">{`$${formattedData.reserve}`}</Typography>
+      </InfoItem>
+      {/* <InfoItem>
+        <Typography>{t("dailyVolume") + ": "}</Typography>
+        <Typography variant="subtitle1">{formattedData.volume}</Typography>
+      </InfoItem> */}
+
+      <Box>
+        <InfoItem>
+          <Typography>{`${t("fee")}:`}</Typography>
+          <Typography>{formattedData.swapFee}</Typography>
+        </InfoItem>
+        <InfoItem>
           <Tooltip
             title={<React.Fragment>{t("aParameterTooltip")}</React.Fragment>}
           >
-            <span className="label bold underline">{`${t(
-              "aParameter",
-            )}:`}</span>
+            <Typography
+              sx={{ cursor: "help", borderBottom: "1px dotted" }}
+            >{`${t("aParameter")}:`}</Typography>
           </Tooltip>
-          <span className="value">{formattedData.aParameter}</span>
-        </div>
-        <InfoItem>
-          <span className="label bold">{`${t("virtualPrice")}:`}</span>
-          <span className="value">{formattedData.virtualPrice}</span>
+          <Typography>{formattedData.aParameter}</Typography>
         </InfoItem>
-        <div className="infoItem">
-          <span className="label bold">{`${t("utilization")}:`}</span>
-          <span className="value">{formattedData.utilization}</span>
-        </div>
-        <div className="twoColumn">
-          <div className="infoItem">
-            <span className="label bold">{`${t("adminFee")}:`}</span>
-            <span className="value">{formattedData.adminFee}</span>
-          </div>
-          {/* <div className="infoItem">
-            <span className="label bold">{t("dailyVolume") + ": "}</span>
-            <span className="value">{formattedData.volume}</span>
-          </div> */}
-        </div>
-      </div>
-      <Divider />
+        <InfoItem>
+          <Typography>{`${t("virtualPrice")}:`}</Typography>
+          <Typography variant="subtitle1">
+            {formattedData.virtualPrice}
+          </Typography>
+        </InfoItem>
+        <InfoItem>
+          <Typography>{`${t("utilization")}:`}</Typography>
+          <Typography variant="subtitle1">
+            {formattedData.utilization}
+          </Typography>
+        </InfoItem>
+
+        <InfoItem>
+          <Typography>{`${t("adminFee")}:`}</Typography>
+          <Typography variant="subtitle1">{formattedData.adminFee}</Typography>
+        </InfoItem>
+      </Box>
+
+      <Divider sx={{ my: 3 }} />
       <div className="bottom">
-        <h4>{t("currencyReserves")}</h4>
+        <Typography variant="h1">{t("currencyReserves")}</Typography>
         <span>{`$${formattedData.reserve} ${t("inTotal")}`}</span>
         <div className="tokenList">
           {formattedData.tokens.map((token, index) => (

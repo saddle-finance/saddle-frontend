@@ -193,7 +193,7 @@
   "tokenValue": "token value",
   "total": "Total",
   "totalAmount": "Total amount",
-  "totalLocked": "Total locked",
+  "totalLocked": "Total locked ($)",
   "transactionComplete": "Transaction complete",
   "transactionInitiated": "Transaction initiated",
   "txCancel_claim": "Claim transaction was canceled.",
