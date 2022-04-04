@@ -209,6 +209,7 @@ const darkPalette: PaletteOptions | undefined = {
     },
   },
   text: {
+    secondary: "#E4E4E4",
     disabled: "#7D7D7D",
   },
   background: {
