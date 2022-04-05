@@ -46,6 +46,7 @@ export interface ReviewWithdrawData {
   slippage: string
   priceImpact: BigNumber
   totalAmount?: string
+  withdrawLPTokenAmount: BigNumber
   txnGasCost: {
     amount: BigNumber
     valueUSD: BigNumber | null // amount * ethPriceUSD

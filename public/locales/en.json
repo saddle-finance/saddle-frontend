@@ -250,6 +250,7 @@
   "whichAssetBucketDoYouWantToSwap": "Which asset bucket do you want to swap?",
   "whichAssetPoolDoYouWantToChoose": "Which asset pool do you want to choose?",
   "withdraw": "Withdraw",
+  "withdrawing": "Withdrawing",
   "withdrawComplete": "Withdraw on {{poolName}} complete",
   "withdrawInitiated": "Withdraw initiated",
   "withdrawal": "Withdrawal",
