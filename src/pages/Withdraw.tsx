@@ -1,7 +1,13 @@
 import { POOLS_MAP, PoolName, isLegacySwapABIPool } from "../constants"
 import React, { ReactElement, useEffect, useState } from "react"
 import WithdrawPage, { ReviewWithdrawData } from "../components/WithdrawPage"
-import { commify, formatUnits, parseUnits } from "@ethersproject/units"
+import {
+  commify,
+  formatEther,
+  formatUnits,
+  parseEther,
+  parseUnits,
+} from "@ethersproject/units"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -37,6 +43,14 @@ function Withdraw({ poolName }: Props): ReactElement {
   const POOL = POOLS_MAP[poolName]
 
   const [estWithdrawBonus, setEstWithdrawBonus] = useState(Zero)
+  const tokenInputSum = POOL.poolTokens.reduce(
+    (sum, { symbol }) =>
+      sum.add(
+        parseEther(withdrawFormState.tokenInputs[symbol].valueRaw) || Zero,
+      ),
+    Zero,
+  )
+
   useEffect(() => {
     // evaluate if a new withdraw will exceed the pool's per-user limit
     async function calculateWithdrawBonus(): Promise<void> {
@@ -48,16 +62,6 @@ function Withdraw({ poolName }: Props): ReactElement {
       ) {
         return
       }
-      const tokenInputSum = parseUnits(
-        POOL.poolTokens
-          .reduce(
-            (sum, { symbol }) =>
-              sum + (+withdrawFormState.tokenInputs[symbol].valueRaw || 0),
-            0,
-          )
-          .toString(),
-        18,
-      )
       let withdrawLPTokenAmount
       if (poolData.totalLocked.gt(0) && tokenInputSum.gt(0)) {
         if (isLegacySwapABIPool(poolData.name)) {
@@ -148,6 +152,7 @@ function Withdraw({ poolName }: Props): ReactElement {
     rates: [],
     slippage: formatSlippageToString(slippageSelected, slippageCustom),
     priceImpact: estWithdrawBonus,
+    totalAmount: formatEther(tokenInputSum),
     txnGasCost: txnGasCost,
   }
   POOL.poolTokens.forEach(({ name, decimals, icon, symbol }) => {

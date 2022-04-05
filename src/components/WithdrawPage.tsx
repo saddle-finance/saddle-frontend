@@ -45,6 +45,7 @@ export interface ReviewWithdrawData {
   }[]
   slippage: string
   priceImpact: BigNumber
+  totalAmount?: string
   txnGasCost: {
     amount: BigNumber
     valueUSD: BigNumber | null // amount * ethPriceUSD

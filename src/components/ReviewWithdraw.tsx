@@ -73,10 +73,10 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
             <Typography variant="body1">{token.value}</Typography>
           </WithdrawInfoItem>
         ))}
-        {/* <WithdrawInfoItem>
+        <WithdrawInfoItem>
           <Typography variant="body1">{t("total")}</Typography>
-          <Typography></Typography>
-        </WithdrawInfoItem> */}
+          <Typography>{data.totalAmount}</Typography>
+        </WithdrawInfoItem>
       </Box>
       <Divider sx={{ my: 3 }} />
       {shouldDisplayGas && (
