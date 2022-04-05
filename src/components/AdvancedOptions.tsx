@@ -13,6 +13,7 @@ import {
   Tooltip,
   Typography,
   styled,
+  useTheme,
 } from "@mui/material"
 import { Deadlines, GasPrices, Slippages } from "../state/user"
 import React, { ReactElement } from "react"
@@ -40,8 +41,14 @@ const ToggleButton = styled(MuiToggleButton)(({ theme }) => ({
   },
 }))
 
-export default function AdvancedOptions(): ReactElement {
+interface AdvancedOptionProps {
+  isOutlined?: boolean
+}
+export default function AdvancedOptions({
+  isOutlined,
+}: AdvancedOptionProps): ReactElement {
   const { t } = useTranslation()
+  const theme = useTheme()
   const dispatch = useDispatch<AppDispatch>()
   const {
     infiniteApproval,
@@ -81,13 +88,33 @@ export default function AdvancedOptions(): ReactElement {
           dispatch(updatePoolAdvancedMode(!advanced))
         }
         expanded={advanced}
+        sx={{
+          padding: 0,
+          border: isOutlined ? "unset" : `1px solid ${theme.palette.divider}`,
+          background: isOutlined
+            ? "transparent"
+            : theme.palette.background.paper,
+        }}
       >
-        <AccordionSummary expandIcon={<ArrowDropDownIcon color="primary" />}>
+        <AccordionSummary
+          expandIcon={<ArrowDropDownIcon color="primary" />}
+          sx={{
+            padding: isOutlined ? 0 : theme.spacing(0, 3),
+            borderBottom: isOutlined
+              ? `1px solid ${theme.palette.primary.main}`
+              : "unset",
+          }}
+        >
           <Typography color="primary" variant="subtitle1">
             {t("advancedOptions")}
           </Typography>
         </AccordionSummary>
-        <AccordionDetails>
+        <AccordionDetails
+          sx={{
+            padding: isOutlined ? 0 : theme.spacing(0, 3, 2, 3),
+            marginTop: isOutlined ? 2 : 0,
+          }}
+        >
           <div data-testid="advTableContainer">
             <Box display="flex" data-testid="infiniteApprovalContainer">
               <Checkbox

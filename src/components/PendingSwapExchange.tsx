@@ -1,18 +1,17 @@
+import { Box, Button, Typography } from "@mui/material"
 import React, { ReactElement, useCallback, useState } from "react"
-import { Trans, useTranslation } from "react-i18next"
 import { calculatePrice, commify, formatBNToString } from "../utils"
 
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state"
 import { BigNumber } from "ethers"
-import Button from "./Button"
 import { PendingSwap } from "../hooks/usePendingSwapData"
 import { SWAP_TYPES } from "../constants"
 import SwapTokenInput from "./SwapTokenInput"
 import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
-import styles from "./PendingSwapExchange.module.scss"
 import { useSelector } from "react-redux"
+import { useTranslation } from "react-i18next"
 
 const PendingSwapExchange = ({
   pendingSwap,
@@ -54,33 +53,33 @@ const PendingSwapExchange = ({
     onPendingSwapSettlement("settle", amount)
   }, [inputState.value, synthTokenFrom.decimals, onPendingSwapSettlement])
   return (
-    <div className={styles.exchangeWrapper}>
-      <div className={styles.stepWrapper}>
-        <h2>{t("step2Settlement")}</h2>
-      </div>
-      <div className={styles.balanceWrapper}>
-        <p>
-          {t("balance")}:{" "}
-          <b
-            className={styles.balance}
-            onClick={() =>
-              setInputState((prevState) => ({
-                ...prevState,
-                valueBN: synthBalance,
-                valueUSD: calculatePrice(
-                  synthBalance,
-                  tokenPricesUSD?.[synthTokenFrom.symbol],
-                  synthTokenFrom.decimals,
-                ),
-                value: formatBNToString(synthBalance, synthTokenFrom.decimals),
-                error: null,
-              }))
-            }
-          >
-            {formattedSynthBalance}
-          </b>
-        </p>
-      </div>
+    <Box width="100%">
+      <Typography variant="h2" color="primary" textAlign="center" mb={4}>
+        {t("step2Settlement")}
+      </Typography>
+
+      <Typography textAlign="right">
+        {t("available")}:{" "}
+        <Button
+          onClick={() =>
+            setInputState((prevState) => ({
+              ...prevState,
+              valueBN: synthBalance,
+              valueUSD: calculatePrice(
+                synthBalance,
+                tokenPricesUSD?.[synthTokenFrom.symbol],
+                synthTokenFrom.decimals,
+              ),
+              value: formatBNToString(synthBalance, synthTokenFrom.decimals),
+              error: null,
+            }))
+          }
+          size="small"
+        >
+          {formattedSynthBalance}
+        </Button>
+      </Typography>
+
       <SwapTokenInput
         tokens={[]}
         onChangeAmount={(newValue) =>
@@ -113,32 +112,51 @@ const PendingSwapExchange = ({
         isSwapFrom={true}
       />
       {inputState.error && (
-        <div className={styles.error}>{inputState.error}</div>
+        <Typography textAlign="center" color="error">
+          {inputState.error}
+        </Typography>
       )}
-      <div className={styles.buttonGroup}>
-        <Button
-          onClick={settle}
-          disabled={
-            (swapType !== SWAP_TYPES.TOKEN_TO_SYNTH && !inputState.value) ||
-            !!inputState.error
-          }
-        >
-          <Trans t={t} i18nKey="settleAsToken">
-            Settle as <img src={tokenTo.icon} /> {{ name: tokenTo.symbol }}
-          </Trans>
-        </Button>
-        <Button
-          onClick={withdraw}
-          disabled={!inputState.value || !!inputState.error}
-        >
-          <Trans t={t} i18nKey="withdrawSynth">
-            Withdraw <img src={synthTokenFrom.icon} />{" "}
-            {{ name: synthTokenFrom.symbol }}
-          </Trans>
-        </Button>
-      </div>
-      <AdvancedOptions />
-    </div>
+
+      <Button
+        variant="contained"
+        fullWidth
+        color="primary"
+        size="large"
+        onClick={settle}
+        disabled={
+          (swapType !== SWAP_TYPES.TOKEN_TO_SYNTH && !inputState.value) ||
+          !!inputState.error
+        }
+        sx={{ mt: 2 }}
+      >
+        {t("settleAsToken")}
+        <img
+          src={tokenTo.icon}
+          style={{ marginLeft: "8px", marginRight: "8px" }}
+        />
+        {tokenTo.symbol}
+      </Button>
+      <Typography textAlign="center" my={1}>
+        {t("OR")}
+      </Typography>
+      <Button
+        variant="contained"
+        fullWidth
+        color="secondary"
+        size="large"
+        onClick={withdraw}
+        disabled={!inputState.value || !!inputState.error}
+      >
+        {t("withdrawSynth")}
+        <img
+          src={synthTokenFrom.icon}
+          style={{ marginLeft: "8px", marginRight: "8px" }}
+        />
+        {synthTokenFrom.symbol}
+      </Button>
+
+      <AdvancedOptions isOutlined />
+    </Box>
   )
 }
 
