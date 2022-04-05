@@ -125,7 +125,6 @@ export default function CreatePool(): React.ReactElement {
       }
       return "error"
     })
-    console.log({ tokenInfoErrors })
     const hasFieldError =
       poolNameError ||
       poolSymbolError ||
