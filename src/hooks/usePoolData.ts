@@ -45,6 +45,7 @@ export interface PoolDataType {
   adminFee: BigNumber
   aParameter: BigNumber
   apy: BigNumber | null
+  claimableAmount: Partial<Record<Partners, BigNumber>>
   name: string
   reserve: BigNumber | null
   swapFee: BigNumber
@@ -85,6 +86,7 @@ const emptyPoolData = {
   adminFee: Zero,
   aParameter: Zero,
   apy: null,
+  claimableAmount: Zero,
   name: "",
   reserve: null,
   swapFee: Zero,
@@ -233,14 +235,15 @@ export default function usePoolData(
           : tokenBalancesUSDSum
               .mul(BigNumber.from(10).pow(18))
               .div(tokenBalancesSum)
-        const { aprs, amountsStaked } = await getThirdPartyDataForPool(
-          library,
-          chainId,
-          account,
-          poolName,
-          tokenPricesUSD,
-          lpTokenPriceUSD,
-        )
+        const { aprs, amountsStaked, claimableAmount } =
+          await getThirdPartyDataForPool(
+            library,
+            chainId,
+            account,
+            poolName,
+            tokenPricesUSD,
+            lpTokenPriceUSD,
+          )
 
         // User share data
         const userLpTokenBalanceStakedElsewhere = Object.keys(
@@ -339,6 +342,7 @@ export default function usePoolData(
         }
 
         const poolData = {
+          claimableAmount,
           name: poolName,
           tokens: poolTokens,
           reserve: tokenBalancesUSDSum,

@@ -21,6 +21,7 @@ import {
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
+import { commify, formatBNToPercentString, formatBNToString } from "../utils"
 
 import AdvancedOptions from "./AdvancedOptions"
 import ConfirmTransaction from "./ConfirmTransaction"
@@ -32,7 +33,6 @@ import PoolInfoCard from "./PoolInfoCard"
 import ReviewDeposit from "./ReviewDeposit"
 import TokenInput from "./TokenInput"
 import { Zero } from "@ethersproject/constants"
-import { formatBNToPercentString } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -168,6 +168,18 @@ const DepositPage = (props: Props): ReactElement => {
               </Box>
               <div className={"transactionInfoContainer"}>
                 <Stack mt={4} spacing={1}>
+                  {poolData?.claimableAmount?.threshold?.gt(Zero) && (
+                    <Box>
+                      Claimable Threshold Amount:{" "}
+                      {commify(
+                        formatBNToString(
+                          poolData?.claimableAmount?.threshold,
+                          18,
+                          4,
+                        ),
+                      )}
+                    </Box>
+                  )}
                   {poolData?.aprs?.threshold?.apr.gt(Zero) && (
                     <div>
                       <a

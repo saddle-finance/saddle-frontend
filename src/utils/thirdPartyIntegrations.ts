@@ -45,6 +45,7 @@ type ThirdPartyData = {
     >
   >
   amountsStaked: Partial<Record<Partners, BigNumber>>
+  claimableAmount: Partial<Record<Partners, BigNumber>>
 }
 export async function getThirdPartyDataForPool(
   library: Web3Provider,
@@ -57,6 +58,7 @@ export async function getThirdPartyDataForPool(
   const result: ThirdPartyData = {
     aprs: {},
     amountsStaked: {},
+    claimableAmount: {},
   }
   try {
     if (poolName === ALETH_POOL_NAME) {
@@ -83,15 +85,17 @@ export async function getThirdPartyDataForPool(
       result.amountsStaked.sharedStake = userStakedAmount
     } else if (poolName === TBTC_METAPOOL_V2_NAME) {
       const rewardSymbol = "T"
-      const [apr, userStakedAmount] = await getThresholdData(
-        library,
-        chainId,
-        lpTokenPriceUSD,
-        tokenPricesUSD?.[rewardSymbol],
-        accountId,
-      )
+      const [apr, thresholdClaimableAmount, userStakedAmount] =
+        await getThresholdData(
+          library,
+          chainId,
+          lpTokenPriceUSD,
+          tokenPricesUSD?.[rewardSymbol],
+          accountId,
+        )
       result.aprs.threshold = { apr, symbol: rewardSymbol }
       result.amountsStaked.threshold = userStakedAmount
+      result.claimableAmount.threshold = thresholdClaimableAmount
     } else if (poolName === D4_POOL_NAME) {
       // this is a slight bastardization of how this is supposed to work
       // TODO: update once we have UI for multiple APYS
@@ -258,7 +262,8 @@ async function getSperaxData(
     library == null ||
     lpTokenPrice.eq("0") ||
     spaPrice === 0 ||
-    chainId !== ChainId.ARBITRUM
+    chainId !== ChainId.ARBITRUM ||
+    !accountId
   )
     return [Zero, Zero]
   const rewardsContract = getContract(
@@ -294,14 +299,15 @@ async function getThresholdData(
   lpTokenPrice: BigNumber,
   thresholdPrice = 0,
   accountId?: string | null,
-): Promise<[BigNumber, BigNumber]> {
+): Promise<[BigNumber, BigNumber, BigNumber]> {
   if (
     library == null ||
     lpTokenPrice.eq("0") ||
     thresholdPrice === 0 ||
-    chainId !== ChainId.MAINNET
+    chainId !== ChainId.MAINNET ||
+    !accountId
   )
-    return [Zero, Zero]
+    return [Zero, Zero, Zero]
   const rewardsContract = getContract(
     "0xe8e1a94F0C960D64E483cA9088A7EC52E77194C2", // prod address
     IREWARDER_ABI,
@@ -313,12 +319,17 @@ async function getThresholdData(
     LP_TOKEN_ABI,
     library,
   ) as LpTokenUnguarded
-  const [totalDeposited, thresholdRewardsPerSecond, userStakedData] =
-    await Promise.all([
-      lpTokenContract.balanceOf(MINICHEF_CONTRACT_ADDRESSES[chainId]),
-      rewardsContract.rewardPerSecond(),
-      rewardsContract.userInfo(accountId || AddressZero),
-    ])
+  const [
+    totalDeposited,
+    thresholdRewardsPerSecond,
+    thresholdClaimableAmount,
+    userStakedData,
+  ] = await Promise.all([
+    lpTokenContract.balanceOf(MINICHEF_CONTRACT_ADDRESSES[chainId]),
+    rewardsContract.rewardPerSecond(),
+    rewardsContract.pendingToken("0x40d2ce4c14f04bd91c59c6a1cd6e28f2a0fc81f8"),
+    rewardsContract.userInfo(accountId || AddressZero),
+  ])
 
   const thresholdPerYear = thresholdRewardsPerSecond.mul(3600 * 24 * 365) // 1e18
   const thresholdPerYearUSD = thresholdPerYear.mul(
@@ -328,5 +339,5 @@ async function getThresholdData(
   const thresholdApr = shiftBNDecimals(thresholdPerYearUSD, 33).div(
     totalDepositedUSD,
   ) // (1e21 + 1e33 = 1e54) / 1e36 = 1e18
-  return [thresholdApr, userStakedData.amount]
+  return [thresholdApr, thresholdClaimableAmount, userStakedData.amount]
 }
