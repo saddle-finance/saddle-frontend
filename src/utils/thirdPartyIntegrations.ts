@@ -327,7 +327,7 @@ async function getThresholdData(
   ] = await Promise.all([
     lpTokenContract.balanceOf(MINICHEF_CONTRACT_ADDRESSES[chainId]),
     rewardsContract.rewardPerSecond(),
-    rewardsContract.pendingToken("0x40d2ce4c14f04bd91c59c6a1cd6e28f2a0fc81f8"),
+    rewardsContract.pendingToken(accountId),
     rewardsContract.userInfo(accountId || AddressZero),
   ])
 
