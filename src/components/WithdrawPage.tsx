@@ -224,7 +224,13 @@ const WithdrawPage = (props: Props): ReactElement => {
             {t("withdraw")}
           </Button>
         </Box>
-        <Stack direction="column" flex={1} spacing={4} width="100%">
+        <Stack
+          direction="column"
+          flex={1}
+          spacing={4}
+          width="100%"
+          maxWidth="50%"
+        >
           {poolData && (
             <MyFarm
               lpWalletBalance={myShareData?.lpTokenBalance || Zero}

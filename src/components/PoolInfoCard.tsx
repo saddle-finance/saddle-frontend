@@ -88,7 +88,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
       )}
       <InfoItem mt={3}>
         <Typography>{`${t("status")}:`}</Typography>
-        <Typography>{`${
+        <Typography variant="subtitle1">{`${
           data?.isPaused ? t("paused") : t("active")
         }`}</Typography>
       </InfoItem>
@@ -118,10 +118,10 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
           >
             <Typography
               sx={{ cursor: "help", borderBottom: "1px dotted" }}
-            >{`${t("aParameter")}:`}</Typography>
+            >{`${t("aParameter")}`}</Typography>
           </Tooltip>
           <Typography variant="subtitle1">
-            {formattedData.aParameter}
+            :{formattedData.aParameter}
           </Typography>
         </InfoItem>
 
@@ -139,7 +139,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
 
       <Divider sx={{ my: 3 }} />
       <Box>
-        <Typography variant="h1">{t("currencyReserves")}</Typography>
+        <Typography variant="h2">{t("currencyReserves")}</Typography>
         <Typography mt={2}>{`$${formattedData.reserve} ${t(
           "inTotal",
         )}`}</Typography>

@@ -84,9 +84,9 @@ function MyShareCard({ data }: Props): ReactElement | null {
           ) : null
         })}
       </div>
-      <Stack direction="row" spacing={4} my={3}>
+      <Stack direction="row" mb={3} flexWrap="wrap">
         {formattedData.tokens.map((coin) => (
-          <div key={coin.symbol}>
+          <Box key={coin.symbol} pt={3} pr={4}>
             <Box display="flex" alignItems="center">
               <img src={coin.icon} alt="Token Icon" />
               <Typography variant="subtitle1" ml={1} data-testid="tokenName">
@@ -94,7 +94,7 @@ function MyShareCard({ data }: Props): ReactElement | null {
               </Typography>
             </Box>
             <Typography data-testid="tokenValue">{coin.value}</Typography>
-          </div>
+          </Box>
         ))}
       </Stack>
       <Divider />
