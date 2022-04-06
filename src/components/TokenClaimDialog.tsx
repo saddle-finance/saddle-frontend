@@ -1,5 +1,5 @@
 import { ChainId, POOLS_MAP, Pool, SDL_TOKEN } from "../constants"
-import { Dialog, Divider, IconButton, Link } from "@mui/material"
+import { Divider, IconButton, Link } from "@mui/material"
 import React, {
   ReactElement,
   useCallback,
@@ -18,8 +18,8 @@ import {
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
 import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
-import { Close } from "@mui/icons-material"
 import { ContractTransaction } from "@ethersproject/contracts"
+import Dialog from "./Dialog"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
@@ -32,7 +32,7 @@ import { useRetroMerkleData } from "../hooks/useRetroMerkleData"
 
 interface TokenClaimDialogProps {
   open: boolean
-  onClose?: () => void
+  onClose: () => void
 }
 export default function TokenClaimDialog({
   open,
@@ -95,14 +95,7 @@ export default function TokenClaimDialog({
       data-testid="tokenClaimDialog"
     >
       {/* TODO: Remove this button after update the modal */}
-      <IconButton
-        disableRipple
-        onClick={onClose}
-        sx={{ position: "absolute", top: 16, right: 24 }}
-        data-testid="dialogCloseBtn"
-      >
-        <Close />
-      </IconButton>
+
       <div data-testid="tknClaimContainer" className={styles.container}>
         <div className={styles.gradient}></div>
         <div className={styles.logoWrapper}>
