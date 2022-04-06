@@ -17,6 +17,7 @@ export default function Dialog({
         <IconButton
           sx={{ position: "absolute", right: 16, top: 16 }}
           onClick={() => onClose()}
+          data-testid="dialogCloseBtn"
         >
           <Close />
         </IconButton>
