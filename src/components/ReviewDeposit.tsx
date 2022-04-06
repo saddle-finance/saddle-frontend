@@ -71,9 +71,7 @@ function ReviewDeposit({
 
   return (
     <React.Fragment>
-      <DialogTitle variant="h1" onClose={onClose}>
-        {t("reviewDeposit")}
-      </DialogTitle>
+      <DialogTitle variant="h1">{t("reviewDeposit")}</DialogTitle>
       <DialogContent>
         <Box>
           <Typography variant="subtitle1" my={2}>
