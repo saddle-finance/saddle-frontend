@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Container,
-  Dialog,
   FormControlLabel,
   Paper,
   Radio,
@@ -20,6 +19,7 @@ import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
+import Dialog from "./Dialog"
 import MyFarm from "./MyFarm"
 import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
@@ -244,6 +244,7 @@ const WithdrawPage = (props: Props): ReactElement => {
         open={!!currentModal}
         onClose={(): void => setCurrentModal(null)}
         scroll="body"
+        hideClose={currentModal === "confirm"}
       >
         {currentModal === "review" ? (
           <ReviewWithdraw

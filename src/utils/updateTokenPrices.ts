@@ -25,6 +25,7 @@ const otherTokens = {
   KEEP: "keep-network",
   SGT: "sharedstake-governance-token",
   ALCX: "alchemix",
+  T: "threshold-network-token",
   [SPA.symbol]: SPA.geckoId,
 }
 
@@ -53,7 +54,7 @@ export default function fetchTokenPricesUSD(
             (acc, key) => {
               return {
                 ...acc,
-                [key]: body?.[otherTokens[key as keyof typeof otherTokens]].usd,
+                [key]: body?.[otherTokens[key]].usd,
               }
             },
             {} as { [symbol: string]: number },

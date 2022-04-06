@@ -19,7 +19,7 @@ import {
   TOKENS_MAP,
   isMetaPool,
 } from "../constants"
-import { Partners, PoolDataType, UserShareType } from "../hooks/usePoolData"
+import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useMemo } from "react"
 import {
   formatBNToPercentString,
@@ -27,6 +27,7 @@ import {
   formatBNToString,
 } from "../utils"
 
+import { Partners } from "../utils/thirdPartyIntegrations"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
 import { useHistory } from "react-router-dom"
@@ -56,7 +57,7 @@ export default function PoolOverview({
       ? formatBNToShortString(poolData.reserve, 18)
       : "-",
     aprs: Object.keys(poolData.aprs).reduce((acc, key) => {
-      const apr = poolData.aprs[key as Partners]?.apr
+      const apr = poolData.aprs[key]?.apr
       return apr
         ? {
             ...acc,
@@ -211,8 +212,8 @@ export default function PoolOverview({
             </div>
           )}
           {Object.keys(poolData.aprs).map((key) => {
-            const symbol = poolData.aprs[key as Partners]?.symbol as string
-            return poolData.aprs[key as Partners]?.apr.gt(Zero) ? (
+            const symbol = poolData.aprs[key]?.symbol as string
+            return poolData.aprs[key]?.apr.gt(Zero) ? (
               <div key={symbol}>
                 {symbol.includes("/") ? (
                   <Tooltip title={symbol.replaceAll("/", "\n")}>
@@ -227,7 +228,7 @@ export default function PoolOverview({
                   <Typography component="span">{symbol} APR: &nbsp;</Typography>
                 )}
                 <Typography component="span">
-                  {formattedData.aprs[key as Partners] as string}
+                  {formattedData.aprs[key] as string}
                 </Typography>
               </div>
             ) : null
