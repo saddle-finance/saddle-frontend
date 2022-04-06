@@ -28,13 +28,9 @@ import { useUDName } from "../hooks/useUDName"
 
 interface Props {
   openOptions: () => void
-  onClose?: () => void
 }
 
-export default function AccountDetail({
-  openOptions,
-  onClose,
-}: Props): ReactElement {
+export default function AccountDetail({ openOptions }: Props): ReactElement {
   const { t } = useTranslation()
   const { account, connector } = useActiveWeb3React()
   const tokenBalances = usePoolTokenBalances()
@@ -55,7 +51,7 @@ export default function AccountDetail({
           : theme.palette.common.black
       }
     >
-      <DialogTitle onClose={onClose}>{t("account")}</DialogTitle>
+      <DialogTitle>{t("account")}</DialogTitle>
       <DialogContent>
         <Box
           display="grid"

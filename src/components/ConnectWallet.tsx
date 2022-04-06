@@ -26,9 +26,7 @@ function ConnectWallet({ onClose }: Props): ReactElement {
 
   return (
     <Box mt={3} data-testid="connectWalletContainer">
-      <DialogTitle variant="h2" onClose={onClose}>
-        {t("connectWallet")}
-      </DialogTitle>
+      <DialogTitle variant="h2">{t("connectWallet")}</DialogTitle>
       <DialogContent sx={{ padding: 4 }}>
         <Stack my={3} ml={1} spacing={2}>
           {map(SUPPORTED_WALLETS, (wallet, index) => (

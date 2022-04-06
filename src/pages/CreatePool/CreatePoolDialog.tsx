@@ -2,12 +2,12 @@ import {
   Alert,
   Box,
   Button,
-  Dialog,
   DialogContent,
   Divider,
   Stack,
   Typography,
 } from "@mui/material"
+import Dialog from "../../components/Dialog"
 import DialogTitle from "../../components/DialogTitle"
 import React from "react"
 import { useTranslation } from "react-i18next"
@@ -26,9 +26,7 @@ export default function ReviewCreatePool({
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle variant="h1" onClose={onClose}>
-        Review Pool Creation
-      </DialogTitle>
+      <DialogTitle variant="h1">Review Pool Creation</DialogTitle>
       <DialogContent>
         <Alert icon={false} color="warning">
           Double check the inputs for your pool are as you want it-- once a pool
