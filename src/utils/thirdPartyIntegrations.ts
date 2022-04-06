@@ -262,8 +262,7 @@ async function getSperaxData(
     library == null ||
     lpTokenPrice.eq("0") ||
     spaPrice === 0 ||
-    chainId !== ChainId.ARBITRUM ||
-    !accountId
+    chainId !== ChainId.ARBITRUM
   )
     return [Zero, Zero]
   const rewardsContract = getContract(
