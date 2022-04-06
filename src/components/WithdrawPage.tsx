@@ -99,7 +99,7 @@ const WithdrawPage = (props: Props): ReactElement => {
   const noShare = !myShareData || myShareData.lpTokenBalance.eq(Zero)
 
   return (
-    <Container maxWidth={isLgDown ? "sm" : "lg"} sx={{ marginTop: 5 }}>
+    <Container maxWidth={isLgDown ? "sm" : "lg"} sx={{ py: 5 }}>
       <Stack
         direction={{ xs: "column", lg: "row" }}
         spacing={4}

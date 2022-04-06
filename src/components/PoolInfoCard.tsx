@@ -17,11 +17,14 @@ interface Props {
   data: PoolDataType | null
 }
 
-const InfoItem = styled(Box)(() => ({
+const InfoItem = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   flexDirection: "row",
   flexBasis: "50%",
+  [theme.breakpoints.down("sm")]: {
+    flexBasis: "100%",
+  },
 }))
 
 function PoolInfoCard({ data }: Props): ReactElement | null {
