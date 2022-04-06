@@ -49,7 +49,9 @@ function Withdraw({ poolName }: Props): ReactElement {
       POOL.poolTokens.reduce(
         (sum, { symbol }) =>
           sum.add(
-            parseEther(withdrawFormState.tokenInputs[symbol].valueRaw) || Zero,
+            parseEther(
+              withdrawFormState.tokenInputs[symbol].valueRaw.trim() || "0",
+            ) || Zero,
           ),
         Zero,
       ),
@@ -72,15 +74,15 @@ function Withdraw({ poolName }: Props): ReactElement {
           (token) => withdrawFormState.tokenInputs[token.symbol].valueSafe,
         )
         if (isLegacySwapABIPool(poolData.name)) {
-          const tokenAmount = await (
+          const calculatedTokenAmount = await (
             swapContract as SwapFlashLoan
           ).calculateTokenAmount(account, withdrawTokenAmounts, false)
-          setWithdrawLPTokenAmount(tokenAmount)
+          setWithdrawLPTokenAmount(calculatedTokenAmount)
         } else {
-          const tokenAmount = await (
+          const calculatedTokenAmount = await (
             swapContract as SwapFlashLoanNoWithdrawFee
           ).calculateTokenAmount(withdrawTokenAmounts, false)
-          setWithdrawLPTokenAmount(tokenAmount)
+          setWithdrawLPTokenAmount(calculatedTokenAmount)
         }
       } else {
         // when pool is empty, estimate the lptokens by just summing the input instead of calling contract
