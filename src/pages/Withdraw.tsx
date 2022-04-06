@@ -44,7 +44,6 @@ function Withdraw({ poolName }: Props): ReactElement {
   const [withdrawLPTokenAmount, setWithdrawLPTokenAmount] =
     useState<BigNumber>(Zero)
 
-  // const [estWithdrawBonus, setEstWithdrawBonus] = useState(Zero)
   const tokenInputSum = useMemo(
     () =>
       POOL.poolTokens.reduce(
