@@ -5,13 +5,15 @@ import {
   Box,
   Checkbox,
   InputAdornment,
+  ToggleButton as MuiToggleButton,
   OutlinedInput,
   Stack,
   TextField,
-  ToggleButton,
   ToggleButtonGroup,
   Tooltip,
   Typography,
+  styled,
+  useTheme,
 } from "@mui/material"
 import { Deadlines, GasPrices, Slippages } from "../state/user"
 import React, { ReactElement } from "react"
@@ -33,8 +35,20 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
 import { PayloadAction } from "@reduxjs/toolkit"
 import { useTranslation } from "react-i18next"
 
-export default function AdvancedOptions(): ReactElement {
+const ToggleButton = styled(MuiToggleButton)(({ theme }) => ({
+  "&.Mui-selected": {
+    border: `1px solid ${theme.palette.primary.main} !important`,
+  },
+}))
+
+interface AdvancedOptionProps {
+  isOutlined?: boolean
+}
+export default function AdvancedOptions({
+  isOutlined,
+}: AdvancedOptionProps): ReactElement {
   const { t } = useTranslation()
+  const theme = useTheme()
   const dispatch = useDispatch<AppDispatch>()
   const {
     infiniteApproval,
@@ -74,13 +88,33 @@ export default function AdvancedOptions(): ReactElement {
           dispatch(updatePoolAdvancedMode(!advanced))
         }
         expanded={advanced}
+        sx={{
+          padding: 0,
+          border: isOutlined ? "unset" : `1px solid ${theme.palette.divider}`,
+          background: isOutlined
+            ? "transparent"
+            : theme.palette.background.paper,
+        }}
       >
-        <AccordionSummary expandIcon={<ArrowDropDownIcon color="primary" />}>
+        <AccordionSummary
+          expandIcon={<ArrowDropDownIcon color="primary" />}
+          sx={{
+            padding: isOutlined ? 0 : theme.spacing(0, 3),
+            borderBottom: isOutlined
+              ? `1px solid ${theme.palette.primary.main}`
+              : "unset",
+          }}
+        >
           <Typography color="primary" variant="subtitle1">
             {t("advancedOptions")}
           </Typography>
         </AccordionSummary>
-        <AccordionDetails>
+        <AccordionDetails
+          sx={{
+            padding: isOutlined ? 0 : theme.spacing(0, 3, 2, 3),
+            marginTop: isOutlined ? 2 : 0,
+          }}
+        >
           <div data-testid="advTableContainer">
             <Box display="flex" data-testid="infiniteApprovalContainer">
               <Checkbox
@@ -119,6 +153,7 @@ export default function AdvancedOptions(): ReactElement {
                   size="small"
                   fullWidth
                   exclusive
+                  color="mute"
                   value={slippageSelected}
                   onChange={handleSlippage}
                 >
@@ -163,6 +198,7 @@ export default function AdvancedOptions(): ReactElement {
                 size="small"
                 fullWidth
                 exclusive
+                color="mute"
                 value={transactionDeadlineSelected}
                 onChange={handleDeadline}
               >

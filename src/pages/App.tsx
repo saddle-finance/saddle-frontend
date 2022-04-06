@@ -14,6 +14,7 @@ import { Redirect, Route, Switch } from "react-router-dom"
 import { styled, useTheme } from "@mui/material"
 
 import { AppDispatch } from "../state"
+import CreatePool from "./CreatePool"
 import Deposit from "./Deposit"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
@@ -45,6 +46,8 @@ const AppContainer = styled("div")(({ theme }) => {
     backgroundImage:
       theme.palette.mode === "light" ? lightBackground : darkBackground,
     minHeight: "100vh",
+    minWidth: "100vw",
+    marginRight: "calc(-1 * (100vw - 100%))",
     backgroundAttachment: "fixed",
     backgroundPosition: "center center",
     backgroundRepeat: "no-repeat",
@@ -96,6 +99,7 @@ export default function App(): ReactElement {
                     />
                   ))}
                   <Redirect from="/pools/:route/:action" to="/pools" />
+                  <Route exact path="/pools/create" component={CreatePool} />
                   <Route exact path="/risk" component={Risk} />
                   <Route exact path="/vesting-claim" component={VestingClaim} />
                 </Switch>
