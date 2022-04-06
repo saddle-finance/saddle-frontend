@@ -37,6 +37,7 @@ function MyShareCard({ data }: Props): ReactElement | null {
     tokens: data.tokens.map((coin) => {
       const token = TOKENS_MAP[coin.symbol]
       return {
+        icon: token.icon,
         symbol: token.symbol,
         name: token.name,
         value: commify(formatBNToString(coin.value, 18, formattedDecimals)),
@@ -65,7 +66,7 @@ function MyShareCard({ data }: Props): ReactElement | null {
           <Typography component="span">{`$${formattedData.usdBalance}`}</Typography>
         </Box>
         <Box display="flex">
-          <Typography component="span">{`${t("totalAmount")}: `}</Typography>
+          <Typography component="span">{`${t("lpAmount")}: `}</Typography>
           <Typography component="span">{formattedData.amount}</Typography>
         </Box>
         {Object.keys(data.amountsStaked).map((key) => {
@@ -83,12 +84,15 @@ function MyShareCard({ data }: Props): ReactElement | null {
           ) : null
         })}
       </div>
-      <Stack direction="row" spacing={4} mb={3}>
+      <Stack direction="row" spacing={4} my={3}>
         {formattedData.tokens.map((coin) => (
           <div key={coin.symbol}>
-            <Typography variant="subtitle1" data-testid="tokenName">
-              {coin.symbol}
-            </Typography>
+            <Box display="flex" alignItems="center">
+              <img src={coin.icon} alt="Token Icon" />
+              <Typography variant="subtitle1" ml={1} data-testid="tokenName">
+                {coin.symbol}
+              </Typography>
+            </Box>
             <Typography data-testid="tokenValue">{coin.value}</Typography>
           </div>
         ))}

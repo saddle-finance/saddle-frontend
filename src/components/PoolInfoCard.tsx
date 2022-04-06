@@ -1,5 +1,3 @@
-import "./PoolInfoCard.scss"
-
 import { Box, Divider, Typography, styled } from "@mui/material"
 import {
   POOLS_MAP,
@@ -23,7 +21,7 @@ const InfoItem = styled(Box)(() => ({
   display: "flex",
   alignItems: "center",
   flexDirection: "row",
-  minWidth: "50%",
+  flexBasis: "50%",
 }))
 
 function PoolInfoCard({ data }: Props): ReactElement | null {
@@ -68,7 +66,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
   }
 
   return (
-    <div className="poolInfoCard">
+    <Box>
       {underlyingPool ? (
         <Tooltip title={<React.Fragment>{t("metapool")}</React.Fragment>}>
           <Typography
@@ -85,7 +83,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
       ) : (
         <Typography variant="h1">{formattedData.name}</Typography>
       )}
-      <InfoItem>
+      <InfoItem mt={3}>
         <Typography>{`${t("status")}:`}</Typography>
         <Typography>{`${
           data?.isPaused ? t("paused") : t("active")
@@ -100,10 +98,16 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
         <Typography variant="subtitle1">{formattedData.volume}</Typography>
       </InfoItem> */}
 
-      <Box>
+      <Box display="flex" mt={3} flexWrap="wrap">
         <InfoItem>
           <Typography>{`${t("fee")}:`}</Typography>
-          <Typography>{formattedData.swapFee}</Typography>
+          <Typography variant="subtitle1">{formattedData.swapFee}</Typography>
+        </InfoItem>
+        <InfoItem>
+          <Typography>{`${t("virtualPrice")}:`}</Typography>
+          <Typography variant="subtitle1">
+            {formattedData.virtualPrice}
+          </Typography>
         </InfoItem>
         <InfoItem>
           <Tooltip
@@ -113,42 +117,45 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
               sx={{ cursor: "help", borderBottom: "1px dotted" }}
             >{`${t("aParameter")}:`}</Typography>
           </Tooltip>
-          <Typography>{formattedData.aParameter}</Typography>
-        </InfoItem>
-        <InfoItem>
-          <Typography>{`${t("virtualPrice")}:`}</Typography>
           <Typography variant="subtitle1">
-            {formattedData.virtualPrice}
+            {formattedData.aParameter}
           </Typography>
         </InfoItem>
+
         <InfoItem>
           <Typography>{`${t("utilization")}:`}</Typography>
           <Typography variant="subtitle1">
             {formattedData.utilization}
           </Typography>
         </InfoItem>
-
-        <InfoItem>
-          <Typography>{`${t("adminFee")}:`}</Typography>
-          <Typography variant="subtitle1">{formattedData.adminFee}</Typography>
-        </InfoItem>
       </Box>
+      <InfoItem>
+        <Typography>{`${t("adminFee")}:`}</Typography>
+        <Typography variant="subtitle1">{formattedData.adminFee}</Typography>
+      </InfoItem>
 
       <Divider sx={{ my: 3 }} />
-      <div className="bottom">
+      <Box>
         <Typography variant="h1">{t("currencyReserves")}</Typography>
-        <span>{`$${formattedData.reserve} ${t("inTotal")}`}</span>
-        <div className="tokenList">
+        <Typography mt={2}>{`$${formattedData.reserve} ${t(
+          "inTotal",
+        )}`}</Typography>
+        <Box display="flex" flexWrap="wrap">
           {formattedData.tokens.map((token, index) => (
-            <div className="token" key={index}>
-              <img alt="icon" src={token.icon} />
-              <span className="bold">{`${token.symbol} ${token.percent}`}</span>
-              <span className="tokenValue">{token.value}</span>
-            </div>
+            <Box key={index} flexBasis={{ xs: "100%", sm: "50%" }} mt={2}>
+              <Box display="flex">
+                <img alt="icon" src={token.icon} />
+                <Typography
+                  variant="subtitle1"
+                  ml={1}
+                >{`${token.symbol} ${token.percent}`}</Typography>
+              </Box>
+              <Typography className="tokenValue">${token.value}</Typography>
+            </Box>
           ))}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   )
 }
 
