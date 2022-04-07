@@ -1,10 +1,10 @@
 import React, { ReactElement } from "react"
 
 import { ReactComponent as ArrowDownIcon } from "../assets/icons/arrowDown.svg"
+import { Box } from "@mui/material"
 import { ReactComponent as CheckIcon } from "../assets/icons/check.svg"
 import { ReactComponent as ClockIcon } from "../assets/icons/clock.svg"
 import { PendingSwap } from "../hooks/usePendingSwapData"
-import classNames from "classnames"
 import { commify } from "../utils"
 import { formatBNToString } from "../utils"
 import { getFormattedShortTime } from "../utils/dateTime"
@@ -36,7 +36,7 @@ const PendingSwapTimeline = ({
     <div className={styles.timeline}>
       <TimelineStep
         isActive={false}
-        icon="check"
+        icon={<CheckIcon />}
         withLine={false}
         testId="PendingSwapTimeline:step1Of2"
       >
@@ -53,7 +53,7 @@ const PendingSwapTimeline = ({
       {minutesRemaining > 0 ? (
         <TimelineStep
           isActive={true}
-          icon="clock"
+          icon={<ClockIcon />}
           testId="PendingSwapTimeline:minutesLeft"
         >
           {t("minutesLeft", { count: minutesRemaining })}
@@ -61,7 +61,7 @@ const PendingSwapTimeline = ({
       ) : (
         <TimelineStep
           isActive={!hasEvents}
-          icon="check"
+          icon={<CheckIcon />}
           testId="PendingSwapTimeline:swappedForAmount"
         >
           {getFormattedShortTime(timestamp)}{" "}
@@ -72,7 +72,7 @@ const PendingSwapTimeline = ({
       {!hasEvents ? (
         <TimelineStep
           isActive={false}
-          icon="arrow"
+          icon={<ArrowDownIcon />}
           testId="PendingSwapTimeline:step2Of2"
         >
           {t("stepAOfB", { a: 2, b: 2 })}{" "}
@@ -84,7 +84,7 @@ const PendingSwapTimeline = ({
           return (
             <TimelineStep
               isActive={false}
-              icon="check"
+              icon={<CheckIcon />}
               key={event.transactionHash}
               testId={`PendingSwapTimeline:event-${i + 1}`}
             >
@@ -112,7 +112,7 @@ const PendingSwapTimeline = ({
           return (
             <TimelineStep
               isActive={false}
-              icon="check"
+              icon={<CheckIcon />}
               key={i}
               testId={`PendingSwapTimeline:event-${i + 1}`}
             >
@@ -138,28 +138,16 @@ const TimelineStep = ({
   withLine = true,
 }: React.PropsWithChildren<{
   isActive: boolean
-  icon: string
+  icon: React.ReactNode
   testId?: string
   withLine?: boolean
 }>) => {
-  let iconEl = null
-  if (icon === "check") {
-    iconEl = <CheckIcon />
-  } else if (icon === "clock") {
-    iconEl = <ClockIcon />
-  } else if (icon === "arrow") {
-    iconEl = <ArrowDownIcon />
-  }
+  console.log("first", isActive)
   return (
-    <div
-      className={classNames(
-        styles.timelineStep,
-        isActive ? styles.active : styles.inactive,
-      )}
-      data-testid={testId || null}
-    >
+    <div data-testid={testId || null}>
       {withLine ? <Line /> : null}
-      {iconEl} {children}
+      <Box color="black">{icon}</Box>
+      {children}
     </div>
   )
 }
