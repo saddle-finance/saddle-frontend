@@ -85,7 +85,7 @@ export async function getThirdPartyDataForPool(
       result.amountsStaked.sharedStake = userStakedAmount
     } else if (poolName === TBTC_METAPOOL_V2_NAME) {
       const rewardSymbol = "T"
-      const [apr, thresholdClaimableAmount, userStakedAmount] =
+      const [apr, userStakedAmount, thresholdClaimableAmount] =
         await getThresholdData(
           library,
           chainId,
@@ -318,17 +318,12 @@ async function getThresholdData(
     LP_TOKEN_ABI,
     library,
   ) as LpTokenUnguarded
-  const [
-    totalDeposited,
-    thresholdRewardsPerSecond,
-    thresholdClaimableAmount,
-    userStakedData,
-  ] = await Promise.all([
-    lpTokenContract.balanceOf(MINICHEF_CONTRACT_ADDRESSES[chainId]),
-    rewardsContract.rewardPerSecond(),
-    rewardsContract.pendingToken(accountId),
-    rewardsContract.userInfo(accountId || AddressZero),
-  ])
+  const [totalDeposited, thresholdRewardsPerSecond, thresholdClaimableAmount] =
+    await Promise.all([
+      lpTokenContract.balanceOf(MINICHEF_CONTRACT_ADDRESSES[chainId]),
+      rewardsContract.rewardPerSecond(),
+      rewardsContract.pendingToken(accountId),
+    ])
 
   const thresholdPerYear = thresholdRewardsPerSecond.mul(3600 * 24 * 365) // 1e18
   const thresholdPerYearUSD = thresholdPerYear.mul(
@@ -338,5 +333,5 @@ async function getThresholdData(
   const thresholdApr = shiftBNDecimals(thresholdPerYearUSD, 33).div(
     totalDepositedUSD,
   ) // (1e21 + 1e33 = 1e54) / 1e36 = 1e18
-  return [thresholdApr, thresholdClaimableAmount, userStakedData.amount]
+  return [thresholdApr, Zero, thresholdClaimableAmount]
 }
