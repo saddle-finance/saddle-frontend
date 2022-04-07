@@ -1,16 +1,28 @@
+import {
+  TimelineItem as MuiTimelineItem,
+  Timeline,
+  TimelineConnector,
+  TimelineContent,
+  TimelineDot,
+  TimelineSeparator,
+} from "@mui/lab"
 import React, { ReactElement } from "react"
-
 import { ReactComponent as ArrowDownIcon } from "../assets/icons/arrowDown.svg"
-import { Box } from "@mui/material"
 import { ReactComponent as CheckIcon } from "../assets/icons/check.svg"
 import { ReactComponent as ClockIcon } from "../assets/icons/clock.svg"
 import { PendingSwap } from "../hooks/usePendingSwapData"
 import { commify } from "../utils"
 import { formatBNToString } from "../utils"
 import { getFormattedShortTime } from "../utils/dateTime"
-import styles from "./PendingSwapTimeline.module.scss"
+import { styled } from "@mui/material"
 import { useTranslation } from "react-i18next"
 
+const TimelineItem = styled(MuiTimelineItem)(() => ({
+  "&:before": {
+    flex: "unset",
+    padding: 0,
+  },
+}))
 const PendingSwapTimeline = ({
   pendingSwap,
 }: {
@@ -33,7 +45,7 @@ const PendingSwapTimeline = ({
   const hasEvents = events.length > 0
 
   return (
-    <div className={styles.timeline}>
+    <Timeline position="right">
       <TimelineStep
         isActive={false}
         icon={<CheckIcon />}
@@ -125,7 +137,7 @@ const PendingSwapTimeline = ({
           )
         }
       })}
-    </div>
+    </Timeline>
   )
 }
 export default PendingSwapTimeline
@@ -144,12 +156,12 @@ const TimelineStep = ({
 }>) => {
   console.log("first", isActive)
   return (
-    <div data-testid={testId || null}>
-      {withLine ? <Line /> : null}
-      <Box color="black">{icon}</Box>
-      {children}
-    </div>
+    <TimelineItem data-testid={testId || null}>
+      <TimelineSeparator>
+        {withLine && <TimelineConnector />}
+        <TimelineDot>{icon}</TimelineDot>
+      </TimelineSeparator>
+      <TimelineContent>{children}</TimelineContent>
+    </TimelineItem>
   )
 }
-
-const Line = () => <div className={styles.timelineLine} />
