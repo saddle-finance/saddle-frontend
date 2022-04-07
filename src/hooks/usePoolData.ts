@@ -6,6 +6,10 @@ import {
   TRANSACTION_TYPES,
 } from "../constants"
 import {
+  Partners,
+  getThirdPartyDataForPool,
+} from "../utils/thirdPartyIntegrations"
+import {
   formatBNToPercentString,
   getContract,
   getTokenSymbolForPoolType,
@@ -26,7 +30,6 @@ import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
-import { getThirdPartyDataForPool } from "../utils/thirdPartyIntegrations"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import { useRewardsHelpers } from "./useRewardsHelpers"
@@ -38,11 +41,11 @@ interface TokenShareType {
   value: BigNumber
 }
 
-export type Partners = "keep" | "sharedStake" | "alchemix"
 export interface PoolDataType {
   adminFee: BigNumber
   aParameter: BigNumber
   apy: BigNumber | null
+  claimableAmount: Partial<Record<Partners, BigNumber>>
   name: string
   reserve: BigNumber | null
   swapFee: BigNumber
@@ -83,6 +86,7 @@ const emptyPoolData = {
   adminFee: Zero,
   aParameter: Zero,
   apy: null,
+  claimableAmount: Zero,
   name: "",
   reserve: null,
   swapFee: Zero,
@@ -231,22 +235,20 @@ export default function usePoolData(
           : tokenBalancesUSDSum
               .mul(BigNumber.from(10).pow(18))
               .div(tokenBalancesSum)
-        const { aprs, amountsStaked } = await getThirdPartyDataForPool(
-          library,
-          chainId,
-          account,
-          poolName,
-          tokenPricesUSD,
-          lpTokenPriceUSD,
-        )
+        const { aprs, amountsStaked, claimableAmount } =
+          await getThirdPartyDataForPool(
+            library,
+            chainId,
+            account,
+            poolName,
+            tokenPricesUSD,
+            lpTokenPriceUSD,
+          )
 
         // User share data
         const userLpTokenBalanceStakedElsewhere = Object.keys(
           amountsStaked,
-        ).reduce(
-          (sum, key) => sum.add(amountsStaked[key as Partners] || Zero),
-          Zero,
-        )
+        ).reduce((sum, key) => sum.add(amountsStaked[key] || Zero), Zero)
         // lpToken balance in wallet as a % of total lpTokens, plus lpTokens staked elsewhere
         const userShare = calculatePctOfTotalShare(
           userLpTokenBalance,
@@ -340,6 +342,7 @@ export default function usePoolData(
         }
 
         const poolData = {
+          claimableAmount,
           name: poolName,
           tokens: poolTokens,
           reserve: tokenBalancesUSDSum,
@@ -367,7 +370,7 @@ export default function usePoolData(
               tokens: userPoolTokens,
               lpTokenBalance: userLpTokenBalance,
               amountsStaked: Object.keys(amountsStaked).reduce((acc, key) => {
-                const amount = amountsStaked[key as Partners]
+                const amount = amountsStaked[key]
                 return key
                   ? {
                       ...acc,

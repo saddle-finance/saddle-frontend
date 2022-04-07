@@ -1,9 +1,10 @@
 import { Box, Divider, Stack, Typography } from "@mui/material"
 import { POOLS_MAP, PoolTypes, TOKENS_MAP } from "../constants"
-import { Partners, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement } from "react"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 
+import { Partners } from "../utils/thirdPartyIntegrations"
+import { UserShareType } from "../hooks/usePoolData"
 import { Zero } from "@ethersproject/constants"
 import { commify } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
@@ -26,7 +27,7 @@ function MyShareCard({ data }: Props): ReactElement | null {
       formatBNToString(data.underlyingTokensAmount, 18, formattedDecimals),
     ),
     amountsStaked: Object.keys(data.amountsStaked).reduce((acc, key) => {
-      const value = data.amountsStaked[key as keyof typeof data.amountsStaked]
+      const value = data.amountsStaked[key]
       return value
         ? {
             ...acc,
@@ -44,7 +45,6 @@ function MyShareCard({ data }: Props): ReactElement | null {
     }),
   }
   const stakingUrls = {
-    keep: "https://dashboard.keep.network/liquidity",
     sharedStake: "https://dashboard.keep.network/liquidity",
     alchemix: "https://app.alchemix.fi/farms",
   }
@@ -68,12 +68,12 @@ function MyShareCard({ data }: Props): ReactElement | null {
           <Typography component="span">{`${t("totalAmount")}: `}</Typography>
           <Typography component="span">{formattedData.amount}</Typography>
         </Box>
-        {Object.keys(data.amountsStaked).map((key) => {
+        {Object.keys(stakingUrls).map((key) => {
           return data.amountsStaked[key as Partners]?.gt(Zero) ? (
             <Typography component="span">
               &nbsp;
               <a
-                href={stakingUrls[key as Partners]}
+                href={stakingUrls[key]}
                 target="_blank"
                 rel="noopener noreferrer"
               >
