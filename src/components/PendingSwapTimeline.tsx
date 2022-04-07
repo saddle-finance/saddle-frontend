@@ -1,4 +1,11 @@
 import {
+  Link,
+  SvgIconTypeMap,
+  Typography,
+  styled,
+  useTheme,
+} from "@mui/material"
+import {
   TimelineItem as MuiTimelineItem,
   Timeline,
   TimelineConnector,
@@ -7,14 +14,14 @@ import {
   TimelineSeparator,
 } from "@mui/lab"
 import React, { ReactElement } from "react"
-import { ReactComponent as ArrowDownIcon } from "../assets/icons/arrowDown.svg"
-import { ReactComponent as CheckIcon } from "../assets/icons/check.svg"
-import { ReactComponent as ClockIcon } from "../assets/icons/clock.svg"
+import ArrowDownIcon from "@mui/icons-material/ArrowDownward"
+import CheckIcon from "@mui/icons-material/Check"
+import ClockIcon from "@mui/icons-material/AccessTime"
+import { OverridableComponent } from "@mui/material/OverridableComponent"
 import { PendingSwap } from "../hooks/usePendingSwapData"
 import { commify } from "../utils"
 import { formatBNToString } from "../utils"
 import { getFormattedShortTime } from "../utils/dateTime"
-import { styled } from "@mui/material"
 import { useTranslation } from "react-i18next"
 
 const TimelineItem = styled(MuiTimelineItem)(() => ({
@@ -45,50 +52,59 @@ const PendingSwapTimeline = ({
   const hasEvents = events.length > 0
 
   return (
-    <Timeline position="right">
+    <Timeline position="right" sx={{ padding: 0 }}>
       <TimelineStep
         isActive={false}
-        icon={<CheckIcon />}
-        withLine={false}
+        icon={CheckIcon}
         testId="PendingSwapTimeline:step1Of2"
       >
-        {getFormattedShortTime(timestamp)} {t("stepAOfB", { a: 1, b: 2 })}{" "}
-        {t("confirmTheSwap")}{" "}
-        <a
+        <Typography component="span">
+          {getFormattedShortTime(timestamp)} {t("stepAOfB", { a: 1, b: 2 })}
+          {" - "}
+          {t("confirmTheSwap")}{" "}
+        </Typography>
+        <Link
           href={`https://etherscan.io/tx/${transactionHash}`}
           target="_blank"
           rel="noreferrer"
         >
           {transactionHash.slice(0, 8)}
-        </a>
+        </Link>
       </TimelineStep>
       {minutesRemaining > 0 ? (
         <TimelineStep
           isActive={true}
-          icon={<ClockIcon />}
+          icon={ClockIcon}
           testId="PendingSwapTimeline:minutesLeft"
         >
-          {t("minutesLeft", { count: minutesRemaining })}
+          <Typography component="span">
+            {t("minutesLeft", { count: minutesRemaining })}
+          </Typography>
         </TimelineStep>
       ) : (
         <TimelineStep
           isActive={!hasEvents}
-          icon={<CheckIcon />}
+          icon={CheckIcon}
           testId="PendingSwapTimeline:swappedForAmount"
         >
-          {getFormattedShortTime(timestamp)}{" "}
-          {t("swappedForAmount", { amount: formattedBalance })}{" "}
-          {synthTokenFrom.symbol}
+          <Typography component="span">
+            {getFormattedShortTime(timestamp)}{" "}
+            {t("swappedForAmount", { amount: formattedBalance })}{" "}
+            {synthTokenFrom.symbol}
+          </Typography>
         </TimelineStep>
       )}
       {!hasEvents ? (
         <TimelineStep
           isActive={false}
-          icon={<ArrowDownIcon />}
+          icon={ArrowDownIcon}
           testId="PendingSwapTimeline:step2Of2"
+          withLine={false}
         >
-          {t("stepAOfB", { a: 2, b: 2 })}{" "}
-          {t("settleToken", { name: tokenTo.symbol })}{" "}
+          <Typography component="span">
+            {t("stepAOfB", { a: 2, b: 2 })}{" "}
+            {t("settleToken", { name: tokenTo.symbol })}{" "}
+          </Typography>
         </TimelineStep>
       ) : null}
       {events.map((event, i) => {
@@ -96,9 +112,10 @@ const PendingSwapTimeline = ({
           return (
             <TimelineStep
               isActive={false}
-              icon={<CheckIcon />}
+              icon={CheckIcon}
               key={event.transactionHash}
               testId={`PendingSwapTimeline:event-${i + 1}`}
+              withLine={false}
             >
               {getFormattedShortTime(event.timestamp)}{" "}
               {t("settledXTokenForYToken", {
@@ -124,9 +141,10 @@ const PendingSwapTimeline = ({
           return (
             <TimelineStep
               isActive={false}
-              icon={<CheckIcon />}
+              icon={CheckIcon}
               key={i}
               testId={`PendingSwapTimeline:event-${i + 1}`}
+              withLine={false}
             >
               {getFormattedShortTime(event.timestamp)}{" "}
               {t("withdrewNToken", {
@@ -144,24 +162,45 @@ export default PendingSwapTimeline
 
 const TimelineStep = ({
   isActive,
-  icon,
+  icon: Icon,
   children,
   testId,
   withLine = true,
 }: React.PropsWithChildren<{
   isActive: boolean
-  icon: React.ReactNode
+  icon: OverridableComponent<SvgIconTypeMap>
   testId?: string
   withLine?: boolean
 }>) => {
-  console.log("first", isActive)
+  const theme = useTheme()
   return (
     <TimelineItem data-testid={testId || null}>
       <TimelineSeparator>
-        {withLine && <TimelineConnector />}
-        <TimelineDot>{icon}</TimelineDot>
+        <TimelineDot
+          sx={{
+            backgroundColor: isActive
+              ? theme.palette.primary.main
+              : theme.palette.text.secondary,
+            width: 12,
+            height: 12,
+          }}
+        ></TimelineDot>
+        {withLine && (
+          <TimelineConnector
+            sx={{ background: theme.palette.text.secondary }}
+          />
+        )}
       </TimelineSeparator>
-      <TimelineContent>{children}</TimelineContent>
+      <TimelineContent color={isActive ? "primary" : "text.secondary"}>
+        <Icon
+          sx={{
+            height: 16,
+            width: 16,
+            marginRight: 1,
+          }}
+        />
+        {children}
+      </TimelineContent>
     </TimelineItem>
   )
 }
