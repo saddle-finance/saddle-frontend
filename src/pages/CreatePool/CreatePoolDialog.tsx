@@ -40,7 +40,7 @@ export default function ReviewCreatePool({
 }: Props): JSX.Element {
   const { t } = useTranslation()
 
-  const handleCreatePool = () => {
+  const onCreatePoolClick = () => {
     // Make contract call handleCreatePool.
     // Then reset the state data on Pool Creation Page.
     onClose()
@@ -91,7 +91,7 @@ export default function ReviewCreatePool({
           your transaction will revert.
         </Typography>
         <Stack spacing={1}>
-          <Button variant="contained" size="large" onClick={handleCreatePool}>
+          <Button variant="contained" size="large" onClick={onCreatePoolClick}>
             Create Pool
           </Button>
           <Button onClick={onClose} size="large">
