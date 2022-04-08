@@ -51,9 +51,7 @@ function ReviewMigration({
 
   return (
     <React.Fragment>
-      <DialogTitle variant="h1" onClose={onClose}>
-        {t("reviewMigration")}
-      </DialogTitle>
+      <DialogTitle variant="h1">{t("reviewMigration")}</DialogTitle>
       <DialogContent>
         <Alert icon={false} severity="warning">
           {t("migrationExplain")}

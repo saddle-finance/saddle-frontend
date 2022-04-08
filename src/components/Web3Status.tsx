@@ -1,8 +1,9 @@
-import { Button, Dialog, Typography } from "@mui/material"
+import { Button, Typography } from "@mui/material"
 import React, { ReactElement, useEffect, useState } from "react"
 
 import AccountDetails from "./AccountDetails"
 import ConnectWallet from "./ConnectWallet"
+import Dialog from "./Dialog"
 import Identicon from "./Identicon"
 import { shortenAddress } from "../utils/shortenAddress"
 import { useENS } from "../hooks/useENS"
@@ -54,7 +55,6 @@ const Web3Status = (): ReactElement => {
         {account && walletView === WALLET_VIEWS.ACCOUNT ? (
           <AccountDetails
             openOptions={() => setWalletView(WALLET_VIEWS.OPTIONS)}
-            onClose={(): void => setModalOpen(false)}
           />
         ) : (
           <ConnectWallet onClose={(): void => setModalOpen(false)} />

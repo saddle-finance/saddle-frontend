@@ -70,9 +70,7 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
 
   return (
     <Paper>
-      <DialogTitle variant="h1" onClose={onClose}>
-        {t("reviewSwap")}
-      </DialogTitle>
+      <DialogTitle variant="h1">{t("reviewSwap")}</DialogTitle>
       <DialogContent>
         {isVirtualSwap ? (
           <VirtualSwapTokens data={data} />

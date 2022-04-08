@@ -1,7 +1,13 @@
 import { POOLS_MAP, PoolName, isLegacySwapABIPool } from "../constants"
-import React, { ReactElement, useEffect, useState } from "react"
+import React, { ReactElement, useEffect, useMemo, useState } from "react"
 import WithdrawPage, { ReviewWithdrawData } from "../components/WithdrawPage"
-import { commify, formatUnits, parseUnits } from "@ethersproject/units"
+import {
+  commify,
+  formatEther,
+  formatUnits,
+  parseEther,
+  parseUnits,
+} from "@ethersproject/units"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -35,8 +41,23 @@ function Withdraw({ poolName }: Props): ReactElement {
   const swapContract = useSwapContract(poolName)
   const { account } = useActiveWeb3React()
   const POOL = POOLS_MAP[poolName]
+  const [withdrawLPTokenAmount, setWithdrawLPTokenAmount] =
+    useState<BigNumber>(Zero)
 
-  const [estWithdrawBonus, setEstWithdrawBonus] = useState(Zero)
+  const tokenInputSum = useMemo(
+    () =>
+      POOL.poolTokens.reduce(
+        (sum, { symbol }) =>
+          sum.add(
+            parseEther(
+              withdrawFormState.tokenInputs[symbol].valueRaw.trim() || "0",
+            ) || Zero,
+          ),
+        Zero,
+      ),
+    [POOL.poolTokens, withdrawFormState.tokenInputs],
+  )
+
   useEffect(() => {
     // evaluate if a new withdraw will exceed the pool's per-user limit
     async function calculateWithdrawBonus(): Promise<void> {
@@ -48,56 +69,32 @@ function Withdraw({ poolName }: Props): ReactElement {
       ) {
         return
       }
-      const tokenInputSum = parseUnits(
-        POOL.poolTokens
-          .reduce(
-            (sum, { symbol }) =>
-              sum + (+withdrawFormState.tokenInputs[symbol].valueRaw || 0),
-            0,
-          )
-          .toString(),
-        18,
-      )
-      let withdrawLPTokenAmount
       if (poolData.totalLocked.gt(0) && tokenInputSum.gt(0)) {
+        const withdrawTokenAmounts = POOL.poolTokens.map(
+          (token) => withdrawFormState.tokenInputs[token.symbol].valueSafe,
+        )
         if (isLegacySwapABIPool(poolData.name)) {
-          withdrawLPTokenAmount = await (
+          const calculatedTokenAmount = await (
             swapContract as SwapFlashLoan
-          ).calculateTokenAmount(
-            account,
-            POOL.poolTokens.map(
-              ({ symbol }) => withdrawFormState.tokenInputs[symbol].valueSafe,
-            ),
-            false,
-          )
+          ).calculateTokenAmount(account, withdrawTokenAmounts, false)
+          setWithdrawLPTokenAmount(calculatedTokenAmount)
         } else {
-          withdrawLPTokenAmount = await (
+          const calculatedTokenAmount = await (
             swapContract as SwapFlashLoanNoWithdrawFee
-          ).calculateTokenAmount(
-            POOL.poolTokens.map(
-              ({ symbol }) => withdrawFormState.tokenInputs[symbol].valueSafe,
-            ),
-            false,
-          )
+          ).calculateTokenAmount(withdrawTokenAmounts, false)
+          setWithdrawLPTokenAmount(calculatedTokenAmount)
         }
       } else {
         // when pool is empty, estimate the lptokens by just summing the input instead of calling contract
-        withdrawLPTokenAmount = tokenInputSum
+        setWithdrawLPTokenAmount(tokenInputSum)
       }
-      setEstWithdrawBonus(
-        calculatePriceImpact(
-          withdrawLPTokenAmount,
-          tokenInputSum,
-          poolData.virtualPrice,
-          true,
-        ),
-      )
     }
     void calculateWithdrawBonus()
   }, [
     poolData,
     withdrawFormState,
     swapContract,
+    tokenInputSum,
     userShareData,
     account,
     POOL.poolTokens,
@@ -147,7 +144,14 @@ function Withdraw({ poolName }: Props): ReactElement {
     withdraw: [],
     rates: [],
     slippage: formatSlippageToString(slippageSelected, slippageCustom),
-    priceImpact: estWithdrawBonus,
+    priceImpact: calculatePriceImpact(
+      withdrawLPTokenAmount,
+      tokenInputSum,
+      poolData.virtualPrice,
+      true,
+    ),
+    totalAmount: formatEther(tokenInputSum),
+    withdrawLPTokenAmount,
     txnGasCost: txnGasCost,
   }
   POOL.poolTokens.forEach(({ name, decimals, icon, symbol }) => {
