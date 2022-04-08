@@ -6,11 +6,17 @@ import {
   TOKENS_MAP,
 } from "../constants"
 import React, { ReactElement } from "react"
-import { formatBNToPercentString, formatBNToString } from "../utils"
+import { commify, formatUnits } from "@ethersproject/units"
+import {
+  formatBNToPercentString,
+  formatBNToShortString,
+  formatBNToString,
+} from "../utils"
 
+// import { Partners } from "../utils/thirdPartyIntegrations"
 import { PoolDataType } from "../hooks/usePoolData"
 import { Tooltip } from "@mui/material"
-import { commify } from "@ethersproject/units"
+import { Zero } from "@ethersproject/constants"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -21,18 +27,18 @@ const InfoItem = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   flexDirection: "row",
-  flexBasis: "50%",
-  "& :first-child": {
+  minWidth: "50%",
+  "& p:first-of-type": {
     marginRight: theme.spacing(0.5),
   },
-
   [theme.breakpoints.down("sm")]: {
-    flexBasis: "100%",
+    minWidth: "100%",
   },
 }))
 
 function PoolInfoCard({ data }: Props): ReactElement | null {
   const { t } = useTranslation()
+  console.log("apr of data ==>", data?.aprs)
   if (data == null) return null
   const { type: poolType, underlyingPool } = POOLS_MAP[data?.name]
   const formattedDecimals = poolType === PoolTypes.USD ? 2 : 4
@@ -48,6 +54,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
     aParameter: data?.aParameter
       ? commify(formatBNToString(data.aParameter, 0, 0))
       : "-",
+    aprs: data.aprs,
     virtualPrice: data?.virtualPrice
       ? commify(formatBNToString(data.virtualPrice, 18, 5))
       : "-",
@@ -58,7 +65,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
       ? commify(formatBNToString(data.reserve, 18, 2))
       : "-",
     adminFee: swapFee && adminFee ? `${adminFee} of ${swapFee}` : null,
-    volume: data?.volume ? commify(formatBNToString(data.volume, 0, 0)) : "-",
+    volume: data?.volume ? formatBNToShortString(data.volume, 18) : "-",
     tokens:
       data?.tokens.map((coin) => {
         const token = TOKENS_MAP[coin.symbol]
@@ -72,6 +79,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
       }) || [],
   }
 
+  console.log("reward ,", formattedData.aprs)
   return (
     <Box>
       {underlyingPool ? (
@@ -100,12 +108,35 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
         <Typography>{`${t("totalLocked")}:`}</Typography>
         <Typography variant="subtitle1">{`${formattedData.reserve}`}</Typography>
       </InfoItem>
-      {/* <InfoItem>
+      <InfoItem>
         <Typography>{t("dailyVolume") + ": "}</Typography>
         <Typography variant="subtitle1">{formattedData.volume}</Typography>
-      </InfoItem> */}
+      </InfoItem>
 
+      {console.log("aprs ==>", formattedData.aprs)}
       <Box display="flex" mt={3} flexWrap="wrap">
+        <InfoItem>
+          {Object.keys(formattedData.aprs).map((key) => {
+            const symbol = formattedData.aprs[key]?.symbol as string
+            const apr = formattedData.aprs[key]?.apr
+            return formattedData.aprs[key]?.apr.gt(Zero) ? (
+              <React.Fragment key={symbol}>
+                {symbol.includes("/") ? (
+                  <Tooltip title={symbol.replaceAll("/", "\n")}>
+                    <Typography sx={{ borderBottom: "1px dotted" }}>
+                      Reward APR:
+                    </Typography>
+                  </Tooltip>
+                ) : (
+                  <Typography>{symbol} APR: &nbsp;</Typography>
+                )}
+                <Typography variant="subtitle1">
+                  {apr && formatUnits(apr, 18)}
+                </Typography>
+              </React.Fragment>
+            ) : null
+          })}
+        </InfoItem>
         <InfoItem>
           <Typography>{`${t("fee")}:`}</Typography>
           <Typography variant="subtitle1">{formattedData.swapFee}</Typography>
@@ -149,9 +180,9 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
         )}`}</Typography>
         <Box display="flex" flexWrap="wrap">
           {formattedData.tokens.map((token, index) => (
-            <Box key={index} flexBasis={{ xs: "100%", sm: "50%" }} mt={2}>
-              <Box display="flex">
-                <img alt="icon" src={token.icon} />
+            <Box key={index} minWidth={{ xs: "100%", sm: "50%" }} mt={2}>
+              <Box display="flex" flexWrap="nowrap">
+                <img alt="icon" src={token.icon} width="24px" height="24px" />
                 <Typography
                   variant="subtitle1"
                   ml={1}

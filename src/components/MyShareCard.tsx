@@ -58,7 +58,7 @@ function MyShareCard({ data }: Props): ReactElement | null {
       <Typography>
         {formattedData.share} {t("ofPool")}
       </Typography>
-      <Typography>{`${t("usdBalance")}: $${
+      <Typography>{`${t("usdBalance")}: ${
         formattedData.usdBalance
       }`}</Typography>
       <Typography>{`${t("lpAmount")}: ${formattedData.amount}`}</Typography>
@@ -76,11 +76,16 @@ function MyShareCard({ data }: Props): ReactElement | null {
           </Typography>
         ) : null
       })}
-      <Stack direction="row" spacing={4} mb={3}>
+      <Stack direction="row" mb={2} flexWrap="wrap">
         {formattedData.tokens.map((coin) => (
           <Box key={coin.symbol} pt={3} pr={4}>
             <Box display="flex" alignItems="center">
-              <img src={coin.icon} alt="Token Icon" />
+              <img
+                src={coin.icon}
+                alt="Token Icon"
+                width="24px"
+                height="24px"
+              />
               <Typography variant="subtitle1" ml={1} data-testid="tokenName">
                 {coin.symbol}
               </Typography>
