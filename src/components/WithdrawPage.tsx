@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Container,
-  Dialog,
   FormControlLabel,
   Paper,
   Radio,
@@ -20,6 +19,7 @@ import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
+import Dialog from "./Dialog"
 import MyFarm from "./MyFarm"
 import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
@@ -45,6 +45,8 @@ export interface ReviewWithdrawData {
   }[]
   slippage: string
   priceImpact: BigNumber
+  totalAmount?: string
+  withdrawLPTokenAmount: BigNumber
   txnGasCost: {
     amount: BigNumber
     valueUSD: BigNumber | null // amount * ethPriceUSD
@@ -248,8 +250,11 @@ const WithdrawPage = (props: Props): ReactElement => {
 
       <Dialog
         open={!!currentModal}
+        maxWidth="xs"
+        fullWidth
         onClose={(): void => setCurrentModal(null)}
         scroll="body"
+        hideClose={currentModal === "confirm"}
       >
         {currentModal === "review" ? (
           <ReviewWithdraw

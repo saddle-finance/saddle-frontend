@@ -10,7 +10,6 @@ import {
   Button,
   Checkbox,
   Container,
-  Dialog,
   Link,
   Paper,
   Stack,
@@ -26,6 +25,7 @@ import { commify, formatBNToPercentString, formatBNToString } from "../utils"
 import AdvancedOptions from "./AdvancedOptions"
 import ConfirmTransaction from "./ConfirmTransaction"
 import { DepositTransaction } from "../interfaces/transactions"
+import Dialog from "./Dialog"
 import LPStakingBanner from "./LPStakingBanner"
 import MyFarm from "./MyFarm"
 import MyShareCard from "./MyShareCard"
@@ -286,6 +286,7 @@ const DepositPage = (props: Props): ReactElement => {
         maxWidth="sm"
         fullWidth
         scroll="body"
+        hideClose={currentModal === "confirm"}
       >
         {currentModal === "review" ? (
           <ReviewDeposit

@@ -154,6 +154,7 @@
   "reviewDeposit": "Review Deposit",
   "reviewMigration": "Review Migration",
   "reviewSwap": "Review Swap",
+  "reviewWithdraw": "Review Withdraw",
   "risk": "Risk",
   "riskAdminKeys": "Saddle's admin keys are controlled by a 3/7 Gnosis Safe multisig. The signers are Mariano Conti, Kain Warwick, DegenSpartan, Klim K, Damir Bandalo, Aurelius, and Scoopy Trooples. This multisig has capabilities to pause new deposits and trades in case of technical emergencies. Users will always be able to withdraw their funds regardless of new deposits being paused. The multisig can also change the swap/withdrawal fees and the per pool/account deposit limits.",
   "riskAudits": "The Saddle smart contracts were audited by",
@@ -252,6 +253,7 @@
   "whichAssetBucketDoYouWantToSwap": "Which asset bucket do you want to swap?",
   "whichAssetPoolDoYouWantToChoose": "Which asset pool do you want to choose?",
   "withdraw": "Withdraw",
+  "withdrawing": "Withdrawing",
   "withdrawComplete": "Withdraw on {{poolName}} complete",
   "withdrawInitiated": "Withdraw initiated",
   "withdrawal": "Withdrawal",
@@ -261,6 +263,5 @@
   "withdrewNToken": "Withdrew {{amount}} {{name}}",
   "wrongNetworkContent": "Oops, looks like you're trying to use Saddle while your wallet is connected to an unsupported network.\n\nPlease switch to Ethereum mainnet or another supported network.",
   "yes": "Yes",
-  "yourRecentTransactions": "Your recent transactions will be here.",
-  "youWillReceive": "You will receive"
+  "yourRecentTransactions": "Your recent transactions will be here."
 }

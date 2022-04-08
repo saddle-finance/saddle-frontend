@@ -55,36 +55,28 @@ function MyShareCard({ data }: Props): ReactElement | null {
       <Typography variant="h1" mb={3}>
         {t("myShare")}
       </Typography>
-      <div>
-        <div>
+      <Typography>
+        {formattedData.share} {t("ofPool")}
+      </Typography>
+      <Typography>{`${t("usdBalance")}: $${
+        formattedData.usdBalance
+      }`}</Typography>
+      <Typography>{`${t("totalAmount")}: ${formattedData.amount}`}</Typography>
+      {Object.keys(stakingUrls).map((key) => {
+        return data.amountsStaked[key as Partners]?.gt(Zero) ? (
           <Typography component="span">
-            {formattedData.share} {t("ofPool")}
+            &nbsp;
+            <a
+              href={stakingUrls[key]}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              ({formattedData.amountsStaked[key as Partners]} {t("staked")})
+            </a>
           </Typography>
-        </div>
-        <Box display="flex">
-          <Typography component="span">{`${t("usdBalance")}: `}</Typography>
-          <Typography component="span">{`$${formattedData.usdBalance}`}</Typography>
-        </Box>
-        <Box display="flex">
-          <Typography component="span">{`${t("lpAmount")}: `}</Typography>
-          <Typography component="span">{formattedData.amount}</Typography>
-        </Box>
-        {Object.keys(stakingUrls).map((key) => {
-          return data.amountsStaked[key as Partners]?.gt(Zero) ? (
-            <Typography component="span">
-              &nbsp;
-              <a
-                href={stakingUrls[key]}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                ({formattedData.amountsStaked[key as Partners]} {t("staked")})
-              </a>
-            </Typography>
-          ) : null
-        })}
-      </div>
-      <Stack direction="row" mb={3} flexWrap="wrap">
+        ) : null
+      })}
+      <Stack direction="row" spacing={4} mb={3}>
         {formattedData.tokens.map((coin) => (
           <Box key={coin.symbol} pt={3} pr={4}>
             <Box display="flex" alignItems="center">
