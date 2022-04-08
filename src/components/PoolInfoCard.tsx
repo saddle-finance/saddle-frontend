@@ -22,6 +22,10 @@ const InfoItem = styled(Box)(({ theme }) => ({
   alignItems: "center",
   flexDirection: "row",
   flexBasis: "50%",
+  "& :first-child": {
+    marginRight: theme.spacing(0.5),
+  },
+
   [theme.breakpoints.down("sm")]: {
     flexBasis: "100%",
   },
@@ -94,7 +98,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
       </InfoItem>
       <InfoItem>
         <Typography>{`${t("totalLocked")}:`}</Typography>
-        <Typography variant="subtitle1">{`$${formattedData.reserve}`}</Typography>
+        <Typography variant="subtitle1">{`${formattedData.reserve}`}</Typography>
       </InfoItem>
       {/* <InfoItem>
         <Typography>{t("dailyVolume") + ": "}</Typography>
@@ -116,12 +120,12 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
           <Tooltip
             title={<React.Fragment>{t("aParameterTooltip")}</React.Fragment>}
           >
-            <Typography
-              sx={{ cursor: "help", borderBottom: "1px dotted" }}
-            >{`${t("aParameter")}`}</Typography>
+            <Typography sx={{ cursor: "help", borderBottom: "1px dotted" }}>
+              {`${t("aParameter")}`}:{" "}
+            </Typography>
           </Tooltip>
           <Typography variant="subtitle1">
-            :{formattedData.aParameter}
+            {formattedData.aParameter}
           </Typography>
         </InfoItem>
 
