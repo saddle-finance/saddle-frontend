@@ -11,10 +11,7 @@ export default function DialogTheme(theme: Theme): Components {
       styleOverrides: {
         paper: {
           borderRadius: 10,
-          border:
-            theme.palette.mode === "light"
-              ? `1px solid ${theme.palette.other.divider}`
-              : `1px solid ${theme.palette.grey[500]}`,
+          border: `1px solid ${theme.palette.other.divider}`,
           backgroundImage: "none",
           boxShadow: "none",
         },

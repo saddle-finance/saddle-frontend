@@ -45,6 +45,8 @@ export interface ReviewWithdrawData {
   }[]
   slippage: string
   priceImpact: BigNumber
+  totalAmount?: string
+  withdrawLPTokenAmount: BigNumber
   txnGasCost: {
     amount: BigNumber
     valueUSD: BigNumber | null // amount * ethPriceUSD
@@ -242,6 +244,8 @@ const WithdrawPage = (props: Props): ReactElement => {
 
       <Dialog
         open={!!currentModal}
+        maxWidth="xs"
+        fullWidth
         onClose={(): void => setCurrentModal(null)}
         scroll="body"
         hideClose={currentModal === "confirm"}
