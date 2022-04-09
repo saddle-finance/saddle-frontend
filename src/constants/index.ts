@@ -1006,6 +1006,7 @@ export type Pool = {
   underlyingPool?: PoolName
   isOutdated?: boolean // pool can be outdated but not have a migration target
   rewardPids: { [chainId in ChainId]: number | null }
+  isGuarded?: boolean
 }
 export type PoolsMap = {
   [poolName: string]: Pool
@@ -1021,6 +1022,7 @@ export const POOLS_MAP: PoolsMap = {
     route: "btc",
     isOutdated: true,
     rewardPids: buildPids({}),
+    isGuarded: true,
   },
   [BTC_POOL_V2_NAME]: {
     name: BTC_POOL_V2_NAME,
@@ -1365,6 +1367,26 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     connector: walletlink,
   },
 }
+
+// derived from https://docs.synthetix.io/tokens/list/
+export const SYNTHETIX_TOKENS = [
+  "0xd2dF355C19471c8bd7D8A3aa27Ff4e26A21b4076", // Aave (sAAVE),
+  "0xF48e200EAF9906362BB1442fca31e0835773b8B4", // Australian Dollars (sAUD),
+  "0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6", // Bitcoin (sBTC),
+  "0xe36E2D3c7c34281FA3bC737950a68571736880A1", // Cardano (sADA),
+  "0xbBC455cb4F1B9e4bFC4B73970d360c8f032EfEE6", // Chainlink (sLINK),
+  "0xe1aFe1Fd76Fd88f78cBf599ea1846231B8bA3B6B", // DeFi Index (sDEFI),
+  "0x104eDF1da359506548BFc7c25bA1E28C16a70235", // ETH / BTC (sETHBTC),
+  "0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb", // Ether (sETH),
+  "0xD71eCFF9342A5Ced620049e616c5035F1dB98620", // Euros (sEUR),
+  "0xF6b1C627e95BFc3c1b4c9B825a032Ff0fBf3e07d", // Japanese Yen (sJPY),
+  "0x1715AC0743102BF5Cd58EfBB6Cf2dC2685d967b6", // Polkadot (sDOT),
+  "0x97fe22E7341a0Cd8Db6F6C021A24Dc8f4DAD855F", // Pound Sterling (sGBP),
+  "0x269895a3dF4D73b077Fc823dD6dA1B95f72Aaf9B", // South Korean Won (sKRW),
+  "0x0F83287FF768D1c1e17a42F44d644D7F22e8ee1d", // Swiss Franc (sCHF),
+  "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F", // Synthetix (SNX),
+  "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51", // US Dollars (sUSD)
+]
 
 // "SADDLE" in bytes32 form
 export const SYNTH_TRACKING_ID =
