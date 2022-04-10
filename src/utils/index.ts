@@ -231,6 +231,12 @@ export async function getMulticallProvider(
   return ethcallProvider
 }
 
+/**
+ * Get icon path from token's symbol
+ *
+ * @param tokenSymbol
+ * @returns the token icon path within the public assets directory
+ */
 export function getTokenIconPath(tokenSymbol: string): string {
   const iconName = tokenSymbol.toLowerCase().includes("saddle")
     ? "saddle_lp_token"
@@ -239,8 +245,13 @@ export function getTokenIconPath(tokenSymbol: string): string {
   return `/static/icons/svg/${iconName}.svg`
 }
 
+/**
+ * Update the img tag's src to the default "unknown" icon if svg file is not found
+ *
+ * @param event The event object of the onError attribute within the img tag
+ */
 export function handleTokenIconImageError(
   event: React.SyntheticEvent<HTMLImageElement, Event>,
-) {
+): void {
   event.currentTarget.src = getTokenIconPath("unknown")
 }

@@ -22,7 +22,6 @@ import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import { formatUnits } from "@ethersproject/units"
 import { isHighPriceImpact } from "../utils/priceImpact"
-import saddleLPTokenLogo from "../assets/icons/saddle_lp_token.svg"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
@@ -68,7 +67,13 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
       </Typography>
       <WithdrawInfoItem>
         <Box display="flex" alignItems="center">
-          <img src={saddleLPTokenLogo} alt="icon" width={20} height={20} />
+          <img
+            src={getTokenIconPath("saddle_lp_token.svg")}
+            alt="icon"
+            onError={handleTokenIconImageError}
+            width={20}
+            height={20}
+          />
           <Typography ml={0.5}>SaddleUSD-V2</Typography>
         </Box>
         <Typography variant="body1">
