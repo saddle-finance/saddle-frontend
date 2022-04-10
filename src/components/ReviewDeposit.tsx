@@ -12,6 +12,8 @@ import {
   formatBNToPercentString,
   formatBNToString,
   formatDeadlineToNumber,
+  getTokenIconPath,
+  handleTokenIconImageError,
 } from "../utils"
 
 import { AppState } from "../state/index"
@@ -81,7 +83,13 @@ function ReviewDeposit({
             {transactionData.from.items.map(({ token, amount }) => (
               <DepositInfoItem key={token.name}>
                 <div>
-                  <img src={token.icon} width={24} height={24} alt="icon" />
+                  <img
+                    src={getTokenIconPath(token.symbol)}
+                    onError={handleTokenIconImageError}
+                    width={24}
+                    height={24}
+                    alt="icon"
+                  />
                   <Typography ml={1}>{token.symbol}</Typography>
                 </div>
                 <Typography>
@@ -105,7 +113,7 @@ function ReviewDeposit({
           <DepositInfoItem>
             <div>
               <img
-                src={transactionData.to.item.token.icon}
+                src={transactionData.to.item.token.symbol}
                 width={24}
                 height={24}
                 alt="icon"

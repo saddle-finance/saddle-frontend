@@ -1,7 +1,12 @@
 import { Box, Button, Typography } from "@mui/material"
 import React, { ReactElement, useCallback, useState } from "react"
-import { calculatePrice, commify, formatBNToString } from "../utils"
-
+import {
+  calculatePrice,
+  commify,
+  formatBNToString,
+  getTokenIconPath,
+  handleTokenIconImageError,
+} from "../utils"
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state"
 import { BigNumber } from "ethers"
@@ -131,7 +136,8 @@ const PendingSwapExchange = ({
       >
         {t("settleAsToken")}
         <img
-          src={tokenTo.icon}
+          src={getTokenIconPath(tokenTo.symbol)}
+          onError={handleTokenIconImageError}
           style={{ marginLeft: "8px", marginRight: "8px" }}
         />
         {tokenTo.symbol}
@@ -149,8 +155,9 @@ const PendingSwapExchange = ({
       >
         {t("withdrawSynth")}
         <img
-          src={synthTokenFrom.icon}
+          src={getTokenIconPath(synthTokenFrom.symbol)}
           style={{ marginLeft: "8px", marginRight: "8px" }}
+          onError={handleTokenIconImageError}
         />
         {synthTokenFrom.symbol}
       </Button>

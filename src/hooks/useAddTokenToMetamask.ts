@@ -1,7 +1,8 @@
 import { SUPPORTED_WALLETS, Token } from "../constants"
 import { useCallback, useState } from "react"
-
 import { find } from "lodash"
+
+import { getTokenIconPath } from "../utils"
 import { useActiveWeb3React } from "./index"
 
 // @dev https://eips.ethereum.org/EIPS/eip-747#wallet_watchasset
@@ -29,7 +30,7 @@ export default function useAddTokenToMetamask(token: Token | undefined): {
               address: token.addresses[chainId],
               symbol: token.symbol,
               decimals: token.decimals,
-              image: token.icon, // @dev TODO I think we'll need urls, not actual files here
+              image: getTokenIconPath(token.symbol), // @dev TODO I think we'll need urls, not actual files here
             },
           },
         })

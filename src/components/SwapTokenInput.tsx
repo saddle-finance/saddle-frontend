@@ -8,7 +8,12 @@ import {
 } from "@mui/material"
 import React, { useEffect } from "react"
 import { SWAP_TYPES, TOKENS_MAP } from "../constants"
-import { commify, formatBNToString } from "../utils"
+import {
+  commify,
+  formatBNToString,
+  getTokenIconPath,
+  handleTokenIconImageError,
+} from "../utils"
 import { styled, useTheme } from "@mui/material/styles"
 import { useRef, useState } from "react"
 import { ArrowDropDown } from "@mui/icons-material"
@@ -87,7 +92,6 @@ export default function SwapTokenInput({
   ) => {
     event.target.select()
   }
-
   const open = Boolean(anchorEl)
   const selectedToken =
     typeof selected === "string" ? TOKENS_MAP[selected] : undefined
@@ -103,17 +107,17 @@ export default function SwapTokenInput({
         bgcolor={theme.palette.background.paper}
         ref={containerRef}
       >
-        {selectedToken?.icon && (
+        {selectedToken && (
           <Box width={24} height={24} marginRight={1}>
             <img
-              src={selectedToken?.icon}
+              src={getTokenIconPath(selectedToken?.symbol)}
+              onError={handleTokenIconImageError}
               alt={selectedToken?.name}
               width="100%"
               height="100%"
             />
           </Box>
         )}
-
         <Box flexWrap="nowrap">
           <Button
             onClick={handleClick}
@@ -231,7 +235,6 @@ function ListItem({
   amount,
   valueUSD,
   name,
-  icon,
   symbol,
   decimals,
   isAvailable,
@@ -261,7 +264,12 @@ function ListItem({
     >
       <Stack direction="row" width="100%" alignItems="center">
         <Box mr={1} width={24} height={24}>
-          <img src={icon} alt={name} height="100%" width="100%" />
+          <img
+            src={getTokenIconPath(symbol)}
+            alt={name}
+            height="100%"
+            width="100%"
+          />
         </Box>
         <Box>
           <Box display="flex">

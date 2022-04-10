@@ -2,8 +2,13 @@ import "./ReviewSwap.scss"
 
 import React, { ReactElement, useState } from "react"
 import { SWAP_TYPES, TOKENS_MAP } from "../constants"
-import { commify, formatBNToString, formatDeadlineToNumber } from "../utils"
-
+import {
+  commify,
+  formatBNToString,
+  formatDeadlineToNumber,
+  getTokenIconPath,
+  handleTokenIconImageError,
+} from "../utils"
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import Button from "./Button"
@@ -50,7 +55,6 @@ function ReviewVirtualSwapSettlement({
   const [hasConfirmedHighPriceImpact, setHasConfirmedHighPriceImpact] =
     useState(false)
   const fromToken = TOKENS_MAP[data.from.symbol]
-  const toToken = data.to ? TOKENS_MAP[data.to.symbol] : null
   const isHighPriceImpactTxn = Boolean(
     data.to?.value &&
       data.exchangeRateInfo &&
@@ -82,7 +86,12 @@ function ReviewVirtualSwapSettlement({
       </h3>
       <div className="swapTable">
         <div className="from">
-          <img className="tokenIcon" src={fromToken.icon} alt="icon" />
+          <img
+            className="tokenIcon"
+            src={getTokenIconPath(fromToken.symbol)}
+            alt="icon"
+            onError={handleTokenIconImageError}
+          />
           <span className="tokenName">{data.from.symbol}</span>
           <div className="floatRight">
             <span>{commify(data.from.value)}</span>
@@ -93,7 +102,12 @@ function ReviewVirtualSwapSettlement({
           <>
             <ThinArrowDown className="stepArrow" />
             <div className="to">
-              <img className="tokenIcon" src={toToken?.icon} alt="icon" />
+              <img
+                className="tokenIcon"
+                src={getTokenIconPath(data.to?.symbol)}
+                alt="icon"
+                onError={handleTokenIconImageError}
+              />
               <span className="tokenName">{data.to.symbol}</span>
               <div className="floatRight">
                 <span>{commify(data.to.value)}</span>

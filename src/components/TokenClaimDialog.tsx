@@ -55,7 +55,6 @@ export default function TokenClaimDialog({
   } = useRewardClaims()
   const { addToken, canAdd } = useAddTokenToMetamask({
     ...SDL_TOKEN,
-    icon: `${window.location.origin}/logo.svg`,
   })
 
   const formattedUnclaimedTokenbalance = commify(

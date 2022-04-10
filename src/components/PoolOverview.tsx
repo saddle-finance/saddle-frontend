@@ -25,6 +25,8 @@ import {
   formatBNToPercentString,
   formatBNToShortString,
   formatBNToString,
+  getTokenIconPath,
+  handleTokenIconImageError,
 } from "../utils"
 
 import { Partners } from "../utils/thirdPartyIntegrations"
@@ -79,7 +81,6 @@ export default function PoolOverview({
       return {
         symbol: token.symbol,
         name: token.name,
-        icon: token.icon,
         value: formatBNToString(coin.value, token.decimals, formattedDecimals),
       }
     }),
@@ -157,9 +158,14 @@ export default function PoolOverview({
         <Grid item xs={12} lg={2.5}>
           <Stack spacing={1} direction={{ xs: "row", lg: "column" }}>
             {formattedData.tokens.length > 0 ? (
-              formattedData.tokens.map(({ symbol, icon }) => (
+              formattedData.tokens.map(({ symbol }) => (
                 <Box display="flex" alignItems="center" key={symbol}>
-                  <img alt="icon" src={icon} width="24px" />
+                  <img
+                    alt="icon"
+                    src={getTokenIconPath(symbol)}
+                    onError={handleTokenIconImageError}
+                    width="24px"
+                  />
                   <Typography marginLeft={1} sx={{ wordBreak: "break-all" }}>
                     {symbol}
                   </Typography>

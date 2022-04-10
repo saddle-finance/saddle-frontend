@@ -1,6 +1,11 @@
 import { LPTOKEN_TO_POOL_MAP, TOKENS_MAP } from "../constants"
 import React, { ReactElement } from "react"
-import { calculatePrice, commify } from "../utils"
+import {
+  calculatePrice,
+  commify,
+  getTokenIconPath,
+  handleTokenIconImageError,
+} from "../utils"
 
 import { AppState } from "../state/index"
 import { BigNumber } from "ethers"
@@ -14,7 +19,6 @@ import { useTranslation } from "react-i18next"
 
 interface Props {
   symbol: string
-  icon: string
   max?: string
   inputValue: string
   onChange: (value: string) => void
@@ -23,7 +27,6 @@ interface Props {
 
 function TokenInput({
   symbol,
-  icon,
   max,
   inputValue,
   onChange,
@@ -74,7 +77,11 @@ function TokenInput({
         })}
         id="tokenInput"
       >
-        <img alt="icon" src={icon} />
+        <img
+          alt="icon"
+          src={getTokenIconPath(symbol)}
+          onError={handleTokenIconImageError}
+        />
         <div className={styles.tokenSymbolAndName}>
           <p className={styles.boldText}>{symbol}</p>
           <p className={styles.smallText}>{name}</p>

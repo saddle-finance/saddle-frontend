@@ -10,8 +10,12 @@ import {
 } from "@mui/material"
 import React, { ReactElement, useState } from "react"
 import { SWAP_TYPES, TOKENS_MAP, getIsVirtualSwap } from "../constants"
-import { formatBNToString, formatDeadlineToNumber } from "../utils"
-
+import {
+  formatBNToString,
+  formatDeadlineToNumber,
+  getTokenIconPath,
+  handleTokenIconImageError,
+} from "../utils"
 import { AppState } from "../state/index"
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -191,7 +195,13 @@ function DirectSwapTokens({ data }: { data: Props["data"] }) {
   return (
     <Stack mb={3} spacing={1}>
       <Box display="flex" alignItems="center">
-        <img src={fromToken.icon} alt="icon" width={20} height={20} />
+        <img
+          src={getTokenIconPath(fromToken.symbol)}
+          alt="icon"
+          onError={handleTokenIconImageError}
+          width={20}
+          height={20}
+        />
         <Typography component="span" ml={1}>
           {data.from.symbol}
         </Typography>
@@ -201,7 +211,11 @@ function DirectSwapTokens({ data }: { data: Props["data"] }) {
       </Box>
       <DoubleArrowDown color="primary" />
       <Box display="flex" alignItems="center">
-        <img src={toToken.icon} alt="icon" />
+        <img
+          src={toToken.symbol}
+          alt="icon"
+          onError={handleTokenIconImageError}
+        />
         <Typography component="span" ml={1}>
           {data.to.symbol}
         </Typography>
@@ -232,7 +246,11 @@ function VirtualSwapTokens({ data }: { data: Props["data"] }) {
           >
             <Stack direction="row" spacing={1}>
               {!isFirst && !isLast && <ArrowDownwardIcon />}
-              <img src={token.icon} alt="icon" />
+              <img
+                src={getTokenIconPath(token.symbol)}
+                alt="icon"
+                onError={handleTokenIconImageError}
+              />
               <Typography color={isLast ? "text.secondary" : "text.primary"}>
                 {token.symbol}
               </Typography>

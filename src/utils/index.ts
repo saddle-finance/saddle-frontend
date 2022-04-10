@@ -230,3 +230,17 @@ export async function getMulticallProvider(
 
   return ethcallProvider
 }
+
+export function getTokenIconPath(tokenSymbol: string): string {
+  const iconName = tokenSymbol.toLowerCase().includes("saddle")
+    ? "saddle_lp_token"
+    : tokenSymbol.toLowerCase()
+
+  return `/static/icons/svg/${iconName}.svg`
+}
+
+export function handleTokenIconImageError(
+  event: React.SyntheticEvent<HTMLImageElement, Event>,
+) {
+  event.currentTarget.src = getTokenIconPath("unknown")
+}

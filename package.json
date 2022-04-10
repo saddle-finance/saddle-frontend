@@ -112,7 +112,7 @@
     "storybook": "start-storybook -p 6006 -s public",
     "test": "react-scripts test"
   },
-  "homepage": ".",
+  "homepage": "/",
   "browserslist": {
     "production": [
       ">0.2%",
