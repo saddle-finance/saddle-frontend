@@ -22,7 +22,7 @@ const chainObject = Object.keys(ChainId)
   )
 
 const createTestToken = (name: string, isSynth?: boolean) => {
-  return new Token(chainObject, 0, name, "", name, "", !!isSynth)
+  return new Token(chainObject, 0, name, "", name, !!isSynth)
 }
 
 const createTestPool = (
