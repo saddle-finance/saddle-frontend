@@ -266,6 +266,7 @@ function ListItem({
         <Box mr={1} width={24} height={24}>
           <img
             src={getTokenIconPath(symbol)}
+            onError={handleTokenIconImageError}
             alt={name}
             height="100%"
             width="100%"
