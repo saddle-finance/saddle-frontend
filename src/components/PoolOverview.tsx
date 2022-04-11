@@ -25,11 +25,9 @@ import {
   formatBNToPercentString,
   formatBNToShortString,
   formatBNToString,
-  getTokenIconPath,
-  handleTokenIconImageError,
 } from "../utils"
-
 import { Partners } from "../utils/thirdPartyIntegrations"
+import TokenIcon from "./TokenIcon"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
 import { useHistory } from "react-router-dom"
@@ -160,12 +158,7 @@ export default function PoolOverview({
             {formattedData.tokens.length > 0 ? (
               formattedData.tokens.map(({ symbol }) => (
                 <Box display="flex" alignItems="center" key={symbol}>
-                  <img
-                    alt="icon"
-                    src={getTokenIconPath(symbol)}
-                    onError={handleTokenIconImageError}
-                    width="24px"
-                  />
+                  <TokenIcon alt="icon" symbol={symbol} width="24px" />
                   <Typography marginLeft={1} sx={{ wordBreak: "break-all" }}>
                     {symbol}
                   </Typography>

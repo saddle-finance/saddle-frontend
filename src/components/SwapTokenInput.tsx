@@ -8,12 +8,7 @@ import {
 } from "@mui/material"
 import React, { useEffect } from "react"
 import { SWAP_TYPES, TOKENS_MAP } from "../constants"
-import {
-  commify,
-  formatBNToString,
-  getTokenIconPath,
-  handleTokenIconImageError,
-} from "../utils"
+import { commify, formatBNToString } from "../utils"
 import { styled, useTheme } from "@mui/material/styles"
 import { useRef, useState } from "react"
 import { ArrowDropDown } from "@mui/icons-material"
@@ -23,6 +18,7 @@ import Box from "@mui/material/Box"
 import ClickAwayListener from "@mui/material/ClickAwayListener"
 import Popper from "@mui/material/Popper"
 import Search from "@mui/icons-material/Search"
+import TokenIcon from "./TokenIcon"
 import { TokenOption } from "../pages/Swap"
 import { useTranslation } from "react-i18next"
 
@@ -109,9 +105,8 @@ export default function SwapTokenInput({
       >
         {selectedToken && (
           <Box width={24} height={24} marginRight={1}>
-            <img
-              src={getTokenIconPath(selectedToken?.symbol)}
-              onError={handleTokenIconImageError}
+            <TokenIcon
+              symbol={selectedToken?.symbol}
               alt={selectedToken?.name}
               width="100%"
               height="100%"
@@ -264,13 +259,7 @@ function ListItem({
     >
       <Stack direction="row" width="100%" alignItems="center">
         <Box mr={1} width={24} height={24}>
-          <img
-            src={getTokenIconPath(symbol)}
-            onError={handleTokenIconImageError}
-            alt={name}
-            height="100%"
-            width="100%"
-          />
+          <TokenIcon symbol={symbol} alt={name} height="100%" width="100%" />
         </Box>
         <Box>
           <Box display="flex">

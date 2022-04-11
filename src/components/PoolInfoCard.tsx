@@ -7,14 +7,10 @@ import {
   TOKENS_MAP,
 } from "../constants"
 import React, { ReactElement } from "react"
-import {
-  formatBNToPercentString,
-  formatBNToString,
-  getTokenIconPath,
-  handleTokenIconImageError,
-} from "../utils"
+import { formatBNToPercentString, formatBNToString } from "../utils"
 import { Divider } from "@mui/material"
 import { PoolDataType } from "../hooks/usePoolData"
+import TokenIcon from "./TokenIcon"
 import { Tooltip } from "@mui/material"
 import { commify } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
@@ -123,11 +119,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
         <div className="tokenList">
           {formattedData.tokens.map((token, index) => (
             <div className="token" key={index}>
-              <img
-                alt="icon"
-                src={getTokenIconPath(token.symbol)}
-                onError={handleTokenIconImageError}
-              />
+              <TokenIcon alt="icon" symbol={token.symbol} />
               <span className="bold">{`${token.symbol} ${token.percent}`}</span>
               <span className="tokenValue">{token.value}</span>
             </div>

@@ -7,17 +7,12 @@ import {
   styled,
 } from "@mui/material"
 import React, { ReactElement, useState } from "react"
-import {
-  formatDeadlineToNumber,
-  getTokenIconPath,
-  handleTokenIconImageError,
-} from "../utils"
-
 import { AppState } from "../state/index"
 import { GasPrices } from "../state/user"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { ReviewWithdrawData } from "./WithdrawPage"
-
+import TokenIcon from "./TokenIcon"
+import { formatDeadlineToNumber } from "../utils"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import { formatUnits } from "@ethersproject/units"
@@ -67,10 +62,9 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
       </Typography>
       <WithdrawInfoItem>
         <Box display="flex" alignItems="center">
-          <img
-            src={getTokenIconPath("saddle_lp_token.svg")}
+          <TokenIcon
+            symbol={"saddle_lp_token.svg"}
             alt="icon"
-            onError={handleTokenIconImageError}
             width={20}
             height={20}
           />
@@ -88,9 +82,8 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
         {data.withdraw.map((token, index) => (
           <WithdrawInfoItem key={index} mb={1}>
             <Box display="flex" alignItems="center">
-              <img
-                src={getTokenIconPath(token.symbol)}
-                onError={handleTokenIconImageError}
+              <TokenIcon
+                symbol={token.symbol}
                 alt="icon"
                 width={20}
                 height={20}

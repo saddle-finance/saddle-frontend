@@ -1,14 +1,9 @@
 import { LPTOKEN_TO_POOL_MAP, TOKENS_MAP } from "../constants"
 import React, { ReactElement } from "react"
-import {
-  calculatePrice,
-  commify,
-  getTokenIconPath,
-  handleTokenIconImageError,
-} from "../utils"
-
+import { calculatePrice, commify } from "../utils"
 import { AppState } from "../state/index"
 import { BigNumber } from "ethers"
+import TokenIcon from "./TokenIcon"
 import { Zero } from "@ethersproject/constants"
 import classnames from "classnames"
 import { formatBNToString } from "../utils"
@@ -77,11 +72,7 @@ function TokenInput({
         })}
         id="tokenInput"
       >
-        <img
-          alt="icon"
-          src={getTokenIconPath(symbol)}
-          onError={handleTokenIconImageError}
-        />
+        <TokenIcon symbol={symbol} alt="icon" />
         <div className={styles.tokenSymbolAndName}>
           <p className={styles.boldText}>{symbol}</p>
           <p className={styles.smallText}>{name}</p>

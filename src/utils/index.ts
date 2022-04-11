@@ -244,14 +244,3 @@ export function getTokenIconPath(tokenSymbol: string): string {
 
   return `/static/icons/svg/${iconName}.svg`
 }
-
-/**
- * Update the img tag's src to the default "unknown" icon if svg file is not found
- *
- * @param event The event object of the onError attribute within the img tag
- */
-export function handleTokenIconImageError(
-  event: React.SyntheticEvent<HTMLImageElement, Event>,
-): void {
-  event.currentTarget.src = getTokenIconPath("unknown")
-}

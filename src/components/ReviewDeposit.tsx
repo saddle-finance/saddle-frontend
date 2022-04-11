@@ -12,14 +12,12 @@ import {
   formatBNToPercentString,
   formatBNToString,
   formatDeadlineToNumber,
-  getTokenIconPath,
-  handleTokenIconImageError,
 } from "../utils"
-
 import { AppState } from "../state/index"
 import { DepositTransaction } from "../interfaces/transactions"
 import DialogTitle from "./DialogTitle"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
+import TokenIcon from "./TokenIcon"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import { isHighPriceImpact } from "../utils/priceImpact"
@@ -83,9 +81,8 @@ function ReviewDeposit({
             {transactionData.from.items.map(({ token, amount }) => (
               <DepositInfoItem key={token.name}>
                 <div>
-                  <img
-                    src={getTokenIconPath(token.symbol)}
-                    onError={handleTokenIconImageError}
+                  <TokenIcon
+                    symbol={token.symbol}
                     width={24}
                     height={24}
                     alt="icon"
@@ -112,8 +109,8 @@ function ReviewDeposit({
           </Typography>
           <DepositInfoItem>
             <div>
-              <img
-                src={transactionData.to.item.token.symbol}
+              <TokenIcon
+                symbol={transactionData.to.item.token.symbol}
                 width={24}
                 height={24}
                 alt="icon"

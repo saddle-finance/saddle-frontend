@@ -10,18 +10,14 @@ import {
 } from "@mui/material"
 import React, { ReactElement, useState } from "react"
 import { SWAP_TYPES, TOKENS_MAP, getIsVirtualSwap } from "../constants"
-import {
-  formatBNToString,
-  formatDeadlineToNumber,
-  getTokenIconPath,
-  handleTokenIconImageError,
-} from "../utils"
+import { formatBNToString, formatDeadlineToNumber } from "../utils"
 import { AppState } from "../state/index"
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
 import { BigNumber } from "@ethersproject/bignumber"
 import DialogTitle from "./DialogTitle"
 import DoubleArrowDown from "@mui/icons-material/KeyboardDoubleArrowDown"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
+import TokenIcon from "./TokenIcon"
 // import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import { isHighPriceImpact } from "../utils/priceImpact"
@@ -195,10 +191,9 @@ function DirectSwapTokens({ data }: { data: Props["data"] }) {
   return (
     <Stack mb={3} spacing={1}>
       <Box display="flex" alignItems="center">
-        <img
-          src={getTokenIconPath(fromToken.symbol)}
+        <TokenIcon
+          symbol={fromToken.symbol}
           alt="icon"
-          onError={handleTokenIconImageError}
           width={20}
           height={20}
         />
@@ -211,11 +206,7 @@ function DirectSwapTokens({ data }: { data: Props["data"] }) {
       </Box>
       <DoubleArrowDown color="primary" />
       <Box display="flex" alignItems="center">
-        <img
-          src={toToken.symbol}
-          alt="icon"
-          onError={handleTokenIconImageError}
-        />
+        <TokenIcon symbol={toToken.symbol} alt="icon" />
         <Typography component="span" ml={1}>
           {data.to.symbol}
         </Typography>
@@ -246,11 +237,7 @@ function VirtualSwapTokens({ data }: { data: Props["data"] }) {
           >
             <Stack direction="row" spacing={1}>
               {!isFirst && !isLast && <ArrowDownwardIcon />}
-              <img
-                src={getTokenIconPath(token.symbol)}
-                alt="icon"
-                onError={handleTokenIconImageError}
-              />
+              <TokenIcon symbol={token.symbol} alt="icon" />
               <Typography color={isLast ? "text.secondary" : "text.primary"}>
                 {token.symbol}
               </Typography>
