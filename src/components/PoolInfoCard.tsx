@@ -152,7 +152,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
             title={<React.Fragment>{t("aParameterTooltip")}</React.Fragment>}
           >
             <Typography sx={{ cursor: "help", borderBottom: "1px dotted" }}>
-              {`${t("aParameter")}`}:{" "}
+              {`${t("aParameter")}:`}
             </Typography>
           </Tooltip>
           <Typography variant="subtitle1">
