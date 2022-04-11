@@ -45,7 +45,6 @@ interface Props {
   tokens: Array<{
     symbol: string
     name: string
-    icon: string
     max: string
     inputValue: string
   }>

@@ -18,6 +18,7 @@ import Box from "@mui/material/Box"
 import ClickAwayListener from "@mui/material/ClickAwayListener"
 import Popper from "@mui/material/Popper"
 import Search from "@mui/icons-material/Search"
+import TokenIcon from "./TokenIcon"
 import { TokenOption } from "../pages/Swap"
 import { useTranslation } from "react-i18next"
 
@@ -87,7 +88,6 @@ export default function SwapTokenInput({
   ) => {
     event.target.select()
   }
-
   const open = Boolean(anchorEl)
   const selectedToken =
     typeof selected === "string" ? TOKENS_MAP[selected] : undefined
@@ -103,17 +103,16 @@ export default function SwapTokenInput({
         bgcolor={theme.palette.background.paper}
         ref={containerRef}
       >
-        {selectedToken?.icon && (
+        {selectedToken && (
           <Box width={24} height={24} marginRight={1}>
-            <img
-              src={selectedToken?.icon}
+            <TokenIcon
+              symbol={selectedToken?.symbol}
               alt={selectedToken?.name}
               width="100%"
               height="100%"
             />
           </Box>
         )}
-
         <Box flexWrap="nowrap">
           <Button
             onClick={handleClick}
@@ -231,7 +230,6 @@ function ListItem({
   amount,
   valueUSD,
   name,
-  icon,
   symbol,
   decimals,
   isAvailable,
@@ -261,7 +259,7 @@ function ListItem({
     >
       <Stack direction="row" width="100%" alignItems="center">
         <Box mr={1} width={24} height={24}>
-          <img src={icon} alt={name} height="100%" width="100%" />
+          <TokenIcon symbol={symbol} alt={name} height="100%" width="100%" />
         </Box>
         <Box>
           <Box display="flex">
