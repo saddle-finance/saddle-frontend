@@ -184,7 +184,7 @@ const TimelineStep = ({
             width: 12,
             height: 12,
           }}
-        ></TimelineDot>
+        />
         {withLine && (
           <TimelineConnector
             sx={{ background: theme.palette.text.secondary }}
