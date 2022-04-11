@@ -30,7 +30,7 @@ export default function useAddTokenToMetamask(token: Token | undefined): {
               address: token.addresses[chainId],
               symbol: token.symbol,
               decimals: token.decimals,
-              image: getTokenIconPath(token.symbol), // @dev TODO I think we'll need urls, not actual files here
+              image: getTokenIconPath(token.symbol),
             },
           },
         })
