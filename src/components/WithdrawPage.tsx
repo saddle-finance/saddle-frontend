@@ -120,7 +120,7 @@ const WithdrawPage = (props: Props): ReactElement => {
               </Typography>
               <Box display="flex">
                 <Box>
-                  <Typography variant="body1" noWrap>{`${t(
+                  <Typography variant="body1" noWrap mr={1}>{`${t(
                     "withdrawPercentage",
                   )} (%):`}</Typography>
                 </Box>
@@ -188,16 +188,17 @@ const WithdrawPage = (props: Props): ReactElement => {
               </Stack>
               <Box mt={3}>
                 {reviewData.priceImpact.gte(0) ? (
-                  <Typography component="span" color="primary">
-                    {t("bonus")}:{" "}
+                  <Typography component="span" color="primary" marginRight={1}>
+                    {t("bonus")}:
                   </Typography>
                 ) : (
                   <Typography
                     component="span"
                     color="error"
                     whiteSpace="nowrap"
+                    marginRight={1}
                   >
-                    {t("priceImpact")}
+                    {t("priceImpact")}:
                   </Typography>
                 )}
                 <Typography

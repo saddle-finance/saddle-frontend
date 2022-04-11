@@ -221,13 +221,13 @@ export default function PoolOverview({
                       component="span"
                       sx={{ borderBottom: "1px dotted" }}
                     >
-                      Reward APR:&nbsp;
+                      Reward APR:
                     </Typography>
                   </Tooltip>
                 ) : (
-                  <Typography component="span">{symbol} APR: &nbsp;</Typography>
+                  <Typography component="span">{symbol} APR:</Typography>
                 )}
-                <Typography component="span">
+                <Typography component="span" marginLeft={1}>
                   {formattedData.aprs[key] as string}
                 </Typography>
               </div>
