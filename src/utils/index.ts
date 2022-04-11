@@ -9,7 +9,12 @@ import { ContractInterface } from "ethers"
 import { Deadlines } from "../state/user"
 import { MulticallProvider } from "../types/ethcall"
 import { Provider } from "ethcall"
+import { SYNTHETIX_TOKENS } from "./../constants/index"
 import { getAddress } from "@ethersproject/address"
+
+export function isSynthAsset(chainId: ChainId, tokenAddress: string): boolean {
+  return chainId === ChainId.MAINNET && SYNTHETIX_TOKENS.includes(tokenAddress)
+}
 
 // returns the checksummed address if the address is valid, otherwise returns false
 export function isAddress(value: string): string | false {
