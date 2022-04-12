@@ -18,7 +18,6 @@ import { Slippages } from "../state/user"
 import SwapTokenInput from "./SwapTokenInput"
 import type { TokenOption } from "../pages/Swap"
 import { Zero } from "@ethersproject/constants"
-import classNames from "classnames"
 import { commify } from "../utils"
 import { formatUnits } from "@ethersproject/units"
 import { isHighPriceImpact } from "../utils/priceImpact"
@@ -318,9 +317,13 @@ const SwapPage = (props: Props): ReactElement => {
           </Button>
         </Box>
 
-        <div className={classNames({ showError: !!error }, "error")}>
+        <Typography
+          display={!error ? "none" : "block"}
+          color="error"
+          textAlign="center"
+        >
           {error}
-        </div>
+        </Typography>
         <Dialog
           open={!!currentModal}
           onClose={(): void => setCurrentModal(null)}
