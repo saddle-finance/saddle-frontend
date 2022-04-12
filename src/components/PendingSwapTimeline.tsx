@@ -1,10 +1,4 @@
-import {
-  Link,
-  SvgIconTypeMap,
-  Typography,
-  styled,
-  useTheme,
-} from "@mui/material"
+import { Link, SvgIconTypeMap, styled, useTheme } from "@mui/material"
 import {
   TimelineItem as MuiTimelineItem,
   Timeline,
@@ -58,11 +52,9 @@ const PendingSwapTimeline = ({
         icon={CheckIcon}
         testId="PendingSwapTimeline:step1Of2"
       >
-        <Typography component="span">
-          {getFormattedShortTime(timestamp)} {t("stepAOfB", { a: 1, b: 2 })}
-          {" - "}
-          {t("confirmTheSwap")}{" "}
-        </Typography>
+        {getFormattedShortTime(timestamp)} {t("stepAOfB", { a: 1, b: 2 })}
+        {" - "}
+        {t("confirmTheSwap")}{" "}
         <Link
           href={`https://etherscan.io/tx/${transactionHash}`}
           target="_blank"
@@ -77,9 +69,7 @@ const PendingSwapTimeline = ({
           icon={ClockIcon}
           testId="PendingSwapTimeline:minutesLeft"
         >
-          <Typography component="span">
-            {t("minutesLeft", { count: minutesRemaining })}
-          </Typography>
+          {t("minutesLeft", { count: minutesRemaining })}
         </TimelineStep>
       ) : (
         <TimelineStep
@@ -87,11 +77,9 @@ const PendingSwapTimeline = ({
           icon={CheckIcon}
           testId="PendingSwapTimeline:swappedForAmount"
         >
-          <Typography component="span">
-            {getFormattedShortTime(timestamp)}{" "}
-            {t("swappedForAmount", { amount: formattedBalance })}{" "}
-            {synthTokenFrom.symbol}
-          </Typography>
+          {getFormattedShortTime(timestamp)}{" "}
+          {t("swappedForAmount", { amount: formattedBalance })}{" "}
+          {synthTokenFrom.symbol}
         </TimelineStep>
       )}
       {!hasEvents ? (
@@ -101,10 +89,8 @@ const PendingSwapTimeline = ({
           testId="PendingSwapTimeline:step2Of2"
           withLine={false}
         >
-          <Typography component="span">
-            {t("stepAOfB", { a: 2, b: 2 })}{" "}
-            {t("settleToken", { name: tokenTo.symbol })}{" "}
-          </Typography>
+          {t("stepAOfB", { a: 2, b: 2 })}{" "}
+          {t("settleToken", { name: tokenTo.symbol })}{" "}
         </TimelineStep>
       ) : null}
       {events.map((event, i) => {
@@ -191,12 +177,17 @@ const TimelineStep = ({
           />
         )}
       </TimelineSeparator>
-      <TimelineContent color={isActive ? "primary" : "text.secondary"}>
+      {/* TimelineContent is extended Typography so props of Typography works for this component */}
+      <TimelineContent
+        variant={isActive ? "subtitle2" : "body2"}
+        color={isActive ? "primary" : "text.secondary"}
+      >
         <Icon
           sx={{
             height: 16,
             width: 16,
             marginRight: 1,
+            marginBottom: "-4px",
           }}
         />
         {children}

@@ -13,7 +13,6 @@ import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
 import InfoIcon from "@mui/icons-material/InfoOutlined"
-// import { ReactComponent as InfoIcon } from "../assets/icons/info.svg"
 import { PendingSwap } from "../hooks/usePendingSwapData"
 import PendingSwapExchange from "./PendingSwapExchange"
 import PendingSwapTimeline from "./PendingSwapTimeline"
@@ -210,11 +209,15 @@ const PendingSwapModal = ({
           </div>
           <div>
             {currentStep === "timer" && (
-              <div>
-                <h2>
-                  {minutesRemaining} {t("minRemaining")}
-                </h2>
-              </div>
+              <Typography
+                variant="h2"
+                color="primary"
+                textAlign="center"
+                mt={4}
+              >
+                {t("waiting")}
+                {minutesRemaining} {t("minRemaining")}
+              </Typography>
             )}
             {currentStep === "exchange" && (
               <PendingSwapExchange
