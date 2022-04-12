@@ -118,7 +118,7 @@
   "migrateInitiated": "Migrate initiated",
   "migrationAmount": "Migration Amount",
   "migrationExplain": "This pool is outdated. We recommend migrating to the new gas optimized version to earn better returns.",
-  "minRemaining": "mininutes left",
+  "minRemaining": "min remaining",
   "minutes": "min",
   "minutesLeft_plural": "{{count}} minutes left",
   "minutesLeft": "{{count}} minute left",

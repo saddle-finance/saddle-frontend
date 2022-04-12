@@ -216,7 +216,7 @@ const PendingSwapModal = ({
                 mt={4}
               >
                 {t("waiting")}
-                {minutesRemaining} {t("minRemaining")}
+                {t("minutesLeft", { count: minutesRemaining })}
               </Typography>
             )}
             {currentStep === "exchange" && (
