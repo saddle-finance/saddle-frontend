@@ -35,8 +35,8 @@ import { useTranslation } from "react-i18next"
 export interface ReviewWithdrawData {
   withdraw: {
     name: string
+    symbol: string
     value: string
-    icon: string
   }[]
   rates: {
     name: string
@@ -59,7 +59,6 @@ interface Props {
   tokensData: Array<{
     symbol: string
     name: string
-    icon: string
     inputValue: string
   }>
   reviewData: ReviewWithdrawData
@@ -226,13 +225,7 @@ const WithdrawPage = (props: Props): ReactElement => {
             {t("withdraw")}
           </Button>
         </Box>
-        <Stack
-          direction="column"
-          flex={1}
-          spacing={4}
-          width="100%"
-          maxWidth="50%"
-        >
+        <Stack direction="column" flex={1} spacing={4} width="100%">
           {poolData && (
             <MyFarm
               lpWalletBalance={myShareData?.lpTokenBalance || Zero}

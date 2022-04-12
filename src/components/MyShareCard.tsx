@@ -4,6 +4,7 @@ import React, { ReactElement } from "react"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 
 import { Partners } from "../utils/thirdPartyIntegrations"
+import TokenIcon from "./TokenIcon"
 import { UserShareType } from "../hooks/usePoolData"
 import { Zero } from "@ethersproject/constants"
 import { commify } from "@ethersproject/units"
@@ -38,7 +39,6 @@ function MyShareCard({ data }: Props): ReactElement | null {
     tokens: data.tokens.map((coin) => {
       const token = TOKENS_MAP[coin.symbol]
       return {
-        icon: token.icon,
         symbol: token.symbol,
         name: token.name,
         value: commify(formatBNToString(coin.value, 18, formattedDecimals)),
@@ -77,20 +77,15 @@ function MyShareCard({ data }: Props): ReactElement | null {
         ) : null
       })}
       <Stack direction="row" mb={2} flexWrap="wrap">
-        {formattedData.tokens.map((coin) => (
-          <Box key={coin.symbol} pt={3} pr={4}>
+        {formattedData.tokens.map((token) => (
+          <Box key={token.symbol} pt={3} pr={4}>
             <Box display="flex" alignItems="center">
-              <img
-                src={coin.icon}
-                alt="Token Icon"
-                width="24px"
-                height="24px"
-              />
+              <TokenIcon alt="icon" symbol={token.symbol} />
               <Typography variant="subtitle1" ml={1} data-testid="tokenName">
-                {coin.symbol}
+                {token.symbol}
               </Typography>
             </Box>
-            <Typography data-testid="tokenValue">{coin.value}</Typography>
+            <Typography data-testid="tokenValue">{token.value}</Typography>
           </Box>
         ))}
       </Stack>

@@ -26,8 +26,8 @@ import {
   formatBNToShortString,
   formatBNToString,
 } from "../utils"
-
 import { Partners } from "../utils/thirdPartyIntegrations"
+import TokenIcon from "./TokenIcon"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
 import { useHistory } from "react-router-dom"
@@ -79,7 +79,6 @@ export default function PoolOverview({
       return {
         symbol: token.symbol,
         name: token.name,
-        icon: token.icon,
         value: formatBNToString(coin.value, token.decimals, formattedDecimals),
       }
     }),
@@ -157,9 +156,9 @@ export default function PoolOverview({
         <Grid item xs={12} lg={2.5}>
           <Stack spacing={1} direction={{ xs: "row", lg: "column" }}>
             {formattedData.tokens.length > 0 ? (
-              formattedData.tokens.map(({ symbol, icon }) => (
+              formattedData.tokens.map(({ symbol }) => (
                 <Box display="flex" alignItems="center" key={symbol}>
-                  <img alt="icon" src={icon} width="24px" />
+                  <TokenIcon alt="icon" symbol={symbol} width="24px" />
                   <Typography marginLeft={1} sx={{ wordBreak: "break-all" }}>
                     {symbol}
                   </Typography>

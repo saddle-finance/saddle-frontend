@@ -230,3 +230,17 @@ export async function getMulticallProvider(
 
   return ethcallProvider
 }
+
+/**
+ * Get icon path from token's symbol
+ *
+ * @param tokenSymbol
+ * @returns the token icon path within the public assets directory
+ */
+export function getTokenIconPath(tokenSymbol: string): string {
+  const iconName = tokenSymbol.toLowerCase().includes("saddle")
+    ? "saddle_lp_token"
+    : tokenSymbol.toLowerCase()
+
+  return `/static/icons/svg/${iconName}.svg`
+}

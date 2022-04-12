@@ -70,7 +70,6 @@ export interface TokenOption {
   name: string
   valueUSD: BigNumber
   amount: BigNumber
-  icon: string
   decimals: number
   swapType: SWAP_TYPES | null
   isAvailable: boolean
@@ -143,11 +142,10 @@ function Swap(): ReactElement {
         }, false)
         return hasAnyUnpaused
       })
-      .map(({ symbol, name, icon, decimals }) => {
+      .map(({ symbol, name, decimals }) => {
         const amount = tokenBalances?.[symbol] || Zero
         return {
           name,
-          icon,
           symbol,
           decimals,
           amount,
@@ -161,11 +159,10 @@ function Swap(): ReactElement {
       formState.currentSwapPairs.length > 0
         ? formState.currentSwapPairs
             .map(({ to, type: swapType }) => {
-              const { symbol, name, icon, decimals } = TOKENS_MAP[to.symbol]
+              const { symbol, name, decimals } = TOKENS_MAP[to.symbol]
               const amount = tokenBalances?.[symbol] || Zero
               return {
                 name,
-                icon,
                 symbol,
                 decimals,
                 amount,

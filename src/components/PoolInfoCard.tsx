@@ -15,6 +15,7 @@ import {
 
 // import { Partners } from "../utils/thirdPartyIntegrations"
 import { PoolDataType } from "../hooks/usePoolData"
+import TokenIcon from "./TokenIcon"
 import { Tooltip } from "@mui/material"
 import { Zero } from "@ethersproject/constants"
 import { useTranslation } from "react-i18next"
@@ -72,7 +73,6 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
         return {
           symbol: token.symbol,
           name: token.name,
-          icon: token.icon,
           percent: coin.percent,
           value: commify(formatBNToString(coin.value, 18, formattedDecimals)),
         }
@@ -113,7 +113,6 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
         <Typography variant="subtitle1">{formattedData.volume}</Typography>
       </InfoItem>
 
-      {console.log("aprs ==>", formattedData.aprs)}
       <Box display="flex" mt={3} flexWrap="wrap">
         <InfoItem>
           {Object.keys(formattedData.aprs).map((key) => {
@@ -182,13 +181,13 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
           {formattedData.tokens.map((token, index) => (
             <Box key={index} minWidth={{ xs: "100%", sm: "50%" }} mt={2}>
               <Box display="flex" flexWrap="nowrap">
-                <img alt="icon" src={token.icon} width="24px" height="24px" />
+                <TokenIcon alt="icon" symbol={token.symbol} />
                 <Typography
                   variant="subtitle1"
                   ml={1}
                 >{`${token.symbol} ${token.percent}`}</Typography>
               </Box>
-              <Typography className="tokenValue">${token.value}</Typography>
+              <Typography data-testid="tokenValue">${token.value}</Typography>
             </Box>
           ))}
         </Box>
