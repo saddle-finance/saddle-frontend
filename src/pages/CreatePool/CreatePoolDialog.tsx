@@ -8,9 +8,17 @@ import {
   Typography,
 } from "@mui/material"
 import { AssetType, PoolType, TextFieldColors } from "."
+import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
+
+import { BigNumberish } from "ethers"
 import Dialog from "../../components/Dialog"
 import DialogTitle from "../../components/DialogTitle"
+import PERMISSIONLESS_DEPLOYER_CONTRACT_ABI from "../../constants/abis/permissionlessDeployer.json"
+import { PermissionlessDeployer } from "../../../types/ethers-contracts/PermissionlessDeployer"
 import React from "react"
+import { Zero } from "@ethersproject/constants"
+import { getContract } from "../../utils"
+import { useActiveWeb3React } from "../../hooks"
 import { useTranslation } from "react-i18next"
 
 type Props = {
@@ -27,7 +35,7 @@ type Props = {
     tokenInfo: {
       name: string
       symbol: string
-      decimals: number
+      decimals: BigNumberish
       checkResult: TextFieldColors
     }[]
   }
@@ -39,10 +47,39 @@ export default function ReviewCreatePool({
   poolData,
 }: Props): JSX.Element {
   const { t } = useTranslation()
+  const { account, chainId, library } = useActiveWeb3React()
 
-  const onCreatePoolClick = () => {
-    // Make contract call handleCreatePool.
-    // Then reset the state data on Pool Creation Page.
+  const onCreatePoolClick = async () => {
+    if (!library || !chainId || !account) return
+    const permissionlessDeployerContract = getContract(
+      // hardhat addr delete this later
+      "0xD5ac451B0c50B9476107823Af206eD814a2e2580",
+      PERMISSIONLESS_DEPLOYER_CONTRACT_ABI,
+      library,
+      account,
+    ) as PermissionlessDeployer
+
+    try {
+      const txn = await permissionlessDeployerContract.deploySwap({
+        poolName: poolData.poolName,
+        tokens: poolData.tokenInputs,
+        decimals: [Zero], // poolData.tokenInfo.decimals || Zero,
+        lpTokenName: poolData.poolName,
+        lpTokenSymbol: poolData.poolSymbol,
+        a: poolData.aParameter,
+        fee: poolData.fee,
+        adminFee: Zero,
+        owner: account,
+        typeOfAsset: Zero,
+      })
+      await enqueuePromiseToast(chainId, txn.wait(), "create", {
+        poolName: "Vesting Contract",
+      })
+      // resetFields()
+    } catch (err) {
+      console.error(err)
+      enqueueToast("error", "Unable to deploy Permissionless Pool")
+    }
     onClose()
   }
 

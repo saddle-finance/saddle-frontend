@@ -17,6 +17,7 @@ import {
 import React, { useEffect, useState } from "react"
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
+import { BigNumberish } from "ethers"
 import CircularProgress from "@mui/material/CircularProgress"
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever"
 import ERC20_ABI from "../../constants/abis/erc20.json"
@@ -54,7 +55,7 @@ export default function CreatePool(): React.ReactElement {
     {
       name: string
       symbol: string
-      decimals: number
+      decimals: BigNumberish
       checkResult: TextFieldColors
     }[]
   >([
@@ -84,7 +85,7 @@ export default function CreatePool(): React.ReactElement {
   ): Promise<{
     name: string
     symbol: string
-    decimals: number
+    decimals: BigNumberish
     checkResult: TextFieldColors
   }> => {
     if (!library || !account || !addr)
@@ -373,7 +374,9 @@ export default function CreatePool(): React.ReactElement {
                       }}
                       helperText={
                         tokenInfo[index]?.name
-                          ? `${tokenInfo[index]?.name} (${tokenInfo[index]?.symbol}: ${tokenInfo[index]?.decimals} decimals)`
+                          ? `${tokenInfo[index]?.name} (${
+                              tokenInfo[index]?.symbol
+                            }: ${String(tokenInfo[index]?.decimals)} decimals)`
                           : " "
                       }
                       InputProps={{
