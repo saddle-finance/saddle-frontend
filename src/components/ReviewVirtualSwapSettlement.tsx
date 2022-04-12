@@ -146,14 +146,12 @@ function ReviewVirtualSwapSettlement({
             </span>
           </div>
           {isHighPriceImpactTxn && (
-            <div className="row">
-              <HighPriceImpactConfirmation
-                checked={hasConfirmedHighPriceImpact}
-                onCheck={(): void =>
-                  setHasConfirmedHighPriceImpact((prevState) => !prevState)
-                }
-              />
-            </div>
+            <HighPriceImpactConfirmation
+              checked={hasConfirmedHighPriceImpact}
+              onCheck={(): void =>
+                setHasConfirmedHighPriceImpact((prevState) => !prevState)
+              }
+            />
           )}
         </div>
       </div>
