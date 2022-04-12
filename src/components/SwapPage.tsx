@@ -183,12 +183,16 @@ const SwapPage = (props: Props): ReactElement => {
                     <SwapIcon />
                   </Button>
                 </div>
-                <Typography>{formattedExchangeRate}</Typography>
+                <Typography data-testid="exchRate">
+                  {formattedExchangeRate}
+                </Typography>
               </Box>
             )}
             <Box display="flex" justifyContent="space-between">
               <Typography>{t("priceImpact")}</Typography>
-              <Typography>{formattedPriceImpact}</Typography>
+              <Typography data-testid="swapPriceImpactValue">
+                {formattedPriceImpact}
+              </Typography>
             </Box>
             {formattedRoute && (
               <>
