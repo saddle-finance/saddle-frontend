@@ -39,12 +39,14 @@ type Props = {
       checkResult: TextFieldColors
     }[]
   }
+  resetFields: () => void
 }
 
 export default function ReviewCreatePool({
   open,
   onClose = () => null,
   poolData,
+  resetFields,
 }: Props): JSX.Element {
   const { t } = useTranslation()
   const { account, chainId, library } = useActiveWeb3React()
@@ -75,7 +77,7 @@ export default function ReviewCreatePool({
       await enqueuePromiseToast(chainId, txn.wait(), "create", {
         poolName: "Vesting Contract",
       })
-      // resetFields()
+      resetFields()
     } catch (err) {
       console.error(err)
       enqueueToast("error", "Unable to deploy Permissionless Pool")

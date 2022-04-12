@@ -80,6 +80,23 @@ export default function CreatePool(): React.ReactElement {
     return digitRegex.exec(text)
   }
 
+  const resetFields = () => {
+    setPoolName("")
+    setPoolSymbol("")
+    setAParameter("")
+    setPoolType("usdMetapool")
+    setAssetType("USD")
+    setTokenInfo([
+      {
+        name: "",
+        symbol: "",
+        decimals: 0,
+        checkResult: "primary",
+      },
+    ])
+    setTokenInputs([""])
+  }
+
   const getUserTokenInputContract = async (
     addr: string,
   ): Promise<{
@@ -448,6 +465,7 @@ export default function CreatePool(): React.ReactElement {
         }}
         open={openCreatePoolDlg}
         onClose={() => setOpenCreatePoolDlg(false)}
+        resetFields={resetFields}
       />
     </Container>
   )
