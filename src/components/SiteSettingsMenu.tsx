@@ -71,7 +71,6 @@ export default function SiteSettingsMenu({
 function AddTokenSection(): ReactElement | null {
   const { addToken, canAdd } = useAddTokenToMetamask({
     ...SDL_TOKEN,
-    icon: `${window.location.origin}/logo.svg`,
   })
   const { t } = useTranslation()
 

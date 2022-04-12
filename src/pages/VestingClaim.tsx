@@ -22,7 +22,6 @@ function VestingClaim(): ReactElement {
   const { account, chainId, library } = useActiveWeb3React()
   const { addToken, canAdd } = useAddTokenToMetamask({
     ...SDL_TOKEN,
-    icon: `${window.location.origin}/logo.svg`,
   })
 
   const [isValidBeneficiary, setIsValidBeneficiary] = useState(false)

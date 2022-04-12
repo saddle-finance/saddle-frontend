@@ -9,13 +9,21 @@ const PERSISTED_KEYS: string[] = ["user"]
 const stateFromStorage = load({
   states: PERSISTED_KEYS,
 })
+const reducer = {
+  application,
+  user,
+}
 const store = configureStore({
-  reducer: {
-    application,
-    user,
-  },
+  reducer,
   middleware: [
-    ...getDefaultMiddleware({ thunk: false }),
+    ...getDefaultMiddleware({
+      thunk: false,
+      serializableCheck: {
+        ignoredPaths: Object.keys(reducer).filter(
+          (k) => !PERSISTED_KEYS.includes(k),
+        ),
+      },
+    }),
     save({ states: PERSISTED_KEYS }),
   ],
   preloadedState: merge({}, { user: userInitialState }, stateFromStorage),

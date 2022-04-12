@@ -8,34 +8,11 @@ import {
 
 import { AbstractConnector } from "@web3-react/abstract-connector"
 import { BigNumber } from "@ethersproject/bignumber"
-import alethLogo from "../assets/icons/aleth.svg"
-import alusdLogo from "../assets/icons/alusd.svg"
 import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
-import daiLogo from "../assets/icons/dai.svg"
-import feiLogo from "../assets/icons/fei.svg"
-import fraxLogo from "../assets/icons/frax.svg"
-import lusdLogo from "../assets/icons/lusd.svg"
 import metamaskIcon from "../assets/icons/metamask.svg"
-import mimLogo from "../assets/icons/mim.png"
-import nusdLogo from "../assets/icons/nusd.svg"
-import renbtcLogo from "../assets/icons/renbtc.svg"
-import saddleLPTokenLogo from "../assets/icons/saddle_lp_token.svg"
-import saddleLogo from "../assets/icons/logo_24.svg"
-import sbtcLogo from "../assets/icons/sbtc.svg"
-import sethLogo from "../assets/icons/seth.svg"
-import speraxLogo from "../assets/icons/sperax.png"
-import susdLogo from "../assets/icons/susd.svg"
 import tallyIcon from "../assets/icons/tally.svg"
-import tbtcLogo from "../assets/icons/tbtc.svg"
 import unstoppableDomainsLogo from "../assets/icons/unstoppableDomainsLogo.png"
-import usdcLogo from "../assets/icons/usdc.svg"
-import usdsLogo from "../assets/icons/usds.png"
-import usdtLogo from "../assets/icons/usdt.svg"
-import veth2Logo from "../assets/icons/veth2.svg"
 import walletconnectIcon from "../assets/icons/walletconnect.svg"
-import wbtcLogo from "../assets/icons/wbtc.svg"
-import wcusdLogo from "../assets/icons/wcusd.png"
-import wethLogo from "../assets/icons/weth.svg"
 
 export const NetworkContextName = "NETWORK"
 export const BTC_POOL_NAME = "BTC"
@@ -119,7 +96,6 @@ export class Token {
   readonly decimals: number
   readonly symbol: string
   readonly name: string
-  readonly icon: string
   readonly geckoId: string
   readonly isSynthetic: boolean
   readonly isLPToken: boolean
@@ -130,7 +106,6 @@ export class Token {
     symbol: string,
     geckoId: string,
     name: string,
-    icon: string,
     isSynthetic = false,
     isLPToken = false,
   ) {
@@ -139,7 +114,6 @@ export class Token {
     this.symbol = symbol
     this.geckoId = geckoId
     this.name = name
-    this.icon = icon
     this.isSynthetic = isSynthetic
     this.isLPToken = isLPToken
   }
@@ -436,7 +410,6 @@ export const SPA = new Token(
   "SPA",
   "sperax",
   "Sperax",
-  speraxLogo,
   false,
   false,
 )
@@ -447,7 +420,6 @@ export const SDL_TOKEN = new Token(
   "SDL",
   "saddle-dao", // TBD
   "Saddle DAO",
-  saddleLogo,
   false,
   false,
 )
@@ -458,7 +430,6 @@ export const SUSD_SWAP_TOKEN = new Token(
   "saddleSUSD",
   "saddlesusd",
   "Saddle sUSD/saddleUSD-V2",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -469,7 +440,6 @@ export const SUSD_SWAP_V2_TOKEN = new Token(
   "saddleSUSD-V2",
   "saddlesusd-v2",
   "Saddle sUSD/saddleUSD-V2 V2",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -480,7 +450,6 @@ export const BTC_SWAP_TOKEN = new Token(
   "saddleBTC",
   "saddlebtc",
   "Saddle TBTC/WBTC/RENBTC/SBTC",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -491,7 +460,6 @@ export const BTC_SWAP_V2_TOKEN = new Token(
   "saddleBTC-V2",
   "saddlebtc-v2",
   "Saddle WBTC/RENBTC/SBTC",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -502,7 +470,6 @@ export const TBTC_SWAP_TOKEN = new Token(
   "saddletBTC",
   "saddletBTC",
   "Saddle tBTCv2/saddleWRenSBTC",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -513,7 +480,6 @@ export const TBTC_SWAP_V2_TOKEN = new Token(
   "saddletBTC-V2",
   "saddletBTC-v2",
   "Saddle tBTCv2/saddleWRenSBTC V2",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -524,7 +490,6 @@ export const STABLECOIN_SWAP_TOKEN = new Token(
   "saddleUSD",
   "saddleusd",
   "Saddle DAI/USDC/USDT",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -535,7 +500,6 @@ export const STABLECOIN_SWAP_V2_TOKEN = new Token(
   "saddleUSD-V2",
   "saddleusd-v2",
   "Saddle DAI/USDC/USDT V2",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -546,7 +510,6 @@ export const WCUSD_SWAP_TOKEN = new Token(
   "saddlewCUSD",
   "saddlewcusd",
   "Saddle wCUSD/saddleUSD-V2",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -557,7 +520,6 @@ export const WCUSD_SWAP_V2_TOKEN = new Token(
   "saddlewCUSD-V2",
   "saddlewcusd-v2",
   "Saddle wCUSD/saddleUSD-V2 V2",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -568,7 +530,6 @@ export const ARB_USD_SWAP_TOKEN = new Token(
   "saddleArbUSD",
   "saddlearbUSD",
   "Saddle nUSD/MIM/USDC/USDT",
-  saddleLogo,
   false,
   true,
 )
@@ -579,7 +540,6 @@ export const FTM_USD_SWAP_TOKEN = new Token(
   "saddleFtmUSD",
   "saddleftmUSD",
   "Saddle FRAX/USDC",
-  saddleLogo,
   false,
   true,
 )
@@ -590,7 +550,6 @@ export const OPT_USD_SWAP_TOKEN = new Token(
   "saddleOptUSD",
   "saddleoptUSD",
   "Saddle DAI/USDC/USDT",
-  saddleLogo,
   false,
   true,
 )
@@ -601,7 +560,6 @@ export const FRAX_OPT_USD_SWAP_TOKEN = new Token(
   "frax-saddleOptUSD",
   "frax-saddleoptUSD",
   "Saddle FRAX/saddleOptUsd",
-  saddleLogo,
   false,
   true,
 )
@@ -612,7 +570,6 @@ export const USDS_ARB_USD_SWAP_TOKEN = new Token(
   "usds-saddleArbUSD",
   "usds-saddlearbUSD",
   "Saddle USDS/saddleArbUsd",
-  saddleLogo,
   false,
   true,
 )
@@ -623,7 +580,6 @@ export const FRAX_ARB_USD_SWAP_V2_TOKEN = new Token(
   "saddleFraxArbUSD-V2",
   "saddlefraxarbUSD-v2",
   "Saddle FRAX/USDC/USDT",
-  saddleLogo,
   false,
   true,
 )
@@ -634,7 +590,6 @@ export const VETH2_SWAP_TOKEN = new Token(
   "saddleVETH2",
   "saddleveth2",
   "Saddle WETH/vETH2",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -645,7 +600,6 @@ export const ALETH_SWAP_TOKEN = new Token(
   "saddleALETH",
   "saddlealeth",
   "Saddle WETH/alETH/sETH",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -656,7 +610,6 @@ export const D4_SWAP_TOKEN = new Token(
   "saddleD4",
   "saddled4",
   "Saddle alUSD/FEI/FRAX/LUSD",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -672,7 +625,6 @@ export const WCUSD = new Token(
   "wCUSD",
   "wrapped-celo-dollar",
   "Wrapped Celo USD",
-  wcusdLogo,
 )
 
 const SUSD_CONTRACT_ADDRESSES = buildAddresses({
@@ -685,7 +637,6 @@ export const SUSD = new Token(
   "sUSD",
   "nusd",
   "sUSD",
-  susdLogo,
   true,
 )
 
@@ -696,14 +647,8 @@ const DAI_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.OPTIMISM]: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
   [ChainId.FANTOM]: "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
 })
-export const DAI = new Token(
-  DAI_CONTRACT_ADDRESSES,
-  18,
-  "DAI",
-  "dai",
-  "Dai",
-  daiLogo,
-)
+
+export const DAI = new Token(DAI_CONTRACT_ADDRESSES, 18, "DAI", "dai", "Dai")
 
 const USDC_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
@@ -719,7 +664,6 @@ export const USDC = new Token(
   "USDC",
   "usd-coin",
   "USDC Coin",
-  usdcLogo,
 )
 
 const USDT_CONTRACT_ADDRESSES = buildAddresses({
@@ -735,7 +679,6 @@ export const USDT = new Token(
   "USDT",
   "tether",
   "Tether",
-  usdtLogo,
 )
 
 const NUSD_CONTRACT_ADDRESSES = buildAddresses({
@@ -747,7 +690,6 @@ export const NUSD = new Token(
   "nUSD",
   "nusd",
   "nUSD",
-  nusdLogo,
 )
 
 const MIM_CONTRACT_ADDRESSES = buildAddresses({
@@ -759,7 +701,6 @@ export const MIM = new Token(
   "MIM",
   "magic-internet-money",
   "Magic Internet Money",
-  mimLogo,
 )
 
 const FRAX_CONTRACT_ADDRESSES = buildAddresses({
@@ -781,7 +722,6 @@ export const FRAX = new Token(
   "FRAX",
   "frax",
   "Frax",
-  fraxLogo,
 )
 
 export const USDS = new Token(
@@ -790,7 +730,6 @@ export const USDS = new Token(
   "USDs",
   "sperax-usd",
   "USDs",
-  usdsLogo,
 )
 
 export const FRAX_ARB_USD_POOL_V2_TOKENS = [FRAX, USDC, USDT]
@@ -820,7 +759,6 @@ export const TBTC = new Token(
   "TBTC",
   "tbtc",
   "tBTC",
-  tbtcLogo,
 )
 
 const TBTC_V2_CONTRACT_ADDRESSES = buildAddresses({
@@ -833,7 +771,6 @@ export const TBTC_V2 = new Token(
   "TBTCv2",
   "tbtc",
   "tBTCv2",
-  tbtcLogo,
 )
 
 const WBTC_CONTRACT_ADDRESSES = buildAddresses({
@@ -847,7 +784,6 @@ export const WBTC = new Token(
   "WBTC",
   "wrapped-bitcoin",
   "WBTC",
-  wbtcLogo,
 )
 
 const RENBTC_CONTRACT_ADDRESSES = buildAddresses({
@@ -861,7 +797,6 @@ export const RENBTC = new Token(
   "RENBTC",
   "renbtc",
   "renBTC",
-  renbtcLogo,
 )
 
 const SBTC_CONTRACT_ADDRESSES = buildAddresses({
@@ -875,7 +810,6 @@ export const SBTC = new Token(
   "sBTC",
   "sbtc",
   "sBTC",
-  sbtcLogo,
   true,
 )
 
@@ -896,7 +830,6 @@ export const WETH = new Token(
   "WETH",
   "ethereum",
   "WETH",
-  wethLogo,
 )
 
 const VETH2_CONTRACT_ADDRESSES = buildAddresses({
@@ -910,7 +843,6 @@ export const VETH2 = new Token(
   "VETH2",
   "ethereum",
   "vETH2",
-  veth2Logo,
 )
 
 export const VETH2_POOL_TOKENS = [WETH, VETH2]
@@ -926,7 +858,6 @@ export const ALETH = new Token(
   "alETH",
   "alchemix-eth",
   "Alchemix ETH",
-  alethLogo,
 )
 
 const SETH_CONTRACT_ADDRESSES = buildAddresses({
@@ -940,7 +871,6 @@ export const SETH = new Token(
   "sETH",
   "seth",
   "Synth sETH",
-  sethLogo,
   true,
 )
 
@@ -957,7 +887,6 @@ export const ALUSD = new Token(
   "alUSD",
   "alchemix-usd",
   "Alchemix USD",
-  alusdLogo,
 )
 
 const FEI_CONTRACT_ADDRESSES = buildAddresses({
@@ -971,7 +900,6 @@ export const FEI = new Token(
   "FEI",
   "fei-usd",
   "Fei Protocol",
-  feiLogo,
 )
 
 const LUSD_CONTRACT_ADDRESSES = buildAddresses({
@@ -985,7 +913,6 @@ export const LUSD = new Token(
   "LUSD",
   "liquity-usd",
   "Liquity USD",
-  lusdLogo,
 )
 
 export const D4_POOL_TOKENS = [ALUSD, FEI, FRAX, LUSD]
@@ -1006,6 +933,7 @@ export type Pool = {
   underlyingPool?: PoolName
   isOutdated?: boolean // pool can be outdated but not have a migration target
   rewardPids: { [chainId in ChainId]: number | null }
+  isGuarded?: boolean
 }
 export type PoolsMap = {
   [poolName: string]: Pool
@@ -1021,6 +949,7 @@ export const POOLS_MAP: PoolsMap = {
     route: "btc",
     isOutdated: true,
     rewardPids: buildPids({}),
+    isGuarded: true,
   },
   [BTC_POOL_V2_NAME]: {
     name: BTC_POOL_V2_NAME,
@@ -1365,6 +1294,26 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     connector: walletlink,
   },
 }
+
+// derived from https://docs.synthetix.io/tokens/list/
+export const SYNTHETIX_TOKENS = [
+  "0xd2dF355C19471c8bd7D8A3aa27Ff4e26A21b4076", // Aave (sAAVE),
+  "0xF48e200EAF9906362BB1442fca31e0835773b8B4", // Australian Dollars (sAUD),
+  "0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6", // Bitcoin (sBTC),
+  "0xe36E2D3c7c34281FA3bC737950a68571736880A1", // Cardano (sADA),
+  "0xbBC455cb4F1B9e4bFC4B73970d360c8f032EfEE6", // Chainlink (sLINK),
+  "0xe1aFe1Fd76Fd88f78cBf599ea1846231B8bA3B6B", // DeFi Index (sDEFI),
+  "0x104eDF1da359506548BFc7c25bA1E28C16a70235", // ETH / BTC (sETHBTC),
+  "0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb", // Ether (sETH),
+  "0xD71eCFF9342A5Ced620049e616c5035F1dB98620", // Euros (sEUR),
+  "0xF6b1C627e95BFc3c1b4c9B825a032Ff0fBf3e07d", // Japanese Yen (sJPY),
+  "0x1715AC0743102BF5Cd58EfBB6Cf2dC2685d967b6", // Polkadot (sDOT),
+  "0x97fe22E7341a0Cd8Db6F6C021A24Dc8f4DAD855F", // Pound Sterling (sGBP),
+  "0x269895a3dF4D73b077Fc823dD6dA1B95f72Aaf9B", // South Korean Won (sKRW),
+  "0x0F83287FF768D1c1e17a42F44d644D7F22e8ee1d", // Swiss Franc (sCHF),
+  "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F", // Synthetix (SNX),
+  "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51", // US Dollars (sUSD)
+]
 
 // "SADDLE" in bytes32 form
 export const SYNTH_TRACKING_ID =

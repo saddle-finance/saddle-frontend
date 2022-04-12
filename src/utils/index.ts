@@ -9,7 +9,12 @@ import { ContractInterface } from "ethers"
 import { Deadlines } from "../state/user"
 import { MulticallProvider } from "../types/ethcall"
 import { Provider } from "ethcall"
+import { SYNTHETIX_TOKENS } from "./../constants/index"
 import { getAddress } from "@ethersproject/address"
+
+export function isSynthAsset(chainId: ChainId, tokenAddress: string): boolean {
+  return chainId === ChainId.MAINNET && SYNTHETIX_TOKENS.includes(tokenAddress)
+}
 
 // returns the checksummed address if the address is valid, otherwise returns false
 export function isAddress(value: string): string | false {
@@ -224,4 +229,18 @@ export async function getMulticallProvider(
   }
 
   return ethcallProvider
+}
+
+/**
+ * Get icon path from token's symbol
+ *
+ * @param tokenSymbol
+ * @returns the token icon path within the public assets directory
+ */
+export function getTokenIconPath(tokenSymbol: string): string {
+  const iconName = tokenSymbol.toLowerCase().includes("saddle")
+    ? "saddle_lp_token"
+    : tokenSymbol.toLowerCase()
+
+  return `/static/icons/svg/${iconName}.svg`
 }
