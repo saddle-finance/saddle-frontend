@@ -1,11 +1,9 @@
-import "./ReviewSwap.scss"
-
+import { Button, Divider, Typography } from "@mui/material"
 import React, { ReactElement, useState } from "react"
 import { SWAP_TYPES, TOKENS_MAP } from "../constants"
 import { commify, formatBNToString, formatDeadlineToNumber } from "../utils"
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
-import Button from "./Button"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { ReactComponent as ThinArrowDown } from "../assets/icons/thinArrowDown.svg"
 import TokenIcon from "./TokenIcon"
@@ -142,7 +140,7 @@ function ReviewVirtualSwapSettlement({
             </span>
           </div>
           <div className="row">
-            <span className="title">{t("deadline")}</span>
+            <Typography className="title">{t("deadline")}</Typography>
             <span className="value floatRight">
               {deadline} {t("minutes")}
             </span>
@@ -159,21 +157,31 @@ function ReviewVirtualSwapSettlement({
           )}
         </div>
       </div>
-      <div className="bottom">
-        <p>{t("estimatedOutput")}</p>
-        <div className="buttonWrapper">
-          <Button
-            onClick={onConfirm}
-            kind="primary"
-            disabled={isHighPriceImpactTxn && !hasConfirmedHighPriceImpact}
-          >
-            {t("confirmSwap")}
-          </Button>
-          <Button onClick={onClose} kind="cancel">
-            {t("cancel")}
-          </Button>
-        </div>
-      </div>
+
+      <Divider sx={{ my: 3 }} />
+
+      <Typography variant="body2" mb={1}>
+        {t("estimatedOutput")}
+      </Typography>
+      <Button
+        variant="contained"
+        color="primary"
+        fullWidth
+        size="large"
+        onClick={onConfirm}
+        disabled={isHighPriceImpactTxn && !hasConfirmedHighPriceImpact}
+      >
+        {t("confirmSwap")}
+      </Button>
+      <Button
+        color="primary"
+        fullWidth
+        size="large"
+        onClick={onClose}
+        sx={{ mt: 1 }}
+      >
+        {t("cancel")}
+      </Button>
     </div>
   )
 }
