@@ -39,7 +39,6 @@ const InfoItem = styled(Box)(({ theme }) => ({
 
 function PoolInfoCard({ data }: Props): ReactElement | null {
   const { t } = useTranslation()
-  console.log("apr of data ==>", data?.aprs)
   if (data == null) return null
   const { type: poolType, underlyingPool } = POOLS_MAP[data?.name]
   const formattedDecimals = poolType === PoolTypes.USD ? 2 : 4
@@ -79,7 +78,6 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
       }) || [],
   }
 
-  console.log("reward ,", formattedData.aprs)
   return (
     <Box>
       {underlyingPool ? (
