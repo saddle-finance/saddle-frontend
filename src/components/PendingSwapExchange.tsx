@@ -1,13 +1,13 @@
 import { Box, Button, Typography } from "@mui/material"
 import React, { ReactElement, useCallback, useState } from "react"
 import { calculatePrice, commify, formatBNToString } from "../utils"
-
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state"
 import { BigNumber } from "ethers"
 import { PendingSwap } from "../hooks/usePendingSwapData"
 import { SWAP_TYPES } from "../constants"
 import SwapTokenInput from "./SwapTokenInput"
+import TokenIcon from "./TokenIcon"
 import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
 import { useSelector } from "react-redux"
@@ -130,8 +130,8 @@ const PendingSwapExchange = ({
         sx={{ mt: 2 }}
       >
         {t("settleAsToken")}
-        <img
-          src={tokenTo.icon}
+        <TokenIcon
+          symbol={tokenTo.symbol}
           style={{ marginLeft: "8px", marginRight: "8px" }}
         />
         {tokenTo.symbol}
@@ -148,8 +148,8 @@ const PendingSwapExchange = ({
         disabled={!inputState.value || !!inputState.error}
       >
         {t("withdrawSynth")}
-        <img
-          src={synthTokenFrom.icon}
+        <TokenIcon
+          symbol={synthTokenFrom.symbol}
           style={{ marginLeft: "8px", marginRight: "8px" }}
         />
         {synthTokenFrom.symbol}

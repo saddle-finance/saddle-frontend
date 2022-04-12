@@ -204,10 +204,9 @@ function Deposit({ poolName }: Props): ReactElement | null {
   // A represention of tokens used for UI
   const tokens = (
     shouldDepositWrapped ? POOL.underlyingPoolTokens || [] : POOL.poolTokens
-  ).map(({ symbol, name, icon, decimals }) => ({
+  ).map(({ symbol, name, decimals }) => ({
     symbol,
     name,
-    icon,
     max: formatBNToString(tokenBalances?.[symbol] || Zero, decimals),
     inputValue: tokenFormState[symbol].valueRaw,
   }))

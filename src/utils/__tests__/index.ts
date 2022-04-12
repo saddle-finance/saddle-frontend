@@ -7,6 +7,7 @@ import {
   formatBNToShortString,
   formatDeadlineToNumber,
   getTokenByAddress,
+  getTokenIconPath,
   getTokenSymbolForPoolType,
   intersection,
 } from "../index"
@@ -148,5 +149,28 @@ describe("getTokenSymbolForPoolType", () => {
 describe("calculatePrice", () => {
   it("correctly gets Zero for an empty price", () => {
     expect(calculatePrice(BigNumber.from(1), 0, undefined)).toBe(Zero)
+  })
+})
+
+describe("getTokenIconPath", () => {
+  it("correctly retrieves icon path for non-saddle tokens", () => {
+    Object.keys(TOKENS_MAP).forEach((tokenSymbol) => {
+      const castedSymbol = <string>tokenSymbol
+      if (!castedSymbol.toLowerCase().includes("saddle")) {
+        expect(getTokenIconPath(castedSymbol)).toEqual(
+          `/static/icons/svg/${castedSymbol.toLowerCase()}.svg`,
+        )
+      }
+    })
+  })
+  it("correctly retrieves icon path for saddle tokens", () => {
+    Object.keys(TOKENS_MAP).forEach((tokenSymbol) => {
+      const castedSymbol = <string>tokenSymbol
+      if (castedSymbol.toLowerCase().includes("saddle")) {
+        expect(getTokenIconPath(castedSymbol)).toEqual(
+          `/static/icons/svg/saddle_lp_token.svg`,
+        )
+      }
+    })
   })
 })

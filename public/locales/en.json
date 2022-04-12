@@ -243,6 +243,7 @@
   "basepool": "Base Pool",
   "unstakeComplete": "Unstake on {{poolName}} complete",
   "unstakeInitiated": "Unstake initiated",
+  "usdBalance": "USD Balance",
   "utilization": "Utilization",
   "vestingContract": "Vesting Contract",
   "virtualPrice": "Virtual price",

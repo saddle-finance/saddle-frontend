@@ -35,8 +35,8 @@ import { useTranslation } from "react-i18next"
 export interface ReviewWithdrawData {
   withdraw: {
     name: string
+    symbol: string
     value: string
-    icon: string
   }[]
   rates: {
     name: string
@@ -59,7 +59,6 @@ interface Props {
   tokensData: Array<{
     symbol: string
     name: string
-    icon: string
     inputValue: string
   }>
   reviewData: ReviewWithdrawData
