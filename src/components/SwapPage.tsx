@@ -322,6 +322,8 @@ const SwapPage = (props: Props): ReactElement => {
           {error}
         </div>
         <Dialog
+          maxWidth="xs"
+          fullWidth
           open={!!currentModal}
           onClose={(): void => setCurrentModal(null)}
           scroll="body"

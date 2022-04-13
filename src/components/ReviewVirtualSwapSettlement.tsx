@@ -1,11 +1,11 @@
-import { Button, Divider, Typography } from "@mui/material"
+import { Box, Button, Divider, Typography } from "@mui/material"
 import React, { ReactElement, useState } from "react"
 import { SWAP_TYPES, TOKENS_MAP } from "../constants"
 import { commify, formatBNToString, formatDeadlineToNumber } from "../utils"
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
+import DoubleArrow from "@mui/icons-material/KeyboardDoubleArrowDown"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
-import { ReactComponent as ThinArrowDown } from "../assets/icons/thinArrowDown.svg"
 import TokenIcon from "./TokenIcon"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
@@ -71,108 +71,115 @@ function ReviewVirtualSwapSettlement({
   //       .div(BigNumber.from(10).pow(25)) // USD / ETH * GWEI * ETH / GWEI = USD
   //   : null
   const shouldDisplayGas = !!gasStandard
-  const isWithdrawAction = !data.from
+  const isWithdrawAction = !data.to
   return (
-    <div className="reviewSwap">
-      <h3>
-        {isWithdrawAction ? t("Review Withdraw") : t("Review Settlement")}
-      </h3>
-      <div className="swapTable">
-        <div className="from">
-          <TokenIcon symbol={fromToken.symbol} alt="icon" />
-          <span className="tokenName">{data.from.symbol}</span>
-          <div className="floatRight">
-            <span>{commify(data.from.value)}</span>
-          </div>
-        </div>
+    <div>
+      <Typography variant="h1" mb={3}>
+        {isWithdrawAction ? t("step2Withdraw") : t("step2ReviewSettle")}
+      </Typography>
 
-        {data.to && (
-          <>
-            <ThinArrowDown className="stepArrow" />
-            <div className="to">
-              <TokenIcon symbol={data.to?.symbol} alt="icon" />
-              <span className="tokenName">{data.to.symbol}</span>
-              <div className="floatRight">
-                <span>{commify(data.to.value)}</span>
-              </div>
-            </div>
-          </>
-        )}
+      <Box display="flex" alignItems="center">
+        <TokenIcon
+          symbol={fromToken.symbol}
+          alt="icon"
+          width={20}
+          height={20}
+        />
+        <Typography ml={1}>{data.from.symbol}</Typography>
+        <Typography sx={{ float: "right", ml: "auto" }}>
+          {commify(data.from.value)}
+        </Typography>
+      </Box>
 
-        <div className="divider" style={{ height: "1px", width: "100%" }} />
-        <div className="swapInfo">
-          {data.exchangeRateInfo && (
-            <div className="priceTable">
-              <span className="title">{t("exchangeRate")}</span>{" "}
-              <span className="pair">{data.exchangeRateInfo.pair}</span>
-              <span className="value floatRight">
-                {formatBNToString(data.exchangeRateInfo.exchangeRate, 18, 4)}
-              </span>
-            </div>
-          )}
-
-          {shouldDisplayGas && (
-            <div className="row">
-              <span className="title">{t("gas")}</span>
-              <span className="value floatRight">
-                {formatGasToString(
-                  { gasStandard, gasFast, gasInstant },
-                  gasPriceSelected,
-                  gasCustom,
-                )}{" "}
-                GWEI
-              </span>
-            </div>
-          )}
-          {/* TODO: Create a light API to expose the cached BlockNative gas estimates. */}
-          {/* {gasValueUSD && (
-            <div className="row">
-              <span className="title">{t("estimatedTxCost")}</span> 
-              <span className="value floatRight">
-                {`≈$${commify(formatBNToString(gasValueUSD, 2, 2))}`}
-              </span>
-            </div>
-          )} */}
-          <div className="row">
-            <span className="title">{t("maxSlippage")}</span>
-            <span className="value floatRight">
-              {formatSlippageToString(slippageSelected, slippageCustom)}%
-            </span>
-          </div>
-          <div className="row">
-            <Typography className="title">{t("deadline")}</Typography>
-            <span className="value floatRight">
-              {deadline} {t("minutes")}
-            </span>
-          </div>
-          {isHighPriceImpactTxn && (
-            <HighPriceImpactConfirmation
-              checked={hasConfirmedHighPriceImpact}
-              onCheck={(): void =>
-                setHasConfirmedHighPriceImpact((prevState) => !prevState)
-              }
+      {data.to && (
+        <>
+          <DoubleArrow color="primary" />
+          <Box display="flex" alignItems="center">
+            <TokenIcon
+              symbol={data.to?.symbol}
+              alt="icon"
+              width={20}
+              height={20}
             />
-          )}
-        </div>
-      </div>
+            <Typography ml={1}>{data.to.symbol}</Typography>
+            <Typography sx={{ float: "right", ml: "auto" }}>
+              {commify(data.to.value)}
+            </Typography>
+          </Box>
+        </>
+      )}
+      <Divider sx={{ my: 3 }} />
+
+      {data.exchangeRateInfo && (
+        <Box display="flex">
+          <Typography>{t("rate")}</Typography>
+          <Typography ml={1}>{data.exchangeRateInfo.pair}</Typography>
+          <Typography sx={{ float: "right", ml: "auto" }}>
+            {formatBNToString(data.exchangeRateInfo.exchangeRate, 18, 4)}
+          </Typography>
+        </Box>
+      )}
+
+      {shouldDisplayGas && (
+        <Box display="flex">
+          <Typography>{t("gas")}</Typography>
+          <Typography>
+            {formatGasToString(
+              { gasStandard, gasFast, gasInstant },
+              gasPriceSelected,
+              gasCustom,
+            )}{" "}
+            GWEI
+          </Typography>
+        </Box>
+      )}
+      {/* TODO: Create a light API to expose the cached BlockNative gas estimates. */}
+      {/* {gasValueUSD && (
+            <Box display = 'flex'>
+              <Typography className="title">{t("estimatedTxCost")}</Typography> 
+              <Typography sx={{ float: "right", ml: "auto" }}>
+                {`≈$${commify(formatBNToString(gasValueUSD, 2, 2))}`}
+              </Typography>
+            </Box>
+          )} */}
+      <Box display="flex">
+        <Typography>{t("maxSlippage")}</Typography>
+        <Typography sx={{ float: "right", ml: "auto" }}>
+          {formatSlippageToString(slippageSelected, slippageCustom)}%
+        </Typography>
+      </Box>
+      <Box display="flex">
+        <Typography className="title">{t("deadline")}</Typography>
+        <Typography sx={{ float: "right", ml: "auto" }}>
+          {deadline} {t("minutes")}
+        </Typography>
+      </Box>
+      {isHighPriceImpactTxn && (
+        <HighPriceImpactConfirmation
+          checked={hasConfirmedHighPriceImpact}
+          onCheck={(): void =>
+            setHasConfirmedHighPriceImpact((prevState) => !prevState)
+          }
+        />
+      )}
 
       <Divider sx={{ my: 3 }} />
 
-      <Typography variant="body2" mb={1}>
+      <Typography variant="body2" mb={2}>
         {t("estimatedOutput")}
       </Typography>
       <Button
         variant="contained"
-        color="primary"
+        color={isWithdrawAction ? "secondary" : "primary"}
         fullWidth
         size="large"
         onClick={onConfirm}
         disabled={isHighPriceImpactTxn && !hasConfirmedHighPriceImpact}
       >
-        {t("confirmSwap")}
+        {isWithdrawAction ? t("confirmWithdraw") : t("confirmSwap")}
       </Button>
       <Button
-        color="primary"
+        color={isWithdrawAction ? "secondary" : "primary"}
         fullWidth
         size="large"
         onClick={onClose}
