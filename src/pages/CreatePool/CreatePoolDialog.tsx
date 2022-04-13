@@ -61,20 +61,34 @@ export default function ReviewCreatePool({
 
   const onCreatePoolClick = async () => {
     if (!library || !chainId || !account) return
+
     const permissionlessDeployerContract = getContract(
       PERMISSIONLESS_DEPLOYER_CONTRACT_ADDRESSES[chainId],
       PERMISSIONLESS_DEPLOYER_CONTRACT_ABI,
       library,
       account,
     ) as PermissionlessDeployer
+
     const poolRegistry = getContract(
       MASTER_REGISTRY_CONTRACT_ADDRESSES[chainId],
       POOL_REGISTRY_ABI,
       library,
       account,
     ) as PoolRegistry
+
+    const enqueueCreatePoolToast = async (deployTxn: {
+      wait: () => Promise<unknown>
+    }) =>
+      await enqueuePromiseToast(
+        chainId,
+        deployTxn.wait(),
+        "createPermissionlessPool",
+        {
+          poolName: poolData.poolName,
+        },
+      )
     // const decimals = poolData.tokenInfo.map((token) => token.decimals)
-    const decimals = [18, 18]
+    const decimals = [6, 18]
 
     console.log({ poolData })
     try {
@@ -95,36 +109,45 @@ export default function ReviewCreatePool({
         deployTxn = await permissionlessDeployerContract.deploySwap(
           deploySwapInput,
         )
+        await enqueueCreatePoolToast(deployTxn)
       } else {
-        const poolRegistryData = await poolRegistry.getPoolDataByName(
-          ethers.utils.formatBytes32String(poolData.poolName),
-        )
-        const deployMetaSwapInput = {
-          ...deploySwapInput,
-          baseSwap: poolRegistryData.poolAddress,
-          tokens: [...poolData.tokenInputs, poolRegistryData.lpToken],
+        let poolRegistryData
+        let deployMetaSwapInput
+        try {
+          poolRegistryData = await poolRegistry.getPoolDataByName(
+            ethers.utils.formatBytes32String(poolData.poolName),
+          )
+          deployMetaSwapInput = {
+            ...deploySwapInput,
+            baseSwap: poolRegistryData.poolAddress,
+            tokens: [...poolData.tokenInputs, poolRegistryData.lpToken],
+          }
+        } catch (err) {
+          console.error(err, "err3")
         }
-        if (poolRegistryData.poolName) {
-          console.log({ poolRegistryData })
+
+        if (poolRegistryData?.poolName && deployMetaSwapInput) {
           deployTxn = await permissionlessDeployerContract.deployMetaSwap(
             deployMetaSwapInput,
           )
-        } else {
+          await enqueueCreatePoolToast(deployTxn)
+        } else if (!poolRegistryData?.poolName) {
           await permissionlessDeployerContract.deploySwap(deploySwapInput)
+          poolRegistryData = await poolRegistry.getPoolDataByName(
+            ethers.utils.formatBytes32String(poolData.poolName),
+          )
+          deployMetaSwapInput = {
+            ...deploySwapInput,
+            baseSwap: poolRegistryData.poolAddress,
+            tokens: [...poolData.tokenInputs, poolRegistryData.lpToken],
+          }
           deployTxn = await permissionlessDeployerContract.deployMetaSwap(
             deployMetaSwapInput,
           )
+          await enqueueCreatePoolToast(deployTxn)
         }
       }
       console.log({ deployTxn })
-      await enqueuePromiseToast(
-        chainId,
-        deployTxn.wait(),
-        "createPermissionlessPool",
-        {
-          poolName: poolData.poolName,
-        },
-      )
       resetFields()
     } catch (err) {
       console.error(err, "err2")
