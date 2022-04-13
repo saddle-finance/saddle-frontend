@@ -122,16 +122,16 @@ export default function ReviewCreatePool({
             baseSwap: poolRegistryData.poolAddress,
             tokens: [...poolData.tokenInputs, poolRegistryData.lpToken],
           }
-        } catch (err) {
-          console.error(err, "err3")
-        }
-
-        if (poolRegistryData?.poolName && deployMetaSwapInput) {
           deployTxn = await permissionlessDeployerContract.deployMetaSwap(
             deployMetaSwapInput,
           )
           await enqueueCreatePoolToast(deployTxn)
-        } else if (!poolRegistryData?.poolName) {
+          return
+        } catch (err) {
+          console.error(err, "err3")
+        }
+
+        if (!poolRegistryData?.poolName) {
           await permissionlessDeployerContract.deploySwap(deploySwapInput)
           poolRegistryData = await poolRegistry.getPoolDataByName(
             ethers.utils.formatBytes32String(poolData.poolName),
