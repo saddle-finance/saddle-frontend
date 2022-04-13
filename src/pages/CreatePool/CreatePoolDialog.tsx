@@ -73,7 +73,8 @@ export default function ReviewCreatePool({
       library,
       account,
     ) as PoolRegistry
-    const decimals = poolData.tokenInfo.map((token) => token.decimals)
+    // const decimals = poolData.tokenInfo.map((token) => token.decimals)
+    const decimals = [18, 18]
 
     console.log({ poolData })
     try {
@@ -90,7 +91,7 @@ export default function ReviewCreatePool({
         owner: account,
         typeOfAsset: poolData.assetType,
       }
-      if (!poolData.poolType.includes("Metapool")) {
+      if (poolData.poolType === "basepool") {
         deployTxn = await permissionlessDeployerContract.deploySwap(
           deploySwapInput,
         )
@@ -98,11 +99,22 @@ export default function ReviewCreatePool({
         const poolRegistryData = await poolRegistry.getPoolDataByName(
           ethers.utils.formatBytes32String(poolData.poolName),
         )
-
-        deployTxn = await permissionlessDeployerContract.deployMetaSwap({
+        const deployMetaSwapInput = {
           ...deploySwapInput,
           baseSwap: poolRegistryData.poolAddress,
-        })
+          tokens: [...poolData.tokenInputs, poolRegistryData.lpToken],
+        }
+        if (poolRegistryData.poolName) {
+          console.log({ poolRegistryData })
+          deployTxn = await permissionlessDeployerContract.deployMetaSwap(
+            deployMetaSwapInput,
+          )
+        } else {
+          await permissionlessDeployerContract.deploySwap(deploySwapInput)
+          deployTxn = await permissionlessDeployerContract.deployMetaSwap(
+            deployMetaSwapInput,
+          )
+        }
       }
       console.log({ deployTxn })
       await enqueuePromiseToast(
@@ -115,7 +127,7 @@ export default function ReviewCreatePool({
       )
       resetFields()
     } catch (err) {
-      console.error(err)
+      console.error(err, "err2")
       enqueueToast("error", "Unable to deploy Permissionless Pool")
     }
     onClose()
@@ -152,7 +164,7 @@ export default function ReviewCreatePool({
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography>{t("poolType")}</Typography>
-            <Typography>{poolData.poolType}</Typography>
+            <Typography>{t(poolData.poolType)}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography>Tokens</Typography>
