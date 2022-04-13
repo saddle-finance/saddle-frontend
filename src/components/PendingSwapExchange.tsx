@@ -54,7 +54,7 @@ const PendingSwapExchange = ({
   }, [inputState.value, synthTokenFrom.decimals, onPendingSwapSettlement])
   return (
     <Box width="100%">
-      <Typography variant="h2" color="primary" textAlign="center" mb={4}>
+      <Typography variant="h2" color="primary" textAlign="center" my={4}>
         {t("step2Settlement")}
       </Typography>
 
