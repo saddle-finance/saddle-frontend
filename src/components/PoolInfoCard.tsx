@@ -104,36 +104,35 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
       </InfoItem>
       <InfoItem>
         <Typography>{`${t("totalLocked")}:`}</Typography>
-        <Typography variant="subtitle1">{`${formattedData.reserve}`}</Typography>
+        <Typography variant="subtitle1">{`$${formattedData.reserve}`}</Typography>
       </InfoItem>
       <InfoItem>
-        <Typography>{t("dailyVolume") + ": "}</Typography>
-        <Typography variant="subtitle1">{formattedData.volume}</Typography>
+        <Typography>{t("dailyVolume")}:</Typography>
+        <Typography variant="subtitle1">${formattedData.volume}</Typography>
       </InfoItem>
 
       <Box display="flex" mt={3} flexWrap="wrap">
-        <InfoItem>
-          {Object.keys(formattedData.aprs).map((key) => {
-            const symbol = formattedData.aprs[key]?.symbol as string
-            const apr = formattedData.aprs[key]?.apr
-            return formattedData.aprs[key]?.apr.gt(Zero) ? (
-              <React.Fragment key={symbol}>
-                {symbol.includes("/") ? (
-                  <Tooltip title={symbol.replaceAll("/", "\n")}>
-                    <Typography sx={{ borderBottom: "1px dotted" }}>
-                      Reward APR:
-                    </Typography>
-                  </Tooltip>
-                ) : (
-                  <Typography>{symbol} APR: &nbsp;</Typography>
-                )}
-                <Typography variant="subtitle1">
-                  {apr && formatUnits(apr, 18)}
-                </Typography>
-              </React.Fragment>
-            ) : null
-          })}
-        </InfoItem>
+        {Object.keys(formattedData.aprs).map((key) => {
+          const symbol = formattedData.aprs[key]?.symbol as string
+          const apr = formattedData.aprs[key]?.apr
+          return formattedData.aprs[key]?.apr.gt(Zero) ? (
+            <InfoItem key={symbol}>
+              {symbol.includes("/") ? (
+                <Tooltip title={symbol.replaceAll("/", "\n")}>
+                  <Typography sx={{ borderBottom: "1px dotted" }}>
+                    Reward APR:
+                  </Typography>
+                </Tooltip>
+              ) : (
+                <Typography>{symbol} APR: &nbsp;</Typography>
+              )}
+              <Typography variant="subtitle1">
+                {apr && formatUnits(apr, 18)}
+              </Typography>
+            </InfoItem>
+          ) : null
+        })}
+
         <InfoItem>
           <Typography>{`${t("fee")}:`}</Typography>
           <Typography variant="subtitle1">{formattedData.swapFee}</Typography>
@@ -185,7 +184,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
                   ml={1}
                 >{`${token.symbol} ${token.percent}`}</Typography>
               </Box>
-              <Typography data-testid="tokenValue">${token.value}</Typography>
+              <Typography data-testid="tokenValue">{token.value}</Typography>
             </Box>
           ))}
         </Box>

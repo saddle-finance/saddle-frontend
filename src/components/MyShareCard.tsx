@@ -58,9 +58,7 @@ function MyShareCard({ data }: Props): ReactElement | null {
       <Typography>
         {formattedData.share} {t("ofPool")}
       </Typography>
-      <Typography>{`${t("usdBalance")}: ${
-        formattedData.usdBalance
-      }`}</Typography>
+      <Typography>{`${t("balance")}: $${formattedData.usdBalance}`}</Typography>
       <Typography>{`${t("lpAmount")}: ${formattedData.amount}`}</Typography>
       {Object.keys(stakingUrls).map((key) => {
         return data.amountsStaked[key as Partners]?.gt(Zero) ? (
