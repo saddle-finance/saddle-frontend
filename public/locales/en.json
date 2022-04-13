@@ -102,7 +102,7 @@
   "investorClaimAmount": "Claimable: {{claimable}}",
   "investorRemainingAmount": "Total SDL: {{remaining}}",
   "language": "Language",
-  "learnMore": "<Learn more>",
+  "learnMore": "Learn more",
   "liquidityUtilization": "Liquidity utilization",
   "lossOfPeg": "Permanent loss of a peg",
   "lowSlippageVirtualSwapWarning": "Warning: Slippage set below 0.5% will likely result in a failed virtual swap. Update in Advanced Settings below.",
