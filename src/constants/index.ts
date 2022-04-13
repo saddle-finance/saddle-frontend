@@ -1156,6 +1156,51 @@ export const POOLS_MAP: PoolsMap = {
     rewardPids: buildPids({}),
   },
 }
+
+// @dev note that metapools refer to the deposit addresses and not the meta addresses
+const minichefPids: Partial<Record<ChainId, { [pool: string]: number }>> = {
+  [ChainId.MAINNET]: {
+    [ALETH_SWAP_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 1,
+    [D4_SWAP_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 2,
+    [STABLECOIN_SWAP_V2_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 3,
+    [BTC_SWAP_V2_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 4,
+    [TBTC_META_SWAP_V2_DEPOSIT_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 5,
+    [TBTC_META_SWAP_V2_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 5,
+    [SUSD_META_SWAP_V2_DEPOSIT_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 6,
+    [SUSD_META_SWAP_V2_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 6,
+    [WCUSD_META_SWAP_V2_DEPOSIT_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 7,
+    [WCUSD_META_SWAP_V2_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 7,
+  },
+  [ChainId.HARDHAT]: {
+    [ALETH_SWAP_ADDRESSES[ChainId.HARDHAT].toLowerCase()]: 1,
+    [D4_SWAP_ADDRESSES[ChainId.HARDHAT].toLowerCase()]: 2,
+    [STABLECOIN_SWAP_V2_ADDRESSES[ChainId.HARDHAT].toLowerCase()]: 3,
+    [BTC_SWAP_V2_ADDRESSES[ChainId.HARDHAT].toLowerCase()]: 4,
+  },
+  [ChainId.ARBITRUM]: {
+    [ARB_USD_SWAP_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 1,
+    [USDS_ARB_USD_SWAP_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 2,
+  },
+}
+
+export function getMinichefPid(
+  chainId: ChainId,
+  poolAddress: string,
+): number | null {
+  return minichefPids?.[chainId]?.[poolAddress] || null
+}
+
+export function getIsLegacySwapABIPoolByAddress(
+  chainId: ChainId,
+  poolAddress: string,
+): boolean {
+  const legacyAddresses = [
+    BTC_POOL_NAME,
+    STABLECOIN_POOL_NAME,
+    VETH2_POOL_NAME,
+  ].map((name) => POOLS_MAP[name].addresses[chainId])
+  return legacyAddresses.includes(poolAddress)
+}
 export function isLegacySwapABIPool(poolName: string): boolean {
   return new Set([BTC_POOL_NAME, STABLECOIN_POOL_NAME, VETH2_POOL_NAME]).has(
     poolName,
@@ -1297,22 +1342,22 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
 
 // derived from https://docs.synthetix.io/tokens/list/
 export const SYNTHETIX_TOKENS = [
-  "0xd2dF355C19471c8bd7D8A3aa27Ff4e26A21b4076", // Aave (sAAVE),
-  "0xF48e200EAF9906362BB1442fca31e0835773b8B4", // Australian Dollars (sAUD),
-  "0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6", // Bitcoin (sBTC),
-  "0xe36E2D3c7c34281FA3bC737950a68571736880A1", // Cardano (sADA),
-  "0xbBC455cb4F1B9e4bFC4B73970d360c8f032EfEE6", // Chainlink (sLINK),
-  "0xe1aFe1Fd76Fd88f78cBf599ea1846231B8bA3B6B", // DeFi Index (sDEFI),
-  "0x104eDF1da359506548BFc7c25bA1E28C16a70235", // ETH / BTC (sETHBTC),
-  "0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb", // Ether (sETH),
-  "0xD71eCFF9342A5Ced620049e616c5035F1dB98620", // Euros (sEUR),
-  "0xF6b1C627e95BFc3c1b4c9B825a032Ff0fBf3e07d", // Japanese Yen (sJPY),
-  "0x1715AC0743102BF5Cd58EfBB6Cf2dC2685d967b6", // Polkadot (sDOT),
-  "0x97fe22E7341a0Cd8Db6F6C021A24Dc8f4DAD855F", // Pound Sterling (sGBP),
-  "0x269895a3dF4D73b077Fc823dD6dA1B95f72Aaf9B", // South Korean Won (sKRW),
-  "0x0F83287FF768D1c1e17a42F44d644D7F22e8ee1d", // Swiss Franc (sCHF),
-  "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F", // Synthetix (SNX),
-  "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51", // US Dollars (sUSD)
+  "0xd2df355c19471c8bd7d8a3aa27ff4e26a21b4076", // Aave (sAAVE)
+  "0xf48e200eaf9906362bb1442fca31e0835773b8b4", // Australian Dollars (sAUD)
+  "0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6", // Bitcoin (sBTC)
+  "0xe36e2d3c7c34281fa3bc737950a68571736880a1", // Cardano (sADA)
+  "0xbbc455cb4f1b9e4bfc4b73970d360c8f032efee6", // Chainlink (sLINK)
+  "0xe1afe1fd76fd88f78cbf599ea1846231b8ba3b6b", // DeFi Index (sDEFI)
+  "0x104edf1da359506548bfc7c25ba1e28c16a70235", // ETH / BTC (sETHBTC)
+  "0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb", // Ether (sETH)
+  "0xd71ecff9342a5ced620049e616c5035f1db98620", // Euros (sEUR)
+  "0xf6b1c627e95bfc3c1b4c9b825a032ff0fbf3e07d", // Japanese Yen (sJPY)
+  "0x1715ac0743102bf5cd58efbb6cf2dc2685d967b6", // Polkadot (sDOT)
+  "0x97fe22e7341a0cd8db6f6c021a24dc8f4dad855f", // Pound Sterling (sGBP)
+  "0x269895a3df4d73b077fc823dd6da1b95f72aaf9b", // South Korean Won (sKRW)
+  "0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d", // Swiss Franc (sCHF)
+  "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f", // Synthetix (SNX)
+  "0x57ab1ec28d129707052df4df418d58a2d46d5f51", // US Dollars (sUSD)
 ]
 
 // "SADDLE" in bytes32 form
