@@ -8,16 +8,22 @@ import {
   Typography,
 } from "@mui/material"
 import { AssetType, PoolType, TextFieldColors } from "."
+import { BigNumber, BigNumberish, ethers } from "ethers"
+import {
+  MASTER_REGISTRY_CONTRACT_ADDRESSES,
+  PERMISSIONLESS_DEPLOYER_CONTRACT_ADDRESSES,
+} from "../../constants"
 import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 
-import { BigNumberish } from "ethers"
 import Dialog from "../../components/Dialog"
 import DialogTitle from "../../components/DialogTitle"
 import PERMISSIONLESS_DEPLOYER_CONTRACT_ABI from "../../constants/abis/permissionlessDeployer.json"
+import POOL_REGISTRY_ABI from "../../constants/abis/poolRegistry.json"
 import { PermissionlessDeployer } from "../../../types/ethers-contracts/PermissionlessDeployer"
+import { PoolRegistry } from "../../../types/ethers-contracts/PoolRegistry"
 import React from "react"
-import { Zero } from "@ethersproject/constants"
 import { getContract } from "../../utils"
+import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../../hooks"
 import { useTranslation } from "react-i18next"
 
@@ -42,6 +48,8 @@ type Props = {
   resetFields: () => void
 }
 
+const POOL_FEE_PERCISION = 8
+
 export default function ReviewCreatePool({
   open,
   onClose = () => null,
@@ -54,29 +62,57 @@ export default function ReviewCreatePool({
   const onCreatePoolClick = async () => {
     if (!library || !chainId || !account) return
     const permissionlessDeployerContract = getContract(
-      // hardhat addr delete this later
-      "0xD5ac451B0c50B9476107823Af206eD814a2e2580",
+      PERMISSIONLESS_DEPLOYER_CONTRACT_ADDRESSES[chainId],
       PERMISSIONLESS_DEPLOYER_CONTRACT_ABI,
       library,
       account,
     ) as PermissionlessDeployer
+    const poolRegistry = getContract(
+      MASTER_REGISTRY_CONTRACT_ADDRESSES[chainId],
+      POOL_REGISTRY_ABI,
+      library,
+      account,
+    ) as PoolRegistry
+    const decimals = poolData.tokenInfo.map((token) => token.decimals)
 
+    console.log({ poolData })
     try {
-      const txn = await permissionlessDeployerContract.deploySwap({
-        poolName: poolData.poolName,
+      let deployTxn
+      const deploySwapInput = {
+        poolName: ethers.utils.formatBytes32String(poolData.poolName),
         tokens: poolData.tokenInputs,
-        decimals: [Zero], // poolData.tokenInfo.decimals || Zero,
+        decimals,
+        adminFee: BigNumber.from(50e8), // 50%
         lpTokenName: poolData.poolName,
         lpTokenSymbol: poolData.poolSymbol,
-        a: poolData.aParameter,
-        fee: poolData.fee,
-        adminFee: Zero,
+        a: BigNumber.from(poolData.aParameter),
+        fee: BigNumber.from(parseUnits(poolData.fee, POOL_FEE_PERCISION)),
         owner: account,
-        typeOfAsset: Zero,
-      })
-      await enqueuePromiseToast(chainId, txn.wait(), "create", {
-        poolName: "Vesting Contract",
-      })
+        typeOfAsset: poolData.assetType,
+      }
+      if (!poolData.poolType.includes("Metapool")) {
+        deployTxn = await permissionlessDeployerContract.deploySwap(
+          deploySwapInput,
+        )
+      } else {
+        const poolRegistryData = await poolRegistry.getPoolDataByName(
+          ethers.utils.formatBytes32String(poolData.poolName),
+        )
+
+        deployTxn = await permissionlessDeployerContract.deployMetaSwap({
+          ...deploySwapInput,
+          baseSwap: poolRegistryData.poolAddress,
+        })
+      }
+      console.log({ deployTxn })
+      await enqueuePromiseToast(
+        chainId,
+        deployTxn.wait(),
+        "createPermissionlessPool",
+        {
+          poolName: poolData.poolName,
+        },
+      )
       resetFields()
     } catch (err) {
       console.error(err)
@@ -85,14 +121,17 @@ export default function ReviewCreatePool({
     onClose()
   }
 
+  const warningMessage =
+    "Double check the inputs for your pool are as you want it. Once a pool is created it can be modified but can't be deleted. It will live on the blockchain forever!"
+  const outputEstimatedMsg =
+    "Output is estimated. If the input is invalid or the gas is too low, your transaction will revert."
+
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle variant="h1">Review Pool Creation</DialogTitle>
       <DialogContent>
         <Alert icon={false} color="warning">
-          Double check the inputs for your pool are as you want it-- once a pool
-          is created, it can be modified but cannot be deleted (it&lsquo;ll live
-          on the blockchain forever!)
+          {warningMessage}
         </Alert>
         <Stack my={3} spacing={1}>
           <Box display="flex" justifyContent="space-between">
@@ -125,10 +164,7 @@ export default function ReviewCreatePool({
           </Box>
         </Stack>
         <Divider />
-        <Typography my={3}>
-          Output is estimated. If the input is invalid or the gas is too low,
-          your transaction will revert.
-        </Typography>
+        <Typography my={3}>{outputEstimatedMsg}</Typography>
         <Stack spacing={1}>
           <Button variant="contained" size="large" onClick={onCreatePoolClick}>
             Create Pool

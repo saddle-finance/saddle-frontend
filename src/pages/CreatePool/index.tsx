@@ -30,7 +30,8 @@ import { useTranslation } from "react-i18next"
 
 export type PoolType = "usdMetapool" | "btcMetapool" | "basepool"
 
-export type AssetType = "USD" | "ETH" | "BTC" | "OTHERS"
+// export type AssetType = "USD" | "ETH" | "BTC" | "OTHERS"
+export type AssetType = 0 | 1 | 2 | 3
 
 export type TextFieldColors =
   | "primary"
@@ -49,7 +50,7 @@ export default function CreatePool(): React.ReactElement {
   const [poolSymbol, setPoolSymbol] = useState<string>("")
   const [aParameter, setAParameter] = useState<string>("")
   const [poolType, setPoolType] = useState<PoolType>("usdMetapool")
-  const [assetType, setAssetType] = useState<AssetType>("USD")
+  const [assetType, setAssetType] = useState<AssetType>(0)
   const [tokenInputs, setTokenInputs] = useState<string[]>([""])
   const [tokenInfo, setTokenInfo] = useState<
     {
@@ -68,7 +69,7 @@ export default function CreatePool(): React.ReactElement {
   ])
   const [fee, setFee] = useState<string>("")
   const { account, library } = useActiveWeb3React()
-  const [disableCreatePool, setDisableCreatePool] = useState<boolean>(true)
+  // const [disableCreatePool, setDisableCreatePool] = useState<boolean>(true)
 
   const handleAddToken = () => {
     setTokenInputs((prev) => [...prev, ""])
@@ -85,7 +86,7 @@ export default function CreatePool(): React.ReactElement {
     setPoolSymbol("")
     setAParameter("")
     setPoolType("usdMetapool")
-    setAssetType("USD")
+    setAssetType(0)
     setTokenInfo([
       {
         name: "",
@@ -136,25 +137,25 @@ export default function CreatePool(): React.ReactElement {
     !isNumber(fee) || parseFloat(fee) > 1 || parseFloat(fee) < 0.04
 
   useEffect(() => {
-    const tokenInfoErrors = tokenInfo.map((token) => {
-      console.log({ token })
-      if (token.checkResult === "success") {
-        return "success"
-      }
-      return "error"
-    })
-    const hasFieldError =
-      poolNameError ||
-      poolSymbolError ||
-      aParameterError ||
-      feeError ||
-      tokenInfoErrors.includes("error")
-    const hasAllValues =
-      poolName.length > 0 &&
-      poolSymbol.length > 0 &&
-      fee.length > 0 &&
-      aParameter.length > 0
-    setDisableCreatePool(hasFieldError || !hasAllValues)
+    // const tokenInfoErrors = tokenInfo.map((token) => {
+    //   console.log({ token })
+    //   if (token.checkResult === "success") {
+    //     return "success"
+    //   }
+    //   return "error"
+    // })
+    // const hasFieldError =
+    //   poolNameError ||
+    //   poolSymbolError ||
+    //   aParameterError ||
+    //   feeError ||
+    //   tokenInfoErrors.includes("error")
+    // const hasAllValues =
+    //   poolName.length > 0 &&
+    //   poolSymbol.length > 0 &&
+    //   fee.length > 0 &&
+    //   aParameter.length > 0
+    // setDisableCreatePool(hasFieldError || !hasAllValues)
   }, [
     fee.length,
     feeError,
@@ -319,12 +320,12 @@ export default function CreatePool(): React.ReactElement {
                   size="large"
                   disabled={poolType !== "basepool"}
                 >
-                  <ToggleButton value="USD" color="secondary">
+                  <ToggleButton value={0} color="secondary">
                     USD
                   </ToggleButton>
-                  <ToggleButton value="ETH">ETH</ToggleButton>
-                  <ToggleButton value="BTC">BTC</ToggleButton>
-                  <ToggleButton value="OTHERS">{t("others")}</ToggleButton>
+                  <ToggleButton value={1}>ETH</ToggleButton>
+                  <ToggleButton value={2}>BTC</ToggleButton>
+                  <ToggleButton value={3}>{t("others")}</ToggleButton>
                 </ToggleButtonGroup>
               </Box>
             </Stack>
@@ -444,7 +445,8 @@ export default function CreatePool(): React.ReactElement {
               variant="contained"
               size="large"
               fullWidth
-              disabled={disableCreatePool}
+              // disabled={disableCreatePool}
+              disabled={false}
               onClick={() => setOpenCreatePoolDlg(true)}
             >
               {t("createCommunityPool")}
