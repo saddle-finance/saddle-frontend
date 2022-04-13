@@ -28,12 +28,9 @@ const InfoItem = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   flexDirection: "row",
-  minWidth: "50%",
+  minWidth: "100%",
   "& p:first-of-type": {
     marginRight: theme.spacing(0.5),
-  },
-  [theme.breakpoints.down("sm")]: {
-    minWidth: "100%",
   },
 }))
 
@@ -124,7 +121,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
                   </Typography>
                 </Tooltip>
               ) : (
-                <Typography>{symbol} APR: &nbsp;</Typography>
+                <Typography>{`${symbol} APR:`}</Typography>
               )}
               <Typography variant="subtitle1">
                 {apr && formatUnits(apr, 18)}
@@ -163,7 +160,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
           </Typography>
         </InfoItem>
       </Box>
-      <InfoItem>
+      <InfoItem flex={1}>
         <Typography>{`${t("adminFee")}:`}</Typography>
         <Typography variant="subtitle1">{formattedData.adminFee}</Typography>
       </InfoItem>
@@ -189,7 +186,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
                   ml={1}
                 >{`${token.symbol} ${token.percent}`}</Typography>
               </Box>
-              <Typography data-testid="tokenValue">{token.value}</Typography>
+              <Typography>{token.value}</Typography>
             </Box>
           ))}
         </Box>
