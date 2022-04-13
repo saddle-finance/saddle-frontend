@@ -59,8 +59,8 @@ export async function getMinichefRewardsData(
       return acc
     }, {} as MinichefData)
   } catch (e) {
-    const error = new Error(`Failed to get minichef data`)
-    error.stack = (e as Error).stack
+    const error = e as Error
+    error.message = `Failed to get minichef data; ${error.message}`
     console.error(error)
     return null
   }

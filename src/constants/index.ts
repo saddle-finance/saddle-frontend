@@ -1160,23 +1160,26 @@ export const POOLS_MAP: PoolsMap = {
 // @dev note that metapools refer to the deposit addresses and not the meta addresses
 const minichefPids: Partial<Record<ChainId, { [pool: string]: number }>> = {
   [ChainId.MAINNET]: {
-    [ALETH_SWAP_ADDRESSES[ChainId.MAINNET]]: 1,
-    [D4_SWAP_ADDRESSES[ChainId.MAINNET]]: 2,
-    [STABLECOIN_SWAP_V2_ADDRESSES[ChainId.MAINNET]]: 3,
-    [BTC_SWAP_V2_ADDRESSES[ChainId.MAINNET]]: 4,
-    [TBTC_META_SWAP_DEPOSIT_ADDRESSES[ChainId.MAINNET]]: 5,
-    [SUSD_META_SWAP_V2_DEPOSIT_ADDRESSES[ChainId.MAINNET]]: 6,
-    [WCUSD_META_SWAP_DEPOSIT_ADDRESSES[ChainId.MAINNET]]: 7,
+    [ALETH_SWAP_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 1,
+    [D4_SWAP_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 2,
+    [STABLECOIN_SWAP_V2_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 3,
+    [BTC_SWAP_V2_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 4,
+    [TBTC_META_SWAP_V2_DEPOSIT_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 5,
+    [TBTC_META_SWAP_V2_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 5,
+    [SUSD_META_SWAP_V2_DEPOSIT_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 6,
+    [SUSD_META_SWAP_V2_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 6,
+    [WCUSD_META_SWAP_V2_DEPOSIT_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 7,
+    [WCUSD_META_SWAP_V2_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 7,
   },
   [ChainId.HARDHAT]: {
-    [ALETH_SWAP_ADDRESSES[ChainId.HARDHAT]]: 1,
-    [D4_SWAP_ADDRESSES[ChainId.HARDHAT]]: 2,
-    [STABLECOIN_SWAP_V2_ADDRESSES[ChainId.HARDHAT]]: 3,
-    [BTC_SWAP_V2_ADDRESSES[ChainId.HARDHAT]]: 4,
+    [ALETH_SWAP_ADDRESSES[ChainId.HARDHAT].toLowerCase()]: 1,
+    [D4_SWAP_ADDRESSES[ChainId.HARDHAT].toLowerCase()]: 2,
+    [STABLECOIN_SWAP_V2_ADDRESSES[ChainId.HARDHAT].toLowerCase()]: 3,
+    [BTC_SWAP_V2_ADDRESSES[ChainId.HARDHAT].toLowerCase()]: 4,
   },
   [ChainId.ARBITRUM]: {
-    [ARB_USD_SWAP_ADDRESSES[ChainId.ARBITRUM]]: 1,
-    [USDS_ARB_USD_SWAP_ADDRESSES[ChainId.ARBITRUM]]: 2,
+    [ARB_USD_SWAP_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 1,
+    [USDS_ARB_USD_SWAP_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 2,
   },
 }
 

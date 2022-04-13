@@ -45,8 +45,8 @@ export async function getMigrationData(
     }, {} as MigrationData)
     return parsedData
   } catch (e) {
-    const error = new Error(`Failed to get migration data`)
-    error.stack = (e as Error).stack
+    const error = e as Error
+    error.message = `Failed to get migration data; ${error.message}`
     console.error(error)
     return null
   }
