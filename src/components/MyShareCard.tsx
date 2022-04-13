@@ -78,7 +78,12 @@ function MyShareCard({ data }: Props): ReactElement | null {
         {formattedData.tokens.map((token) => (
           <Box key={token.symbol} pt={3} pr={4}>
             <Box display="flex" alignItems="center">
-              <TokenIcon alt="icon" symbol={token.symbol} />
+              <TokenIcon
+                alt="icon"
+                symbol={token.symbol}
+                width={20}
+                height={20}
+              />
               <Typography variant="subtitle1" ml={1} data-testid="tokenName">
                 {token.symbol}
               </Typography>

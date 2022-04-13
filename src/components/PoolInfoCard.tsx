@@ -177,8 +177,13 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
         <Box display="flex" flexWrap="wrap">
           {formattedData.tokens.map((token, index) => (
             <Box key={index} minWidth={{ xs: "100%", sm: "50%" }} mt={2}>
-              <Box display="flex" flexWrap="nowrap">
-                <TokenIcon alt="icon" symbol={token.symbol} />
+              <Box display="flex" flexWrap="nowrap" alignItems="center">
+                <TokenIcon
+                  alt="icon"
+                  symbol={token.symbol}
+                  width={20}
+                  height={20}
+                />
                 <Typography
                   variant="subtitle1"
                   ml={1}
