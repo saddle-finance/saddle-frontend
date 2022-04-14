@@ -1,6 +1,12 @@
-import "./SwapPage.scss"
-
-import { Box, Button, Container, Paper, Typography } from "@mui/material"
+import {
+  Alert,
+  Box,
+  Button,
+  Container,
+  Link,
+  Paper,
+  Typography,
+} from "@mui/material"
 import React, { ReactElement, useMemo, useState } from "react"
 import { SWAP_TYPES, getIsVirtualSwap } from "../constants"
 import { formatBNToPercentString, formatBNToString } from "../utils"
@@ -10,15 +16,15 @@ import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
 import Dialog from "./Dialog"
-import { ReactComponent as InfoIcon } from "../assets/icons/info.svg"
+import InfoIcon from "@mui/icons-material/Info"
 import { PendingSwap } from "../hooks/usePendingSwapData"
 import PendingSwapModal from "./PendingSwapModal"
 import ReviewSwap from "./ReviewSwap"
 import { Slippages } from "../state/user"
+import SwapIcon from "@mui/icons-material/SwapHoriz"
 import SwapTokenInput from "./SwapTokenInput"
 import type { TokenOption } from "../pages/Swap"
 import { Zero } from "@ethersproject/constants"
-import classNames from "classnames"
 import { commify } from "../utils"
 import { formatUnits } from "@ethersproject/units"
 import { isHighPriceImpact } from "../utils/priceImpact"
@@ -103,267 +109,242 @@ const SwapPage = (props: Props): ReactElement => {
 
   return (
     <Container maxWidth="sm" sx={{ pt: 5, pb: 20 }}>
-      <div className="swapPage">
-        <Paper>
-          <Box p={{ xs: 3, md: 4 }} flex={1}>
-            <Box mb={5}>
-              <Box display="flex">
-                <Typography variant="subtitle1" component="span">
-                  {t("from").toLocaleUpperCase()}
+      <Paper>
+        <Box p={{ xs: 3, md: 4 }} flex={1}>
+          <Box mb={5}>
+            <Box display="flex">
+              <Typography variant="subtitle1" component="span">
+                {t("from").toLocaleUpperCase()}
+              </Typography>
+              <Box width="max-content" mr={0} ml="auto">
+                <Typography variant="subtitle2" component="span">
+                  {t("balance")}:
                 </Typography>
-                <Box width="max-content" mr={0} ml="auto">
-                  <Typography variant="subtitle2" component="span">
-                    {t("balance")}:
-                  </Typography>
-                  &nbsp;
-                  <Button
-                    size="small"
-                    onClick={() => {
-                      if (fromToken == null) return
-                      const amtStr = formatBNToString(
-                        fromToken.amount,
-                        fromToken.decimals || 0,
-                      )
-                      onChangeFromAmount(amtStr)
-                    }}
-                  >
-                    {formattedBalance}
-                  </Button>
-                </Box>
+                &nbsp;
+                <Button
+                  size="small"
+                  onClick={() => {
+                    if (fromToken == null) return
+                    const amtStr = formatBNToString(
+                      fromToken.amount,
+                      fromToken.decimals || 0,
+                    )
+                    onChangeFromAmount(amtStr)
+                  }}
+                >
+                  {formattedBalance}
+                </Button>
               </Box>
-              <SwapTokenInput
-                data-testid="swapTokenInputFrom"
-                tokens={tokenOptions.from.filter(
-                  ({ symbol }) => symbol !== toState.symbol,
-                )}
-                onSelect={onChangeFromToken}
-                onChangeAmount={onChangeFromAmount}
-                selected={fromState.symbol}
-                inputValue={fromState.value}
-                inputValueUSD={fromState.valueUSD}
-                isSwapFrom={true}
-              />
             </Box>
-            <Typography variant="subtitle1">
-              {t("to").toLocaleUpperCase()}
-            </Typography>
-
             <SwapTokenInput
-              data-testid="swapTokenInputTo"
-              tokens={tokenOptions.to.filter(
-                ({ symbol }) => symbol !== fromState.symbol,
+              data-testid="swapTokenInputFrom"
+              tokens={tokenOptions.from.filter(
+                ({ symbol }) => symbol !== toState.symbol,
               )}
-              onSelect={onChangeToToken}
-              selected={toState.symbol}
-              inputValue={toState.value}
-              inputValueUSD={toState.valueUSD}
-              isSwapFrom={false}
+              onSelect={onChangeFromToken}
+              onChangeAmount={onChangeFromAmount}
+              selected={fromState.symbol}
+              inputValue={fromState.value}
+              inputValueUSD={fromState.valueUSD}
+              isSwapFrom={true}
             />
-            <div style={{ height: "24px" }}></div>
-            {fromState.symbol && toState.symbol && (
-              <Box display="flex" justifyContent="space-between">
-                <div>
-                  <Typography component="span">{t("rate")}</Typography>
-                  &nbsp;
-                  <Typography component="span">
-                    {exchangeRateInfo.pair}
-                  </Typography>
-                  &nbsp;
-                  <button
-                    className="exchange"
-                    onClick={onClickReverseExchangeDirection}
-                  >
-                    <svg
-                      width="24"
-                      height="20"
-                      viewBox="0 0 24 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M17.4011 12.4196C17.4011 13.7551 16.5999 13.8505 16.4472 13.8505H6.62679L9.14986 11.3274L8.47736 10.6501L5.13869 13.9888C5.04986 14.0782 5 14.1991 5 14.3251C5 14.4511 5.04986 14.572 5.13869 14.6613L8.47736 18L9.14986 17.3275L6.62679 14.8044H16.4472C17.1054 14.8044 18.355 14.3274 18.355 12.4196V10.9888H17.4011V12.4196Z"
-                        fill="#3800D6"
-                      />
-                      <path
-                        d="M5.9539 7.58511C5.9539 6.24965 6.75519 6.15426 6.90781 6.15426H16.7283L14.2052 8.67733L14.8777 9.34984L18.2164 6.01117C18.3052 5.92181 18.355 5.80092 18.355 5.67492C18.355 5.54891 18.3052 5.42803 18.2164 5.33867L14.8777 2L14.2004 2.67727L16.7283 5.20035H6.90781C6.24962 5.20035 5 5.6773 5 7.58511V9.01597H5.9539V7.58511Z"
-                        fill="#3800D6"
-                      />
-                    </svg>
-                  </button>
-                </div>
-                <span className="exchRate">{formattedExchangeRate}</span>
-              </Box>
-            )}
-            <Box display="flex" justifyContent="space-between">
-              <span>{t("priceImpact")}</span>
-              <span>{formattedPriceImpact}</span>
-            </Box>
-            {formattedRoute && (
-              <>
-                <Box display="flex" justifyContent="space-between">
-                  <span>{t("route")}</span>
-                  <span>{formattedRoute}</span>
-                </Box>
-                {isVirtualSwap && (
-                  <div className="row">
-                    <span></span>
-                    <span>
-                      <a
-                        href="https://docs.saddle.finance/saddle-faq#what-is-virtual-swap"
-                        style={{ textDecoration: "underline" }}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        ({t("virtualSwap")})
-                      </a>
-                    </span>
-                  </div>
-                )}
-                {isVirtualSwap && isHighSlippage && (
-                  <div className="exchangeWarning">
-                    {t("lowSlippageVirtualSwapWarning")}
-                  </div>
-                )}
-              </>
-            )}
           </Box>
-        </Paper>
-        {account && isHighPriceImpact(exchangeRateInfo.priceImpact) ? (
-          <div className="exchangeWarning">
-            {t("highPriceImpact", {
-              rate: formattedPriceImpact,
-            })}
-          </div>
-        ) : null}
-        {isVirtualSwap && (
-          <div className="virtualSwapInfoBubble">
-            <InfoIcon />
-            {t("crossAssetSwapsUseVirtualSwaps")} {"<"}
-            <a
-              href="https://docs.saddle.finance/saddle-faq#what-is-virtual-swap"
-              target="_blank"
-              rel="noreferrer"
-            >
-              {t("learnMore")}
-            </a>
-            {">"}
-          </div>
-        )}
-        <AdvancedOptions />
-        <div className="pendingSwaps">
-          {pendingSwaps.map((pendingSwap) => {
-            const formattedSynthBalance = commify(
-              formatUnits(
-                pendingSwap.synthBalance,
-                pendingSwap.synthTokenFrom.decimals,
-              ),
-            )
-            return (
-              <div
-                className="pendingSwapItem"
-                key={pendingSwap.itemId?.toString()}
-                onClick={() => {
-                  setActivePendingSwap(pendingSwap.itemId)
-                  setCurrentModal("pendingSwap")
-                }}
-              >
-                <span className="swapDetails">
-                  {formattedSynthBalance} {pendingSwap.synthTokenFrom.symbol}{" "}
-                  {"->"} {pendingSwap.tokenTo.symbol}
-                </span>
-                <div className="swapTimeContainer">
-                  <svg
-                    width="11"
-                    height="11"
-                    viewBox="0 0 11 11"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M5.23467 1H5.5C7.98605 1 10 3.01525 10 5.49924C10 7.98311 7.98618 10 5.5 10C3.01388 10 1 7.98469 1 5.49924C1 4.30732 1.46423 3.22282 2.21973 2.41912L2.60641 2.78249C1.93974 3.49169 1.53066 4.4476 1.53066 5.49924C1.53066 7.69191 3.30721 9.46943 5.5 9.46943C7.69273 9.46943 9.46934 7.69046 9.46934 5.49924C9.46934 3.39724 7.83438 1.67581 5.76533 1.5393V2.96008H5.23467V1Z"
-                      fill="black"
-                      stroke="black"
-                      strokeWidth="0.3"
-                      strokeMiterlimit="10"
-                    />
-                    <path
-                      d="M5.76204 5.52774L5.76861 5.53328L5.77577 5.53804C5.82206 5.5688 5.85082 5.61957 5.84998 5.67802L5.84997 5.67802V5.68017C5.84997 5.77327 5.77431 5.85 5.67911 5.85C5.62153 5.85 5.56861 5.81994 5.53676 5.77321L5.53241 5.76682L5.52742 5.76091L4.26017 4.26001L5.76204 5.52774Z"
-                      fill="black"
-                      stroke="black"
-                      strokeWidth="0.3"
-                    />
-                  </svg>
-                  <span className="swapTime">
-                    {Math.ceil(pendingSwap.secondsRemaining / 60)} min.
-                  </span>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-        <Box mt={3} width="100%">
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            fullWidth
-            onClick={(): void => {
-              setCurrentModal("review")
-            }}
-            disabled={!!error || +toState.value <= 0}
-          >
-            {t("swap")}
-          </Button>
-        </Box>
+          <Typography variant="subtitle1">
+            {t("to").toLocaleUpperCase()}
+          </Typography>
 
-        <div className={classNames({ showError: !!error }, "error")}>
-          {error}
-        </div>
-        <Dialog
-          open={!!currentModal}
-          onClose={(): void => setCurrentModal(null)}
-          scroll="body"
-          hideClose={currentModal === "confirm"}
-        >
-          {currentModal === "review" ? (
-            <ReviewSwap
-              onClose={(): void => setCurrentModal(null)}
-              onConfirm={async (): Promise<void> => {
-                setCurrentModal("confirm")
-                logEvent("swap", {
-                  from: fromState.symbol,
-                  to: toState.symbol,
-                })
-                await onConfirmTransaction?.()
-                setCurrentModal(null)
+          <SwapTokenInput
+            data-testid="swapTokenInputTo"
+            tokens={tokenOptions.to.filter(
+              ({ symbol }) => symbol !== fromState.symbol,
+            )}
+            onSelect={onChangeToToken}
+            selected={toState.symbol}
+            inputValue={toState.value}
+            inputValueUSD={toState.valueUSD}
+            isSwapFrom={false}
+          />
+          <div style={{ height: "24px" }}></div>
+          {fromState.symbol && toState.symbol && (
+            <Box display="flex" justifyContent="space-between">
+              <div>
+                <Typography component="span" mr={1}>
+                  {t("rate")}
+                </Typography>
+                <Typography component="span" mr={1}>
+                  {exchangeRateInfo.pair}
+                </Typography>
+                <Button
+                  variant="text"
+                  size="small"
+                  onClick={onClickReverseExchangeDirection}
+                >
+                  <SwapIcon />
+                </Button>
+              </div>
+              <Typography data-testid="exchRate">
+                {formattedExchangeRate}
+              </Typography>
+            </Box>
+          )}
+          <Box display="flex" justifyContent="space-between">
+            <Typography>{t("priceImpact")}</Typography>
+            <Typography data-testid="swapPriceImpactValue">
+              {formattedPriceImpact}
+            </Typography>
+          </Box>
+          {formattedRoute && (
+            <>
+              <Box display="flex" justifyContent="space-between">
+                <Typography>{t("route")}</Typography>
+                <Typography>{formattedRoute}</Typography>
+              </Box>
+              {isVirtualSwap && (
+                <Link
+                  href="https://docs.saddle.finance/saddle-faq#what-is-virtual-swap"
+                  style={{ textDecoration: "underline" }}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  ({t("virtualSwap")})
+                </Link>
+              )}
+              {isVirtualSwap && isHighSlippage && (
+                <Alert variant="filled" severity="error" sx={{ mt: 2 }}>
+                  {t("lowSlippageVirtualSwapWarning")}
+                </Alert>
+              )}
+            </>
+          )}
+        </Box>
+      </Paper>
+      {account && isHighPriceImpact(exchangeRateInfo.priceImpact) ? (
+        <Alert variant="filled" severity="error" sx={{ mt: 2 }}>
+          {t("highPriceImpact", {
+            rate: formattedPriceImpact,
+          })}
+        </Alert>
+      ) : null}
+      {isVirtualSwap && (
+        <Alert icon={false} sx={{ mt: 2 }}>
+          <Box display="flex" alignItems="center" mx={5}>
+            <InfoIcon color="primary" />
+            <Typography ml={1}>
+              {t("crossAssetSwapsUseVirtualSwaps")}
+              <Link
+                href="https://docs.saddle.finance/saddle-faq#what-is-virtual-swap"
+                target="_blank"
+                rel="noreferrer"
+                color="inherit"
+              >
+                {"<" + t("learnMore") + ">"}
+              </Link>
+            </Typography>
+          </Box>
+        </Alert>
+      )}
+      <div>
+        {pendingSwaps.map((pendingSwap) => {
+          const formattedSynthBalance = commify(
+            formatUnits(
+              pendingSwap.synthBalance,
+              pendingSwap.synthTokenFrom.decimals,
+            ),
+          )
+          return (
+            <Button
+              key={pendingSwap.itemId?.toString()}
+              variant="outlined"
+              fullWidth
+              size="large"
+              onClick={() => {
+                setActivePendingSwap(pendingSwap.itemId)
+                setCurrentModal("pendingSwap")
               }}
-              data={{
-                from: fromState,
-                to: toState,
-                exchangeRateInfo,
-                txnGasCost,
-                swapType,
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                p: 2,
+                mt: 2,
               }}
-            />
-          ) : null}
-          {currentModal === "confirm" ? <ConfirmTransaction /> : null}
-          {currentModal === "pendingSwap" ? (
-            <PendingSwapModal
-              pendingSwap={
-                pendingSwaps.find(
-                  (p) => p.itemId === activePendingSwap,
-                ) as PendingSwap
-              }
-              onClose={() => {
-                setCurrentModal(null)
-                setActivePendingSwap(null)
-              }}
-            />
-          ) : null}
-        </Dialog>
+            >
+              <Typography variant="subtitle1" color="text.primary">
+                {formattedSynthBalance} {pendingSwap.synthTokenFrom.symbol}{" "}
+                {"->"} {pendingSwap.tokenTo.symbol}
+              </Typography>
+
+              <Typography variant="body1" color="text.primary">
+                {Math.ceil(pendingSwap.secondsRemaining / 60)} min wait
+              </Typography>
+            </Button>
+          )
+        })}
       </div>
+      <AdvancedOptions />
+
+      <Button
+        variant="contained"
+        color="primary"
+        size="large"
+        fullWidth
+        onClick={(): void => {
+          setCurrentModal("review")
+        }}
+        disabled={!!error || +toState.value <= 0}
+        sx={{ mt: 3 }}
+      >
+        {t("swap")}
+      </Button>
+
+      <Typography
+        display={!error ? "none" : "block"}
+        color="error"
+        textAlign="center"
+      >
+        {error}
+      </Typography>
+      <Dialog
+        open={!!currentModal}
+        onClose={(): void => setCurrentModal(null)}
+        scroll="body"
+        hideClose={currentModal === "confirm"}
+      >
+        {currentModal === "review" ? (
+          <ReviewSwap
+            onClose={(): void => setCurrentModal(null)}
+            onConfirm={async (): Promise<void> => {
+              setCurrentModal("confirm")
+              logEvent("swap", {
+                from: fromState.symbol,
+                to: toState.symbol,
+              })
+              await onConfirmTransaction?.()
+              setCurrentModal(null)
+            }}
+            data={{
+              from: fromState,
+              to: toState,
+              exchangeRateInfo,
+              txnGasCost,
+              swapType,
+            }}
+          />
+        ) : null}
+        {currentModal === "confirm" ? <ConfirmTransaction /> : null}
+        {currentModal === "pendingSwap" ? (
+          <PendingSwapModal
+            pendingSwap={
+              pendingSwaps.find(
+                (p) => p.itemId === activePendingSwap,
+              ) as PendingSwap
+            }
+            onClose={() => {
+              setCurrentModal(null)
+              setActivePendingSwap(null)
+            }}
+          />
+        ) : null}
+      </Dialog>
     </Container>
   )
 }

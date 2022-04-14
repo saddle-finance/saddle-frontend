@@ -81,22 +81,17 @@ context("Swap Flow", () => {
       })
       it("shows information about the transaction", () => {
         cy.get("div").contains("Rate").as("rateEl").should("exist")
-        cy.get("@rateEl")
-          .parent()
-          .siblings(".exchRate")
-          .should(($el) => {
-            expect($el.text()).to.match(/\d+\.\d+/)
-          })
+        cy.get('[data-testid="exchRate"]').should(($el) => {
+          expect($el.text()).to.match(/\d+\.\d+/)
+        })
 
         cy.get("div")
           .contains("Price Impact")
           .as("priceImpactEl")
           .should("exist")
-        cy.get("@priceImpactEl")
-          .siblings("span")
-          .should(($el) => {
-            expect($el.text()).to.match(/-?\d+\.\d+%/)
-          })
+        cy.get('[data-testid="swapPriceImpactValue"]').should(($el) => {
+          expect($el.text()).to.match(/-?\d+\.\d+%/)
+        })
       })
       it("completes a swap", () => {
         cy.get("button").contains("Swap").click()
