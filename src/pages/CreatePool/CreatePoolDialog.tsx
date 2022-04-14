@@ -9,18 +9,13 @@ import {
 } from "@mui/material"
 import { AssetType, PoolType, TextFieldColors } from "."
 import { BigNumber, BigNumberish, ethers } from "ethers"
-import {
-  MASTER_REGISTRY_CONTRACT_ADDRESSES,
-  PERMISSIONLESS_DEPLOYER_CONTRACT_ADDRESSES,
-} from "../../constants"
 import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 
 import Dialog from "../../components/Dialog"
 import DialogTitle from "../../components/DialogTitle"
 import PERMISSIONLESS_DEPLOYER_CONTRACT_ABI from "../../constants/abis/permissionlessDeployer.json"
-import POOL_REGISTRY_ABI from "../../constants/abis/poolRegistry.json"
+import { PERMISSIONLESS_DEPLOYER_CONTRACT_ADDRESSES } from "../../constants"
 import { PermissionlessDeployer } from "../../../types/ethers-contracts/PermissionlessDeployer"
-import { PoolRegistry } from "../../../types/ethers-contracts/PoolRegistry"
 import React from "react"
 import { getContract } from "../../utils"
 import { parseUnits } from "@ethersproject/units"
@@ -46,6 +41,8 @@ type Props = {
     }[]
   }
   resetFields: () => void
+  metapoolBasepoolAddr: string
+  metapoolBasepoolLpAddr: string
 }
 
 const POOL_FEE_PERCISION = 8
@@ -55,6 +52,8 @@ export default function ReviewCreatePool({
   onClose = () => null,
   poolData,
   resetFields,
+  metapoolBasepoolAddr,
+  metapoolBasepoolLpAddr,
 }: Props): JSX.Element {
   const { t } = useTranslation()
   const { account, chainId, library } = useActiveWeb3React()
@@ -69,13 +68,6 @@ export default function ReviewCreatePool({
       account,
     ) as PermissionlessDeployer
 
-    const poolRegistry = getContract(
-      MASTER_REGISTRY_CONTRACT_ADDRESSES[chainId],
-      POOL_REGISTRY_ABI,
-      library,
-      account,
-    ) as PoolRegistry
-
     const enqueueCreatePoolToast = async (deployTxn: {
       wait: () => Promise<unknown>
     }) =>
@@ -87,73 +79,47 @@ export default function ReviewCreatePool({
           poolName: poolData.poolName,
         },
       )
-    // const decimals = poolData.tokenInfo.map((token) => token.decimals)
-    const decimals = [6, 18]
 
-    console.log({ poolData })
+    const decimals = poolData.tokenInfo.map((token) => token.decimals)
+    const deploySwapInput = {
+      poolName: ethers.utils.formatBytes32String(poolData.poolName),
+      tokens: poolData.tokenInputs,
+      decimals,
+      adminFee: BigNumber.from(50e8), // 50%
+      lpTokenName: poolData.poolName,
+      lpTokenSymbol: poolData.poolSymbol,
+      a: BigNumber.from(poolData.aParameter),
+      fee: BigNumber.from(parseUnits(poolData.fee, POOL_FEE_PERCISION)),
+      owner: account,
+      typeOfAsset: poolData.assetType,
+    }
+    let deployTxn
+
     try {
-      let deployTxn
-      const deploySwapInput = {
-        poolName: ethers.utils.formatBytes32String(poolData.poolName),
-        tokens: poolData.tokenInputs,
-        decimals,
-        adminFee: BigNumber.from(50e8), // 50%
-        lpTokenName: poolData.poolName,
-        lpTokenSymbol: poolData.poolSymbol,
-        a: BigNumber.from(poolData.aParameter),
-        fee: BigNumber.from(parseUnits(poolData.fee, POOL_FEE_PERCISION)),
-        owner: account,
-        typeOfAsset: poolData.assetType,
-      }
       if (poolData.poolType === "basepool") {
         deployTxn = await permissionlessDeployerContract.deploySwap(
           deploySwapInput,
         )
         await enqueueCreatePoolToast(deployTxn)
       } else {
-        let poolRegistryData
-        let deployMetaSwapInput
-        try {
-          poolRegistryData = await poolRegistry.getPoolDataByName(
-            ethers.utils.formatBytes32String(poolData.poolName),
-          )
-          deployMetaSwapInput = {
-            ...deploySwapInput,
-            baseSwap: poolRegistryData.poolAddress,
-            tokens: [...poolData.tokenInputs, poolRegistryData.lpToken],
-          }
-          deployTxn = await permissionlessDeployerContract.deployMetaSwap(
-            deployMetaSwapInput,
-          )
-          await enqueueCreatePoolToast(deployTxn)
-          return
-        } catch (err) {
-          console.error(err, "err3")
+        const deployMetaSwapInput = {
+          ...deploySwapInput,
+          baseSwap: metapoolBasepoolAddr,
+          tokens: [...poolData.tokenInputs, metapoolBasepoolLpAddr],
+          decimals: [...deploySwapInput.decimals, 18],
         }
-
-        if (!poolRegistryData?.poolName) {
-          await permissionlessDeployerContract.deploySwap(deploySwapInput)
-          poolRegistryData = await poolRegistry.getPoolDataByName(
-            ethers.utils.formatBytes32String(poolData.poolName),
-          )
-          deployMetaSwapInput = {
-            ...deploySwapInput,
-            baseSwap: poolRegistryData.poolAddress,
-            tokens: [...poolData.tokenInputs, poolRegistryData.lpToken],
-          }
-          deployTxn = await permissionlessDeployerContract.deployMetaSwap(
-            deployMetaSwapInput,
-          )
-          await enqueueCreatePoolToast(deployTxn)
-        }
+        deployTxn = await permissionlessDeployerContract.deployMetaSwap(
+          deployMetaSwapInput,
+        )
+        await enqueueCreatePoolToast(deployTxn)
       }
-      console.log({ deployTxn })
       resetFields()
     } catch (err) {
-      console.error(err, "err2")
+      console.error(err)
       enqueueToast("error", "Unable to deploy Permissionless Pool")
+    } finally {
+      onClose()
     }
-    onClose()
   }
 
   const warningMessage =
@@ -202,10 +168,10 @@ export default function ReviewCreatePool({
         <Typography my={3}>{outputEstimatedMsg}</Typography>
         <Stack spacing={1}>
           <Button variant="contained" size="large" onClick={onCreatePoolClick}>
-            Create Pool
+            <Typography>Create Pool</Typography>
           </Button>
           <Button onClick={onClose} size="large">
-            Go back to edit
+            <Typography>Go back to edit</Typography>
           </Button>
         </Stack>
       </DialogContent>

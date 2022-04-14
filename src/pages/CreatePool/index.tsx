@@ -1,3 +1,4 @@
+import { BigNumberish, ethers } from "ethers"
 import {
   Box,
   Button,
@@ -17,7 +18,6 @@ import {
 import React, { useEffect, useState } from "react"
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
-import { BigNumberish } from "ethers"
 import CircularProgress from "@mui/material/CircularProgress"
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever"
 import ERC20_ABI from "../../constants/abis/erc20.json"
@@ -26,11 +26,11 @@ import ReviewCreatePool from "./CreatePoolDialog"
 import { Link as RouteLink } from "react-router-dom"
 import { getContract } from "../../utils"
 import { useActiveWeb3React } from "../../hooks"
+import { usePoolRegistry } from "../../hooks/useContract"
 import { useTranslation } from "react-i18next"
 
 export type PoolType = "usdMetapool" | "btcMetapool" | "basepool"
 
-// export type AssetType = "USD" | "ETH" | "BTC" | "OTHERS"
 export type AssetType = 0 | 1 | 2 | 3
 
 export type TextFieldColors =
@@ -44,6 +44,13 @@ export type TextFieldColors =
 export default function CreatePool(): React.ReactElement {
   const { t } = useTranslation()
   const theme = useTheme()
+  const poolRegistry = usePoolRegistry()
+  const { account, library } = useActiveWeb3React()
+
+  const [disableCreatePool, setDisableCreatePool] = useState<boolean>(true)
+  const [metapoolBasepoolAddr, setMetapoolBasepoolAddr] = useState<string>("")
+  const [metapoolBasepoolLpAddr, setMetapoolBasepoolLpAddr] =
+    useState<string>("")
   const [openCreatePoolDlg, setOpenCreatePoolDlg] = useState<boolean>(false)
   const [inputLoading, setInputLoading] = useState<boolean[]>([false])
   const [poolName, setPoolName] = useState<string>("")
@@ -68,8 +75,6 @@ export default function CreatePool(): React.ReactElement {
     },
   ])
   const [fee, setFee] = useState<string>("")
-  const { account, library } = useActiveWeb3React()
-  // const [disableCreatePool, setDisableCreatePool] = useState<boolean>(true)
 
   const handleAddToken = () => {
     setTokenInputs((prev) => [...prev, ""])
@@ -87,6 +92,7 @@ export default function CreatePool(): React.ReactElement {
     setAParameter("")
     setPoolType("usdMetapool")
     setAssetType(0)
+    setFee("")
     setTokenInfo([
       {
         name: "",
@@ -137,25 +143,43 @@ export default function CreatePool(): React.ReactElement {
     !isNumber(fee) || parseFloat(fee) > 1 || parseFloat(fee) < 0.04
 
   useEffect(() => {
-    // const tokenInfoErrors = tokenInfo.map((token) => {
-    //   console.log({ token })
-    //   if (token.checkResult === "success") {
-    //     return "success"
-    //   }
-    //   return "error"
-    // })
-    // const hasFieldError =
-    //   poolNameError ||
-    //   poolSymbolError ||
-    //   aParameterError ||
-    //   feeError ||
-    //   tokenInfoErrors.includes("error")
-    // const hasAllValues =
-    //   poolName.length > 0 &&
-    //   poolSymbol.length > 0 &&
-    //   fee.length > 0 &&
-    //   aParameter.length > 0
-    // setDisableCreatePool(hasFieldError || !hasAllValues)
+    const getBasePoolLPTokenAddrs = async () => {
+      if (poolRegistry) {
+        const basePoolName = poolType === "usdMetapool" ? "USDv2" : "BTCv2"
+        try {
+          const poolRegistryData = await poolRegistry.getPoolDataByName(
+            ethers.utils.formatBytes32String(basePoolName),
+          )
+          setMetapoolBasepoolAddr(poolRegistryData.poolAddress)
+          setMetapoolBasepoolLpAddr(poolRegistryData.lpToken)
+        } catch (err) {
+          console.error(err)
+        }
+      }
+    }
+    void getBasePoolLPTokenAddrs()
+  }, [poolRegistry, poolType])
+
+  useEffect(() => {
+    const tokenInfoErrors = tokenInfo.map((token) => {
+      if (token.checkResult === "success") {
+        return "success"
+      }
+      return "error"
+    })
+    const hasFieldError =
+      poolNameError ||
+      poolSymbolError ||
+      aParameterError ||
+      feeError ||
+      tokenInfoErrors.includes("error")
+    const hasAllValues =
+      poolName.length > 0 &&
+      poolSymbol.length > 0 &&
+      fee.length > 0 &&
+      aParameter.length > 0
+
+    setDisableCreatePool(hasFieldError || !hasAllValues)
   }, [
     fee.length,
     feeError,
@@ -220,6 +244,7 @@ export default function CreatePool(): React.ReactElement {
                     error={poolSymbolError}
                     helperText={poolSymbolError && t("poolSymbolError")}
                     onChange={(e) => setPoolSymbol(e.target.value)}
+                    value={poolSymbol}
                     sx={{ ml: [0, 1.5], flex: 1 }}
                   />
                 </Box>
@@ -253,6 +278,7 @@ export default function CreatePool(): React.ReactElement {
                   <TextField
                     label={t("aParameter")}
                     onChange={(e) => setAParameter(e.target.value)}
+                    value={aParameter}
                     error={aParameterError}
                     helperText={aParameterError && t("aParameterError")}
                     fullWidth
@@ -348,6 +374,7 @@ export default function CreatePool(): React.ReactElement {
                     flexBasis={`calc(50% - ${theme.spacing(1.5)})`}
                   >
                     <TextField
+                      value={tokenInput}
                       autoComplete="off"
                       label={`Token ${index}`}
                       fullWidth
@@ -355,7 +382,7 @@ export default function CreatePool(): React.ReactElement {
                       margin="normal"
                       onChange={(e) => {
                         tokenInputs[index] = e.target.value
-                        setTokenInputs(tokenInputs)
+                        setTokenInputs([...tokenInputs])
                       }}
                       onBlur={async (e) => {
                         if (!e.target.value) {
@@ -366,8 +393,6 @@ export default function CreatePool(): React.ReactElement {
                             checkResult: "primary" as TextFieldColors,
                           }
                           setTokenInfo([...tokenInfo])
-                        } else if (e.target.value === tokenInput) {
-                          return
                         }
 
                         inputLoading[index] = true
@@ -378,6 +403,7 @@ export default function CreatePool(): React.ReactElement {
                             tokenInputs[index],
                           )
                         } catch (err) {
+                          console.error(err)
                           tokenData = {
                             name: "",
                             symbol: "",
@@ -427,6 +453,18 @@ export default function CreatePool(): React.ReactElement {
                     />
                   </Box>
                 ))}
+                {(poolType === "usdMetapool" || poolType === "btcMetapool") && (
+                  <Box flexBasis={`calc(50% - ${theme.spacing(1.5)})`}>
+                    <TextField
+                      value={metapoolBasepoolAddr}
+                      fullWidth
+                      disabled
+                      color="primary"
+                      margin="normal"
+                      helperText="Basepool Address"
+                    />
+                  </Box>
+                )}
               </Stack>
             </Box>
             <Button
@@ -445,8 +483,7 @@ export default function CreatePool(): React.ReactElement {
               variant="contained"
               size="large"
               fullWidth
-              // disabled={disableCreatePool}
-              disabled={false}
+              disabled={disableCreatePool}
               onClick={() => setOpenCreatePoolDlg(true)}
             >
               {t("createCommunityPool")}
@@ -465,6 +502,8 @@ export default function CreatePool(): React.ReactElement {
           tokenInfo,
           fee,
         }}
+        metapoolBasepoolAddr={metapoolBasepoolAddr}
+        metapoolBasepoolLpAddr={metapoolBasepoolLpAddr}
         open={openCreatePoolDlg}
         onClose={() => setOpenCreatePoolDlg(false)}
         resetFields={resetFields}
