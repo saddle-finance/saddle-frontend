@@ -161,12 +161,9 @@ export default function CreatePool(): React.ReactElement {
   }, [poolRegistry, poolType])
 
   useEffect(() => {
-    const tokenInfoErrors = tokenInfo.map((token) => {
-      if (token.checkResult === "success") {
-        return "success"
-      }
-      return "error"
-    })
+    const tokenInfoErrors = tokenInfo.map((token) =>
+      token.checkResult === "success" ? "success" : "error",
+    )
     const hasFieldError =
       poolNameError ||
       poolSymbolError ||
