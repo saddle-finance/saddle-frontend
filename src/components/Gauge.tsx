@@ -13,7 +13,10 @@ interface Props {
   gauges: GaugeWeight[]
 }
 
-export default function Gauge({ gauges }: Props): JSX.Element {
+export default function Gauge({
+  gauges,
+  ...props
+}: Props & HighchartsReact.Props): JSX.Element {
   HighchartsExporting(Highcharts)
   const chartComponentRef = useRef<HighchartsReact.RefObject>(null)
   const data = gauges.map((g) => {
@@ -65,6 +68,7 @@ export default function Gauge({ gauges }: Props): JSX.Element {
       options={options}
       ref={chartComponentRef}
       allowChartUpdate
+      {...props}
     />
   )
 }
