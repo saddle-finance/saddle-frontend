@@ -13,7 +13,6 @@ import { Vesting } from "../../types/ethers-contracts/Vesting"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
 import plusIcon from "../assets/icons/plus.svg"
-import styles from "../components/TokenClaimModal.module.scss"
 import { useActiveWeb3React } from "../hooks"
 import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
 
@@ -120,17 +119,17 @@ function VestingClaim(): ReactElement {
 
   return (
     <>
-      <div className={styles.container}>
-        <div className={styles.gradient}></div>
-        <div className={styles.logoWrapper}>
-          <div className={styles.logo}>
+      <div>
+        <div></div>
+        <div>
+          <div>
             <img src={logo} />
           </div>
         </div>
-        <div className={styles.mainContent}>
+        <div>
           {isValidBeneficiary ? (
             <>
-              <div className={styles.amountContainer}>
+              <div>
                 <div>
                   <div>
                     {t("investorClaimAmount", {
@@ -146,13 +145,12 @@ function VestingClaim(): ReactElement {
                 {canAdd && (
                   <img
                     src={plusIcon}
-                    className={styles.plus}
                     style={{ width: 16, marginBottom: 3, marginLeft: 32 }}
                     onClick={() => addToken()}
                   />
                 )}
               </div>
-              <div className={styles.tokenBalanceHelpText}>
+              <div>
                 {t("vestingContract")}{" "}
                 <a
                   href={`https://etherscan.io/address/${
@@ -164,10 +162,10 @@ function VestingClaim(): ReactElement {
               </div>
             </>
           ) : (
-            <div className={styles.info}>{t("switchToBeneficiaryAddress")}</div>
+            <div>{t("switchToBeneficiaryAddress")}</div>
           )}
 
-          <div className={styles.info}>
+          <div>
             <span>
               <Trans i18nKey="saddleTokenInfo" t={t}>
                 SDL token is launched by Saddle Finance. Read more about token

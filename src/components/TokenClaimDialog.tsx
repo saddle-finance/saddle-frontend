@@ -1,5 +1,15 @@
+import {
+  Box,
+  Button,
+  // DialogContent,
+  Divider,
+  IconButton,
+  Link,
+  List,
+  ListItem,
+  Typography,
+} from "@mui/material"
 import { ChainId, POOLS_MAP, Pool, SDL_TOKEN } from "../constants"
-import { Divider, IconButton, Link } from "@mui/material"
 import React, {
   ReactElement,
   useCallback,
@@ -17,13 +27,11 @@ import {
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
 import { BigNumber } from "@ethersproject/bignumber"
-import Button from "./Button"
 import { ContractTransaction } from "@ethersproject/contracts"
 import Dialog from "./Dialog"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
-import styles from "./TokenClaimModal.module.scss"
 import { useActiveWeb3React } from "../hooks"
 import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
 import { useRetroMerkleData } from "../hooks/useRetroMerkleData"
@@ -93,108 +101,123 @@ export default function TokenClaimDialog({
       onClose={onClose}
       data-testid="tokenClaimDialog"
     >
-      {/* TODO: Remove this button after update the modal */}
-
-      <div data-testid="tknClaimContainer" className={styles.container}>
-        <div className={styles.gradient}></div>
-        <div className={styles.logoWrapper}>
-          <div className={styles.logo}>
-            <img src={logo} />
-          </div>
-        </div>
-        <div className={styles.mainContent}>
-          <div className={styles.tokenBalance}>
-            {formattedUnclaimedTokenbalance}
-
-            {canAdd && (
-              <IconButton
-                onClick={() => addToken()}
-                color="primary"
-                disabled={!isClaimableNetwork}
-                data-testid="tokenAddBtn"
-              >
-                <AddCircleOutlineIcon fontSize="large" />
-              </IconButton>
-            )}
-          </div>
-          <div className={styles.tokenBalanceHelpText}>
-            {t("totalClaimableSDL")}
-          </div>
-          <ul data-testid="claimsListContainer" className={styles.claimsList}>
-            {rewardBalances.retroactive && isClaimableNetwork && (
-              <>
-                <ClaimListItem
-                  title={t("retroactiveDrop")}
-                  amount={rewardBalances.retroactive || Zero}
-                  claimCallback={() => claimRetroReward()}
-                  status={claimsStatuses["retroactive"]}
-                />
-                <div className={styles.info}>
-                  {t("totalRetroactiveDrop")} {formattedTotalRetroDrop}
-                </div>
-                {!!allPoolsWithRewards.length && (
-                  <div style={{ height: "32px" }} />
-                )}
-              </>
-            )}
-            {!isClaimableNetwork && (
-              <p style={{ whiteSpace: "pre-line" }}>
-                <Trans i18nKey="disableRewardContent">
-                  SDL is currently only deployed on Ethereum Mainnet and is not
-                  yet claimable on this chain. We display the amount that will
-                  be claimable once SDL is available on this network. See
-                  <Link
-                    href="https://docs.saddle.finance/saddle-faq#why-cant-i-claim-my-sdl-on-arbitrum"
-                    color="secondary"
-                    target="_blank"
-                  >
-                    this post
-                  </Link>
-                  for more information.
-                </Trans>
-              </p>
-            )}
-            {allPoolsWithRewards.map((pool, i, arr) => (
-              <React.Fragment key={pool.name}>
-                <ClaimListItem
-                  title={pool.name}
-                  amount={rewardBalances[pool.name] || Zero}
-                  claimCallback={() => claimPoolReward(pool)}
-                  status={
-                    claimsStatuses["allPools"] || claimsStatuses[pool.name]
-                  }
-                />
-                {i < arr.length - 1 && <Divider key={i} />}
-              </React.Fragment>
-            ))}
-          </ul>
-          <div className={styles.info}>
-            <span>
-              <Trans i18nKey="saddleTokenInfo" t={t}>
-                SDL token is launched by Saddle Finance. Read more about token
-                distribution{" "}
-                <a
-                  href="https://blog.saddle.finance/introducing-sdl"
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ textDecoration: "underline" }}
-                >
-                  here
-                </a>
-              </Trans>
-            </span>
-          </div>
-          {
-            <Button
-              onClick={() => claimAllPoolsRewards(poolsWithUserRewards)}
-              fullWidth
-              disabled={poolsWithUserRewards.length < 2}
-            >
-              {t("claimForAllPools")}
-            </Button>
+      <Box
+        py="35px"
+        sx={{
+          backgroundImage: (theme) =>
+            theme.palette.mode === "dark"
+              ? "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(7,7,19,1) 25%, rgba(18,19,52,1) 50%,rgba(0,0,0,0) 50%, rgba(0,0,0,0) 100%), radial-gradient(circle, rgba(18,19,52,1) 0%, rgba(0,0,0,1) 100%)"
+              : `linear-gradient(180deg, #FFF 25%, #FAF3CE 50%,#FFF 50%, #FFF 100%)`,
+        }}
+      >
+        <Box
+          width="170px"
+          height="170px"
+          borderRadius="50%"
+          border={(theme) =>
+            `16px solid ${
+              theme.palette.mode === "dark" ? "#341291" : "#FBF4CF"
+            }`
           }
-        </div>
-      </div>
+          marginX="auto"
+          boxShadow="0px 4px 20px rgba(255, 255, 255, 0.25)"
+        >
+          <img src={logo} width="100%" height="100%" />
+        </Box>
+      </Box>
+      <Box display="flex" alignItems="center" justifyContent="center">
+        <Typography variant="h1">{formattedUnclaimedTokenbalance}</Typography>
+
+        {canAdd && (
+          <IconButton
+            onClick={() => addToken()}
+            color="primary"
+            disabled={!isClaimableNetwork}
+            data-testid="tokenAddBtn"
+          >
+            <AddCircleOutlineIcon fontSize="large" />
+          </IconButton>
+        )}
+      </Box>
+      <Typography variant="body1" textAlign="center">
+        {t("totalClaimableSDL")}
+      </Typography>
+      <Box mx={{ xs: 2, md: 5 }} mb={3}>
+        <List data-testid="claimsListContainer">
+          {rewardBalances.retroactive && isClaimableNetwork && (
+            <>
+              <ClaimListItem
+                title={t("retroactiveDrop")}
+                amount={rewardBalances.retroactive || Zero}
+                claimCallback={() => claimRetroReward()}
+                status={claimsStatuses["retroactive"]}
+              />
+
+              <Typography sx={{ ml: 2 }}>
+                {t("totalRetroactiveDrop")} {formattedTotalRetroDrop}
+              </Typography>
+
+              {!!allPoolsWithRewards.length && (
+                <div style={{ height: "32px" }} />
+              )}
+            </>
+          )}
+          {!isClaimableNetwork && (
+            <Typography style={{ whiteSpace: "pre-line" }}>
+              <Trans i18nKey="disableRewardContent">
+                SDL is currently only deployed on Ethereum Mainnet and is not
+                yet claimable on this chain. We display the amount that will be
+                claimable once SDL is available on this network. See
+                <Link
+                  href="https://docs.saddle.finance/saddle-faq#why-cant-i-claim-my-sdl-on-arbitrum"
+                  color="secondary"
+                  target="_blank"
+                >
+                  this post
+                </Link>
+                for more information.
+              </Trans>
+            </Typography>
+          )}
+          {allPoolsWithRewards.map((pool, i, arr) => (
+            <React.Fragment key={pool.name}>
+              <ClaimListItem
+                title={pool.name}
+                amount={rewardBalances[pool.name] || Zero}
+                claimCallback={() => claimPoolReward(pool)}
+                status={claimsStatuses["allPools"] || claimsStatuses[pool.name]}
+              />
+              {i < arr.length - 1 && <Divider key={i} />}
+            </React.Fragment>
+          ))}
+        </List>
+
+        <Typography my={3}>
+          <Trans i18nKey="saddleTokenInfo" t={t}>
+            SDL token is launched by Saddle Finance. Read more about token
+            distribution{" "}
+            <Link
+              href="https://blog.saddle.finance/introducing-sdl"
+              target="_blank"
+              rel="noreferrer"
+              style={{ textDecoration: "underline" }}
+            >
+              here
+            </Link>
+          </Trans>
+        </Typography>
+
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          fullWidth
+          disabled={poolsWithUserRewards.length < 2}
+          onClick={() => claimAllPoolsRewards(poolsWithUserRewards)}
+        >
+          {t("claimForAllPools")}
+        </Button>
+      </Box>
     </Dialog>
   )
 }
@@ -217,18 +240,22 @@ function ClaimListItem({
     status === STATUSES.SUCCESS ||
     amount.lt(BigNumber.from(10).pow(16)) // don't let anyone try to claim less than 0.01 token
   return (
-    <li className={styles.listItem}>
-      <b className={styles.listItemTitle}>{title}</b>
-      <span>{status === STATUSES.SUCCESS ? 0 : formattedAmount}</span>
+    <ListItem>
+      <Typography variant="subtitle1" sx={{ flex: 1 }}>
+        {title}
+      </Typography>
+      <Typography sx={{ flex: 1 }}>
+        {status === STATUSES.SUCCESS ? 0 : formattedAmount}
+      </Typography>
       <Button
+        variant="contained"
+        color="primary"
         onClick={claimCallback}
-        size="medium"
-        kind="primary"
         disabled={disabled}
       >
         {t("claim")}
       </Button>
-    </li>
+    </ListItem>
   )
 }
 
