@@ -17,8 +17,12 @@ import { AppDispatch } from "../state"
 import BasicPoolsProvider from "../providers/BasicPoolsProvider"
 import CreatePool from "./CreatePool"
 import Deposit from "./Deposit"
+<<<<<<< HEAD
 import { LocalizationProvider } from "@mui/x-date-pickers"
 import MinichefProvider from "../providers/MinichefProvider"
+=======
+import Gauge from "../components/Gauge"
+>>>>>>> 4e2fc81 (Created Gauge chart component)
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
@@ -78,6 +82,7 @@ export default function App(): ReactElement {
   return (
     <Suspense fallback={null}>
       <Web3ReactManager>
+<<<<<<< HEAD
         <BasicPoolsProvider>
           <MinichefProvider>
             <TokensProvider>
@@ -165,6 +170,50 @@ export default function App(): ReactElement {
             </TokensProvider>
           </MinichefProvider>
         </BasicPoolsProvider>
+=======
+        <GasAndTokenPrices>
+          <PendingSwapsProvider>
+            <RewardsBalancesProvider>
+              <AppContainer>
+                <TopMenu />
+                <Switch>
+                  <Route exact path="/" component={Swap} />
+                  <Route exact path="/pools" component={Pools} />
+                  {pools.map(({ name, route }) => (
+                    <Route
+                      exact
+                      path={`/pools/${route}/deposit`}
+                      render={(props) => <Deposit {...props} poolName={name} />}
+                      key={`${name}-deposit`}
+                    />
+                  ))}
+                  {pools.map(({ name, route }) => (
+                    <Route
+                      exact
+                      path={`/pools/${route}/withdraw`}
+                      render={(props) => (
+                        <Withdraw {...props} poolName={name} />
+                      )}
+                      key={`${name}-withdraw`}
+                    />
+                  ))}
+                  <Redirect from="/pools/:route/:action" to="/pools" />
+                  <Route exact path="/pools/create" component={CreatePool} />
+                  <Route exact path="/risk" component={Risk} />
+                  <Route exact path="/vesting-claim" component={VestingClaim} />
+                  <Route exact path="/gauge" component={Gauge} />
+                </Switch>
+                <WrongNetworkModal />
+                <Version />
+                <ToastContainer
+                  theme={theme.palette.mode === "dark" ? "dark" : "light"}
+                  position="top-left"
+                />
+              </AppContainer>
+            </RewardsBalancesProvider>
+          </PendingSwapsProvider>
+        </GasAndTokenPrices>
+>>>>>>> 4e2fc81 (Created Gauge chart component)
       </Web3ReactManager>
     </Suspense>
   )
