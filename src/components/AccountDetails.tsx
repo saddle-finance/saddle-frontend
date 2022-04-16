@@ -11,7 +11,6 @@ import { commify, formatBNToString } from "../utils"
 
 import ChangeIcon from "@mui/icons-material/ImportExport"
 import Copy from "./Copy"
-import DialogTitle from "./DialogTitle"
 import Identicon from "./Identicon"
 import LaunchIcon from "@mui/icons-material/Launch"
 import { SUPPORTED_WALLETS } from "../constants"
@@ -51,8 +50,10 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
           : theme.palette.common.black
       }
     >
-      <DialogTitle>{t("account")}</DialogTitle>
       <DialogContent>
+        <Typography variant="h2" mb={2}>
+          {t("account")}
+        </Typography>
         <Box
           display="grid"
           gridTemplateColumns="1fr 1fr"
@@ -103,15 +104,7 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
           </Box>
         </Box>
       </DialogContent>
-      {/* Change hardcoded color with theme color after definining design */}
-      <Box
-        bgcolor={
-          theme.palette.mode == "light"
-            ? theme.palette.background.paper
-            : "#333"
-        }
-        p={3}
-      >
+      <Box bgcolor={theme.palette.background.paper} p={3}>
         <Transactions />
       </Box>
     </Box>
