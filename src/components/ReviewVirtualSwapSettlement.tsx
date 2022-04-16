@@ -93,7 +93,7 @@ function ReviewVirtualSwapSettlement({
 
       {data.to && (
         <>
-          <DoubleArrow color="primary" />
+          <DoubleArrow color="primary" sx={{ fontSize: 20, marginTop: 1 }} />
           <Box display="flex" alignItems="center">
             <TokenIcon
               symbol={data.to?.symbol}
