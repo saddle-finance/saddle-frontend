@@ -28,7 +28,6 @@ const InfoItem = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   flexDirection: "row",
-  minWidth: "100%",
   "& p:first-of-type": {
     marginRight: theme.spacing(0.5),
   },
@@ -108,7 +107,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
         <Typography variant="subtitle1">${formattedData.volume}</Typography>
       </InfoItem>
 
-      <Box display="flex" mt={3} flexWrap="wrap">
+      <Box mt={3}>
         {Object.keys(formattedData.aprs).map((key) => {
           const symbol = formattedData.aprs[key]?.symbol as string
           const apr = formattedData.aprs[key]?.apr
