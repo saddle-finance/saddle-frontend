@@ -26,11 +26,13 @@ function TokenInput({
   inputValue,
   onChange,
   disabled,
-}: // error,
-Props): ReactElement {
+  error,
+}: Props): ReactElement {
   const { t } = useTranslation()
   const { name } = TOKENS_MAP[symbol]
   const theme = useTheme()
+
+  console.log("diabled value ==>", disabled)
 
   let tokenUSDValue: number | BigNumber | undefined
   const poolName = LPTOKEN_TO_POOL_MAP[symbol]
@@ -75,13 +77,33 @@ Props): ReactElement {
         id="tokenInput"
         display="flex"
         borderRadius="6px"
-        border={`1px solid ${theme.palette.other.border}`}
+        alignItems="center"
+        border={`1px solid ${
+          !error ? theme.palette.other.border : theme.palette.error.main
+        }`}
+        bgcolor={
+          disabled ? theme.palette.action.disabledBackground : "transparent"
+        }
         p={1}
+        sx={{
+          cursor: disabled ? "not-allowed" : "auto",
+          opacity: disabled ? theme.palette.action.disabledOpacity : 1,
+        }}
       >
-        <TokenIcon symbol={symbol} alt="icon" />
+        <TokenIcon symbol={symbol} alt="icon" width={24} height={24} />
         <Box ml={1}>
-          <Typography variant="subtitle1">{symbol}</Typography>
-          <Typography variant="body2">{name}</Typography>
+          <Typography
+            variant="subtitle1"
+            color={disabled ? "text.secondary" : "text.primary"}
+          >
+            {symbol}
+          </Typography>
+          <Typography
+            variant="body2"
+            color={disabled ? "text.secondary" : "text.primary"}
+          >
+            {name}
+          </Typography>
         </Box>
 
         <Box flex={1} textAlign="end">
@@ -105,7 +127,10 @@ Props): ReactElement {
             onFocus={(e) => e.target.select()}
             fullWidth
           />
-          <Typography variant="body2">
+          <Typography
+            variant="body2"
+            color={disabled ? "text.secondary" : "text.primary"}
+          >
             ≈$
             {commify(
               formatBNToString(
