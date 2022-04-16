@@ -1,4 +1,11 @@
-import { Box, Button, InputBase, Typography, useTheme } from "@mui/material"
+import {
+  Box,
+  Button,
+  FormHelperText,
+  InputBase,
+  Typography,
+  useTheme,
+} from "@mui/material"
 import { LPTOKEN_TO_POOL_MAP, TOKENS_MAP } from "../constants"
 import React, { ReactElement } from "react"
 import { calculatePrice, commify } from "../utils"
@@ -18,6 +25,7 @@ interface Props {
   onChange: (value: string) => void
   disabled?: boolean
   error?: boolean
+  helperText?: string
 }
 
 function TokenInput({
@@ -27,12 +35,11 @@ function TokenInput({
   onChange,
   disabled,
   error,
+  helperText,
 }: Props): ReactElement {
   const { t } = useTranslation()
   const { name } = TOKENS_MAP[symbol]
   const theme = useTheme()
-
-  console.log("diabled value ==>", disabled)
 
   let tokenUSDValue: number | BigNumber | undefined
   const poolName = LPTOKEN_TO_POOL_MAP[symbol]
@@ -56,7 +63,11 @@ function TokenInput({
       periodIndex === -1 || e.target.value.length - 1 - periodIndex <= decimals
     if (isValidInput && isValidPrecision) {
       // don't allow input longer than the token allows
-      onChange(e.target.value)
+      const re = /^[0-9]*[.,]?[0-9]*$/
+      // if value is not blank, then test the regex
+      if (e.target.value === "" || re.test(e.target.value)) {
+        onChange(e.target.value)
+      }
     }
   }
 
@@ -105,8 +116,7 @@ function TokenInput({
             {name}
           </Typography>
         </Box>
-
-        <Box flex={1} textAlign="end">
+        <Box textAlign="end" flex={1}>
           <InputBase
             autoComplete="off"
             autoCorrect="off"
@@ -130,6 +140,7 @@ function TokenInput({
           <Typography
             variant="body2"
             color={disabled ? "text.secondary" : "text.primary"}
+            textAlign="end"
           >
             ≈$
             {commify(
@@ -142,6 +153,13 @@ function TokenInput({
           </Typography>
         </Box>
       </Box>
+      <FormHelperText
+        disabled={disabled}
+        error={error}
+        sx={{ textAlign: "end" }}
+      >
+        {helperText}
+      </FormHelperText>
     </div>
   )
 }
