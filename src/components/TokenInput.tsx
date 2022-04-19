@@ -6,7 +6,11 @@ import {
   Typography,
   useTheme,
 } from "@mui/material"
-import { LPTOKEN_TO_POOL_MAP, TOKENS_MAP } from "../constants"
+import {
+  LPTOKEN_TO_POOL_MAP,
+  TOKENS_MAP,
+  readableDecimalNumberRegex,
+} from "../constants"
 import React, { ReactElement } from "react"
 import { calculatePrice, commify } from "../utils"
 import { AppState } from "../state/index"
@@ -63,9 +67,12 @@ function TokenInput({
       periodIndex === -1 || e.target.value.length - 1 - periodIndex <= decimals
     if (isValidInput && isValidPrecision) {
       // don't allow input longer than the token allows
-      const re = /^[0-9]*[.,]?[0-9]*$/
+
       // if value is not blank, then test the regex
-      if (e.target.value === "" || re.test(e.target.value)) {
+      if (
+        e.target.value === "" ||
+        readableDecimalNumberRegex.test(e.target.value)
+      ) {
         onChange(e.target.value)
       }
     }
