@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  // DialogContent,
   Divider,
   IconButton,
   Link,
@@ -106,23 +105,27 @@ export default function TokenClaimDialog({
         sx={{
           backgroundImage: (theme) =>
             theme.palette.mode === "dark"
-              ? "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(7,7,19,1) 25%, rgba(18,19,52,1) 50%,rgba(0,0,0,0) 50%, rgba(0,0,0,0) 100%), radial-gradient(circle, rgba(18,19,52,1) 0%, rgba(0,0,0,1) 100%)"
+              ? "linear-gradient(180deg, #000 0%, rgba(7,7,19,1) 25%, #341291 50%,rgba(0,0,0,0) 50%, rgba(0,0,0,0) 100%), radial-gradient(circle, rgba(18,19,52,1) 0%, #000 100%)"
               : `linear-gradient(180deg, #FFF 25%, #FAF3CE 50%,#FFF 50%, #FFF 100%)`,
         }}
       >
         <Box
-          width="170px"
-          height="170px"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          width={170}
+          height={170}
           borderRadius="50%"
-          border={(theme) =>
-            `16px solid ${
-              theme.palette.mode === "dark" ? "#341291" : "#FBF4CF"
-            }`
-          }
           marginX="auto"
           boxShadow="0px 4px 20px rgba(255, 255, 255, 0.25)"
+          sx={{
+            backgroundImage: (theme) =>
+              theme.palette.mode === "dark"
+                ? "linear-gradient(0deg, #000 0%, #341291 100%)"
+                : "linear-gradient(180deg, #FFF 0%, #FBF4CF 100%)",
+          }}
         >
-          <img src={logo} width="100%" height="100%" />
+          <img src={logo} width={138} height={138} />
         </Box>
       </Box>
       <Box
