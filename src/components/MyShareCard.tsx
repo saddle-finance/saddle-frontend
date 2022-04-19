@@ -4,6 +4,7 @@ import React, { ReactElement } from "react"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 
 import { Partners } from "../utils/thirdPartyIntegrations"
+import TokenIcon from "./TokenIcon"
 import { UserShareType } from "../hooks/usePoolData"
 import { Zero } from "@ethersproject/constants"
 import { commify } from "@ethersproject/units"
@@ -57,10 +58,8 @@ function MyShareCard({ data }: Props): ReactElement | null {
       <Typography>
         {formattedData.share} {t("ofPool")}
       </Typography>
-      <Typography>{`${t("usdBalance")}: $${
-        formattedData.usdBalance
-      }`}</Typography>
-      <Typography>{`${t("totalAmount")}: ${formattedData.amount}`}</Typography>
+      <Typography>{`${t("balance")}: $${formattedData.usdBalance}`}</Typography>
+      <Typography>{`${t("lpAmount")}: ${formattedData.amount}`}</Typography>
       {Object.keys(stakingUrls).map((key) => {
         return data.amountsStaked[key as Partners]?.gt(Zero) ? (
           <Typography component="span">
@@ -75,13 +74,21 @@ function MyShareCard({ data }: Props): ReactElement | null {
           </Typography>
         ) : null
       })}
-      <Stack direction="row" spacing={4} mb={3}>
-        {formattedData.tokens.map((coin) => (
-          <Box key={coin.symbol}>
-            <Typography variant="subtitle1" data-testid="tokenName">
-              {coin.symbol}
-            </Typography>
-            <Typography data-testid="tokenValue">{coin.value}</Typography>
+      <Stack direction="row" mb={2} flexWrap="wrap">
+        {formattedData.tokens.map((token) => (
+          <Box key={token.symbol} pt={3} pr={4}>
+            <Box display="flex" alignItems="center">
+              <TokenIcon
+                alt="icon"
+                symbol={token.symbol}
+                width={20}
+                height={20}
+              />
+              <Typography variant="subtitle1" ml={1} data-testid="tokenName">
+                {token.symbol}
+              </Typography>
+            </Box>
+            <Typography data-testid="tokenValue">{token.value}</Typography>
           </Box>
         ))}
       </Stack>
