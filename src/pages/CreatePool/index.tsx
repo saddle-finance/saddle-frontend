@@ -48,7 +48,9 @@ export default function CreatePool(): React.ReactElement {
   const { account, library } = useActiveWeb3React()
 
   const [disableCreatePool, setDisableCreatePool] = useState<boolean>(true)
-  const [metapoolBasepoolAddr, setMetapoolBasepoolAddr] = useState<string>("")
+  const [metapoolBasepoolAddr, setMetapoolBasepoolAddr] = useState<string>(
+    "Unable to obtain basepool address",
+  )
   const [metapoolBasepoolLpAddr, setMetapoolBasepoolLpAddr] =
     useState<string>("")
   const [openCreatePoolDlg, setOpenCreatePoolDlg] = useState<boolean>(false)
@@ -135,8 +137,8 @@ export default function CreatePool(): React.ReactElement {
     }
   }
 
-  const poolNameError = poolName.length > 10
-  const poolSymbolError = poolSymbol.length > 14
+  const poolNameError = poolName.length > 31
+  const poolSymbolError = poolSymbol.length > 31
   const aParameterError = !isNumber(aParameter) || parseFloat(aParameter) < 1
 
   const feeError =

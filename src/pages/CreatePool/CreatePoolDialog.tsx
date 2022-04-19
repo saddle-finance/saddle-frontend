@@ -86,7 +86,6 @@ export default function ReviewCreatePool({
       tokens: poolData.tokenInputs,
       decimals,
       adminFee: BigNumber.from(50e8), // 50%
-      lpTokenName: poolData.poolName,
       lpTokenSymbol: poolData.poolSymbol,
       a: BigNumber.from(poolData.aParameter),
       fee: BigNumber.from(parseUnits(poolData.fee, POOL_FEE_PERCISION)),

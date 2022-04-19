@@ -234,6 +234,32 @@
   },
   {
     "inputs": [],
+    "name": "LP_TOKEN_NAME0",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "LP_TOKEN_NAME1",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "MASTER_REGISTRY",
     "outputs": [
       {
@@ -311,11 +337,6 @@
           },
           {
             "internalType": "string",
-            "name": "lpTokenName",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
             "name": "lpTokenSymbol",
             "type": "string"
           },
@@ -389,11 +410,6 @@
             "internalType": "uint8[]",
             "name": "decimals",
             "type": "uint8[]"
-          },
-          {
-            "internalType": "string",
-            "name": "lpTokenName",
-            "type": "string"
           },
           {
             "internalType": "string",
