@@ -13,7 +13,6 @@ import {
   formatBNToString,
 } from "../utils"
 
-// import { Partners } from "../utils/thirdPartyIntegrations"
 import { PoolDataType } from "../hooks/usePoolData"
 import TokenIcon from "./TokenIcon"
 import { Tooltip } from "@mui/material"
