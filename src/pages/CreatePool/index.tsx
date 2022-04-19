@@ -31,7 +31,12 @@ import { useTranslation } from "react-i18next"
 
 export type PoolType = "usdMetapool" | "btcMetapool" | "basepool"
 
-export type AssetType = 0 | 1 | 2 | 3
+export enum AssetType {
+  USD,
+  ETH,
+  BTC,
+  OTHERS,
+}
 
 export type TextFieldColors =
   | "primary"
@@ -345,12 +350,14 @@ export default function CreatePool(): React.ReactElement {
                   size="large"
                   disabled={poolType !== "basepool"}
                 >
-                  <ToggleButton value={0} color="secondary">
+                  <ToggleButton value={AssetType.USD} color="secondary">
                     USD
                   </ToggleButton>
-                  <ToggleButton value={1}>ETH</ToggleButton>
-                  <ToggleButton value={2}>BTC</ToggleButton>
-                  <ToggleButton value={3}>{t("others")}</ToggleButton>
+                  <ToggleButton value={AssetType.ETH}>ETH</ToggleButton>
+                  <ToggleButton value={AssetType.BTC}>BTC</ToggleButton>
+                  <ToggleButton value={AssetType.OTHERS}>
+                    {t("others")}
+                  </ToggleButton>
                 </ToggleButtonGroup>
               </Box>
             </Stack>

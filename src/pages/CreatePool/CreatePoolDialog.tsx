@@ -121,17 +121,12 @@ export default function ReviewCreatePool({
     }
   }
 
-  const warningMessage =
-    "Double check the inputs for your pool are as you want it. Once a pool is created it can be modified but can't be deleted. It will live on the blockchain forever!"
-  const outputEstimatedMsg =
-    "Output is estimated. If the input is invalid or the gas is too low, your transaction will revert."
-
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle variant="h1">Review Pool Creation</DialogTitle>
+      <DialogTitle variant="h1">{t("reviewPoolCreation")}</DialogTitle>
       <DialogContent>
         <Alert icon={false} color="warning">
-          {warningMessage}
+          {t("permissionlessPoolCreationWarningMsg")}
         </Alert>
         <Stack my={3} spacing={1}>
           <Box display="flex" justifyContent="space-between">
@@ -155,22 +150,22 @@ export default function ReviewCreatePool({
             <Typography>{t(poolData.poolType)}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
-            <Typography>Tokens</Typography>
+            <Typography>{t("tokens")}</Typography>
             <Typography>
-              {poolData.tokenInfo.map(
-                (token, i) => (i ? ", " : "") + token.name,
-              )}
+              {poolData.tokenInfo.map((token) => token.name).join(", ")}
             </Typography>
           </Box>
         </Stack>
         <Divider />
-        <Typography my={3}>{outputEstimatedMsg}</Typography>
+        <Typography my={3}>
+          {t("permissionlessPoolCreationOutputEstimatedMsg")}
+        </Typography>
         <Stack spacing={1}>
           <Button variant="contained" size="large" onClick={onCreatePoolClick}>
-            <Typography>Create Pool</Typography>
+            <Typography>{t("createPool")}</Typography>
           </Button>
           <Button onClick={onClose} size="large">
-            <Typography>Go back to edit</Typography>
+            <Typography>{t("goBackToEdit")}</Typography>
           </Button>
         </Stack>
       </DialogContent>
