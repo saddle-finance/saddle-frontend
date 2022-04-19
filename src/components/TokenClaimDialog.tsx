@@ -125,7 +125,12 @@ export default function TokenClaimDialog({
           <img src={logo} width="100%" height="100%" />
         </Box>
       </Box>
-      <Box display="flex" alignItems="center" justifyContent="center">
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        data-testid="tknClaimContainer"
+      >
         <Typography variant="h1">{formattedUnclaimedTokenbalance}</Typography>
 
         {canAdd && (
