@@ -13,13 +13,10 @@ import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 
 import Dialog from "../../components/Dialog"
 import DialogTitle from "../../components/DialogTitle"
-import PERMISSIONLESS_DEPLOYER_CONTRACT_ABI from "../../constants/abis/permissionlessDeployer.json"
-import { PERMISSIONLESS_DEPLOYER_CONTRACT_ADDRESSES } from "../../constants"
-import { PermissionlessDeployer } from "../../../types/ethers-contracts/PermissionlessDeployer"
 import React from "react"
-import { getContract } from "../../utils"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../../hooks"
+import { usePermissionlessDeployer } from "../../hooks/useContract"
 import { useTranslation } from "react-i18next"
 
 type Props = {
@@ -56,17 +53,11 @@ export default function ReviewCreatePool({
   metapoolBasepoolLpAddr,
 }: Props): JSX.Element {
   const { t } = useTranslation()
+  const permissionlessDeployer = usePermissionlessDeployer()
   const { account, chainId, library } = useActiveWeb3React()
 
   const onCreatePoolClick = async () => {
-    if (!library || !chainId || !account) return
-
-    const permissionlessDeployerContract = getContract(
-      PERMISSIONLESS_DEPLOYER_CONTRACT_ADDRESSES[chainId],
-      PERMISSIONLESS_DEPLOYER_CONTRACT_ABI,
-      library,
-      account,
-    ) as PermissionlessDeployer
+    if (!library || !chainId || !account || !permissionlessDeployer) return
 
     const enqueueCreatePoolToast = async (deployTxn: {
       wait: () => Promise<unknown>
@@ -96,9 +87,7 @@ export default function ReviewCreatePool({
 
     try {
       if (poolData.poolType === "basepool") {
-        deployTxn = await permissionlessDeployerContract.deploySwap(
-          deploySwapInput,
-        )
+        deployTxn = await permissionlessDeployer.deploySwap(deploySwapInput)
         await enqueueCreatePoolToast(deployTxn)
       } else {
         const deployMetaSwapInput = {
@@ -107,7 +96,7 @@ export default function ReviewCreatePool({
           tokens: [...poolData.tokenInputs, metapoolBasepoolLpAddr],
           decimals: [...deploySwapInput.decimals, 18],
         }
-        deployTxn = await permissionlessDeployerContract.deployMetaSwap(
+        deployTxn = await permissionlessDeployer.deployMetaSwap(
           deployMetaSwapInput,
         )
         await enqueueCreatePoolToast(deployTxn)

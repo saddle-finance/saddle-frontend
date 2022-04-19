@@ -34,7 +34,9 @@ import MINICHEF_CONTRACT_ABI from "../constants/abis/miniChef.json"
 import { MasterRegistry } from "../../types/ethers-contracts/MasterRegistry"
 import { MetaSwapDeposit } from "../../types/ethers-contracts/MetaSwapDeposit"
 import { MiniChef } from "../../types/ethers-contracts/MiniChef"
+import PERMISSIONLESS_DEPLOYER_ABI from "../constants/abis/permissionlessDeployer.json"
 import POOL_REGISTRY_ABI from "../constants/abis/poolRegistry.json"
+import { PermissionlessDeployer } from "../../types/ethers-contracts/PermissionlessDeployer"
 import { PoolRegistry } from "../../types/ethers-contracts/PoolRegistry"
 import RETROACTIVE_VESTING_CONTRACT_ABI from "../constants/abis/retroactiveVesting.json"
 import { RetroactiveVesting } from "../../types/ethers-contracts/RetroactiveVesting"
@@ -115,6 +117,42 @@ export function usePoolRegistry(): PoolRegistry | null {
       library,
       account,
     ) as PoolRegistry
+  }, [contractAddress, library, account])
+}
+
+export const PERMISSIONLESS_DEPLOYER_NAME = formatBytes32String(
+  "PermissionlessDeployer",
+)
+export function usePermissionlessDeployer(): PermissionlessDeployer | null {
+  const { account, library } = useActiveWeb3React()
+  const masterRegistryContract = useMasterRegistry()
+  const [contractAddress, setContractAddress] = useState<string | undefined>()
+  useEffect(() => {
+    if (masterRegistryContract) {
+      masterRegistryContract
+        ?.resolveNameToLatestAddress(PERMISSIONLESS_DEPLOYER_NAME)
+        .then((contractAddress) => {
+          if (contractAddress !== AddressZero) {
+            setContractAddress(contractAddress)
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+          setContractAddress(undefined)
+        })
+    } else {
+      setContractAddress(undefined)
+    }
+  }, [masterRegistryContract])
+
+  return useMemo(() => {
+    if (!library || !account || !contractAddress) return null
+    return getContract(
+      contractAddress,
+      PERMISSIONLESS_DEPLOYER_ABI,
+      library,
+      account,
+    ) as PermissionlessDeployer
   }, [contractAddress, library, account])
 }
 
