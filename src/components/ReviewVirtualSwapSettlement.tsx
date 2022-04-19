@@ -75,7 +75,7 @@ function ReviewVirtualSwapSettlement({
   return (
     <div>
       <Typography variant="h1" mb={3}>
-        {isWithdrawAction ? t("step2Withdraw") : t("step2ReviewSettle")}
+        {isWithdrawAction ? t("step2ReviewWithdraw") : t("step2ReviewSettle")}
       </Typography>
 
       <Box display="flex" alignItems="center">
