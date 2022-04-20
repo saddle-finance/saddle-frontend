@@ -1,5 +1,6 @@
 import { PoolTypes, TOKENS_MAP } from "../../constants/index"
 import {
+  batchArray,
   calculateExchangeRate,
   calculatePrice,
   commify,
@@ -16,6 +17,23 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { Deadlines } from "../../state/user"
 import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
+
+describe("batchArray", () => {
+  const testCases = [
+    [
+      [[1, 2, 3], 2],
+      [[1, 2], [3]],
+    ],
+    [[[1, 2, 3], 3], [[1, 2, 3]]],
+    [[[1, 2, 3], 4], [[1, 2, 3]]],
+  ] as [[number[], number], number[][]][]
+  testCases.forEach(([args, expected]) => {
+    const argsString = `${args[0].toString()}, ${args[1]}`
+    it(`correctly formats ${argsString}`, () => {
+      expect(batchArray(...args)).toEqual(expected)
+    })
+  })
+})
 
 describe("enumerate", () => {
   const testCases = [
