@@ -1,6 +1,14 @@
-import "./Transactions.scss"
-import { Box, Button, Typography } from "@mui/material"
+import {
+  Box,
+  Button,
+  Link,
+  List,
+  ListItem,
+  Typography,
+  useTheme,
+} from "@mui/material"
 import React, { ReactElement, useCallback, useEffect, useState } from "react"
+import LinkIcon from "@mui/icons-material/Launch"
 import { getEtherscanLink } from "../utils/getEtherscanLink"
 import { getFormattedShortTime } from "../utils/dateTime"
 import { getPoolByAddress } from "../utils/getPoolByAddress"
@@ -57,6 +65,7 @@ export default function Transactions(): ReactElement {
   const SADDLE_SUBGRAPH_URL =
     "https://api.thegraph.com/subgraphs/name/saddle-finance/saddle"
   const { t } = useTranslation()
+  const theme = useTheme()
   const { chainId, account } = useActiveWeb3React()
   const [transactionList, setTransactionList] = useState<Transaction[]>([])
 
@@ -154,49 +163,47 @@ export default function Transactions(): ReactElement {
 
   return (
     <>
-      <Box display="flex" justifyContent="space-between" mb={3}>
+      <Box display="flex" justifyContent="space-between" mb={2}>
         <Typography variant="subtitle1">{t("recentTransactions")}</Typography>
         <Button
           onClick={(): void => {
             setTransactionList([])
           }}
         >
-          <Typography variant="body2" color="CaptionText">
+          <Typography
+            variant="body2"
+            color={theme.palette.getContrastText(
+              theme.palette.background.paper,
+            )}
+          >
             {t("clear")}
           </Typography>
         </Button>
       </Box>
-      <div className="transactionList">
+      <List>
         {transactionList.length !== 0 ? (
           transactionList.map((txn, index) => (
-            <div key={index} className="transactionItem">
-              <span className="transactionObject">{txn.object}</span>
-              <a
+            <ListItem key={index} disableGutters>
+              <Typography marginRight={1}>{txn.object}</Typography>
+              <Link
                 href={getEtherscanLink(txn.transaction, "tx")}
                 target="_blank"
                 rel="noreferrer"
-                className="transactionLink"
+                sx={{ lineHeight: 0 }}
               >
-                {/* link icon */}
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M11.6667 11.6667H4.33333V4.33333H8V3H4.33333C3.59333 3 3 3.6 3 4.33333V11.6667C3 12.4 3.59333 13 4.33333 13H11.6667C12.4 13 13 12.4 13 11.6667V8H11.6667V11.6667ZM9.33333 2V3.33333H11.7267L6.17333 8.88667L7.11333 9.82667L12.6667 4.27333V6.66667H14V2H9.33333Z" />
-                </svg>
-              </a>
-              <span className="transactionTime">{txn.time}</span>
-            </div>
+                <LinkIcon sx={{ fontSize: 16 }} />
+              </Link>
+              <Typography sx={{ flex: 1 }} textAlign="end">
+                {txn.time}
+              </Typography>
+            </ListItem>
           ))
         ) : (
-          <span style={{ fontSize: "16px" }}>
+          <Typography style={{ fontSize: "16px" }}>
             {t("yourRecentTransactions")}
-          </span>
+          </Typography>
         )}
-      </div>
+      </List>
     </>
   )
 }

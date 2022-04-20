@@ -5,7 +5,7 @@ import { commify, formatBNToString, getContract } from "../utils"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 
 import { BigNumber } from "@ethersproject/bignumber"
-import Button from "../components/Button"
+import { Button } from "@mui/material"
 import INVESTOR_EMPLOYEE_VESTING_CONTRACT_ABI from "../constants/abis/vesting.json"
 import SDL_TOKEN_ABI from "../constants/abis/sdl.json"
 import { Sdl } from "../../types/ethers-contracts/Sdl"
