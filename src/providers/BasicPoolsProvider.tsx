@@ -49,7 +49,7 @@ type BasicPool = {
   isMigrated: boolean
   sdlPerDay: BigNumber
 } & SwapInfo
-type BasicPools = Record<string, BasicPool> | null
+type BasicPools = Record<string, BasicPool> | null // indexed by name, which is unique in the Registry
 
 export const BasicPoolsContext = React.createContext<BasicPools>(null)
 
@@ -80,7 +80,7 @@ export default function BasicPoolsProvider({
         poolData.isMigrated = migrationData?.[pool.poolAddress] != null
         return {
           ...acc,
-          [pool.poolAddress]: poolData,
+          [pool.poolName]: poolData,
         }
       }, {} as BasicPools)
       setBasicPools(result)
@@ -140,7 +140,7 @@ export async function getSwapInfo(
       ? pool.poolTokens.map(({ addresses }) => addresses[chainId].toLowerCase())
       : null
     const basePoolAddress = pool.underlyingPool
-      ? POOLS_MAP[pool.underlyingPool].addresses[chainId]
+      ? POOLS_MAP[pool.underlyingPool].addresses[chainId]?.toLowerCase()
       : null
     const typeOfAsset = pool.type
 
