@@ -1,13 +1,23 @@
-import { LPTOKEN_TO_POOL_MAP, TOKENS_MAP } from "../constants"
+import {
+  Box,
+  Button,
+  FormHelperText,
+  InputBase,
+  Typography,
+  useTheme,
+} from "@mui/material"
+import {
+  LPTOKEN_TO_POOL_MAP,
+  TOKENS_MAP,
+  readableDecimalNumberRegex,
+} from "../constants"
 import React, { ReactElement } from "react"
 import { calculatePrice, commify } from "../utils"
 import { AppState } from "../state/index"
 import { BigNumber } from "ethers"
 import TokenIcon from "./TokenIcon"
 import { Zero } from "@ethersproject/constants"
-import classnames from "classnames"
 import { formatBNToString } from "../utils"
-import styles from "./TokenInput.module.scss"
 import usePoolData from "../hooks/usePoolData"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
@@ -18,6 +28,8 @@ interface Props {
   inputValue: string
   onChange: (value: string) => void
   disabled?: boolean
+  error?: boolean
+  helperText?: string
 }
 
 function TokenInput({
@@ -26,9 +38,12 @@ function TokenInput({
   inputValue,
   onChange,
   disabled,
+  error,
+  helperText,
 }: Props): ReactElement {
   const { t } = useTranslation()
   const { name } = TOKENS_MAP[symbol]
+  const theme = useTheme()
 
   let tokenUSDValue: number | BigNumber | undefined
   const poolName = LPTOKEN_TO_POOL_MAP[symbol]
@@ -52,33 +67,64 @@ function TokenInput({
       periodIndex === -1 || e.target.value.length - 1 - periodIndex <= decimals
     if (isValidInput && isValidPrecision) {
       // don't allow input longer than the token allows
-      onChange(e.target.value)
+
+      // if value is not blank, then test the regex
+      if (
+        e.target.value === "" ||
+        readableDecimalNumberRegex.test(e.target.value)
+      ) {
+        onChange(e.target.value)
+      }
     }
   }
 
   return (
     <div>
       {max != null && (
-        <div className={styles.balanceContainer}>
-          <span>{t("balance")}:</span>
-          &nbsp;
-          <a onClick={() => onChange(String(max))}>{max}</a>
-        </div>
+        <Box display="flex" alignItems="center" justifyContent="end">
+          <Typography variant="subtitle2" sx={{ mr: 1 }}>
+            {t("balance")}:
+          </Typography>
+          <Button size="small" onClick={() => onChange(String(max))}>
+            <Typography variant="subtitle2">{max}</Typography>
+          </Button>
+        </Box>
       )}
 
-      <div
-        className={classnames(styles.tokenInputContainer, {
-          [styles.disabled]: disabled,
-        })}
+      <Box
         id="tokenInput"
+        display="flex"
+        borderRadius="6px"
+        alignItems="center"
+        border={`1px solid ${
+          !error ? theme.palette.other.border : theme.palette.error.main
+        }`}
+        bgcolor={
+          disabled ? theme.palette.action.disabledBackground : "transparent"
+        }
+        p={1}
+        sx={{
+          cursor: disabled ? "not-allowed" : "auto",
+          opacity: disabled ? theme.palette.action.disabledOpacity : 1,
+        }}
       >
-        <TokenIcon symbol={symbol} alt="icon" />
-        <div className={styles.tokenSymbolAndName}>
-          <p className={styles.boldText}>{symbol}</p>
-          <p className={styles.smallText}>{name}</p>
-        </div>
-        <div className={styles.inputGroup}>
-          <input
+        <TokenIcon symbol={symbol} alt="icon" width={24} height={24} />
+        <Box ml={1}>
+          <Typography
+            variant="subtitle1"
+            color={disabled ? "text.secondary" : "text.primary"}
+          >
+            {symbol}
+          </Typography>
+          <Typography
+            variant="body2"
+            color={disabled ? "text.secondary" : "text.primary"}
+          >
+            {name}
+          </Typography>
+        </Box>
+        <Box textAlign="end" flex={1}>
+          <InputBase
             autoComplete="off"
             autoCorrect="off"
             type="text"
@@ -86,12 +132,23 @@ function TokenInput({
             spellCheck="false"
             disabled={disabled ? true : false}
             value={inputValue}
+            inputProps={{
+              style: {
+                textAlign: "end",
+                padding: 0,
+                fontFamily: theme.typography.body1.fontFamily,
+                fontSize: theme.typography.body1.fontSize,
+              },
+            }}
             onChange={onChangeInput}
-            onFocus={(e: React.ChangeEvent<HTMLInputElement>): void =>
-              e.target.select()
-            }
+            onFocus={(e) => e.target.select()}
+            fullWidth
           />
-          <p className={styles.smallText}>
+          <Typography
+            variant="body2"
+            color={disabled ? "text.secondary" : "text.primary"}
+            textAlign="end"
+          >
             ≈$
             {commify(
               formatBNToString(
@@ -100,9 +157,16 @@ function TokenInput({
                 2,
               ),
             )}
-          </p>
-        </div>
-      </div>
+          </Typography>
+        </Box>
+      </Box>
+      <FormHelperText
+        disabled={disabled}
+        error={error}
+        sx={{ textAlign: "end" }}
+      >
+        {helperText}
+      </FormHelperText>
     </div>
   )
 }

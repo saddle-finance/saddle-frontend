@@ -7,7 +7,11 @@ import {
   Typography,
 } from "@mui/material"
 import React, { useEffect } from "react"
-import { SWAP_TYPES, TOKENS_MAP } from "../constants"
+import {
+  SWAP_TYPES,
+  TOKENS_MAP,
+  readableDecimalNumberRegex,
+} from "../constants"
 import { commify, formatBNToString } from "../utils"
 import { styled, useTheme } from "@mui/material/styles"
 import { useRef, useState } from "react"
@@ -76,9 +80,11 @@ export default function SwapTokenInput({
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    const re = /^[0-9]*[.,]?[0-9]*$/
     // if value is not blank, then test the regex
-    if (e.target.value === "" || re.test(e.target.value)) {
+    if (
+      e.target.value === "" ||
+      readableDecimalNumberRegex.test(e.target.value)
+    ) {
       onChangeAmount?.(e.target.value)
     }
   }
