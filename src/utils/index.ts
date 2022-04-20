@@ -7,13 +7,27 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "@ethersproject/contracts"
 import { ContractInterface } from "ethers"
 import { Deadlines } from "../state/user"
+import META_SWAP_ABI from "../constants/abis/metaSwap.json"
+import META_SWAP_DEPOSIT_ABI from "../constants/abis/metaSwapDeposit.json"
+import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
+import { MetaSwapDeposit } from "../../types/ethers-contracts/MetaSwapDeposit"
 import { MulticallProvider } from "../types/ethcall"
 import { Provider } from "ethcall"
+import SWAP_FLASH_LOAN_ABI from "../constants/abis/swapFlashLoan.json"
+import SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI from "../constants/abis/swapFlashLoanNoWithdrawFee.json"
+import SWAP_GUARDED_ABI from "../constants/abis/swapGuarded.json"
 import { SYNTHETIX_TOKENS } from "./../constants/index"
+import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
+import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
+import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
+import { TokenPricesUSD } from "../state/application"
 import { getAddress } from "@ethersproject/address"
 
 export function isSynthAsset(chainId: ChainId, tokenAddress: string): boolean {
-  return chainId === ChainId.MAINNET && SYNTHETIX_TOKENS.includes(tokenAddress)
+  return (
+    chainId === ChainId.MAINNET &&
+    SYNTHETIX_TOKENS.includes(tokenAddress.toLowerCase())
+  )
 }
 
 // returns the checksummed address if the address is valid, otherwise returns false
@@ -57,6 +71,102 @@ export function getContract(
   }
 
   return new Contract(address, ABI, getProviderOrSigner(library, account))
+}
+
+interface PoolAttributes {
+  isGuarded?: boolean
+  isMetaSwap?: boolean
+  isMetaSwapDeposit?: boolean
+  isLegacySwap?: boolean
+}
+
+export function getSwapContract(
+  library: Web3Provider,
+  address: string,
+  poolAttributes: PoolAttributes,
+  account?: string,
+):
+  | SwapGuarded
+  | SwapFlashLoan
+  | SwapFlashLoanNoWithdrawFee
+  | MetaSwap
+  | MetaSwapDeposit
+  | null {
+  const { isGuarded, isMetaSwap, isMetaSwapDeposit, isLegacySwap } =
+    poolAttributes
+
+  // address error cases
+  if (!address) {
+    throw new Error("Pool address not provided")
+  }
+  if (isMetaSwap && isGuarded) {
+    throw new Error("Unsupported ABI")
+  }
+
+  // get contract
+  if (isGuarded) {
+    return getContract(
+      address,
+      SWAP_GUARDED_ABI,
+      library,
+      account ?? undefined,
+    ) as SwapGuarded
+  } else if (isLegacySwap) {
+    return getContract(
+      address,
+      SWAP_FLASH_LOAN_ABI,
+      library,
+      account ?? undefined,
+    ) as SwapFlashLoan
+  } else if (isMetaSwapDeposit) {
+    // @dev it's important that this comes before isMetaSwap check
+    return getContract(
+      address,
+      META_SWAP_DEPOSIT_ABI,
+      library,
+      account ?? undefined,
+    ) as MetaSwapDeposit
+  } else if (isMetaSwap) {
+    return getContract(
+      address,
+      META_SWAP_ABI,
+      library,
+      account ?? undefined,
+    ) as MetaSwap
+  } else {
+    return getContract(
+      address,
+      SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI,
+      library,
+      account ?? undefined,
+    ) as SwapFlashLoanNoWithdrawFee
+  }
+}
+
+export function batchArray<T>(array: T[], batchSize: number): T[][] {
+  const batches = []
+  for (let i = 0; i < array.length; i += batchSize) {
+    batches.push(array.slice(i, i + batchSize))
+  }
+  return batches
+}
+
+export function getTokenUSDValueByType(
+  tokenAmount: BigNumber,
+  typeOfAsset: PoolTypes,
+  tokenPricesUSD?: TokenPricesUSD,
+): BigNumber {
+  let tokenValue = 0
+  if (typeOfAsset === PoolTypes.BTC) {
+    tokenValue = tokenPricesUSD?.BTC || 0
+  } else if (typeOfAsset === PoolTypes.ETH) {
+    tokenValue = tokenPricesUSD?.ETH || 0
+  } else {
+    tokenValue = 1 // USD
+  }
+  return parseUnits(tokenValue.toFixed(2), 2)
+    .mul(tokenAmount)
+    .div(BigNumber.from(10).pow(2)) //1e18
 }
 
 export function formatBNToShortString(
