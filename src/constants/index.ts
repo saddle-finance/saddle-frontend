@@ -65,6 +65,8 @@ export enum ChainId {
   ARBITRUM = 42161,
   OPTIMISM = 10,
   FANTOM = 250,
+  EVMOS = 9001,
+  EVMOS_TESTNET = 9000,
 }
 export enum PoolTypes {
   BTC,

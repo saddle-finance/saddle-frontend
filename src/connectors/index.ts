@@ -29,9 +29,9 @@ export function getNetworkLibrary(): BaseProvider {
 
 function createInjectedMetaMaskProvider() {
   return new InjectedConnector({
-    // mainnet, ropsten, rinkeby, goerli, optimism, kovan, fantom, local buidler
+    // mainnet, ropsten, rinkeby, goerli, optimism, kovan, evmos, fantom, local buidler
     // see: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
-    supportedChainIds: [1, 3, 4, 5, 10, 42, 250, 42161, 31337],
+    supportedChainIds: [1, 3, 4, 5, 10, 42, 250, 9000, 9001, 42161, 31337],
   })
 }
 
