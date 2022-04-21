@@ -151,30 +151,29 @@ function VestingClaim(): ReactElement {
       <Box textAlign="center">
         {isValidBeneficiary ? (
           <>
-            <div>
-              <Box display="flex" justifyContent="center" alignItems="center">
-                <div>
-                  <Typography variant="subtitle1">
-                    {t("investorClaimAmount", {
-                      claimable: formatAmount(claimableVestedAmount),
-                    })}
-                  </Typography>
-                  <Typography variant="subtitle1">
-                    {t("investorRemainingAmount", {
-                      remaining: formatAmount(remainingAmount),
-                    })}
-                  </Typography>
-                </div>
-                {canAdd && (
-                  <IconButton
-                    style={{ width: 16, marginBottom: 3, marginLeft: 32 }}
-                    onClick={() => addToken()}
-                  >
-                    <AddCircleOutlineIcon color="primary" />
-                  </IconButton>
-                )}
-              </Box>
-            </div>
+            <Box display="flex" justifyContent="center" alignItems="center">
+              <div>
+                <Typography variant="subtitle1">
+                  {t("investorClaimAmount", {
+                    claimable: formatAmount(claimableVestedAmount),
+                  })}
+                </Typography>
+                <Typography variant="subtitle1">
+                  {t("investorRemainingAmount", {
+                    remaining: formatAmount(remainingAmount),
+                  })}
+                </Typography>
+              </div>
+              {canAdd && (
+                <IconButton
+                  style={{ width: 16, marginBottom: 3, marginLeft: 32 }}
+                  onClick={() => addToken()}
+                >
+                  <AddCircleOutlineIcon color="primary" />
+                </IconButton>
+              )}
+            </Box>
+
             <Typography my={3}>
               {t("vestingContract")}{" "}
               <Link
