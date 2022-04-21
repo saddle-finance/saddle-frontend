@@ -1,5 +1,4 @@
-import "./PoolInfoCard.scss"
-
+import { Box, Divider, Typography, styled } from "@mui/material"
 import {
   POOLS_MAP,
   POOL_FEE_PRECISION,
@@ -7,17 +6,31 @@ import {
   TOKENS_MAP,
 } from "../constants"
 import React, { ReactElement } from "react"
-import { formatBNToPercentString, formatBNToString } from "../utils"
-import { Divider } from "@mui/material"
+import { commify, formatUnits } from "@ethersproject/units"
+import {
+  formatBNToPercentString,
+  formatBNToShortString,
+  formatBNToString,
+} from "../utils"
+
 import { PoolDataType } from "../hooks/usePoolData"
 import TokenIcon from "./TokenIcon"
 import { Tooltip } from "@mui/material"
-import { commify } from "@ethersproject/units"
+import { Zero } from "@ethersproject/constants"
 import { useTranslation } from "react-i18next"
 
 interface Props {
   data: PoolDataType | null
 }
+
+const InfoItem = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  flexDirection: "row",
+  "& p:first-of-type": {
+    marginRight: theme.spacing(0.5),
+  },
+}))
 
 function PoolInfoCard({ data }: Props): ReactElement | null {
   const { t } = useTranslation()
@@ -36,6 +49,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
     aParameter: data?.aParameter
       ? commify(formatBNToString(data.aParameter, 0, 0))
       : "-",
+    aprs: data.aprs,
     virtualPrice: data?.virtualPrice
       ? commify(formatBNToString(data.virtualPrice, 18, 5))
       : "-",
@@ -46,7 +60,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
       ? commify(formatBNToString(data.reserve, 18, 2))
       : "-",
     adminFee: swapFee && adminFee ? `${adminFee} of ${swapFee}` : null,
-    volume: data?.volume ? commify(formatBNToString(data.volume, 0, 0)) : "-",
+    volume: data?.volume ? formatBNToShortString(data.volume, 18) : "-",
     tokens:
       data?.tokens.map((coin) => {
         const token = TOKENS_MAP[coin.symbol]
@@ -60,73 +74,122 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
   }
 
   return (
-    <div className="poolInfoCard">
+    <Box>
       {underlyingPool ? (
         <Tooltip title={<React.Fragment>{t("metapool")}</React.Fragment>}>
-          <h4 className="underline">{formattedData.name}</h4>
+          <Typography
+            variant="h1"
+            sx={{
+              borderBottom: "1px dotted",
+              width: "fit-content",
+              cursor: "help",
+            }}
+          >
+            {formattedData.name}
+          </Typography>
         </Tooltip>
       ) : (
-        <h4>{formattedData.name}</h4>
+        <Typography variant="h1">{formattedData.name}</Typography>
       )}
-      <div className="info">
-        <div className="infoItem">
-          <span className="label bold">{`${t("status")}:`}</span>
-          <span className="value">{`${
-            data?.isPaused ? t("paused") : t("active")
-          }`}</span>
-        </div>
-        <div className="infoItem">
-          <span className="label bold">{`${t("fee")}:`}</span>
-          <span className="value">{formattedData.swapFee}</span>
-        </div>
-        <div className="infoItem">
+      <InfoItem mt={3}>
+        <Typography>{`${t("status")}:`}</Typography>
+        <Typography variant="subtitle1">{`${
+          data?.isPaused ? t("paused") : t("active")
+        }`}</Typography>
+      </InfoItem>
+      <InfoItem>
+        <Typography>{`${t("totalLocked")}:`}</Typography>
+        <Typography variant="subtitle1">{`$${formattedData.reserve}`}</Typography>
+      </InfoItem>
+      <InfoItem>
+        <Typography>{t("dailyVolume")}:</Typography>
+        <Typography variant="subtitle1">${formattedData.volume}</Typography>
+      </InfoItem>
+
+      <Box mt={3}>
+        {Object.keys(formattedData.aprs).map((key) => {
+          const symbol = formattedData.aprs[key]?.symbol as string
+          const apr = formattedData.aprs[key]?.apr
+          return formattedData.aprs[key]?.apr.gt(Zero) ? (
+            <InfoItem key={symbol}>
+              {symbol.includes("/") ? (
+                <Tooltip title={symbol.replaceAll("/", "\n")}>
+                  <Typography sx={{ borderBottom: "1px dotted" }}>
+                    Reward APR:
+                  </Typography>
+                </Tooltip>
+              ) : (
+                <Typography>{`${symbol} APR:`}</Typography>
+              )}
+              <Typography variant="subtitle1">
+                {apr && formatUnits(apr, 18)}
+              </Typography>
+            </InfoItem>
+          ) : null
+        })}
+
+        <InfoItem>
+          <Typography>{`${t("fee")}:`}</Typography>
+          <Typography variant="subtitle1">{formattedData.swapFee}</Typography>
+        </InfoItem>
+        <InfoItem>
+          <Typography>{`${t("virtualPrice")}:`}</Typography>
+          <Typography variant="subtitle1">
+            {formattedData.virtualPrice}
+          </Typography>
+        </InfoItem>
+        <InfoItem>
           <Tooltip
             title={<React.Fragment>{t("aParameterTooltip")}</React.Fragment>}
           >
-            <span className="label bold underline">{`${t(
-              "aParameter",
-            )}:`}</span>
+            <Typography sx={{ cursor: "help", borderBottom: "1px dotted" }}>
+              {`${t("aParameter")}:`}
+            </Typography>
           </Tooltip>
-          <span className="value">{formattedData.aParameter}</span>
-        </div>
-        <div className="infoItem">
-          <span className="label bold">{`${t("virtualPrice")}:`}</span>
-          <span className="value">{formattedData.virtualPrice}</span>
-        </div>
-        <div className="infoItem">
-          <span className="label bold">{`${t("utilization")}:`}</span>
-          <span className="value">{formattedData.utilization}</span>
-        </div>
-        <div className="infoItem">
-          <span className="label bold">{`${t("totalLocked")}:`}</span>
-          <span className="value">{`$${formattedData.reserve}`}</span>
-        </div>
-        <div className="twoColumn">
-          <div className="infoItem">
-            <span className="label bold">{`${t("adminFee")}:`}</span>
-            <span className="value">{formattedData.adminFee}</span>
-          </div>
-          {/* <div className="infoItem">
-            <span className="label bold">{t("dailyVolume") + ": "}</span>
-            <span className="value">{formattedData.volume}</span>
-          </div> */}
-        </div>
-      </div>
-      <Divider />
-      <div className="bottom">
-        <h4>{t("currencyReserves")}</h4>
-        <span>{`$${formattedData.reserve} ${t("inTotal")}`}</span>
-        <div className="tokenList">
+          <Typography variant="subtitle1">
+            {formattedData.aParameter}
+          </Typography>
+        </InfoItem>
+
+        <InfoItem>
+          <Typography>{`${t("utilization")}:`}</Typography>
+          <Typography variant="subtitle1">
+            {formattedData.utilization}
+          </Typography>
+        </InfoItem>
+      </Box>
+      <InfoItem flex={1}>
+        <Typography>{`${t("adminFee")}:`}</Typography>
+        <Typography variant="subtitle1">{formattedData.adminFee}</Typography>
+      </InfoItem>
+
+      <Divider sx={{ my: 3 }} />
+      <Box>
+        <Typography variant="h2">{t("currencyReserves")}</Typography>
+        <Typography mt={2}>{`$${formattedData.reserve} ${t(
+          "inTotal",
+        )}`}</Typography>
+        <Box display="flex" flexWrap="wrap">
           {formattedData.tokens.map((token, index) => (
-            <div className="token" key={index}>
-              <TokenIcon alt="icon" symbol={token.symbol} />
-              <span className="bold">{`${token.symbol} ${token.percent}`}</span>
-              <span className="tokenValue">{token.value}</span>
-            </div>
+            <Box key={index} minWidth={{ xs: "100%", sm: "50%" }} mt={2}>
+              <Box display="flex" flexWrap="nowrap" alignItems="center">
+                <TokenIcon
+                  alt="icon"
+                  symbol={token.symbol}
+                  width={20}
+                  height={20}
+                />
+                <Typography
+                  variant="subtitle1"
+                  ml={1}
+                >{`${token.symbol} ${token.percent}`}</Typography>
+              </Box>
+              <Typography>{token.value}</Typography>
+            </Box>
           ))}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   )
 }
 

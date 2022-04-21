@@ -100,18 +100,13 @@ const WithdrawPage = (props: Props): ReactElement => {
   const noShare = !myShareData || myShareData.lpTokenBalance.eq(Zero)
 
   return (
-    <Container maxWidth={isLgDown ? "sm" : "lg"} sx={{ marginTop: 5 }}>
+    <Container maxWidth={isLgDown ? "sm" : "lg"} sx={{ py: 5 }}>
       <Stack
         direction={{ xs: "column", lg: "row" }}
         spacing={4}
         alignItems={{ xs: "center", lg: "flex-start" }}
       >
-        <Box
-          flex={1}
-          justifyContent="center"
-          alignItems="center"
-          marginX="auto"
-        >
+        <Box flex={1} justifyContent="center" alignItems="center">
           <Paper>
             <Box p={4}>
               <Typography variant="h1" marginBottom={3}>
@@ -138,7 +133,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                   }
                 />
               </Box>
-              <Box textAlign="end" width="100%" minHeight="24px">
+              <Box textAlign="end" minHeight="24px">
                 <Typography color="error">
                   {formStateData.error?.message || ""}
                 </Typography>
@@ -225,7 +220,7 @@ const WithdrawPage = (props: Props): ReactElement => {
             {t("withdraw")}
           </Button>
         </Box>
-        <Stack direction="column" flex={1} spacing={4} width="100%">
+        <Stack direction="column" flex={1} spacing={4}>
           {poolData && (
             <MyFarm
               lpWalletBalance={myShareData?.lpTokenBalance || Zero}

@@ -23,7 +23,7 @@ type MinichefPoolsData = {
     rewards?: RewardsData
   }
 }
-type MinichefUserData = {
+export type MinichefUserData = {
   [pid: number]: {
     amountStaked: BigNumber
     rewardDebt: BigNumber

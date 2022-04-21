@@ -1,5 +1,5 @@
+import { Button, Divider, IconButton, Link } from "@mui/material"
 import { ChainId, POOLS_MAP, Pool, SDL_TOKEN } from "../constants"
-import { Divider, IconButton, Link } from "@mui/material"
 import React, {
   ReactElement,
   useCallback,
@@ -17,7 +17,6 @@ import {
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
 import { BigNumber } from "@ethersproject/bignumber"
-import Button from "./Button"
 import { ContractTransaction } from "@ethersproject/contracts"
 import Dialog from "./Dialog"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
@@ -186,8 +185,11 @@ export default function TokenClaimDialog({
           </div>
           {
             <Button
-              onClick={() => claimAllPoolsRewards(poolsWithUserRewards)}
+              variant="contained"
+              color="primary"
+              size="large"
               fullWidth
+              onClick={() => claimAllPoolsRewards(poolsWithUserRewards)}
               disabled={poolsWithUserRewards.length < 2}
             >
               {t("claimForAllPools")}
@@ -220,12 +222,7 @@ function ClaimListItem({
     <li className={styles.listItem}>
       <b className={styles.listItemTitle}>{title}</b>
       <span>{status === STATUSES.SUCCESS ? 0 : formattedAmount}</span>
-      <Button
-        onClick={claimCallback}
-        size="medium"
-        kind="primary"
-        disabled={disabled}
-      >
+      <Button onClick={claimCallback} size="medium" disabled={disabled}>
         {t("claim")}
       </Button>
     </li>
