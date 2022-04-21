@@ -763,7 +763,7 @@ const TERRA_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.EVMOS_TESTNET]: "0xB3d39E511b33154A023a67a5C916FfBA0346Cdab",
 })
 
-export const Terra = new Token(
+export const LUNA = new Token(
   TERRA_CONTRACT_ADDRESSES,
   18,
   "LUNA",
@@ -785,7 +785,7 @@ export const USDS_ARB_USD_UNDERLYING_POOL_TOKENS = [
   FRAX_ARB_USD_SWAP_V2_TOKEN,
 ]
 export const FTM_USD_POOL_TOKENS = [FRAX, USDC]
-export const EVMOS_TESTNET_POOL_TOKENS = [DAI, USDC, USDT, Terra]
+export const EVMOS_TESTNET_POOL_TOKENS = [DAI, USDC, USDT, LUNA]
 
 // Tokenized BTC
 const TBTC_CONTRACT_ADDRESSES = buildAddresses({

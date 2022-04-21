@@ -203,7 +203,6 @@ function NetworkSection(): ReactElement {
       </MenuItem>
       <Collapse in={isNetworkVisible}>
         {networks.map((chainId) => {
-          console.log({ IS_DEVELOPMENT, chainId, h: hexlify(9000) })
           const params = IS_DEVELOPMENT
             ? DEV_SUPPORTED_NETWORKS[chainId]
             : SUPPORTED_NETWORKS[chainId]
