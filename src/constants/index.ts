@@ -766,8 +766,8 @@ const TERRA_CONTRACT_ADDRESSES = buildAddresses({
 export const Terra = new Token(
   TERRA_CONTRACT_ADDRESSES,
   18,
-  "Terra",
-  "terra",
+  "LUNA",
+  "terra-luna",
   "Terra",
 )
 
