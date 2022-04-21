@@ -4,6 +4,7 @@ import {
   BTC_POOL_NAME,
   BTC_POOL_V2_NAME,
   D4_POOL_NAME,
+  EVMOS_TESTNET_POOL_NAME,
   FRAX_ARB_USD_POOL_V2_NAME,
   FRAX_OPT_USD_METAPOOL_NAME,
   FTM_USD_POOL_NAME,
@@ -74,6 +75,9 @@ function Pools(): ReactElement | null {
   )
   const [usdsArbUsdPoolData, usdsArbUsdUserShareData] = usePoolData(
     USDS_ARB_USD_METAPOOL_NAME,
+  )
+  const [evmosTestnetUsdPoolData, evmosTestnetUsdUserShareData] = usePoolData(
+    EVMOS_TESTNET_POOL_NAME,
   )
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const approveAndMigrate = useApproveAndMigrate()
@@ -213,6 +217,13 @@ function Pools(): ReactElement | null {
         poolData: fraxOptUsdPoolData,
         userShareData: fraxOptUsdUserShareData,
         poolRoute: "/pools/frax-optusd",
+      }
+    } else if (poolName === EVMOS_TESTNET_POOL_NAME) {
+      return {
+        name: EVMOS_TESTNET_POOL_NAME,
+        poolData: evmosTestnetUsdPoolData,
+        userShareData: evmosTestnetUsdUserShareData,
+        poolRoute: "/pools/evmostestnetusd",
       }
     } else if (poolName === FRAX_ARB_USD_POOL_V2_NAME) {
       return {
