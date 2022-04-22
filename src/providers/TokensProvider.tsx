@@ -1,3 +1,4 @@
+import { BasicPool, BasicPoolsContext } from "./BasicPoolsProvider"
 import {
   MulticallCall,
   MulticallContract,
@@ -6,14 +7,14 @@ import {
 import React, { ReactElement, useContext, useEffect, useState } from "react"
 import { getMulticallProvider, isSynthAsset } from "../utils"
 
-import { BasicPoolsContext } from "./BasicPoolsProvider"
 import { ChainId } from "../constants"
 import { Contract } from "ethcall"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
+import { MinichefContext } from "./MinichefProvider"
 import { useActiveWeb3React } from "../hooks"
 
-type Token = {
+export type BasicToken = {
   address: string
   name: string
   symbol: string
@@ -21,15 +22,16 @@ type Token = {
   isLPToken: boolean
   isSynthetic: boolean
 }
-type Tokens = Record<string, Token> | null
-export const TokensContext = React.createContext<Tokens>(null)
+export type BasicTokens = { [address: string]: BasicToken | undefined } | null
+export const TokensContext = React.createContext<BasicTokens>(null)
 
 export default function TokensProvider({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
   const { chainId, library } = useActiveWeb3React()
   const pools = useContext(BasicPoolsContext)
-  const [tokens, setTokens] = useState<Tokens>(null)
+  const minichefData = useContext(MinichefContext)
+  const [tokens, setTokens] = useState<BasicTokens>(null)
   useEffect(() => {
     async function fetchTokens() {
       if (!chainId || !library || !pools) {
@@ -39,7 +41,7 @@ export default function TokensProvider({
       const ethCallProvider = await getMulticallProvider(library, chainId)
       const lpTokens = new Set()
       const targetTokenAddresses = new Set(
-        Object.values(pools)
+        (Object.values(pools) as BasicPool[])
           .map((pool) => {
             lpTokens.add(pool.lpToken)
             return [
@@ -50,6 +52,12 @@ export default function TokensProvider({
           })
           .flat(),
       )
+      if (minichefData) {
+        // add minichef reward tokens
+        minichefData.allRewardTokens.forEach((address) => {
+          targetTokenAddresses.add(address)
+        })
+      }
       const tokenInfos = await getTokenInfos(
         ethCallProvider,
         chainId,
@@ -57,12 +65,12 @@ export default function TokensProvider({
       )
       if (!tokenInfos) return
       Object.keys(tokenInfos).forEach((address) => {
-        tokenInfos[address].isLPToken = lpTokens.has(address)
+        ;(tokenInfos[address] as BasicToken).isLPToken = lpTokens.has(address)
       })
       setTokens(tokenInfos)
     }
     void fetchTokens()
-  }, [chainId, library, pools])
+  }, [chainId, library, pools, minichefData])
   return (
     <TokensContext.Provider value={tokens}>{children}</TokensContext.Provider>
   )
@@ -76,15 +84,18 @@ async function getTokenInfos(
   ethCallProvider: MulticallProvider,
   chainId: ChainId,
   tokenAddresses: string[], // we assume these are already deduped
-): Promise<Tokens | null> {
+): Promise<BasicTokens | null> {
   if (!ethCallProvider) {
     return null
   }
   try {
+    const lowercaseTokenAddresses = tokenAddresses.map((address) =>
+      address.toLowerCase(),
+    )
     const nameCalls = [] as MulticallCall<unknown, string>[]
     const symbolCalls = [] as MulticallCall<unknown, string>[]
     const decimalsCalls = [] as MulticallCall<unknown, number>[]
-    tokenAddresses.forEach((address) => {
+    lowercaseTokenAddresses.forEach((address) => {
       const tokenContract = new Contract(
         address,
         ERC20_ABI,
@@ -93,14 +104,14 @@ async function getTokenInfos(
       symbolCalls.push(tokenContract.symbol())
       decimalsCalls.push(tokenContract.decimals())
     })
-    const multicallArgs = Array(tokenAddresses.length).fill(true)
+    const multicallArgs = Array(lowercaseTokenAddresses.length).fill(true)
 
     const [nameResults, symbolResults, decimalsResults] = await Promise.all([
       ethCallProvider.tryEach(nameCalls, multicallArgs),
       ethCallProvider.tryEach(symbolCalls, multicallArgs),
       ethCallProvider.tryEach(decimalsCalls, multicallArgs),
     ])
-    const results = tokenAddresses.reduce((acc, address, index) => {
+    const results = lowercaseTokenAddresses.reduce((acc, address, index) => {
       const name = nameResults[index]
       const symbol = symbolResults[index]
       const decimals = decimalsResults[index] // could be 0

@@ -23,7 +23,7 @@ import {
   WCUSD_METAPOOL_NAME,
   WCUSD_METAPOOL_V2_NAME,
 } from "../constants"
-import { Box, Button, Container, Stack, TextField } from "@mui/material"
+import { Box, Button, Chip, Container, Stack, TextField } from "@mui/material"
 import React, { ReactElement, useEffect, useState } from "react"
 
 import { BigNumber } from "ethers"
@@ -33,9 +33,7 @@ import PoolOverview from "../components/PoolOverview"
 import ReviewMigration from "../components/ReviewMigration"
 import { Search } from "@mui/icons-material"
 import { Zero } from "@ethersproject/constants"
-import classNames from "classnames"
 import { logEvent } from "../utils/googleAnalytics"
-import styles from "./Pools.module.scss"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndMigrate } from "../hooks/useApproveAndMigrate"
 import { useHistory } from "react-router"
@@ -250,7 +248,7 @@ function Pools(): ReactElement | null {
   }
   return (
     <Container sx={{ pb: 5 }}>
-      <Stack direction="row" alignItems="center">
+      <Stack direction="row" alignItems="center" justifyContent="center">
         {false && (
           <Box flex={1}>
             <TextField
@@ -262,7 +260,7 @@ function Pools(): ReactElement | null {
             />
           </Box>
         )}
-        <ul className={styles.filters}>
+        <Stack direction="row" spacing={1} my={3}>
           {[
             ["all", "ALL"] as const,
             [PoolTypes.BTC, "BTC"] as const,
@@ -270,18 +268,16 @@ function Pools(): ReactElement | null {
             [PoolTypes.USD, "USD"] as const,
             ["outdated", "OUTDATED"] as const,
           ].map(([filterKey, text]) => (
-            <li
+            <Chip
               key={filterKey}
-              className={classNames(styles.filterTab, {
-                [styles.selected]: filter === filterKey,
-                [styles.outdated]: filterKey === "outdated",
-              })}
+              variant={filter === filterKey ? "filled" : "text"}
+              size="medium"
+              color={filterKey === "outdated" ? "secondary" : "default"}
+              label={text}
               onClick={(): void => setFilter(filterKey)}
-            >
-              {text}
-            </li>
+            />
           ))}
-        </ul>
+        </Stack>
 
         {false && (
           <Box flex={1}>

@@ -16,11 +16,15 @@ import { MulticallContract } from "../types/ethcall"
 import { Web3Provider } from "@ethersproject/providers"
 import { getMulticallProvider } from "."
 
-type MinichefPoolsData = {
-  [poolAddress: string]: {
-    sdlPerDay: BigNumber
-    pid: number
-    rewards?: RewardsData
+export type MinichefPoolData = {
+  sdlPerDay: BigNumber
+  pid: number
+  rewards?: Rewards
+}
+export type MinichefData = {
+  allRewardTokens: string[]
+  pools: {
+    [poolAddress: string]: MinichefPoolData
   }
 }
 export type MinichefUserData = {
@@ -29,14 +33,14 @@ export type MinichefUserData = {
     rewardDebt: BigNumber
   }
 } | null
-type RewardsData = {
+export type Rewards = {
   rewarderAddress: string
   rewardPerSecond: BigNumber
   rewardPerDay: BigNumber
   rewardTokenAddress: string
 }
-type MinichefRewardersData = {
-  [pid: number]: RewardsData
+export type MinichefRewardersData = {
+  [pid: number]: Rewards
 }
 const oneDaySecs = BigNumber.from(24 * 60 * 60)
 
@@ -47,7 +51,7 @@ export async function getMinichefRewardsPoolsData(
   library: Web3Provider,
   chainId: ChainId,
   poolAddresses: string[],
-): Promise<MinichefPoolsData | null> {
+): Promise<MinichefData | null> {
   const ethCallProvider = await getMulticallProvider(library, chainId)
   const minichefAddress = MINICHEF_CONTRACT_ADDRESSES[chainId]
   const addressesPidTuples = getPidsForPools(chainId, poolAddresses)
@@ -60,10 +64,15 @@ export async function getMinichefRewardsPoolsData(
     ) as MulticallContract<MiniChef>
 
     // Fetch SDL distribution amounts
-    const [saddlePerSecond, totalAllocPoint] = await ethCallProvider.tryEach(
-      [minichefContract.saddlePerSecond(), minichefContract.totalAllocPoint()],
-      [false, false],
-    )
+    const [saddlePerSecond, totalAllocPoint, sdlAddress] =
+      await ethCallProvider.tryEach(
+        [
+          minichefContract.saddlePerSecond(),
+          minichefContract.totalAllocPoint(),
+          minichefContract.SADDLE(),
+        ],
+        [false, false, false],
+      )
 
     // Fetch SDL reward info for each pool
     const poolInfos = await ethCallProvider.tryEach(
@@ -93,9 +102,18 @@ export async function getMinichefRewardsPoolsData(
         }
       }
       return acc
-    }, {} as MinichefPoolsData)
+    }, {} as { [address: string]: MinichefPoolData })
+    const allRewardTokens = [
+      sdlAddress.toLowerCase(),
+      ...Object.values(poolsData)
+        .map((pool) => pool.rewards?.rewardTokenAddress.toLowerCase())
+        .filter(Boolean),
+    ] as string[]
 
-    return poolsData
+    return {
+      pools: poolsData,
+      allRewardTokens,
+    }
   } catch (e) {
     const error = e as Error
     error.message = `Failed to get pools minichef data; ${error.message}`
@@ -154,7 +172,7 @@ export async function getMinichefRewardsRewardersData(
     )
     const poolsRewarderData = rewarderPids.reduce((acc, pid, i) => {
       const rewarderContract = rewarderContractsMap[pid]
-      const rewardTokenAddress = rewarderTokens[i]
+      const rewardTokenAddress = rewarderTokens[i].toLowerCase()
       const rewardPerSecond = rewarderAmountPerSeconds[i]
       const rewardPerDay = rewardPerSecond.mul(oneDaySecs)
       return {
@@ -163,7 +181,7 @@ export async function getMinichefRewardsRewardersData(
           rewardTokenAddress,
           rewardPerDay,
           rewardPerSecond,
-          rewarderAddress: rewarderContract.address,
+          rewarderAddress: rewarderContract.address.toLowerCase(),
         },
       }
     }, {} as MinichefRewardersData)

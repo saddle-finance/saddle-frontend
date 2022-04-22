@@ -12,6 +12,18 @@ export const NETWORK_LABEL: Partial<Record<ChainId, string>> = {
   [ChainId.HARDHAT]: "Hardhat 👷🏼‍♂️",
 }
 
+// TODO: figure out better way of representing non-erc20 native tokens
+export const NETWORK_NATIVE_TOKENS: Record<ChainId, string> = {
+  [ChainId.MAINNET]: "ETH",
+  [ChainId.ARBITRUM]: "ETH",
+  [ChainId.OPTIMISM]: "ETH",
+  [ChainId.FANTOM]: "FTM",
+  [ChainId.ROPSTEN]: "ETH",
+  [ChainId.EVMOS]: "EVMOS",
+  [ChainId.EVMOS_TESTNET]: "tEVMOS",
+  [ChainId.HARDHAT]: "ETH",
+}
+
 // refer to https://github.com/sushiswap/sushiswap-interface/blob/canary/src/modals/NetworkModal/index.tsx#L13
 export const SUPPORTED_NETWORKS: {
   [chainId in ChainId]?: {
