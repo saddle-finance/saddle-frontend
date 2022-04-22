@@ -1,3 +1,4 @@
+import { BasicPool, BasicPoolsContext } from "./BasicPoolsProvider"
 import {
   MulticallCall,
   MulticallContract,
@@ -6,7 +7,6 @@ import {
 import React, { ReactElement, useContext, useEffect, useState } from "react"
 import { getMulticallProvider, isSynthAsset } from "../utils"
 
-import { BasicPoolsContext } from "./BasicPoolsProvider"
 import { ChainId } from "../constants"
 import { Contract } from "ethcall"
 import ERC20_ABI from "../constants/abis/erc20.json"
@@ -21,7 +21,7 @@ type Token = {
   isLPToken: boolean
   isSynthetic: boolean
 }
-type Tokens = Record<string, Token> | null
+export type Tokens = { [address: string]: Token | undefined } | null
 export const TokensContext = React.createContext<Tokens>(null)
 
 export default function TokensProvider({
@@ -39,7 +39,7 @@ export default function TokensProvider({
       const ethCallProvider = await getMulticallProvider(library, chainId)
       const lpTokens = new Set()
       const targetTokenAddresses = new Set(
-        Object.values(pools)
+        (Object.values(pools) as BasicPool[])
           .map((pool) => {
             lpTokens.add(pool.lpToken)
             return [
@@ -57,7 +57,7 @@ export default function TokensProvider({
       )
       if (!tokenInfos) return
       Object.keys(tokenInfos).forEach((address) => {
-        tokenInfos[address].isLPToken = lpTokens.has(address)
+        ;(tokenInfos[address] as Token).isLPToken = lpTokens.has(address)
       })
       setTokens(tokenInfos)
     }
@@ -81,10 +81,13 @@ async function getTokenInfos(
     return null
   }
   try {
+    const lowercaseTokenAddresses = tokenAddresses.map((address) =>
+      address.toLowerCase(),
+    )
     const nameCalls = [] as MulticallCall<unknown, string>[]
     const symbolCalls = [] as MulticallCall<unknown, string>[]
     const decimalsCalls = [] as MulticallCall<unknown, number>[]
-    tokenAddresses.forEach((address) => {
+    lowercaseTokenAddresses.forEach((address) => {
       const tokenContract = new Contract(
         address,
         ERC20_ABI,
@@ -93,14 +96,14 @@ async function getTokenInfos(
       symbolCalls.push(tokenContract.symbol())
       decimalsCalls.push(tokenContract.decimals())
     })
-    const multicallArgs = Array(tokenAddresses.length).fill(true)
+    const multicallArgs = Array(lowercaseTokenAddresses.length).fill(true)
 
     const [nameResults, symbolResults, decimalsResults] = await Promise.all([
       ethCallProvider.tryEach(nameCalls, multicallArgs),
       ethCallProvider.tryEach(symbolCalls, multicallArgs),
       ethCallProvider.tryEach(decimalsCalls, multicallArgs),
     ])
-    const results = tokenAddresses.reduce((acc, address, index) => {
+    const results = lowercaseTokenAddresses.reduce((acc, address, index) => {
       const name = nameResults[index]
       const symbol = symbolResults[index]
       const decimals = decimalsResults[index] // could be 0

@@ -1,18 +1,20 @@
+import { BLOCK_TIME, ChainId } from "../constants"
+import { BasicPool, BasicPoolsContext } from "./BasicPoolsProvider"
 import { MinichefUserData, getMinichefRewardsUserData } from "../utils/minichef"
-import React, { ReactElement, useContext, useEffect, useState } from "react"
+import { MulticallCall, MulticallContract } from "../types/ethcall"
+import React, { ReactElement, useCallback, useContext, useState } from "react"
 import { batchArray, getMulticallProvider } from "../utils"
 
-import { BasicPoolsContext } from "./BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
-import { ChainId } from "../constants"
 import { Contract } from "ethcall"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
-import { MulticallContract } from "../types/ethcall"
+import { NETWORK_NATIVE_TOKENS } from "../constants/networks"
 import { TokensContext } from "./TokensProvider"
 import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
 import { useActiveWeb3React } from "../hooks"
+import usePoller from "../hooks/usePoller"
 
 type UserTokenBalances = { [address: string]: BigNumber }
 type UserState = {
@@ -31,9 +33,9 @@ export default function UserStateProvider({
   const pools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
   const [userState, setUserState] = useState<UserState>(null)
-  useEffect(() => {
+  const fetchState = useCallback(() => {
     async function fetchUserState() {
-      if (!chainId || !library || !pools || !account) {
+      if (!chainId || !library || !pools || !account || !tokens) {
         setUserState(null)
         return
       }
@@ -41,12 +43,14 @@ export default function UserStateProvider({
         library,
         chainId,
         account,
-        Object.keys(tokens),
+        Object.keys(tokens) as string[],
       )
       const minichefData = await getMinichefRewardsUserData(
         library,
         chainId,
-        Object.keys(pools),
+        (Object.values(pools) as BasicPool[]).map(
+          ({ poolAddress }) => poolAddress,
+        ),
         account,
       )
       setUserState({
@@ -56,6 +60,7 @@ export default function UserStateProvider({
     }
     void fetchUserState()
   }, [library, chainId, account, pools, tokens])
+  usePoller(fetchState, BLOCK_TIME * 2, [fetchState])
   return (
     <UserStateContext.Provider value={userState}>
       {children}
@@ -63,7 +68,7 @@ export default function UserStateProvider({
   )
 }
 
-const BATCH_SIZE = 30
+const BATCH_SIZE = 40
 async function getUserTokenBalances(
   library: Web3Provider,
   chainId: ChainId,
@@ -72,13 +77,15 @@ async function getUserTokenBalances(
 ): Promise<UserTokenBalances | null> {
   try {
     const ethCallProvider = await getMulticallProvider(library, chainId)
-    const balanceCalls = tokenAddresses.map((address) => {
-      const contract = new Contract(
-        address,
-        ERC20_ABI,
-      ) as MulticallContract<Erc20>
-      return contract.balanceOf(account)
-    })
+    const balanceCalls: MulticallCall<unknown, BigNumber>[] =
+      tokenAddresses.map((address) => {
+        const contract = new Contract(
+          address,
+          ERC20_ABI,
+        ) as MulticallContract<Erc20>
+        return contract.balanceOf(account)
+      })
+    balanceCalls.push(ethCallProvider.getEthBalance(account))
     const batchBalanceResults = (
       await Promise.all(
         batchArray(balanceCalls, BATCH_SIZE).map((batch) => {
@@ -89,10 +96,15 @@ async function getUserTokenBalances(
         }),
       )
     ).flat()
-    return tokenAddresses.reduce((acc, address, i) => {
+
+    return batchBalanceResults.reduce((acc, result, i) => {
+      const address =
+        i === batchBalanceResults.length - 1
+          ? NETWORK_NATIVE_TOKENS[chainId]
+          : tokenAddresses[i]
       return {
         ...acc,
-        [address]: batchBalanceResults[i] || Zero,
+        [address]: result || Zero,
       }
     }, {} as UserTokenBalances)
   } catch (e) {

@@ -45,11 +45,11 @@ type SwapInfo = {
   isMetaSwap: boolean
 }
 
-type BasicPool = {
+export type BasicPool = {
   isMigrated: boolean
   sdlPerDay: BigNumber
 } & SwapInfo
-type BasicPools = Record<string, BasicPool> | null // indexed by name, which is unique in the Registry
+type BasicPools = { [poolName: string]: BasicPool | undefined } | null // indexed by name, which is unique in the Registry
 
 export const BasicPoolsContext = React.createContext<BasicPools>(null)
 
