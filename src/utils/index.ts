@@ -197,6 +197,10 @@ export function formatBNToString(
       )
 }
 
+export function bnSum(a: BigNumber, b: BigNumber): BigNumber {
+  return a.add(b)
+}
+
 export function formatBNToPercentString(
   bn: BigNumber,
   nativePrecison: number,
@@ -310,6 +314,7 @@ export function calculatePrice(
 }
 
 export function getTokenSymbolForPoolType(poolType: PoolTypes): string {
+  // TODO modify for native assets (eg ETH vs FTM)
   if (poolType === PoolTypes.BTC) {
     return "WBTC"
   } else if (poolType === PoolTypes.ETH) {

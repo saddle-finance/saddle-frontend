@@ -34,13 +34,13 @@ const DepositInfoItem = styled(Box)(({ theme }) => ({
   display: "flex",
   minWidth: "100%",
   marginBottom: theme.spacing(2),
-  "&>:first-child": {
+  "& div:first-of-type": {
     display: "flex",
+    gap: theme.spacing(1),
   },
-  "&>:last-child": {
+  "& :last-child": {
     marginLeft: "auto",
-    marginRight: "0px",
-    width: "fit-content",
+    marginRight: 0,
   },
 }))
 function ReviewDeposit({
@@ -171,9 +171,10 @@ function ReviewDeposit({
               {deadline} {t("minutes")}
             </Typography>
           </DepositInfoItem>
-          <DepositInfoItem>
+          <Box>
             <Typography mr={2}>{t("rates")}</Typography>
-            <div>
+
+            <Box ml="auto" mr={0} width="fit-content">
               {transactionData.from.items.map(
                 ({ token, singleTokenPriceUSD }) => (
                   <Typography key={token.symbol}>
@@ -190,8 +191,8 @@ function ReviewDeposit({
                   </Typography>
                 ),
               )}
-            </div>
-          </DepositInfoItem>
+            </Box>
+          </Box>
         </Box>
         {isHighPriceImpactTxn && (
           <HighPriceImpactConfirmation

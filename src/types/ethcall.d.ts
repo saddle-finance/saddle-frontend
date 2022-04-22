@@ -1,4 +1,5 @@
 import { Call, Contract, Provider } from "ethcall"
+import { BigNumber } from "@ethersproject/bignumber"
 
 export class MulticallCall<Inputs, Outputs> extends Call {
   inputs: Inputs
@@ -16,6 +17,7 @@ export type MulticallContract<ContractType> = {
   >
 } & Contract
 export class MulticallProvider extends Provider {
+  getEthBalance(account: string): MulticallCall<string, BigNumber>
   /**
    *  TODO: TS can't infer tuple types
    *  so this huge type supports either arrays of calls with the same return type (eg BigNumber[])
