@@ -102,6 +102,7 @@ export default function ButtonTheme(theme: Theme): Components {
         sizeSmall: {
           minWidth: 0,
           padding: 1,
+          borderRadius: 3,
         },
       },
     },
