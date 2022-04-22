@@ -60,9 +60,9 @@ export type PoolName =
 export enum ChainId {
   MAINNET = 1,
   ROPSTEN = 3,
-  RINKEBY = 4,
-  GÖRLI = 5,
-  KOVAN = 42,
+  // RINKEBY = 4,
+  // GÖRLI = 5,
+  // KOVAN = 42,
   HARDHAT = 31337,
   ARBITRUM = 42161,
   OPTIMISM = 10,
