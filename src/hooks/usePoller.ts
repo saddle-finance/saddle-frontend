@@ -26,6 +26,7 @@ const usePoller = (
       // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
       return () => clearInterval(id)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [delay, ...deps])
 
   // run at start too
