@@ -1,4 +1,3 @@
-import "../styles/global.scss"
 import "react-toastify/dist/ReactToastify.css"
 
 import { BLOCK_TIME, POOLS_MAP } from "../constants"
