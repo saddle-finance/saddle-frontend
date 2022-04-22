@@ -767,8 +767,8 @@ export const UST = new Token(
   UST_CONTRACT_ADDRESSES,
   18,
   "UST",
-  "terra-usd",
-  "UST",
+  "terrausd",
+  "TerraUSD",
 )
 
 export const FRAX_ARB_USD_POOL_V2_TOKENS = [FRAX, USDC, USDT]
