@@ -11,6 +11,10 @@ import {
 } from "@mui/material"
 import { ChainId, IS_L2_SUPPORTED, IS_SDL_LIVE, SDL_TOKEN } from "../constants"
 import {
+  DEV_SUPPORTED_NETWORKS,
+  SUPPORTED_NETWORKS,
+} from "../constants/networks"
+import {
   ExpandLess,
   ExpandMore,
   LightMode,
@@ -21,7 +25,6 @@ import React, { ReactElement, useState } from "react"
 import CheckIcon from "@mui/icons-material/Check"
 import { IS_DEVELOPMENT } from "../utils/environment"
 import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
-import { hexlify } from "@ethersproject/bytes"
 import { useActiveWeb3React } from "../hooks"
 import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
 import { useThemeSettings } from "../providers/ThemeSettingsProvider"
@@ -31,6 +34,7 @@ const MenuItem = styled(MuiMenuItem)({
   display: "flex",
   justifyContent: "space-between",
 })
+
 interface SiteSettingsMenuProps {
   anchorEl?: Element
   close?: () => void
@@ -81,104 +85,6 @@ function AddTokenSection(): ReactElement | null {
       <span>{t("addSDL")}</span> <SaddleLogo height={24} width={24} />
     </MenuItem>
   ) : null
-}
-
-// refer to https://github.com/sushiswap/sushiswap-interface/blob/canary/src/modals/NetworkModal/index.tsx#L13
-export const SUPPORTED_NETWORKS: {
-  [chainId in ChainId]?: {
-    chainId: string
-    chainName: string
-    nativeCurrency: {
-      name: string
-      symbol: string
-      decimals: number
-    }
-    rpcUrls: string[]
-    blockExplorerUrls: string[]
-  }
-} = {
-  [ChainId.MAINNET]: {
-    chainId: "0x1",
-    chainName: "Ethereum",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
-    rpcUrls: ["https://mainnet.infura.io/v3"],
-    blockExplorerUrls: ["https://etherscan.com"],
-  },
-  [ChainId.ARBITRUM]: {
-    chainId: "0xA4B1",
-    chainName: "Arbitrum",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
-    rpcUrls: ["https://arb1.arbitrum.io/rpc"],
-    blockExplorerUrls: ["https://mainnet-arb-explorer.netlify.app"],
-  },
-  [ChainId.OPTIMISM]: {
-    chainId: "0xA",
-    chainName: "Optimism",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
-    rpcUrls: ["https://mainnet.optimism.io"],
-    blockExplorerUrls: ["https://optimistic.etherscan.io"],
-  },
-  [ChainId.FANTOM]: {
-    chainId: "0xFA",
-    chainName: "Fantom",
-    nativeCurrency: {
-      name: "Fantom",
-      symbol: "FTM",
-      decimals: 18,
-    },
-    rpcUrls: ["https://rpc.ftm.tools"],
-    blockExplorerUrls: ["https://ftmscan.com"],
-  },
-  [ChainId.EVMOS]: {
-    chainId: hexlify(9001),
-    chainName: "Evmos",
-    nativeCurrency: {
-      name: "Evmos",
-      symbol: "EVMOS",
-      decimals: 18,
-    },
-    rpcUrls: ["https://eth.bd.evmos.org:8545"],
-    blockExplorerUrls: ["https://evm.evmos.org"],
-  },
-}
-
-export const DEV_SUPPORTED_NETWORKS: {
-  [chainId in ChainId]?: {
-    chainId: string
-    chainName: string
-    nativeCurrency: {
-      name: string
-      symbol: string
-      decimals: number
-    }
-    rpcUrls: string[]
-    blockExplorerUrls: string[]
-  }
-} = {
-  ...SUPPORTED_NETWORKS,
-  [ChainId.EVMOS_TESTNET]: {
-    chainId: hexlify(9000),
-    chainName: "Evmos Testnet",
-    nativeCurrency: {
-      name: "Evmos",
-      symbol: "tEVMOS",
-      decimals: 18,
-    },
-    rpcUrls: ["https://eth.bd.evmos.dev:8545"],
-    blockExplorerUrls: ["https://evm.evmos.dev"],
-  },
 }
 
 function NetworkSection(): ReactElement {
