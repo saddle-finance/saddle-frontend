@@ -8,7 +8,7 @@ import {
   getMinichefPid,
 } from "../constants"
 import React, { ReactElement, useEffect, useState } from "react"
-import { getContract, getSwapContract } from "../utils"
+import { getContract, getSwapContract, isSynthAsset } from "../utils"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -43,13 +43,14 @@ type SwapInfo = {
   lpTokenSupply: BigNumber
   miniChefRewardsPid: number | null
   isMetaSwap: boolean
+  isSynthetic: boolean
 }
 
 export type BasicPool = {
   isMigrated: boolean
-  sdlPerDay: BigNumber
+  sdlPerDay: BigNumber // TODO create provider to serve this
 } & SwapInfo
-type BasicPools = { [poolName: string]: BasicPool | undefined } | null // indexed by name, which is unique in the Registry
+export type BasicPools = { [poolName: string]: BasicPool | undefined } | null // indexed by name, which is unique in the Registry
 
 export const BasicPoolsContext = React.createContext<BasicPools>(null)
 
@@ -132,8 +133,8 @@ export async function getSwapInfo(
     const isLegacySwap = getIsLegacySwapABIPoolByAddress(chainId, poolAddress)
     const rewardsPid = getMinichefPid(chainId, poolAddress)
     const tokens = isMetaSwap // @dev this is counterintuitive but will be corrected post-registry
-      ? (pool.underlyingPoolTokens as Token[]).map(
-          ({ addresses }) => addresses[chainId],
+      ? (pool.underlyingPoolTokens as Token[]).map(({ addresses }) =>
+          addresses[chainId].toLowerCase(),
         ) // refers to [meta,lp] pair
       : pool.poolTokens.map(({ addresses }) => addresses[chainId].toLowerCase())
     const underlyingTokens = isMetaSwap
@@ -143,6 +144,9 @@ export async function getSwapInfo(
       ? POOLS_MAP[pool.underlyingPool].addresses[chainId]?.toLowerCase()
       : null
     const typeOfAsset = pool.type
+    const isSynthetic = (underlyingTokens || tokens).some((addr) =>
+      isSynthAsset(chainId, addr),
+    )
 
     // Swap Contract logic
     const swapContract = getSwapContract(
@@ -196,6 +200,7 @@ export async function getSwapInfo(
       underlyingTokenBalances: null,
       lpTokenSupply,
       miniChefRewardsPid: rewardsPid,
+      isSynthetic,
     }
   } catch (e) {
     const error = new Error(
