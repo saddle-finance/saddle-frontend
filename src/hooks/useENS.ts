@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+
 import { ChainId } from "../constants"
 import { ethers } from "ethers"
 import { useActiveWeb3React } from "."
@@ -17,9 +18,8 @@ export const useENS = (address: string | null | undefined): ReturnType => {
         ethers.utils.isAddress(address) &&
         chainId === ChainId.MAINNET
       ) {
-        const provider = new ethers.providers.Web3Provider(library.provider)
-        const ensName = await provider.lookupAddress(address)
-        if (ensName) setENSName(ensName)
+        const ensNameOnMainnet = await library.lookupAddress(address)
+        setENSName(ensNameOnMainnet)
       } else if (
         address &&
         library &&
@@ -32,7 +32,9 @@ export const useENS = (address: string | null | undefined): ReturnType => {
         const ensNameOnMainnet = await ethers
           .getDefaultProvider(NETWORK_URL)
           .lookupAddress(address)
-        if (ensNameOnMainnet) setENSName(ensNameOnMainnet)
+        setENSName(ensNameOnMainnet)
+      } else {
+        setENSName(null)
       }
     }
     resolveENS().catch(console.error)

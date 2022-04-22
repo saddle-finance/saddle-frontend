@@ -2,7 +2,11 @@ import { useEffect, useRef } from "react"
 
 // Source: https://github.com/austintgriffith/eth-hooks/blob/master/src/Poller.ts
 
-const usePoller = (fn: () => void, delay: number): void => {
+const usePoller = (
+  fn: () => void,
+  delay: number,
+  deps: unknown[] = [],
+): void => {
   const savedCallback = useRef<() => void>()
 
   // Remember the latest fn.
@@ -22,13 +26,13 @@ const usePoller = (fn: () => void, delay: number): void => {
       // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
       return () => clearInterval(id)
     }
-  }, [delay])
+  }, [delay, ...deps])
 
   // run at start too
   useEffect(() => {
     fn()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [...deps])
 }
 
 export default usePoller
