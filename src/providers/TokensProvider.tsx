@@ -11,9 +11,10 @@ import { ChainId } from "../constants"
 import { Contract } from "ethcall"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
+import { MinichefContext } from "./MinichefProvider"
 import { useActiveWeb3React } from "../hooks"
 
-type Token = {
+export type BasicToken = {
   address: string
   name: string
   symbol: string
@@ -21,15 +22,16 @@ type Token = {
   isLPToken: boolean
   isSynthetic: boolean
 }
-export type Tokens = { [address: string]: Token | undefined } | null
-export const TokensContext = React.createContext<Tokens>(null)
+export type BasicTokens = { [address: string]: BasicToken | undefined } | null
+export const TokensContext = React.createContext<BasicTokens>(null)
 
 export default function TokensProvider({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
   const { chainId, library } = useActiveWeb3React()
   const pools = useContext(BasicPoolsContext)
-  const [tokens, setTokens] = useState<Tokens>(null)
+  const minichefData = useContext(MinichefContext)
+  const [tokens, setTokens] = useState<BasicTokens>(null)
   useEffect(() => {
     async function fetchTokens() {
       if (!chainId || !library || !pools) {
@@ -50,6 +52,12 @@ export default function TokensProvider({
           })
           .flat(),
       )
+      if (minichefData) {
+        // add minichef reward tokens
+        minichefData.allRewardTokens.forEach((address) => {
+          targetTokenAddresses.add(address)
+        })
+      }
       const tokenInfos = await getTokenInfos(
         ethCallProvider,
         chainId,
@@ -57,12 +65,12 @@ export default function TokensProvider({
       )
       if (!tokenInfos) return
       Object.keys(tokenInfos).forEach((address) => {
-        ;(tokenInfos[address] as Token).isLPToken = lpTokens.has(address)
+        ;(tokenInfos[address] as BasicToken).isLPToken = lpTokens.has(address)
       })
       setTokens(tokenInfos)
     }
     void fetchTokens()
-  }, [chainId, library, pools])
+  }, [chainId, library, pools, minichefData])
   return (
     <TokensContext.Provider value={tokens}>{children}</TokensContext.Provider>
   )
@@ -76,7 +84,7 @@ async function getTokenInfos(
   ethCallProvider: MulticallProvider,
   chainId: ChainId,
   tokenAddresses: string[], // we assume these are already deduped
-): Promise<Tokens | null> {
+): Promise<BasicTokens | null> {
   if (!ethCallProvider) {
     return null
   }
