@@ -24,8 +24,7 @@ export const NETWORK_NATIVE_TOKENS: Record<ChainId, string> = {
   [ChainId.HARDHAT]: "ETH",
 }
 
-// refer to https://github.com/sushiswap/sushiswap-interface/blob/canary/src/modals/NetworkModal/index.tsx#L13
-export const SUPPORTED_NETWORKS: {
+type SupportedNetworks = {
   [chainId in ChainId]?: {
     chainId: string
     chainName: string
@@ -37,7 +36,10 @@ export const SUPPORTED_NETWORKS: {
     rpcUrls: string[]
     blockExplorerUrls: string[]
   }
-} = {
+}
+
+// refer to https://github.com/sushiswap/sushiswap-interface/blob/canary/src/modals/NetworkModal/index.tsx#L13
+export const SUPPORTED_NETWORKS: SupportedNetworks = {
   [ChainId.MAINNET]: {
     chainId: "0x1",
     chainName: "Ethereum",
@@ -95,19 +97,7 @@ export const SUPPORTED_NETWORKS: {
   },
 }
 
-export const DEV_SUPPORTED_NETWORKS: {
-  [chainId in ChainId]?: {
-    chainId: string
-    chainName: string
-    nativeCurrency: {
-      name: string
-      symbol: string
-      decimals: number
-    }
-    rpcUrls: string[]
-    blockExplorerUrls: string[]
-  }
-} = {
+export const DEV_SUPPORTED_NETWORKS: SupportedNetworks = {
   ...SUPPORTED_NETWORKS,
   [ChainId.EVMOS_TESTNET]: {
     chainId: hexlify(9000),
