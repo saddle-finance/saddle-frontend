@@ -50,7 +50,6 @@ context("Swap Flow", () => {
           "include.text",
           poolTokenSymbols[0],
         )
-        console.time("bal")
         cy.get("span")
           .contains("Balance")
           .siblings("button")
