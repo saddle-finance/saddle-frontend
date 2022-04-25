@@ -5,14 +5,18 @@ context("Swap Flow", () => {
         const host = Cypress.env("DAPP_HOST") as string
         cy.visit(`${host}#/`)
         cy.waitForReact()
-        cy.wait(3000)
+        cy.wait(2000)
       })
       it("starts in a neutral state", () => {
-        cy.react("SwapTokenInput").eq(0).should("include.text", "Choose")
-        cy.react("SwapTokenInput").eq(1).should("include.text", "Choose")
+        cy.get('[data-testid="swapTokenInputFrom"]')
+          .eq(0)
+          .should("include.text", "Choose")
+        cy.get('[data-testid="swapTokenInputTo"]')
+          .eq(0)
+          .should("include.text", "Choose")
       })
       it("shows all of the pool's tokens and balances in dropdown", () => {
-        cy.react("SwapTokenInput")
+        cy.get('[data-testid="swapTokenInputFrom"]')
           .eq(0)
           .contains("Choose")
           .as("dropdownButton")
@@ -37,14 +41,21 @@ context("Swap Flow", () => {
         cy.get('[data-testid="dropdownContainer"]')
           .contains(poolTokenSymbols[0])
           .click()
-        cy.react("SearchSelect").should("not.exist")
+        cy.react("SearchSelect", { options: { timeout: 1000 } }).should(
+          "not.exist",
+        )
         // cy.react("SwapTokenInput")
         //   .eq(0)
         cy.get('[data-testid="swapTokenInputFrom"]').should(
           "include.text",
           poolTokenSymbols[0],
         )
-        cy.contains("Balance:").siblings("a").should("not.have", "0.0")
+        console.time("bal")
+        cy.get("span")
+          .contains("Balance")
+          .siblings("button")
+          .eq(0)
+          .should("not.have", "0.0")
       })
       it("accepts user input and updates calculated amount", () => {
         cy.get('[data-testid="tokenValueInput"]').eq(0).type("1")
