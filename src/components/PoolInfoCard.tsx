@@ -1,22 +1,21 @@
 import { Box, Divider, Typography, styled } from "@mui/material"
-import {
-  POOLS_MAP,
-  POOL_FEE_PRECISION,
-  PoolTypes,
-  TOKENS_MAP,
-} from "../constants"
+import { POOLS_MAP, POOL_FEE_PRECISION, PoolTypes } from "../constants"
 import React, { ReactElement } from "react"
-import { commify, formatUnits } from "@ethersproject/units"
 import {
+  bnSum,
   formatBNToPercentString,
   formatBNToShortString,
   formatBNToString,
 } from "../utils"
+import { commify, parseUnits } from "@ethersproject/units"
 
+import { AppState } from "../state"
 import { PoolDataType } from "../hooks/usePoolData"
 import TokenIcon from "./TokenIcon"
 import { Tooltip } from "@mui/material"
 import { Zero } from "@ethersproject/constants"
+import { useActiveWeb3React } from "../hooks"
+import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -33,16 +32,27 @@ const InfoItem = styled(Box)(({ theme }) => ({
 }))
 
 function PoolInfoCard({ data }: Props): ReactElement | null {
+  const { chainId } = useActiveWeb3React()
   const { t } = useTranslation()
-  if (data == null) return null
-  const { type: poolType, underlyingPool } = POOLS_MAP[data?.name]
-  const formattedDecimals = poolType === PoolTypes.USD ? 2 : 4
+  const { swapStats } = useSelector((state: AppState) => state.application)
+  if (data == null || chainId == null) return null
+  const poolAddress = (
+    POOLS_MAP?.[data.name]?.metaSwapAddresses?.[chainId] ||
+    POOLS_MAP?.[data.name]?.addresses[chainId]
+  )?.toLowerCase()
+  const { oneDayVolume, utilization } =
+    swapStats && poolAddress in swapStats
+      ? swapStats[poolAddress]
+      : { oneDayVolume: null, utilization: null }
+  const formattedDecimals = data?.poolType === PoolTypes.USD ? 2 : 4
   const swapFee = data?.swapFee
     ? formatBNToPercentString(data.swapFee, POOL_FEE_PRECISION)
     : null
   const adminFee = data?.adminFee
     ? formatBNToPercentString(data.adminFee, POOL_FEE_PRECISION)
     : null
+  const coinsSum =
+    data?.tokens.map(({ value }) => value).reduce(bnSum, Zero) || Zero
   const formattedData = {
     name: data?.name,
     swapFee,
@@ -53,21 +63,27 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
     virtualPrice: data?.virtualPrice
       ? commify(formatBNToString(data.virtualPrice, 18, 5))
       : "-",
-    utilization: data?.utilization
-      ? formatBNToPercentString(data.utilization, 18, 0)
+    utilization: utilization
+      ? formatBNToPercentString(parseUnits(utilization, 18), 18, 0)
       : "-",
     reserve: data?.reserve
       ? commify(formatBNToString(data.reserve, 18, 2))
       : "-",
     adminFee: swapFee && adminFee ? `${adminFee} of ${swapFee}` : null,
-    volume: data?.volume ? formatBNToShortString(data.volume, 18) : "-",
+    volume: oneDayVolume
+      ? formatBNToShortString(parseUnits(oneDayVolume, 18), 18)
+      : "-",
     tokens:
       data?.tokens.map((coin) => {
-        const token = TOKENS_MAP[coin.symbol]
         return {
-          symbol: token.symbol,
-          name: token.name,
-          percent: coin.percent,
+          symbol: coin.symbol,
+          name: coin.name,
+          percent: coinsSum.gt(Zero)
+            ? formatBNToPercentString(
+                coin.value.mul(BigInt(1e18)).div(coinsSum),
+                18,
+              )
+            : "-",
           value: commify(formatBNToString(coin.value, 18, formattedDecimals)),
         }
       }) || [],
@@ -75,7 +91,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
 
   return (
     <Box>
-      {underlyingPool ? (
+      {data.isMetaSwap ? (
         <Tooltip title={<React.Fragment>{t("metapool")}</React.Fragment>}>
           <Typography
             variant="h1"
@@ -122,7 +138,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
                 <Typography>{`${symbol} APR:`}</Typography>
               )}
               <Typography variant="subtitle1">
-                {apr && formatUnits(apr, 18)}
+                {apr && formatBNToPercentString(apr, 18)}
               </Typography>
             </InfoItem>
           ) : null

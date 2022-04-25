@@ -88,20 +88,20 @@ export default function App(): ReactElement {
                         <Switch>
                           <Route exact path="/" component={Swap} />
                           <Route exact path="/pools" component={Pools} />
-                          {pools.map(({ name, route }) => (
+                          {pools.map(({ name }) => (
                             <Route
                               exact
-                              path={`/pools/${route}/deposit`}
+                              path={`/pools/${name}/deposit`}
                               render={(props) => (
                                 <Deposit {...props} poolName={name} />
                               )}
                               key={`${name}-deposit`}
                             />
                           ))}
-                          {pools.map(({ name, route }) => (
+                          {pools.map(({ name }) => (
                             <Route
                               exact
-                              path={`/pools/${route}/withdraw`}
+                              path={`/pools/${name}/withdraw`}
                               render={(props) => (
                                 <Withdraw {...props} poolName={name} />
                               )}

@@ -1,24 +1,27 @@
-import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { useDispatch, useSelector } from "react-redux"
 
 import { AppState } from "../state"
+import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
+import { TRANSACTION_TYPES } from "../constants"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { gasBNFromState } from "../utils/gas"
 import { getContract } from "../utils"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
+import { useContext } from "react"
 import { useGeneralizedSwapMigratorContract } from "./useContract"
 
 export function useApproveAndMigrate(): (
-  oldPoolName: PoolName | null,
+  oldPoolName: string | null,
   lpTokenBalance?: BigNumber,
 ) => Promise<void> {
   const dispatch = useDispatch()
   const migratorContract = useGeneralizedSwapMigratorContract()
+  const basicPools = useContext(BasicPoolsContext)
   const { account, chainId, library } = useActiveWeb3React()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
@@ -28,15 +31,24 @@ export function useApproveAndMigrate(): (
   )
 
   return async function approveAndMigrate(
-    oldPoolName: PoolName | null,
+    oldPoolName: string | null,
     lpTokenBalance?: BigNumber,
   ): Promise<void> {
-    if (!migratorContract || !chainId || !account || !library || !oldPoolName)
+    const basicPool = basicPools?.[oldPoolName || ""]
+
+    if (
+      !migratorContract ||
+      !chainId ||
+      !account ||
+      !library ||
+      !oldPoolName ||
+      !basicPool ||
+      !lpTokenBalance ||
+      lpTokenBalance.isZero()
+    )
       return
-    const pool = POOLS_MAP[oldPoolName]
-    const lpTokenAddress = pool.lpToken.addresses[chainId]
     const lpTokenContract = getContract(
-      lpTokenAddress,
+      basicPool.lpToken,
       ERC20_ABI,
       library,
       account,
@@ -48,9 +60,6 @@ export function useApproveAndMigrate(): (
         gasCustom,
       ).mul(BigNumber.from(10).pow(9))
 
-      if (!account) throw new Error("Wallet must be connected")
-      if (!migratorContract) throw new Error("Migration contract is not loaded")
-      if (!lpTokenBalance || lpTokenBalance.isZero()) return
       if (lpTokenContract == null) return
       await checkAndApproveTokenForTrade(
         lpTokenContract,
@@ -67,10 +76,8 @@ export function useApproveAndMigrate(): (
         chainId,
       )
       try {
-        const metaSwapAddress = pool.metaSwapAddresses?.[chainId]
-        const migratingPoolAddress = metaSwapAddress || pool.addresses[chainId]
         const migrateTransaction = await migratorContract.migrate(
-          migratingPoolAddress,
+          basicPool.poolAddress,
           lpTokenBalance,
           lpTokenBalance.mul(1000 - 5).div(1000), // 50bps, 0.5%
         )
@@ -79,7 +86,7 @@ export function useApproveAndMigrate(): (
           migrateTransaction.wait(),
           "migrate",
           {
-            poolName: pool.name,
+            poolName: basicPool.poolName,
           },
         )
         dispatch(
