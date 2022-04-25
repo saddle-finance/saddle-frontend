@@ -105,7 +105,7 @@ context("Swap Flow", () => {
         })
       })
       it("completes a swap", () => {
-        cy.get("button").contains("Swap").click()
+        cy.get("button").contains("Swap").should("be.enabled").click()
       })
     })
   }
