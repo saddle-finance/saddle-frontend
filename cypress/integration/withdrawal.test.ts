@@ -13,6 +13,7 @@ context("Withdrawal Flow", () => {
     cy.visit(`${host}#/pools`)
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function basicDeposit(poolName: PoolName) {
     const host = Cypress.env("DAPP_HOST") as string
     // we need a deposit before testing withdrawal
@@ -34,9 +35,10 @@ context("Withdrawal Flow", () => {
   }
 
   function testPoolWithdraw(poolName: PoolName) {
-    it(`prepares the ${poolName} pool by adding assets to it`, () => {
-      basicDeposit(poolName)
-    })
+    // @dev removed since the withdraw test follows the deposit test. Can revisit if we paralellize.
+    // it(`prepares the ${poolName} pool by adding assets to it`, () => {
+    //   basicDeposit(poolName)
+    // })
     it(`successfully completes a withdrawal of all ${poolName} assets`, () => {
       cy.contains(poolName)
         .parents("[data-testid=poolOverview]")
@@ -47,10 +49,8 @@ context("Withdrawal Flow", () => {
       const tokens = poolTokensFullName[poolName]
       cy.get('[data-testid="withdrawTokenRadio"]').contains(tokens[0]).click()
       cy.get('[data-testid="myFarmLpBalance"]').should("not.have.text", "0.0")
-      cy.wait(10000)
-      cy.get("#tokenInput input").first().type("1")
-      cy.wait(10000)
-      cy.get('[data-testid="withdrawBtn"]').click()
+      cy.get("#tokenInput input").first().type("1") // TODO: remove element id :(
+      cy.get('[data-testid="withdrawBtn"]').should("be.enabled").click()
       cy.get("[data-testid=tokenValue]")
         .first()
         .then(($value) => {
@@ -64,8 +64,7 @@ context("Withdrawal Flow", () => {
       // test combo withdraw through percentage option
       cy.get('[data-testid="withdrawPercentageCombo"]').click()
       cy.get('[data-testid="withdrawPercentageInput"]').type("3")
-      cy.wait(10000)
-      cy.get("button").contains("Withdraw").click()
+      cy.get("button").contains("Withdraw").should("be.enabled").click()
       cy.get("[data-testid=tokenValue]")
         .first()
         .then(($value) => {
@@ -94,8 +93,7 @@ context("Withdrawal Flow", () => {
               "not.have.text",
               "0.0",
             )
-            cy.wait(10000)
-            cy.get("button").contains("Withdraw").click()
+            cy.get("button").contains("Withdraw").should("be.enabled").click()
             cy.get("button").contains("Confirm Withdraw").click()
             cy.get("[data-testid=tokenValue]")
               .first()
