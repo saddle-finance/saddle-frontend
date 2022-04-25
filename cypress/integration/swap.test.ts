@@ -5,7 +5,7 @@ context("Swap Flow", () => {
         const host = Cypress.env("DAPP_HOST") as string
         cy.visit(`${host}#/`)
         cy.waitForReact()
-        cy.wait(2000)
+        cy.wait(3000)
       })
       it("starts in a neutral state", () => {
         cy.get('[data-testid="swapTokenInputFrom"]')
