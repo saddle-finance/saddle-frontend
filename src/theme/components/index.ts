@@ -6,7 +6,6 @@ import BackdropTheme from "./BackdropTheme"
 import ButtonTheme from "./ButtonTheme"
 import CheckboxTheme from "./CheckboxTheme"
 import ChipTheme from "./ChipTheme"
-import { CssBaseLine } from "./CssBaseLine"
 import DialogTheme from "./DialogTheme"
 import DialogTitleTheme from "./DialogTitleTheme"
 import IconButtonTheme from "./IconButtonTheme"
@@ -38,7 +37,6 @@ export default function componentsOverrides(theme: Theme): Components {
     ToggleButtonTheme(theme),
     BackdropTheme(),
     PaperTheme(theme),
-    CssBaseLine(),
     ListItemButtonTheme(theme),
     ListItemIconTheme(theme),
     RadioButtonTheme(),

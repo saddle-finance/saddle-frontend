@@ -11,14 +11,19 @@ import {
 } from "@mui/material"
 import { ChainId, IS_L2_SUPPORTED, IS_SDL_LIVE, SDL_TOKEN } from "../constants"
 import {
+  DEV_SUPPORTED_NETWORKS,
+  SUPPORTED_NETWORKS,
+} from "../constants/networks"
+import {
   ExpandLess,
   ExpandMore,
   LightMode,
   NightlightRound,
 } from "@mui/icons-material"
 import React, { ReactElement, useState } from "react"
-import CheckIcon from "@mui/icons-material/Check"
 
+import CheckIcon from "@mui/icons-material/Check"
+import { IS_DEVELOPMENT } from "../utils/environment"
 import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
 import { useActiveWeb3React } from "../hooks"
 import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
@@ -29,6 +34,7 @@ const MenuItem = styled(MuiMenuItem)({
   display: "flex",
   justifyContent: "space-between",
 })
+
 interface SiteSettingsMenuProps {
   anchorEl?: Element
   close?: () => void
@@ -81,65 +87,6 @@ function AddTokenSection(): ReactElement | null {
   ) : null
 }
 
-// refer to https://github.com/sushiswap/sushiswap-interface/blob/canary/src/modals/NetworkModal/index.tsx#L13
-export const SUPPORTED_NETWORKS: {
-  [chainId in ChainId]?: {
-    chainId: string
-    chainName: string
-    nativeCurrency: {
-      name: string
-      symbol: string
-      decimals: number
-    }
-    rpcUrls: string[]
-    blockExplorerUrls: string[]
-  }
-} = {
-  [ChainId.MAINNET]: {
-    chainId: "0x1",
-    chainName: "Ethereum",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
-    rpcUrls: ["https://mainnet.infura.io/v3"],
-    blockExplorerUrls: ["https://etherscan.com"],
-  },
-  [ChainId.ARBITRUM]: {
-    chainId: "0xA4B1",
-    chainName: "Arbitrum",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
-    rpcUrls: ["https://arb1.arbitrum.io/rpc"],
-    blockExplorerUrls: ["https://mainnet-arb-explorer.netlify.app"],
-  },
-  [ChainId.OPTIMISM]: {
-    chainId: "0xA",
-    chainName: "Optimism",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
-    rpcUrls: ["https://mainnet.optimism.io"],
-    blockExplorerUrls: ["https://optimistic.etherscan.io"],
-  },
-  [ChainId.FANTOM]: {
-    chainId: "0xFA",
-    chainName: "Fantom",
-    nativeCurrency: {
-      name: "Fantom",
-      symbol: "FTM",
-      decimals: 18,
-    },
-    rpcUrls: ["https://rpc.ftm.tools"],
-    blockExplorerUrls: ["https://ftmscan.com"],
-  },
-}
 function NetworkSection(): ReactElement {
   const { t } = useTranslation()
   const { chainId: activeChainId, library, account } = useActiveWeb3React()
@@ -147,6 +94,8 @@ function NetworkSection(): ReactElement {
   const networks = [
     ChainId.MAINNET,
     ChainId.FANTOM,
+    ChainId.EVMOS,
+    ...(IS_DEVELOPMENT ? [ChainId.EVMOS_TESTNET] : []),
     ...(IS_L2_SUPPORTED ? [ChainId.ARBITRUM, ChainId.OPTIMISM] : []),
   ]
 
@@ -160,7 +109,9 @@ function NetworkSection(): ReactElement {
       </MenuItem>
       <Collapse in={isNetworkVisible}>
         {networks.map((chainId) => {
-          const params = SUPPORTED_NETWORKS[chainId]
+          const params = IS_DEVELOPMENT
+            ? DEV_SUPPORTED_NETWORKS[chainId]
+            : SUPPORTED_NETWORKS[chainId]
 
           return (
             <ListItemButton
