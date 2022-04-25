@@ -43,7 +43,7 @@ context("Withdrawal Flow", () => {
       cy.contains(poolName)
         .parents("[data-testid=poolOverview]")
         .within(() => {
-          cy.get("button").contains("Withdraw").click()
+          cy.get("button").contains("Withdraw").should("be.enabled").click()
         })
       // test single item
       const tokens = poolTokensFullName[poolName]
@@ -55,7 +55,10 @@ context("Withdrawal Flow", () => {
         .first()
         .then(($value) => {
           const prevVal = $value.text()
-          cy.get("button").contains("Confirm Withdraw").click()
+          cy.get("button")
+            .contains("Confirm Withdraw")
+            .should("be.enabled")
+            .click()
           cy.get("[data-testid=tokenValue]")
             .first()
             .should("not.have.text", prevVal)
@@ -69,7 +72,10 @@ context("Withdrawal Flow", () => {
         .first()
         .then(($value) => {
           const prevVal = $value.text()
-          cy.get("button").contains("Confirm Withdraw").click()
+          cy.get("button")
+            .contains("Confirm Withdraw")
+            .should("be.enabled")
+            .click()
           cy.get("[data-testid=tokenValue]")
             .first()
             .should("not.have.text", prevVal)
@@ -94,7 +100,10 @@ context("Withdrawal Flow", () => {
               "0.0",
             )
             cy.get("button").contains("Withdraw").should("be.enabled").click()
-            cy.get("button").contains("Confirm Withdraw").click()
+            cy.get("button")
+              .contains("Confirm Withdraw")
+              .should("be.enabled")
+              .click()
             cy.get("[data-testid=tokenValue]")
               .first()
               .should("not.have.text", prevVal)
