@@ -1,5 +1,5 @@
 context("Top menu test", () => {
-  beforeEach(() => {
+  before(() => {
     const host = Cypress.env("DAPP_HOST") as string
 
     cy.visit(`${host}#/pools`)
