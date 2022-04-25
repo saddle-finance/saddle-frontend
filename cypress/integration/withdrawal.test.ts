@@ -35,7 +35,7 @@ context("Withdrawal Flow", () => {
   }
 
   function testPoolWithdraw(poolName: PoolName) {
-    // @dev removed since the withdraw test follows the deposit test. Can revisit if we paralellize.
+    // @dev this runs after deposit flow so is unneeded
     // it(`prepares the ${poolName} pool by adding assets to it`, () => {
     //   basicDeposit(poolName)
     // })
@@ -43,23 +43,21 @@ context("Withdrawal Flow", () => {
       cy.contains(poolName)
         .parents("[data-testid=poolOverview]")
         .within(() => {
-          cy.get("button").contains("Withdraw").should("be.enabled").click()
+          cy.get("button").contains("Withdraw").click()
         })
       // test single item
       const tokens = poolTokensFullName[poolName]
       cy.get('[data-testid="withdrawTokenRadio"]').contains(tokens[0]).click()
       cy.get('[data-testid="myFarmLpBalance"]').should("not.have.text", "0.0")
-      cy.wait(5000)
-      cy.get("#tokenInput input").first().type("1") // TODO: remove element id :(
-      cy.get('[data-testid="withdrawBtn"]').should("be.enabled").click()
+      cy.wait(10000)
+      cy.get("#tokenInput input").first().type("1")
+      cy.wait(10000)
+      cy.get('[data-testid="withdrawBtn"]').click()
       cy.get("[data-testid=tokenValue]")
         .first()
         .then(($value) => {
           const prevVal = $value.text()
-          cy.get("button")
-            .contains("Confirm Withdraw")
-            .should("be.enabled")
-            .click()
+          cy.get("button").contains("Confirm Withdraw").click()
           cy.get("[data-testid=tokenValue]")
             .first()
             .should("not.have.text", prevVal)
@@ -68,16 +66,13 @@ context("Withdrawal Flow", () => {
       // test combo withdraw through percentage option
       cy.get('[data-testid="withdrawPercentageCombo"]').click()
       cy.get('[data-testid="withdrawPercentageInput"]').type("3")
-      cy.wait(5000)
-      cy.get("button").contains("Withdraw").should("be.enabled").click()
+      cy.wait(10000)
+      cy.get("button").contains("Withdraw").click()
       cy.get("[data-testid=tokenValue]")
         .first()
         .then(($value) => {
           const prevVal = $value.text()
-          cy.get("button")
-            .contains("Confirm Withdraw")
-            .should("be.enabled")
-            .click()
+          cy.get("button").contains("Confirm Withdraw").click()
           cy.get("[data-testid=tokenValue]")
             .first()
             .should("not.have.text", prevVal)
@@ -94,7 +89,6 @@ context("Withdrawal Flow", () => {
               "not.have.text",
               "0.0",
             )
-            cy.wait(5000)
             cy.wrap($inputs).each(($input) => {
               cy.wrap($input).type("2")
             })
@@ -102,11 +96,9 @@ context("Withdrawal Flow", () => {
               "not.have.text",
               "0.0",
             )
-            cy.get("button").contains("Withdraw").should("be.enabled").click()
-            cy.get("button")
-              .contains("Confirm Withdraw")
-              .should("be.enabled")
-              .click()
+            cy.wait(10000)
+            cy.get("button").contains("Withdraw").click()
+            cy.get("button").contains("Confirm Withdraw").click()
             cy.get("[data-testid=tokenValue]")
               .first()
               .should("not.have.text", prevVal)
