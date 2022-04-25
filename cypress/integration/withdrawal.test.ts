@@ -49,6 +49,7 @@ context("Withdrawal Flow", () => {
       const tokens = poolTokensFullName[poolName]
       cy.get('[data-testid="withdrawTokenRadio"]').contains(tokens[0]).click()
       cy.get('[data-testid="myFarmLpBalance"]').should("not.have.text", "0.0")
+      cy.wait(5000)
       cy.get("#tokenInput input").first().type("1") // TODO: remove element id :(
       cy.get('[data-testid="withdrawBtn"]').should("be.enabled").click()
       cy.get("[data-testid=tokenValue]")
@@ -67,6 +68,7 @@ context("Withdrawal Flow", () => {
       // test combo withdraw through percentage option
       cy.get('[data-testid="withdrawPercentageCombo"]').click()
       cy.get('[data-testid="withdrawPercentageInput"]').type("3")
+      cy.wait(5000)
       cy.get("button").contains("Withdraw").should("be.enabled").click()
       cy.get("[data-testid=tokenValue]")
         .first()
@@ -92,6 +94,7 @@ context("Withdrawal Flow", () => {
               "not.have.text",
               "0.0",
             )
+            cy.wait(5000)
             cy.wrap($inputs).each(($input) => {
               cy.wrap($input).type("2")
             })
