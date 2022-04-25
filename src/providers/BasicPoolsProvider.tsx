@@ -48,7 +48,6 @@ type SwapInfo = {
 
 export type BasicPool = {
   isMigrated: boolean
-  sdlPerDay: BigNumber // TODO create provider to serve this
 } & SwapInfo
 export type BasicPools = { [poolName: string]: BasicPool | undefined } | null // indexed by name, which is unique in the Registry
 

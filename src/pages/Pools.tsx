@@ -33,15 +33,15 @@ function Pools(): ReactElement | null {
   const [activeMigration, setActiveMigration] = useState<{
     poolName: string | null
     lpTokenBalance: BigNumber
-    lpTokenName: string
-  }>({ poolName: null, lpTokenBalance: Zero, lpTokenName: "" })
+    lpTokenAddress: string
+  }>({ poolName: null, lpTokenBalance: Zero, lpTokenAddress: "" })
   const [filter, setFilter] = useState<PoolTypes | "all" | "outdated">("all")
   const handleClickMigrate = (
     poolName: string,
     lpTokenBalance: BigNumber,
-    lpTokenName: string,
+    lpTokenAddress: string,
   ) => {
-    setActiveMigration({ poolName, lpTokenBalance, lpTokenName })
+    setActiveMigration({ poolName, lpTokenBalance, lpTokenAddress })
     setCurrentModal("migrate")
   }
 
@@ -49,7 +49,7 @@ function Pools(): ReactElement | null {
     setActiveMigration({
       poolName: null,
       lpTokenBalance: Zero,
-      lpTokenName: "",
+      lpTokenAddress: "",
     })
   }, [account, chainId])
 
@@ -160,14 +160,14 @@ function Pools(): ReactElement | null {
             <PoolOverview
               key={basicPool.poolName}
               poolName={basicPool.poolName}
-              poolRoute={`/pools/${basicPool.poolName}`} // TODO
+              poolRoute={`/pools/${basicPool.poolName}`} // TODO address names may contain arbitrary chars
               onClickMigrate={
                 basicPool.isMigrated
                   ? () =>
                       handleClickMigrate(
                         basicPool.poolName,
                         userState?.tokenBalances?.[basicPool.lpToken] || Zero,
-                        basicPool.lpToken, // TODO should be symbol
+                        basicPool.lpToken,
                       )
                   : undefined
               }
@@ -186,7 +186,7 @@ function Pools(): ReactElement | null {
               setActiveMigration({
                 poolName: null,
                 lpTokenBalance: Zero,
-                lpTokenName: "",
+                lpTokenAddress: "",
               })
             }}
             onConfirm={async (): Promise<void> => {
@@ -206,10 +206,10 @@ function Pools(): ReactElement | null {
               setActiveMigration({
                 poolName: null,
                 lpTokenBalance: Zero,
-                lpTokenName: "",
+                lpTokenAddress: "",
               })
             }}
-            lpTokenName={activeMigration.lpTokenName}
+            lpTokenAddress={activeMigration.lpTokenAddress}
             migrationAmount={activeMigration.lpTokenBalance}
           />
         ) : null}

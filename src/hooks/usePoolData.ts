@@ -135,6 +135,7 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
         return
       }
       try {
+        const poolMinichefData = minichefData?.pools?.[basicPool.poolAddress]
         const expandedPoolTokens = basicPool.tokens.map(
           (tokenAddr) => tokens[tokenAddr],
         ) as BasicToken[]
@@ -179,7 +180,12 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
             ),
           )
           .add(
-            calculateFraction(Zero, basicPool.lpTokenSupply), // TODO replace 0 with stakedInMiniChef
+            calculateFraction(
+              (poolMinichefData?.pid &&
+                userState?.minichef?.[poolMinichefData?.pid]?.amountStaked) ||
+                Zero,
+              basicPool.lpTokenSupply,
+            ),
           )
         const userPoolTokenBalances = priceDataForPool.tokenBalances1e18.map(
           (balance) => {
@@ -277,6 +283,7 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
     swapStats,
     tokenPricesUSD,
     tokens,
+    userState?.minichef,
     userState?.tokenBalances,
   ])
 

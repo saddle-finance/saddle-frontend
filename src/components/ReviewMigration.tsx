@@ -6,12 +6,13 @@ import {
   Divider,
   Typography,
 } from "@mui/material"
-import React, { ReactElement } from "react"
+import React, { ReactElement, useContext } from "react"
 import { commify, formatBNToString } from "../utils"
 
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import DialogTitle from "./DialogTitle"
+import { TokensContext } from "../providers/TokensProvider"
 import { gasBNFromState } from "../utils/gas"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
@@ -20,16 +21,17 @@ interface Props {
   onClose?: () => void
   onConfirm?: () => void
   migrationAmount?: BigNumber // 1e18
-  lpTokenName?: string
+  lpTokenAddress?: string
 }
 
 function ReviewMigration({
   onClose,
   onConfirm,
   migrationAmount,
-  lpTokenName,
+  lpTokenAddress,
 }: Props): ReactElement {
   const { t } = useTranslation()
+  const tokens = useContext(TokensContext)
   const { gasPriceSelected, gasCustom } = useSelector(
     (state: AppState) => state.user,
   )
@@ -63,7 +65,9 @@ function ReviewMigration({
               {commify(
                 formatBNToString(migrationAmount || BigNumber.from("0"), 18, 2),
               )}{" "}
-              {lpTokenName}
+              {lpTokenAddress
+                ? tokens?.[lpTokenAddress]?.name
+                : null || "LP Token"}
             </Typography>
           </Box>
           {shouldDisplayGas && (
