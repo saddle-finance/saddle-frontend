@@ -29,7 +29,11 @@ import { useActiveWeb3React } from "../../hooks"
 import { usePoolRegistry } from "../../hooks/useContract"
 import { useTranslation } from "react-i18next"
 
-export type PoolType = "usdMetapool" | "btcMetapool" | "basepool"
+export enum PoolType {
+  UsdMeta = "usdMetapool",
+  BtcMeta = "btcMetapool",
+  Base = "basepool",
+}
 
 export enum AssetType {
   USD,
@@ -38,7 +42,7 @@ export enum AssetType {
   OTHERS,
 }
 
-export type TextFieldColors =
+export type ValidationStatus =
   | "primary"
   | "secondary"
   | "error"
@@ -63,7 +67,7 @@ export default function CreatePool(): React.ReactElement {
   const [poolName, setPoolName] = useState<string>("")
   const [poolSymbol, setPoolSymbol] = useState<string>("")
   const [aParameter, setAParameter] = useState<string>("")
-  const [poolType, setPoolType] = useState<PoolType>("usdMetapool")
+  const [poolType, setPoolType] = useState<PoolType>(PoolType.BtcMeta)
   const [assetType, setAssetType] = useState<AssetType>(0)
   const [tokenInputs, setTokenInputs] = useState<string[]>([""])
   const [tokenInfo, setTokenInfo] = useState<
@@ -71,7 +75,7 @@ export default function CreatePool(): React.ReactElement {
       name: string
       symbol: string
       decimals: BigNumberish
-      checkResult: TextFieldColors
+      checkResult: ValidationStatus
     }[]
   >([
     {
@@ -87,17 +91,17 @@ export default function CreatePool(): React.ReactElement {
     setTokenInputs((prev) => [...prev, ""])
   }
 
-  const isNumber = (text: string) => {
-    const digitRegex = /^\d*(\.\d+)?$/
+  const isValidNumber = (text: string) => {
+    const digitRegex = /^\d+$/
 
-    return digitRegex.exec(text)
+    return digitRegex.test(text)
   }
 
   const resetFields = () => {
     setPoolName("")
     setPoolSymbol("")
     setAParameter("")
-    setPoolType("usdMetapool")
+    setPoolType(PoolType.Base)
     setAssetType(0)
     setFee("")
     setTokenInfo([
@@ -117,14 +121,14 @@ export default function CreatePool(): React.ReactElement {
     name: string
     symbol: string
     decimals: BigNumberish
-    checkResult: TextFieldColors
+    checkResult: ValidationStatus
   }> => {
     if (!library || !account || !addr)
       return {
         name: "",
         symbol: "",
         decimals: 0,
-        checkResult: "primary" as TextFieldColors,
+        checkResult: "primary" as ValidationStatus,
       }
 
     const tokenContractResult = getContract(
@@ -142,17 +146,17 @@ export default function CreatePool(): React.ReactElement {
     }
   }
 
-  const poolNameError = poolName.length > 31
-  const poolSymbolError = poolSymbol.length > 31
-  const aParameterError = !isNumber(aParameter) || parseFloat(aParameter) < 1
+  const poolNameError = poolName.length > 32
+  const poolSymbolError = poolSymbol.length > 32
+  const aParameterError = !isValidNumber(aParameter) || Number(aParameter) < 1
 
   const feeError =
-    !isNumber(fee) || parseFloat(fee) > 1 || parseFloat(fee) < 0.04
+    !isValidNumber(fee) || parseFloat(fee) > 1 || parseFloat(fee) < 0.04
 
   useEffect(() => {
     const getBasePoolLPTokenAddrs = async () => {
       if (poolRegistry) {
-        const basePoolName = poolType === "usdMetapool" ? "USDv2" : "BTCv2"
+        const basePoolName = poolType === PoolType.UsdMeta ? "USDv2" : "BTCv2"
         try {
           const poolRegistryData = await poolRegistry.getPoolDataByName(
             ethers.utils.formatBytes32String(basePoolName),
@@ -317,21 +321,24 @@ export default function CreatePool(): React.ReactElement {
                   }}
                   fullWidth
                 >
-                  <ToggleButton value="usdMetapool" size="large">
+                  <ToggleButton value={PoolType.UsdMeta} size="large">
                     {t("usdMetapool")}
                   </ToggleButton>
-                  <ToggleButton value="btcMetapool">
+                  <ToggleButton value={PoolType.BtcMeta}>
                     {t("btcMetapool")}
                   </ToggleButton>
-                  <ToggleButton value="basepool">{t("basepool")}</ToggleButton>
+                  <ToggleButton value={PoolType.Base}>
+                    {t("basepool")}
+                  </ToggleButton>
                 </ToggleButtonGroup>
               </Box>
 
               <Box
                 flex={1}
                 sx={{
-                  opacity: poolType === "basepool" ? 1 : 0.5,
-                  cursor: poolType === "basepool" ? "default" : "not-allowed",
+                  opacity: poolType === PoolType.Base ? 1 : 0.5,
+                  cursor:
+                    poolType === PoolType.Base ? "default" : "not-allowed",
                 }}
               >
                 <Typography variant="subtitle1">
@@ -348,7 +355,7 @@ export default function CreatePool(): React.ReactElement {
                   exclusive
                   onChange={(event, value) => setAssetType(value)}
                   size="large"
-                  disabled={poolType !== "basepool"}
+                  disabled={poolType !== PoolType.Base}
                 >
                   <ToggleButton value={AssetType.USD} color="secondary">
                     USD
@@ -380,7 +387,6 @@ export default function CreatePool(): React.ReactElement {
                     flexBasis={`calc(50% - ${theme.spacing(1.5)})`}
                   >
                     <TextField
-                      value={tokenInput}
                       autoComplete="off"
                       label={`Token ${index}`}
                       fullWidth
@@ -396,7 +402,7 @@ export default function CreatePool(): React.ReactElement {
                             name: "",
                             symbol: "",
                             decimals: 0,
-                            checkResult: "primary" as TextFieldColors,
+                            checkResult: "primary" as ValidationStatus,
                           }
                           setTokenInfo([...tokenInfo])
                         }
@@ -414,7 +420,7 @@ export default function CreatePool(): React.ReactElement {
                             name: "",
                             symbol: "",
                             decimals: 0,
-                            checkResult: "error" as TextFieldColors,
+                            checkResult: "error" as ValidationStatus,
                           }
                         }
                         inputLoading[index] = false
@@ -459,7 +465,8 @@ export default function CreatePool(): React.ReactElement {
                     />
                   </Box>
                 ))}
-                {(poolType === "usdMetapool" || poolType === "btcMetapool") && (
+                {(poolType === PoolType.UsdMeta ||
+                  poolType === PoolType.BtcMeta) && (
                   <Box flexBasis={`calc(50% - ${theme.spacing(1.5)})`}>
                     <TextField
                       value={metapoolBasepoolAddr}
@@ -467,7 +474,7 @@ export default function CreatePool(): React.ReactElement {
                       disabled
                       color="primary"
                       margin="normal"
-                      helperText="Basepool Address"
+                      helperText={t("basepoolAddress")}
                     />
                   </Box>
                 )}
@@ -478,8 +485,8 @@ export default function CreatePool(): React.ReactElement {
               size="large"
               onClick={handleAddToken}
               disabled={
-                (poolType === "basepool" && tokenInputs.length > 3) ||
-                poolType !== "basepool"
+                (poolType === PoolType.Base && tokenInputs.length > 3) ||
+                poolType !== PoolType.Base
               }
               sx={{ mb: 4 }}
             >

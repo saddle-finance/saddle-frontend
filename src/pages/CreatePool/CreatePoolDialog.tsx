@@ -7,12 +7,13 @@ import {
   Stack,
   Typography,
 } from "@mui/material"
-import { AssetType, PoolType, TextFieldColors } from "."
+import { AssetType, PoolType, ValidationStatus } from "."
 import { BigNumber, BigNumberish, ethers } from "ethers"
 import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 
 import Dialog from "../../components/Dialog"
 import DialogTitle from "../../components/DialogTitle"
+import { POOL_FEE_PRECISION } from "../../constants"
 import React from "react"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../../hooks"
@@ -34,7 +35,7 @@ type Props = {
       name: string
       symbol: string
       decimals: BigNumberish
-      checkResult: TextFieldColors
+      checkResult: ValidationStatus
     }[]
   }
   resetFields: () => void
@@ -42,7 +43,7 @@ type Props = {
   metapoolBasepoolLpAddr: string
 }
 
-const POOL_FEE_PERCISION = 8
+// const POOL_FEE_PERCISION = 8
 
 export default function ReviewCreatePool({
   open,
@@ -79,14 +80,14 @@ export default function ReviewCreatePool({
       adminFee: BigNumber.from(50e8), // 50%
       lpTokenSymbol: poolData.poolSymbol,
       a: BigNumber.from(poolData.aParameter),
-      fee: BigNumber.from(parseUnits(poolData.fee, POOL_FEE_PERCISION)),
+      fee: BigNumber.from(parseUnits(poolData.fee, POOL_FEE_PRECISION)),
       owner: account,
       typeOfAsset: poolData.assetType,
     }
     let deployTxn
 
     try {
-      if (poolData.poolType === "basepool") {
+      if (poolData.poolType === PoolType.Base) {
         deployTxn = await permissionlessDeployer.deploySwap(deploySwapInput)
         await enqueueCreatePoolToast(deployTxn)
       } else {
