@@ -87,25 +87,45 @@ export default function App(): ReactElement {
                         <Switch>
                           <Route exact path="/" component={Swap} />
                           <Route exact path="/pools" component={Pools} />
-                          {pools.map(({ name }) => (
-                            <Route
-                              exact
-                              path={`/pools/${name}/deposit`}
-                              render={(props) => (
-                                <Deposit {...props} poolName={name} />
-                              )}
-                              key={`${name}-deposit`}
-                            />
+                          {pools.map(({ name, route }) => (
+                            <>
+                              <Route
+                                exact
+                                path={`/pools/${name}/deposit`}
+                                render={(props) => (
+                                  <Deposit {...props} poolName={name} />
+                                )}
+                                key={`${name}-deposit`}
+                              />
+                              <Route
+                                exact
+                                path={`/pools/${route}/deposit`}
+                                render={(props) => (
+                                  <Deposit {...props} poolName={name} />
+                                )}
+                                key={`${route}-deposit`}
+                              />
+                            </>
                           ))}
-                          {pools.map(({ name }) => (
-                            <Route
-                              exact
-                              path={`/pools/${name}/withdraw`}
-                              render={(props) => (
-                                <Withdraw {...props} poolName={name} />
-                              )}
-                              key={`${name}-withdraw`}
-                            />
+                          {pools.map(({ name, route }) => (
+                            <>
+                              <Route
+                                exact
+                                path={`/pools/${name}/withdraw`}
+                                render={(props) => (
+                                  <Withdraw {...props} poolName={name} />
+                                )}
+                                key={`${name}-withdraw`}
+                              />
+                              <Route
+                                exact
+                                path={`/pools/${route}/withdraw`}
+                                render={(props) => (
+                                  <Withdraw {...props} poolName={name} />
+                                )}
+                                key={`${route}-withdraw`}
+                              />
+                            </>
                           ))}
                           <Redirect from="/pools/:route/:action" to="/pools" />
                           <Route
