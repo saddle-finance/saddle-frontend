@@ -13,6 +13,7 @@ context("Withdrawal Flow", () => {
     cy.visit(`${host}#/pools`)
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function basicDeposit(poolName: PoolName) {
     const host = Cypress.env("DAPP_HOST") as string
     // we need a deposit before testing withdrawal
@@ -34,9 +35,10 @@ context("Withdrawal Flow", () => {
   }
 
   function testPoolWithdraw(poolName: PoolName) {
-    it(`prepares the ${poolName} pool by adding assets to it`, () => {
-      basicDeposit(poolName)
-    })
+    // @dev this runs after deposit flow so is unneeded
+    // it(`prepares the ${poolName} pool by adding assets to it`, () => {
+    //   basicDeposit(poolName)
+    // })
     it(`successfully completes a withdrawal of all ${poolName} assets`, () => {
       cy.contains(poolName)
         .parents("[data-testid=poolOverview]")

@@ -10,5 +10,6 @@
     }
   },
   "defaultCommandTimeout": 40000,
-  "requestTimeout": 40000
+  "requestTimeout": 40000,
+  "video": false
 }

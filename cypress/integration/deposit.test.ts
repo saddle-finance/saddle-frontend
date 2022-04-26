@@ -18,7 +18,7 @@ context("Deposit Flow", () => {
         })
       cy.get("#tokenInput input").then(($inputs) => {
         cy.wrap($inputs).each(($input) => {
-          cy.wrap($input).type("1")
+          cy.wrap($input).type("100")
         })
       })
       cy.get("[data-testid=tokenValue]")

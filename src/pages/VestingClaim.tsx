@@ -1,19 +1,18 @@
+import { Box, Button, IconButton, Link, Typography } from "@mui/material"
 import React, { ReactElement, useEffect, useState } from "react"
 import { SDL_TOKEN, SDL_TOKEN_ADDRESSES } from "../constants"
 import { Trans, useTranslation } from "react-i18next"
 import { commify, formatBNToString, getContract } from "../utils"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
 import { BigNumber } from "@ethersproject/bignumber"
-import Button from "../components/Button"
 import INVESTOR_EMPLOYEE_VESTING_CONTRACT_ABI from "../constants/abis/vesting.json"
 import SDL_TOKEN_ABI from "../constants/abis/sdl.json"
 import { Sdl } from "../../types/ethers-contracts/Sdl"
 import { Vesting } from "../../types/ethers-contracts/Vesting"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
-import plusIcon from "../assets/icons/plus.svg"
-import styles from "../components/TokenClaimModal.module.scss"
 import { useActiveWeb3React } from "../hooks"
 import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
 
@@ -119,84 +118,106 @@ function VestingClaim(): ReactElement {
   }
 
   return (
-    <>
-      <div className={styles.container}>
-        <div className={styles.gradient}></div>
-        <div className={styles.logoWrapper}>
-          <div className={styles.logo}>
-            <img src={logo} />
-          </div>
-        </div>
-        <div className={styles.mainContent}>
-          {isValidBeneficiary ? (
-            <>
-              <div className={styles.amountContainer}>
-                <div>
-                  <div>
-                    {t("investorClaimAmount", {
-                      claimable: formatAmount(claimableVestedAmount),
-                    })}
-                  </div>
-                  <div>
-                    {t("investorRemainingAmount", {
-                      remaining: formatAmount(remainingAmount),
-                    })}
-                  </div>
-                </div>
-                {canAdd && (
-                  <img
-                    src={plusIcon}
-                    className={styles.plus}
-                    style={{ width: 16, marginBottom: 3, marginLeft: 32 }}
-                    onClick={() => addToken()}
-                  />
-                )}
-              </div>
-              <div className={styles.tokenBalanceHelpText}>
-                {t("vestingContract")}{" "}
-                <a
-                  href={`https://etherscan.io/address/${
-                    vestingContract?.address ?? ""
-                  }`}
-                >
-                  {vestingContract?.address}
-                </a>
-              </div>
-            </>
-          ) : (
-            <div className={styles.info}>{t("switchToBeneficiaryAddress")}</div>
-          )}
+    <div>
+      <Box
+        py={5}
+        sx={{
+          backgroundImage: (theme) =>
+            theme.palette.mode === "dark"
+              ? "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(7,7,19,1) 25%, rgba(18,19,52,1) 50%,rgba(0,0,0,0) 50%, rgba(0,0,0,0) 100%)"
+              : `linear-gradient(180deg, #FFF 25%, #FAF3CE 50%,#FFF 50%, #FFF 100%)`,
+        }}
+      >
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          width={170}
+          height={170}
+          borderRadius="50%"
+          marginX="auto"
+          boxShadow="0px 4px 20px rgba(255, 255, 255, 0.25)"
+          sx={{
+            background: (theme) =>
+              theme.palette.mode === "dark"
+                ? "linear-gradient(0deg, #000 0%, #341291 100%)"
+                : "linear-gradient(180deg, #FFF 0%, #FBF4CF 100%)",
+          }}
+        >
+          <img src={logo} width={138} height={138} />
+        </Box>
+      </Box>
 
-          <div className={styles.info}>
-            <span>
-              <Trans i18nKey="saddleTokenInfo" t={t}>
-                SDL token is launched by Saddle Finance. Read more about token
-                distribution{" "}
-                <a
-                  href="https://blog.saddle.finance/introducing-sdl"
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ textDecoration: "underline" }}
+      <Box textAlign="center">
+        {isValidBeneficiary ? (
+          <>
+            <Box display="flex" justifyContent="center" alignItems="center">
+              <div>
+                <Typography variant="subtitle1">
+                  {t("investorClaimAmount", {
+                    claimable: formatAmount(claimableVestedAmount),
+                  })}
+                </Typography>
+                <Typography variant="subtitle1">
+                  {t("investorRemainingAmount", {
+                    remaining: formatAmount(remainingAmount),
+                  })}
+                </Typography>
+              </div>
+              {canAdd && (
+                <IconButton
+                  style={{ width: 16, marginBottom: 3, marginLeft: 32 }}
+                  onClick={() => addToken()}
                 >
-                  here
-                </a>
-              </Trans>
-            </span>
-          </div>
-          {
-            <Button
-              onClick={onClaimClick}
-              disabled={
-                !isValidBeneficiary ||
-                Number(formatAmount(claimableVestedAmount)) === 0
-              }
+                  <AddCircleOutlineIcon color="primary" />
+                </IconButton>
+              )}
+            </Box>
+
+            <Typography my={3}>
+              {t("vestingContract")}{" "}
+              <Link
+                href={`https://etherscan.io/address/${
+                  vestingContract?.address ?? ""
+                }`}
+              >
+                {vestingContract?.address}
+              </Link>
+            </Typography>
+          </>
+        ) : (
+          <Typography>{t("switchToBeneficiaryAddress")}</Typography>
+        )}
+
+        <Typography mb={3}>
+          <Trans i18nKey="saddleTokenInfo" t={t}>
+            SDL token is launched by Saddle Finance. Read more about token
+            distribution{" "}
+            <Link
+              href="https://blog.saddle.finance/introducing-sdl"
+              target="_blank"
+              rel="noreferrer"
+              style={{ textDecoration: "underline" }}
             >
-              {t("claim")}
-            </Button>
+              here
+            </Link>
+          </Trans>
+        </Typography>
+
+        <Button
+          variant="contained"
+          size="large"
+          onClick={onClaimClick}
+          disabled={
+            !isValidBeneficiary ||
+            Number(formatAmount(claimableVestedAmount)) === 0
           }
-        </div>
-      </div>
-    </>
+          sx={{ minWidth: 176 }}
+        >
+          {t("claim")}
+        </Button>
+      </Box>
+    </div>
   )
 }
 

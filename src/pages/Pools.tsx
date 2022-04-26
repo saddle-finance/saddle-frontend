@@ -4,6 +4,7 @@ import {
   BTC_POOL_NAME,
   BTC_POOL_V2_NAME,
   D4_POOL_NAME,
+  EVMOS_TESTNET_POOL_NAME,
   FRAX_ARB_USD_POOL_V2_NAME,
   FRAX_OPT_USD_METAPOOL_NAME,
   FTM_USD_POOL_NAME,
@@ -22,7 +23,7 @@ import {
   WCUSD_METAPOOL_NAME,
   WCUSD_METAPOOL_V2_NAME,
 } from "../constants"
-import { Box, Button, Container, Stack, TextField } from "@mui/material"
+import { Box, Button, Chip, Container, Stack, TextField } from "@mui/material"
 import React, { ReactElement, useEffect, useState } from "react"
 
 import { BigNumber } from "ethers"
@@ -32,9 +33,7 @@ import PoolOverview from "../components/PoolOverview"
 import ReviewMigration from "../components/ReviewMigration"
 import { Search } from "@mui/icons-material"
 import { Zero } from "@ethersproject/constants"
-import classNames from "classnames"
 import { logEvent } from "../utils/googleAnalytics"
-import styles from "./Pools.module.scss"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndMigrate } from "../hooks/useApproveAndMigrate"
 import { useHistory } from "react-router"
@@ -74,6 +73,9 @@ function Pools(): ReactElement | null {
   )
   const [usdsArbUsdPoolData, usdsArbUsdUserShareData] = usePoolData(
     USDS_ARB_USD_METAPOOL_NAME,
+  )
+  const [evmosTestnetUsdPoolData, evmosTestnetUsdUserShareData] = usePoolData(
+    EVMOS_TESTNET_POOL_NAME,
   )
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const approveAndMigrate = useApproveAndMigrate()
@@ -214,6 +216,13 @@ function Pools(): ReactElement | null {
         userShareData: fraxOptUsdUserShareData,
         poolRoute: "/pools/frax-optusd",
       }
+    } else if (poolName === EVMOS_TESTNET_POOL_NAME) {
+      return {
+        name: EVMOS_TESTNET_POOL_NAME,
+        poolData: evmosTestnetUsdPoolData,
+        userShareData: evmosTestnetUsdUserShareData,
+        poolRoute: "/pools/evmostestnetusd",
+      }
     } else if (poolName === FRAX_ARB_USD_POOL_V2_NAME) {
       return {
         name: FRAX_ARB_USD_POOL_V2_NAME,
@@ -239,7 +248,7 @@ function Pools(): ReactElement | null {
   }
   return (
     <Container sx={{ pb: 5 }}>
-      <Stack direction="row" alignItems="center">
+      <Stack direction="row" alignItems="center" justifyContent="center">
         {false && (
           <Box flex={1}>
             <TextField
@@ -251,7 +260,7 @@ function Pools(): ReactElement | null {
             />
           </Box>
         )}
-        <ul className={styles.filters}>
+        <Stack direction="row" spacing={1} my={3}>
           {[
             ["all", "ALL"] as const,
             [PoolTypes.BTC, "BTC"] as const,
@@ -259,18 +268,16 @@ function Pools(): ReactElement | null {
             [PoolTypes.USD, "USD"] as const,
             ["outdated", "OUTDATED"] as const,
           ].map(([filterKey, text]) => (
-            <li
+            <Chip
               key={filterKey}
-              className={classNames(styles.filterTab, {
-                [styles.selected]: filter === filterKey,
-                [styles.outdated]: filterKey === "outdated",
-              })}
+              variant={filter === filterKey ? "filled" : "text"}
+              size="medium"
+              color={filterKey === "outdated" ? "secondary" : "default"}
+              label={text}
               onClick={(): void => setFilter(filterKey)}
-            >
-              {text}
-            </li>
+            />
           ))}
-        </ul>
+        </Stack>
 
         {false && (
           <Box flex={1}>

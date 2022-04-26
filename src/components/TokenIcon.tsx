@@ -7,6 +7,8 @@ interface Props {
 
 export default function TokenIcon({
   symbol,
+  width = 24,
+  height = 24,
   ...props
 }: Props & ImgHTMLAttributes<HTMLImageElement>): JSX.Element {
   return (
@@ -15,6 +17,8 @@ export default function TokenIcon({
       src={getTokenIconPath(symbol)}
       onError={handleTokenIconImageError}
       {...props}
+      width={width}
+      height={height}
     />
   )
 }
