@@ -84,7 +84,7 @@
   "estimatedOutput": "Output is estimated. If the price changes by more than the max slippage your transaction will revert.",
   "estimatedTxCost": "Estimated TX Cost",
   "exchangeRate": "Exchange Rate",
-  "exitToMigrate": "Exit to Migrate",
+  "exitToMigrate": "Exit to migrate",
   "fast": "Fast",
   "fee": "Fee",
   "feeError": "Fee should be a number between 0.04 and 1",
