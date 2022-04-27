@@ -8,6 +8,7 @@
     "@emotion/styled": "^11.6.0",
     "@metamask/jazzicon": "^2.0.0",
     "@mui/icons-material": "^5.5.1",
+    "@mui/lab": "^5.0.0-alpha.76",
     "@mui/material": "^5.4.0",
     "@reduxjs/toolkit": "^1.4.0",
     "@sentry/react": "^6.16.1",
@@ -30,7 +31,7 @@
     "async-retry": "^1.3.1",
     "classnames": "^2.3.1",
     "copy-to-clipboard": "^3.3.1",
-    "ethcall": "^4.4.0-beta.1",
+    "ethcall": "^4.6.3",
     "ethers": "^5.5.3",
     "framer-motion": "^4.0.3",
     "history": "^5.0.0",
@@ -98,7 +99,7 @@
     "build-storybook": "build-storybook -s public",
     "build": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-scripts build",
     "bundlemon": "bundlemon --subProject no-compression --defaultCompression none && bundlemon --subProject gzip-compression --defaultCompression gzip",
-    "cy:coverage": "start-test 3000 'npx cypress-repeat run -n 5 --until-passes --rerun-failed-only'",
+    "cy:coverage": "start-test 3000 'npx cypress-repeat run -n 2 --until-passes --rerun-failed-only'",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
     "cy:startopen": "start-test 3000 'cypress open'",
@@ -152,6 +153,11 @@
           "import/no-anonymous-default-export": "off"
         }
       }
+    ]
+  },
+  "nyc": {
+    "reporter": [
+      "html"
     ]
   }
 }

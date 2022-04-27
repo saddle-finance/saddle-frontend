@@ -1,3 +1,4 @@
+import { Box, DialogContent, Link, Typography } from "@mui/material"
 import React, { ReactElement, useCallback, useState } from "react"
 import {
   calculateExchangeRate,
@@ -11,7 +12,7 @@ import { enqueuePromiseToast, enqueueToast } from "./Toastify"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import ConfirmTransaction from "./ConfirmTransaction"
-import { ReactComponent as InfoIcon } from "../assets/icons/info.svg"
+import InfoIcon from "@mui/icons-material/InfoOutlined"
 import { PendingSwap } from "../hooks/usePendingSwapData"
 import PendingSwapExchange from "./PendingSwapExchange"
 import PendingSwapTimeline from "./PendingSwapTimeline"
@@ -21,7 +22,6 @@ import { Zero } from "@ethersproject/constants"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { formatUnits } from "@ethersproject/units"
 import { gasBNFromState } from "../utils/gas"
-import styles from "./PendingSwapModal.module.scss"
 import { subtractSlippage } from "../utils/slippage"
 import { useActiveWeb3React } from "../hooks"
 import { useBridgeContract } from "../hooks/useContract"
@@ -198,22 +198,26 @@ const PendingSwapModal = ({
   )
 
   return (
-    <>
+    <DialogContent>
       {(currentStep === "timer" || currentStep === "exchange") && (
-        <div className={styles.virtualSwapModal}>
-          <div className={styles.headerContent}>
-            <b className={styles.title}>
+        <div>
+          <div>
+            <b>
               {formattedSynthBalance} {synthTokenFrom.symbol} {"->"}{" "}
               {tokenTo.symbol}
             </b>
           </div>
-          <div className={styles.centerContent}>
+          <div>
             {currentStep === "timer" && (
-              <div className={styles.timer}>
-                <h2>
-                  {minutesRemaining} {t("minRemaining")}
-                </h2>
-              </div>
+              <Typography
+                variant="h2"
+                color="primary"
+                textAlign="center"
+                mt={4}
+              >
+                {t("waiting")}
+                {t("minutesLeft", { count: minutesRemaining })}
+              </Typography>
             )}
             {currentStep === "exchange" && (
               <PendingSwapExchange
@@ -222,19 +226,21 @@ const PendingSwapModal = ({
               />
             )}
           </div>
-          <div className={styles.footerContent}>
-            <b className={styles.title}>{t("swapTimeline")}</b>
+          <div>
+            <Typography variant="subtitle1" mt={4} mb={2}>
+              {t("swapTimeline")}
+            </Typography>
             <PendingSwapTimeline pendingSwap={pendingSwap} />
-            <div className={styles.about}>
-              <InfoIcon />
-              <a
+            <Box display="flex" alignItems="center">
+              <InfoIcon sx={{ mr: 1 }} />
+              <Link
                 href="https://docs.saddle.finance/saddle-faq#what-is-virtual-swap"
                 target="_blank"
                 rel="noreferrer"
               >
                 {t("aboutVirtualSwap")}
-              </a>
-            </div>
+              </Link>
+            </Box>
           </div>
         </div>
       )}
@@ -286,7 +292,7 @@ const PendingSwapModal = ({
         />
       )}
       {currentStep === "confirmation" && <ConfirmTransaction />}
-    </>
+    </DialogContent>
   )
 }
 

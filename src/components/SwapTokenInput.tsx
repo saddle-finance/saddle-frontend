@@ -7,7 +7,11 @@ import {
   Typography,
 } from "@mui/material"
 import React, { useEffect } from "react"
-import { SWAP_TYPES, TOKENS_MAP } from "../constants"
+import {
+  SWAP_TYPES,
+  TOKENS_MAP,
+  readableDecimalNumberRegex,
+} from "../constants"
 import { commify, formatBNToString } from "../utils"
 import { styled, useTheme } from "@mui/material/styles"
 import { useRef, useState } from "react"
@@ -18,6 +22,7 @@ import Box from "@mui/material/Box"
 import ClickAwayListener from "@mui/material/ClickAwayListener"
 import Popper from "@mui/material/Popper"
 import Search from "@mui/icons-material/Search"
+import TokenIcon from "./TokenIcon"
 import { TokenOption } from "../pages/Swap"
 import { useTranslation } from "react-i18next"
 
@@ -75,9 +80,11 @@ export default function SwapTokenInput({
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    const re = /^[0-9]*[.,]?[0-9]*$/
     // if value is not blank, then test the regex
-    if (e.target.value === "" || re.test(e.target.value)) {
+    if (
+      e.target.value === "" ||
+      readableDecimalNumberRegex.test(e.target.value)
+    ) {
       onChangeAmount?.(e.target.value)
     }
   }
@@ -87,7 +94,6 @@ export default function SwapTokenInput({
   ) => {
     event.target.select()
   }
-
   const open = Boolean(anchorEl)
   const selectedToken =
     typeof selected === "string" ? TOKENS_MAP[selected] : undefined
@@ -103,17 +109,16 @@ export default function SwapTokenInput({
         bgcolor={theme.palette.background.paper}
         ref={containerRef}
       >
-        {selectedToken?.icon && (
+        {selectedToken && (
           <Box width={24} height={24} marginRight={1}>
-            <img
-              src={selectedToken?.icon}
+            <TokenIcon
+              symbol={selectedToken?.symbol}
               alt={selectedToken?.name}
               width="100%"
               height="100%"
             />
           </Box>
         )}
-
         <Box flexWrap="nowrap">
           <Button
             onClick={handleClick}
@@ -231,7 +236,6 @@ function ListItem({
   amount,
   valueUSD,
   name,
-  icon,
   symbol,
   decimals,
   isAvailable,
@@ -261,7 +265,7 @@ function ListItem({
     >
       <Stack direction="row" width="100%" alignItems="center">
         <Box mr={1} width={24} height={24}>
-          <img src={icon} alt={name} height="100%" width="100%" />
+          <TokenIcon symbol={symbol} alt={name} height="100%" width="100%" />
         </Box>
         <Box>
           <Box display="flex">

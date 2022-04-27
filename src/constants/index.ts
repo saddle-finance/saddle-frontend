@@ -8,34 +8,11 @@ import {
 
 import { AbstractConnector } from "@web3-react/abstract-connector"
 import { BigNumber } from "@ethersproject/bignumber"
-import alethLogo from "../assets/icons/aleth.svg"
-import alusdLogo from "../assets/icons/alusd.svg"
 import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
-import daiLogo from "../assets/icons/dai.svg"
-import feiLogo from "../assets/icons/fei.svg"
-import fraxLogo from "../assets/icons/frax.svg"
-import lusdLogo from "../assets/icons/lusd.svg"
 import metamaskIcon from "../assets/icons/metamask.svg"
-import mimLogo from "../assets/icons/mim.png"
-import nusdLogo from "../assets/icons/nusd.svg"
-import renbtcLogo from "../assets/icons/renbtc.svg"
-import saddleLPTokenLogo from "../assets/icons/saddle_lp_token.svg"
-import saddleLogo from "../assets/icons/logo_24.svg"
-import sbtcLogo from "../assets/icons/sbtc.svg"
-import sethLogo from "../assets/icons/seth.svg"
-import speraxLogo from "../assets/icons/sperax.png"
-import susdLogo from "../assets/icons/susd.svg"
 import tallyIcon from "../assets/icons/tally.svg"
-import tbtcLogo from "../assets/icons/tbtc.svg"
 import unstoppableDomainsLogo from "../assets/icons/unstoppableDomainsLogo.png"
-import usdcLogo from "../assets/icons/usdc.svg"
-import usdsLogo from "../assets/icons/usds.png"
-import usdtLogo from "../assets/icons/usdt.svg"
-import veth2Logo from "../assets/icons/veth2.svg"
 import walletconnectIcon from "../assets/icons/walletconnect.svg"
-import wbtcLogo from "../assets/icons/wbtc.svg"
-import wcusdLogo from "../assets/icons/wcusd.png"
-import wethLogo from "../assets/icons/weth.svg"
 
 export const NetworkContextName = "NETWORK"
 export const BTC_POOL_NAME = "BTC"
@@ -57,6 +34,7 @@ export const OPT_USD_POOL_NAME = "optUSD"
 export const FRAX_OPT_USD_METAPOOL_NAME = "frax-optUSD"
 export const FRAX_ARB_USD_POOL_V2_NAME = "arbUSDV2"
 export const FTM_USD_POOL_NAME = "ftmUSD"
+export const EVMOS_TESTNET_POOL_NAME = "evmosTestnetUSD"
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof BTC_POOL_V2_NAME
@@ -77,6 +55,7 @@ export type PoolName =
   | typeof FRAX_ARB_USD_POOL_V2_NAME
   | typeof FTM_USD_POOL_NAME
   | typeof USDS_ARB_USD_METAPOOL_NAME
+  | typeof EVMOS_TESTNET_POOL_NAME
 
 export enum ChainId {
   MAINNET = 1,
@@ -88,6 +67,8 @@ export enum ChainId {
   ARBITRUM = 42161,
   OPTIMISM = 10,
   FANTOM = 250,
+  EVMOS = 9001,
+  EVMOS_TESTNET = 9000,
 }
 export enum PoolTypes {
   BTC,
@@ -119,7 +100,6 @@ export class Token {
   readonly decimals: number
   readonly symbol: string
   readonly name: string
-  readonly icon: string
   readonly geckoId: string
   readonly isSynthetic: boolean
   readonly isLPToken: boolean
@@ -130,7 +110,6 @@ export class Token {
     symbol: string,
     geckoId: string,
     name: string,
-    icon: string,
     isSynthetic = false,
     isLPToken = false,
   ) {
@@ -139,7 +118,6 @@ export class Token {
     this.symbol = symbol
     this.geckoId = geckoId
     this.name = name
-    this.icon = icon
     this.isSynthetic = isSynthetic
     this.isLPToken = isLPToken
   }
@@ -307,6 +285,10 @@ export const FTM_USD_SWAP_ADDRESSES = buildAddresses({
   [ChainId.FANTOM]: "0xBea9F78090bDB9e662d8CB301A00ad09A5b756e9",
 })
 
+export const EVMOS_TESTNET_SWAP_ADDRESSES = buildAddresses({
+  [ChainId.EVMOS_TESTNET]: "0x7264594dFB80a150f80b2988862605dDfda53727",
+})
+
 export const FRAX_OPT_USD_SWAP_ADDRESSES = buildAddresses({
   [ChainId.OPTIMISM]: "0xc55E8C79e5A6c3216D4023769559D06fa9A7732e",
 })
@@ -352,6 +334,12 @@ export const WCUSD_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
 export const FTM_USD_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.FANTOM]: "0xc969dD0A7AB0F8a0C5A69C0839dB39b6C928bC08",
 })
+
+export const EVMOS_TESTNET_4POOL_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses(
+  {
+    [ChainId.EVMOS_TESTNET]: "0x8adcB8A1Df1209554Be83F0F1c21EA54F9A9b18c",
+  },
+)
 
 export const WCUSD_SWAP_TOKEN_V2_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0x5F7872490a9B405946376dd40fCbDeF521F13e3f",
@@ -436,7 +424,6 @@ export const SPA = new Token(
   "SPA",
   "sperax",
   "Sperax",
-  speraxLogo,
   false,
   false,
 )
@@ -447,7 +434,6 @@ export const SDL_TOKEN = new Token(
   "SDL",
   "saddle-dao", // TBD
   "Saddle DAO",
-  saddleLogo,
   false,
   false,
 )
@@ -458,7 +444,6 @@ export const SUSD_SWAP_TOKEN = new Token(
   "saddleSUSD",
   "saddlesusd",
   "Saddle sUSD/saddleUSD-V2",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -469,7 +454,6 @@ export const SUSD_SWAP_V2_TOKEN = new Token(
   "saddleSUSD-V2",
   "saddlesusd-v2",
   "Saddle sUSD/saddleUSD-V2 V2",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -480,7 +464,6 @@ export const BTC_SWAP_TOKEN = new Token(
   "saddleBTC",
   "saddlebtc",
   "Saddle TBTC/WBTC/RENBTC/SBTC",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -491,7 +474,6 @@ export const BTC_SWAP_V2_TOKEN = new Token(
   "saddleBTC-V2",
   "saddlebtc-v2",
   "Saddle WBTC/RENBTC/SBTC",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -502,7 +484,6 @@ export const TBTC_SWAP_TOKEN = new Token(
   "saddletBTC",
   "saddletBTC",
   "Saddle tBTCv2/saddleWRenSBTC",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -513,7 +494,6 @@ export const TBTC_SWAP_V2_TOKEN = new Token(
   "saddletBTC-V2",
   "saddletBTC-v2",
   "Saddle tBTCv2/saddleWRenSBTC V2",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -524,7 +504,6 @@ export const STABLECOIN_SWAP_TOKEN = new Token(
   "saddleUSD",
   "saddleusd",
   "Saddle DAI/USDC/USDT",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -535,7 +514,6 @@ export const STABLECOIN_SWAP_V2_TOKEN = new Token(
   "saddleUSD-V2",
   "saddleusd-v2",
   "Saddle DAI/USDC/USDT V2",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -546,7 +524,6 @@ export const WCUSD_SWAP_TOKEN = new Token(
   "saddlewCUSD",
   "saddlewcusd",
   "Saddle wCUSD/saddleUSD-V2",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -557,7 +534,6 @@ export const WCUSD_SWAP_V2_TOKEN = new Token(
   "saddlewCUSD-V2",
   "saddlewcusd-v2",
   "Saddle wCUSD/saddleUSD-V2 V2",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -568,7 +544,6 @@ export const ARB_USD_SWAP_TOKEN = new Token(
   "saddleArbUSD",
   "saddlearbUSD",
   "Saddle nUSD/MIM/USDC/USDT",
-  saddleLogo,
   false,
   true,
 )
@@ -579,7 +554,16 @@ export const FTM_USD_SWAP_TOKEN = new Token(
   "saddleFtmUSD",
   "saddleftmUSD",
   "Saddle FRAX/USDC",
-  saddleLogo,
+  false,
+  true,
+)
+
+export const EVMOS_TESTNET_SWAP_TOKEN = new Token(
+  EVMOS_TESTNET_4POOL_SWAP_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "saddleEvmosUSD",
+  "saddleevmosUSD",
+  "Saddle EVMOS 4 Pool",
   false,
   true,
 )
@@ -590,7 +574,6 @@ export const OPT_USD_SWAP_TOKEN = new Token(
   "saddleOptUSD",
   "saddleoptUSD",
   "Saddle DAI/USDC/USDT",
-  saddleLogo,
   false,
   true,
 )
@@ -601,7 +584,6 @@ export const FRAX_OPT_USD_SWAP_TOKEN = new Token(
   "frax-saddleOptUSD",
   "frax-saddleoptUSD",
   "Saddle FRAX/saddleOptUsd",
-  saddleLogo,
   false,
   true,
 )
@@ -612,7 +594,6 @@ export const USDS_ARB_USD_SWAP_TOKEN = new Token(
   "usds-saddleArbUSD",
   "usds-saddlearbUSD",
   "Saddle USDS/saddleArbUsd",
-  saddleLogo,
   false,
   true,
 )
@@ -623,7 +604,6 @@ export const FRAX_ARB_USD_SWAP_V2_TOKEN = new Token(
   "saddleFraxArbUSD-V2",
   "saddlefraxarbUSD-v2",
   "Saddle FRAX/USDC/USDT",
-  saddleLogo,
   false,
   true,
 )
@@ -634,7 +614,6 @@ export const VETH2_SWAP_TOKEN = new Token(
   "saddleVETH2",
   "saddleveth2",
   "Saddle WETH/vETH2",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -645,7 +624,6 @@ export const ALETH_SWAP_TOKEN = new Token(
   "saddleALETH",
   "saddlealeth",
   "Saddle WETH/alETH/sETH",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -656,7 +634,6 @@ export const D4_SWAP_TOKEN = new Token(
   "saddleD4",
   "saddled4",
   "Saddle alUSD/FEI/FRAX/LUSD",
-  saddleLPTokenLogo,
   false,
   true,
 )
@@ -672,7 +649,6 @@ export const WCUSD = new Token(
   "wCUSD",
   "wrapped-celo-dollar",
   "Wrapped Celo USD",
-  wcusdLogo,
 )
 
 const SUSD_CONTRACT_ADDRESSES = buildAddresses({
@@ -685,7 +661,6 @@ export const SUSD = new Token(
   "sUSD",
   "nusd",
   "sUSD",
-  susdLogo,
   true,
 )
 
@@ -695,15 +670,10 @@ const DAI_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
   [ChainId.OPTIMISM]: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
   [ChainId.FANTOM]: "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
+  [ChainId.EVMOS_TESTNET]: "0x6CE6BeeEDeFd2d83C1c6EC191ceBCE0317227852",
 })
-export const DAI = new Token(
-  DAI_CONTRACT_ADDRESSES,
-  18,
-  "DAI",
-  "dai",
-  "Dai",
-  daiLogo,
-)
+
+export const DAI = new Token(DAI_CONTRACT_ADDRESSES, 18, "DAI", "dai", "Dai")
 
 const USDC_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
@@ -712,6 +682,7 @@ const USDC_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.ARBITRUM]: "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
   [ChainId.OPTIMISM]: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
   [ChainId.FANTOM]: "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+  [ChainId.EVMOS_TESTNET]: "0xF4cd157e54c7B658d7A4995d84372C3dc79D1755",
 })
 export const USDC = new Token(
   USDC_CONTRACT_ADDRESSES,
@@ -719,7 +690,6 @@ export const USDC = new Token(
   "USDC",
   "usd-coin",
   "USDC Coin",
-  usdcLogo,
 )
 
 const USDT_CONTRACT_ADDRESSES = buildAddresses({
@@ -728,6 +698,7 @@ const USDT_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1",
   [ChainId.ARBITRUM]: "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
   [ChainId.OPTIMISM]: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
+  [ChainId.EVMOS_TESTNET]: "0x06545e8108090bA1E8448a66b65C62A8B862e7D1",
 })
 export const USDT = new Token(
   USDT_CONTRACT_ADDRESSES,
@@ -735,7 +706,6 @@ export const USDT = new Token(
   "USDT",
   "tether",
   "Tether",
-  usdtLogo,
 )
 
 const NUSD_CONTRACT_ADDRESSES = buildAddresses({
@@ -747,7 +717,6 @@ export const NUSD = new Token(
   "nUSD",
   "nusd",
   "nUSD",
-  nusdLogo,
 )
 
 const MIM_CONTRACT_ADDRESSES = buildAddresses({
@@ -759,7 +728,6 @@ export const MIM = new Token(
   "MIM",
   "magic-internet-money",
   "Magic Internet Money",
-  mimLogo,
 )
 
 const FRAX_CONTRACT_ADDRESSES = buildAddresses({
@@ -781,7 +749,6 @@ export const FRAX = new Token(
   "FRAX",
   "frax",
   "Frax",
-  fraxLogo,
 )
 
 export const USDS = new Token(
@@ -790,7 +757,18 @@ export const USDS = new Token(
   "USDs",
   "sperax-usd",
   "USDs",
-  usdsLogo,
+)
+
+const UST_CONTRACT_ADDRESSES = buildAddresses({
+  [ChainId.EVMOS_TESTNET]: "0xB3d39E511b33154A023a67a5C916FfBA0346Cdab",
+})
+
+export const UST = new Token(
+  UST_CONTRACT_ADDRESSES,
+  18,
+  "UST",
+  "terrausd",
+  "TerraUSD",
 )
 
 export const FRAX_ARB_USD_POOL_V2_TOKENS = [FRAX, USDC, USDT]
@@ -807,6 +785,7 @@ export const USDS_ARB_USD_UNDERLYING_POOL_TOKENS = [
   FRAX_ARB_USD_SWAP_V2_TOKEN,
 ]
 export const FTM_USD_POOL_TOKENS = [FRAX, USDC]
+export const EVMOS_TESTNET_POOL_TOKENS = [DAI, USDC, USDT, UST]
 
 // Tokenized BTC
 const TBTC_CONTRACT_ADDRESSES = buildAddresses({
@@ -820,7 +799,6 @@ export const TBTC = new Token(
   "TBTC",
   "tbtc",
   "tBTC",
-  tbtcLogo,
 )
 
 const TBTC_V2_CONTRACT_ADDRESSES = buildAddresses({
@@ -833,7 +811,6 @@ export const TBTC_V2 = new Token(
   "TBTCv2",
   "tbtc",
   "tBTCv2",
-  tbtcLogo,
 )
 
 const WBTC_CONTRACT_ADDRESSES = buildAddresses({
@@ -847,7 +824,6 @@ export const WBTC = new Token(
   "WBTC",
   "wrapped-bitcoin",
   "WBTC",
-  wbtcLogo,
 )
 
 const RENBTC_CONTRACT_ADDRESSES = buildAddresses({
@@ -861,7 +837,6 @@ export const RENBTC = new Token(
   "RENBTC",
   "renbtc",
   "renBTC",
-  renbtcLogo,
 )
 
 const SBTC_CONTRACT_ADDRESSES = buildAddresses({
@@ -875,7 +850,6 @@ export const SBTC = new Token(
   "sBTC",
   "sbtc",
   "sBTC",
-  sbtcLogo,
   true,
 )
 
@@ -896,7 +870,6 @@ export const WETH = new Token(
   "WETH",
   "ethereum",
   "WETH",
-  wethLogo,
 )
 
 const VETH2_CONTRACT_ADDRESSES = buildAddresses({
@@ -910,7 +883,6 @@ export const VETH2 = new Token(
   "VETH2",
   "ethereum",
   "vETH2",
-  veth2Logo,
 )
 
 export const VETH2_POOL_TOKENS = [WETH, VETH2]
@@ -926,7 +898,6 @@ export const ALETH = new Token(
   "alETH",
   "alchemix-eth",
   "Alchemix ETH",
-  alethLogo,
 )
 
 const SETH_CONTRACT_ADDRESSES = buildAddresses({
@@ -940,7 +911,6 @@ export const SETH = new Token(
   "sETH",
   "seth",
   "Synth sETH",
-  sethLogo,
   true,
 )
 
@@ -957,7 +927,6 @@ export const ALUSD = new Token(
   "alUSD",
   "alchemix-usd",
   "Alchemix USD",
-  alusdLogo,
 )
 
 const FEI_CONTRACT_ADDRESSES = buildAddresses({
@@ -971,7 +940,6 @@ export const FEI = new Token(
   "FEI",
   "fei-usd",
   "Fei Protocol",
-  feiLogo,
 )
 
 const LUSD_CONTRACT_ADDRESSES = buildAddresses({
@@ -985,7 +953,6 @@ export const LUSD = new Token(
   "LUSD",
   "liquity-usd",
   "Liquity USD",
-  lusdLogo,
 )
 
 export const D4_POOL_TOKENS = [ALUSD, FEI, FRAX, LUSD]
@@ -1228,6 +1195,61 @@ export const POOLS_MAP: PoolsMap = {
     route: "ftmusd",
     rewardPids: buildPids({}),
   },
+  [EVMOS_TESTNET_POOL_NAME]: {
+    name: EVMOS_TESTNET_POOL_NAME,
+    addresses: EVMOS_TESTNET_SWAP_ADDRESSES,
+    lpToken: EVMOS_TESTNET_SWAP_TOKEN,
+    poolTokens: EVMOS_TESTNET_POOL_TOKENS,
+    isSynthetic: false,
+    type: PoolTypes.USD,
+    route: "evmostestnetusd",
+    rewardPids: buildPids({}),
+  },
+}
+
+// @dev note that metapools refer to the deposit addresses and not the meta addresses
+const minichefPids: Partial<Record<ChainId, { [pool: string]: number }>> = {
+  [ChainId.MAINNET]: {
+    [ALETH_SWAP_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 1,
+    [D4_SWAP_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 2,
+    [STABLECOIN_SWAP_V2_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 3,
+    [BTC_SWAP_V2_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 4,
+    [TBTC_META_SWAP_V2_DEPOSIT_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 5,
+    [TBTC_META_SWAP_V2_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 5,
+    [SUSD_META_SWAP_V2_DEPOSIT_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 6,
+    [SUSD_META_SWAP_V2_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 6,
+    [WCUSD_META_SWAP_V2_DEPOSIT_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 7,
+    [WCUSD_META_SWAP_V2_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 7,
+  },
+  [ChainId.HARDHAT]: {
+    [ALETH_SWAP_ADDRESSES[ChainId.HARDHAT].toLowerCase()]: 1,
+    [D4_SWAP_ADDRESSES[ChainId.HARDHAT].toLowerCase()]: 2,
+    [STABLECOIN_SWAP_V2_ADDRESSES[ChainId.HARDHAT].toLowerCase()]: 3,
+    [BTC_SWAP_V2_ADDRESSES[ChainId.HARDHAT].toLowerCase()]: 4,
+  },
+  [ChainId.ARBITRUM]: {
+    [ARB_USD_SWAP_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 1,
+    [USDS_ARB_USD_SWAP_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 2,
+  },
+}
+
+export function getMinichefPid(
+  chainId: ChainId,
+  poolAddress: string,
+): number | null {
+  return minichefPids?.[chainId]?.[poolAddress] || null
+}
+
+export function getIsLegacySwapABIPoolByAddress(
+  chainId: ChainId,
+  poolAddress: string,
+): boolean {
+  const legacyAddresses = [
+    BTC_POOL_NAME,
+    STABLECOIN_POOL_NAME,
+    VETH2_POOL_NAME,
+  ].map((name) => POOLS_MAP[name].addresses[chainId])
+  return legacyAddresses.includes(poolAddress)
 }
 export function isLegacySwapABIPool(poolName: string): boolean {
   return new Set([BTC_POOL_NAME, STABLECOIN_POOL_NAME, VETH2_POOL_NAME]).has(
@@ -1370,22 +1392,22 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
 
 // derived from https://docs.synthetix.io/tokens/list/
 export const SYNTHETIX_TOKENS = [
-  "0xd2dF355C19471c8bd7D8A3aa27Ff4e26A21b4076", // Aave (sAAVE),
-  "0xF48e200EAF9906362BB1442fca31e0835773b8B4", // Australian Dollars (sAUD),
-  "0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6", // Bitcoin (sBTC),
-  "0xe36E2D3c7c34281FA3bC737950a68571736880A1", // Cardano (sADA),
-  "0xbBC455cb4F1B9e4bFC4B73970d360c8f032EfEE6", // Chainlink (sLINK),
-  "0xe1aFe1Fd76Fd88f78cBf599ea1846231B8bA3B6B", // DeFi Index (sDEFI),
-  "0x104eDF1da359506548BFc7c25bA1E28C16a70235", // ETH / BTC (sETHBTC),
-  "0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb", // Ether (sETH),
-  "0xD71eCFF9342A5Ced620049e616c5035F1dB98620", // Euros (sEUR),
-  "0xF6b1C627e95BFc3c1b4c9B825a032Ff0fBf3e07d", // Japanese Yen (sJPY),
-  "0x1715AC0743102BF5Cd58EfBB6Cf2dC2685d967b6", // Polkadot (sDOT),
-  "0x97fe22E7341a0Cd8Db6F6C021A24Dc8f4DAD855F", // Pound Sterling (sGBP),
-  "0x269895a3dF4D73b077Fc823dD6dA1B95f72Aaf9B", // South Korean Won (sKRW),
-  "0x0F83287FF768D1c1e17a42F44d644D7F22e8ee1d", // Swiss Franc (sCHF),
-  "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F", // Synthetix (SNX),
-  "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51", // US Dollars (sUSD)
+  "0xd2df355c19471c8bd7d8a3aa27ff4e26a21b4076", // Aave (sAAVE)
+  "0xf48e200eaf9906362bb1442fca31e0835773b8b4", // Australian Dollars (sAUD)
+  "0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6", // Bitcoin (sBTC)
+  "0xe36e2d3c7c34281fa3bc737950a68571736880a1", // Cardano (sADA)
+  "0xbbc455cb4f1b9e4bfc4b73970d360c8f032efee6", // Chainlink (sLINK)
+  "0xe1afe1fd76fd88f78cbf599ea1846231b8ba3b6b", // DeFi Index (sDEFI)
+  "0x104edf1da359506548bfc7c25ba1e28c16a70235", // ETH / BTC (sETHBTC)
+  "0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb", // Ether (sETH)
+  "0xd71ecff9342a5ced620049e616c5035f1db98620", // Euros (sEUR)
+  "0xf6b1c627e95bfc3c1b4c9b825a032ff0fbf3e07d", // Japanese Yen (sJPY)
+  "0x1715ac0743102bf5cd58efbb6cf2dc2685d967b6", // Polkadot (sDOT)
+  "0x97fe22e7341a0cd8db6f6c021a24dc8f4dad855f", // Pound Sterling (sGBP)
+  "0x269895a3df4d73b077fc823dd6da1b95f72aaf9b", // South Korean Won (sKRW)
+  "0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d", // Swiss Franc (sCHF)
+  "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f", // Synthetix (SNX)
+  "0x57ab1ec28d129707052df4df418d58a2d46d5f51", // US Dollars (sUSD)
 ]
 
 // "SADDLE" in bytes32 form
@@ -1397,3 +1419,6 @@ export const IS_VIRTUAL_SWAP_ACTIVE = true
 export const IS_L2_SUPPORTED = true
 export const IS_SDL_LIVE = true
 // FLAGS END
+
+// Regex for readable decimal number
+export const readableDecimalNumberRegex = /^[0-9]*[.,]?[0-9]*$/

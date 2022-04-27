@@ -7,17 +7,16 @@ import {
   styled,
 } from "@mui/material"
 import React, { ReactElement, useState } from "react"
-
 import { AppState } from "../state/index"
 import { GasPrices } from "../state/user"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import { ReviewWithdrawData } from "./WithdrawPage"
+import TokenIcon from "./TokenIcon"
 import { formatDeadlineToNumber } from "../utils"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import { formatUnits } from "@ethersproject/units"
 import { isHighPriceImpact } from "../utils/priceImpact"
-import saddleLPTokenLogo from "../assets/icons/saddle_lp_token.svg"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
@@ -63,7 +62,12 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
       </Typography>
       <WithdrawInfoItem>
         <Box display="flex" alignItems="center">
-          <img src={saddleLPTokenLogo} alt="icon" width={20} height={20} />
+          <TokenIcon
+            symbol={"saddle_lp_token.svg"}
+            alt="icon"
+            width={20}
+            height={20}
+          />
           <Typography ml={0.5}>SaddleUSD-V2</Typography>
         </Box>
         <Typography variant="body1">
@@ -78,7 +82,12 @@ function ReviewWithdraw({ onClose, onConfirm, data }: Props): ReactElement {
         {data.withdraw.map((token, index) => (
           <WithdrawInfoItem key={index} mb={1}>
             <Box display="flex" alignItems="center">
-              <img src={token.icon} alt="icon" width={20} height={20} />
+              <TokenIcon
+                symbol={token.symbol}
+                alt="icon"
+                width={20}
+                height={20}
+              />
               <Typography ml={0.5}>{token.name}</Typography>
             </Box>
 

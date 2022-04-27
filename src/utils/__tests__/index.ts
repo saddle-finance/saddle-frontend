@@ -1,5 +1,7 @@
 import { PoolTypes, TOKENS_MAP } from "../../constants/index"
 import {
+  batchArray,
+  bnSum,
   calculateExchangeRate,
   calculatePrice,
   commify,
@@ -7,6 +9,7 @@ import {
   formatBNToShortString,
   formatDeadlineToNumber,
   getTokenByAddress,
+  getTokenIconPath,
   getTokenSymbolForPoolType,
   intersection,
 } from "../index"
@@ -15,6 +18,40 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { Deadlines } from "../../state/user"
 import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
+
+describe("bnSum", () => {
+  const testCases = [
+    [[1, 2, 3], 6],
+    [[1, 2], 3],
+    [[1], 1],
+    [[], Zero],
+  ] as [number[], number][]
+  testCases.forEach(([args, expected]) => {
+    const argsString = `${args.join("+")} => ${expected}`
+    it(`correctly calculates ${argsString}`, () => {
+      expect(args.map((n) => BigNumber.from(n)).reduce(bnSum, Zero)).toEqual(
+        BigNumber.from(expected),
+      )
+    })
+  })
+})
+
+describe("batchArray", () => {
+  const testCases = [
+    [
+      [[1, 2, 3], 2],
+      [[1, 2], [3]],
+    ],
+    [[[1, 2, 3], 3], [[1, 2, 3]]],
+    [[[1, 2, 3], 4], [[1, 2, 3]]],
+  ] as [[number[], number], number[][]][]
+  testCases.forEach(([args, expected]) => {
+    const argsString = `${args[0].toString()}, ${args[1]}`
+    it(`correctly formats ${argsString}`, () => {
+      expect(batchArray(...args)).toEqual(expected)
+    })
+  })
+})
 
 describe("enumerate", () => {
   const testCases = [
@@ -148,5 +185,28 @@ describe("getTokenSymbolForPoolType", () => {
 describe("calculatePrice", () => {
   it("correctly gets Zero for an empty price", () => {
     expect(calculatePrice(BigNumber.from(1), 0, undefined)).toBe(Zero)
+  })
+})
+
+describe("getTokenIconPath", () => {
+  it("correctly retrieves icon path for non-saddle tokens", () => {
+    Object.keys(TOKENS_MAP).forEach((tokenSymbol) => {
+      const castedSymbol = <string>tokenSymbol
+      if (!castedSymbol.toLowerCase().includes("saddle")) {
+        expect(getTokenIconPath(castedSymbol)).toEqual(
+          `/static/icons/svg/${castedSymbol.toLowerCase()}.svg`,
+        )
+      }
+    })
+  })
+  it("correctly retrieves icon path for saddle tokens", () => {
+    Object.keys(TOKENS_MAP).forEach((tokenSymbol) => {
+      const castedSymbol = <string>tokenSymbol
+      if (castedSymbol.toLowerCase().includes("saddle")) {
+        expect(getTokenIconPath(castedSymbol)).toEqual(
+          `/static/icons/svg/saddle_lp_token.svg`,
+        )
+      }
+    })
   })
 })

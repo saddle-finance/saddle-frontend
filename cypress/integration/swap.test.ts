@@ -8,16 +8,21 @@ context("Swap Flow", () => {
         cy.wait(3000)
       })
       it("starts in a neutral state", () => {
-        cy.react("SwapTokenInput").eq(0).should("include.text", "Choose")
-        cy.react("SwapTokenInput").eq(1).should("include.text", "Choose")
+        cy.get('[data-testid="swapTokenInputFrom"]')
+          .eq(0)
+          .should("include.text", "Choose")
+        cy.get('[data-testid="swapTokenInputTo"]')
+          .eq(0)
+          .should("include.text", "Choose")
       })
       it("shows all of the pool's tokens and balances in dropdown", () => {
-        cy.react("SwapTokenInput")
+        cy.get('[data-testid="swapTokenInputFrom"]')
           .eq(0)
           .contains("Choose")
           .as("dropdownButton")
           .click() // show
         poolTokenSymbols.forEach((tokenSymbol) => {
+          cy.react("ListItem", { options: { timeout: 3000 } }).should("exist") // wait for listitem to appear
           cy.get('[data-testid="dropdownContainer"]')
             .contains(tokenSymbol)
             .should("exist")
@@ -37,14 +42,20 @@ context("Swap Flow", () => {
         cy.get('[data-testid="dropdownContainer"]')
           .contains(poolTokenSymbols[0])
           .click()
-        cy.react("SearchSelect").should("not.exist")
+        cy.react("SearchSelect", { options: { timeout: 1000 } }).should(
+          "not.exist",
+        )
         // cy.react("SwapTokenInput")
         //   .eq(0)
         cy.get('[data-testid="swapTokenInputFrom"]').should(
           "include.text",
           poolTokenSymbols[0],
         )
-        cy.contains("Balance:").siblings("a").should("not.have", "0.0")
+        cy.get("span")
+          .contains("Balance")
+          .siblings("button")
+          .eq(0)
+          .should("not.have", "0.0")
       })
       it("accepts user input and updates calculated amount", () => {
         cy.get('[data-testid="tokenValueInput"]').eq(0).type("1")
@@ -81,25 +92,20 @@ context("Swap Flow", () => {
       })
       it("shows information about the transaction", () => {
         cy.get("div").contains("Rate").as("rateEl").should("exist")
-        cy.get("@rateEl")
-          .parent()
-          .siblings(".exchRate")
-          .should(($el) => {
-            expect($el.text()).to.match(/\d+\.\d+/)
-          })
+        cy.get('[data-testid="exchRate"]').should(($el) => {
+          expect($el.text()).to.match(/\d+\.\d+/)
+        })
 
         cy.get("div")
           .contains("Price Impact")
           .as("priceImpactEl")
           .should("exist")
-        cy.get("@priceImpactEl")
-          .siblings("span")
-          .should(($el) => {
-            expect($el.text()).to.match(/-?\d+\.\d+%/)
-          })
+        cy.get('[data-testid="swapPriceImpactValue"]').should(($el) => {
+          expect($el.text()).to.match(/-?\d+\.\d+%/)
+        })
       })
       it("completes a swap", () => {
-        cy.get("button").contains("Swap").click()
+        cy.get("button").contains("Swap").should("be.enabled").click()
       })
     })
   }

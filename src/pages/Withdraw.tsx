@@ -112,10 +112,9 @@ function Withdraw({ poolName }: Props): ReactElement {
 
   const tokensData = React.useMemo(
     () =>
-      POOL.poolTokens.map(({ name, symbol, icon }) => ({
+      POOL.poolTokens.map(({ name, symbol }) => ({
         name,
         symbol,
-        icon,
         inputValue: withdrawFormState.tokenInputs[symbol].valueRaw,
       })),
     [withdrawFormState, POOL.poolTokens],
@@ -154,7 +153,7 @@ function Withdraw({ poolName }: Props): ReactElement {
     withdrawLPTokenAmount,
     txnGasCost: txnGasCost,
   }
-  POOL.poolTokens.forEach(({ name, decimals, icon, symbol }) => {
+  POOL.poolTokens.forEach(({ name, decimals, symbol }) => {
     if (BigNumber.from(withdrawFormState.tokenInputs[symbol].valueSafe).gt(0)) {
       reviewWithdrawData.withdraw.push({
         name,
@@ -164,7 +163,7 @@ function Withdraw({ poolName }: Props): ReactElement {
             decimals,
           ),
         ),
-        icon,
+        symbol,
       })
       if (tokenPricesUSD != null) {
         reviewWithdrawData.rates.push({

@@ -13,11 +13,11 @@ import {
   formatBNToString,
   formatDeadlineToNumber,
 } from "../utils"
-
 import { AppState } from "../state/index"
 import { DepositTransaction } from "../interfaces/transactions"
 import DialogTitle from "./DialogTitle"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
+import TokenIcon from "./TokenIcon"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import { isHighPriceImpact } from "../utils/priceImpact"
@@ -34,13 +34,13 @@ const DepositInfoItem = styled(Box)(({ theme }) => ({
   display: "flex",
   minWidth: "100%",
   marginBottom: theme.spacing(2),
-  "&>:first-child": {
+  "& div:first-of-type": {
     display: "flex",
+    gap: theme.spacing(1),
   },
-  "&>:last-child": {
+  "& :last-child": {
     marginLeft: "auto",
-    marginRight: "0px",
-    width: "fit-content",
+    marginRight: 0,
   },
 }))
 function ReviewDeposit({
@@ -81,7 +81,12 @@ function ReviewDeposit({
             {transactionData.from.items.map(({ token, amount }) => (
               <DepositInfoItem key={token.name}>
                 <div>
-                  <img src={token.icon} width={24} height={24} alt="icon" />
+                  <TokenIcon
+                    symbol={token.symbol}
+                    width={24}
+                    height={24}
+                    alt="icon"
+                  />
                   <Typography ml={1}>{token.symbol}</Typography>
                 </div>
                 <Typography>
@@ -104,8 +109,8 @@ function ReviewDeposit({
           </Typography>
           <DepositInfoItem>
             <div>
-              <img
-                src={transactionData.to.item.token.icon}
+              <TokenIcon
+                symbol={transactionData.to.item.token.symbol}
                 width={24}
                 height={24}
                 alt="icon"
@@ -166,9 +171,10 @@ function ReviewDeposit({
               {deadline} {t("minutes")}
             </Typography>
           </DepositInfoItem>
-          <DepositInfoItem>
+          <Box>
             <Typography mr={2}>{t("rates")}</Typography>
-            <div>
+
+            <Box ml="auto" mr={0} width="fit-content">
               {transactionData.from.items.map(
                 ({ token, singleTokenPriceUSD }) => (
                   <Typography key={token.symbol}>
@@ -185,8 +191,8 @@ function ReviewDeposit({
                   </Typography>
                 ),
               )}
-            </div>
-          </DepositInfoItem>
+            </Box>
+          </Box>
         </Box>
         {isHighPriceImpactTxn && (
           <HighPriceImpactConfirmation

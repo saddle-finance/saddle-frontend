@@ -123,7 +123,8 @@ const lightPalette: PaletteOptions | undefined = {
     },
   },
   text: {
-    secondary: "#252525",
+    primary: "#000000",
+    secondary: "#404040",
     disabled: "#A7A7A7",
   },
   divider: "#E3D899",
