@@ -99,7 +99,7 @@
     "build-storybook": "build-storybook -s public",
     "build": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-scripts build",
     "bundlemon": "bundlemon --subProject no-compression --defaultCompression none && bundlemon --subProject gzip-compression --defaultCompression gzip",
-    "cy:coverage": "start-test 3000 'npx cypress-repeat run -n 2 --until-passes --rerun-failed-only'",
+    "cy:coverage": "start-test 3000 'npx cypress-repeat run -n 2 --until-passes --rerun-failed-only --browser chrome'",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
     "cy:startopen": "start-test 3000 'cypress open'",
