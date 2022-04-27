@@ -13,7 +13,6 @@ import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 
 import Dialog from "../../components/Dialog"
 import DialogTitle from "../../components/DialogTitle"
-import { POOL_FEE_PRECISION } from "../../constants"
 import React from "react"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../../hooks"
@@ -75,10 +74,10 @@ export default function ReviewCreatePool({
       poolName: ethers.utils.formatBytes32String(poolData.poolName),
       tokens: poolData.tokenInputs,
       decimals,
-      adminFee: BigNumber.from(parseUnits("50", POOL_FEE_PRECISION)), // 50%
+      adminFee: BigNumber.from(parseUnits("50", 8)), // 50%
       lpTokenSymbol: poolData.poolSymbol,
       a: BigNumber.from(poolData.aParameter),
-      fee: BigNumber.from(parseUnits(poolData.fee, POOL_FEE_PRECISION)),
+      fee: BigNumber.from(parseUnits(poolData.fee, 8)),
       owner: account,
       typeOfAsset: poolData.assetType,
     }
