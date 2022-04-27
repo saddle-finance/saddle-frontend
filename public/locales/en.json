@@ -90,6 +90,7 @@
   "from": "From",
   "gas": "Gas",
   "getWallet": "Get a wallet!",
+  "goBackToEdit": "Go back to edit",
   "highPriceImpact": "Warning: High Price Impact! {{rate}}",
   "highPriceImpactConfirmation": "Warning: There is a high Price Impact on this transaction due either to the transaction's size or insufficient liquidity, which will result in a loss of funds. Please confirm that you understand before submitting your transaction.",
   "iConfirm": "I CONFIRM",
