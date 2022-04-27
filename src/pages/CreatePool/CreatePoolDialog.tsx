@@ -75,7 +75,7 @@ export default function ReviewCreatePool({
       poolName: ethers.utils.formatBytes32String(poolData.poolName),
       tokens: poolData.tokenInputs,
       decimals,
-      adminFee: BigNumber.from(50e8), // 50%
+      adminFee: BigNumber.from(parseUnits("50", POOL_FEE_PRECISION)), // 50%
       lpTokenSymbol: poolData.poolSymbol,
       a: BigNumber.from(poolData.aParameter),
       fee: BigNumber.from(parseUnits(poolData.fee, POOL_FEE_PRECISION)),
