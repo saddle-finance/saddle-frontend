@@ -36,10 +36,15 @@ export default function MyFarm({
   const formattedSpaClaimableBalance = commify(
     formatBNToString(amountOfSpaClaimable, 18, 4),
   )
+
+  const veSDLFeatureReady = false
+
   return isPoolIncentivized && IS_SDL_LIVE ? (
     <Paper sx={{ flex: 1 }}>
       <Stack spacing={2} p={4}>
-        <Typography variant="h1">{t("myFarm")}</Typography>
+        <Typography variant="h1">
+          {veSDLFeatureReady ? t("myGaugeFarm") : t("myFarm")}
+        </Typography>
         <Box display="flex" alignItems="center">
           <Box flex={1}>
             <Typography>{t("lpAvailable")}</Typography>

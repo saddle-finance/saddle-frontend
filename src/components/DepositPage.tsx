@@ -76,6 +76,10 @@ const DepositPage = (props: Props): ReactElement => {
   const theme = useTheme()
   const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
 
+  const onMigrateToGaugeClick = () => {
+    // TODO: Hook up call to migrate to gauge.
+  }
+
   return (
     <Container maxWidth={isLgDown ? "sm" : "lg"} sx={{ pt: 5, pb: 10 }}>
       {poolData?.name === VETH2_POOL_NAME &&
@@ -99,6 +103,30 @@ const DepositPage = (props: Props): ReactElement => {
             </Link>
             &gt;
           </Typography>
+        </Alert>
+      )}
+      {false && (
+        // {myShareData?.amountsStaked.gt(Zero) && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-around"
+            sx={{ p: 0 }}
+          >
+            <Typography sx={{ p: 0 }}>
+              {t("migrateToGauge", { farmName: poolData?.name })}
+            </Typography>
+            <Button
+              sx={{ minWidth: 192 }}
+              variant="contained"
+              color="secondary"
+              size="large"
+              onClick={onMigrateToGaugeClick}
+            >
+              {t("exitToMigrate")}
+            </Button>
+          </Box>
         </Alert>
       )}
 
