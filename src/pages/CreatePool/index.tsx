@@ -67,7 +67,7 @@ export default function CreatePool(): React.ReactElement {
   const [poolName, setPoolName] = useState<string>("")
   const [poolSymbol, setPoolSymbol] = useState<string>("")
   const [aParameter, setAParameter] = useState<string>("")
-  const [poolType, setPoolType] = useState<PoolType>(PoolType.BtcMeta)
+  const [poolType, setPoolType] = useState<PoolType>(PoolType.UsdMeta)
   const [assetType, setAssetType] = useState<AssetType>(0)
   const [tokenInputs, setTokenInputs] = useState<string[]>([""])
   const [tokenInfo, setTokenInfo] = useState<
@@ -92,7 +92,7 @@ export default function CreatePool(): React.ReactElement {
   }
 
   const isValidNumber = (text: string) => {
-    const digitRegex = /^\d+$/
+    const digitRegex = /^\d*(\.\d+)?$/
 
     return digitRegex.test(text)
   }
@@ -148,7 +148,8 @@ export default function CreatePool(): React.ReactElement {
 
   const poolNameError = poolName.length > 32
   const poolSymbolError = poolSymbol.length > 32
-  const aParameterError = !isValidNumber(aParameter) || Number(aParameter) < 1
+  const aParameterError =
+    !isValidNumber(aParameter) || parseFloat(aParameter) < 1
 
   const feeError =
     !isValidNumber(fee) || parseFloat(fee) > 1 || parseFloat(fee) < 0.04

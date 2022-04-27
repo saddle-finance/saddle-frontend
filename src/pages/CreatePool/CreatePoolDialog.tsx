@@ -43,8 +43,6 @@ type Props = {
   metapoolBasepoolLpAddr: string
 }
 
-// const POOL_FEE_PERCISION = 8
-
 export default function ReviewCreatePool({
   open,
   onClose = () => null,
