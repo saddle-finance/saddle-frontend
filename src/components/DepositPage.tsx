@@ -80,6 +80,8 @@ const DepositPage = (props: Props): ReactElement => {
     // TODO: Hook up call to migrate to gauge.
   }
 
+  const veSDLFeatureReady = false // TODO: delete after release.
+
   return (
     <Container maxWidth={isLgDown ? "sm" : "lg"} sx={{ pt: 5, pb: 10 }}>
       {poolData?.name === VETH2_POOL_NAME &&
@@ -105,7 +107,7 @@ const DepositPage = (props: Props): ReactElement => {
           </Typography>
         </Alert>
       )}
-      {false && (
+      {veSDLFeatureReady && (
         // {myShareData?.amountsStaked.gt(Zero) && (
         <Alert severity="error" sx={{ mb: 2 }}>
           <Box display="flex" alignItems="center" justifyContent="space-around">
