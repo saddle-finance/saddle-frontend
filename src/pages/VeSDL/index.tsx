@@ -18,9 +18,13 @@ import {
 import React, { useState } from "react"
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
 import { DatePicker } from "@mui/lab"
+import TokenInput from "../../components/TokenInput"
 
-export default function VeSDL() {
+export default function VeSDL(): JSX.Element {
   const [date, setDate] = useState<string | null>(null)
+  const handleChange = () => {
+    console.log("first")
+  }
   return (
     <Container>
       <Box display="flex" gap={2}>
@@ -36,7 +40,14 @@ export default function VeSDL() {
             <Typography variant="h2" textAlign="center">
               SDL Lock
             </Typography>
-            <TextField fullWidth />
+
+            <TokenInput
+              data-testid="sdlTokenInput"
+              symbol="SDL"
+              name="sdl"
+              onChange={handleChange}
+              inputValue="0.0"
+            />
             <Box display="flex" alignItems="center">
               <div>
                 <Typography mr={1} noWrap>
@@ -54,7 +65,12 @@ export default function VeSDL() {
             <Box textAlign="center">
               <ArrowDownwardIcon />
             </Box>
-            <TextField fullWidth />
+            <TokenInput
+              symbol="veSDL"
+              name="Vote escrow SDL"
+              onChange={handleChange}
+              inputValue="0.0"
+            />
             <Button variant="contained" fullWidth size="large">
               Lock
             </Button>
@@ -116,7 +132,7 @@ export default function VeSDL() {
                     <TableCell>Current week</TableCell>
                     <TableCell align="center">
                       <Button variant="contained" size="medium">
-                        Vote
+                        <Typography>Vote</Typography>
                       </Button>
                     </TableCell>
                   </TableRow>

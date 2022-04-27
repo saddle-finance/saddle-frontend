@@ -8,7 +8,7 @@ import {
 } from "@mui/material"
 import {
   LPTOKEN_TO_POOL_MAP,
-  TOKENS_MAP,
+  // TOKENS_MAP,
   readableDecimalNumberRegex,
 } from "../constants"
 import React, { ReactElement } from "react"
@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next"
 
 interface Props {
   symbol: string
+  name?: string
   max?: string
   inputValue: string
   onChange: (value: string) => void
@@ -34,6 +35,7 @@ interface Props {
 
 function TokenInput({
   symbol,
+  name,
   max,
   inputValue,
   onChange,
@@ -42,7 +44,6 @@ function TokenInput({
   helperText,
 }: Props): ReactElement {
   const { t } = useTranslation()
-  const { name } = TOKENS_MAP[symbol]
   const theme = useTheme()
 
   let tokenUSDValue: number | BigNumber | undefined
@@ -59,13 +60,14 @@ function TokenInput({
   }
 
   function onChangeInput(e: React.ChangeEvent<HTMLInputElement>): void {
-    const { decimals } = TOKENS_MAP[symbol]
+    // const { decimals } = TOKENS_MAP[symbol]
     const parsedValue = parseFloat("0" + e.target.value)
-    const periodIndex = e.target.value.indexOf(".")
+    // const periodIndex = e.target.value.indexOf(".")
     const isValidInput = e.target.value === "" || !isNaN(parsedValue)
-    const isValidPrecision =
-      periodIndex === -1 || e.target.value.length - 1 - periodIndex <= decimals
-    if (isValidInput && isValidPrecision) {
+    // const isValidPrecision =
+    //   periodIndex === -1 || e.target.value.length - 1 - periodIndex <= decimals
+    // if (isValidInput && isValidPrecision) {
+    if (isValidInput) {
       // don't allow input longer than the token allows
 
       // if value is not blank, then test the regex
