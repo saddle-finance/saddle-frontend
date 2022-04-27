@@ -23,7 +23,7 @@ import Web3Status from "./Web3Status"
 import { formatBNToShortString } from "../utils"
 import { useTranslation } from "react-i18next"
 
-type ActiveTabType = "" | "pools" | "risk"
+type ActiveTabType = "" | "pools" | "risk" | "vesdl"
 
 const NavMenu = styled(NavLink)<NavLinkProps & { selected: boolean }>(
   ({ theme, selected }) => {
@@ -93,6 +93,10 @@ function TopMenu(): ReactElement {
 
             <NavMenu to="/pools" selected={activeTab === "pools"}>
               {t("pools")}
+            </NavMenu>
+
+            <NavMenu to="/pools" selected={activeTab === "vesdl"}>
+              {t("veSdl")}
             </NavMenu>
 
             <NavMenu to="/risk" selected={activeTab === "risk"}>
