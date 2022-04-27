@@ -108,13 +108,8 @@ const DepositPage = (props: Props): ReactElement => {
       {false && (
         // {myShareData?.amountsStaked.gt(Zero) && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-around"
-            sx={{ p: 0 }}
-          >
-            <Typography sx={{ p: 0 }}>
+          <Box display="flex" alignItems="center" justifyContent="space-around">
+            <Typography>
               {t("migrateToGauge", { farmName: poolData?.name })}
             </Typography>
             <Button
