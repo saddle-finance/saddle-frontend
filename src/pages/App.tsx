@@ -94,7 +94,17 @@ export default function App(): ReactElement {
                               render={(props) => (
                                 <Deposit {...props} poolName={name} />
                               )}
-                              key={`${name}-deposit`}
+                              key={`${name}-name-deposit`}
+                            />
+                          ))}
+                          {pools.map(({ name, route }) => (
+                            <Route
+                              exact
+                              path={`/pools/${route}/deposit`}
+                              render={(props) => (
+                                <Deposit {...props} poolName={name} />
+                              )}
+                              key={`${route}-route-deposit`}
                             />
                           ))}
                           {pools.map(({ name }) => (
@@ -104,7 +114,17 @@ export default function App(): ReactElement {
                               render={(props) => (
                                 <Withdraw {...props} poolName={name} />
                               )}
-                              key={`${name}-withdraw`}
+                              key={`${name}-name-withdraw`}
+                            />
+                          ))}
+                          {pools.map(({ route, name }) => (
+                            <Route
+                              exact
+                              path={`/pools/${route}/withdraw`}
+                              render={(props) => (
+                                <Withdraw {...props} poolName={name} />
+                              )}
+                              key={`${route}-route-withdraw`}
                             />
                           ))}
                           <Redirect from="/pools/:route/:action" to="/pools" />
