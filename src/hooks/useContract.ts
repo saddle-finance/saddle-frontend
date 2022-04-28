@@ -187,13 +187,13 @@ export function useTokenContract(
   return useContract(tokenAddress, ERC20_ABI, withSignerIfPossible)
 }
 
-export function useSwapContract<T extends PoolName>(
+export function useSwapContract<T extends PoolName | string>(
   poolName?: T,
 ): T extends typeof BTC_POOL_NAME
   ? SwapGuarded | null
   : SwapFlashLoan | SwapFlashLoanNoWithdrawFee | MetaSwapDeposit | null
 export function useSwapContract(
-  poolName?: PoolName,
+  poolName?: string,
 ):
   | SwapGuarded
   | SwapFlashLoan
