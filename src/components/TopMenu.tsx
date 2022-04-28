@@ -95,9 +95,11 @@ function TopMenu(): ReactElement {
               {t("pools")}
             </NavMenu>
 
-            <NavMenu to="/vesdl" selected={activeTab === "vesdl"}>
-              {t("veSdl")}
-            </NavMenu>
+            {false && (
+              <NavMenu to="/vesdl" selected={activeTab === "vesdl"}>
+                {t("veSdl")}
+              </NavMenu>
+            )}
 
             <NavMenu to="/risk" selected={activeTab === "risk"}>
               {t("risk")}
