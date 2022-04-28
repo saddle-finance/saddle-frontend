@@ -173,7 +173,7 @@ export default function PoolOverview({
           )}
         </StyledGrid>
         <StyledGrid item xs={6} lg={2.5} disabled={disableText}>
-          {poolData.sdlPerDay != null && IS_SDL_LIVE && (
+          {poolData.sdlPerDay?.gt(Zero) && IS_SDL_LIVE && (
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Typography variant="subtitle1" mr={1}>
                 <Link
