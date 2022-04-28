@@ -3,6 +3,24 @@ import { JsonRpcProvider } from "@ethersproject/providers"
 import { Wallet } from "@ethersproject/wallet"
 import { _Eip1193Bridge } from "@ethersproject/experimental/lib/eip1193-bridge"
 
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      getBySelId: typeof getBySelId
+      getBySelLike: typeof getBySelLike
+    }
+  }
+}
+function getBySelId(selector: string, ...args) {
+  return cy.get(`[data-testid=${selector}]`, ...args)
+}
+Cypress.Commands.add("getBySelId", getBySelId)
+
+function getBySelLike(selector: string, ...args) {
+  return cy.get(`[data-test*=${selector}]`, ...args)
+}
+Cypress.Commands.add("getBySelLike", getBySelLike)
+
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite
@@ -15,7 +33,7 @@ import { _Eip1193Bridge } from "@ethersproject/experimental/lib/eip1193-bridge"
 //
 //
 // -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
+// Cypress.Commands.add("login", (email, password) => {})
 //
 //
 // -- This is a child command --

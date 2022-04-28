@@ -42,6 +42,7 @@ function TokenInput({
   disabled,
   error,
   helperText,
+  ...rest
 }: Props): ReactElement {
   const { t } = useTranslation()
   const theme = useTheme()
@@ -81,7 +82,7 @@ function TokenInput({
   }
 
   return (
-    <div>
+    <div {...rest}>
       {max != null && (
         <Box display="flex" alignItems="center" justifyContent="end">
           <Typography variant="subtitle2" sx={{ mr: 1 }}>
