@@ -35,6 +35,7 @@ export const FRAX_OPT_USD_METAPOOL_NAME = "frax-optUSD"
 export const FRAX_ARB_USD_POOL_V2_NAME = "arbUSDV2"
 export const FTM_USD_POOL_NAME = "ftmUSD"
 export const EVMOS_TESTNET_POOL_NAME = "evmosTestnetUSD"
+export const EVMOS_POOL_NAME = "evmosMainnetUSD"
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof BTC_POOL_V2_NAME
@@ -56,6 +57,7 @@ export type PoolName =
   | typeof FTM_USD_POOL_NAME
   | typeof USDS_ARB_USD_METAPOOL_NAME
   | typeof EVMOS_TESTNET_POOL_NAME
+  | typeof EVMOS_POOL_NAME
 
 export enum ChainId {
   MAINNET = 1,
@@ -289,6 +291,10 @@ export const EVMOS_TESTNET_SWAP_ADDRESSES = buildAddresses({
   [ChainId.EVMOS_TESTNET]: "0x7264594dFB80a150f80b2988862605dDfda53727",
 })
 
+export const EVMOS_SWAP_ADDRESSES = buildAddresses({
+  [ChainId.EVMOS]: "0x7264594dFB80a150f80b2988862605dDfda53727", // TODO: Update
+})
+
 export const FRAX_OPT_USD_SWAP_ADDRESSES = buildAddresses({
   [ChainId.OPTIMISM]: "0xc55E8C79e5A6c3216D4023769559D06fa9A7732e",
 })
@@ -340,6 +346,10 @@ export const EVMOS_TESTNET_4POOL_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses(
     [ChainId.EVMOS_TESTNET]: "0x8adcB8A1Df1209554Be83F0F1c21EA54F9A9b18c",
   },
 )
+
+export const EVMOS_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
+  [ChainId.EVMOS]: "0x8adcB8A1Df1209554Be83F0F1c21EA54F9A9b18c", // TODO: Update
+})
 
 export const WCUSD_SWAP_TOKEN_V2_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0x5F7872490a9B405946376dd40fCbDeF521F13e3f",
@@ -568,6 +578,16 @@ export const EVMOS_TESTNET_SWAP_TOKEN = new Token(
   true,
 )
 
+export const EVMOS_SWAP_TOKEN = new Token(
+  EVMOS_SWAP_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "saddleEvmosUSD",
+  "saddleevmosUSD",
+  "Saddle DAI/USDC/USDT",
+  false,
+  true,
+)
+
 export const OPT_USD_SWAP_TOKEN = new Token(
   OPT_USD_SWAP_TOKEN_CONTRACT_ADDRESSES,
   18,
@@ -671,6 +691,7 @@ const DAI_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.OPTIMISM]: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
   [ChainId.FANTOM]: "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
   [ChainId.EVMOS_TESTNET]: "0x6CE6BeeEDeFd2d83C1c6EC191ceBCE0317227852",
+  [ChainId.EVMOS]: "0x63743ACF2c7cfee65A5E356A4C4A005b586fC7AA",
 })
 
 export const DAI = new Token(DAI_CONTRACT_ADDRESSES, 18, "DAI", "dai", "Dai")
@@ -683,6 +704,7 @@ const USDC_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.OPTIMISM]: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
   [ChainId.FANTOM]: "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
   [ChainId.EVMOS_TESTNET]: "0xF4cd157e54c7B658d7A4995d84372C3dc79D1755",
+  [ChainId.EVMOS]: "0x51e44FfaD5C2B122C8b635671FCC8139dc636E82",
 })
 export const USDC = new Token(
   USDC_CONTRACT_ADDRESSES,
@@ -699,6 +721,7 @@ const USDT_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.ARBITRUM]: "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
   [ChainId.OPTIMISM]: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
   [ChainId.EVMOS_TESTNET]: "0x06545e8108090bA1E8448a66b65C62A8B862e7D1",
+  [ChainId.EVMOS]: "0x7FF4a56B32ee13D7D4D405887E0eA37d61Ed919e",
 })
 export const USDT = new Token(
   USDT_CONTRACT_ADDRESSES,
@@ -786,6 +809,7 @@ export const USDS_ARB_USD_UNDERLYING_POOL_TOKENS = [
 ]
 export const FTM_USD_POOL_TOKENS = [FRAX, USDC]
 export const EVMOS_TESTNET_POOL_TOKENS = [DAI, USDC, USDT, UST]
+export const EVMOS_POOL_TOKENS = [DAI, USDC, USDT]
 
 // Tokenized BTC
 const TBTC_CONTRACT_ADDRESSES = buildAddresses({
@@ -1203,6 +1227,16 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "evmostestnetusd",
+    rewardPids: buildPids({}),
+  },
+  [EVMOS_POOL_NAME]: {
+    name: EVMOS_POOL_NAME,
+    addresses: EVMOS_SWAP_ADDRESSES,
+    lpToken: EVMOS_SWAP_TOKEN,
+    poolTokens: EVMOS_POOL_TOKENS,
+    isSynthetic: false,
+    type: PoolTypes.USD,
+    route: "evmosusd",
     rewardPids: buildPids({}),
   },
 }
