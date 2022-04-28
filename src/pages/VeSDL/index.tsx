@@ -22,8 +22,9 @@ import TokenInput from "../../components/TokenInput"
 
 export default function VeSDL(): JSX.Element {
   const [date, setDate] = useState<string | null>(null)
-  const handleChange = () => {
-    console.log("first")
+  const [sdlTokenVal, setSdlTokenVal] = useState<string>("0.0")
+  const handleChange = (value: string) => {
+    setSdlTokenVal(value)
   }
   return (
     <Container>
@@ -46,7 +47,7 @@ export default function VeSDL(): JSX.Element {
               symbol="SDL"
               name="sdl"
               onChange={handleChange}
-              inputValue="0.0"
+              inputValue={sdlTokenVal}
             />
             <Box display="flex" alignItems="center">
               <div>
@@ -58,7 +59,12 @@ export default function VeSDL(): JSX.Element {
                 value={date}
                 onChange={(date) => setDate(date)}
                 renderInput={(props) => (
-                  <TextField {...props} size="small" fullWidth />
+                  <TextField
+                    data-testid="veSdlUnlockData"
+                    {...props}
+                    size="small"
+                    fullWidth
+                  />
                 )}
               />
             </Box>
