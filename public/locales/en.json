@@ -249,6 +249,7 @@
   "usdMetapool": "USD Metapool",
   "btcMetapool": "BTC Metapool",
   "basepool": "Base Pool",
+  "unlockDate": "Unlock date",
   "unstakeComplete": "Unstake on {{poolName}} complete",
   "unstakeInitiated": "Unstake initiated",
   "usdBalance": "USD Balance",
