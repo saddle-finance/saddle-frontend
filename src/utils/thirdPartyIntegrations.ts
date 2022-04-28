@@ -51,7 +51,7 @@ export async function getThirdPartyDataForPool(
   library: Web3Provider,
   chainId: ChainId,
   accountId: string | undefined | null,
-  poolName: PoolName,
+  poolName: PoolName | string,
   tokenPricesUSD: TokenPricesUSD,
   lpTokenPriceUSD: BigNumber,
 ): Promise<ThirdPartyData> {

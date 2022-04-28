@@ -87,6 +87,16 @@ export default function App(): ReactElement {
                         <Switch>
                           <Route exact path="/" component={Swap} />
                           <Route exact path="/pools" component={Pools} />
+                          {pools.map(({ name }) => (
+                            <Route
+                              exact
+                              path={`/pools/${name}/deposit`}
+                              render={(props) => (
+                                <Deposit {...props} poolName={name} />
+                              )}
+                              key={`${name}-name-deposit`}
+                            />
+                          ))}
                           {pools.map(({ name, route }) => (
                             <Route
                               exact
@@ -94,17 +104,27 @@ export default function App(): ReactElement {
                               render={(props) => (
                                 <Deposit {...props} poolName={name} />
                               )}
-                              key={`${name}-deposit`}
+                              key={`${route}-route-deposit`}
+                            />
+                          ))}
+                          {pools.map(({ name }) => (
+                            <Route
+                              exact
+                              path={`/pools/${name}/withdraw`}
+                              render={(props) => (
+                                <Withdraw {...props} poolName={name} />
+                              )}
+                              key={`${name}-name-withdraw`}
                             />
                           ))}
                           {pools.map(({ name, route }) => (
                             <Route
                               exact
-                              path={`/pools/${route}/withdraw`}
+                              path={`/pools/${route}/deposit`}
                               render={(props) => (
                                 <Withdraw {...props} poolName={name} />
                               )}
-                              key={`${name}-withdraw`}
+                              key={`${route}-route-withdraw`}
                             />
                           ))}
                           <Redirect from="/pools/:route/:action" to="/pools" />
