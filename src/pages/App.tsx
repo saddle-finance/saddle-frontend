@@ -79,18 +79,28 @@ export default function App(): ReactElement {
     <Suspense fallback={null}>
       <Web3ReactManager>
         <BasicPoolsProvider>
-          <MinichefProvider>
-            <TokensProvider>
-              <UserStateProvider>
-                <GasAndTokenPrices>
-                  <PendingSwapsProvider>
-                    <RewardsBalancesProvider>
-                      <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <MinichefProvider>
+              <TokensProvider>
+                <UserStateProvider>
+                  <GasAndTokenPrices>
+                    <PendingSwapsProvider>
+                      <RewardsBalancesProvider>
                         <AppContainer>
                           <TopMenu />
                           <Switch>
                             <Route exact path="/" component={Swap} />
                             <Route exact path="/pools" component={Pools} />
+                            {pools.map(({ name }) => (
+                              <Route
+                                exact
+                                path={`/pools/${name}/deposit`}
+                                render={(props) => (
+                                  <Deposit {...props} poolName={name} />
+                                )}
+                                key={`${name}-name-deposit`}
+                              />
+                            ))}
                             {pools.map(({ name, route }) => (
                               <Route
                                 exact
@@ -98,17 +108,27 @@ export default function App(): ReactElement {
                                 render={(props) => (
                                   <Deposit {...props} poolName={name} />
                                 )}
-                                key={`${name}-deposit`}
+                                key={`${route}-route-deposit`}
+                              />
+                            ))}
+                            {pools.map(({ name }) => (
+                              <Route
+                                exact
+                                path={`/pools/${name}/withdraw`}
+                                render={(props) => (
+                                  <Withdraw {...props} poolName={name} />
+                                )}
+                                key={`${name}-name-withdraw`}
                               />
                             ))}
                             {pools.map(({ name, route }) => (
                               <Route
                                 exact
-                                path={`/pools/${route}/withdraw`}
+                                path={`/pools/${route}/deposit`}
                                 render={(props) => (
                                   <Withdraw {...props} poolName={name} />
                                 )}
-                                key={`${name}-withdraw`}
+                                key={`${route}-route-withdraw`}
                               />
                             ))}
                             <Redirect
@@ -137,13 +157,13 @@ export default function App(): ReactElement {
                             position="top-left"
                           />
                         </AppContainer>
-                      </LocalizationProvider>
-                    </RewardsBalancesProvider>
-                  </PendingSwapsProvider>
-                </GasAndTokenPrices>
-              </UserStateProvider>
-            </TokensProvider>
-          </MinichefProvider>
+                      </RewardsBalancesProvider>
+                    </PendingSwapsProvider>
+                  </GasAndTokenPrices>
+                </UserStateProvider>
+              </TokensProvider>
+            </MinichefProvider>
+          </LocalizationProvider>
         </BasicPoolsProvider>
       </Web3ReactManager>
     </Suspense>

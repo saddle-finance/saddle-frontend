@@ -26,7 +26,6 @@ export default function VeSDL(): JSX.Element {
   const handleChange = (value: string) => {
     setSdlTokenVal(value)
   }
-  console.log("first")
   return (
     <Container>
       <Box display="flex" gap={2}>

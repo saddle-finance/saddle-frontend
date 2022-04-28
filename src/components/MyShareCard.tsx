@@ -1,5 +1,5 @@
 import { Box, Divider, Stack, Typography } from "@mui/material"
-import { POOLS_MAP, PoolTypes, TOKENS_MAP } from "../constants"
+import { POOLS_MAP, PoolTypes } from "../constants"
 import React, { ReactElement } from "react"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 
@@ -37,10 +37,9 @@ function MyShareCard({ data }: Props): ReactElement | null {
         : acc
     }, {} as typeof data.amountsStaked),
     tokens: data.tokens.map((coin) => {
-      const token = TOKENS_MAP[coin.symbol]
       return {
-        symbol: token.symbol,
-        name: token.name,
+        symbol: coin.symbol,
+        name: coin.name,
         value: commify(formatBNToString(coin.value, 18, formattedDecimals)),
       }
     }),
