@@ -8,7 +8,7 @@ import {
 } from "@mui/material"
 import {
   LPTOKEN_TO_POOL_MAP,
-  // TOKENS_MAP,
+  TOKENS_MAP,
   readableDecimalNumberRegex,
 } from "../constants"
 import React, { ReactElement } from "react"
@@ -30,6 +30,7 @@ interface Props {
   onChange: (value: string) => void
   disabled?: boolean
   error?: boolean
+  allowDecimalOverflow?: boolean
   helperText?: string
 }
 
@@ -41,6 +42,7 @@ function TokenInput({
   onChange,
   disabled,
   error,
+  allowDecimalOverflow,
   helperText,
   ...rest
 }: Props): ReactElement {
@@ -61,14 +63,13 @@ function TokenInput({
   }
 
   function onChangeInput(e: React.ChangeEvent<HTMLInputElement>): void {
-    // const { decimals } = TOKENS_MAP[symbol]
+    const { decimals } = TOKENS_MAP[symbol] || 0
     const parsedValue = parseFloat("0" + e.target.value)
-    // const periodIndex = e.target.value.indexOf(".")
+    const periodIndex = e.target.value.indexOf(".")
     const isValidInput = e.target.value === "" || !isNaN(parsedValue)
-    // const isValidPrecision =
-    //   periodIndex === -1 || e.target.value.length - 1 - periodIndex <= decimals
-    // if (isValidInput && isValidPrecision) {
-    if (isValidInput) {
+    const isValidPrecision =
+      periodIndex === -1 || e.target.value.length - 1 - periodIndex <= decimals
+    if (isValidInput && (isValidPrecision || allowDecimalOverflow)) {
       // don't allow input longer than the token allows
 
       // if value is not blank, then test the regex

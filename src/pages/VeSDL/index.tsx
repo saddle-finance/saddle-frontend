@@ -43,6 +43,7 @@ export default function VeSDL(): JSX.Element {
 
             <TokenInput
               data-testid="sdlTokenInput"
+              allowDecimalOverflow
               symbol="SDL"
               name="sdl"
               max="3000"
@@ -73,6 +74,7 @@ export default function VeSDL(): JSX.Element {
             </Box>
             <TokenInput
               symbol="veSDL"
+              allowDecimalOverflow
               name="Vote escrow SDL"
               max={"0"}
               onChange={handleChange}
