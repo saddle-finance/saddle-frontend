@@ -35,7 +35,7 @@ export const FRAX_OPT_USD_METAPOOL_NAME = "frax-optUSD"
 export const FRAX_ARB_USD_POOL_V2_NAME = "arbUSDV2"
 export const FTM_USD_POOL_NAME = "ftmUSD"
 export const EVMOS_TESTNET_POOL_NAME = "evmosTestnetUSD"
-export const EVMOS_POOL_NAME = "evmosMainnetUSD"
+export const EVMOS_POOL_NAME = "evmosUSD"
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof BTC_POOL_V2_NAME
