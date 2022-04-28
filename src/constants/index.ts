@@ -292,7 +292,7 @@ export const EVMOS_TESTNET_SWAP_ADDRESSES = buildAddresses({
 })
 
 export const EVMOS_SWAP_ADDRESSES = buildAddresses({
-  [ChainId.EVMOS]: "0x7264594dFB80a150f80b2988862605dDfda53727", // TODO: Update
+  [ChainId.EVMOS]: "0x1275203FB58Fc25bC6963B13C2a1ED1541563aF0",
 })
 
 export const FRAX_OPT_USD_SWAP_ADDRESSES = buildAddresses({
@@ -348,7 +348,7 @@ export const EVMOS_TESTNET_4POOL_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses(
 )
 
 export const EVMOS_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
-  [ChainId.EVMOS]: "0x8adcB8A1Df1209554Be83F0F1c21EA54F9A9b18c", // TODO: Update
+  [ChainId.EVMOS]: "0x9c673F50CEe126FcC9F7378Ed46c33f5DEDEc0fC",
 })
 
 export const WCUSD_SWAP_TOKEN_V2_CONTRACT_ADDRESSES = buildAddresses({
