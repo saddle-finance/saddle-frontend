@@ -3,7 +3,7 @@ import { ChainId } from "../constants"
 export function getMultichainScanLink(
   chainId: ChainId,
   data: string,
-  type: "tx" | "token" | "address" | "block",
+  type: "tx" | "token" | "address" | "block" | "txs",
 ): string {
   let chainScanBaseName = "etherscan"
   switch (chainId) {
@@ -18,6 +18,9 @@ export function getMultichainScanLink(
       break
     case ChainId.OPTIMISM:
       chainScanBaseName = "optimistic.etherscan"
+      break
+    case ChainId.EVMOS || ChainId.EVMOS_TESTNET:
+      chainScanBaseName = "mintscan"
       break
     default:
       chainScanBaseName = "etherscan"

@@ -159,27 +159,33 @@ function Swap(): ReactElement {
       .sort(sortTokenOptions)
     const toTokens =
       formState.currentSwapPairs.length > 0
-        ? formState.currentSwapPairs
-            .map(({ to, type: swapType }) => {
-              const { symbol, name, decimals } = TOKENS_MAP[to.symbol]
-              const amount = tokenBalances?.[symbol] || Zero
-              return {
-                name,
-                symbol,
-                decimals,
-                amount,
-                valueUSD: calculatePrice(
-                  amount,
-                  tokenPricesUSD?.[symbol],
+        ? (
+            formState.currentSwapPairs
+              .map(({ to, type: swapType }) => {
+                if (!TOKENS_MAP?.[to.symbol]) {
+                  console.log("unknown symbol", { to, swapType })
+                  return null
+                }
+                const { symbol, name, decimals } = TOKENS_MAP[to.symbol]
+                const amount = tokenBalances?.[symbol] || Zero
+                return {
+                  name,
+                  symbol,
                   decimals,
-                ),
-                swapType,
-                isAvailable: IS_VIRTUAL_SWAP_ACTIVE
-                  ? swapType !== SWAP_TYPES.INVALID
-                  : swapType === SWAP_TYPES.DIRECT, // TODO replace once VSwaps are live
-              }
-            })
-            .sort(sortTokenOptions)
+                  amount,
+                  valueUSD: calculatePrice(
+                    amount,
+                    tokenPricesUSD?.[symbol],
+                    decimals,
+                  ),
+                  swapType,
+                  isAvailable: IS_VIRTUAL_SWAP_ACTIVE
+                    ? swapType !== SWAP_TYPES.INVALID
+                    : swapType === SWAP_TYPES.DIRECT, // TODO replace once VSwaps are live
+                }
+              })
+              .filter(Boolean) as TokenOption[]
+          ).sort(sortTokenOptions)
         : allTokens
     // from: all tokens always available. to: limited by selected "from" token.
     return {
