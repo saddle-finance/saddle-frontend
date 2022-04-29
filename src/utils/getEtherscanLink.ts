@@ -22,6 +22,9 @@ export function getMultichainScanLink(
     case ChainId.EVMOS || ChainId.EVMOS_TESTNET:
       chainScanBaseName = "mintscan"
       break
+    case ChainId.KAVA_TESTNET:
+      chainScanBaseName = "evm-alpha.kava"
+      break
     default:
       chainScanBaseName = "etherscan"
   }
