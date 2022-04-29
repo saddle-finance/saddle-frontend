@@ -206,7 +206,7 @@ export const USDS_ARB_USD_META_SWAP_DEPOSIT_ADDRESSES = buildAddresses({
 })
 
 export const TBTC_EVMOS_BTC_META_SWAP_DEPOSIT_ADDRESSES = buildAddresses({
-  [ChainId.EVMOS]: "0xdb5c5A6162115Ce9a188E7D773C4D011F421BbE5",
+  [ChainId.EVMOS]: "0xFdA5D2ad8b6d3884AbB799DA66f57175E8706941",
 })
 
 export const TBTC_META_SWAP_ADDRESSES = buildAddresses({
