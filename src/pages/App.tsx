@@ -17,7 +17,7 @@ import { AppDispatch } from "../state"
 import BasicPoolsProvider from "../providers/BasicPoolsProvider"
 import CreatePool from "./CreatePool"
 import Deposit from "./Deposit"
-import { LocalizationProvider } from "@mui/lab"
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import MinichefProvider from "../providers/MinichefProvider"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
@@ -79,13 +79,13 @@ export default function App(): ReactElement {
     <Suspense fallback={null}>
       <Web3ReactManager>
         <BasicPoolsProvider>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <MinichefProvider>
-              <TokensProvider>
-                <UserStateProvider>
-                  <GasAndTokenPrices>
-                    <PendingSwapsProvider>
-                      <RewardsBalancesProvider>
+          <MinichefProvider>
+            <TokensProvider>
+              <UserStateProvider>
+                <GasAndTokenPrices>
+                  <PendingSwapsProvider>
+                    <RewardsBalancesProvider>
+                      <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <AppContainer>
                           <TopMenu />
                           <Switch>
@@ -157,13 +157,13 @@ export default function App(): ReactElement {
                             position="top-left"
                           />
                         </AppContainer>
-                      </RewardsBalancesProvider>
-                    </PendingSwapsProvider>
-                  </GasAndTokenPrices>
-                </UserStateProvider>
-              </TokensProvider>
-            </MinichefProvider>
-          </LocalizationProvider>
+                      </LocalizationProvider>
+                    </RewardsBalancesProvider>
+                  </PendingSwapsProvider>
+                </GasAndTokenPrices>
+              </UserStateProvider>
+            </TokensProvider>
+          </MinichefProvider>
         </BasicPoolsProvider>
       </Web3ReactManager>
     </Suspense>

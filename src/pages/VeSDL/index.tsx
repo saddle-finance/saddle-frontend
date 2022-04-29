@@ -12,19 +12,43 @@ import {
 } from "@mui/material"
 import React, { useState } from "react"
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
-import { DatePicker } from "@mui/lab"
+import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import GaugeVote from "./GaugeVote"
 import LockedInfo from "./LockedInfo"
 import TokenInput from "../../components/TokenInput"
+import { Zero } from "@ethersproject/constants"
+import { differenceInMonths } from "date-fns"
+import { parseEther } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
 export default function VeSDL(): JSX.Element {
-  const [date, setDate] = useState<string | null>(null)
-  const [sdlTokenVal, setSdlTokenVal] = useState<string>("0.0")
+  const [date, setDate] = useState<Date | null>(null)
+  const [sdlTokenRawVal, setSdlTokenRawVal] = useState<string>("")
+  const [veSdlTokenRawVal, setVeSdlTokenRawVal] = useState<string>("")
   const { t } = useTranslation()
   const handleChange = (value: string) => {
-    setSdlTokenVal(value)
+    setSdlTokenRawVal(value)
   }
+
+  const prevUnlockDate: Date = new Date("2022-5-23")
+  const addLockMos = date ? differenceInMonths(date, prevUnlockDate) : null
+
+  const lockHelperText = () => {
+    const sdlTokenValue = parseEther(sdlTokenRawVal.trim() || "0")
+    if (sdlTokenValue.gt(Zero) && !addLockMos) {
+      return t("increaseLockAmount", { addLockAmt: sdlTokenRawVal })
+    } else if (sdlTokenValue.gt(Zero) && addLockMos && addLockMos > 0) {
+      return t("increaseLockAmountAndTime", {
+        addLockMos,
+        addLockAmt: sdlTokenRawVal,
+      })
+    } else if (sdlTokenValue.eq(Zero) && addLockMos && addLockMos > 0) {
+      return t("increaseLockTime", { addLockMos })
+    } else {
+      return
+    }
+  }
+
   return (
     <Container sx={{ py: 3 }}>
       <Box display={{ sm: "flex" }} gap={2}>
@@ -43,22 +67,23 @@ export default function VeSDL(): JSX.Element {
 
             <TokenInput
               data-testid="sdlTokenInput"
-              allowDecimalOverflow
               symbol="SDL"
               name="sdl"
               max="3000"
+              decimalLength={18}
               onChange={handleChange}
-              inputValue={sdlTokenVal}
+              inputValue={sdlTokenRawVal}
             />
             <Box display="flex" alignItems="center">
               <div>
                 <Typography mr={1} noWrap>
-                  Unlock date:
+                  {t("unlockDate")}:
                 </Typography>
               </div>
               <DatePicker
                 value={date}
                 onChange={(date) => setDate(date)}
+                minDate={prevUnlockDate}
                 renderInput={(props) => (
                   <TextField
                     data-testid="veSdlUnlockData"
@@ -74,38 +99,46 @@ export default function VeSDL(): JSX.Element {
             </Box>
             <TokenInput
               symbol="veSDL"
-              allowDecimalOverflow
-              name="Vote escrow SDL"
-              max={"0"}
-              onChange={handleChange}
-              inputValue="0.0"
+              name={t("voteEscrowSDL")}
+              decimalLength={18}
+              max={"3000"}
+              onChange={(value) => setVeSdlTokenRawVal(value)}
+              inputValue={veSdlTokenRawVal}
             />
+            <Typography
+              textAlign="center"
+              color="primary"
+              whiteSpace="pre-line"
+            >
+              {lockHelperText()}
+            </Typography>
             <Button variant="contained" fullWidth size="large">
               Lock
             </Button>
             <Typography textAlign="end">
-              <Link>veToken calculator</Link>
+              <Link>{t("veTokenCalculator")}</Link>
             </Typography>
             <Divider />
             <Typography variant="h2" textAlign="center" mb={2}>
               {t("veSdlUnlock")}
             </Typography>
             <Typography>{t("totalSdlLock")}: 3000</Typography>
-            <Typography>{t("lockupExpiray")}: 09/06/2022</Typography>
+            <Typography>{t("lockupExpiry")}: 09/06/2022</Typography>
+            <Typography>{t("totalVeSdlHolding")}: 09/06/2022</Typography>
             <Alert severity="error" icon={false} sx={{ textAlign: "center" }}>
               {t("withdrawAlertMsg", { sdlValue: 3000 })}
             </Alert>
             <Button variant="contained" size="large" fullWidth>
-              Unlock
+              {t("unlock")}
             </Button>
           </Paper>
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h2" textAlign="center">
+          <Paper sx={{ p: 4 }}>
+            <Typography variant="h2" textAlign="center" mb={2}>
               {t("veSdlHolderFeeClaim")}
             </Typography>
             <Box
               display="flex"
-              justifyContent="center"
+              justifyContent="space-between"
               alignItems="center"
               gap={2}
             >

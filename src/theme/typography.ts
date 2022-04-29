@@ -19,7 +19,8 @@ const typography: TypographyOptions = {
   h1: {
     fontFamily: NOE_DISPLAY_FAMILY,
     fontWeight: 700,
-    fontSize: pxToRem(30),
+    fontSize: pxToRem(32),
+    lineHeight: 40 / 32,
   },
   h2: {
     fontFamily: NOE_DISPLAY_FAMILY,
@@ -47,6 +48,7 @@ const typography: TypographyOptions = {
   subtitle1: {
     fontWeight: 600,
     fontSize: pxToRem(16),
+    lineHeight: 20.11 / 16,
   },
   subtitle2: {
     fontWeight: 600,
@@ -55,7 +57,7 @@ const typography: TypographyOptions = {
   },
   body1: {
     fontSize: pxToRem(16),
-    lineHeight: 24 / 16,
+    lineHeight: 20.11 / 16,
   },
   body2: {
     fontSize: pxToRem(12),

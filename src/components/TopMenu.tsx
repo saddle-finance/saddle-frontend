@@ -12,6 +12,7 @@ import {
 import { NavLink, NavLinkProps, useLocation } from "react-router-dom"
 import React, { ReactElement, useContext, useState } from "react"
 
+import { IS_DEVELOPMENT } from "../utils/environment"
 import { IS_SDL_LIVE } from "../constants"
 import { MoreVert } from "@mui/icons-material"
 import NetworkDisplay from "./NetworkDisplay"
@@ -95,7 +96,7 @@ function TopMenu(): ReactElement {
               {t("pools")}
             </NavMenu>
 
-            {false && (
+            {IS_DEVELOPMENT && (
               <NavMenu to="/vesdl" selected={activeTab === "vesdl"}>
                 {t("veSdl")}
               </NavMenu>

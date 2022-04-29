@@ -1,5 +1,6 @@
 import { Box, Paper, Typography } from "@mui/material"
 import React from "react"
+import { useTranslation } from "react-i18next"
 
 type LockedInfoProps = {
   sdlLocked?: string
@@ -12,18 +13,19 @@ export default function LockedInfo({
   totalveSdl,
   avgLockTime,
 }: LockedInfoProps): JSX.Element {
+  const { t } = useTranslation()
   return (
     <Paper sx={{ display: "flex", p: 2 }}>
       <Box flex={1}>
-        <Typography>SDL locked</Typography>
+        <Typography>{t("sdlLocked")}</Typography>
         <Typography variant="subtitle1">{sdlLocked || "-"}</Typography>
       </Box>
       <Box flex={1}>
-        <Typography>Total veSDL</Typography>
+        <Typography>{t("totalVeSDL")}</Typography>
         <Typography variant="subtitle1">{totalveSdl || "-"}</Typography>
       </Box>
       <Box flex={1}>
-        <Typography>Avg. lock time</Typography>
+        <Typography>{t("avgLockTime")}</Typography>
         <Typography variant="subtitle1">{avgLockTime || "-"}</Typography>
       </Box>
     </Paper>

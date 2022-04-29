@@ -19,30 +19,32 @@ export default function GaugeVote(): JSX.Element {
   return (
     <Paper sx={{ p: 2 }}>
       <Typography variant="h2" textAlign="center">
-        Gauge Vote
+        {t("gaugeVote")}
       </Typography>
       <Box height="428px"></Box>
       <TableContainer>
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Vote period</TableCell>
-              <TableCell align="center">Snapshot link</TableCell>
+              <TableCell variant="head">{t("votePeriod")}</TableCell>
+              <TableCell variant="head" align="center">
+                {t("snapshotLink")}
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             <TableRow>
-              <TableCell>Current week</TableCell>
+              <TableCell>{t("currentWeek")}</TableCell>
               <TableCell align="center">
                 <Button variant="contained" size="medium">
-                  <Typography>Vote</Typography>
+                  <Typography>{t("vote")}</Typography>
                 </Button>
               </TableCell>
             </TableRow>
           </TableBody>
         </Table>
       </TableContainer>
-      <Typography textAlign="end">
+      <Typography textAlign="end" mt={1}>
         <Link color="inherit">{t("viewAllVote")}</Link>
       </Typography>
     </Paper>

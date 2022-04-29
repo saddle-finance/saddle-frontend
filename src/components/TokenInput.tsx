@@ -26,11 +26,11 @@ interface Props {
   symbol: string
   name?: string
   max?: string
+  decimalLength?: number
   inputValue: string
   onChange: (value: string) => void
   disabled?: boolean
   error?: boolean
-  allowDecimalOverflow?: boolean
   helperText?: string
 }
 
@@ -38,11 +38,11 @@ function TokenInput({
   symbol,
   name,
   max,
+  decimalLength,
   inputValue,
   onChange,
   disabled,
   error,
-  allowDecimalOverflow,
   helperText,
   ...rest
 }: Props): ReactElement {
@@ -63,13 +63,13 @@ function TokenInput({
   }
 
   function onChangeInput(e: React.ChangeEvent<HTMLInputElement>): void {
-    const { decimals } = TOKENS_MAP[symbol] || 0
+    const { decimals } = TOKENS_MAP[symbol] || { decimals: decimalLength }
     const parsedValue = parseFloat("0" + e.target.value)
     const periodIndex = e.target.value.indexOf(".")
     const isValidInput = e.target.value === "" || !isNaN(parsedValue)
     const isValidPrecision =
       periodIndex === -1 || e.target.value.length - 1 - periodIndex <= decimals
-    if (isValidInput && (isValidPrecision || allowDecimalOverflow)) {
+    if (isValidInput && isValidPrecision) {
       // don't allow input longer than the token allows
 
       // if value is not blank, then test the regex
