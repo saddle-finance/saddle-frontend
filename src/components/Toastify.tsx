@@ -10,6 +10,7 @@ import { toast as toastify } from "react-toastify"
 
 type ToastVariation = "success" | "info" | "error"
 type TxType =
+  | "createPermissionlessPool"
   | "tokenApproval"
   | "deposit"
   | "swap"
@@ -27,6 +28,8 @@ export const enqueuePromiseToast = (
 ): Promise<unknown> => {
   const renderPendingContentBasedOnType = (type: string) => {
     switch (type) {
+      case "createPermissionlessPool":
+        return `Permissionless Pool ${additionalData?.poolName} initiated`
       case "deposit":
         return i18n.t("depositInitiated")
       case "tokenApproval":
@@ -50,6 +53,8 @@ export const enqueuePromiseToast = (
 
   const renderSuccessContentBasedOnType = (type: TxType) => {
     switch (type) {
+      case "createPermissionlessPool":
+        return `Permissionless Pool ${additionalData?.poolName} created`
       case "deposit":
         return i18n.t("depositComplete", { poolName: additionalData?.poolName })
       case "tokenApproval":

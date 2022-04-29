@@ -127,8 +127,15 @@ export class Token {
 
 export const BLOCK_TIME = 13000 // ms
 
+// TODO: Update with mainnet and ropsten addresses
+export const PERMISSIONLESS_DEPLOYER_CONTRACT_ADDRESSES = buildAddresses({
+  [ChainId.HARDHAT]: "0xD5ac451B0c50B9476107823Af206eD814a2e2580",
+  [ChainId.MAINNET]: "",
+  [ChainId.ROPSTEN]: "",
+})
+
 export const MASTER_REGISTRY_CONTRACT_ADDRESSES = buildAddresses({
-  [ChainId.HARDHAT]: "0x367761085BF3C12e5DA2Df99AC6E1a824612b8fb",
+  [ChainId.HARDHAT]: "0xe8D2A1E88c91DCd5433208d4152Cc4F399a7e91d",
   [ChainId.MAINNET]: "0xc5ad17b98D7fe73B6dD3b0df5b3040457E68C045",
   [ChainId.ROPSTEN]: "0xA287A3921AF80fB33E80897C6879DfFbA8527780",
 })
