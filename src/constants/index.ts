@@ -832,7 +832,7 @@ const TBTC_V2_CONTRACT_ADDRESSES = buildAddresses({
 export const TBTC_V2 = new Token(
   TBTC_V2_CONTRACT_ADDRESSES,
   18,
-  "TBTCv2",
+  "tBTC",
   "tbtc",
   "tBTCv2",
 )
@@ -871,7 +871,7 @@ const SBTC_CONTRACT_ADDRESSES = buildAddresses({
 export const SBTC = new Token(
   SBTC_CONTRACT_ADDRESSES,
   18,
-  "sBTC",
+  "SBTC",
   "sbtc",
   "sBTC",
   true,
@@ -1425,24 +1425,31 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
 }
 
 // derived from https://docs.synthetix.io/tokens/list/
-export const SYNTHETIX_TOKENS = [
-  "0xd2df355c19471c8bd7d8a3aa27ff4e26a21b4076", // Aave (sAAVE)
-  "0xf48e200eaf9906362bb1442fca31e0835773b8b4", // Australian Dollars (sAUD)
-  "0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6", // Bitcoin (sBTC)
-  "0xe36e2d3c7c34281fa3bc737950a68571736880a1", // Cardano (sADA)
-  "0xbbc455cb4f1b9e4bfc4b73970d360c8f032efee6", // Chainlink (sLINK)
-  "0xe1afe1fd76fd88f78cbf599ea1846231b8ba3b6b", // DeFi Index (sDEFI)
-  "0x104edf1da359506548bfc7c25ba1e28c16a70235", // ETH / BTC (sETHBTC)
-  "0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb", // Ether (sETH)
-  "0xd71ecff9342a5ced620049e616c5035f1db98620", // Euros (sEUR)
-  "0xf6b1c627e95bfc3c1b4c9b825a032ff0fbf3e07d", // Japanese Yen (sJPY)
-  "0x1715ac0743102bf5cd58efbb6cf2dc2685d967b6", // Polkadot (sDOT)
-  "0x97fe22e7341a0cd8db6f6c021a24dc8f4dad855f", // Pound Sterling (sGBP)
-  "0x269895a3df4d73b077fc823dd6da1b95f72aaf9b", // South Korean Won (sKRW)
-  "0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d", // Swiss Franc (sCHF)
-  "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f", // Synthetix (SNX)
-  "0x57ab1ec28d129707052df4df418d58a2d46d5f51", // US Dollars (sUSD)
-]
+export const SYNTHETIX_TOKENS: { [chainId in ChainId]?: string[] } = {
+  [ChainId.MAINNET]: [
+    "0xd2df355c19471c8bd7d8a3aa27ff4e26a21b4076", // Aave (sAAVE)
+    "0xf48e200eaf9906362bb1442fca31e0835773b8b4", // Australian Dollars (sAUD)
+    "0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6", // Bitcoin (sBTC)
+    "0xe36e2d3c7c34281fa3bc737950a68571736880a1", // Cardano (sADA)
+    "0xbbc455cb4f1b9e4bfc4b73970d360c8f032efee6", // Chainlink (sLINK)
+    "0xe1afe1fd76fd88f78cbf599ea1846231b8ba3b6b", // DeFi Index (sDEFI)
+    "0x104edf1da359506548bfc7c25ba1e28c16a70235", // ETH / BTC (sETHBTC)
+    "0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb", // Ether (sETH)
+    "0xd71ecff9342a5ced620049e616c5035f1db98620", // Euros (sEUR)
+    "0xf6b1c627e95bfc3c1b4c9b825a032ff0fbf3e07d", // Japanese Yen (sJPY)
+    "0x1715ac0743102bf5cd58efbb6cf2dc2685d967b6", // Polkadot (sDOT)
+    "0x97fe22e7341a0cd8db6f6c021a24dc8f4dad855f", // Pound Sterling (sGBP)
+    "0x269895a3df4d73b077fc823dd6da1b95f72aaf9b", // South Korean Won (sKRW)
+    "0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d", // Swiss Franc (sCHF)
+    "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f", // Synthetix (SNX)
+    "0x57ab1ec28d129707052df4df418d58a2d46d5f51", // US Dollars (sUSD)
+  ],
+  [ChainId.HARDHAT]: [
+    "0x0e801d84fa97b50751dbf25036d067dcf18858bf", // susd
+    "0x2279b7a0a67db372996a5fab50d91eaa73d2ebe6", // sbtc
+    "0x67d269191c92caf3cd7723f116c85e6e9bf55933", // seth
+  ],
+}
 
 // "SADDLE" in bytes32 form
 export const SYNTH_TRACKING_ID =
