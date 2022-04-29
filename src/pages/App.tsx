@@ -117,10 +117,10 @@ export default function App(): ReactElement {
                               key={`${name}-name-withdraw`}
                             />
                           ))}
-                          {pools.map(({ name, route }) => (
+                          {pools.map(({ route, name }) => (
                             <Route
                               exact
-                              path={`/pools/${route}/deposit`}
+                              path={`/pools/${route}/withdraw`}
                               render={(props) => (
                                 <Withdraw {...props} poolName={name} />
                               )}

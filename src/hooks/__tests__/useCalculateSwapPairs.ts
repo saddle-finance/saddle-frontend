@@ -1,44 +1,60 @@
-import {
-  ChainId,
-  Pool,
-  PoolName,
-  PoolTypes,
-  SWAP_TYPES,
-  Token,
-} from "../../constants/index"
+import { ExpandedBasicPool, __test__ } from "../useCalculateSwapPairs"
+import { PoolTypes, SWAP_TYPES } from "../../constants/index"
 
-import { __test__ } from "../useCalculateSwapPairs"
+import { BasicToken } from "./../../providers/TokensProvider"
+import { BigNumber } from "@ethersproject/bignumber"
+import { getPriceDataForPool } from "../usePoolData"
 
 const { getTradingPairsForToken } = __test__
 
-const chainObject = Object.keys(ChainId)
-  .filter((k) => parseInt(k) > 0)
-  .reduce(
-    (acc, chainId) => ({
-      ...acc,
-      [chainId]: "",
-    }),
-    {} as { [chainId in ChainId]: string },
-  )
-
-const createTestToken = (name: string, isSynth?: boolean) => {
-  return new Token(chainObject, 0, name, "", name, !!isSynth)
+const createTestToken = (name: string, isSynth?: boolean): BasicToken => {
+  return {
+    name,
+    symbol: name,
+    address: `0x${name.toLowerCase()}`, // shut up it's test data!
+    decimals: 18,
+    isSynthetic: isSynth || false,
+    isLPToken: false,
+  }
 }
 
 const createTestPool = (
-  name: string,
-  tokens: Token[],
-  type = PoolTypes.USD,
-): Pool => {
+  poolName: string,
+  tokens: BasicToken[],
+  isMetaSwap: boolean,
+  typeOfAsset = PoolTypes.USD,
+) => {
   return {
-    name: name as PoolName, // not true but it's a test
-    lpToken: createTestToken(`${name} LPToken`),
-    poolTokens: tokens,
+    poolName,
+    lpToken: `0xlp-${poolName}`,
+    tokens: tokens.map((token) => token.address),
+    expandedTokens: tokens,
+    expandedUnderlyingTokens: isMetaSwap ? tokens : null,
     isSynthetic: tokens.some(({ isSynthetic }) => isSynthetic),
-    addresses: {} as { [chainId in ChainId]: string },
-    type,
-    route: "",
-  }
+    poolAddress: `0x${poolName}`,
+    typeOfAsset,
+    targetAddress: null,
+    isSaddleApproved: true,
+    isRemoved: false,
+    isGuarded: false,
+    isPaused: false,
+    isMigrated: false,
+    virtualPrice: BigNumber.from(1),
+    adminFee: BigNumber.from(1),
+    swapFee: BigNumber.from(1),
+    aParameter: BigNumber.from(1),
+    tokenBalances: tokens.map(() => BigNumber.from(1)),
+    lpTokenSupply: BigNumber.from(1),
+    miniChefRewardsPid: null,
+    underlyingTokens: isMetaSwap ? tokens.map((token) => token.address) : null,
+    basePoolAddress: isMetaSwap ? `0xbase-${poolName}` : null,
+    metaSwapDepositAddress: isMetaSwap ? `0xdeposit-${poolName}` : null,
+    underlyingTokenBalances: isMetaSwap
+      ? tokens.map(() => BigNumber.from(1))
+      : null,
+    isMetaSwap,
+    priceData: {} as ReturnType<typeof getPriceDataForPool>,
+  } as ExpandedBasicPool
 }
 describe("getTradingPairsForToken", () => {
   const tokenA = createTestToken("tokenA")
@@ -49,34 +65,31 @@ describe("getTradingPairsForToken", () => {
   const tokenF = createTestToken("tokenFSynth", true)
   const tokenG = createTestToken("tokenG")
 
-  const pool1 = createTestPool("NonSynth AB", [tokenA, tokenB])
-  const pool2 = createTestPool("Synth CDE", [tokenC, tokenD, tokenE])
-  const pool3 = createTestPool("Synth DFG", [tokenD, tokenF, tokenG])
+  const pool1 = createTestPool("NonSynth AB", [tokenA, tokenB], false)
+  const pool2 = createTestPool("Synth CDE", [tokenC, tokenD, tokenE], false)
+  const pool3 = createTestPool("Synth DFG", [tokenD, tokenF, tokenG], true)
 
   const allTokens = [tokenA, tokenB, tokenC, tokenD, tokenE, tokenF, tokenG]
   const allPools = [pool1, pool2, pool3]
 
   const tokensMap = allTokens.reduce(
-    (acc, t) => ({ ...acc, [t.symbol]: t }),
-    {} as { [symbol: string]: Token },
+    (acc, t) => ({ ...acc, [t.address.toLowerCase()]: t }),
+    {} as { [address: string]: BasicToken },
   )
-  const poolsMap = allPools.reduce(
-    (acc, p) => ({ ...acc, [p.name]: p }),
-    {} as { [poolName: string]: Pool },
-  )
+
   const tokensToPoolsMap = {
-    [tokenA.symbol]: [pool1.name],
-    [tokenB.symbol]: [pool1.name],
-    [tokenC.symbol]: [pool2.name],
-    [tokenD.symbol]: [pool2.name, pool3.name],
-    [tokenE.symbol]: [pool2.name],
-    [tokenF.symbol]: [pool3.name],
-    [tokenG.symbol]: [pool3.name],
+    [tokenA.address]: [pool1.poolName],
+    [tokenB.address]: [pool1.poolName],
+    [tokenC.address]: [pool2.poolName],
+    [tokenD.address]: [pool2.poolName, pool3.poolName],
+    [tokenE.address]: [pool2.poolName],
+    [tokenF.address]: [pool3.poolName],
+    [tokenG.address]: [pool3.poolName],
   }
+
   it("Tokens can't swap with themselves", () => {
     const pairs = getTradingPairsForToken(
       tokensMap,
-      poolsMap,
       allPools,
       tokensToPoolsMap,
       tokenA,
@@ -90,12 +103,12 @@ describe("getTradingPairsForToken", () => {
       from: {
         symbol: tokenA.symbol,
         poolName: undefined,
-        tokenIndex: undefined,
+        tokenIndex: -1,
       },
       to: {
         symbol: tokenA.symbol,
         poolName: undefined,
-        tokenIndex: undefined,
+        tokenIndex: -1,
       },
       route: [],
     })
@@ -104,7 +117,6 @@ describe("getTradingPairsForToken", () => {
   it("Tokens in non-synth pools can only swap with each other", () => {
     const pairs = getTradingPairsForToken(
       tokensMap,
-      poolsMap,
       allPools,
       tokensToPoolsMap,
       tokenA,
@@ -114,19 +126,19 @@ describe("getTradingPairsForToken", () => {
       type: SWAP_TYPES.DIRECT,
       from: {
         symbol: tokenA.symbol,
-        poolName: pool1.name,
-        tokenIndex: pool1.poolTokens.indexOf(tokenA),
+        poolName: pool1.poolName,
+        tokenIndex: pool1.tokens.indexOf(tokenA.address),
       },
       to: {
         symbol: tokenB.symbol,
-        poolName: pool1.name,
-        tokenIndex: pool1.poolTokens.indexOf(tokenB),
+        poolName: pool1.poolName,
+        tokenIndex: pool1.tokens.indexOf(tokenB.address),
       },
       route: [tokenA.symbol, tokenB.symbol],
     })
     for (const swapData of pairs) {
       const { type, to } = swapData
-      if (to.poolName !== pool1.name) {
+      if (to.poolName !== pool1.poolName) {
         expect(type).toEqual(SWAP_TYPES.INVALID)
       }
     }
@@ -135,7 +147,6 @@ describe("getTradingPairsForToken", () => {
   it("Synth tokens can swap with any other synth token", () => {
     const pairs = getTradingPairsForToken(
       tokensMap,
-      poolsMap,
       allPools,
       tokensToPoolsMap,
       tokenE,
@@ -147,13 +158,13 @@ describe("getTradingPairsForToken", () => {
       type: SWAP_TYPES.SYNTH_TO_SYNTH,
       from: {
         symbol: tokenE.symbol,
-        poolName: pool2.name,
-        tokenIndex: pool2.poolTokens.indexOf(tokenE),
+        poolName: pool2.poolName,
+        tokenIndex: pool2.tokens.indexOf(tokenE.address),
       },
       to: {
         symbol: tokenF.symbol,
-        poolName: pool3.name,
-        tokenIndex: pool3.poolTokens.indexOf(tokenF),
+        poolName: pool3.poolName,
+        tokenIndex: pool3.tokens.indexOf(tokenF.address),
       },
       route: [tokenE.symbol, tokenF.symbol],
     })
@@ -162,7 +173,6 @@ describe("getTradingPairsForToken", () => {
   it("Virtual swaps can be disabled", () => {
     const pairs = getTradingPairsForToken(
       tokensMap,
-      poolsMap,
       allPools,
       tokensToPoolsMap,
       tokenE,
@@ -175,12 +185,12 @@ describe("getTradingPairsForToken", () => {
       from: {
         symbol: tokenE.symbol,
         poolName: undefined,
-        tokenIndex: undefined,
+        tokenIndex: -1,
       },
       to: {
         symbol: tokenF.symbol,
         poolName: undefined,
-        tokenIndex: undefined,
+        tokenIndex: -1,
       },
       route: [],
     })
@@ -189,7 +199,6 @@ describe("getTradingPairsForToken", () => {
   it("A synth token can swap with a nonSynth token in a synth pool", () => {
     const pairs = getTradingPairsForToken(
       tokensMap,
-      poolsMap,
       allPools,
       tokensToPoolsMap,
       tokenF,
@@ -201,13 +210,13 @@ describe("getTradingPairsForToken", () => {
       type: SWAP_TYPES.SYNTH_TO_TOKEN,
       from: {
         symbol: tokenF.symbol,
-        poolName: pool3.name,
-        tokenIndex: pool3.poolTokens.indexOf(tokenF),
+        poolName: pool3.poolName,
+        tokenIndex: pool3.tokens.indexOf(tokenF.address),
       },
       to: {
         symbol: tokenC.symbol,
-        poolName: pool2.name,
-        tokenIndex: pool2.poolTokens.indexOf(tokenC),
+        poolName: pool2.poolName,
+        tokenIndex: pool2.tokens.indexOf(tokenC.address),
       },
       route: [tokenF.symbol, tokenE.symbol, tokenC.symbol],
     })
@@ -216,7 +225,6 @@ describe("getTradingPairsForToken", () => {
   it("A nonSynth token in a synth pool can swap with another nonSynth token in a different synth pool", () => {
     const pairs = getTradingPairsForToken(
       tokensMap,
-      poolsMap,
       allPools,
       tokensToPoolsMap,
       tokenC,
@@ -228,13 +236,13 @@ describe("getTradingPairsForToken", () => {
       type: SWAP_TYPES.TOKEN_TO_TOKEN,
       from: {
         symbol: tokenC.symbol,
-        poolName: pool2.name,
-        tokenIndex: pool2.poolTokens.indexOf(tokenC),
+        poolName: pool2.poolName,
+        tokenIndex: pool2.tokens.indexOf(tokenC.address),
       },
       to: {
         symbol: tokenG.symbol,
-        poolName: pool3.name,
-        tokenIndex: pool3.poolTokens.indexOf(tokenG),
+        poolName: pool3.poolName,
+        tokenIndex: pool3.tokens.indexOf(tokenG.address),
       },
       route: [tokenC.symbol, tokenE.symbol, tokenF.symbol, tokenG.symbol],
     })
@@ -243,7 +251,6 @@ describe("getTradingPairsForToken", () => {
   it("A nonSynth token in a synth pool can swap with a synth token in another pool", () => {
     const pairs = getTradingPairsForToken(
       tokensMap,
-      poolsMap,
       allPools,
       tokensToPoolsMap,
       tokenC,
@@ -255,13 +262,13 @@ describe("getTradingPairsForToken", () => {
       type: SWAP_TYPES.TOKEN_TO_SYNTH,
       from: {
         symbol: tokenC.symbol,
-        poolName: pool2.name,
-        tokenIndex: pool2.poolTokens.indexOf(tokenC),
+        poolName: pool2.poolName,
+        tokenIndex: pool2.tokens.indexOf(tokenC.address),
       },
       to: {
         symbol: tokenF.symbol,
-        poolName: pool3.name,
-        tokenIndex: pool3.poolTokens.indexOf(tokenF),
+        poolName: pool3.poolName,
+        tokenIndex: pool3.tokens.indexOf(tokenF.address),
       },
       route: [tokenC.symbol, tokenE.symbol, tokenF.symbol],
     })

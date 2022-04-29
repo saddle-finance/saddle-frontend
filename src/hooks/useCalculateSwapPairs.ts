@@ -1,18 +1,18 @@
+import { BasicPool, BasicPoolsContext } from "./../providers/BasicPoolsProvider"
 import {
-  ChainId,
-  POOLS_MAP,
-  Pool,
-  PoolsMap,
-  SWAP_TYPES,
-  TOKENS_MAP,
-  Token,
-  TokensMap,
-} from "../constants/index"
-import { useCallback, useEffect, useMemo, useState } from "react"
+  BasicToken,
+  BasicTokens,
+  TokensContext,
+} from "../providers/TokensProvider"
+import { ChainId, SWAP_TYPES, Token } from "../constants/index"
+import { useCallback, useContext, useEffect, useMemo, useState } from "react"
 
+import { AppState } from "../state"
+import { IS_DEVELOPMENT } from "./../utils/environment"
+import { getPriceDataForPool } from "./usePoolData"
 import { intersection } from "../utils/index"
 import { useActiveWeb3React } from "."
-import usePoolsStatuses from "./usePoolsStatuses"
+import { useSelector } from "react-redux"
 
 // swaptypes in order of least to most preferred (aka expensive)
 const SWAP_TYPES_ORDERED_ASC = [
@@ -25,36 +25,73 @@ const SWAP_TYPES_ORDERED_ASC = [
 ]
 
 type TokenToPoolsMap = {
-  [tokenSymbol: string]: string[]
+  [tokenSymbol: string]: string[] | undefined
+}
+
+export type ExpandedBasicPool = BasicPool & {
+  priceData: ReturnType<typeof getPriceDataForPool>
+  expandedTokens: BasicToken[]
+  expandedUnderlyingTokens: BasicToken[] | null
 }
 
 type TokenToSwapDataMap = { [symbol: string]: SwapData[] }
 export function useCalculateSwapPairs(): (token?: Token) => SwapData[] {
   const [pairCache, setPairCache] = useState<TokenToSwapDataMap>({})
-  const poolsStatuses = usePoolsStatuses()
+  const basicPools = useContext(BasicPoolsContext)
+  const tokens = useContext(TokensContext)
   const { chainId } = useActiveWeb3React()
+  const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const [poolsSortedByTVL, tokenToPoolsMapSorted] = useMemo(() => {
-    const sortedPools = Object.values(POOLS_MAP)
-      .filter((pool) => (chainId ? pool.addresses[chainId] : false)) // filter by pools available in the chain
-      .filter((pool) => !poolsStatuses[pool.name]?.isPaused) // paused pools can't swap
-      .sort((a, b) => {
-        const aTVL = poolsStatuses[a.name]?.tvl
-        const bTVL = poolsStatuses[b.name]?.tvl
-        if (aTVL && bTVL) {
-          return aTVL.gt(bTVL) ? -1 : 1
-        }
-        return aTVL ? -1 : 1
+    if (basicPools === null || tokens === null) return []
+    const basicPoolsWithPriceData = (Object.values(basicPools) as BasicPool[])
+      .map((pool) => {
+        const priceData = getPriceDataForPool(tokens, pool, tokenPricesUSD)
+        const expandedTokens = pool.tokens.map((addr) => tokens?.[addr])
+        const expandedUnderlyingTokens =
+          pool.underlyingTokens?.map((addr) => tokens?.[addr]) || null
+        return { ...pool, priceData, expandedTokens, expandedUnderlyingTokens }
       })
-    const tokenToPools = sortedPools.reduce((acc, { name: poolName }) => {
-      const pool = POOLS_MAP[poolName]
+      .filter((pool) => !pool.isPaused) // paused pools can't swap
+      .filter((expandedPool) => {
+        const hasExpandedTokenData = expandedPool.expandedTokens.every(
+          (token) => token != null,
+        )
+        const hasExpandedUnderlyingTokenData =
+          expandedPool.expandedUnderlyingTokens === null ||
+          expandedPool.expandedUnderlyingTokens?.every((token) => token != null)
+        const shouldInclude =
+          hasExpandedTokenData && hasExpandedUnderlyingTokenData
+        if (!shouldInclude && IS_DEVELOPMENT) {
+          console.error(
+            `Could not find tokens for pool ${
+              expandedPool.poolName
+            } ${JSON.stringify({
+              hasExpandedTokenData,
+              hasExpandedUnderlyingTokenData,
+            })}`,
+          )
+        }
+        return shouldInclude
+      }) as ExpandedBasicPool[] // make sure we have enough data about a pool
+    const sortedPools = basicPoolsWithPriceData.sort((a, b) => {
+      const aTVL = a.priceData?.tokenBalancesSumUSD
+      const bTVL = b.priceData?.tokenBalancesSumUSD
+      if (aTVL && bTVL) {
+        return aTVL.gt(bTVL) ? -1 : 1
+      }
+      return aTVL ? -1 : 1
+    })
+
+    // map of tokenAddress to poolName[]
+    const tokenToPools = sortedPools.reduce((acc, pool) => {
       const newAcc = { ...acc }
-      pool.poolTokens.forEach((token) => {
-        newAcc[token.symbol] = (newAcc[token.symbol] || []).concat(poolName)
+      ;(pool.underlyingTokens || pool.tokens).forEach((addr) => {
+        newAcc[addr] = (newAcc[addr] || []).concat(pool.poolName)
       })
       return newAcc
     }, {} as TokenToPoolsMap)
     return [sortedPools, tokenToPools]
-  }, [poolsStatuses, chainId])
+  }, [basicPools, tokens, tokenPricesUSD]) // TODO reduce refresh rate caused by tokenPricesUSD
 
   useEffect(() => {
     // @dev clear cache when moving chains
@@ -63,34 +100,41 @@ export function useCalculateSwapPairs(): (token?: Token) => SwapData[] {
 
   return useCallback(
     function calculateSwapPairs(token?: Token): SwapData[] {
-      if (!token) return []
+      if (token == null || chainId == null || tokens === null) return []
       const cacheHit = pairCache[token.symbol]
       if (cacheHit) return cacheHit
+      const originTokenAddress = (token.addresses[chainId] || "").toLowerCase()
+      const originToken = tokens[originTokenAddress]
+      if (!originToken) return []
       const swapPairs = getTradingPairsForToken(
-        TOKENS_MAP,
-        POOLS_MAP,
-        poolsSortedByTVL,
-        tokenToPoolsMapSorted,
-        token,
-        [ChainId.MAINNET, ChainId.HARDHAT].includes(chainId as ChainId),
+        tokens,
+        poolsSortedByTVL || [],
+        tokenToPoolsMapSorted || {},
+        originToken,
+        chainId === ChainId.MAINNET, // virtualSwap only supports mainnet
       )
       setPairCache((prevState) => ({ ...prevState, [token.symbol]: swapPairs }))
       return swapPairs
     },
-    [poolsSortedByTVL, tokenToPoolsMapSorted, pairCache, chainId],
+    [pairCache, tokens, poolsSortedByTVL, tokenToPoolsMapSorted, chainId],
   )
 }
 
-function buildSwapSideData(token: Token): SwapSide
-function buildSwapSideData(token: Token, pool: Pool): Required<SwapSide>
+function buildSwapSideData(token: BasicToken): SwapSide
 function buildSwapSideData(
-  token: Token,
-  pool?: Pool,
+  token: BasicToken,
+  pool: ExpandedBasicPool,
+): Required<SwapSide>
+function buildSwapSideData(
+  token: BasicToken,
+  pool?: ExpandedBasicPool,
 ): Required<SwapSide> | SwapSide {
   return {
     symbol: token.symbol,
-    poolName: pool?.name,
-    tokenIndex: pool?.poolTokens.findIndex((t) => t === token),
+    poolName: pool?.poolName,
+    tokenIndex: (pool?.underlyingTokens || pool?.tokens || []).findIndex(
+      (addr) => addr === token.address,
+    ), // @dev note we're assuming we use the metaswapDeposit address, thus we're only looking at underlying tokens
   }
 }
 
@@ -115,47 +159,56 @@ export type SwapData =
     }
 
 function getTradingPairsForToken(
-  tokensMap: TokensMap,
-  poolsMap: PoolsMap,
-  poolsSortedByTVL: Pool[],
+  tokensMap: NonNullable<BasicTokens>,
+  poolsSortedByTVL: ExpandedBasicPool[],
   tokenToPoolsMap: TokenToPoolsMap,
-  originToken: Token,
+  originToken: BasicToken,
   allowVirtualSwap: boolean,
 ): SwapData[] {
-  const allTokens = Object.values(tokensMap).filter(
-    ({ isLPToken, symbol }) => !isLPToken && tokenToPoolsMap[symbol],
-  )
+  const poolsMap: { [poolName: string]: ExpandedBasicPool } =
+    poolsSortedByTVL.reduce(
+      (acc, pool) => ({ ...acc, [pool.poolName]: pool }),
+      {},
+    )
+  const allTokens = (Object.values(tokensMap) as BasicToken[]).filter(
+    ({ isLPToken, address }) => !isLPToken && tokenToPoolsMap[address],
+  ) // @dev tokens includes non-pool tokens like rewards as well, so filter only tokens in pools
   const synthPoolsSet = new Set(
     poolsSortedByTVL.filter(({ isSynthetic }) => isSynthetic),
   )
   const originTokenPoolsSet = new Set(
-    tokenToPoolsMap[originToken.symbol].map((poolName) => poolsMap[poolName]),
+    (tokenToPoolsMap[originToken.address] || []).map(
+      (poolName) => poolsMap[poolName],
+    ),
   )
   const originPoolsSynthSet = intersection(synthPoolsSet, originTokenPoolsSet)
   const tokenToSwapDataMap: { [symbol: string]: SwapData } = {} // object is used for deduping
 
   allTokens.forEach((token) => {
     // Base Case: Invalid trade, eg token with itself
-    let swapData: SwapData = {
+    const invalidSwap: SwapData = {
       from: buildSwapSideData(originToken),
       to: buildSwapSideData(token),
       type: SWAP_TYPES.INVALID,
       route: [],
     }
+    let swapData: SwapData = invalidSwap
     const tokenPoolsSet = new Set(
-      tokenToPoolsMap[token.symbol].map((poolName) => poolsMap[poolName]),
+      (tokenToPoolsMap[token.address] || []).map(
+        (poolName) => poolsMap[poolName],
+      ),
     )
     const tokenPoolsSynthSet = intersection(synthPoolsSet, tokenPoolsSet)
     const sharedPoolsSet = intersection(originTokenPoolsSet, tokenPoolsSet)
 
     /**
      * sToken = synth, Token = nonsynth
-     * sPool = synth, Pool = nonsynth
+     * sPool = synth, BasicPool = nonsynth
      * sPool(TokenA) <> sTokenB = nonsynth token in synth pool swapping with synth token
      */
 
     // Case 1: TokenA <> TokenA
-    if (originToken === token) {
+    if (originToken.address === token.address) {
       // fall through to default "invalid" swapData
     }
     // Case 2: poolA(TokenA) <> poolA(TokenB)
@@ -191,9 +244,10 @@ function getTradingPairsForToken(
     ) {
       const originPool = [...originTokenPoolsSet][0]
       const destinationPool = [...tokenPoolsSynthSet][0]
-      const middleSynth = destinationPool.poolTokens.find(
-        ({ isSynthetic }) => isSynthetic,
-      )
+      const middleSynth = (
+        destinationPool.expandedUnderlyingTokens ||
+        destinationPool.expandedTokens
+      ).find(({ isSynthetic }) => isSynthetic)
       if (middleSynth) {
         swapData = {
           type: SWAP_TYPES.SYNTH_TO_TOKEN,
@@ -213,12 +267,13 @@ function getTradingPairsForToken(
     ) {
       const originPool = [...originPoolsSynthSet][0]
       const destinationPool = [...tokenPoolsSynthSet][0]
-      const originSynth = originPool.poolTokens.find(
-        ({ isSynthetic }) => isSynthetic,
-      )
-      const destinationSynth = destinationPool.poolTokens.find(
-        ({ isSynthetic }) => isSynthetic,
-      )
+      const originSynth = (
+        originPool.expandedUnderlyingTokens || originPool.expandedTokens
+      ).find(({ isSynthetic }) => isSynthetic)
+      const destinationSynth = (
+        destinationPool.expandedUnderlyingTokens ||
+        destinationPool.expandedTokens
+      ).find(({ isSynthetic }) => isSynthetic)
       if (originSynth && destinationSynth) {
         swapData = {
           type: SWAP_TYPES.TOKEN_TO_TOKEN,
@@ -242,9 +297,9 @@ function getTradingPairsForToken(
     ) {
       const originPool = [...originPoolsSynthSet][0]
       const destinationPool = [...tokenPoolsSet][0]
-      const middleSynth = originPool.poolTokens.find(
-        ({ isSynthetic }) => isSynthetic,
-      )
+      const middleSynth = (
+        originPool.expandedUnderlyingTokens || originPool.expandedTokens
+      ).find(({ isSynthetic }) => isSynthetic)
       if (middleSynth) {
         swapData = {
           type: SWAP_TYPES.TOKEN_TO_SYNTH,
@@ -254,19 +309,30 @@ function getTradingPairsForToken(
         }
       }
     }
+    // validate that origin and dest token idxs are found
+    if (
+      (swapData.from.tokenIndex == null ||
+        swapData.to.tokenIndex == null ||
+        swapData.from.tokenIndex === -1 ||
+        swapData.to.tokenIndex === -1) &&
+      swapData.type !== SWAP_TYPES.INVALID
+    ) {
+      IS_DEVELOPMENT &&
+        console.log(`Found invalid swap: ${JSON.stringify(swapData)}`)
+      swapData = invalidSwap
+    }
 
     // use this swap only if we haven't already calculated a better swap for the pair
     const existingTokenSwapData: SwapData | undefined =
-      tokenToSwapDataMap[token.symbol]
+      tokenToSwapDataMap[token.address]
     const existingSwapIdx = SWAP_TYPES_ORDERED_ASC.indexOf(
       existingTokenSwapData?.type,
     )
     const newSwapIdx = SWAP_TYPES_ORDERED_ASC.indexOf(swapData.type)
     if (!existingTokenSwapData || newSwapIdx > existingSwapIdx) {
-      tokenToSwapDataMap[token.symbol] = swapData
+      tokenToSwapDataMap[token.address] = swapData
     }
   })
-
   return Object.values(tokenToSwapDataMap)
 }
 
