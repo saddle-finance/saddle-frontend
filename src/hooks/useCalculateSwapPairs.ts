@@ -141,7 +141,7 @@ function buildSwapSideData(
 export type SwapSide = {
   symbol: string
   poolName?: string
-  tokenIndex: number // will be -1 if not in a pool
+  tokenIndex?: number
 }
 
 export type SwapData =
@@ -311,7 +311,10 @@ function getTradingPairsForToken(
     }
     // validate that origin and dest token idxs are found
     if (
-      (swapData.from.tokenIndex === -1 || swapData.to.tokenIndex === -1) &&
+      (swapData.from.tokenIndex == null ||
+        swapData.to.tokenIndex == null ||
+        swapData.from.tokenIndex === -1 ||
+        swapData.to.tokenIndex === -1) &&
       swapData.type !== SWAP_TYPES.INVALID
     ) {
       IS_DEVELOPMENT &&
