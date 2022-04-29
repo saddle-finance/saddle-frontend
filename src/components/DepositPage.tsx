@@ -1,5 +1,6 @@
 import {
   ALETH_POOL_NAME,
+  PoolName,
   TBTC_METAPOOL_V2_NAME,
   VETH2_POOL_NAME,
   isMetaPool,
@@ -34,6 +35,7 @@ import ReviewDeposit from "./ReviewDeposit"
 import TokenInput from "./TokenInput"
 import { Zero } from "@ethersproject/constants"
 import { logEvent } from "../utils/googleAnalytics"
+import { useRewardsHelpers } from "../hooks/useRewardsHelpers"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
@@ -70,6 +72,10 @@ const DepositPage = (props: Props): ReactElement => {
     onToggleDepositWrapped,
   } = props
 
+  const { unstake, amountStaked } = useRewardsHelpers(
+    poolData?.name as PoolName,
+  )
+  console.log({ poolData, unstake, amountStaked })
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const validDepositAmount = transactionData.to.totalAmount.gt(0)
   const shouldDisplayWrappedOption = isMetaPool(poolData?.name)
@@ -77,7 +83,7 @@ const DepositPage = (props: Props): ReactElement => {
   const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
 
   const onMigrateToGaugeClick = () => {
-    // TODO: Hook up call to migrate to gauge.
+    void unstake(amountStaked)
   }
 
   const veSDLFeatureReady = false // TODO: delete after release.
@@ -108,7 +114,7 @@ const DepositPage = (props: Props): ReactElement => {
         </Alert>
       )}
       {veSDLFeatureReady && (
-        // {myShareData?.amountsStaked.gt(Zero) && (
+        // {amountStaked.gt(Zero) && (
         <Alert severity="error" sx={{ mb: 2 }}>
           <Box display="flex" alignItems="center" justifyContent="space-around">
             <Typography>
