@@ -42,7 +42,7 @@ export function useCalculateSwapPairs(): (token?: Token) => SwapData[] {
   const { chainId } = useActiveWeb3React()
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const [poolsSortedByTVL, tokenToPoolsMapSorted] = useMemo(() => {
-    if (basicPools == null || tokens == null) return []
+    if (basicPools === null || tokens === null) return []
     const basicPoolsWithPriceData = (Object.values(basicPools) as BasicPool[])
       .map((pool) => {
         const priceData = getPriceDataForPool(tokens, pool, tokenPricesUSD)
@@ -100,7 +100,7 @@ export function useCalculateSwapPairs(): (token?: Token) => SwapData[] {
 
   return useCallback(
     function calculateSwapPairs(token?: Token): SwapData[] {
-      if (token == null || chainId == null || tokens == null) return []
+      if (token == null || chainId == null || tokens === null) return []
       const cacheHit = pairCache[token.symbol]
       if (cacheHit) return cacheHit
       const originTokenAddress = (token.addresses[chainId] || "").toLowerCase()
@@ -141,7 +141,7 @@ function buildSwapSideData(
 export type SwapSide = {
   symbol: string
   poolName?: string
-  tokenIndex?: number
+  tokenIndex: number // will be -1 if not in a pool
 }
 
 export type SwapData =
@@ -309,12 +309,9 @@ function getTradingPairsForToken(
         }
       }
     }
-    // validate that to and from idx is > -1
+    // validate that origin and dest token idxs are found
     if (
-      (swapData.from.tokenIndex == null ||
-        swapData.to.tokenIndex == null ||
-        swapData.from.tokenIndex === -1 ||
-        swapData.to.tokenIndex === -1) &&
+      (swapData.from.tokenIndex === -1 || swapData.to.tokenIndex === -1) &&
       swapData.type !== SWAP_TYPES.INVALID
     ) {
       IS_DEVELOPMENT &&
