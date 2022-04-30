@@ -18,7 +18,10 @@ export default function TableCellTheme(theme: Theme): Components {
         root: {
           fontSize: theme.typography.body1.fontSize,
           fontWeight: theme.typography.body1.fontWeight,
-          borderColor: theme.palette.divider,
+          borderColor:
+            theme.palette.mode === "dark"
+              ? "rgba(255, 255, 255, 0.12)"
+              : "rgba(0, 0, 0, 0.12)",
         },
       },
     },
