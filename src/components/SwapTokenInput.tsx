@@ -83,7 +83,7 @@ export default function SwapTokenInput({
   ) => {
     // if value is not blank, then test the regex
     if (
-      e.target.value === "" ||
+      e.target.value.trim() === "" ||
       readableDecimalNumberRegex.test(e.target.value)
     ) {
       onChangeAmount?.(e.target.value)
