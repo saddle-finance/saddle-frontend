@@ -17,7 +17,7 @@ import { AppDispatch } from "../state"
 import BasicPoolsProvider from "../providers/BasicPoolsProvider"
 import CreatePool from "./CreatePool"
 import Deposit from "./Deposit"
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
+import { LocalizationProvider } from "@mui/x-date-pickers"
 import MinichefProvider from "../providers/MinichefProvider"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import Pools from "./Pools"
@@ -121,10 +121,10 @@ export default function App(): ReactElement {
                                 key={`${name}-name-withdraw`}
                               />
                             ))}
-                            {pools.map(({ name, route }) => (
+                            {pools.map(({ route, name }) => (
                               <Route
                                 exact
-                                path={`/pools/${route}/deposit`}
+                                path={`/pools/${route}/withdraw`}
                                 render={(props) => (
                                   <Withdraw {...props} poolName={name} />
                                 )}
@@ -141,12 +141,12 @@ export default function App(): ReactElement {
                               component={CreatePool}
                             />
                             <Route exact path="/risk" component={Risk} />
-                            <Route exact path="/vesdl" component={VeSDL} />
                             <Route
                               exact
                               path="/vesting-claim"
                               component={VestingClaim}
                             />
+                            <Route exact path="/vesdl" component={VeSDL} />
                           </Switch>
                           <WrongNetworkModal />
                           <Version />

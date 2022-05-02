@@ -4,32 +4,31 @@ import {
   PoolName,
   PoolTypes,
   Token,
-  getIsLegacySwapABIPoolByAddress,
   getMinichefPid,
 } from "../constants"
 import React, { ReactElement, useEffect, useState } from "react"
-import { getContract, getSwapContract, isSynthAsset } from "../utils"
+import { getMulticallProvider, isSynthAsset } from "../utils"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
+import { Contract as EthcallContract } from "ethcall"
+import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
+import { MulticallContract } from "../types/ethcall"
 import { Web3Provider } from "@ethersproject/providers"
 import { getMigrationData } from "../utils/migrations"
 import { useActiveWeb3React } from "../hooks"
 import { useSelector } from "react-redux"
 
-type SwapInfo = {
+type SharedSwapData = {
   poolAddress: string
   lpToken: string
   typeOfAsset: PoolTypes
   poolName: string
   targetAddress: string | null
   tokens: string[]
-  underlyingTokens: string[] | null
-  basePoolAddress: string | null
-  metaSwapDepositAddress: string | null
   isSaddleApproved: boolean
   isRemoved: boolean
   isGuarded: boolean
@@ -39,12 +38,25 @@ type SwapInfo = {
   swapFee: BigNumber
   aParameter: BigNumber
   tokenBalances: BigNumber[]
-  underlyingTokenBalances: BigNumber[] | null
   lpTokenSupply: BigNumber
   miniChefRewardsPid: number | null
-  isMetaSwap: boolean
   isSynthetic: boolean
 }
+type MetaSwapInfo = SharedSwapData & {
+  underlyingTokens: string[]
+  basePoolAddress: string
+  metaSwapDepositAddress: string
+  underlyingTokenBalances: BigNumber[]
+  isMetaSwap: true
+}
+type NonMetaSwapInfo = SharedSwapData & {
+  underlyingTokens: null
+  basePoolAddress: null
+  metaSwapDepositAddress: null
+  underlyingTokenBalances: null
+  isMetaSwap: false
+}
+type SwapInfo = MetaSwapInfo | NonMetaSwapInfo
 
 export type BasicPool = {
   isMigrated: boolean
@@ -119,6 +131,17 @@ export async function getSwapInfo(
   poolName: PoolName,
 ): Promise<SwapInfo | null> {
   try {
+    /**
+     * @dev This function maps the old POOLS_MAP to a more registry-friendly structure.
+     * POOLS_MAP has an idiom that `address` for metapools refers to the metaswapDeposit address,
+     * and `metaswapAddress` refers to the actual metaswap contract address.
+     * Similarly, `tokens` for metapools refers to the metaswapDeposit tokens (eg [susd, usdc, dai, usdt]),
+     * and `underlyingTokens` refers to the metaswap tokens (eg [susd, saddleUsdLpToken]).
+     *
+     * This function corrects the addresses (eg poolAddress -> metaswapContract, metaSwapDepositAddress -> metaswapDepositContract)
+     * and also corrects the tokens (eg tokens -> [t1, lpToken], underlyingTokens -> [t1, t2, t3, t4]).
+     */
+    const ethCallProvider = await getMulticallProvider(library, chainId)
     // Constants
     const pool = POOLS_MAP[poolName]
     const _metaSwapAddress = pool.metaSwapAddresses?.[chainId]?.toLowerCase()
@@ -129,12 +152,11 @@ export async function getSwapInfo(
     const metaSwapDepositAddress = isMetaSwap ? _internalAddress : null
     const isGuarded = !!pool.isGuarded
     if (!poolAddress) return null
-    const isLegacySwap = getIsLegacySwapABIPoolByAddress(chainId, poolAddress)
     const rewardsPid = getMinichefPid(chainId, poolAddress)
-    const tokens = isMetaSwap // @dev this is counterintuitive but will be corrected post-registry
+    const tokens = isMetaSwap
       ? (pool.underlyingPoolTokens as Token[]).map(({ addresses }) =>
           addresses[chainId].toLowerCase(),
-        ) // refers to [meta,lp] pair
+        )
       : pool.poolTokens.map(({ addresses }) => addresses[chainId].toLowerCase())
     const underlyingTokens = isMetaSwap
       ? pool.poolTokens.map(({ addresses }) => addresses[chainId].toLowerCase())
@@ -143,36 +165,34 @@ export async function getSwapInfo(
       ? POOLS_MAP[pool.underlyingPool].addresses[chainId]?.toLowerCase()
       : null
     const typeOfAsset = pool.type
-    const isSynthetic = (underlyingTokens || tokens).some((addr) =>
+    const isSynthetic = (tokens || underlyingTokens || []).some((addr) =>
       isSynthAsset(chainId, addr),
     )
 
     // Swap Contract logic
-    const swapContract = getSwapContract(
-      library,
+    const swapContractMulticall = new EthcallContract(
       poolAddress,
-      { isGuarded, isMetaSwap, isLegacySwap, isMetaSwapDeposit: false }, // make sure metaswapDeposit is correct so we use a contract w balances
-    ) as MetaSwap
-    if (!swapContract) return null
-    const [swapStorage, aParameter, isPaused, virtualPrice] = await Promise.all(
-      [
-        swapContract.swapStorage(),
-        swapContract.getA(),
-        swapContract.paused(),
-        swapContract.getVirtualPrice(),
-      ],
-    )
+      META_SWAP_ABI,
+    ) as MulticallContract<MetaSwap>
+    const lpTokenContract = new EthcallContract(
+      lpToken,
+      ERC20_ABI,
+    ) as MulticallContract<Erc20>
+
+    const [swapStorage, aParameter, isPaused, virtualPrice] =
+      await ethCallProvider.all([
+        swapContractMulticall.swapStorage(),
+        swapContractMulticall.getA(),
+        swapContractMulticall.paused(),
+        swapContractMulticall.getVirtualPrice(),
+      ])
     const { adminFee, swapFee } = swapStorage
-    const tokenBalances = await Promise.all(
-      tokens.map((_, i) => swapContract.getTokenBalance(i)),
-    )
+    const [lpTokenSupply, ...tokenBalances] = await ethCallProvider.all([
+      lpTokenContract.totalSupply(),
+      ...tokens.map((_, i) => swapContractMulticall.getTokenBalance(i)),
+    ])
 
-    // LpToken Logic
-    const lpTokenContract = getContract(lpToken, ERC20_ABI, library) as Erc20
-    if (!lpTokenContract) return null
-    const lpTokenSupply = await lpTokenContract.totalSupply()
-
-    return {
+    const data = {
       // Registry Values
       poolAddress,
       lpToken,
@@ -201,6 +221,9 @@ export async function getSwapInfo(
       miniChefRewardsPid: rewardsPid,
       isSynthetic,
     }
+    return isMetaSwap
+      ? (data as unknown as MetaSwapInfo) // TODO can we be more sure of this?
+      : (data as NonMetaSwapInfo)
   } catch (e) {
     const error = new Error(
       `Unable to getSwapInfo for ${poolName}\n${(e as Error).message}`,

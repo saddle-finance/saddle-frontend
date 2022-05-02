@@ -24,10 +24,7 @@ import { TokenPricesUSD } from "../state/application"
 import { getAddress } from "@ethersproject/address"
 
 export function isSynthAsset(chainId: ChainId, tokenAddress: string): boolean {
-  return (
-    chainId === ChainId.MAINNET &&
-    SYNTHETIX_TOKENS.includes(tokenAddress.toLowerCase())
-  )
+  return SYNTHETIX_TOKENS[chainId]?.includes(tokenAddress) || false
 }
 
 // returns the checksummed address if the address is valid, otherwise returns false
