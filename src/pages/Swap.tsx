@@ -1,7 +1,6 @@
 import {
   IS_VIRTUAL_SWAP_ACTIVE,
   POOLS_MAP,
-  PoolName,
   SWAP_TYPES,
   TOKENS_MAP,
   TOKEN_TO_POOLS_MAP,
@@ -32,6 +31,7 @@ import {
 } from "../hooks/useContract"
 
 import { AppState } from "../state/index"
+import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { PendingSwapsContext } from "../providers/PendingSwapsProvider"
 import SwapPage from "../components/SwapPage"
@@ -43,7 +43,6 @@ import { formatGasToString } from "../utils/gas"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndSwap } from "../hooks/useApproveAndSwap"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
-import usePoolsStatuses from "../hooks/usePoolsStatuses"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 import { utils } from "ethers"
@@ -100,7 +99,7 @@ function Swap(): ReactElement {
   const { chainId } = useActiveWeb3React()
   const approveAndSwap = useApproveAndSwap()
   const tokenBalances = usePoolTokenBalances()
-  const poolsStatuses = usePoolsStatuses()
+  const basicPools = useContext(BasicPoolsContext)
   const bridgeContract = useBridgeContract()
   const snxEchangeRatesContract = useSynthetixExchangeRatesContract()
   const calculateSwapPairs = useCalculateSwapPairs()
@@ -120,9 +119,7 @@ function Swap(): ReactElement {
     setPrevFormState(EMPTY_FORM_STATE)
   }, [chainId])
 
-  const swapContract = useSwapContract(
-    formState.to.poolName as PoolName | undefined,
-  )
+  const swapContract = useSwapContract(formState.to.poolName)
   // build a representation of pool tokens for the UI
   const tokenOptions = useMemo(() => {
     if (!chainId)
@@ -136,11 +133,16 @@ function Swap(): ReactElement {
         // get list of pools containing the token
         const tokenPools = TOKEN_TO_POOLS_MAP[symbol]
         // ensure at least one pool is unpaused to include token in swappable list
-        const hasAnyUnpaused = tokenPools.reduce((acc, poolName) => {
-          const poolStatus = poolsStatuses[poolName as PoolName]
-          return poolStatus ? Boolean(acc || !poolStatus.isPaused) : acc
-        }, false)
-        return hasAnyUnpaused
+        const hasAnyUnpaused = tokenPools.some((poolName) => {
+          const basicPool = basicPools?.[poolName]
+          return basicPool ? !basicPool.isPaused : false
+        })
+        // only show pools with balances
+        const hasAnyBalance = tokenPools.some((poolName) => {
+          const basicPool = basicPools?.[poolName]
+          return basicPool?.lpTokenSupply.gt(Zero) ?? false
+        })
+        return hasAnyUnpaused && hasAnyBalance
       })
       .map(({ symbol, name, decimals }) => {
         const amount = tokenBalances?.[symbol] || Zero
@@ -157,27 +159,33 @@ function Swap(): ReactElement {
       .sort(sortTokenOptions)
     const toTokens =
       formState.currentSwapPairs.length > 0
-        ? formState.currentSwapPairs
-            .map(({ to, type: swapType }) => {
-              const { symbol, name, decimals } = TOKENS_MAP[to.symbol]
-              const amount = tokenBalances?.[symbol] || Zero
-              return {
-                name,
-                symbol,
-                decimals,
-                amount,
-                valueUSD: calculatePrice(
-                  amount,
-                  tokenPricesUSD?.[symbol],
+        ? (
+            formState.currentSwapPairs
+              .map(({ to, type: swapType }) => {
+                if (!TOKENS_MAP?.[to.symbol]) {
+                  console.log("unknown symbol", { to, swapType })
+                  return null
+                }
+                const { symbol, name, decimals } = TOKENS_MAP[to.symbol]
+                const amount = tokenBalances?.[symbol] || Zero
+                return {
+                  name,
+                  symbol,
                   decimals,
-                ),
-                swapType,
-                isAvailable: IS_VIRTUAL_SWAP_ACTIVE
-                  ? swapType !== SWAP_TYPES.INVALID
-                  : swapType === SWAP_TYPES.DIRECT, // TODO replace once VSwaps are live
-              }
-            })
-            .sort(sortTokenOptions)
+                  amount,
+                  valueUSD: calculatePrice(
+                    amount,
+                    tokenPricesUSD?.[symbol],
+                    decimals,
+                  ),
+                  swapType,
+                  isAvailable: IS_VIRTUAL_SWAP_ACTIVE
+                    ? swapType !== SWAP_TYPES.INVALID
+                    : swapType === SWAP_TYPES.DIRECT, // TODO replace once VSwaps are live
+                }
+              })
+              .filter(Boolean) as TokenOption[]
+          ).sort(sortTokenOptions)
         : allTokens
     // from: all tokens always available. to: limited by selected "from" token.
     return {
@@ -189,7 +197,7 @@ function Swap(): ReactElement {
     tokenBalances,
     formState.currentSwapPairs,
     chainId,
-    poolsStatuses,
+    basicPools,
   ])
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const calculateSwapAmount = useCallback(

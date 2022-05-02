@@ -7,68 +7,153 @@ import {
   Stack,
   Typography,
 } from "@mui/material"
+import { AssetType, PoolType, ValidationStatus } from "."
+import { BigNumber, BigNumberish, ethers } from "ethers"
+import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
+
 import Dialog from "../../components/Dialog"
 import DialogTitle from "../../components/DialogTitle"
 import React from "react"
+import { parseUnits } from "@ethersproject/units"
+import { useActiveWeb3React } from "../../hooks"
+import { usePermissionlessDeployer } from "../../hooks/useContract"
 import { useTranslation } from "react-i18next"
 
-type Props = { open: boolean; onClose?: () => void }
+type Props = {
+  open: boolean
+  onClose?: () => void
+  poolData: {
+    poolName: string
+    poolSymbol: string
+    aParameter: string
+    poolType: PoolType
+    fee: string
+    assetType: AssetType
+    tokenInputs: string[]
+    tokenInfo: {
+      name: string
+      symbol: string
+      decimals: BigNumberish
+      checkResult: ValidationStatus
+    }[]
+  }
+  resetFields: () => void
+  metapoolBasepoolAddr: string
+  metapoolBasepoolLpAddr: string
+}
 
 export default function ReviewCreatePool({
   open,
   onClose = () => null,
+  poolData,
+  resetFields,
+  metapoolBasepoolAddr,
+  metapoolBasepoolLpAddr,
 }: Props): JSX.Element {
   const { t } = useTranslation()
+  const permissionlessDeployer = usePermissionlessDeployer()
+  const { account, chainId, library } = useActiveWeb3React()
 
-  const handleCreatePool = () => {
-    onClose()
+  const onCreatePoolClick = async () => {
+    if (!library || !chainId || !account || !permissionlessDeployer) return
+
+    const enqueueCreatePoolToast = async (deployTxn: {
+      wait: () => Promise<unknown>
+    }) =>
+      await enqueuePromiseToast(
+        chainId,
+        deployTxn.wait(),
+        "createPermissionlessPool",
+        {
+          poolName: poolData.poolName,
+        },
+      )
+
+    const decimals = poolData.tokenInfo.map((token) => token.decimals)
+    const deploySwapInput = {
+      poolName: ethers.utils.formatBytes32String(poolData.poolName),
+      tokens: poolData.tokenInputs,
+      decimals,
+      adminFee: BigNumber.from(parseUnits("50", 8)), // 50%
+      lpTokenSymbol: poolData.poolSymbol,
+      a: BigNumber.from(poolData.aParameter),
+      fee: BigNumber.from(parseUnits(poolData.fee, 8)),
+      owner: account,
+      typeOfAsset: poolData.assetType,
+    }
+    let deployTxn
+
+    try {
+      if (poolData.poolType === PoolType.Base) {
+        deployTxn = await permissionlessDeployer.deploySwap(deploySwapInput)
+        await enqueueCreatePoolToast(deployTxn)
+      } else {
+        const deployMetaSwapInput = {
+          ...deploySwapInput,
+          baseSwap: metapoolBasepoolAddr,
+          tokens: [...poolData.tokenInputs, metapoolBasepoolLpAddr],
+          decimals: [...deploySwapInput.decimals, 18],
+        }
+        deployTxn = await permissionlessDeployer.deployMetaSwap(
+          deployMetaSwapInput,
+        )
+        await enqueueCreatePoolToast(deployTxn)
+      }
+      resetFields()
+    } catch (err) {
+      console.error(err)
+      enqueueToast("error", "Unable to deploy Permissionless Pool")
+    } finally {
+      onClose()
+    }
   }
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle variant="h1">Review Pool Creation</DialogTitle>
+      <DialogTitle variant="h1">{t("reviewPoolCreation")}</DialogTitle>
       <DialogContent>
         <Alert icon={false} color="warning">
-          Double check the inputs for your pool are as you want it-- once a pool
-          is created, it can be modified but cannot be deleted (it&lsquo;ll live
-          on the blockchain forever!)
+          {t("permissionlessPoolCreationWarningMsg")}
         </Alert>
         <Stack my={3} spacing={1}>
           <Box display="flex" justifyContent="space-between">
             <Typography>{t("poolName")}</Typography>
-            <Typography>vUSD</Typography>
+            <Typography>{poolData.poolName}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography>{t("poolSymbol")}</Typography>
-            <Typography>Saddle-vUSD</Typography>
+            <Typography>{poolData.poolSymbol}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography>{t("fee")}</Typography>
-            <Typography>0.9%</Typography>
+            <Typography>{poolData.fee}%</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography>{t("aParameter")}</Typography>
-            <Typography>120</Typography>
+            <Typography>{poolData.aParameter}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography>{t("poolType")}</Typography>
-            <Typography>USD MetaPool</Typography>
+            <Typography>{t(poolData.poolType)}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
-            <Typography>Tokens</Typography>
-            <Typography>vUSD</Typography>
+            <Typography>{t("tokens")}</Typography>
+            <Typography>
+              {poolData.tokenInfo.map((token) => token.name).join(", ")}
+            </Typography>
           </Box>
         </Stack>
         <Divider />
         <Typography my={3}>
-          Output is estimated. If the input is invalid or the gas is too low,
-          your transaction will revert.
+          {t("permissionlessPoolCreationOutputEstimatedMsg")}
         </Typography>
         <Stack spacing={1}>
-          <Button variant="contained" size="large" onClick={handleCreatePool}>
-            Create Pool
+          <Button variant="contained" size="large" onClick={onCreatePoolClick}>
+            <Typography>{t("createPool")}</Typography>
           </Button>
-          <Button size="large">Go back to edit</Button>
+          <Button onClick={onClose} size="large">
+            <Typography>{t("goBackToEdit")}</Typography>
+          </Button>
         </Stack>
       </DialogContent>
     </Dialog>

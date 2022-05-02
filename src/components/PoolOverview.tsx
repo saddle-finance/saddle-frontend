@@ -12,44 +12,32 @@ import {
   styled,
   useTheme,
 } from "@mui/material"
-import {
-  IS_SDL_LIVE,
-  POOLS_MAP,
-  PoolTypes,
-  TOKENS_MAP,
-  isMetaPool,
-} from "../constants"
-import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useMemo } from "react"
-import {
-  formatBNToPercentString,
-  formatBNToShortString,
-  formatBNToString,
-} from "../utils"
+import { formatBNToPercentString, formatBNToShortString } from "../utils"
+
+import { IS_SDL_LIVE } from "../constants"
 import { Partners } from "../utils/thirdPartyIntegrations"
 import TokenIcon from "./TokenIcon"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
 import { useHistory } from "react-router-dom"
+import usePoolData from "../hooks/usePoolData"
 import { useTranslation } from "react-i18next"
 
 interface Props {
   poolRoute: string
-  poolData: PoolDataType
-  userShareData: UserShareType | null
+  poolName: string
   onClickMigrate?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
 export default function PoolOverview({
-  poolData,
   poolRoute,
-  userShareData,
   onClickMigrate,
+  poolName,
 }: Props): ReactElement | null {
   const { t } = useTranslation()
   const theme = useTheme()
-  const { type: poolType, isOutdated } = POOLS_MAP[poolData.name]
-  const formattedDecimals = poolType === PoolTypes.USD ? 2 : 4
+  const [poolData, userShareData] = usePoolData(poolName)
   const shouldMigrate = !!onClickMigrate
   const formattedData = {
     name: poolData.name,
@@ -74,41 +62,33 @@ export default function PoolOverview({
       18,
     ),
     sdlPerDay: formatBNToShortString(poolData?.sdlPerDay || Zero, 18),
-    tokens: poolData.tokens.map((coin) => {
-      const token = TOKENS_MAP[coin.symbol]
-      return {
-        symbol: token.symbol,
-        name: token.name,
-        value: formatBNToString(coin.value, token.decimals, formattedDecimals),
-      }
-    }),
+    tokens: poolData.tokens,
   }
-  const hasShare = !!userShareData?.usdBalance.gt("0")
-  const isMetapool = isMetaPool(formattedData.name)
+  const hasShare = !!userShareData?.usdBalance.gt(Zero)
   const history = useHistory()
-  const disableText = isOutdated || shouldMigrate || poolData.isPaused
+  const disableText = poolData.isGuarded || shouldMigrate || poolData.isPaused
   const chipLabel = useMemo(() => {
-    if ((isOutdated || shouldMigrate) && poolData.isPaused) {
+    if ((poolData.isGuarded || shouldMigrate) && poolData.isPaused) {
       return (
         <span>
           OUTDATED <br />& PAUSED
         </span>
       )
-    } else if (isOutdated || shouldMigrate) {
+    } else if (poolData.isGuarded || shouldMigrate) {
       return <span>OUTDATED</span>
     } else if (poolData.isPaused) {
       return <span>PAUSED</span>
     } else {
       return null
     }
-  }, [isOutdated, shouldMigrate, poolData.isPaused])
+  }, [poolData.isGuarded, shouldMigrate, poolData.isPaused])
 
   return (
     <Paper
       sx={{
         p: theme.spacing(2, 3),
         borderColor:
-          isOutdated || shouldMigrate
+          poolData.isGuarded || shouldMigrate
             ? theme.palette.secondary.main
             : theme.palette.other.divider,
       }}
@@ -121,11 +101,15 @@ export default function PoolOverview({
               display="flex"
               color={disableText ? theme.palette.text.disabled : undefined}
             >
-              <Tooltip title={isMetapool ? <div>{t("metapool")}</div> : ""}>
+              <Tooltip
+                title={poolData.isMetaSwap ? <div>{t("metapool")}</div> : ""}
+              >
                 <Typography
                   variant="h2"
                   sx={{
-                    borderBottom: isMetapool ? "1px dotted" : undefined,
+                    borderBottom: poolData.isMetaSwap
+                      ? "1px dotted"
+                      : undefined,
                     mr: 1,
                     width: "fit-content",
                   }}
@@ -138,7 +122,9 @@ export default function PoolOverview({
                   variant="filled"
                   size="small"
                   label={chipLabel}
-                  color={isOutdated || shouldMigrate ? "secondary" : "error"}
+                  color={
+                    poolData.isGuarded || shouldMigrate ? "secondary" : "error"
+                  }
                 />
               )}
             </Box>
@@ -187,7 +173,7 @@ export default function PoolOverview({
           )}
         </StyledGrid>
         <StyledGrid item xs={6} lg={2.5} disabled={disableText}>
-          {poolData.sdlPerDay != null && IS_SDL_LIVE && (
+          {poolData.sdlPerDay?.gt(Zero) && IS_SDL_LIVE && (
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Typography variant="subtitle1" mr={1}>
                 <Link
@@ -238,7 +224,9 @@ export default function PoolOverview({
             {shouldMigrate ? (
               <Button
                 variant="contained"
-                color={isOutdated || shouldMigrate ? "secondary" : "primary"}
+                color={
+                  poolData.isGuarded || shouldMigrate ? "secondary" : "primary"
+                }
                 fullWidth
                 size="large"
                 onClick={onClickMigrate}
@@ -249,17 +237,21 @@ export default function PoolOverview({
             ) : (
               <Button
                 variant="contained"
-                color={isOutdated || shouldMigrate ? "secondary" : "primary"}
+                color={
+                  poolData.isGuarded || shouldMigrate ? "secondary" : "primary"
+                }
                 fullWidth
                 size="large"
-                disabled={poolData?.isPaused || isOutdated}
+                disabled={poolData?.isPaused || poolData.isGuarded}
                 onClick={() => history.push(`${poolRoute}/deposit`)}
               >
                 {t("deposit")}
               </Button>
             )}
             <Button
-              color={isOutdated || shouldMigrate ? "secondary" : "primary"}
+              color={
+                poolData.isGuarded || shouldMigrate ? "secondary" : "primary"
+              }
               fullWidth
               size="large"
               onClick={() => history.push(`${poolRoute}/withdraw`)}

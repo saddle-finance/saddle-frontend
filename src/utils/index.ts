@@ -24,10 +24,7 @@ import { TokenPricesUSD } from "../state/application"
 import { getAddress } from "@ethersproject/address"
 
 export function isSynthAsset(chainId: ChainId, tokenAddress: string): boolean {
-  return (
-    chainId === ChainId.MAINNET &&
-    SYNTHETIX_TOKENS.includes(tokenAddress.toLowerCase())
-  )
+  return SYNTHETIX_TOKENS[chainId]?.includes(tokenAddress) || false
 }
 
 // returns the checksummed address if the address is valid, otherwise returns false
@@ -339,6 +336,19 @@ export async function getMulticallProvider(
     }
     ethcallProvider.multicall = {
       address: "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+      block: 0,
+    }
+  } else if (chainId === ChainId.EVMOS) {
+    ethcallProvider.multicall3 = {
+      address: "0xAfbFD3e9E426a28A7a1b0CD1D44089A5B63B4335",
+      block: 0,
+    }
+    ethcallProvider.multicall2 = {
+      address: "0x3A0c2A793a8DB779e0293699D0Ce77c77617FE0f",
+      block: 0,
+    }
+    ethcallProvider.multicall = {
+      address: "0x98D2aFc66DE1F73598c6CFa35cbdfebB135fb8FA",
       block: 0,
     }
   }

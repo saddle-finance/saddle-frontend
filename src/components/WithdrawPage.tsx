@@ -161,7 +161,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                       key={t.symbol}
                       control={<Radio />}
                       value={t.symbol}
-                      disabled={poolData?.isPaused}
+                      // disabled={poolData?.isPaused}
                       label={t.name}
                       data-testid="withdrawTokenRadio"
                     />
@@ -181,7 +181,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                         tokenSymbol: token.symbol,
                       })
                     }
-                    disabled={poolData?.isPaused}
+                    // disabled={poolData?.isPaused}
                   />
                 ))}
               </Stack>
