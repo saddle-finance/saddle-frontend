@@ -29,6 +29,7 @@ import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import { Zero } from "@ethersproject/constants"
 import { formatBNToPercentString } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
+import { readableDecimalNumberRegex } from "../constants"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
@@ -122,12 +123,16 @@ const WithdrawPage = (props: Props): ReactElement => {
                   placeholder="0"
                   size="small"
                   data-testid="withdrawPercentageInput"
-                  onChange={(e): void =>
-                    onFormChange({
-                      fieldName: "percentage",
-                      value: e.currentTarget.value,
-                    })
-                  }
+                  onChange={(e): void => {
+                    if (
+                      e.target.value.trim() === "" ||
+                      readableDecimalNumberRegex.test(e.target.value)
+                    )
+                      onFormChange({
+                        fieldName: "percentage",
+                        value: e.currentTarget.value.trim(),
+                      })
+                  }}
                   value={
                     formStateData.percentage ? formStateData.percentage : ""
                   }
