@@ -24,7 +24,7 @@ import { useTranslation } from "react-i18next"
 export default function VeSDL(): JSX.Element {
   const [date, setDate] = useState<Date | null>(null)
   const [sdlTokenRawVal, setSdlTokenRawVal] = useState<string>("")
-  const [veSdlTokenRawVal, setVeSdlTokenRawVal] = useState<string>("")
+  const [veSdlTokenRawVal] = useState<string>("")
   const { t } = useTranslation()
   const handleChange = (value: string) => {
     setSdlTokenRawVal(value)
@@ -101,8 +101,8 @@ export default function VeSDL(): JSX.Element {
               symbol="veSDL"
               name={t("voteEscrowSDL")}
               decimalLength={18}
+              readonly
               max={"3000"}
-              onChange={(value) => setVeSdlTokenRawVal(value)}
               inputValue={veSdlTokenRawVal}
             />
             <Typography

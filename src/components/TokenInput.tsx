@@ -28,8 +28,9 @@ interface Props {
   max?: string
   decimalLength?: number
   inputValue: string
-  onChange: (value: string) => void
+  onChange?: (value: string) => void
   disabled?: boolean
+  readonly?: boolean
   error?: boolean
   helperText?: string
 }
@@ -42,6 +43,7 @@ function TokenInput({
   inputValue,
   onChange,
   disabled,
+  readonly,
   error,
   helperText,
   ...rest
@@ -77,7 +79,7 @@ function TokenInput({
         e.target.value === "" ||
         readableDecimalNumberRegex.test(e.target.value)
       ) {
-        onChange(e.target.value)
+        if (onChange) onChange(e.target.value)
       }
     }
   }
@@ -89,7 +91,11 @@ function TokenInput({
           <Typography variant="subtitle2" sx={{ mr: 1 }}>
             {t("balance")}:
           </Typography>
-          <Button size="small" onClick={() => onChange(String(max))}>
+          <Button
+            size="small"
+            disabled={readonly}
+            onClick={() => onChange && onChange(String(max))}
+          >
             <Typography variant="subtitle2">{max}</Typography>
           </Button>
         </Box>
@@ -136,6 +142,7 @@ function TokenInput({
             spellCheck="false"
             disabled={disabled ? true : false}
             value={inputValue}
+            readOnly={readonly}
             inputProps={{
               style: {
                 textAlign: "end",
