@@ -351,6 +351,19 @@ export async function getMulticallProvider(
       address: "0x98D2aFc66DE1F73598c6CFa35cbdfebB135fb8FA",
       block: 0,
     }
+  } else if (chainId === ChainId.KAVA_TESTNET) {
+    ethcallProvider.multicall3 = {
+      address: "0x9AA75e03e93f69E1F399ddeD0dA5fFCbE914D099",
+      block: 0,
+    }
+    ethcallProvider.multicall2 = {
+      address: "0xA4fe4981f7550884E7E6224F0c78245DC145b2F2",
+      block: 0,
+    }
+    ethcallProvider.multicall = {
+      address: "0xBC22B8E74E7fe2E217b295f4a3e1a9E8e182BECD",
+      block: 0,
+    }
   }
 
   return ethcallProvider

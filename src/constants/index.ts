@@ -37,6 +37,7 @@ export const FRAX_ARB_USD_POOL_V2_NAME = "arbUSDV2"
 export const FTM_USD_POOL_NAME = "ftmUSD"
 export const EVMOS_TESTNET_POOL_NAME = "evmosTestnetUSD"
 export const EVMOS_POOL_NAME = "evmosUSD"
+export const KAVA_TESTNET_USD_POOL_NAME = "kavaTestnetUSD"
 export const TBTC_EVMOS_BTC_METAPOOL_NAME = "tbtc-evmosBTC Meta"
 export type PoolName =
   | typeof BTC_POOL_NAME
@@ -60,6 +61,7 @@ export type PoolName =
   | typeof USDS_ARB_USD_METAPOOL_NAME
   | typeof EVMOS_TESTNET_POOL_NAME
   | typeof EVMOS_POOL_NAME
+  | typeof KAVA_TESTNET_USD_POOL_NAME
   | typeof TBTC_EVMOS_BTC_METAPOOL_NAME
   | typeof EVMOS_BTC_POOL_NAME
 
@@ -75,6 +77,7 @@ export enum ChainId {
   FANTOM = 250,
   EVMOS = 9001,
   EVMOS_TESTNET = 9000,
+  KAVA_TESTNET = 2221,
 }
 export enum PoolTypes {
   BTC,
@@ -318,6 +321,10 @@ export const EVMOS_SWAP_ADDRESSES = buildAddresses({
   [ChainId.EVMOS]: "0x1275203FB58Fc25bC6963B13C2a1ED1541563aF0",
 })
 
+export const KAVA_TESTNET_USD_SWAP_ADDRESSES = buildAddresses({
+  [ChainId.KAVA_TESTNET]: "0x02ad8Da8cCa3764DFb62d749E51Cb3d4b35643ad",
+})
+
 export const FRAX_OPT_USD_SWAP_ADDRESSES = buildAddresses({
   [ChainId.OPTIMISM]: "0xc55E8C79e5A6c3216D4023769559D06fa9A7732e",
 })
@@ -372,6 +379,10 @@ export const EVMOS_TESTNET_4POOL_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses(
 
 export const EVMOS_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.EVMOS]: "0x9c673F50CEe126FcC9F7378Ed46c33f5DEDEc0fC",
+})
+
+export const KAVA_TESTNET_USD_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
+  [ChainId.KAVA_TESTNET]: "0x7546eC9bf608162117D9Ac6A3F7D50aaE9ea9E6B",
 })
 
 export const WCUSD_SWAP_TOKEN_V2_CONTRACT_ADDRESSES = buildAddresses({
@@ -629,6 +640,16 @@ export const EVMOS_SWAP_TOKEN = new Token(
   true,
 )
 
+export const KAVA_TESTNET_USD_SWAP_TOKEN = new Token(
+  KAVA_TESTNET_USD_SWAP_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "saddleKavaUSD",
+  "saddlekavaUSD",
+  "Saddle USDC/USDT",
+  false,
+  true,
+)
+
 export const OPT_USD_SWAP_TOKEN = new Token(
   OPT_USD_SWAP_TOKEN_CONTRACT_ADDRESSES,
   18,
@@ -756,6 +777,7 @@ const USDC_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.FANTOM]: "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
   [ChainId.EVMOS_TESTNET]: "0xF4cd157e54c7B658d7A4995d84372C3dc79D1755",
   [ChainId.EVMOS]: "0x51e44FfaD5C2B122C8b635671FCC8139dc636E82",
+  [ChainId.KAVA_TESTNET]: "0x6CE6BeeEDeFd2d83C1c6EC191ceBCE0317227852",
 })
 export const USDC = new Token(
   USDC_CONTRACT_ADDRESSES,
@@ -773,6 +795,7 @@ const USDT_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.OPTIMISM]: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
   [ChainId.EVMOS_TESTNET]: "0x06545e8108090bA1E8448a66b65C62A8B862e7D1",
   [ChainId.EVMOS]: "0x7FF4a56B32ee13D7D4D405887E0eA37d61Ed919e",
+  [ChainId.KAVA_TESTNET]: "0xF4cd157e54c7B658d7A4995d84372C3dc79D1755",
 })
 export const USDT = new Token(
   USDT_CONTRACT_ADDRESSES,
@@ -861,6 +884,7 @@ export const USDS_ARB_USD_UNDERLYING_POOL_TOKENS = [
 export const FTM_USD_POOL_TOKENS = [FRAX, USDC]
 export const EVMOS_TESTNET_POOL_TOKENS = [DAI, USDC, USDT, UST]
 export const EVMOS_POOL_TOKENS = [DAI, USDC, USDT]
+export const KAVA_TESTNET_USD_POOL_TOKENS = [USDC, USDT]
 
 // Tokenized BTC
 const TBTC_CONTRACT_ADDRESSES = buildAddresses({
@@ -1305,6 +1329,16 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "evmosusd",
+    rewardPids: buildPids({}),
+  },
+  [KAVA_TESTNET_USD_POOL_NAME]: {
+    name: KAVA_TESTNET_USD_POOL_NAME,
+    addresses: KAVA_TESTNET_USD_SWAP_ADDRESSES,
+    lpToken: KAVA_TESTNET_USD_SWAP_TOKEN,
+    poolTokens: KAVA_TESTNET_USD_POOL_TOKENS,
+    isSynthetic: false,
+    type: PoolTypes.USD,
+    route: "kavatestnetusd",
     rewardPids: buildPids({}),
   },
   [TBTC_EVMOS_BTC_METAPOOL_NAME]: {
