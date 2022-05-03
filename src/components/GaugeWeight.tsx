@@ -1,28 +1,24 @@
 import React, { useRef } from "react"
+import { Gauge } from "../providers/GaugeProvider"
 import Highcharts from "highcharts"
 import HighchartsExporting from "highcharts/modules/exporting"
 import HighchartsReact from "highcharts-react-official"
 import PieChart from "highcharts-react-official"
 
-interface GaugeWeight {
-  name: string
-  gauge_relative_weight: string
-}
-
 interface Props {
-  gauges: GaugeWeight[]
+  gauges: Gauge[] | undefined
 }
 
-export default function Gauge({
+export default function GaugeWeight({
   gauges,
   ...props
 }: Props & HighchartsReact.Props): JSX.Element {
   HighchartsExporting(Highcharts)
   const chartComponentRef = useRef<HighchartsReact.RefObject>(null)
-  const data = gauges.map((g) => {
+  const data = gauges?.map((g) => {
     return {
       name: g.name,
-      y: parseInt(g.gauge_relative_weight) / 1e16,
+      y: g.gaugeRelativeWeight.toNumber() / 1e16,
     }
   })
 

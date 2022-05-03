@@ -13,7 +13,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material"
-import React, { useState } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import GaugeVote from "./GaugeVote"
@@ -24,6 +24,7 @@ import { differenceInMonths } from "date-fns"
 import { parseEther } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 import { useGaugeController, useHelperContract } from "../../hooks/useContract"
+import { GaugeContext } from "../../providers/GaugeProvider"
 
 export default function VeSDL(): JSX.Element {
   const [date, setDate] = useState<Date | null>(null)
@@ -34,25 +35,11 @@ export default function VeSDL(): JSX.Element {
     setSdlTokenRawVal(value)
   }
 
+  const gaugeData = useContext(GaugeContext)
+  console.log("GAUGE DATA", gaugeData)
+
   const prevUnlockDate: Date = new Date("2022-5-23")
   const addLockMos = date ? differenceInMonths(date, prevUnlockDate) : null
-
-  const gaugeController = useGaugeController()
-  const helperContract = useHelperContract()
-  const [gauges, setGauges] = useState<any>()
-  
-  async function getGauges() {
-    if (!gaugeController || !helperContract) return null
-    const gauges = []
-      const nGauges = await gaugeController.n_gauges()
-      for (let i = 0; i < nGauges.toNumber(); i++) {
-        gauges.push(await helperContract.gaugeToPoolData(await gaugeController.gauges(i)))
-      } 
-      setGauges(gauges)
-  }
-  useEffect(() => {
-    getGauges()
-  }, [gaugeController, helperContract]) 
 
   const lockHelperText = () => {
     const sdlTokenValue = parseEther(sdlTokenRawVal.trim() || "0")
