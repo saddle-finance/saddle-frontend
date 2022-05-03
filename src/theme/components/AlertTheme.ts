@@ -34,6 +34,9 @@ export default function AlertTheme(theme: Theme): Components {
         root: {
           fontSize: theme.typography.body1.fontSize,
         },
+        message: {
+          flex: 1,
+        },
       },
     },
   }

@@ -173,7 +173,6 @@ const WithdrawPage = (props: Props): ReactElement => {
                   <TokenInput
                     key={`tokenInput-${index}`}
                     {...token}
-                    // inputValue={parseFloat(token.inputValue).toFixed(5)}
                     onChange={(value): void =>
                       onFormChange({
                         fieldName: "tokenInputs",
