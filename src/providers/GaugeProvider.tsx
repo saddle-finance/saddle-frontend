@@ -47,16 +47,14 @@ export default function GaugeProvider({
       const gaugeData: Gauge[] = []
       if (!gaugeController || !helperContract) return
       const nGauges = await gaugeController.n_gauges()
-      for (let i = 0; i < nGauges.toNumber(); i++) {
+      for (let i = 1; i <= nGauges.toNumber(); i++) {
         const gaugeAddress = await gaugeController.gauges(i)
         const gaugePoolData: GaugePoolData =
           await helperContract.gaugeToPoolData(gaugeAddress)
-        const gaugeWeight = await gaugeController.get_gauge_weight(
-          gaugePoolData.poolAddress,
-        )
+        const gaugeWeight = await gaugeController.get_gauge_weight(gaugeAddress)
         const gaugeRelativeWeight = await gaugeController[
           "gauge_relative_weight(address)"
-        ](gaugePoolData.poolAddress)
+        ](gaugeAddress)
         gaugeData.push({
           address: gaugePoolData.poolAddress,
           lpToken: gaugePoolData.lpToken,

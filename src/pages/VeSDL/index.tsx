@@ -1,6 +1,3 @@
-/* prettier-ignore */
-// ts-ignore
-/* eslint-disable */
 import {
   Alert,
   Box,
@@ -13,7 +10,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material"
-import React, { useState, useEffect, useContext } from "react"
+import React, { useState } from "react"
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import GaugeVote from "./GaugeVote"
@@ -23,8 +20,6 @@ import { Zero } from "@ethersproject/constants"
 import { differenceInMonths } from "date-fns"
 import { parseEther } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
-import { useGaugeController, useHelperContract } from "../../hooks/useContract"
-import { GaugeContext } from "../../providers/GaugeProvider"
 
 export default function VeSDL(): JSX.Element {
   const [date, setDate] = useState<Date | null>(null)
@@ -34,9 +29,6 @@ export default function VeSDL(): JSX.Element {
   const handleChange = (value: string) => {
     setSdlTokenRawVal(value)
   }
-
-  const gaugeData = useContext(GaugeContext)
-  console.log("GAUGE DATA", gaugeData)
 
   const prevUnlockDate: Date = new Date("2022-5-23")
   const addLockMos = date ? differenceInMonths(date, prevUnlockDate) : null
