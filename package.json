@@ -13,7 +13,7 @@
     "@mui/x-date-pickers": "^5.0.0-alpha.2",
     "@reduxjs/toolkit": "^1.4.0",
     "@sentry/react": "^6.16.1",
-    "@sentry/tracing": "^6.16.1",
+    "@sentry/tracing": "^6.19.7",
     "@types/jest": "^26.0.22",
     "@types/lodash": "^4.14.178",
     "@types/node": "^14.14.35",
