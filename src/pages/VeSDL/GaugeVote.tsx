@@ -11,6 +11,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material"
+import Gauge from "../../components/Gauge"
 import React from "react"
 import { useTranslation } from "react-i18next"
 
@@ -21,7 +22,9 @@ export default function GaugeVote(): JSX.Element {
       <Typography variant="h2" textAlign="center">
         {t("gaugeVote")}
       </Typography>
-      <Box height="428px"></Box>
+      <Box height="428px">
+        <Gauge gauges={[]} />
+      </Box>
       <TableContainer>
         <Table size="small">
           <TableHead>

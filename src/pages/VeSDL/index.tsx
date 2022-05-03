@@ -1,3 +1,6 @@
+/* prettier-ignore */
+// ts-ignore
+/* eslint-disable */
 import {
   Alert,
   Box,
@@ -20,6 +23,7 @@ import { Zero } from "@ethersproject/constants"
 import { differenceInMonths } from "date-fns"
 import { parseEther } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
+import { useGaugeController, useHelperContract } from "../../hooks/useContract"
 
 export default function VeSDL(): JSX.Element {
   const [date, setDate] = useState<Date | null>(null)
@@ -32,6 +36,23 @@ export default function VeSDL(): JSX.Element {
 
   const prevUnlockDate: Date = new Date("2022-5-23")
   const addLockMos = date ? differenceInMonths(date, prevUnlockDate) : null
+
+  const gaugeController = useGaugeController()
+  const helperContract = useHelperContract()
+  const [gauges, setGauges] = useState<any>()
+  
+  async function getGauges() {
+    if (!gaugeController || !helperContract) return null
+    const gauges = []
+      const nGauges = await gaugeController.n_gauges()
+      for (let i = 0; i < nGauges.toNumber(); i++) {
+        gauges.push(await helperContract.gaugeToPoolData(await gaugeController.gauges(i)))
+      } 
+      setGauges(gauges)
+  }
+  useEffect(() => {
+    getGauges()
+  }, [gaugeController, helperContract]) 
 
   const lockHelperText = () => {
     const sdlTokenValue = parseEther(sdlTokenRawVal.trim() || "0")
