@@ -31,6 +31,7 @@ interface Props {
   onChange?: (value: string) => void
   disabled?: boolean
   readonly?: boolean
+  showUSDprice?: boolean
   error?: boolean
   helperText?: string
 }
@@ -46,6 +47,7 @@ function TokenInput({
   readonly,
   error,
   helperText,
+  showUSDprice = true,
   ...rest
 }: Props): ReactElement {
   const { t } = useTranslation()
@@ -159,6 +161,7 @@ function TokenInput({
             variant="body2"
             color={disabled ? "text.secondary" : "text.primary"}
             textAlign="end"
+            sx={{ display: showUSDprice ? "block" : "none" }}
           >
             ≈$
             {commify(
