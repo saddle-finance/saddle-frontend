@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Checkbox,
   Container,
   FormControlLabel,
   Paper,
@@ -14,6 +15,7 @@ import {
 } from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
+import { isMetaPool, readableDecimalNumberRegex } from "../constants"
 
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state"
@@ -29,7 +31,6 @@ import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import { Zero } from "@ethersproject/constants"
 import { formatBNToPercentString } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
-import { readableDecimalNumberRegex } from "../constants"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
@@ -69,6 +70,8 @@ interface Props {
   formStateData: WithdrawFormState
   onFormChange: (action: any) => void
   onConfirmTransaction: () => Promise<void>
+  onToggleWithdrawWrapped: () => void
+  shouldWithdrawWrapped: boolean
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -82,12 +85,15 @@ const WithdrawPage = (props: Props): ReactElement => {
     formStateData,
     reviewData,
     onConfirmTransaction,
+    onToggleWithdrawWrapped,
+    shouldWithdrawWrapped,
   } = props
 
   const { gasPriceSelected } = useSelector((state: AppState) => state.user)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const theme = useTheme()
   const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
+  const shouldDisplayWrappedOption = isMetaPool(poolData?.name)
 
   const onSubmit = (): void => {
     setCurrentModal("review")
@@ -185,6 +191,20 @@ const WithdrawPage = (props: Props): ReactElement => {
                   />
                 ))}
               </Stack>
+              <Box
+                sx={{
+                  display: shouldDisplayWrappedOption ? "block" : "none",
+                  mt: 2,
+                }}
+              >
+                <Checkbox
+                  onChange={onToggleWithdrawWrapped}
+                  checked={shouldWithdrawWrapped}
+                />
+                <Typography component="span" variant="body1">
+                  {t("withdrawWrapped")}
+                </Typography>
+              </Box>
               <Box mt={3}>
                 {reviewData.priceImpact.gte(0) ? (
                   <Typography component="span" color="primary" marginRight={1}>

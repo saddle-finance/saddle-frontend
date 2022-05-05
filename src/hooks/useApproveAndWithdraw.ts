@@ -1,15 +1,17 @@
-import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
+import { POOLS_MAP, PoolName, TRANSACTION_TYPES, Token } from "../constants"
 import { addSlippage, subtractSlippage } from "../utils/slippage"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
+import { formatDeadlineToNumber, getContract } from "../utils"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 import { useLPTokenContract, useSwapContract } from "./useContract"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import { GasPrices } from "../state/user"
+import META_SWAP_ABI from "../constants/abis/metaSwap.json"
+import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { NumberInputState } from "../utils/numberInputState"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
-import { formatDeadlineToNumber } from "../utils"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
 import { useDispatch } from "react-redux"
@@ -23,10 +25,13 @@ interface ApproveAndWithdrawStateArgument {
 
 export function useApproveAndWithdraw(
   poolName: PoolName,
-): (state: ApproveAndWithdrawStateArgument) => Promise<void> {
+): (
+  state: ApproveAndWithdrawStateArgument,
+  shouldWithdrawWrapped?: boolean,
+) => Promise<void> {
   const dispatch = useDispatch()
   const swapContract = useSwapContract(poolName)
-  const { account, chainId } = useActiveWeb3React()
+  const { account, chainId, library } = useActiveWeb3React()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -41,13 +46,32 @@ export function useApproveAndWithdraw(
   } = useSelector((state: AppState) => state.user)
   const lpTokenContract = useLPTokenContract(poolName)
   const POOL = POOLS_MAP[poolName]
+  const metaSwapContract = useMemo(() => {
+    if (POOL.metaSwapAddresses && chainId && library) {
+      return getContract(
+        POOL.metaSwapAddresses?.[chainId],
+        META_SWAP_ABI,
+        library,
+        account ?? undefined,
+      ) as MetaSwap
+    }
+    return null
+  }, [chainId, library, POOL.metaSwapAddresses, account])
 
   return async function approveAndWithdraw(
     state: ApproveAndWithdrawStateArgument,
+    shouldWithdrawWrapped = false,
   ): Promise<void> {
     try {
       if (!account || !chainId) throw new Error("Wallet must be connected")
-      if (!swapContract) throw new Error("Swap contract is not loaded")
+      if (!swapContract || (shouldWithdrawWrapped && !metaSwapContract))
+        throw new Error("Swap contract is not loaded")
+      const poolTokens = shouldWithdrawWrapped
+        ? (POOL.underlyingPoolTokens as Token[])
+        : POOL.poolTokens
+      const effectiveSwapContract = shouldWithdrawWrapped
+        ? (metaSwapContract as MetaSwap)
+        : swapContract
       if (state.lpTokenAmountToSpend.isZero()) return
       if (lpTokenContract == null) return
       let gasPrice

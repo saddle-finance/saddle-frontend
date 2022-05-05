@@ -1,4 +1,9 @@
-import { POOLS_MAP, PoolName, isLegacySwapABIPool } from "../constants"
+import {
+  POOLS_MAP,
+  PoolName,
+  isLegacySwapABIPool,
+  isMetaPool,
+} from "../constants"
 import React, { ReactElement, useEffect, useMemo, useState } from "react"
 import WithdrawPage, { ReviewWithdrawData } from "../components/WithdrawPage"
 import {
@@ -11,6 +16,8 @@ import {
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
+import META_SWAP_ABI from "../constants/abis/metaSwap.json"
+import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { Zero } from "@ethersproject/constants"
@@ -18,11 +25,13 @@ import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
+import { getContract } from "../utils"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndWithdraw } from "../hooks/useApproveAndWithdraw"
 import usePoolData from "../hooks/usePoolData"
 import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
+// import { useTokenFormState } from "../hooks/useTokenFormState"
 import useWithdrawFormState from "../hooks/useWithdrawFormState"
 
 interface Props {
@@ -39,10 +48,17 @@ function Withdraw({ poolName }: Props): ReactElement {
   )
   const approveAndWithdraw = useApproveAndWithdraw(poolName)
   const swapContract = useSwapContract(poolName)
-  const { account } = useActiveWeb3React()
+  const { account, chainId, library } = useActiveWeb3React()
   const POOL = POOLS_MAP[poolName]
+  const allTokens = useMemo(() => {
+    return Array.from(
+      new Set(POOL.poolTokens.concat(POOL.underlyingPoolTokens || [])),
+    )
+  }, [POOL.poolTokens, POOL.underlyingPoolTokens])
   const [withdrawLPTokenAmount, setWithdrawLPTokenAmount] =
     useState<BigNumber>(Zero)
+  const [shouldWithdrawWrapped, setShouldWithdrawWrapped] = useState(false)
+  const [tokenFormState, updateTokenFormState] = useTokenFormState(allTokens)
 
   const tokenInputSum = useMemo(
     () =>
@@ -59,6 +75,49 @@ function Withdraw({ poolName }: Props): ReactElement {
   )
 
   useEffect(() => {
+    // empty out previous token state when switchng between wrapped and unwrapped
+    if (shouldWithdrawWrapped) {
+      updateWithdrawFormState(
+        POOL.poolTokens.reduce(
+          (acc, { symbol }) => ({
+            ...acc,
+            [symbol]: "",
+          }),
+          {},
+        ),
+      )
+    } else {
+      updateWithdrawFormState(
+        (POOL.underlyingPoolTokens || []).reduce(
+          (acc, { symbol }) => ({
+            ...acc,
+            [symbol]: "",
+          }),
+          {},
+        ),
+      )
+    }
+  }, [
+    shouldWithdrawWrapped,
+    updateTokenFormState,
+    POOL.poolTokens,
+    POOL.underlyingPoolTokens,
+  ])
+
+  const isMetaSwap = isMetaPool(POOL.name)
+  const metaSwapContract = useMemo(() => {
+    if (isMetaSwap && chainId && library) {
+      return getContract(
+        POOL.metaSwapAddresses?.[chainId] as string,
+        META_SWAP_ABI,
+        library,
+        account ?? undefined,
+      ) as MetaSwap
+    }
+    return null
+  }, [isMetaSwap, chainId, library, POOL.metaSwapAddresses, account])
+
+  useEffect(() => {
     // evaluate if a new withdraw will exceed the pool's per-user limit
     async function calculateWithdrawBonus(): Promise<void> {
       if (
@@ -69,6 +128,7 @@ function Withdraw({ poolName }: Props): ReactElement {
       ) {
         return
       }
+      let withdrawLPTokenAmount
       if (poolData.totalLocked.gt(0) && tokenInputSum.gt(0)) {
         const withdrawTokenAmounts = POOL.poolTokens.map(
           (token) => withdrawFormState.tokenInputs[token.symbol].valueSafe,
@@ -78,6 +138,16 @@ function Withdraw({ poolName }: Props): ReactElement {
             swapContract as SwapFlashLoan
           ).calculateTokenAmount(account, withdrawTokenAmounts, false)
           setWithdrawLPTokenAmount(calculatedTokenAmount)
+        } else if (shouldWithdrawWrapped) {
+          withdrawLPTokenAmount = metaSwapContract
+            ? await metaSwapContract.calculateTokenAmount(
+                (POOL.underlyingPoolTokens || []).map(
+                  ({ symbol }) => withdrawFormState[symbol].valueSafe,
+                ),
+                true, // withdraw boolean
+              )
+            : Zero
+          setWithdrawLPTokenAmount(withdrawLPTokenAmount)
         } else {
           const calculatedTokenAmount = await (
             swapContract as SwapFlashLoanNoWithdrawFee
@@ -187,7 +257,11 @@ function Withdraw({ poolName }: Props): ReactElement {
       myShareData={userShareData}
       formStateData={withdrawFormState}
       onConfirmTransaction={onConfirmTransaction}
+      onToggleWithdrawWrapped={() =>
+        setShouldWithdrawWrapped((prevState) => !prevState)
+      }
       onFormChange={updateWithdrawFormState}
+      shouldWithdrawWrapped={shouldWithdrawWrapped}
     />
   )
 }
