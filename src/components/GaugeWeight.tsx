@@ -1,4 +1,5 @@
 import React, { useRef } from "react"
+import { BigNumber } from "@ethersproject/bignumber"
 import { Gauge } from "../providers/GaugeProvider"
 import Highcharts from "highcharts"
 import HighchartsExporting from "highcharts/modules/exporting"
@@ -18,7 +19,7 @@ export default function GaugeWeight({
   const data = gauges?.map((g) => {
     return {
       name: g.name,
-      y: g.gaugeRelativeWeight.toNumber() / 1e16,
+      y: g.gaugeRelativeWeight.div(BigNumber.from(10).pow(16)).toNumber(),
     }
   })
 
@@ -35,7 +36,7 @@ export default function GaugeWeight({
       },
     },
     tooltip: {
-      pointFormat: "Gauge relative weights: {point.percentage:.3f}%",
+      pointFormat: "Gauge relative weights: {point.percentage:.2f}%",
     },
     plotOptions: {
       series: {

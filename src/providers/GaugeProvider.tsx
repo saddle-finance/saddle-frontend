@@ -1,22 +1,7 @@
-import React, { ReactElement, useEffect, useState } from "react"
+import { BasicPool, BasicPoolsContext } from "./BasicPoolsProvider"
+import React, { ReactElement, useContext, useEffect, useState } from "react"
 import { useGaugeController, useHelperContract } from "../hooks/useContract"
 import { BigNumber } from "ethers"
-import { PoolTypes } from "../constants"
-
-type GaugePoolData = {
-  poolAddress: string
-  lpToken: string
-  typeOfAsset: PoolTypes
-  poolName: string
-  targetAddress: string | null
-  tokens: string[]
-  underlyingTokens: string[]
-  basePoolAddress: string
-  metaSwapDepositAddress: string
-  isSaddleApproved: boolean
-  isRemoved: boolean
-  isGuarded: boolean
-}
 
 export type Gauge = {
   address: string
@@ -24,6 +9,7 @@ export type Gauge = {
   name: string
   symbol?: string
   gaugeWeight: BigNumber
+  poolAddress: string
   gaugeRelativeWeight: BigNumber
   workingSupply?: BigNumber
 }
@@ -31,34 +17,51 @@ export type Gauge = {
 export type Gauges = {
   gaugeCount: number
   gauges: Gauge[]
-} | null
+}
 
-export const GaugeContext = React.createContext<Gauges>(null)
+const initialGaugesState: Gauges = {
+  gaugeCount: 0,
+  gauges: [],
+}
+
+export const GaugeContext = React.createContext<Gauges>(initialGaugesState)
 
 export default function GaugeProvider({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
   const gaugeController = useGaugeController()
   const helperContract = useHelperContract()
-  const [gauges, setGauges] = useState<Gauges>(null)
+  const poolsContext = useContext(BasicPoolsContext)
+  const [gauges, setGauges] = useState<Gauges>(initialGaugesState)
 
   useEffect(() => {
     async function fetchGauges() {
+      //convert Basic Pools object to key on pool address
+      //instead of poolName for O(1) lookup
+      const pools: { [poolAddress: string]: BasicPool } = {}
+      Object.values(poolsContext || []).forEach((pool) => {
+        if (pool) {
+          pools[pool.poolAddress] = { ...pool }
+        }
+      })
+      // initialize the gauge data
       const gaugeData: Gauge[] = []
       if (!gaugeController || !helperContract) return
       const nGauges = await gaugeController.n_gauges()
-      for (let i = 1; i <= nGauges.toNumber(); i++) {
-        const gaugeAddress = await gaugeController.gauges(i)
-        const gaugePoolData: GaugePoolData =
-          await helperContract.gaugeToPoolData(gaugeAddress)
+      for (let i = 0; i < nGauges.toNumber(); i++) {
+        const gaugeAddress: string = await gaugeController.gauges(i)
+        const gaugePoolAddress: string = (
+          await helperContract.gaugeToPoolAddress(gaugeAddress)
+        ).toLowerCase()
         const gaugeWeight = await gaugeController.get_gauge_weight(gaugeAddress)
         const gaugeRelativeWeight = await gaugeController[
           "gauge_relative_weight(address)"
         ](gaugeAddress)
         gaugeData.push({
-          address: gaugePoolData.poolAddress,
-          lpToken: gaugePoolData.lpToken,
-          name: gaugePoolData.poolName,
+          address: gaugeAddress,
+          lpToken: pools[gaugePoolAddress]?.lpToken,
+          name: pools[gaugePoolAddress]?.poolName,
+          poolAddress: gaugePoolAddress,
           gaugeWeight,
           gaugeRelativeWeight,
         })
@@ -70,7 +73,7 @@ export default function GaugeProvider({
     }
 
     void fetchGauges()
-  }, [gaugeController, helperContract])
+  }, [poolsContext, gaugeController, helperContract])
 
   return (
     <GaugeContext.Provider value={gauges}>{children}</GaugeContext.Provider>

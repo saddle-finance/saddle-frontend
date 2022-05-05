@@ -40,7 +40,7 @@ type SharedSwapData = {
   tokenBalances: BigNumber[]
   lpTokenSupply: BigNumber
   miniChefRewardsPid: number | null
-  isSynthetic: boolean
+  isSynthetic?: boolean
 }
 type MetaSwapInfo = SharedSwapData & {
   underlyingTokens: string[]
