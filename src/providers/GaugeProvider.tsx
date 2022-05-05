@@ -1,6 +1,9 @@
 import { BasicPool, BasicPoolsContext } from "./BasicPoolsProvider"
 import React, { ReactElement, useContext, useEffect, useState } from "react"
-import { useGaugeController, useHelperContract } from "../hooks/useContract"
+import {
+  useGaugeControllerContract,
+  useHelperContract,
+} from "../hooks/useContract"
 import { BigNumber } from "ethers"
 
 export type Gauge = {
@@ -29,7 +32,7 @@ export const GaugeContext = React.createContext<Gauges>(initialGaugesState)
 export default function GaugeProvider({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
-  const gaugeController = useGaugeController()
+  const gaugeController = useGaugeControllerContract()
   const helperContract = useHelperContract()
   const poolsContext = useContext(BasicPoolsContext)
   const [gauges, setGauges] = useState<Gauges>(initialGaugesState)
@@ -66,6 +69,7 @@ export default function GaugeProvider({
           gaugeRelativeWeight,
         })
       }
+
       setGauges({
         gaugeCount: nGauges.toNumber(),
         gauges: gaugeData,

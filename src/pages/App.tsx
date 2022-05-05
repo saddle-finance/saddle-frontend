@@ -81,12 +81,12 @@ export default function App(): ReactElement {
       <Web3ReactManager>
         <BasicPoolsProvider>
           <MinichefProvider>
-            <TokensProvider>
-              <UserStateProvider>
-                <GasAndTokenPrices>
-                  <PendingSwapsProvider>
-                    <RewardsBalancesProvider>
-                      <GaugeProvider>
+            <GaugeProvider>
+              <TokensProvider>
+                <UserStateProvider>
+                  <GasAndTokenPrices>
+                    <PendingSwapsProvider>
+                      <RewardsBalancesProvider>
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                           <AppContainer>
                             <TopMenu />
@@ -160,12 +160,12 @@ export default function App(): ReactElement {
                             />
                           </AppContainer>
                         </LocalizationProvider>
-                      </GaugeProvider>
-                    </RewardsBalancesProvider>
-                  </PendingSwapsProvider>
-                </GasAndTokenPrices>
-              </UserStateProvider>
-            </TokensProvider>
+                      </RewardsBalancesProvider>
+                    </PendingSwapsProvider>
+                  </GasAndTokenPrices>
+                </UserStateProvider>
+              </TokensProvider>
+            </GaugeProvider>
           </MinichefProvider>
         </BasicPoolsProvider>
       </Web3ReactManager>

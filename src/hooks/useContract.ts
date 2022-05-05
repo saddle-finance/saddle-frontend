@@ -354,7 +354,7 @@ export function useAllContracts(): AllContractsObject | null {
   }, [chainId, library, account])
 }
 
-export function useGaugeController(): GaugeController | null {
+export function useGaugeControllerContract(): GaugeController | null {
   const { chainId } = useActiveWeb3React()
   const contractAddress = chainId
     ? GAUGE_CONTROLLER_ADDRESSES[chainId]

@@ -1,5 +1,6 @@
 import React, { useRef } from "react"
 import { BigNumber } from "@ethersproject/bignumber"
+import { CircularProgress } from "@mui/material"
 import { Gauge } from "../providers/GaugeProvider"
 import Highcharts from "highcharts"
 import HighchartsExporting from "highcharts/modules/exporting"
@@ -59,13 +60,17 @@ export default function GaugeWeight({
     ],
   }
 
-  return (
-    <PieChart
-      highcharts={Highcharts}
-      options={options}
-      ref={chartComponentRef}
-      allowChartUpdate
-      {...props}
-    />
-  )
+  if (!gauges?.length) {
+    return <CircularProgress color="secondary" />
+  } else {
+    return (
+      <PieChart
+        highcharts={Highcharts}
+        options={options}
+        ref={chartComponentRef}
+        allowChartUpdate
+        {...props}
+      />
+    )
+  }
 }
