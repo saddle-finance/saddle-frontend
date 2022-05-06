@@ -8,13 +8,8 @@ This is also a place to include before/after screenshots if applicable. Visual r
 
 Fixes # (Add link to github issue if available)
 
-## Checklist before merging:
+_Note_: If merged/deployed alone, make that known in a public Slack channel and ping team members. If the description above is clear and concise, it should be sufficient for team members with minimal context to verify the work that was done. Otherwise, please revise and provide additional information.
 
-- [ ] Branch is up-to-date with main branch of the main repo
-- [ ] All applicable Unit/Functional/E2E tests are included
-- [ ] All current and new tests are passing (run `npm test`)
-- [ ] Manually verified on local development environment that the fix/change is good
+## Post merge/deploy:
 
-## Post merge/deploy checklist:
-
-- [ ] Manually verify with a co-pilot (another team member) that the shipped changes is on prod
+- [ ] Manually verify (preferably with another team member) that the shipped changes are on prod. 
