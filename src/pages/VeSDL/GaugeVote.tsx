@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  CircularProgress,
   Link,
   Paper,
   Table,
@@ -25,7 +26,11 @@ export default function GaugeVote(): JSX.Element {
         {t("gaugeVote")}
       </Typography>
       <Box>
-        <GaugeWeight gauges={gaugeData?.gauges} />
+        {!gaugeData ? (
+          <CircularProgress color="secondary" />
+        ) : (
+          <GaugeWeight gauges={gaugeData.gauges} />
+        )}
       </Box>
       <TableContainer>
         <Table size="small">

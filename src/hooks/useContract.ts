@@ -369,3 +369,11 @@ export function useHelperContract(): HelperContract | null {
     : undefined
   return useContract(contractAddress, HELPER_CONTRACT_ABI) as HelperContract
 }
+
+export function useLiquidityGaugeContract(): HelperContract | null {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress = chainId
+    ? HELPER_CONTRACT_ADDRESSES[chainId]
+    : undefined
+  return useContract(contractAddress, HELPER_CONTRACT_ABI) as HelperContract
+}

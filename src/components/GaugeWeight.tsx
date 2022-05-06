@@ -1,4 +1,5 @@
-import React, { useRef } from "react"
+import React, { useContext, useRef } from "react"
+import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { CircularProgress } from "@mui/material"
 import { Gauge } from "../providers/GaugeProvider"
@@ -8,7 +9,7 @@ import HighchartsReact from "highcharts-react-official"
 import PieChart from "highcharts-react-official"
 
 interface Props {
-  gauges: Gauge[] | undefined
+  gauges: { [poolAddress: string]: Gauge }
 }
 
 export default function GaugeWeight({
@@ -17,10 +18,28 @@ export default function GaugeWeight({
 }: Props & HighchartsReact.Props): JSX.Element {
   HighchartsExporting(Highcharts)
   const chartComponentRef = useRef<HighchartsReact.RefObject>(null)
-  const data = gauges?.map((g) => {
+  const pools = useContext(BasicPoolsContext)
+  if (pools == undefined) return <CircularProgress color="secondary" />
+
+  const gaugesInfo = Object.values(pools)
+    .map((pool) => {
+      if (!pool || !pool.poolAddress || !gauges[pool.poolAddress]) return
+      const gaugePoolAddress = pool.poolAddress
+      return {
+        poolAddress: gaugePoolAddress,
+        poolName: pool.poolName,
+        gaugeRelativeWeight: gauges[gaugePoolAddress].gaugeRelativeWeight,
+      }
+    })
+    .filter(
+      (gaugeInfo) =>
+        gaugeInfo != undefined && gauges[gaugeInfo.poolAddress] != null,
+    )
+
+  const data = gaugesInfo.map((g) => {
     return {
-      name: g.name,
-      y: g.gaugeRelativeWeight.div(BigNumber.from(10).pow(16)).toNumber(),
+      name: g?.poolName,
+      y: g?.gaugeRelativeWeight.div(BigNumber.from(10).pow(16)).toNumber(),
     }
   })
 
@@ -60,17 +79,13 @@ export default function GaugeWeight({
     ],
   }
 
-  if (!gauges?.length) {
-    return <CircularProgress color="secondary" />
-  } else {
-    return (
-      <PieChart
-        highcharts={Highcharts}
-        options={options}
-        ref={chartComponentRef}
-        allowChartUpdate
-        {...props}
-      />
-    )
-  }
+  return (
+    <PieChart
+      highcharts={Highcharts}
+      options={options}
+      ref={chartComponentRef}
+      allowChartUpdate
+      {...props}
+    />
+  )
 }
