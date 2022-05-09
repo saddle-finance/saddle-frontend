@@ -5,6 +5,7 @@
 Please describe the issue/current behavior with as much context information as possible. 
 e.g: Currently, when a user does X, Y happens, and this leads to Z experience. So the solution here is to .....
 This is also a place to include before/after screenshots if applicable. Visual representation is preferred, but thorough written before/after comparison is also accepted.
+***IMPORTANT***: For reviewers, please verify any new/migragted contract addresses thoroughly. 
 
 Fixes # (Add link to github issue if available)
 
