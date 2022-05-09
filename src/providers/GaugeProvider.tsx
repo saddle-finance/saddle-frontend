@@ -26,7 +26,7 @@ export type Gauge = {
   gaugeWeight: BigNumber
   poolAddress: string
   gaugeRelativeWeight: BigNumber
-  workingSupply?: BigNumber
+  workingSupply: BigNumber
 }
 
 export type PoolAddressToGauge = {
@@ -97,11 +97,13 @@ export async function getGaugeData(
       GAUGE_CONTROLLER_ABI,
     )
 
-    const gaugeAddresses = await ethCallProvider.all(
-      enumerate(gaugeCount, 0).map((value) =>
-        gaugeControllerMultiCall.gauges(value),
-      ),
-    )
+    const gaugeAddresses = (
+      await ethCallProvider.all(
+        enumerate(gaugeCount, 0).map((value) =>
+          gaugeControllerMultiCall.gauges(value),
+        ),
+      )
+    ).map((address) => address.toLowerCase())
 
     const gaugePoolAddresses: string[] = (
       await ethCallProvider.all(

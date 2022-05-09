@@ -35,22 +35,15 @@ export default function GaugeWeight({
         ? {
             poolAddress: gaugePoolAddress,
             poolName: pool.poolName,
-            // @ts-ignore: Object is possibly 'null'.
-            gaugeRelativeWeight: gauges[gaugePoolAddress].gaugeRelativeWeight,
+            gaugeRelativeWeight: gauge.gaugeRelativeWeight,
           }
         : null
     })
-    .filter(
-      (gaugeInfo) =>
-        gaugeInfo != undefined && gauges[gaugeInfo.poolAddress] != null,
-    ) as GaugeWeightData[]
+    .filter(Boolean) as GaugeWeightData[]
 
   const data = gaugesInfo.map((g) => {
     return {
-      // This check has already been done in the filter method on L34
-      // @ts-ignore: Object is possibly 'null'.
       name: g.poolName,
-      // @ts-ignore: Object is possibly 'null'.
       y: g.gaugeRelativeWeight.div(BigNumber.from(10).pow(16)).toNumber(),
     }
   })
