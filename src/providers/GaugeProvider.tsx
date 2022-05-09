@@ -9,10 +9,6 @@ import {
   enumerate,
   getMulticallProvider,
 } from "../utils"
-import {
-  useGaugeControllerContract,
-  useHelperContract,
-} from "../hooks/useContract"
 import { BigNumber } from "ethers"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
@@ -20,6 +16,7 @@ import HELPER_CONTRACT_ABI from "../constants/abis/helperContract.json"
 import { HelperContract } from "../../types/ethers-contracts/HelperContract"
 import { Web3Provider } from "@ethersproject/providers"
 import { useActiveWeb3React } from "../hooks"
+import { useGaugeControllerContract } from "../hooks/useContract"
 
 export type Gauge = {
   address: string
@@ -50,24 +47,20 @@ export default function GaugeProvider({
 }: React.PropsWithChildren<unknown>): ReactElement {
   const { chainId, library } = useActiveWeb3React()
   const gaugeController = useGaugeControllerContract()
-  const helperContract = useHelperContract()
   const [gauges, setGauges] = useState<Gauges>(initialGaugesState)
 
   useEffect(() => {
     async function fetchGauges() {
-      if (!gaugeController || !helperContract || !chainId || !library) return
-      const nGauges = await gaugeController.n_gauges()
-      const gaugeData: { [poolAddress: string]: Gauge } =
-        (await getGaugeData(library, chainId, nGauges.toNumber())) || {}
+      if (!gaugeController || !chainId || !library) return
+      const gauges: Gauges =
+        (await getGaugeData(library, chainId, gaugeController)) ||
+        initialGaugesState
 
-      setGauges({
-        gaugeCount: nGauges.toNumber(),
-        gauges: gaugeData,
-      })
+      setGauges(gauges)
     }
 
     void fetchGauges()
-  }, [chainId, library, gaugeController, helperContract])
+  }, [chainId, library, gaugeController])
 
   return (
     <GaugeContext.Provider value={gauges}>{children}</GaugeContext.Provider>
@@ -77,12 +70,11 @@ export default function GaugeProvider({
 export async function getGaugeData(
   library: Web3Provider,
   chainId: ChainId,
-  gaugeCount: number,
-): Promise<{
-  [poolAddress: string]: Gauge
-} | null> {
-  if (chainId !== ChainId.HARDHAT) return {}
+  gaugeController: GaugeController,
+): Promise<Gauges | null> {
+  if (chainId !== ChainId.HARDHAT) return initialGaugesState
   try {
+    const gaugeCount = (await gaugeController.n_gauges()).toNumber()
     const ethCallProvider = await getMulticallProvider(library, chainId)
     const helperContractAddress = HELPER_CONTRACT_ADDRESSES[chainId]
     const gaugeControllerContractAddress = GAUGE_CONTROLLER_ADDRESSES[chainId]
@@ -97,7 +89,7 @@ export async function getGaugeData(
       GAUGE_CONTROLLER_ABI,
     )
 
-    const gaugeAddresses = (
+    const gaugeAddresses: string[] = (
       await ethCallProvider.all(
         enumerate(gaugeCount, 0).map((value) =>
           gaugeControllerMultiCall.gauges(value),
@@ -132,23 +124,25 @@ export async function getGaugeData(
       gaugeRelativeWeightsPromise,
     ])
 
-    const gaugeData: { [poolAddress: string]: Gauge } =
-      gaugePoolAddresses.reduce(
-        (previousGaugeData, gaugePoolAddress, index) => {
-          return {
-            ...previousGaugeData,
-            [gaugePoolAddress]: {
-              address: gaugeAddresses[index],
-              poolAddress: gaugePoolAddress,
-              gaugeWeight: gaugeWeights[index],
-              gaugeRelativeWeight: gaugeRelativeWeights[index],
-            },
-          }
-        },
-        {},
-      )
+    const gauges: PoolAddressToGauge = gaugePoolAddresses.reduce(
+      (previousGaugeData, gaugePoolAddress, index) => {
+        return {
+          ...previousGaugeData,
+          [gaugePoolAddress]: {
+            address: gaugeAddresses[index],
+            poolAddress: gaugePoolAddress,
+            gaugeWeight: gaugeWeights[index],
+            gaugeRelativeWeight: gaugeRelativeWeights[index],
+          },
+        }
+      },
+      {},
+    )
 
-    return gaugeData
+    return {
+      gaugeCount,
+      gauges,
+    }
   } catch (e) {
     const error = new Error(
       `Unable to get Gauge data \n${(e as Error).message}`,

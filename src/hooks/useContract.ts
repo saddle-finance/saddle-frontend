@@ -3,7 +3,6 @@ import {
   BTC_POOL_NAME,
   GAUGE_CONTROLLER_ADDRESSES,
   GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES,
-  HELPER_CONTRACT_ADDRESSES,
   MASTER_REGISTRY_CONTRACT_ADDRESSES,
   MINICHEF_CONTRACT_ADDRESSES,
   POOLS_MAP,
@@ -27,8 +26,6 @@ import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
 import GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI from "../constants/abis/generalizedSwapMigrator.json"
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
 import { GeneralizedSwapMigrator } from "../../types/ethers-contracts/GeneralizedSwapMigrator"
-import HELPER_CONTRACT_ABI from "../constants/abis/helperContract.json"
-import { HelperContract } from "../../types/ethers-contracts/HelperContract"
 import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
@@ -360,12 +357,4 @@ export function useGaugeControllerContract(): GaugeController | null {
     ? GAUGE_CONTROLLER_ADDRESSES[chainId]
     : undefined
   return useContract(contractAddress, GAUGE_CONTROLLER_ABI) as GaugeController
-}
-
-export function useHelperContract(): HelperContract | null {
-  const { chainId } = useActiveWeb3React()
-  const contractAddress = chainId
-    ? HELPER_CONTRACT_ADDRESSES[chainId]
-    : undefined
-  return useContract(contractAddress, HELPER_CONTRACT_ABI) as HelperContract
 }
