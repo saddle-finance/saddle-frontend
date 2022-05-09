@@ -23,12 +23,14 @@ import { Bridge } from "../../types/ethers-contracts/Bridge"
 import { Contract } from "@ethersproject/contracts"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
+import { Contract as EthcallContract } from "ethcall"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
 import GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI from "../constants/abis/generalizedSwapMigrator.json"
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
 import { GeneralizedSwapMigrator } from "../../types/ethers-contracts/GeneralizedSwapMigrator"
 import HELPER_CONTRACT_ABI from "../constants/abis/helperContract.json"
 import { HelperContract } from "../../types/ethers-contracts/HelperContract"
+import { JsonFragment } from "@ethersproject/abi"
 import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
@@ -39,6 +41,7 @@ import MINICHEF_CONTRACT_ABI from "../constants/abis/miniChef.json"
 import { MasterRegistry } from "../../types/ethers-contracts/MasterRegistry"
 import { MetaSwapDeposit } from "../../types/ethers-contracts/MetaSwapDeposit"
 import { MiniChef } from "../../types/ethers-contracts/MiniChef"
+import { MulticallContract } from "../types/ethcall"
 import PERMISSIONLESS_DEPLOYER_ABI from "../constants/abis/permissionlessDeployer.json"
 import POOL_REGISTRY_ABI from "../constants/abis/poolRegistry.json"
 import { PermissionlessDeployer } from "../../types/ethers-contracts/PermissionlessDeployer"
@@ -370,10 +373,12 @@ export function useHelperContract(): HelperContract | null {
   return useContract(contractAddress, HELPER_CONTRACT_ABI) as HelperContract
 }
 
-export function useLiquidityGaugeContract(): HelperContract | null {
-  const { chainId } = useActiveWeb3React()
-  const contractAddress = chainId
-    ? HELPER_CONTRACT_ADDRESSES[chainId]
-    : undefined
-  return useContract(contractAddress, HELPER_CONTRACT_ABI) as HelperContract
+export function createMultiCallContract<T>(
+  contractAddress: string,
+  contractAbi: JsonFragment[],
+): MulticallContract<T> {
+  return new EthcallContract(
+    contractAddress,
+    contractAbi,
+  ) as MulticallContract<T>
 }
