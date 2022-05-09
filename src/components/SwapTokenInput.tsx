@@ -15,6 +15,7 @@ import {
 import { commify, formatBNToString } from "../utils"
 import { styled, useTheme } from "@mui/material/styles"
 import { useRef, useState } from "react"
+
 import { ArrowDropDown } from "@mui/icons-material"
 import Autocomplete from "@mui/material/Autocomplete"
 import { BigNumber } from "ethers"
@@ -82,7 +83,7 @@ export default function SwapTokenInput({
   ) => {
     // if value is not blank, then test the regex
     if (
-      e.target.value === "" ||
+      e.target.value.trim() === "" ||
       readableDecimalNumberRegex.test(e.target.value)
     ) {
       onChangeAmount?.(e.target.value)
@@ -214,7 +215,7 @@ export default function SwapTokenInput({
                 }
               }}
               renderOption={(props, option) => (
-                <ListItem listItemProps={props} {...option} />
+                <ListItem listItemProps={props} {...option} key={option.name} />
               )}
               getOptionLabel={(option) => option.symbol}
               getOptionDisabled={(option) => !option.isAvailable}

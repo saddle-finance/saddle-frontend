@@ -24,25 +24,31 @@ import { useTranslation } from "react-i18next"
 
 interface Props {
   symbol: string
+  name?: string
   max?: string
+  decimalLength?: number
   inputValue: string
-  onChange: (value: string) => void
+  onChange?: (value: string) => void
   disabled?: boolean
+  readonly?: boolean
   error?: boolean
   helperText?: string
 }
 
 function TokenInput({
   symbol,
+  name,
   max,
+  decimalLength,
   inputValue,
   onChange,
   disabled,
+  readonly,
   error,
   helperText,
+  ...rest
 }: Props): ReactElement {
   const { t } = useTranslation()
-  const { name } = TOKENS_MAP[symbol]
   const theme = useTheme()
 
   let tokenUSDValue: number | BigNumber | undefined
@@ -59,7 +65,7 @@ function TokenInput({
   }
 
   function onChangeInput(e: React.ChangeEvent<HTMLInputElement>): void {
-    const { decimals } = TOKENS_MAP[symbol]
+    const { decimals } = TOKENS_MAP[symbol] || { decimals: decimalLength }
     const parsedValue = parseFloat("0" + e.target.value)
     const periodIndex = e.target.value.indexOf(".")
     const isValidInput = e.target.value === "" || !isNaN(parsedValue)
@@ -73,19 +79,23 @@ function TokenInput({
         e.target.value === "" ||
         readableDecimalNumberRegex.test(e.target.value)
       ) {
-        onChange(e.target.value)
+        if (onChange) onChange(e.target.value)
       }
     }
   }
 
   return (
-    <div>
+    <div {...rest}>
       {max != null && (
         <Box display="flex" alignItems="center" justifyContent="end">
           <Typography variant="subtitle2" sx={{ mr: 1 }}>
             {t("balance")}:
           </Typography>
-          <Button size="small" onClick={() => onChange(String(max))}>
+          <Button
+            size="small"
+            disabled={readonly}
+            onClick={() => onChange && onChange(String(max))}
+          >
             <Typography variant="subtitle2">{max}</Typography>
           </Button>
         </Box>
@@ -132,6 +142,7 @@ function TokenInput({
             spellCheck="false"
             disabled={disabled ? true : false}
             value={inputValue}
+            readOnly={readonly}
             inputProps={{
               style: {
                 textAlign: "end",

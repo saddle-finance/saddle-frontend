@@ -12,6 +12,7 @@ import {
 import { NavLink, NavLinkProps, useLocation } from "react-router-dom"
 import React, { ReactElement, useContext, useState } from "react"
 
+import { IS_DEVELOPMENT } from "../utils/environment"
 import { IS_SDL_LIVE } from "../constants"
 import { MoreVert } from "@mui/icons-material"
 import NetworkDisplay from "./NetworkDisplay"
@@ -23,7 +24,7 @@ import Web3Status from "./Web3Status"
 import { formatBNToShortString } from "../utils"
 import { useTranslation } from "react-i18next"
 
-type ActiveTabType = "" | "pools" | "risk"
+type ActiveTabType = "" | "pools" | "risk" | "vesdl"
 
 const NavMenu = styled(NavLink)<NavLinkProps & { selected: boolean }>(
   ({ theme, selected }) => {
@@ -94,6 +95,12 @@ function TopMenu(): ReactElement {
             <NavMenu to="/pools" selected={activeTab === "pools"}>
               {t("pools")}
             </NavMenu>
+
+            {IS_DEVELOPMENT && (
+              <NavMenu to="/vesdl" selected={activeTab === "vesdl"}>
+                {t("veSdl")}
+              </NavMenu>
+            )}
 
             <NavMenu to="/risk" selected={activeTab === "risk"}>
               {t("risk")}

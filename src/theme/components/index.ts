@@ -9,12 +9,14 @@ import ChipTheme from "./ChipTheme"
 import DialogTheme from "./DialogTheme"
 import DialogTitleTheme from "./DialogTitleTheme"
 import IconButtonTheme from "./IconButtonTheme"
+import LinkTheme from "./LinkTheme"
 import ListItemButtonTheme from "./ListItemButtonTheme"
 import ListItemIconTheme from "./ListItemIconTheme"
 import MenuItemTheme from "./MenuItemTheme"
 import MenuTheme from "./MenuTheme"
 import PaperTheme from "./PaperTheme"
 import RadioButtonTheme from "./RadioButtonTheme"
+import TableCellTheme from "./TableCellTheme"
 import TextFieldTheme from "./TextFieldTheme"
 import ToggleButtonTheme from "./ToggleButtonTheme"
 import TooltipTheme from "./TooltipTheme"
@@ -31,8 +33,10 @@ export default function componentsOverrides(theme: Theme): Components {
     DialogTheme(theme),
     DialogTitleTheme(theme),
     IconButtonTheme(theme),
+    LinkTheme(),
     MenuTheme(theme),
     MenuItemTheme(),
+    TableCellTheme(theme),
     TooltipTheme(theme),
     ToggleButtonTheme(theme),
     BackdropTheme(),

@@ -9,6 +9,7 @@ export const NETWORK_LABEL: Partial<Record<ChainId, string>> = {
   [ChainId.ROPSTEN]: "Ropsten",
   [ChainId.EVMOS]: "Evmos",
   [ChainId.EVMOS_TESTNET]: "Evmos Testnet",
+  [ChainId.KAVA_TESTNET]: "Kava Testnet",
   [ChainId.HARDHAT]: "Hardhat 👷🏼‍♂️",
 }
 
@@ -21,6 +22,7 @@ export const NETWORK_NATIVE_TOKENS: Record<ChainId, string> = {
   [ChainId.ROPSTEN]: "ETH",
   [ChainId.EVMOS]: "EVMOS",
   [ChainId.EVMOS_TESTNET]: "tEVMOS",
+  [ChainId.KAVA_TESTNET]: "KAVA",
   [ChainId.HARDHAT]: "ETH",
 }
 
@@ -109,5 +111,16 @@ export const DEV_SUPPORTED_NETWORKS: SupportedNetworks = {
     },
     rpcUrls: ["https://eth.bd.evmos.dev:8545"],
     blockExplorerUrls: ["https://evm.evmos.dev"],
+  },
+  [ChainId.KAVA_TESTNET]: {
+    chainId: hexlify(2221),
+    chainName: "Kava Testnet",
+    nativeCurrency: {
+      name: "Kava",
+      symbol: "KAVA",
+      decimals: 18,
+    },
+    rpcUrls: ["https://evm.evm-alpha.kava.io"],
+    blockExplorerUrls: ["https://explorer.evm-alpha.kava.io"],
   },
 }
