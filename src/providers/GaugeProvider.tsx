@@ -68,6 +68,8 @@ export default function GaugeProvider({
     void fetchGauges()
   }, [chainId, library, gaugeController, helperContract])
 
+  console.log("gauges", gauges)
+
   return (
     <GaugeContext.Provider value={gauges}>{children}</GaugeContext.Provider>
   )
@@ -90,8 +92,6 @@ export async function getGaugeData(
     HELPER_CONTRACT_ABI,
   )
 
-  console.log("helper MULTI CALL", helperContractMultiCall)
-
   const gaugeControllerMultiCall = createMultiCallContract<GaugeController>(
     gaugeControllerContractAddress,
     GAUGE_CONTROLLER_ABI,
@@ -112,15 +112,15 @@ export async function getGaugeData(
   ).map((poolAddress) => poolAddress.toLowerCase())
 
   const gaugeWeightsPromise: Promise<BigNumber[]> = ethCallProvider.all(
-    gaugePoolAddresses.map((poolAddress) =>
-      gaugeControllerMultiCall.get_gauge_weight(poolAddress),
+    gaugeAddresses.map((gaugeAddress) =>
+      gaugeControllerMultiCall.get_gauge_weight(gaugeAddress),
     ),
   )
 
   const gaugeRelativeWeightsPromise: Promise<BigNumber[]> = ethCallProvider.all(
-    gaugePoolAddresses.map((poolAddress) =>
+    gaugeAddresses.map((gaugeAddress) =>
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-      gaugeControllerMultiCall.gauge_relative_weight(poolAddress),
+      gaugeControllerMultiCall.gauge_relative_weight(gaugeAddress),
     ),
   )
 
