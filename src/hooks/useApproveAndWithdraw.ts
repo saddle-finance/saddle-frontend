@@ -95,7 +95,7 @@ export function useApproveAndWithdraw(
           : state.lpTokenAmountToSpend
       await checkAndApproveTokenForTrade(
         lpTokenContract,
-        swapContract.address,
+        effectiveSwapContract.address,
         account,
         allowanceAmount,
         infiniteApproval,
@@ -121,7 +121,7 @@ export function useApproveAndWithdraw(
       )
       let spendTransaction
       if (state.withdrawType === "ALL") {
-        spendTransaction = await swapContract.removeLiquidity(
+        spendTransaction = await effectiveSwapContract.removeLiquidity(
           state.lpTokenAmountToSpend,
           POOL.poolTokens.map(({ symbol }) =>
             subtractSlippage(
@@ -133,7 +133,7 @@ export function useApproveAndWithdraw(
           deadline,
         )
       } else if (state.withdrawType === "IMBALANCE") {
-        spendTransaction = await swapContract.removeLiquidityImbalance(
+        spendTransaction = await effectiveSwapContract.removeLiquidityImbalance(
           POOL.poolTokens.map(
             ({ symbol }) => state.tokenFormState[symbol].valueSafe,
           ),
