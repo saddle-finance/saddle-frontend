@@ -1,15 +1,21 @@
+import { BasicPool, BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import React, { useContext, useRef } from "react"
-import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { CircularProgress } from "@mui/material"
-import { Gauge } from "../providers/GaugeProvider"
 import Highcharts from "highcharts"
 import HighchartsExporting from "highcharts/modules/exporting"
 import HighchartsReact from "highcharts-react-official"
 import PieChart from "highcharts-react-official"
+import { PoolAddressToGauge } from "../providers/GaugeProvider"
 
 interface Props {
-  gauges: { [poolAddress: string]: Gauge }
+  gauges: PoolAddressToGauge
+}
+
+export type GaugeWeightData = {
+  poolAddress: string
+  poolName: string
+  gaugeRelativeWeight: BigNumber
 }
 
 export default function GaugeWeight({
@@ -21,25 +27,31 @@ export default function GaugeWeight({
   const pools = useContext(BasicPoolsContext)
   if (pools == undefined) return <CircularProgress color="secondary" />
 
-  const gaugesInfo = Object.values(pools)
+  const gaugesInfo = (Object.values(pools) as BasicPool[])
     .map((pool) => {
-      if (!pool || !pool.poolAddress || !gauges[pool.poolAddress]) return
+      const gauge = gauges[pool.poolAddress]
       const gaugePoolAddress = pool.poolAddress
-      return {
-        poolAddress: gaugePoolAddress,
-        poolName: pool.poolName,
-        gaugeRelativeWeight: gauges[gaugePoolAddress].gaugeRelativeWeight,
-      }
+      return gauge
+        ? {
+            poolAddress: gaugePoolAddress,
+            poolName: pool.poolName,
+            // @ts-ignore: Object is possibly 'null'.
+            gaugeRelativeWeight: gauges[gaugePoolAddress].gaugeRelativeWeight,
+          }
+        : null
     })
     .filter(
       (gaugeInfo) =>
         gaugeInfo != undefined && gauges[gaugeInfo.poolAddress] != null,
-    )
+    ) as GaugeWeightData[]
 
   const data = gaugesInfo.map((g) => {
     return {
-      name: g?.poolName,
-      y: g?.gaugeRelativeWeight.div(BigNumber.from(10).pow(16)).toNumber(),
+      // This check has already been done in the filter method on L34
+      // @ts-ignore: Object is possibly 'null'.
+      name: g.poolName,
+      // @ts-ignore: Object is possibly 'null'.
+      y: g.gaugeRelativeWeight.div(BigNumber.from(10).pow(16)).toNumber(),
     }
   })
 

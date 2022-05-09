@@ -19,7 +19,6 @@ import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
-import { MulticallContract } from "../types/ethcall"
 import { Web3Provider } from "@ethersproject/providers"
 import { getMigrationData } from "../utils/migrations"
 import { useActiveWeb3React } from "../hooks"
@@ -43,7 +42,7 @@ type SharedSwapData = {
   tokenBalances: BigNumber[]
   lpTokenSupply: BigNumber
   miniChefRewardsPid: number | null
-  isSynthetic?: boolean
+  isSynthetic: boolean
 }
 type MetaSwapInfo = SharedSwapData & {
   underlyingTokens: string[]
@@ -173,13 +172,12 @@ export async function getSwapInfo(
     )
 
     // Swap Contract logic
-    const swapContractMulticall: MulticallContract<MetaSwap> =
-      createMultiCallContract(poolAddress, META_SWAP_ABI)
-
-    const lpTokenContract: MulticallContract<Erc20> = createMultiCallContract(
-      lpToken,
-      ERC20_ABI,
+    const swapContractMulticall = createMultiCallContract<MetaSwap>(
+      poolAddress,
+      META_SWAP_ABI,
     )
+
+    const lpTokenContract = createMultiCallContract<Erc20>(lpToken, ERC20_ABI)
 
     const [swapStorage, aParameter, isPaused, virtualPrice] =
       await ethCallProvider.all([

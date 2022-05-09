@@ -29,9 +29,13 @@ export type Gauge = {
   workingSupply?: BigNumber
 }
 
+export type PoolAddressToGauge = {
+  [poolAddress: string]: Gauge | undefined
+}
+
 export type Gauges = {
   gaugeCount: number
-  gauges: { [poolAddress: string]: Gauge }
+  gauges: PoolAddressToGauge
 }
 
 const initialGaugesState: Gauges = {
@@ -53,11 +57,8 @@ export default function GaugeProvider({
     async function fetchGauges() {
       if (!gaugeController || !helperContract || !chainId || !library) return
       const nGauges = await gaugeController.n_gauges()
-      const gaugeData: { [poolAddress: string]: Gauge } = await getGaugeData(
-        library,
-        chainId,
-        nGauges.toNumber(),
-      )
+      const gaugeData: { [poolAddress: string]: Gauge } =
+        (await getGaugeData(library, chainId, nGauges.toNumber())) || {}
 
       setGauges({
         gaugeCount: nGauges.toNumber(),
@@ -67,8 +68,6 @@ export default function GaugeProvider({
 
     void fetchGauges()
   }, [chainId, library, gaugeController, helperContract])
-
-  console.log("gauges", gauges)
 
   return (
     <GaugeContext.Provider value={gauges}>{children}</GaugeContext.Provider>
@@ -81,68 +80,79 @@ export async function getGaugeData(
   gaugeCount: number,
 ): Promise<{
   [poolAddress: string]: Gauge
-}> {
+} | null> {
   if (chainId !== ChainId.HARDHAT) return {}
-  const ethCallProvider = await getMulticallProvider(library, chainId)
-  const helperContractAddress = HELPER_CONTRACT_ADDRESSES[chainId]
-  const gaugeControllerContractAddress = GAUGE_CONTROLLER_ADDRESSES[chainId]
+  try {
+    const ethCallProvider = await getMulticallProvider(library, chainId)
+    const helperContractAddress = HELPER_CONTRACT_ADDRESSES[chainId]
+    const gaugeControllerContractAddress = GAUGE_CONTROLLER_ADDRESSES[chainId]
 
-  const helperContractMultiCall = createMultiCallContract<HelperContract>(
-    helperContractAddress,
-    HELPER_CONTRACT_ABI,
-  )
+    const helperContractMultiCall = createMultiCallContract<HelperContract>(
+      helperContractAddress,
+      HELPER_CONTRACT_ABI,
+    )
 
-  const gaugeControllerMultiCall = createMultiCallContract<GaugeController>(
-    gaugeControllerContractAddress,
-    GAUGE_CONTROLLER_ABI,
-  )
+    const gaugeControllerMultiCall = createMultiCallContract<GaugeController>(
+      gaugeControllerContractAddress,
+      GAUGE_CONTROLLER_ABI,
+    )
 
-  const gaugeAddresses = await ethCallProvider.all(
-    enumerate(gaugeCount, 0).map((value) =>
-      gaugeControllerMultiCall.gauges(value),
-    ),
-  )
-
-  const gaugePoolAddresses: string[] = (
-    await ethCallProvider.all(
-      gaugeAddresses.map((address) =>
-        helperContractMultiCall.gaugeToPoolAddress(address),
+    const gaugeAddresses = await ethCallProvider.all(
+      enumerate(gaugeCount, 0).map((value) =>
+        gaugeControllerMultiCall.gauges(value),
       ),
     )
-  ).map((poolAddress) => poolAddress.toLowerCase())
 
-  const gaugeWeightsPromise: Promise<BigNumber[]> = ethCallProvider.all(
-    gaugeAddresses.map((gaugeAddress) =>
-      gaugeControllerMultiCall.get_gauge_weight(gaugeAddress),
-    ),
-  )
+    const gaugePoolAddresses: string[] = (
+      await ethCallProvider.all(
+        gaugeAddresses.map((address) =>
+          helperContractMultiCall.gaugeToPoolAddress(address),
+        ),
+      )
+    ).map((poolAddress) => poolAddress.toLowerCase())
 
-  const gaugeRelativeWeightsPromise: Promise<BigNumber[]> = ethCallProvider.all(
-    gaugeAddresses.map((gaugeAddress) =>
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-      gaugeControllerMultiCall.gauge_relative_weight(gaugeAddress),
-    ),
-  )
+    const gaugeWeightsPromise: Promise<BigNumber[]> = ethCallProvider.all(
+      gaugeAddresses.map((gaugeAddress) =>
+        gaugeControllerMultiCall.get_gauge_weight(gaugeAddress),
+      ),
+    )
 
-  const [gaugeWeights, gaugeRelativeWeights] = await Promise.all([
-    gaugeWeightsPromise,
-    gaugeRelativeWeightsPromise,
-  ])
+    const gaugeRelativeWeightsPromise: Promise<BigNumber[]> =
+      ethCallProvider.all(
+        gaugeAddresses.map((gaugeAddress) =>
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+          gaugeControllerMultiCall.gauge_relative_weight(gaugeAddress),
+        ),
+      )
 
-  const gaugeData: { [poolAddress: string]: Gauge } = gaugePoolAddresses.reduce(
-    (previousGaugeData, gaugePoolAddress, index) => {
-      return {
-        ...previousGaugeData,
-        [gaugePoolAddress]: {
-          address: gaugeAddresses[index],
-          poolAddress: gaugePoolAddress,
-          gaugeWeight: gaugeWeights[index],
-          gaugeRelativeWeight: gaugeRelativeWeights[index],
+    const [gaugeWeights, gaugeRelativeWeights] = await Promise.all([
+      gaugeWeightsPromise,
+      gaugeRelativeWeightsPromise,
+    ])
+
+    const gaugeData: { [poolAddress: string]: Gauge } =
+      gaugePoolAddresses.reduce(
+        (previousGaugeData, gaugePoolAddress, index) => {
+          return {
+            ...previousGaugeData,
+            [gaugePoolAddress]: {
+              address: gaugeAddresses[index],
+              poolAddress: gaugePoolAddress,
+              gaugeWeight: gaugeWeights[index],
+              gaugeRelativeWeight: gaugeRelativeWeights[index],
+            },
+          }
         },
-      }
-    },
-    {},
-  )
+        {},
+      )
 
-  return gaugeData
+    return gaugeData
+  } catch (e) {
+    const error = new Error(
+      `Unable to get Gauge data \n${(e as Error).message}`,
+    )
+    error.stack = (e as Error).stack
+    console.error(error)
+    return null
+  }
 }
