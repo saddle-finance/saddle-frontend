@@ -6,10 +6,13 @@ import {
 import React, { ReactElement, useEffect, useState } from "react"
 import {
   createMultiCallContract,
+  enumerate,
+  getMulticallProvider,
+} from "../utils"
+import {
   useGaugeControllerContract,
   useHelperContract,
 } from "../hooks/useContract"
-import { enumerate, getMulticallProvider } from "../utils"
 import { BigNumber } from "ethers"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
@@ -86,6 +89,8 @@ export async function getGaugeData(
     helperContractAddress,
     HELPER_CONTRACT_ABI,
   )
+
+  console.log("helper MULTI CALL", helperContractMultiCall)
 
   const gaugeControllerMultiCall = createMultiCallContract<GaugeController>(
     gaugeControllerContractAddress,

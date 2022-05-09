@@ -7,7 +7,11 @@ import {
   getMinichefPid,
 } from "../constants"
 import React, { ReactElement, useEffect, useState } from "react"
-import { getMulticallProvider, isSynthAsset } from "../utils"
+import {
+  createMultiCallContract,
+  getMulticallProvider,
+  isSynthAsset,
+} from "../utils"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -17,7 +21,6 @@ import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { MulticallContract } from "../types/ethcall"
 import { Web3Provider } from "@ethersproject/providers"
-import { createMultiCallContract } from "../hooks/useContract"
 import { getMigrationData } from "../utils/migrations"
 import { useActiveWeb3React } from "../hooks"
 import { useSelector } from "react-redux"
