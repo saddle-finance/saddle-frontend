@@ -29,8 +29,8 @@ export default function GaugeWeight({
 
   const gaugesInfo = (Object.values(pools) as BasicPool[])
     .map((pool) => {
-      const gauge = gauges[pool.poolAddress]
       const gaugePoolAddress = pool.poolAddress
+      const gauge = gauges[gaugePoolAddress]
       return gauge
         ? {
             poolAddress: gaugePoolAddress,
