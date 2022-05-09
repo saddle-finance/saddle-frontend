@@ -9,14 +9,13 @@ import {
   useGaugeControllerContract,
   useHelperContract,
 } from "../hooks/useContract"
+import { enumerate, getMulticallProvider } from "../utils"
 import { BigNumber } from "ethers"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
 import HELPER_CONTRACT_ABI from "../constants/abis/helperContract.json"
 import { HelperContract } from "../../types/ethers-contracts/HelperContract"
-import { MulticallContract } from "../types/ethcall"
 import { Web3Provider } from "@ethersproject/providers"
-import { getMulticallProvider } from "../utils"
 import { useActiveWeb3React } from "../hooks"
 
 export type Gauge = {
@@ -49,33 +48,13 @@ export default function GaugeProvider({
 
   useEffect(() => {
     async function fetchGauges() {
-      // const gaugeData: { [poolAddress: string]: Gauge } = {}
       if (!gaugeController || !helperContract || !chainId || !library) return
       const nGauges = await gaugeController.n_gauges()
-      // for (let i = 1; i <= nGauges.toNumber(); i++) {
-      //   const gaugeAddress: string = await gaugeController.gauges(i)
-      //   const gaugePoolAddress: string = (
-      //     await helperContract.gaugeToPoolAddress(gaugeAddress)
-      //   ).toLowerCase()
-      //   const gaugeWeight = await gaugeController.get_gauge_weight(gaugeAddress)
-      //   const gaugeRelativeWeight = await gaugeController[
-      //     "gauge_relative_weight(address)"
-      //   ](gaugeAddress)
-      //   gaugeData[gaugePoolAddress] = {
-      //     address: gaugeAddress,
-      //     poolAddress: gaugePoolAddress,
-      //     gaugeWeight,
-      //     gaugeRelativeWeight,
-      //   }
-      // }
-
       const gaugeData: { [poolAddress: string]: Gauge } = await getGaugeData(
-        nGauges,
         library,
         chainId,
+        nGauges.toNumber(),
       )
-
-      console.log("gaugeData", gaugeData)
 
       setGauges({
         gaugeCount: nGauges.toNumber(),
@@ -92,29 +71,33 @@ export default function GaugeProvider({
 }
 
 export async function getGaugeData(
-  nGauges: BigNumber,
   library: Web3Provider,
   chainId: ChainId,
+  gaugeCount: number,
 ): Promise<{
   [poolAddress: string]: Gauge
 }> {
+  if (chainId !== ChainId.HARDHAT) return {}
   const ethCallProvider = await getMulticallProvider(library, chainId)
   const helperContractAddress = HELPER_CONTRACT_ADDRESSES[chainId]
   const gaugeControllerContractAddress = GAUGE_CONTROLLER_ADDRESSES[chainId]
 
-  const helperContractMultiCall: MulticallContract<HelperContract> =
-    createMultiCallContract(helperContractAddress, HELPER_CONTRACT_ABI)
+  const helperContractMultiCall = createMultiCallContract<HelperContract>(
+    helperContractAddress,
+    HELPER_CONTRACT_ABI,
+  )
 
-  const gaugeControllerMultiCall: MulticallContract<GaugeController> =
-    createMultiCallContract(
-      gaugeControllerContractAddress,
-      GAUGE_CONTROLLER_ABI,
-    )
+  const gaugeControllerMultiCall = createMultiCallContract<GaugeController>(
+    gaugeControllerContractAddress,
+    GAUGE_CONTROLLER_ABI,
+  )
+
   const gaugeAddresses = await ethCallProvider.all(
-    [...Array(nGauges)].map((value) =>
-      gaugeControllerMultiCall.gauges(value.toNumber() + 1),
+    enumerate(gaugeCount, 0).map((value) =>
+      gaugeControllerMultiCall.gauges(value),
     ),
   )
+
   const gaugePoolAddresses: string[] = (
     await ethCallProvider.all(
       gaugeAddresses.map((address) =>
@@ -123,17 +106,23 @@ export async function getGaugeData(
     )
   ).map((poolAddress) => poolAddress.toLowerCase())
 
-  const gaugeWeights: BigNumber[] = await ethCallProvider.all(
+  const gaugeWeightsPromise: Promise<BigNumber[]> = ethCallProvider.all(
     gaugePoolAddresses.map((poolAddress) =>
       gaugeControllerMultiCall.get_gauge_weight(poolAddress),
     ),
   )
 
-  const gaugeRelativeWeights: BigNumber[] = await ethCallProvider.all(
+  const gaugeRelativeWeightsPromise: Promise<BigNumber[]> = ethCallProvider.all(
     gaugePoolAddresses.map((poolAddress) =>
-      gaugeControllerMultiCall["gauge_relative_weight(address)"](poolAddress),
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+      gaugeControllerMultiCall.gauge_relative_weight(poolAddress),
     ),
   )
+
+  const [gaugeWeights, gaugeRelativeWeights] = await Promise.all([
+    gaugeWeightsPromise,
+    gaugeRelativeWeightsPromise,
+  ])
 
   const gaugeData: { [poolAddress: string]: Gauge } = gaugePoolAddresses.reduce(
     (previousGaugeData, gaugePoolAddress, index) => {
