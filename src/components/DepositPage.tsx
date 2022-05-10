@@ -34,7 +34,9 @@ import PoolInfoCard from "./PoolInfoCard"
 import ReviewDeposit from "./ReviewDeposit"
 import TokenInput from "./TokenInput"
 import { Zero } from "@ethersproject/constants"
+// import { enqueuePromiseToast } from "./Toastify"
 import { logEvent } from "../utils/googleAnalytics"
+// import { useActiveWeb3React } from "../hooks"
 import { useRewardsHelpers } from "../hooks/useRewardsHelpers"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -71,6 +73,7 @@ const DepositPage = (props: Props): ReactElement => {
     onConfirmTransaction,
     onToggleDepositWrapped,
   } = props
+  console.log({ myShareData })
 
   const { unstake, amountStaked } = useRewardsHelpers(
     poolData?.name as PoolName,
@@ -81,12 +84,18 @@ const DepositPage = (props: Props): ReactElement => {
   const shouldDisplayWrappedOption = isMetaPool(poolData?.name)
   const theme = useTheme()
   const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
+  // const { account, chainId } = useActiveWeb3React()
+  // TODO: import gauge addr from GaugeProvider context.
+  // const liquidityGauge = new Contract(LiquidityGaugeAddr, LiquidityGaugeABI, library)
 
   const onMigrateToGaugeClick = () => {
     void unstake(amountStaked)
+    // TODO: stake into new contract
+    // const depositTxn = await liquidityGauge.deposit(myShareData.lpTokenBalance, account, true)
+    // await enqueuePromiseToast(chainId, depositTxn.wait(), "deposit")
   }
 
-  const veSDLFeatureReady = false // TODO: delete after release.
+  const veSDLFeatureReady = true // TODO: delete after release.
 
   return (
     <Container maxWidth={isLgDown ? "sm" : "lg"} sx={{ pt: 5, pb: 10 }}>
