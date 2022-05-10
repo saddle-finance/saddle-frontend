@@ -7,16 +7,18 @@ import {
   getMinichefPid,
 } from "../constants"
 import React, { ReactElement, useEffect, useState } from "react"
-import { getMulticallProvider, isSynthAsset } from "../utils"
+import {
+  createMultiCallContract,
+  getMulticallProvider,
+  isSynthAsset,
+} from "../utils"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
-import { Contract as EthcallContract } from "ethcall"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
-import { MulticallContract } from "../types/ethcall"
 import { Web3Provider } from "@ethersproject/providers"
 import { getMigrationData } from "../utils/migrations"
 import { useActiveWeb3React } from "../hooks"
@@ -170,14 +172,12 @@ export async function getSwapInfo(
     )
 
     // Swap Contract logic
-    const swapContractMulticall = new EthcallContract(
+    const swapContractMulticall = createMultiCallContract<MetaSwap>(
       poolAddress,
       META_SWAP_ABI,
-    ) as MulticallContract<MetaSwap>
-    const lpTokenContract = new EthcallContract(
-      lpToken,
-      ERC20_ABI,
-    ) as MulticallContract<Erc20>
+    )
+
+    const lpTokenContract = createMultiCallContract<Erc20>(lpToken, ERC20_ABI)
 
     const [swapStorage, aParameter, isPaused, virtualPrice] =
       await ethCallProvider.all([

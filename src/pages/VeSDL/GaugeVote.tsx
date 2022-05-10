@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  CircularProgress,
   Link,
   Paper,
   Table,
@@ -11,17 +12,26 @@ import {
   TableRow,
   Typography,
 } from "@mui/material"
-import React from "react"
+import React, { useContext } from "react"
+import { GaugeContext } from "../../providers/GaugeProvider"
+import GaugeWeight from "../../components/GaugeWeight"
 import { useTranslation } from "react-i18next"
 
 export default function GaugeVote(): JSX.Element {
+  const gaugeData = useContext(GaugeContext)
   const { t } = useTranslation()
   return (
     <Paper sx={{ p: 2 }}>
       <Typography variant="h2" textAlign="center">
         {t("gaugeVote")}
       </Typography>
-      <Box height="428px"></Box>
+      <Box>
+        {!gaugeData ? (
+          <CircularProgress color="secondary" />
+        ) : (
+          <GaugeWeight gauges={gaugeData.gauges} />
+        )}
+      </Box>
       <TableContainer>
         <Table size="small">
           <TableHead>
