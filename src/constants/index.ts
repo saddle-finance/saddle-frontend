@@ -470,6 +470,14 @@ export const SPA_TOKEN_ADDRESSES = buildAddresses({
   [ChainId.ARBITRUM]: "0x5575552988A3A80504bBaeB1311674fCFd40aD4B",
 })
 
+export const HELPER_CONTRACT_ADDRESSES = buildAddresses({
+  [ChainId.HARDHAT]: "0x73eccD6288e117cAcA738BDAD4FEC51312166C1A",
+})
+
+export const GAUGE_CONTROLLER_ADDRESSES = buildAddresses({
+  [ChainId.HARDHAT]: "0xc0F115A19107322cFBf1cDBC7ea011C19EbDB4F8",
+})
+
 export const SPA = new Token(
   SPA_TOKEN_ADDRESSES,
   18,

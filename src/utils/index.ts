@@ -1,17 +1,19 @@
 import { AddressZero, Zero } from "@ethersproject/constants"
 import { ChainId, PoolTypes, TOKENS_MAP, Token } from "../constants"
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
+import { MulticallContract, MulticallProvider } from "../types/ethcall"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "@ethersproject/contracts"
 import { ContractInterface } from "ethers"
 import { Deadlines } from "../state/user"
+import { Contract as EthcallContract } from "ethcall"
+import { JsonFragment } from "@ethersproject/abi"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import META_SWAP_DEPOSIT_ABI from "../constants/abis/metaSwapDeposit.json"
 import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { MetaSwapDeposit } from "../../types/ethers-contracts/MetaSwapDeposit"
-import { MulticallProvider } from "../types/ethcall"
 import { Provider } from "ethcall"
 import SWAP_FLASH_LOAN_ABI from "../constants/abis/swapFlashLoan.json"
 import SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI from "../constants/abis/swapFlashLoanNoWithdrawFee.json"
@@ -381,4 +383,22 @@ export function getTokenIconPath(tokenSymbol: string): string {
     : tokenSymbol.toLowerCase()
 
   return `/static/icons/svg/${iconName}.svg`
+}
+
+/**
+ * Create a multicall version of the selected smart contract
+ *
+ * @param contractAddress
+ * @param contractAbi
+ * @returns the multicall wrapped version of the smart contract
+ *
+ */
+export function createMultiCallContract<T>(
+  contractAddress: string,
+  contractAbi: JsonFragment[],
+): MulticallContract<T> {
+  return new EthcallContract(
+    contractAddress,
+    contractAbi,
+  ) as MulticallContract<T>
 }
