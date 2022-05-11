@@ -92,14 +92,12 @@ export default function GaugeWeight({
   }
 
   return (
-    <div>
-      <PieChart
-        highcharts={Highcharts}
-        options={options}
-        ref={chartComponentRef}
-        allowChartUpdate
-        {...props}
-      />
-    </div>
+    <PieChart
+      highcharts={Highcharts}
+      options={options}
+      ref={chartComponentRef}
+      allowChartUpdate
+      {...props}
+    />
   )
 }
