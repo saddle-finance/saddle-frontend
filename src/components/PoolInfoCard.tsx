@@ -14,6 +14,7 @@ import { PoolDataType } from "../hooks/usePoolData"
 import TokenIcon from "./TokenIcon"
 import { Tooltip } from "@mui/material"
 import { Zero } from "@ethersproject/constants"
+import { getMultichainScanLink } from "../utils/getEtherscanLink"
 import { shortenAddress } from "../utils/shortenAddress"
 import { useActiveWeb3React } from "../hooks"
 import { useSelector } from "react-redux"
@@ -41,8 +42,6 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
     POOLS_MAP?.[data.name]?.metaSwapAddresses?.[chainId] ||
     POOLS_MAP?.[data.name]?.addresses[chainId]
   )?.toLowerCase()
-  console.log("pool addr =>", poolAddress)
-  console.log("pool addr =>", data.lpToken)
   const { oneDayVolume, utilization } =
     swapStats && poolAddress in swapStats
       ? swapStats[poolAddress]
@@ -212,7 +211,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
         <Typography mt={3}>
           Pool address:&nbsp;
           <Link
-            href={`https://etherscan.io/address/${poolAddress}`}
+            href={getMultichainScanLink(chainId, poolAddress, "address")}
             target="_blank"
             color="inherit"
           >
@@ -222,7 +221,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
         <Typography mt={1}>
           LP token address:&nbsp;
           <Link
-            href={`https://etherscan.io/address/${data.lpToken}`}
+            href={getMultichainScanLink(chainId, data.lpToken, "token")}
             target="_blank"
             color="inherit"
           >
