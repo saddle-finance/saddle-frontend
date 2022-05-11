@@ -26,7 +26,7 @@ export function getMultichainScanLink(
       chainScanDomain = "explorer.evm-alpha.kava.io"
       break
     default:
-      chainScanDomain = "etherscan"
+      chainScanDomain = "etherscan.io"
   }
 
   return `https://${chainScanDomain}/${type}/${data}`

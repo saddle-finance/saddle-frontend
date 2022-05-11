@@ -209,21 +209,23 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
           ))}
         </Box>
         <Typography mt={3}>
-          Pool address:&nbsp;
+          Pool address:
           <Link
             href={getMultichainScanLink(chainId, poolAddress, "address")}
             target="_blank"
             color="inherit"
+            ml={1}
           >
             {shortenAddress(poolAddress)}
           </Link>
         </Typography>
         <Typography mt={1}>
-          LP token address:&nbsp;
+          LP token address:
           <Link
             href={getMultichainScanLink(chainId, data.lpToken, "token")}
             target="_blank"
             color="inherit"
+            ml={1}
           >
             {data.lpToken && shortenAddress(data.lpToken)}
           </Link>
