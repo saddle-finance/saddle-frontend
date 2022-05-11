@@ -25,9 +25,16 @@ export default function GaugeVote(): JSX.Element {
       <Typography variant="h2" textAlign="center">
         {t("gaugeVote")}
       </Typography>
-      <Box>
+      <Box minHeight="428px">
         {!gaugeData ? (
-          <CircularProgress color="secondary" />
+          <Box
+            display="flex"
+            height="100%"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <CircularProgress color="secondary" />
+          </Box>
         ) : (
           <GaugeWeight gauges={gaugeData.gauges} />
         )}
