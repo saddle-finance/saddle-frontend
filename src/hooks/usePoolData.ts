@@ -44,6 +44,7 @@ export interface PoolDataType {
   volume: BigNumber | null
   sdlPerDay: BigNumber | null
   isPaused: boolean
+  poolAddress: string
   aprs: Partial<
     Record<
       Partners,
@@ -83,6 +84,7 @@ const emptyPoolData = {
   swapFee: Zero,
   tokens: [],
   totalLocked: Zero,
+  poolAddress: "",
   utilization: null,
   virtualPrice: Zero,
   volume: null,
@@ -233,6 +235,7 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
           isGuarded: basicPool.isGuarded,
           lpToken: basicPool.lpToken, // will be address, was symbol
           poolType: basicPool.typeOfAsset,
+          poolAddress: basicPool.poolAddress,
 
           lpTokenPriceUSD: priceDataForPool.lpTokenPriceUSD, // USD
           reserve: priceDataForPool.tokenBalancesSumUSD, // USD

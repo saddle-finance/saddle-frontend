@@ -475,7 +475,7 @@ export const HELPER_CONTRACT_ADDRESSES = buildAddresses({
 })
 
 export const GAUGE_CONTROLLER_ADDRESSES = buildAddresses({
-  [ChainId.HARDHAT]: "0x07882Ae1ecB7429a84f1D53048d35c4bB2056877",
+  [ChainId.HARDHAT]: "0xF8e31cb472bc70500f08Cd84917E5A1912Ec8397",
 })
 
 export const SPA = new Token(

@@ -19,24 +19,32 @@ import {
   useTheme,
 } from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
-import React, { ReactElement, useState } from "react"
+import React, { ReactElement, useContext, useEffect, useState } from "react"
 import { Trans, useTranslation } from "react-i18next"
-import { commify, formatBNToPercentString, formatBNToString } from "../utils"
+import {
+  commify,
+  formatBNToPercentString,
+  formatBNToString,
+  getContract,
+} from "../utils"
+import { enqueuePromiseToast, enqueueToast } from "./Toastify"
 
 import AdvancedOptions from "./AdvancedOptions"
 import ConfirmTransaction from "./ConfirmTransaction"
 import { DepositTransaction } from "../interfaces/transactions"
 import Dialog from "./Dialog"
+import { GaugeContext } from "../providers/GaugeProvider"
+import LIQUIDITY_GAUGE_V5_ABI from "../constants/abis/liquidityGaugeV5.json"
 import LPStakingBanner from "./LPStakingBanner"
+import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import MyFarm from "./MyFarm"
 import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
 import ReviewDeposit from "./ReviewDeposit"
 import TokenInput from "./TokenInput"
 import { Zero } from "@ethersproject/constants"
-// import { enqueuePromiseToast } from "./Toastify"
 import { logEvent } from "../utils/googleAnalytics"
-// import { useActiveWeb3React } from "../hooks"
+import { useActiveWeb3React } from "../hooks"
 import { useRewardsHelpers } from "../hooks/useRewardsHelpers"
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -73,26 +81,65 @@ const DepositPage = (props: Props): ReactElement => {
     onConfirmTransaction,
     onToggleDepositWrapped,
   } = props
-  console.log({ myShareData })
-
+  console.log({ poolData, myShareData, transactionData })
+  const { account, chainId, library } = useActiveWeb3React()
   const { unstake, amountStaked } = useRewardsHelpers(
     poolData?.name as PoolName,
   )
-  console.log({ poolData, unstake, amountStaked })
   const [currentModal, setCurrentModal] = useState<string | null>(null)
+  const [liquidityGaugeContract, setLiquidityGaugeContract] =
+    useState<LiquidityGaugeV5>()
   const validDepositAmount = transactionData.to.totalAmount.gt(0)
   const shouldDisplayWrappedOption = isMetaPool(poolData?.name)
   const theme = useTheme()
   const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
-  // const { account, chainId } = useActiveWeb3React()
-  // TODO: import gauge addr from GaugeProvider context.
-  // const liquidityGauge = new Contract(LiquidityGaugeAddr, LiquidityGaugeABI, library)
+  const { gauges } = useContext(GaugeContext)
 
-  const onMigrateToGaugeClick = () => {
-    void unstake(amountStaked)
-    // TODO: stake into new contract
-    // const depositTxn = await liquidityGauge.deposit(myShareData.lpTokenBalance, account, true)
-    // await enqueuePromiseToast(chainId, depositTxn.wait(), "deposit")
+  useEffect(() => {
+    if (!library || !account || !chainId || !poolData) return
+    console.log({ pd: poolData.name, poolData })
+    const gaugeAddr = gauges?.[poolData.poolAddress]?.address ?? ""
+    console.log({ gaugeAddr })
+    if (gaugeAddr) {
+      const liquidityGaugeContract = getContract(
+        gaugeAddr,
+        LIQUIDITY_GAUGE_V5_ABI,
+        library,
+        account,
+      ) as LiquidityGaugeV5
+      setLiquidityGaugeContract(liquidityGaugeContract)
+      console.log({ liquidityGaugeContract })
+    }
+  }, [library, account, chainId, poolData, gauges])
+
+  const onMigrateToGaugeClick = async () => {
+    if (
+      !liquidityGaugeContract ||
+      !chainId ||
+      !myShareData ||
+      !account ||
+      !poolData
+    )
+      return
+    try {
+      console.log({ amountStaked })
+      await unstake(amountStaked)
+      console.log({ lpTokenBalance: myShareData.lpTokenBalance })
+      const txn = await liquidityGaugeContract["deposit(uint256,address,bool)"](
+        myShareData.lpTokenBalance,
+        account,
+        true,
+      )
+      const amount = await liquidityGaugeContract.balanceOf(account)
+      const amount2 = await liquidityGaugeContract.working_balances(account)
+      console.log({ amount, amount2, account })
+      await enqueuePromiseToast(chainId, txn.wait(), "stake", {
+        poolName: poolData.name,
+      })
+    } catch (err) {
+      console.error(err)
+      enqueueToast("error", "Unable to stake in gauge amount")
+    }
   }
 
   const veSDLFeatureReady = true // TODO: delete after release.
@@ -122,8 +169,7 @@ const DepositPage = (props: Props): ReactElement => {
           </Typography>
         </Alert>
       )}
-      {veSDLFeatureReady && (
-        // {amountStaked.gt(Zero) && (
+      {veSDLFeatureReady && amountStaked.gt(Zero) && (
         <Alert severity="error" sx={{ mb: 2 }}>
           <Box display="flex" alignItems="center" justifyContent="space-around">
             <Typography>
