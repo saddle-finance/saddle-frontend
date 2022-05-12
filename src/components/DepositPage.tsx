@@ -46,7 +46,9 @@ interface Props {
     symbol: string
     name: string
     max: string
+    decimals: number
     inputValue: string
+    priceUSD: number
   }>
   exceedsWallet: boolean
   selected?: { [key: string]: any }
@@ -165,16 +167,24 @@ const DepositPage = (props: Props): ReactElement => {
                 </Typography>
               ) : null}
               <Stack direction="column" spacing={2}>
-                {tokens.map((token, index) => (
-                  <TokenInput
-                    key={index}
-                    {...token}
-                    disabled={poolData?.isPaused}
-                    onChange={(value): void =>
-                      onChangeTokenInputValue(token.symbol, value)
-                    }
-                  />
-                ))}
+                {tokens.map(
+                  ({ decimals, symbol, name, priceUSD, inputValue }, index) => (
+                    <TokenInput
+                      key={index}
+                      token={{
+                        decimals,
+                        symbol,
+                        name,
+                        priceUSD,
+                      }}
+                      inputValue={inputValue}
+                      disabled={poolData?.isPaused}
+                      onChange={(value): void =>
+                        onChangeTokenInputValue(symbol, value)
+                      }
+                    />
+                  ),
+                )}
               </Stack>
               <Box
                 sx={{

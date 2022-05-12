@@ -9,6 +9,7 @@ import {
 import React, { ReactElement, useEffect, useMemo, useState } from "react"
 import { TokensStateType, useTokenFormState } from "../hooks/useTokenFormState"
 import { formatBNToString, getContract, shiftBNDecimals } from "../utils"
+import { formatUnits, parseUnits } from "@ethersproject/units"
 import usePoolData, { PoolDataType } from "../hooks/usePoolData"
 
 import { AppState } from "../state"
@@ -23,7 +24,6 @@ import { Zero } from "@ethersproject/constants"
 import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { formatGasToString } from "../utils/gas"
-import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
@@ -202,14 +202,23 @@ function Deposit({ poolName }: Props): ReactElement | null {
   ])
 
   // A represention of tokens used for UI
-  const tokens = (
-    shouldDepositWrapped ? POOL.underlyingPoolTokens || [] : POOL.poolTokens
-  ).map(({ symbol, name, decimals }) => ({
-    symbol,
-    name,
-    max: formatBNToString(tokenBalances?.[symbol] || Zero, decimals),
-    inputValue: tokenFormState[symbol].valueRaw,
-  }))
+  const tmpDepositTokens = shouldDepositWrapped
+    ? POOL.underlyingPoolTokens || []
+    : POOL.poolTokens
+  const tokens = tmpDepositTokens.map(({ symbol, name, decimals }, i) => {
+    const priceUSD =
+      (shouldDepositWrapped && i === tmpDepositTokens.length - 1
+        ? parseFloat(formatUnits(poolData.lpTokenPriceUSD, 18))
+        : tokenPricesUSD?.[symbol]) || 0
+    return {
+      symbol,
+      name,
+      decimals,
+      priceUSD,
+      max: formatBNToString(tokenBalances?.[symbol] || Zero, decimals),
+      inputValue: tokenFormState[symbol].valueRaw,
+    }
+  })
 
   const exceedsWallet = allTokens.some(({ symbol }) => {
     const exceedsBoolean = (tokenBalances?.[symbol] || Zero).lt(

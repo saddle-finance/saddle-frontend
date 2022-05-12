@@ -60,6 +60,8 @@ interface Props {
   tokensData: Array<{
     symbol: string
     name: string
+    decimals: number
+    priceUSD: number
     inputValue: string
   }>
   reviewData: ReviewWithdrawData
@@ -169,20 +171,27 @@ const WithdrawPage = (props: Props): ReactElement => {
                 })}
               </RadioGroup>
               <Stack spacing={3}>
-                {tokensData.map((token, index) => (
-                  <TokenInput
-                    key={`tokenInput-${index}`}
-                    {...token}
-                    onChange={(value): void =>
-                      onFormChange({
-                        fieldName: "tokenInputs",
-                        value: value,
-                        tokenSymbol: token.symbol,
-                      })
-                    }
-                    // disabled={poolData?.isPaused}
-                  />
-                ))}
+                {tokensData.map(
+                  ({ decimals, symbol, name, priceUSD, inputValue }, index) => (
+                    <TokenInput
+                      key={index}
+                      token={{
+                        decimals,
+                        symbol,
+                        name,
+                        priceUSD,
+                      }}
+                      inputValue={inputValue}
+                      onChange={(value): void =>
+                        onFormChange({
+                          fieldName: "tokenInputs",
+                          value: value,
+                          tokenSymbol: symbol,
+                        })
+                      }
+                    />
+                  ),
+                )}
               </Stack>
               <Box mt={3}>
                 {reviewData.priceImpact.gte(0) ? (
