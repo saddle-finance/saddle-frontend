@@ -5,31 +5,31 @@ export function getMultichainScanLink(
   data: string,
   type: "tx" | "token" | "address" | "block" | "txs",
 ): string {
-  let chainScanBaseName = "etherscan"
+  let chainScanDomain = "etherscan.io"
   switch (chainId) {
     case ChainId.MAINNET:
-      chainScanBaseName = "etherscan"
+      chainScanDomain = "etherscan.io"
       break
     case ChainId.ARBITRUM:
-      chainScanBaseName = "arbiscan"
+      chainScanDomain = "arbiscan.io"
       break
     case ChainId.FANTOM:
-      chainScanBaseName = "ftmscan"
+      chainScanDomain = "ftmscan.com"
       break
     case ChainId.OPTIMISM:
-      chainScanBaseName = "optimistic.etherscan"
+      chainScanDomain = "optimistic.etherscan.io"
       break
     case ChainId.EVMOS || ChainId.EVMOS_TESTNET:
-      chainScanBaseName = "mintscan"
+      chainScanDomain = "evm.evmos.org"
       break
     case ChainId.KAVA_TESTNET:
-      chainScanBaseName = "evm-alpha.kava"
+      chainScanDomain = "explorer.evm-alpha.kava.io"
       break
     default:
-      chainScanBaseName = "etherscan"
+      chainScanDomain = "etherscan.io"
   }
 
-  return `https://${chainScanBaseName}.io/${type}/${data}`
+  return `https://${chainScanDomain}/${type}/${data}`
 }
 
 export function getEtherscanLink(
