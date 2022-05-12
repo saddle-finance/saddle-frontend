@@ -135,6 +135,7 @@
   "minutesLeft_plural": "{{count}} minutes left",
   "minutesLeft": "{{count}} minute left",
   "myActivity": "My Activity (Total)",
+  "myGaugeFarm": "My Gauge Farm",
   "myFarm": "My Farm",
   "myShare": "My Share",
   "network": "Network",

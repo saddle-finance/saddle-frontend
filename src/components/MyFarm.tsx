@@ -1,22 +1,28 @@
 import { Box, Button, Paper, Stack, Typography } from "@mui/material"
 import { ChainId, IS_SDL_LIVE, PoolName } from "../constants"
-import React, { ReactElement } from "react"
+import React, { ReactElement, useEffect, useState } from "react"
 import { commify, formatBNToString } from "../utils"
 
 import { BigNumber } from "@ethersproject/bignumber"
+import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { Zero } from "@ethersproject/constants"
+import { enqueuePromiseToast } from "./Toastify"
 import { useActiveWeb3React } from "../hooks"
+import { useLPTokenContract } from "../hooks/useContract"
 import { useRewardsHelpers } from "../hooks/useRewardsHelpers"
 import { useTranslation } from "react-i18next"
 
 type Props = {
+  liquidityGaugeContract?: LiquidityGaugeV5 | undefined
   lpWalletBalance: BigNumber
   poolName: string
 }
 export default function MyFarm({
+  liquidityGaugeContract,
   lpWalletBalance,
   poolName,
 }: Props): ReactElement | null {
+  const [userGaugeBalance, setUserGaugeBalance] = useState<BigNumber>(Zero)
   const {
     approveAndStake,
     claimSPA,
@@ -25,7 +31,8 @@ export default function MyFarm({
     amountOfSpaClaimable,
     isPoolIncentivized,
   } = useRewardsHelpers(poolName as PoolName)
-  const { chainId } = useActiveWeb3React()
+  const lpTokenContract = useLPTokenContract(poolName as PoolName)
+  const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
   const formattedLpWalletBalance = commify(
     formatBNToString(lpWalletBalance, 18, 4),
@@ -33,9 +40,21 @@ export default function MyFarm({
   const formattedLpStakedBalance = commify(
     formatBNToString(amountStaked, 18, 4),
   )
+  const formattedLiquidityGaugeLpStakedBalance = commify(
+    formatBNToString(userGaugeBalance, 18, 4),
+  )
   const formattedSpaClaimableBalance = commify(
     formatBNToString(amountOfSpaClaimable, 18, 4),
   )
+
+  useEffect(() => {
+    const fetchUserGaugeBalance = async () => {
+      if (!liquidityGaugeContract || !account) return
+      const userGaugeBalance = await liquidityGaugeContract.balanceOf(account)
+      setUserGaugeBalance(userGaugeBalance)
+    }
+    void fetchUserGaugeBalance()
+  }, [account, liquidityGaugeContract])
 
   const veSDLFeatureReady = false
 
@@ -58,7 +77,26 @@ export default function MyFarm({
               size="large"
               fullWidth
               disabled={lpWalletBalance.isZero()}
-              onClick={() => approveAndStake(lpWalletBalance)}
+              // onClick={() => approveAndStake(lpWalletBalance)}
+              onClick={
+                veSDLFeatureReady
+                  ? async () => {
+                      if (
+                        !liquidityGaugeContract ||
+                        !lpTokenContract ||
+                        !account ||
+                        !chainId
+                      )
+                        return
+                      const txn = await liquidityGaugeContract[
+                        "deposit(uint256,address,bool)"
+                      ](await lpTokenContract.balanceOf(account), account, true)
+                      await enqueuePromiseToast(chainId, txn.wait(), "stake", {
+                        poolName,
+                      })
+                    }
+                  : () => approveAndStake(lpWalletBalance)
+              }
             >
               {t("stakeAll")}
             </Button>
@@ -68,7 +106,9 @@ export default function MyFarm({
           <Box flex={1}>
             <Typography>{t("lpStaked")}</Typography>
             <Typography variant="subtitle1">
-              {formattedLpStakedBalance}
+              {veSDLFeatureReady
+                ? formattedLiquidityGaugeLpStakedBalance
+                : formattedLpStakedBalance}
             </Typography>
           </Box>
           <Box flex={1}>
@@ -76,8 +116,31 @@ export default function MyFarm({
               variant="outlined"
               size="large"
               fullWidth
-              disabled={amountStaked.isZero()}
-              onClick={() => unstake(amountStaked)}
+              disabled={
+                veSDLFeatureReady
+                  ? userGaugeBalance.isZero()
+                  : amountStaked.isZero()
+              }
+              // onClick={() => unstake(amountStaked)}
+              onClick={
+                veSDLFeatureReady
+                  ? async () => {
+                      if (!liquidityGaugeContract || !account || !chainId)
+                        return
+                      const txn = await liquidityGaugeContract[
+                        "withdraw(uint256)"
+                      ](await liquidityGaugeContract.balanceOf(account))
+                      await enqueuePromiseToast(
+                        chainId,
+                        txn.wait(),
+                        "unstake",
+                        {
+                          poolName,
+                        },
+                      )
+                    }
+                  : () => unstake(amountStaked)
+              }
             >
               {t("unstakeAll")}
             </Button>

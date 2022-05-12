@@ -43,11 +43,12 @@ import PoolInfoCard from "./PoolInfoCard"
 import ReviewDeposit from "./ReviewDeposit"
 import TokenInput from "./TokenInput"
 import { Zero } from "@ethersproject/constants"
+import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { logEvent } from "../utils/googleAnalytics"
 import { useActiveWeb3React } from "../hooks"
+import { useLPTokenContract } from "../hooks/useContract"
 import { useRewardsHelpers } from "../hooks/useRewardsHelpers"
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   title: string
   onConfirmTransaction: () => Promise<void>
@@ -61,13 +62,11 @@ interface Props {
     inputValue: string
   }>
   exceedsWallet: boolean
-  selected?: { [key: string]: any }
   poolData: PoolDataType | null
   myShareData: UserShareType | null
   transactionData: DepositTransaction
 }
 
-/* eslint-enable @typescript-eslint/no-explicit-any */
 const DepositPage = (props: Props): ReactElement => {
   const { t } = useTranslation()
   const {
@@ -81,7 +80,6 @@ const DepositPage = (props: Props): ReactElement => {
     onConfirmTransaction,
     onToggleDepositWrapped,
   } = props
-  console.log({ poolData, myShareData, transactionData })
   const { account, chainId, library } = useActiveWeb3React()
   const { unstake, amountStaked } = useRewardsHelpers(
     poolData?.name as PoolName,
@@ -89,6 +87,7 @@ const DepositPage = (props: Props): ReactElement => {
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const [liquidityGaugeContract, setLiquidityGaugeContract] =
     useState<LiquidityGaugeV5>()
+  const lpTokenContract = useLPTokenContract(poolData?.name as PoolName)
   const validDepositAmount = transactionData.to.totalAmount.gt(0)
   const shouldDisplayWrappedOption = isMetaPool(poolData?.name)
   const theme = useTheme()
@@ -97,9 +96,7 @@ const DepositPage = (props: Props): ReactElement => {
 
   useEffect(() => {
     if (!library || !account || !chainId || !poolData) return
-    console.log({ pd: poolData.name, poolData })
     const gaugeAddr = gauges?.[poolData.poolAddress]?.address ?? ""
-    console.log({ gaugeAddr })
     if (gaugeAddr) {
       const liquidityGaugeContract = getContract(
         gaugeAddr,
@@ -108,7 +105,6 @@ const DepositPage = (props: Props): ReactElement => {
         account,
       ) as LiquidityGaugeV5
       setLiquidityGaugeContract(liquidityGaugeContract)
-      console.log({ liquidityGaugeContract })
     }
   }, [library, account, chainId, poolData, gauges])
 
@@ -116,23 +112,33 @@ const DepositPage = (props: Props): ReactElement => {
     if (
       !liquidityGaugeContract ||
       !chainId ||
-      !myShareData ||
+      !library ||
       !account ||
-      !poolData
+      !poolData ||
+      !lpTokenContract
     )
       return
     try {
-      console.log({ amountStaked })
       await unstake(amountStaked)
-      console.log({ lpTokenBalance: myShareData.lpTokenBalance })
+      await checkAndApproveTokenForTrade(
+        lpTokenContract,
+        liquidityGaugeContract.address,
+        account,
+        await lpTokenContract.balanceOf(account),
+        true,
+        Zero, // @dev: gas not being used
+        {
+          onTransactionError: () => {
+            throw new Error("Your transaction could not be completed")
+          },
+        },
+        chainId,
+      )
       const txn = await liquidityGaugeContract["deposit(uint256,address,bool)"](
-        myShareData.lpTokenBalance,
+        await lpTokenContract.balanceOf(account),
         account,
         true,
       )
-      const amount = await liquidityGaugeContract.balanceOf(account)
-      const amount2 = await liquidityGaugeContract.working_balances(account)
-      console.log({ amount, amount2, account })
       await enqueuePromiseToast(chainId, txn.wait(), "stake", {
         poolName: poolData.name,
       })
@@ -352,6 +358,7 @@ const DepositPage = (props: Props): ReactElement => {
         <Stack direction="column" flex={1} spacing={4} width="100%">
           {poolData && (
             <MyFarm
+              liquidityGaugeContract={liquidityGaugeContract}
               lpWalletBalance={myShareData?.lpTokenBalance || Zero}
               poolName={poolData.name}
             />
