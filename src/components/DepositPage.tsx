@@ -112,14 +112,13 @@ const DepositPage = (props: Props): ReactElement => {
     if (
       !liquidityGaugeContract ||
       !chainId ||
-      !library ||
       !account ||
       !poolData ||
       !lpTokenContract
     )
       return
     try {
-      await unstake(amountStaked)
+      void unstake(amountStaked)
       await checkAndApproveTokenForTrade(
         lpTokenContract,
         liquidityGaugeContract.address,
