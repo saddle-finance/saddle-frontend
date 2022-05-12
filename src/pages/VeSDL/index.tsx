@@ -10,7 +10,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material"
-import { BigNumber, BigNumberish, ContractInterface } from "ethers"
+import { BigNumber, ContractInterface } from "ethers"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import {
   SDL_TOKEN_ADDRESSES,
@@ -30,7 +30,6 @@ import { VotingEscrow } from "../../../types/ethers-contracts/VotingEscrow"
 import { Zero } from "@ethersproject/constants"
 import { enqueueToast } from "../../components/Toastify"
 import { getContract } from "../../utils"
-// import { getCurrentBlockTimestamp } from "../../utils/getCurrentBlockTimestamp"
 import { useActiveWeb3React } from "../../hooks"
 import { useTranslation } from "react-i18next"
 
@@ -49,7 +48,7 @@ export default function VeSDL(): JSX.Element {
   })
   const [veSdlTokenVal, setVeSDLTokenRowVal] = useState<BigNumber>(Zero)
   const [lockedSDLVal, setlockedSDLVal] = useState<BigNumber>(Zero)
-  const sdlTokenValue = parseEther(sdlToken.sdlTokenInputVal.trim() || "0")
+  const sdlTokenValue = parseEther(sdlToken.sdlTokenInputVal.trim() || "0.0")
 
   const [lockEnd, setLockEnd] = useState<Date | null>(null)
   const [unlockDate, setDate] = useState<Date | null>(null)
@@ -57,6 +56,7 @@ export default function VeSDL(): JSX.Element {
   const { account, chainId, library } = useActiveWeb3React()
   const { t } = useTranslation()
 
+  // Get votingEscrow contract from ABI
   const votingEscrowContract = useMemo(() => {
     if (chainId && library) {
       return getContract(
@@ -103,31 +103,20 @@ export default function VeSDL(): JSX.Element {
     }
   }, [account, sdlContract, votingEscrowContract])
 
-  function calculateLockAmount(
-    totalAmount: BigNumberish,
-    currentTimestamp: BigNumberish,
-    expireTimestamp: BigNumberish,
-  ) {
+  function calculateLockAmount() {
+    if (!unlockDate) return
+    const currentTimestamp = getUnixTime(new Date())
+    const expireTimestamp = getUnixTime(unlockDate)
+    const totalAmount = sdlTokenValue.add(lockedSDLVal)
     const roundedExpireTimestamp = BigNumber.from(expireTimestamp)
       .div(WEEK)
       .mul(WEEK)
 
-    return BigNumber.from(totalAmount)
+    const estLockValue = totalAmount
       .mul(BigNumber.from(roundedExpireTimestamp).sub(currentTimestamp))
       .div(MAXTIME)
-      .toString()
+    return formatUnits(estLockValue)
   }
-
-  const handleSDLTokenChange = (value: string) => {
-    setSDLToken((prev) => ({ ...prev, sdlTokenInputVal: value }))
-  }
-  const expectedLockAmount =
-    unlockDate &&
-    calculateLockAmount(
-      sdlToken.sdlTokenInputVal,
-      getUnixTime(new Date()),
-      getUnixTime(unlockDate),
-    )
 
   const handleLock = async () => {
     if (!account || !chainId || !votingEscrowContract?.address) return
@@ -219,7 +208,9 @@ export default function VeSDL(): JSX.Element {
               name="sdl"
               max={sdlToken.maxBalance}
               decimalLength={18}
-              onChange={(value) => handleSDLTokenChange(value)}
+              onChange={(value) =>
+                setSDLToken((prev) => ({ ...prev, sdlTokenInputVal: value }))
+              }
               inputValue={sdlToken.sdlTokenInputVal}
             />
             <Box display="flex" alignItems="center">
@@ -250,7 +241,7 @@ export default function VeSDL(): JSX.Element {
               name={t("voteEscrowSDL")}
               decimalLength={18}
               readonly
-              inputValue={expectedLockAmount || "0.0"}
+              inputValue={calculateLockAmount() || "0.0"}
               showUSDprice={false}
             />
             <Typography
