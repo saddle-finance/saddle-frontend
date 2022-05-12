@@ -59,6 +59,7 @@ interface Props {
   title: string
   tokensData: Array<{
     symbol: string
+    address: string
     name: string
     inputValue: string
   }>
@@ -72,7 +73,7 @@ interface Props {
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-const WithdrawPage = (props: Props): ReactElement => {
+const WithdrawPage = (props: Props): ReactElement | null => {
   const { t } = useTranslation()
   const {
     tokensData,
@@ -100,7 +101,7 @@ const WithdrawPage = (props: Props): ReactElement => {
   }
   const noShare = !myShareData || myShareData.lpTokenBalance.eq(Zero)
 
-  return (
+  return !poolData ? null : (
     <Container maxWidth={isLgDown ? "sm" : "lg"} sx={{ py: 5 }}>
       <Stack
         direction={{ xs: "column", lg: "row" }}
@@ -158,7 +159,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                 {tokensData.map((t) => {
                   return (
                     <FormControlLabel
-                      key={t.symbol}
+                      key={t.address}
                       control={<Radio />}
                       value={t.symbol}
                       // disabled={poolData?.isPaused}
@@ -178,6 +179,7 @@ const WithdrawPage = (props: Props): ReactElement => {
                         fieldName: "tokenInputs",
                         value: value,
                         tokenSymbol: token.symbol,
+                        address: token.address,
                       })
                     }
                     // disabled={poolData?.isPaused}

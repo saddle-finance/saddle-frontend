@@ -1,32 +1,36 @@
-import { POOLS_MAP, PoolName, TRANSACTION_TYPES } from "../constants"
 import { addSlippage, subtractSlippage } from "../utils/slippage"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
+import { formatDeadlineToNumber, getContract } from "../utils"
 import { formatUnits, parseUnits } from "@ethersproject/units"
-import { useLPTokenContract, useSwapContract } from "./useContract"
+import { useDispatch, useSelector } from "react-redux"
 
 import { AppState } from "../state"
+import { BasicPoolsContext } from "./../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
+import ERC20_ABI from "../constants/abis/erc20.json"
+import { Erc20 } from "./../../types/ethers-contracts/Erc20"
 import { GasPrices } from "../state/user"
 import { NumberInputState } from "../utils/numberInputState"
+import { TRANSACTION_TYPES } from "../constants"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
-import { formatDeadlineToNumber } from "../utils"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
-import { useDispatch } from "react-redux"
-import { useSelector } from "react-redux"
+import { useContext } from "react"
+import { useSwapContract } from "./useContract"
 
 interface ApproveAndWithdrawStateArgument {
-  tokenFormState: { [symbol: string]: NumberInputState }
+  tokenFormState?: { [address: string]: NumberInputState | undefined }
   withdrawType: string
   lpTokenAmountToSpend: BigNumber
 }
 
 export function useApproveAndWithdraw(
-  poolName: PoolName,
-): (state: ApproveAndWithdrawStateArgument) => Promise<void> {
+  poolName: string,
+): (state?: ApproveAndWithdrawStateArgument) => Promise<void> {
   const dispatch = useDispatch()
+  const basicPools = useContext(BasicPoolsContext)
   const swapContract = useSwapContract(poolName)
-  const { account, chainId } = useActiveWeb3React()
+  const { account, chainId, library } = useActiveWeb3React()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -39,16 +43,24 @@ export function useApproveAndWithdraw(
     transactionDeadlineSelected,
     infiniteApproval,
   } = useSelector((state: AppState) => state.user)
-  const lpTokenContract = useLPTokenContract(poolName)
-  const POOL = POOLS_MAP[poolName]
 
   return async function approveAndWithdraw(
-    state: ApproveAndWithdrawStateArgument,
+    state?: ApproveAndWithdrawStateArgument,
   ): Promise<void> {
     try {
-      if (!account || !chainId) throw new Error("Wallet must be connected")
-      if (!swapContract) throw new Error("Swap contract is not loaded")
+      const basicPool = basicPools?.[poolName]
+      if (!state || !library) return
+      if (!account || !chainId || !library)
+        throw new Error("Wallet must be connected")
+      if (!swapContract || !basicPool)
+        throw new Error("Swap contract is not loaded")
       if (state.lpTokenAmountToSpend.isZero()) return
+      const lpTokenContract = getContract(
+        basicPool.lpToken,
+        ERC20_ABI,
+        library,
+        account,
+      ) as Erc20
       if (lpTokenContract == null) return
       let gasPrice
       if (gasPriceSelected === GasPrices.Custom && gasCustom?.valueSafe) {
@@ -99,9 +111,9 @@ export function useApproveAndWithdraw(
       if (state.withdrawType === "ALL") {
         spendTransaction = await swapContract.removeLiquidity(
           state.lpTokenAmountToSpend,
-          POOL.poolTokens.map(({ symbol }) =>
+          basicPool.tokens.map((address) =>
             subtractSlippage(
-              BigNumber.from(state.tokenFormState[symbol].valueSafe),
+              BigNumber.from(state.tokenFormState?.[address]?.valueSafe || "0"),
               slippageSelected,
               slippageCustom,
             ),
@@ -110,8 +122,8 @@ export function useApproveAndWithdraw(
         )
       } else if (state.withdrawType === "IMBALANCE") {
         spendTransaction = await swapContract.removeLiquidityImbalance(
-          POOL.poolTokens.map(
-            ({ symbol }) => state.tokenFormState[symbol].valueSafe,
+          basicPool.tokens.map(
+            (address) => state.tokenFormState?.[address]?.valueSafe || "0",
           ),
           addSlippage(
             state.lpTokenAmountToSpend,
@@ -123,12 +135,13 @@ export function useApproveAndWithdraw(
       } else {
         spendTransaction = await swapContract.removeLiquidityOneToken(
           state.lpTokenAmountToSpend,
-          POOL.poolTokens.findIndex(
-            ({ symbol }) => symbol === state.withdrawType,
-          ),
+          basicPool.tokens.findIndex(
+            (address) => address === state.withdrawType,
+          ), // TODO what
           subtractSlippage(
             BigNumber.from(
-              state.tokenFormState[state.withdrawType || ""].valueSafe,
+              state.tokenFormState?.[state.withdrawType || ""]?.valueSafe ||
+                "0",
             ),
             slippageSelected,
             slippageCustom,

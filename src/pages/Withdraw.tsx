@@ -1,11 +1,9 @@
-import { POOLS_MAP, PoolName, isLegacySwapABIPool } from "../constants"
 import React, { ReactElement, useEffect, useMemo, useState } from "react"
 import WithdrawPage, { ReviewWithdrawData } from "../components/WithdrawPage"
 import {
   commify,
   formatEther,
   formatUnits,
-  parseEther,
   parseUnits,
 } from "@ethersproject/units"
 
@@ -18,6 +16,7 @@ import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
+import { isLegacySwapABIPool } from "../constants"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndWithdraw } from "../hooks/useApproveAndWithdraw"
 import usePoolData from "../hooks/usePoolData"
@@ -26,7 +25,7 @@ import { useSwapContract } from "../hooks/useContract"
 import useWithdrawFormState from "../hooks/useWithdrawFormState"
 
 interface Props {
-  poolName: PoolName
+  poolName: string
 }
 function Withdraw({ poolName }: Props): ReactElement {
   const [poolData, userShareData] = usePoolData(poolName)
@@ -40,23 +39,16 @@ function Withdraw({ poolName }: Props): ReactElement {
   const approveAndWithdraw = useApproveAndWithdraw(poolName)
   const swapContract = useSwapContract(poolName)
   const { account } = useActiveWeb3React()
-  const POOL = POOLS_MAP[poolName]
   const [withdrawLPTokenAmount, setWithdrawLPTokenAmount] =
     useState<BigNumber>(Zero)
 
-  const tokenInputSum = useMemo(
-    () =>
-      POOL.poolTokens.reduce(
-        (sum, { symbol }) =>
-          sum.add(
-            parseEther(
-              withdrawFormState.tokenInputs[symbol].valueRaw.trim() || "0",
-            ) || Zero,
-          ),
-        Zero,
-      ),
-    [POOL.poolTokens, withdrawFormState.tokenInputs],
-  )
+  const tokenInputSum = useMemo(() => {
+    return poolData.tokens.reduce(
+      (sum, { address }) =>
+        sum.add(withdrawFormState.tokenInputs[address]?.valueSafe || Zero),
+      Zero,
+    )
+  }, [poolData.tokens, withdrawFormState.tokenInputs])
 
   useEffect(() => {
     // evaluate if a new withdraw will exceed the pool's per-user limit
@@ -70,8 +62,9 @@ function Withdraw({ poolName }: Props): ReactElement {
         return
       }
       if (poolData.totalLocked.gt(0) && tokenInputSum.gt(0)) {
-        const withdrawTokenAmounts = POOL.poolTokens.map(
-          (token) => withdrawFormState.tokenInputs[token.symbol].valueSafe,
+        const withdrawTokenAmounts = poolData.tokens.map(
+          (token) =>
+            withdrawFormState.tokenInputs[token.address]?.valueSafe || Zero,
         )
         if (isLegacySwapABIPool(poolData.name)) {
           const calculatedTokenAmount = await (
@@ -97,7 +90,6 @@ function Withdraw({ poolName }: Props): ReactElement {
     tokenInputSum,
     userShareData,
     account,
-    POOL.poolTokens,
   ])
   async function onConfirmTransaction(): Promise<void> {
     const { withdrawType, tokenInputs, lpTokenAmountToSpend } =
@@ -112,12 +104,13 @@ function Withdraw({ poolName }: Props): ReactElement {
 
   const tokensData = React.useMemo(
     () =>
-      POOL.poolTokens.map(({ name, symbol }) => ({
+      poolData.tokens.map(({ name, symbol, address }) => ({
         name,
         symbol,
-        inputValue: withdrawFormState.tokenInputs[symbol].valueRaw,
+        address,
+        inputValue: withdrawFormState.tokenInputs[address]?.valueRaw || "",
       })),
-    [withdrawFormState, POOL.poolTokens],
+    [withdrawFormState, poolData.tokens],
   )
   const gasPrice = BigNumber.from(
     formatGasToString(
@@ -153,13 +146,17 @@ function Withdraw({ poolName }: Props): ReactElement {
     withdrawLPTokenAmount,
     txnGasCost: txnGasCost,
   }
-  POOL.poolTokens.forEach(({ name, decimals, symbol }) => {
-    if (BigNumber.from(withdrawFormState.tokenInputs[symbol].valueSafe).gt(0)) {
+  poolData.tokens.forEach(({ name, decimals, symbol, address }) => {
+    if (
+      BigNumber.from(
+        withdrawFormState.tokenInputs[address]?.valueSafe || "0",
+      ).gt(0)
+    ) {
       reviewWithdrawData.withdraw.push({
         name,
         value: commify(
           formatUnits(
-            withdrawFormState.tokenInputs[symbol].valueSafe,
+            withdrawFormState.tokenInputs[address]?.valueSafe || "0",
             decimals,
           ),
         ),
@@ -169,10 +166,10 @@ function Withdraw({ poolName }: Props): ReactElement {
         reviewWithdrawData.rates.push({
           name,
           value: formatUnits(
-            withdrawFormState.tokenInputs[symbol].valueSafe,
+            withdrawFormState.tokenInputs[address]?.valueSafe || "0",
             decimals,
           ),
-          rate: commify(tokenPricesUSD[symbol]?.toFixed(2)),
+          rate: commify(tokenPricesUSD[symbol]?.toFixed(2)), // TODO
         })
       }
     }
