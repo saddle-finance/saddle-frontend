@@ -46,12 +46,12 @@ export default function VeSDL(): JSX.Element {
     maxBalance: "",
     sdlTokenInputVal: "",
   })
-  const [veSdlTokenVal, setVeSDLTokenRowVal] = useState<BigNumber>(Zero)
-  const [lockedSDLVal, setlockedSDLVal] = useState<BigNumber>(Zero)
+  const [veSdlTokenVal, setVeSDLTokenVal] = useState<BigNumber>(Zero)
+  const [lockedSDLVal, setLockedSDLVal] = useState<BigNumber>(Zero)
   const sdlTokenValue = parseEther(sdlToken.sdlTokenInputVal.trim() || "0.0")
 
   const [lockEnd, setLockEnd] = useState<Date | null>(null)
-  const [unlockDate, setDate] = useState<Date | null>(null)
+  const [unlockDate, setUnlockDate] = useState<Date | null>(null)
 
   const { account, chainId, library } = useActiveWeb3React()
   const { t } = useTranslation()
@@ -90,7 +90,7 @@ export default function VeSDL(): JSX.Element {
       const vesdlBal = await votingEscrowContract?.["balanceOf(address)"](
         account,
       )
-      setVeSDLTokenRowVal(vesdlBal || Zero)
+      setVeSDLTokenVal(vesdlBal || Zero)
 
       const prevLockend =
         (await votingEscrowContract?.locked__end(account)) || Zero
@@ -99,7 +99,7 @@ export default function VeSDL(): JSX.Element {
       )
 
       const vesdlToken = await votingEscrowContract?.locked(account)
-      setlockedSDLVal(vesdlToken?.amount || Zero)
+      setLockedSDLVal(vesdlToken?.amount || Zero)
     }
   }, [account, sdlContract, votingEscrowContract])
 
@@ -131,8 +131,8 @@ export default function VeSDL(): JSX.Element {
           unlockTimeStamp,
         )
         await txn.wait()
+        setUnlockDate(null)
         enqueueToast("success", "Locked")
-        void fetchData()
       } else if (
         sdlTokenValue.gt(Zero) &&
         unlockTimeStamp === null &&
@@ -141,8 +141,8 @@ export default function VeSDL(): JSX.Element {
         // Deposit additional SDL into and existing lock
         const txn = await votingEscrowContract.increase_amount(sdlTokenValue)
         await txn.wait()
+        setUnlockDate(null)
         enqueueToast("success", "Increased amount")
-        void fetchData()
       } else if (
         !sdlTokenValue.gt(Zero) &&
         unlockTimeStamp &&
@@ -153,11 +153,25 @@ export default function VeSDL(): JSX.Element {
           BigNumber.from(unlockTimeStamp),
         )
         await txn.wait()
+        setUnlockDate(null)
         enqueueToast("success", "Increased lock time")
       }
       void fetchData()
     } catch (err) {
       console.log(err)
+    }
+  }
+
+  const handleUnlock = async () => {
+    if (votingEscrowContract) {
+      try {
+        await sdlContract?.approve(votingEscrowContract.address, lockedSDLVal)
+        const txn = await votingEscrowContract?.force_withdraw()
+        await txn.wait()
+        void fetchData()
+      } catch (error) {
+        console.log("unlock ==>", error)
+      }
     }
   }
 
@@ -221,7 +235,7 @@ export default function VeSDL(): JSX.Element {
               </div>
               <DatePicker
                 value={unlockDate}
-                onChange={(date) => setDate(date)}
+                onChange={(date) => setUnlockDate(date)}
                 minDate={lockEnd}
                 renderInput={(props) => (
                   <TextField
@@ -279,7 +293,12 @@ export default function VeSDL(): JSX.Element {
             <Alert severity="error" icon={false} sx={{ textAlign: "center" }}>
               {t("withdrawAlertMsg", { sdlValue: 3000 })}
             </Alert>
-            <Button variant="contained" size="large" fullWidth>
+            <Button
+              variant="contained"
+              onClick={handleUnlock}
+              size="large"
+              fullWidth
+            >
               {t("unlock")}
             </Button>
           </Paper>
