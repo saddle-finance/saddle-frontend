@@ -147,7 +147,7 @@ const DepositPage = (props: Props): ReactElement => {
     }
   }
 
-  const veSDLFeatureReady = true // TODO: delete after release.
+  const veSDLFeatureReady = false // TODO: delete after release.
 
   return (
     <Container maxWidth={isLgDown ? "sm" : "lg"} sx={{ pt: 5, pb: 10 }}>
