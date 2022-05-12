@@ -104,13 +104,15 @@ function Withdraw({ poolName }: Props): ReactElement {
 
   const tokensData = React.useMemo(
     () =>
-      poolData.tokens.map(({ name, symbol, address }) => ({
+      poolData.tokens.map(({ name, symbol, address, decimals }) => ({
         name,
         symbol,
         address,
+        decimals,
+        priceUSD: tokenPricesUSD?.[symbol] || 0, // @dev TODO handle lpToken Price weh nwrapped withdraw implemented
         inputValue: withdrawFormState.tokenInputs[address]?.valueRaw || "",
       })),
-    [withdrawFormState, poolData.tokens],
+    [withdrawFormState, poolData.tokens, tokenPricesUSD],
   )
   const gasPrice = BigNumber.from(
     formatGasToString(
