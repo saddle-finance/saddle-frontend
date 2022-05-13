@@ -143,11 +143,24 @@ export default function VeSDL(): JSX.Element {
         await sdlContract?.approve(votingEscrowContract?.address, sdlTokenValue)
 
       if (sdlTokenValue.gt(Zero) && unlockTimeStamp) {
-        const txn = await votingEscrowContract?.create_lock(
-          sdlTokenValue,
-          unlockTimeStamp,
-        )
-        await txn.wait()
+        if (lockedSDLVal.isZero()) {
+          const txn = await votingEscrowContract?.create_lock(
+            sdlTokenValue,
+            unlockTimeStamp,
+          )
+          await txn.wait()
+        } else {
+          const txnIncreaseAmount = await votingEscrowContract.increase_amount(
+            sdlTokenValue,
+          )
+          await txnIncreaseAmount.wait()
+          const txnIncreaseUnlockTime =
+            await votingEscrowContract.increase_unlock_time(
+              BigNumber.from(unlockTimeStamp),
+            )
+          await txnIncreaseUnlockTime.wait()
+        }
+
         setUnlockDate(null)
       } else if (
         sdlTokenValue.gt(Zero) &&
