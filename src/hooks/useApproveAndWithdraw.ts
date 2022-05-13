@@ -130,7 +130,7 @@ export function useApproveAndWithdraw(
           state.lpTokenAmountToSpend,
           basicPool.tokens.findIndex(
             (address) => address === state.withdrawType,
-          ), // TODO what
+          ), // @dev withdrawType is either token address or "reset"
           subtractSlippage(
             BigNumber.from(
               state.tokenFormState?.[state.withdrawType || ""]?.valueSafe ||

@@ -37,7 +37,6 @@ export type WithdrawFormAction = {
   fieldName: FormFields | "reset"
   address?: string
   value: string
-  tokenSymbol?: string
 }
 
 export default function useWithdrawFormState(
@@ -285,6 +284,7 @@ export default function useWithdrawFormState(
         let nextState: WithdrawFormState | Record<string, unknown> = {}
         if (action.fieldName === "tokenInputs") {
           const { address = "", value: valueInput } = action
+          console.log({ action })
           const newTokenInputs = {
             ...prevState.tokenInputs,
             [address]: tokenInputStateCreators[address](valueInput),

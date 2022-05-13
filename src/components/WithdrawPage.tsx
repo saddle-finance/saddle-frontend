@@ -163,7 +163,7 @@ const WithdrawPage = (props: Props): ReactElement | null => {
                     <FormControlLabel
                       key={t.address}
                       control={<Radio />}
-                      value={t.symbol}
+                      value={t.address}
                       // disabled={poolData?.isPaused}
                       label={t.name}
                       data-testid="withdrawTokenRadio"
@@ -173,7 +173,10 @@ const WithdrawPage = (props: Props): ReactElement | null => {
               </RadioGroup>
               <Stack spacing={3}>
                 {tokensData.map(
-                  ({ decimals, symbol, name, priceUSD, inputValue }, index) => (
+                  (
+                    { decimals, symbol, name, priceUSD, inputValue, address },
+                    index,
+                  ) => (
                     <TokenInput
                       key={index}
                       token={{
@@ -187,7 +190,7 @@ const WithdrawPage = (props: Props): ReactElement | null => {
                         onFormChange({
                           fieldName: "tokenInputs",
                           value: value,
-                          tokenSymbol: symbol,
+                          address,
                         })
                       }
                     />
