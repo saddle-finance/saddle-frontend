@@ -282,6 +282,7 @@ export default function VeSDL(): JSX.Element {
                 value={unlockDate}
                 onChange={(date) => setUnlockDate(date)}
                 minDate={lockEnd || new Date()}
+                maxDate={new Date((Date.now() / 1000 + MAXTIME) * 1000)}
                 renderInput={(props) => (
                   <TextField
                     data-testid="veSdlUnlockData"
