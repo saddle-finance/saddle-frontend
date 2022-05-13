@@ -41,7 +41,7 @@ type TokenType = {
 
 const WEEK = 86400 * 7
 const MAXTIME = 86400 * 365 * 4
-const MULTIPLIER = Math.pow(10, 15)
+const MULTIPLIER = Math.pow(10, 5)
 
 export default function VeSDL(): JSX.Element {
   const [sdlToken, setSDLToken] = useState<TokenType>({
