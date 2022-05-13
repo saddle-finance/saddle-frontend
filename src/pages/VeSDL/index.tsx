@@ -108,6 +108,7 @@ export default function VeSDL(): JSX.Element {
 
   function calculateLockAmount() {
     if (!unlockDate) return
+    if (isNaN(unlockDate.valueOf())) return
     const currentTimestamp = getUnixTime(new Date())
     const expireTimestamp = getUnixTime(unlockDate)
     const totalAmount = sdlTokenValue.add(lockedSDLVal)
@@ -197,9 +198,10 @@ export default function VeSDL(): JSX.Element {
     }
   }
 
-  const addLockMos = unlockDate
-    ? differenceInMonths(unlockDate, lockEnd || new Date())
-    : 0
+  const addLockMos =
+    unlockDate && !isNaN(unlockDate.valueOf())
+      ? differenceInMonths(unlockDate, lockEnd || new Date())
+      : 0
 
   const lockHelperText = () => {
     if (lockedSDLVal.isZero()) {
@@ -315,6 +317,7 @@ export default function VeSDL(): JSX.Element {
             </Typography>
             <Button
               variant="contained"
+              data-testid="lockVeSdlBtn"
               fullWidth
               size="large"
               onClick={handleLock}
@@ -339,7 +342,7 @@ export default function VeSDL(): JSX.Element {
             <Typography>
               {t("totalVeSdlHolding")}: {formatUnits(veSdlTokenVal)}
             </Typography>
-            {!getPenalty() && (
+            {getPenalty() && (
               <Alert
                 severity="error"
                 icon={false}
@@ -352,6 +355,7 @@ export default function VeSDL(): JSX.Element {
             )}
             <Button
               variant="contained"
+              data-testid="unLockVeSdlBtn"
               onClick={handleUnlock}
               size="large"
               fullWidth

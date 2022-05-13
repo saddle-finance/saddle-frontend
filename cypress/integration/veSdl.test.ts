@@ -13,5 +13,7 @@ context("veSDL test", () => {
       .find("input")
       .type("12/02/2022")
       .should("have.value", "12/02/2022")
+    cy.getBySelId("lockVeSdlBtn").should("be.disabled")
+    cy.getBySelId("unLockVeSdlBtn").should("be.disabled")
   })
 })
