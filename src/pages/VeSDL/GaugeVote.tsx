@@ -1,5 +1,6 @@
 import {
   Box,
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   Button,
   CircularProgress,
   Link,
@@ -13,12 +14,22 @@ import {
   Typography,
 } from "@mui/material"
 import React, { useContext } from "react"
+import {
+  SNAPSHOT_STATE,
+  VoteEscrowSnapshots,
+} from "../../state/voteEscrowSnapshots"
+import { AppState } from "../../state"
 import { GaugeContext } from "../../providers/GaugeProvider"
 import GaugeWeight from "../../components/GaugeWeight"
+import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
 export default function GaugeVote(): JSX.Element {
   const gaugeData = useContext(GaugeContext)
+  const { snapshots }: VoteEscrowSnapshots = useSelector(
+    (state: AppState) => state.voteEscrowSnapshots,
+  )
+
   const { t } = useTranslation()
   return (
     <Paper sx={{ p: 2 }}>
@@ -50,20 +61,45 @@ export default function GaugeVote(): JSX.Element {
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow>
-              <TableCell>{t("currentWeek")}</TableCell>
-              <TableCell align="center">
-                <Button variant="contained" size="medium">
-                  <Typography>{t("vote")}</Typography>
-                </Button>
-              </TableCell>
-            </TableRow>
+            {snapshots.map((snapshot, index) => {
+              const voteOrView =
+                snapshot.state === SNAPSHOT_STATE.CLOSED
+                  ? t("results")
+                  : t("vote")
+              return (
+                <TableRow key={`snapshot-${index}`}>
+                  <TableCell>
+                    {new Date(snapshot.start * 1000).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell align="center">
+                    <Button
+                      variant="contained"
+                      size="medium"
+                      href={generateSnapshotVoteLink(snapshot.id)}
+                      target="_blank"
+                    >
+                      <Typography>{voteOrView}</Typography>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
       </TableContainer>
       <Typography textAlign="end" mt={1}>
-        <Link color="inherit">{t("viewAllVote")}</Link>
+        <Link
+          color="inherit"
+          href="https://snapshot.org/#/saddlefinance.eth"
+          target="_blank"
+        >
+          {t("viewAllVote")}
+        </Link>
       </Typography>
     </Paper>
   )
+}
+
+function generateSnapshotVoteLink(id: string): string {
+  return `https://snapshot.org/#/saddlefinance.eth/proposal/${id}`
 }

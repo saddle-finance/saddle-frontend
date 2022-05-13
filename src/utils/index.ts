@@ -402,3 +402,13 @@ export function createMultiCallContract<T>(
     contractAbi,
   ) as MulticallContract<T>
 }
+
+/**
+ * Generate the snapshot vote URL from ID
+ *
+ * @param id ID of snapshot
+ * @returns the snapshot URL
+ */
+export function generateSnapshotVoteLink(id: string): string {
+  return `https://snapshot.org/#/saddlefinance.eth/proposal/${id}`
+}
