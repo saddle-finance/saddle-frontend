@@ -270,7 +270,6 @@ export default function VeSDL(): JSX.Element {
                 setSDLToken((prev) => ({ ...prev, sdlTokenInputVal: value }))
               }
               inputValue={sdlToken.sdlTokenInputVal}
-              helperText="Exceed Token balance"
             />
             <Box display="flex" alignItems="center">
               <div>
