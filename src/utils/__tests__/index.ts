@@ -5,6 +5,7 @@ import {
   calculateExchangeRate,
   calculatePrice,
   commify,
+  createMultiCallContract,
   enumerate,
   formatBNToShortString,
   formatDeadlineToNumber,
@@ -15,7 +16,10 @@ import {
 } from "../index"
 
 import { BigNumber } from "@ethersproject/bignumber"
+import { Contract } from "ethcall"
 import { Deadlines } from "../../state/user"
+import HELPER_CONTRACT_ABI from "../../../src/constants/abis/helperContract.json"
+import { HelperContract } from "../../../types/ethers-contracts/HelperContract"
 import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
 
@@ -208,5 +212,20 @@ describe("getTokenIconPath", () => {
         )
       }
     })
+  })
+})
+
+describe("createMultiCallContrat", () => {
+  it("correctly returns method call as an Object and not a Promise", () => {
+    const emptyAddress = "0x0000000000000000000000000000000000000000"
+    const helperContractMultiCall = createMultiCallContract<HelperContract>(
+      emptyAddress,
+      HELPER_CONTRACT_ABI,
+    )
+
+    expect(helperContractMultiCall).toBeInstanceOf(Contract)
+    expect(
+      helperContractMultiCall.gaugeToPoolAddress(emptyAddress),
+    ).toBeInstanceOf(Object)
   })
 })

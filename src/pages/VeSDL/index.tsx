@@ -19,6 +19,7 @@ import {
 } from "../../constants"
 import { differenceInMonths, getUnixTime } from "date-fns"
 import { formatUnits, parseEther } from "@ethersproject/units"
+
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import GaugeVote from "./GaugeVote"
@@ -214,9 +215,12 @@ export default function VeSDL(): JSX.Element {
   }
 
   useEffect(() => {
-    setInitialLoading(true)
-    void fetchData()
-    setInitialLoading(false)
+    const init = async () => {
+      setInitialLoading(true)
+      await fetchData()
+      setInitialLoading(false)
+    }
+    void init()
   }, [fetchData])
 
   if (initialLoading) return <LinearProgress />
@@ -239,10 +243,13 @@ export default function VeSDL(): JSX.Element {
 
             <TokenInput
               data-testid="sdlTokenInput"
-              symbol="SDL"
-              name="sdl"
+              token={{
+                decimals: 18,
+                symbol: "SDL",
+                name: "SDL",
+                priceUSD: 0,
+              }}
               max={sdlToken.maxBalance}
-              decimalLength={18}
               onChange={(value) =>
                 setSDLToken((prev) => ({ ...prev, sdlTokenInputVal: value }))
               }
@@ -272,9 +279,12 @@ export default function VeSDL(): JSX.Element {
               <ArrowDownwardIcon />
             </Box>
             <TokenInput
-              symbol="veSDL"
-              name={t("voteEscrowSDL")}
-              decimalLength={18}
+              token={{
+                decimals: 18,
+                symbol: "veSDL",
+                name: t("voteEscrowSDL"),
+                priceUSD: 0,
+              }}
               readonly
               inputValue={calculateLockAmount() || "0.0"}
               showUSDprice={false}
