@@ -8,13 +8,16 @@ import {
   POOLS_MAP,
   PoolName,
   RETROACTIVE_VESTING_CONTRACT_ADDRESSES,
+  SDL_TOKEN_ADDRESSES,
   SYNTHETIX_CONTRACT_ADDRESSES,
   SYNTHETIX_EXCHANGE_RATES_CONTRACT_ADDRESSES,
   TOKENS_MAP,
   Token,
+  VOTING_ESCROW_CONTRACT_ADDRESS,
   isLegacySwapABIPool,
   isMetaPool,
 } from "../constants"
+
 import { useEffect, useMemo, useState } from "react"
 import { AddressZero } from "@ethersproject/constants"
 import BRIDGE_CONTRACT_ABI from "../constants/abis/bridge.json"
@@ -42,6 +45,7 @@ import { PermissionlessDeployer } from "../../types/ethers-contracts/Permissionl
 import { PoolRegistry } from "../../types/ethers-contracts/PoolRegistry"
 import RETROACTIVE_VESTING_CONTRACT_ABI from "../constants/abis/retroactiveVesting.json"
 import { RetroactiveVesting } from "../../types/ethers-contracts/RetroactiveVesting"
+import SDL_TOKEN_ABI from "../constants/abis/sdl.json"
 import SWAP_FLASH_LOAN_ABI from "../constants/abis/swapFlashLoan.json"
 import SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI from "../constants/abis/swapFlashLoanNoWithdrawFee.json"
 import SWAP_GUARDED_ABI from "../constants/abis/swapGuarded.json"
@@ -52,6 +56,8 @@ import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFla
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import { SynthetixExchangeRate } from "../../types/ethers-contracts/SynthetixExchangeRate"
 import { SynthetixNetworkToken } from "../../types/ethers-contracts/SynthetixNetworkToken"
+import VOTING_ESCROW_CONTRACT_ABI from "../constants/abis/votingEscrow.json"
+import { VotingEscrow } from "../../types/ethers-contracts/VotingEscrow"
 import { formatBytes32String } from "@ethersproject/strings"
 import { getContract } from "../utils"
 import { useActiveWeb3React } from "./index"
@@ -357,4 +363,22 @@ export function useGaugeControllerContract(): GaugeController | null {
     ? GAUGE_CONTROLLER_ADDRESSES[chainId]
     : undefined
   return useContract(contractAddress, GAUGE_CONTROLLER_ABI) as GaugeController
+}
+
+export const useSdlContract = () => {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress = chainId ? SDL_TOKEN_ADDRESSES[chainId] : undefined
+  return useContract(contractAddress, SDL_TOKEN_ABI) as Erc20
+}
+
+export const useVotingEscrowContract = () => {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress = chainId
+    ? VOTING_ESCROW_CONTRACT_ADDRESS[chainId]
+    : undefined
+
+  return useContract(
+    contractAddress,
+    VOTING_ESCROW_CONTRACT_ABI,
+  ) as VotingEscrow
 }

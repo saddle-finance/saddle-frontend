@@ -11,27 +11,27 @@ import {
   TextField,
   Typography,
 } from "@mui/material"
-import { BigNumber, ContractInterface } from "ethers"
-import React, { useCallback, useEffect, useMemo, useState } from "react"
-import {
-  SDL_TOKEN_ADDRESSES,
-  VOTING_ESCROW_CONTRACT_ADDRESS,
-} from "../../constants"
+import React, { useCallback, useEffect, useState } from "react"
 import { differenceInMonths, format, getUnixTime } from "date-fns"
 import { formatUnits, parseEther } from "@ethersproject/units"
+import {
+  useSdlContract,
+  useVotingEscrowContract,
+} from "../../hooks/useContract"
 
+import { AppState } from "../../state"
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
+import { BigNumber } from "ethers"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import GaugeVote from "./GaugeVote"
 import LockedInfo from "./LockedInfo"
-import SDL_TOKEN_ABI from "../../constants/abis/sdl.json"
-import { Sdl } from "../../../types/ethers-contracts/Sdl"
 import TokenInput from "../../components/TokenInput"
-import VOTING_ESCROW_CONTRACT_ABI from "../../constants/abis/votingEscrow.json"
-import { VotingEscrow } from "../../../types/ethers-contracts/VotingEscrow"
 import { Zero } from "@ethersproject/constants"
-import { getContract } from "../../utils"
+import checkAndApproveTokenForTrade from "../../utils/checkAndApproveTokenForTrade"
+import { enqueueToast } from "../../components/Toastify"
+import { minBigNumber } from "../../utils/minBigNumber"
 import { useActiveWeb3React } from "../../hooks"
+import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
 type TokenType = {
@@ -39,9 +39,7 @@ type TokenType = {
   sdlTokenInputVal: string
 }
 
-const WEEK = 86400 * 7
 const MAXTIME = 86400 * 365 * 4
-const MULTIPLIER = Math.pow(10, 5)
 
 export default function VeSDL(): JSX.Element {
   const [sdlToken, setSDLToken] = useState<TokenType>({
@@ -55,39 +53,19 @@ export default function VeSDL(): JSX.Element {
   const [lockEnd, setLockEnd] = useState<Date | null>(null)
   const [unlockDate, setUnlockDate] = useState<Date | null>(null)
   const [initialLoading, setInitialLoading] = useState<boolean>(false)
+  const { infiniteApproval } = useSelector((state: AppState) => state.user)
 
-  const { account, chainId, library } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
+  const votingEscrowContract = useVotingEscrowContract()
+  const sdlContract = useSdlContract()
+
   const { t } = useTranslation()
-
-  // Get votingEscrow contract from ABI
-  const votingEscrowContract = useMemo(() => {
-    if (chainId && library) {
-      return getContract(
-        VOTING_ESCROW_CONTRACT_ADDRESS?.[chainId],
-        VOTING_ESCROW_CONTRACT_ABI as ContractInterface,
-        library,
-        account ?? undefined,
-      ) as VotingEscrow
-    }
-  }, [account, chainId, library])
-
-  const sdlContract = useMemo(() => {
-    if (chainId && library) {
-      return getContract(
-        SDL_TOKEN_ADDRESSES[chainId],
-        SDL_TOKEN_ABI,
-        library,
-        account ?? undefined,
-      ) as Sdl
-    }
-  }, [account, chainId, library])
 
   const fetchData = useCallback(async () => {
     if (account) {
       const sdlTokenBal = await sdlContract?.balanceOf(account)
       setSDLToken((prev) => ({
         ...prev,
-        sdlTokenInputVal: "",
         maxBalance: formatUnits(sdlTokenBal || Zero),
       }))
       const vesdlBal = await votingEscrowContract?.["balanceOf(address)"](
@@ -105,98 +83,114 @@ export default function VeSDL(): JSX.Element {
       setLockedSDLVal(veSdlToken?.amount || Zero)
     }
   }, [account, sdlContract, votingEscrowContract])
-
-  function calculateLockAmount() {
-    if (!unlockDate) return
-    if (isNaN(unlockDate.valueOf())) return
-    const currentTimestamp = getUnixTime(new Date())
-    const expireTimestamp = getUnixTime(unlockDate)
-    const totalAmount = sdlTokenValue.add(lockedSDLVal)
-    const roundedExpireTimestamp = BigNumber.from(expireTimestamp)
-      .div(WEEK)
-      .mul(WEEK)
-
-    const estLockValue = totalAmount
-      .mul(BigNumber.from(roundedExpireTimestamp).sub(currentTimestamp))
-      .div(MAXTIME)
-    return formatUnits(estLockValue)
+  const resetFormState = () => {
+    setSDLToken((prev) => ({
+      ...prev,
+      sdlTokenInputVal: "",
+    }))
+    setUnlockDate(null)
   }
 
-  const getPenalty = () => {
-    if (!lockEnd) return
-    const leftTime = getUnixTime(lockEnd) - getUnixTime(new Date())
-    const penaltyRatio = Math.min(
-      (MULTIPLIER * 3) / 4,
-      (MULTIPLIER * leftTime) / MAXTIME,
-    ).toFixed()
+  const currentTimestamp = getUnixTime(new Date())
+  const unlockDateOrLockEnd = unlockDate || lockEnd
+  const expireTimestamp =
+    unlockDateOrLockEnd && !isNaN(unlockDateOrLockEnd.valueOf())
+      ? getUnixTime(unlockDateOrLockEnd)
+      : undefined
+  const totalAmount =
+    !sdlTokenValue.isZero() || unlockDate
+      ? sdlTokenValue.add(lockedSDLVal)
+      : Zero
 
-    const penaltyAmount = lockedSDLVal
-      .mul(BigNumber.from(penaltyRatio))
-      .div(BigNumber.from(MULTIPLIER))
-    return formatUnits(penaltyAmount)
-  }
+  // Calculate estimated veSdl amount
+  const estLockAmt = expireTimestamp
+    ? totalAmount
+        .mul(
+          BigNumber.from(expireTimestamp).sub(BigNumber.from(currentTimestamp)),
+        )
+        .div(BigNumber.from(MAXTIME))
+    : Zero
+
+  // Calculate penalty Ratio and penalty amount
+  const leftTimeForUnlock = lockEnd && getUnixTime(lockEnd) - currentTimestamp
+  const penaltyAmount = leftTimeForUnlock
+    ? minBigNumber(
+        lockedSDLVal.mul(BigNumber.from(3)).div(BigNumber.from(4)),
+        lockedSDLVal
+          .mul(BigNumber.from(leftTimeForUnlock))
+          .div(BigNumber.from(MAXTIME)),
+      )
+    : Zero
 
   const handleLock = async () => {
+    const unlockTimeStamp = unlockDate ? getUnixTime(unlockDate) : null
+    const hasLockedSDL = !lockedSDLVal.isZero()
+    const shouldCreateLock =
+      !hasLockedSDL && sdlTokenValue.gt(Zero) && unlockTimeStamp
+    const shouldIncreaseAmoutAndLockEnd =
+      hasLockedSDL && sdlTokenValue.gt(Zero) && unlockTimeStamp
+    const shouldIncreaseAmount =
+      hasLockedSDL && sdlTokenValue.gt(Zero) && !unlockTimeStamp
+    const shouldIncreaseLockEnd =
+      hasLockedSDL && sdlTokenValue.isZero() && unlockTimeStamp
+
     if (!account || !chainId || !votingEscrowContract?.address) return
     try {
-      const unlockTimeStamp = unlockDate ? getUnixTime(unlockDate) : null
-      if (sdlTokenValue.gt(Zero))
-        await sdlContract?.approve(votingEscrowContract?.address, sdlTokenValue)
+      if (sdlTokenValue.gt(Zero)) {
+        await checkAndApproveTokenForTrade(
+          sdlContract,
+          votingEscrowContract.address,
+          account,
+          sdlTokenValue,
+          infiniteApproval,
+        )
+      }
 
-      if (sdlTokenValue.gt(Zero) && unlockTimeStamp) {
-        if (lockedSDLVal.isZero()) {
-          const txn = await votingEscrowContract?.create_lock(
-            sdlTokenValue,
-            unlockTimeStamp,
+      if (shouldCreateLock && unlockTimeStamp) {
+        const txn = await votingEscrowContract?.create_lock(
+          sdlTokenValue,
+          unlockTimeStamp,
+        )
+        await txn.wait()
+        enqueueToast("success", "Locked SDL")
+      } else if (shouldIncreaseAmoutAndLockEnd) {
+        const txnIncreaseAmount = await votingEscrowContract.increase_amount(
+          sdlTokenValue,
+        )
+        await txnIncreaseAmount.wait()
+        const txnIncreaseUnlockTime =
+          await votingEscrowContract.increase_unlock_time(
+            BigNumber.from(unlockTimeStamp),
           )
-          await txn.wait()
-        } else {
-          const txnIncreaseAmount = await votingEscrowContract.increase_amount(
-            sdlTokenValue,
-          )
-          await txnIncreaseAmount.wait()
-          const txnIncreaseUnlockTime =
-            await votingEscrowContract.increase_unlock_time(
-              BigNumber.from(unlockTimeStamp),
-            )
-          await txnIncreaseUnlockTime.wait()
-        }
-
-        setUnlockDate(null)
-      } else if (
-        sdlTokenValue.gt(Zero) &&
-        !unlockTimeStamp &&
-        !veSdlTokenVal.isZero()
-      ) {
+        await txnIncreaseUnlockTime.wait()
+        enqueueToast("success", "Increased unlock time")
+      } else if (shouldIncreaseAmount) {
         // Deposit additional SDL into and existing lock
         const txn = await votingEscrowContract.increase_amount(sdlTokenValue)
         await txn.wait()
-        setUnlockDate(null)
-      } else if (
-        !sdlTokenValue.gt(Zero) &&
-        unlockTimeStamp &&
-        !veSdlTokenVal.isZero()
-      ) {
+      } else if (shouldIncreaseLockEnd) {
         // Extend the unlock time on a lock that already exists
         const txn = await votingEscrowContract.increase_unlock_time(
           BigNumber.from(unlockTimeStamp),
         )
         await txn.wait()
-        setUnlockDate(null)
+        enqueueToast("success", "Increased lock amount")
       }
       void fetchData()
+      resetFormState()
     } catch (err) {
       console.log(err)
     }
   }
 
-  const handleUnlock = async () => {
+  const handleUnlock = useCallback(async () => {
     if (votingEscrowContract) {
       const txn = await votingEscrowContract?.force_withdraw()
       await txn.wait()
+      enqueueToast("success", "Unlocked")
       void fetchData()
     }
-  }
+  }, [])
 
   const addLockMos =
     unlockDate && !isNaN(unlockDate.valueOf())
@@ -283,7 +277,7 @@ export default function VeSDL(): JSX.Element {
                 value={unlockDate}
                 onChange={(date) => setUnlockDate(date)}
                 minDate={lockEnd || new Date()}
-                maxDate={new Date((Date.now() / 1000 + MAXTIME) * 1000)}
+                maxDate={new Date((currentTimestamp + MAXTIME) * 1000)}
                 renderInput={(props) => (
                   <TextField
                     data-testid="veSdlUnlockData"
@@ -305,7 +299,7 @@ export default function VeSDL(): JSX.Element {
                 priceUSD: 0,
               }}
               readonly
-              inputValue={calculateLockAmount() || "0.0"}
+              inputValue={formatUnits(estLockAmt)}
               showUSDprice={false}
             />
             <Typography
@@ -342,7 +336,7 @@ export default function VeSDL(): JSX.Element {
             <Typography>
               {t("totalVeSdlHolding")}: {formatUnits(veSdlTokenVal)}
             </Typography>
-            {getPenalty() && (
+            {penaltyAmount && (
               <Alert
                 severity="error"
                 icon={false}
@@ -350,7 +344,9 @@ export default function VeSDL(): JSX.Element {
                   textAlign: "center",
                 }}
               >
-                {t("withdrawAlertMsg", { sdlValue: getPenalty() })}
+                {t("withdrawAlertMsg", {
+                  sdlValue: formatUnits(penaltyAmount),
+                })}
               </Alert>
             )}
             <Button
