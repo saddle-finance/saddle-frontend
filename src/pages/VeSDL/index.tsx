@@ -189,19 +189,27 @@ export default function VeSDL(): JSX.Element {
     : null
 
   const lockHelperText = () => {
-    if (sdlTokenValue.gt(Zero) && !addLockMos) {
-      return t("increaseLockAmount", {
-        addLockAmt: sdlToken.sdlTokenInputVal,
-      })
-    } else if (sdlTokenValue.gt(Zero) && addLockMos && addLockMos > 0) {
-      return t("increaseLockAmountAndTime", {
-        addLockMos,
-        addLockAmt: sdlToken.sdlTokenInputVal,
-      })
-    } else if (sdlTokenValue.eq(Zero) && addLockMos && addLockMos > 0) {
-      return t("increaseLockTime", { addLockMos })
+    if (lockedSDLVal.isZero()) {
+      if (sdlTokenValue.gt(Zero) && addLockMos && addLockMos > 0)
+        return t("lockSdl", {
+          sdlAmount: sdlToken.sdlTokenInputVal,
+          period: addLockMos,
+        })
     } else {
-      return
+      if (sdlTokenValue.gt(Zero) && !addLockMos) {
+        return t("increaseLockAmount", {
+          addLockAmt: sdlToken.sdlTokenInputVal,
+        })
+      } else if (sdlTokenValue.gt(Zero) && addLockMos && addLockMos > 0) {
+        return t("increaseLockAmountAndTime", {
+          addLockMos,
+          addLockAmt: sdlToken.sdlTokenInputVal,
+        })
+      } else if (sdlTokenValue.eq(Zero) && addLockMos && addLockMos > 0) {
+        return t("increaseLockTime", { addLockMos })
+      } else {
+        return
+      }
     }
   }
 
