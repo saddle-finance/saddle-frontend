@@ -30,7 +30,6 @@ import TokenInput from "../../components/TokenInput"
 import VOTING_ESCROW_CONTRACT_ABI from "../../constants/abis/votingEscrow.json"
 import { VotingEscrow } from "../../../types/ethers-contracts/VotingEscrow"
 import { Zero } from "@ethersproject/constants"
-import { enqueueToast } from "../../components/Toastify"
 import { getContract } from "../../utils"
 import { useActiveWeb3React } from "../../hooks"
 import { useTranslation } from "react-i18next"
@@ -150,7 +149,6 @@ export default function VeSDL(): JSX.Element {
         )
         await txn.wait()
         setUnlockDate(null)
-        enqueueToast("success", "Locked")
       } else if (
         sdlTokenValue.gt(Zero) &&
         unlockTimeStamp === null &&
@@ -160,7 +158,6 @@ export default function VeSDL(): JSX.Element {
         const txn = await votingEscrowContract.increase_amount(sdlTokenValue)
         await txn.wait()
         setUnlockDate(null)
-        enqueueToast("success", "Increased amount")
       } else if (
         !sdlTokenValue.gt(Zero) &&
         unlockTimeStamp &&
@@ -172,7 +169,6 @@ export default function VeSDL(): JSX.Element {
         )
         await txn.wait()
         setUnlockDate(null)
-        enqueueToast("success", "Increased lock time")
       }
       void fetchData()
     } catch (err) {
