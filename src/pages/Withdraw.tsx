@@ -4,6 +4,7 @@ import {
   commify,
   formatEther,
   formatUnits,
+  parseEther,
   parseUnits,
 } from "@ethersproject/units"
 
@@ -45,7 +46,12 @@ function Withdraw({ poolName }: Props): ReactElement {
   const tokenInputSum = useMemo(() => {
     return poolData.tokens.reduce(
       (sum, { address }) =>
-        sum.add(withdrawFormState.tokenInputs[address]?.valueSafe || Zero),
+        sum.add(
+          parseEther(
+            "0" +
+              (withdrawFormState.tokenInputs[address]?.valueRaw.trim() || "0"),
+          ) || Zero,
+        ),
       Zero,
     )
   }, [poolData.tokens, withdrawFormState.tokenInputs])
@@ -148,6 +154,7 @@ function Withdraw({ poolName }: Props): ReactElement {
     withdrawLPTokenAmount,
     txnGasCost: txnGasCost,
   }
+  console.log(reviewWithdrawData.priceImpact.toString())
   poolData.tokens.forEach(({ name, decimals, symbol, address }) => {
     if (
       BigNumber.from(
