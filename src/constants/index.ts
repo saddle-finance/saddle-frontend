@@ -39,6 +39,9 @@ export const EVMOS_TESTNET_POOL_NAME = "evmosTestnetUSD"
 export const EVMOS_POOL_NAME = "evmosUSD"
 export const KAVA_TESTNET_USD_POOL_NAME = "kavaTestnetUSD"
 export const TBTC_EVMOS_BTC_METAPOOL_NAME = "tbtc-evmosBTC Meta"
+export const TBTC_METAPOOL_V2_BTCV2_V3_NAME = "tBTCv2-BTCv2_v3"
+export const WCUSD_METAPOOL_V2_USDV2_V3_NAME = "wcUSD-USDv2_v3"
+export const SUSD_METAPOOL_V2_USDV2_V3_NAME = "sUSD-USDv2_v3"
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof BTC_POOL_V2_NAME
@@ -64,6 +67,9 @@ export type PoolName =
   | typeof KAVA_TESTNET_USD_POOL_NAME
   | typeof TBTC_EVMOS_BTC_METAPOOL_NAME
   | typeof EVMOS_BTC_POOL_NAME
+  | typeof TBTC_METAPOOL_V2_BTCV2_V3_NAME
+  | typeof WCUSD_METAPOOL_V2_USDV2_V3_NAME
+  | typeof SUSD_METAPOOL_V2_USDV2_V3_NAME
 
 export enum ChainId {
   MAINNET = 1,
@@ -190,12 +196,22 @@ export const SUSD_META_SWAP_V2_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0xdbC43Ba45381e02825b14322cDdd15eC4B3164E6",
 })
 
+export const SUSD_META_SWAP_V3_ADDRESSES = buildAddresses({
+  [ChainId.MAINNET]: "0x824dcD7b044D60df2e89B1bB888e66D8BCf41491",
+  [ChainId.HARDHAT]: "0xdbC43Ba45381e02825b14322cDdd15eC4B3164E6",
+})
+
 export const SUSD_META_SWAP_DEPOSIT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0x1e35ebF875f8A2185EDf22da02e7dBCa0F5558aB",
   [ChainId.HARDHAT]: "0x809d550fca64d94Bd9F66E60752A544199cfAC3D",
 })
 
 export const SUSD_META_SWAP_V2_DEPOSIT_ADDRESSES = buildAddresses({
+  [ChainId.MAINNET]: "0xc66Ed5d7800579220c71f21B1cCa2006B3a95900",
+  [ChainId.HARDHAT]: "0xf433C50017d963b6082043445bCD0A54716DDC1d",
+})
+
+export const SUSD_META_SWAP_V3_DEPOSIT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0xc66Ed5d7800579220c71f21B1cCa2006B3a95900",
   [ChainId.HARDHAT]: "0xf433C50017d963b6082043445bCD0A54716DDC1d",
 })
@@ -222,6 +238,11 @@ export const TBTC_META_SWAP_V2_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0x6c8D53600C7f8F97ed32e6162867F3340dE3Ab37",
 })
 
+export const TBTC_META_SWAP_V3_ADDRESSES = buildAddresses({
+  [ChainId.MAINNET]: "0xA0b4a2667dD60d5CdD7EcFF1084F0CeB8dD84326",
+  [ChainId.HARDHAT]: "0x6c8D53600C7f8F97ed32e6162867F3340dE3Ab37",
+})
+
 export const EVMOS_TBTC_META_SWAP_ADDRESSES = buildAddresses({
   [ChainId.EVMOS]: "0xdb5c5A6162115Ce9a188E7D773C4D011F421BbE5",
 })
@@ -232,6 +253,11 @@ export const TBTC_META_SWAP_DEPOSIT_ADDRESSES = buildAddresses({
 })
 
 export const TBTC_META_SWAP_V2_DEPOSIT_ADDRESSES = buildAddresses({
+  [ChainId.MAINNET]: "0xee1ec4e1C6e39C31dAaf3db2A62A397bdf3fe2f1",
+  [ChainId.HARDHAT]: "0x0ed2E86FcE2e5A7965f59708c01f88a722BC7f07",
+})
+
+export const TBTC_META_SWAP_V3_DEPOSIT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0x05383312655856E25b851c15fA856dB7e270F0cF",
   [ChainId.HARDHAT]: "0xB06Ce7334A26e90077F0182F07aCF650Bc978936",
 })
@@ -246,12 +272,22 @@ export const WCUSD_META_SWAP_V2_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0x8D03623d799E93E53FeDf96aF88e2879bA1804FA",
 })
 
+export const WCUSD_META_SWAP_V3_ADDRESSES = buildAddresses({
+  [ChainId.MAINNET]: "0xc02D481B52Ae04Ebc76a8882441cfAED45eb8342",
+  [ChainId.HARDHAT]: "0x8D03623d799E93E53FeDf96aF88e2879bA1804FA",
+})
+
 export const WCUSD_META_SWAP_DEPOSIT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0x401AFbc31ad2A3Bc0eD8960d63eFcDEA749b4849",
   [ChainId.HARDHAT]: "0x922D6956C99E12DFeB3224DEA977D0939758A1Fe",
 })
 
 export const WCUSD_META_SWAP_V2_DEPOSIT_ADDRESSES = buildAddresses({
+  [ChainId.MAINNET]: "0x9898D87368DE0Bf1f10bbea8dE46c00cC3a2F9F1",
+  [ChainId.HARDHAT]: "0xbc51860c89838ec548d7190657874556407423f4",
+})
+
+export const WCUSD_META_SWAP_V3_DEPOSIT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0x9898D87368DE0Bf1f10bbea8dE46c00cC3a2F9F1",
   [ChainId.HARDHAT]: "0xbc51860c89838ec548d7190657874556407423f4",
 })
@@ -351,6 +387,11 @@ export const SUSD_SWAP_TOKEN_V2_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0xb7c7142Cb2cBf105Eca46A00dDD0Fb3DD7698E8b",
 })
 
+export const SUSD_SWAP_TOKEN_V3_CONTRACT_ADDRESSES = buildAddresses({
+  [ChainId.MAINNET]: "0xb6214a9d18f5Bf34A23a355114A03bE4f7D804fa",
+  [ChainId.HARDHAT]: "0xb7c7142Cb2cBf105Eca46A00dDD0Fb3DD7698E8b",
+})
+
 export const STABLECOIN_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0x76204f8CFE8B95191A3d1CfA59E267EA65e06FAC",
   [ChainId.ROPSTEN]: "0x09f0e9d602c9989B2C03983cA37E7fa18084C44B",
@@ -386,6 +427,11 @@ export const KAVA_TESTNET_USD_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
 })
 
 export const WCUSD_SWAP_TOKEN_V2_CONTRACT_ADDRESSES = buildAddresses({
+  [ChainId.MAINNET]: "0x5F7872490a9B405946376dd40fCbDeF521F13e3f",
+  [ChainId.HARDHAT]: "0x5c5baB00ef196517c81097dA095948317d458f21",
+})
+
+export const WCUSD_SWAP_TOKEN_V3_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0x5F7872490a9B405946376dd40fCbDeF521F13e3f",
   [ChainId.HARDHAT]: "0x5c5baB00ef196517c81097dA095948317d458f21",
 })
@@ -436,6 +482,11 @@ export const TBTC_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
 })
 
 export const TBTC_SWAP_TOKEN_V2_CONTRACT_ADDRESSES = buildAddresses({
+  [ChainId.MAINNET]: "0x3f2f811605bC6D701c3Ad6E501be13461c560320",
+  [ChainId.HARDHAT]: "0x1b1501C45aB5Ee45eE44a2360d53F9eb3316Ab66",
+})
+
+export const TBTC_SWAP_TOKEN_V3_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0x3f2f811605bC6D701c3Ad6E501be13461c560320",
   [ChainId.HARDHAT]: "0x1b1501C45aB5Ee45eE44a2360d53F9eb3316Ab66",
 })
@@ -518,6 +569,16 @@ export const SUSD_SWAP_V2_TOKEN = new Token(
   true,
 )
 
+export const SUSD_SWAP_V2_V3_TOKEN = new Token(
+  SUSD_SWAP_TOKEN_V3_CONTRACT_ADDRESSES,
+  18,
+  "saddleSUSD-V2-V3",
+  "saddlesusd-v2-v3",
+  "Saddle sUSD/saddleUSD-V2 V3",
+  false,
+  true,
+)
+
 export const BTC_SWAP_TOKEN = new Token(
   BTC_SWAP_TOKEN_CONTRACT_ADDRESSES,
   18,
@@ -568,6 +629,16 @@ export const TBTC_SWAP_V2_TOKEN = new Token(
   true,
 )
 
+export const TBTC_SWAP_V3_TOKEN = new Token(
+  TBTC_SWAP_TOKEN_V3_CONTRACT_ADDRESSES,
+  18,
+  "saddletBTC-V3",
+  "saddletBTC-v3",
+  "Saddle tBTCv2/saddleWRenSBTC V3",
+  false,
+  true,
+)
+
 export const STABLECOIN_SWAP_TOKEN = new Token(
   STABLECOIN_SWAP_TOKEN_CONTRACT_ADDRESSES,
   18,
@@ -604,6 +675,16 @@ export const WCUSD_SWAP_V2_TOKEN = new Token(
   "saddlewCUSD-V2",
   "saddlewcusd-v2",
   "Saddle wCUSD/saddleUSD-V2 V2",
+  false,
+  true,
+)
+
+export const WCUSD_SWAP_V2_V3_TOKEN = new Token(
+  WCUSD_SWAP_TOKEN_V3_CONTRACT_ADDRESSES,
+  18,
+  "saddlewCUSD-V2_V3",
+  "saddlewcusd-v2-v3",
+  "Saddle wCUSD/saddleUSD-V2 V3",
   false,
   true,
 )
@@ -1362,6 +1443,45 @@ export const POOLS_MAP: PoolsMap = {
     route: "tbtc-evmosbtc",
     rewardPids: buildPids({}),
   },
+  [TBTC_METAPOOL_V2_BTCV2_V3_NAME]: {
+    name: TBTC_METAPOOL_V2_BTCV2_V3_NAME,
+    lpToken: TBTC_SWAP_V3_TOKEN,
+    poolTokens: TBTC_POOL_TOKENS,
+    addresses: TBTC_META_SWAP_V3_DEPOSIT_ADDRESSES,
+    isSynthetic: true,
+    type: PoolTypes.BTC,
+    metaSwapAddresses: TBTC_META_SWAP_V3_ADDRESSES,
+    underlyingPoolTokens: TBTC_UNDERLYING_POOL_TOKENS,
+    underlyingPool: BTC_POOL_V2_NAME,
+    route: "tbtcv2btcv2v3",
+    rewardPids: buildPids({ [ChainId.MAINNET]: 5 }),
+  },
+  [WCUSD_METAPOOL_V2_USDV2_V3_NAME]: {
+    name: WCUSD_METAPOOL_V2_USDV2_V3_NAME,
+    lpToken: WCUSD_SWAP_V2_V3_TOKEN,
+    poolTokens: WCUSD_POOL_TOKENS,
+    addresses: WCUSD_META_SWAP_V3_DEPOSIT_ADDRESSES,
+    isSynthetic: true,
+    type: PoolTypes.USD,
+    metaSwapAddresses: WCUSD_META_SWAP_V3_ADDRESSES,
+    underlyingPoolTokens: WCUSD_UNDERLYING_POOL_TOKENS,
+    underlyingPool: STABLECOIN_POOL_V2_NAME,
+    route: "wcusdv2usdv2v3",
+    rewardPids: buildPids({ [ChainId.MAINNET]: 7 }),
+  },
+  [SUSD_METAPOOL_V2_USDV2_V3_NAME]: {
+    name: SUSD_METAPOOL_V2_USDV2_V3_NAME,
+    lpToken: SUSD_SWAP_V2_V3_TOKEN,
+    poolTokens: SUSD_POOL_TOKENS,
+    addresses: SUSD_META_SWAP_V3_DEPOSIT_ADDRESSES,
+    isSynthetic: true,
+    type: PoolTypes.USD,
+    metaSwapAddresses: SUSD_META_SWAP_V3_ADDRESSES,
+    underlyingPoolTokens: SUSD_UNDERLYING_POOL_TOKENS,
+    underlyingPool: STABLECOIN_POOL_V2_NAME,
+    route: "susdv2usdv2v3",
+    rewardPids: buildPids({}),
+  },
 }
 
 // @dev note that metapools refer to the deposit addresses and not the meta addresses
@@ -1424,6 +1544,9 @@ export function isMetaPool(poolName = ""): boolean {
     WCUSD_METAPOOL_NAME,
     WCUSD_METAPOOL_V2_NAME,
     TBTC_EVMOS_BTC_METAPOOL_NAME,
+    TBTC_METAPOOL_V2_BTCV2_V3_NAME,
+    WCUSD_METAPOOL_V2_USDV2_V3_NAME,
+    SUSD_METAPOOL_V2_USDV2_V3_NAME,
   ]).has(poolName)
 }
 
