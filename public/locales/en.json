@@ -1,10 +1,12 @@
 {
+  "adjustLock": "Adjust Lock",
   "approveSpend": "Approve {{tokenName}} spend",
   "available": "Available",
   "avgLockTime": "Avg. lock time",
   "totalRetroactiveDrop": "Total Retroactive Drop (incl. unvested)",
   "totalClaimableSDL": "Total Claimable SDL",
   "retroactiveDrop": "Retroactive Drop",
+  "createLock": "Create Lock",
   "claimAll": "Claim All",
   "claimForAllPools": "Claim for all Pools",
   "claimableSPA": "Claimable SPA",

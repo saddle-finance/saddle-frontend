@@ -4,6 +4,7 @@ import {
   Button,
   Container,
   Divider,
+  LinearProgress,
   Link,
   Paper,
   Stack,
@@ -40,6 +41,7 @@ type TokenType = {
 
 const WEEK = 86400 * 7
 const MAXTIME = 86400 * 365 * 4
+const MULTIPLIER = Math.pow(10, 10)
 
 export default function VeSDL(): JSX.Element {
   const [sdlToken, setSDLToken] = useState<TokenType>({
@@ -52,6 +54,7 @@ export default function VeSDL(): JSX.Element {
 
   const [lockEnd, setLockEnd] = useState<Date | null>(null)
   const [unlockDate, setUnlockDate] = useState<Date | null>(null)
+  const [initialLoading, setInitialLoading] = useState<boolean>(false)
 
   const { account, chainId, library } = useActiveWeb3React()
   const { t } = useTranslation()
@@ -116,6 +119,20 @@ export default function VeSDL(): JSX.Element {
       .mul(BigNumber.from(roundedExpireTimestamp).sub(currentTimestamp))
       .div(MAXTIME)
     return formatUnits(estLockValue)
+  }
+
+  const getPenalty = () => {
+    if (!lockEnd) return
+    const leftTime = getUnixTime(lockEnd) - getUnixTime(new Date())
+    const penaltyRatio = Math.min(
+      (MULTIPLIER * 3) / 4,
+      (MULTIPLIER * leftTime) / MAXTIME,
+    ).toFixed()
+
+    const penaltyAmount = lockedSDLVal
+      .mul(BigNumber.from(penaltyRatio))
+      .div(BigNumber.from(MULTIPLIER))
+    return formatUnits(penaltyAmount)
   }
 
   const handleLock = async () => {
@@ -197,8 +214,12 @@ export default function VeSDL(): JSX.Element {
   }
 
   useEffect(() => {
+    setInitialLoading(true)
     void fetchData()
+    setInitialLoading(false)
   }, [fetchData])
+
+  if (initialLoading) return <LinearProgress />
 
   return (
     <Container sx={{ py: 3 }}>
@@ -236,7 +257,7 @@ export default function VeSDL(): JSX.Element {
               <DatePicker
                 value={unlockDate}
                 onChange={(date) => setUnlockDate(date)}
-                minDate={lockEnd}
+                minDate={lockEnd || new Date()}
                 renderInput={(props) => (
                   <TextField
                     data-testid="veSdlUnlockData"
@@ -271,7 +292,7 @@ export default function VeSDL(): JSX.Element {
               size="large"
               onClick={handleLock}
             >
-              Lock
+              {lockedSDLVal.isZero() ? t("createLock") : t("adjustLock")}
             </Button>
             <Typography textAlign="end">
               <Link>{t("veTokenCalculator")}</Link>
@@ -290,14 +311,22 @@ export default function VeSDL(): JSX.Element {
             <Typography>
               {t("totalVeSdlHolding")}: {formatUnits(veSdlTokenVal)}
             </Typography>
-            <Alert severity="error" icon={false} sx={{ textAlign: "center" }}>
-              {t("withdrawAlertMsg", { sdlValue: 3000 })}
+            <Alert
+              severity="error"
+              icon={false}
+              sx={{
+                textAlign: "center",
+                display: !getPenalty() ? "none" : "block",
+              }}
+            >
+              {t("withdrawAlertMsg", { sdlValue: getPenalty() })}
             </Alert>
             <Button
               variant="contained"
               onClick={handleUnlock}
               size="large"
               fullWidth
+              disabled={lockedSDLVal.isZero()}
             >
               {t("unlock")}
             </Button>
