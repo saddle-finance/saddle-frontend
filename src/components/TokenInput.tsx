@@ -73,7 +73,7 @@ function TokenInput({
 
   return (
     <div {...rest}>
-      {max != null && (
+      {max && (
         <Box display="flex" alignItems="center" justifyContent="end">
           <Typography variant="subtitle2" sx={{ mr: 1 }}>
             {t("balance")}:

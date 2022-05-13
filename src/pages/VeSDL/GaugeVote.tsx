@@ -25,7 +25,7 @@ export default function GaugeVote(): JSX.Element {
       <Typography variant="h2" textAlign="center">
         {t("gaugeVote")}
       </Typography>
-      <Box minHeight="428px">
+      <Box height="428px">
         {!gaugeData ? (
           <Box
             display="flex"

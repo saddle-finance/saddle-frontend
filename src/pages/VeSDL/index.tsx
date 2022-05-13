@@ -17,7 +17,7 @@ import {
   SDL_TOKEN_ADDRESSES,
   VOTING_ESCROW_CONTRACT_ADDRESS,
 } from "../../constants"
-import { differenceInMonths, getUnixTime } from "date-fns"
+import { differenceInMonths, format, getUnixTime } from "date-fns"
 import { formatUnits, parseEther } from "@ethersproject/units"
 
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
@@ -41,7 +41,7 @@ type TokenType = {
 
 const WEEK = 86400 * 7
 const MAXTIME = 86400 * 365 * 4
-const MULTIPLIER = Math.pow(10, 10)
+const MULTIPLIER = Math.pow(10, 15)
 
 export default function VeSDL(): JSX.Element {
   const [sdlToken, setSDLToken] = useState<TokenType>({
@@ -178,14 +178,9 @@ export default function VeSDL(): JSX.Element {
 
   const handleUnlock = async () => {
     if (votingEscrowContract) {
-      try {
-        await sdlContract?.approve(votingEscrowContract.address, lockedSDLVal)
-        const txn = await votingEscrowContract?.force_withdraw()
-        await txn.wait()
-        void fetchData()
-      } catch (error) {
-        console.log("unlock ==>", error)
-      }
+      const txn = await votingEscrowContract?.force_withdraw()
+      await txn.wait()
+      void fetchData()
     }
   }
 
@@ -209,6 +204,10 @@ export default function VeSDL(): JSX.Element {
       return
     }
   }
+
+  const enableLock = lockedSDLVal.isZero()
+    ? sdlToken.sdlTokenInputVal === "" || unlockDate === null
+    : sdlToken.sdlTokenInputVal === "" && unlockDate === null
 
   useEffect(() => {
     const init = async () => {
@@ -250,6 +249,7 @@ export default function VeSDL(): JSX.Element {
                 setSDLToken((prev) => ({ ...prev, sdlTokenInputVal: value }))
               }
               inputValue={sdlToken.sdlTokenInputVal}
+              helperText="Exceed Token balance"
             />
             <Box display="flex" alignItems="center">
               <div>
@@ -297,6 +297,7 @@ export default function VeSDL(): JSX.Element {
               fullWidth
               size="large"
               onClick={handleLock}
+              disabled={enableLock}
             >
               {lockedSDLVal.isZero() ? t("createLock") : t("adjustLock")}
             </Button>
@@ -312,7 +313,7 @@ export default function VeSDL(): JSX.Element {
             </Typography>
             <Typography>
               {t("lockupExpiry")}:
-              {` ${lockEnd ? lockEnd.toLocaleString() : "..."}`}
+              {` ${lockEnd ? format(lockEnd, "MM/dd/yyyy") : "..."}`}
             </Typography>
             <Typography>
               {t("totalVeSdlHolding")}: {formatUnits(veSdlTokenVal)}

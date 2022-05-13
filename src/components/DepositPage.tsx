@@ -168,7 +168,10 @@ const DepositPage = (props: Props): ReactElement => {
               ) : null}
               <Stack direction="column" spacing={2}>
                 {tokens.map(
-                  ({ decimals, symbol, name, priceUSD, inputValue }, index) => (
+                  (
+                    { decimals, symbol, name, priceUSD, inputValue, max },
+                    index,
+                  ) => (
                     <TokenInput
                       key={index}
                       token={{
@@ -177,6 +180,7 @@ const DepositPage = (props: Props): ReactElement => {
                         name,
                         priceUSD,
                       }}
+                      max={max}
                       inputValue={inputValue}
                       disabled={poolData?.isPaused}
                       onChange={(value): void =>
