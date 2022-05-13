@@ -237,4 +237,9 @@ describe("generateSnapshotVoteLink", () => {
     const expectedLink = `https://snapshot.org/#/saddlefinance.eth/proposal/${id}`
     expect(generateSnapshotVoteLink(id)).toEqual(expectedLink)
   })
+
+  it("returns link to all proposals if id is not present", () => {
+    const expectedLink = `https://snapshot.org/#/saddlefinance.eth`
+    expect(generateSnapshotVoteLink()).toEqual(expectedLink)
+  })
 })

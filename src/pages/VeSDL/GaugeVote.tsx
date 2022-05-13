@@ -21,6 +21,7 @@ import {
 import { AppState } from "../../state"
 import { GaugeContext } from "../../providers/GaugeProvider"
 import GaugeWeight from "../../components/GaugeWeight"
+import { generateSnapshotVoteLink } from "../../utils"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
@@ -88,18 +89,10 @@ export default function GaugeVote(): JSX.Element {
         </Table>
       </TableContainer>
       <Typography textAlign="end" mt={1}>
-        <Link
-          color="inherit"
-          href="https://snapshot.org/#/saddlefinance.eth"
-          target="_blank"
-        >
+        <Link color="inherit" href={generateSnapshotVoteLink()} target="_blank">
           {t("viewAllVote")}
         </Link>
       </Typography>
     </Paper>
   )
-}
-
-function generateSnapshotVoteLink(id: string): string {
-  return `https://snapshot.org/#/saddlefinance.eth/proposal/${id}`
 }
