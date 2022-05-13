@@ -142,21 +142,22 @@ function TokenInput({
             onFocus={(e) => e.target.select()}
             fullWidth
           />
-          <Typography
-            variant="body2"
-            color={disabled ? "text.secondary" : "text.primary"}
-            textAlign="end"
-            sx={{ display: showUSDprice ? "block" : "none" }}
-          >
-            ≈$
-            {commify(
-              formatBNToString(
-                calculatePrice(inputValue, tokenPriceUSD || 0),
-                18,
-                2,
-              ),
-            )}
-          </Typography>
+          {showUSDprice && (
+            <Typography
+              variant="body2"
+              color={disabled ? "text.secondary" : "text.primary"}
+              textAlign="end"
+            >
+              ≈$
+              {commify(
+                formatBNToString(
+                  calculatePrice(inputValue, tokenPriceUSD || 0),
+                  18,
+                  2,
+                ),
+              )}
+            </Typography>
+          )}
         </Box>
       </Box>
       <FormHelperText

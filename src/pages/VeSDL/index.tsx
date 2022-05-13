@@ -48,7 +48,7 @@ export default function VeSDL(): JSX.Element {
     maxBalance: "",
     sdlTokenInputVal: "",
   })
-  const [veSdlTokenVal, setVeSDLTokenVal] = useState<BigNumber>(Zero)
+  const [veSdlTokenVal, setVeSdlTokenVal] = useState<BigNumber>(Zero)
   const [lockedSDLVal, setLockedSDLVal] = useState<BigNumber>(Zero)
   const sdlTokenValue = parseEther(sdlToken.sdlTokenInputVal.trim() || "0.0")
 
@@ -93,16 +93,16 @@ export default function VeSDL(): JSX.Element {
       const vesdlBal = await votingEscrowContract?.["balanceOf(address)"](
         account,
       )
-      setVeSDLTokenVal(vesdlBal || Zero)
+      setVeSdlTokenVal(vesdlBal || Zero)
 
-      const prevLockend =
+      const prevLockEnd =
         (await votingEscrowContract?.locked__end(account)) || Zero
       setLockEnd(
-        !prevLockend.isZero() ? new Date(prevLockend.toNumber() * 1000) : null,
+        !prevLockEnd.isZero() ? new Date(prevLockEnd.toNumber() * 1000) : null,
       )
 
-      const vesdlToken = await votingEscrowContract?.locked(account)
-      setLockedSDLVal(vesdlToken?.amount || Zero)
+      const veSdlToken = await votingEscrowContract?.locked(account)
+      setLockedSDLVal(veSdlToken?.amount || Zero)
     }
   }, [account, sdlContract, votingEscrowContract])
 
@@ -164,7 +164,7 @@ export default function VeSDL(): JSX.Element {
         setUnlockDate(null)
       } else if (
         sdlTokenValue.gt(Zero) &&
-        unlockTimeStamp === null &&
+        !unlockTimeStamp &&
         !veSdlTokenVal.isZero()
       ) {
         // Deposit additional SDL into and existing lock
@@ -199,11 +199,11 @@ export default function VeSDL(): JSX.Element {
 
   const addLockMos = unlockDate
     ? differenceInMonths(unlockDate, lockEnd || new Date())
-    : null
+    : 0
 
   const lockHelperText = () => {
     if (lockedSDLVal.isZero()) {
-      if (sdlTokenValue.gt(Zero) && addLockMos && addLockMos > 0)
+      if (sdlTokenValue.gt(Zero) && addLockMos > 0)
         return t("lockSdl", {
           sdlAmount: sdlToken.sdlTokenInputVal,
           period: addLockMos,
@@ -213,12 +213,12 @@ export default function VeSDL(): JSX.Element {
         return t("increaseLockAmount", {
           addLockAmt: sdlToken.sdlTokenInputVal,
         })
-      } else if (sdlTokenValue.gt(Zero) && addLockMos && addLockMos > 0) {
+      } else if (sdlTokenValue.gt(Zero) && addLockMos > 0) {
         return t("increaseLockAmountAndTime", {
           addLockMos,
           addLockAmt: sdlToken.sdlTokenInputVal,
         })
-      } else if (sdlTokenValue.eq(Zero) && addLockMos && addLockMos > 0) {
+      } else if (sdlTokenValue.eq(Zero) && addLockMos > 0) {
         return t("increaseLockTime", { addLockMos })
       } else {
         return
@@ -227,8 +227,8 @@ export default function VeSDL(): JSX.Element {
   }
 
   const enableLock = lockedSDLVal.isZero()
-    ? sdlToken.sdlTokenInputVal === "" || unlockDate === null
-    : sdlToken.sdlTokenInputVal === "" && unlockDate === null
+    ? !sdlToken.sdlTokenInputVal || !unlockDate
+    : !sdlToken.sdlTokenInputVal && !unlockDate
 
   useEffect(() => {
     const init = async () => {
@@ -339,16 +339,17 @@ export default function VeSDL(): JSX.Element {
             <Typography>
               {t("totalVeSdlHolding")}: {formatUnits(veSdlTokenVal)}
             </Typography>
-            <Alert
-              severity="error"
-              icon={false}
-              sx={{
-                textAlign: "center",
-                display: !getPenalty() ? "none" : "block",
-              }}
-            >
-              {t("withdrawAlertMsg", { sdlValue: getPenalty() })}
-            </Alert>
+            {!getPenalty() && (
+              <Alert
+                severity="error"
+                icon={false}
+                sx={{
+                  textAlign: "center",
+                }}
+              >
+                {t("withdrawAlertMsg", { sdlValue: getPenalty() })}
+              </Alert>
+            )}
             <Button
               variant="contained"
               onClick={handleUnlock}
