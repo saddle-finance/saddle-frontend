@@ -1,9 +1,9 @@
 import { PoolName } from "../../src/constants"
 
 // have two seperate maps here since the naming convention is different throughout the page
-const poolTokensFullName: { [key: string]: string[] } = {
+const poolTokensSymbols: { [key: string]: string[] } = {
   "BTC V2": ["WBTC", "renBTC", "sBTC"],
-  "Stablecoin V2": ["Dai", "USDC Coin", "Tether"],
+  "Stablecoin V2": ["DAI", "USDC", "USDT"],
 }
 const pools = ["BTC V2", "Stablecoin V2"]
 
@@ -46,7 +46,7 @@ context("Withdrawal Flow", () => {
           cy.get("button").contains("Withdraw").click()
         })
       // test single item
-      const tokens = poolTokensFullName[poolName]
+      const tokens = poolTokensSymbols[poolName]
       cy.get('[data-testid="withdrawTokenRadio"]')
         .contains(tokens[0], { matchCase: false })
         .click()
