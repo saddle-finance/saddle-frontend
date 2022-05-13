@@ -1,8 +1,4 @@
-import {
-  Proposal,
-  VoteEscrowSnapshots,
-  getVoteEscrowSnapshots,
-} from "../state/voteEscrowSnapshots"
+import { Proposal, getVoteEscrowSnapshots } from "../state/voteEscrowSnapshots"
 import { AppDispatch } from "../state"
 
 interface Response {
@@ -51,27 +47,14 @@ export default function getSnapshotVoteData(
         .slice(0, 10),
     )
     .then((proposals) => {
-      const voteEscrowSnapshots = extractSnapshotInfoFromProposals(proposals)
-      dispatch(getVoteEscrowSnapshots(voteEscrowSnapshots))
+      dispatch(getVoteEscrowSnapshots({ snapshots: proposals }))
     })
-}
-
-function extractSnapshotInfoFromProposals(
-  proposals: Proposal[],
-): VoteEscrowSnapshots {
-  const voteEscrowSnapshots: VoteEscrowSnapshots = {
-    snapshots: [],
-  }
-
-  voteEscrowSnapshots.snapshots = proposals.map(
-    ({ id, start, state, title }) => {
-      return {
-        id,
-        start,
-        state,
-        title,
-      }
-    },
-  )
-  return voteEscrowSnapshots
+    .catch((e) => {
+      const error = new Error(
+        `Unable to get Snapshot vote data \n${(e as Error).message}`,
+      )
+      error.stack = (e as Error).stack
+      console.error(error)
+      return Promise.resolve()
+    })
 }
