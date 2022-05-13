@@ -1,22 +1,20 @@
 import { addSlippage, subtractSlippage } from "../utils/slippage"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
-import { formatDeadlineToNumber, getContract } from "../utils"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 import { useDispatch, useSelector } from "react-redux"
+import { useLPTokenContract, useSwapContract } from "./useContract"
 
 import { AppState } from "../state"
 import { BasicPoolsContext } from "./../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
-import ERC20_ABI from "../constants/abis/erc20.json"
-import { Erc20 } from "./../../types/ethers-contracts/Erc20"
 import { GasPrices } from "../state/user"
 import { NumberInputState } from "../utils/numberInputState"
 import { TRANSACTION_TYPES } from "../constants"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
+import { formatDeadlineToNumber } from "../utils"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
 import { useContext } from "react"
-import { useSwapContract } from "./useContract"
 
 interface ApproveAndWithdrawStateArgument {
   tokenFormState?: { [address: string]: NumberInputState | undefined }
@@ -30,6 +28,7 @@ export function useApproveAndWithdraw(
   const dispatch = useDispatch()
   const basicPools = useContext(BasicPoolsContext)
   const swapContract = useSwapContract(poolName)
+  const lpTokenContract = useLPTokenContract(poolName)
   const { account, chainId, library } = useActiveWeb3React()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
@@ -49,19 +48,13 @@ export function useApproveAndWithdraw(
   ): Promise<void> {
     try {
       const basicPool = basicPools?.[poolName]
-      if (!state || !library) return
+      if (!state || !library || !lpTokenContract) return
       if (!account || !chainId || !library)
         throw new Error("Wallet must be connected")
       if (!swapContract || !basicPool)
         throw new Error("Swap contract is not loaded")
       if (state.lpTokenAmountToSpend.isZero()) return
-      const lpTokenContract = getContract(
-        basicPool.lpToken,
-        ERC20_ABI,
-        library,
-        account,
-      ) as Erc20
-      if (lpTokenContract == null) return
+
       let gasPrice
       if (gasPriceSelected === GasPrices.Custom && gasCustom?.valueSafe) {
         gasPrice = gasCustom.valueSafe
