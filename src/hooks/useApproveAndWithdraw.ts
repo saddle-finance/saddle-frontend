@@ -48,10 +48,10 @@ export function useApproveAndWithdraw(
   ): Promise<void> {
     try {
       const basicPool = basicPools?.[poolName]
-      if (!state || !library || !lpTokenContract) return
+      if (!state) return
       if (!account || !chainId || !library)
         throw new Error("Wallet must be connected")
-      if (!swapContract || !basicPool)
+      if (!swapContract || !basicPool || !lpTokenContract)
         throw new Error("Swap contract is not loaded")
       if (state.lpTokenAmountToSpend.isZero()) return
 
