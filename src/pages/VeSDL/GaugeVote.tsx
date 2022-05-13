@@ -1,6 +1,5 @@
 import {
   Box,
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   Button,
   CircularProgress,
   Link,
