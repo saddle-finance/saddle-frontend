@@ -1445,7 +1445,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: TBTC_UNDERLYING_POOL_TOKENS,
     underlyingPool: BTC_POOL_V2_NAME,
     route: "tbtcv2btcv2v3",
-    rewardPids: buildPids({ [ChainId.MAINNET]: 5 }),
+    rewardPids: buildPids({ [ChainId.MAINNET]: 8 }),
   },
   [WCUSD_METAPOOL_V2_USDV2_V3_NAME]: {
     name: WCUSD_METAPOOL_V2_USDV2_V3_NAME,
@@ -1458,7 +1458,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: WCUSD_UNDERLYING_POOL_TOKENS,
     underlyingPool: STABLECOIN_POOL_V2_NAME,
     route: "wcusdv2usdv2v3",
-    rewardPids: buildPids({ [ChainId.MAINNET]: 7 }),
+    rewardPids: buildPids({ [ChainId.MAINNET]: 10 }),
   },
   [SUSD_METAPOOL_V2_USDV2_V3_NAME]: {
     name: SUSD_METAPOOL_V2_USDV2_V3_NAME,
@@ -1471,7 +1471,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: SUSD_UNDERLYING_POOL_TOKENS,
     underlyingPool: STABLECOIN_POOL_V2_NAME,
     route: "susdv2usdv2v3",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.MAINNET]: 9 }),
   },
 }
 
