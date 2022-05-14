@@ -1573,19 +1573,6 @@ export const TOKEN_TO_POOLS_MAP = Object.keys(POOLS_MAP).reduce(
   {} as TokenToPoolsMap,
 )
 
-export type LPTokenToPoolsMap = {
-  [tokenSymbol: string]: PoolName
-}
-export const LPTOKEN_TO_POOL_MAP = Object.keys(POOLS_MAP).reduce(
-  (acc, poolName) => {
-    const pool = POOLS_MAP[poolName as PoolName]
-    const newAcc = { ...acc }
-    newAcc[pool.lpToken.symbol] = poolName as PoolName
-    return newAcc
-  },
-  {} as LPTokenToPoolsMap,
-)
-
 export const TRANSACTION_TYPES = {
   DEPOSIT: "DEPOSIT",
   WITHDRAW: "WITHDRAW",

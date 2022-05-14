@@ -109,9 +109,7 @@ export const enqueuePromiseToast = (
               href={getMultichainScanLink(
                 chainId,
                 data?.transactionHash ?? "",
-                chainId === ChainId.EVMOS || chainId === ChainId.EVMOS_TESTNET
-                  ? "txs"
-                  : "tx",
+                "tx",
               )}
               target="_blank"
               rel="noreferrer"

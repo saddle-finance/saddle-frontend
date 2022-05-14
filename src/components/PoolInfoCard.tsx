@@ -1,4 +1,4 @@
-import { Box, Divider, Typography, styled } from "@mui/material"
+import { Box, Divider, Link, Typography, styled } from "@mui/material"
 import { POOLS_MAP, POOL_FEE_PRECISION, PoolTypes } from "../constants"
 import React, { ReactElement } from "react"
 import {
@@ -14,6 +14,8 @@ import { PoolDataType } from "../hooks/usePoolData"
 import TokenIcon from "./TokenIcon"
 import { Tooltip } from "@mui/material"
 import { Zero } from "@ethersproject/constants"
+import { getMultichainScanLink } from "../utils/getEtherscanLink"
+import { shortenAddress } from "../utils/shortenAddress"
 import { useActiveWeb3React } from "../hooks"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
@@ -105,7 +107,9 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
           </Typography>
         </Tooltip>
       ) : (
-        <Typography variant="h1">{formattedData.name}</Typography>
+        <Typography component="span" variant="h1" mr={2}>
+          {formattedData.name}
+        </Typography>
       )}
       <InfoItem mt={3}>
         <Typography>{`${t("status")}:`}</Typography>
@@ -204,6 +208,29 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
             </Box>
           ))}
         </Box>
+        <Typography mt={3}>
+          Pool address:
+          <Link
+            href={getMultichainScanLink(chainId, poolAddress, "address")}
+            target="_blank"
+            color="inherit"
+            ml={1}
+          >
+            {shortenAddress(poolAddress)}
+          </Link>
+        </Typography>
+        <Typography mt={1}>
+          LP token address:
+          <Link
+            href={getMultichainScanLink(chainId, data.lpToken, "token")}
+            target="_blank"
+            color="inherit"
+            ml={1}
+          >
+            {data.lpToken && shortenAddress(data.lpToken)}
+          </Link>
+        </Typography>
+        {/* TODO: Gauge link */}
       </Box>
     </Box>
   )

@@ -11,6 +11,7 @@ import {
   Typography,
 } from "@mui/material"
 import React, { useState } from "react"
+
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import GaugeVote from "./GaugeVote"
@@ -67,10 +68,13 @@ export default function VeSDL(): JSX.Element {
 
             <TokenInput
               data-testid="sdlTokenInput"
-              symbol="SDL"
-              name="sdl"
               max="3000"
-              decimalLength={18}
+              token={{
+                decimals: 18,
+                symbol: "SDL",
+                name: "SDL",
+                priceUSD: 0,
+              }}
               onChange={handleChange}
               inputValue={sdlTokenRawVal}
             />
@@ -98,9 +102,12 @@ export default function VeSDL(): JSX.Element {
               <ArrowDownwardIcon />
             </Box>
             <TokenInput
-              symbol="veSDL"
-              name={t("voteEscrowSDL")}
-              decimalLength={18}
+              token={{
+                decimals: 18,
+                symbol: "veSDL",
+                name: t("voteEscrowSDL"),
+                priceUSD: 0,
+              }}
               readonly
               max={"3000"}
               inputValue={veSdlTokenRawVal}
