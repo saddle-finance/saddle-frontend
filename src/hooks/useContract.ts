@@ -235,7 +235,7 @@ export function useSwapContract(
   return useMemo(() => {
     if (!pool || !library) return null
     try {
-      const poolAddress = pool.poolAddress
+      const poolAddress = pool.metaSwapDepositAddress || pool.poolAddress
       if (!poolAddress) return null
       return getSwapContract(library, poolAddress, pool, account ?? undefined)
     } catch (error) {

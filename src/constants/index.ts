@@ -957,7 +957,7 @@ const SBTC_CONTRACT_ADDRESSES = buildAddresses({
 export const SBTC = new Token(
   SBTC_CONTRACT_ADDRESSES,
   18,
-  "SBTC",
+  "sBTC",
   "sbtc",
   "sBTC",
   true,
