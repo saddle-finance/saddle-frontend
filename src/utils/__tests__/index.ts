@@ -97,7 +97,7 @@ describe("formatBNToShortString", () => {
 describe("getTokenByAddress", () => {
   it("correctly fetches a token", () => {
     const chainId = 1
-    const target = TOKENS_MAP["SBTC"]
+    const target = TOKENS_MAP["sBTC"]
     expect(getTokenByAddress(target.addresses[chainId], chainId)).toEqual(
       target,
     )
