@@ -23,7 +23,7 @@ export default function VeTokenCalculator({
   const [totalVeSdl, setTotalVeSdl] = useState<string>("")
   const [poolLiquidity, setPoolLiquidity] = useState<string>("")
   const [depositAmount, setDepositAmount] = useState<string>("")
-  const [poolName, setPoolName] = useState<string>("")
+  const [poolName, setPoolName] = useState<string>("D4")
   const [userVeSdlAmt, setUserVeSdlAmt] = useState<string>("")
 
   //Test purpose
@@ -72,8 +72,8 @@ export default function VeTokenCalculator({
           <Typography>
             <CalculateIcon
               color="primary"
-              sx={{ verticalAlign: "text-bottom" }}
-            />{" "}
+              sx={{ verticalAlign: "text-bottom", mr: 1 }}
+            />
             {t("veSdlMaxBoost")}:
           </Typography>
           <Divider />
@@ -90,10 +90,10 @@ export default function VeTokenCalculator({
           <Typography>
             <CalculateIcon
               color="primary"
-              sx={{ verticalAlign: "text-bottom" }}
-            />{" "}
-            {t("boost")}:{" "}
-            <Typography component="span" color="primary">
+              sx={{ verticalAlign: "text-bottom", mr: 1 }}
+            />
+            {t("boost")}:
+            <Typography component="span" color="primary" ml={1}>
               0x (0 veSDL)
             </Typography>
           </Typography>
