@@ -17,6 +17,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import GaugeVote from "./GaugeVote"
 import LockedInfo from "./LockedInfo"
 import TokenInput from "../../components/TokenInput"
+import VeTokenCalculator from "./VeTokenCalculator"
 import { Zero } from "@ethersproject/constants"
 import { differenceInMonths } from "date-fns"
 import { parseEther } from "@ethersproject/units"
@@ -26,6 +27,7 @@ export default function VeSDL(): JSX.Element {
   const [date, setDate] = useState<Date | null>(null)
   const [sdlTokenRawVal, setSdlTokenRawVal] = useState<string>("")
   const [veSdlTokenRawVal] = useState<string>("")
+  const [openCalculator, setOpenCalculator] = useState<boolean>(false)
   const { t } = useTranslation()
   const handleChange = (value: string) => {
     setSdlTokenRawVal(value)
@@ -123,7 +125,9 @@ export default function VeSDL(): JSX.Element {
               Lock
             </Button>
             <Typography textAlign="end">
-              <Link>{t("veTokenCalculator")}</Link>
+              <Link onClick={() => setOpenCalculator(true)}>
+                {t("veTokenCalculator")}
+              </Link>
             </Typography>
             <Divider />
             <Typography variant="h2" textAlign="center" mb={2}>
@@ -162,6 +166,10 @@ export default function VeSDL(): JSX.Element {
           <GaugeVote />
         </Stack>
       </Box>
+      <VeTokenCalculator
+        open={openCalculator}
+        onClose={() => setOpenCalculator(false)}
+      />
     </Container>
   )
 }
