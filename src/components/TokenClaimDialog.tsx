@@ -187,6 +187,19 @@ export default function TokenClaimDialog({
               </Trans>
             </Typography>
           )}
+          {/* allGaugesWithRewards.map((gauge, i, arr) => (
+            <React.Fragment key={gauge.name}>
+              <ClaimListItem
+                title={gauge.name}
+                amount={rewardBalances[gauge.name] || Zero}
+                claimCallback={() => claimGaugeReward(gauge)}
+                status={
+                  claimsStatuses["allGauges"] || claimsStatuses[gauge.name]
+                }
+              />
+              {i < arr.length - 1 && <Divider key={i} />}
+            </React.Fragment>
+            ))*/}
           {allPoolsWithRewards.map((pool, i, arr) => (
             <React.Fragment key={pool.name}>
               <ClaimListItem
