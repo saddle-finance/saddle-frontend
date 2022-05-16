@@ -365,13 +365,13 @@ export function useGaugeControllerContract(): GaugeController | null {
   return useContract(contractAddress, GAUGE_CONTROLLER_ABI) as GaugeController
 }
 
-export const useSdlContract = () => {
+export const useSdlContract = (): Erc20 => {
   const { chainId } = useActiveWeb3React()
   const contractAddress = chainId ? SDL_TOKEN_ADDRESSES[chainId] : undefined
   return useContract(contractAddress, SDL_TOKEN_ABI) as Erc20
 }
 
-export const useVotingEscrowContract = () => {
+export const useVotingEscrowContract = (): VotingEscrow => {
   const { chainId } = useActiveWeb3React()
   const contractAddress = chainId
     ? VOTING_ESCROW_CONTRACT_ADDRESS[chainId]

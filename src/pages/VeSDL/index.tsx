@@ -183,14 +183,14 @@ export default function VeSDL(): JSX.Element {
     }
   }
 
-  const handleUnlock = useCallback(async () => {
+  const handleUnlock = async () => {
     if (votingEscrowContract) {
       const txn = await votingEscrowContract?.force_withdraw()
       await txn.wait()
       enqueueToast("success", "Unlocked")
       void fetchData()
     }
-  }, [])
+  }
 
   const addLockMos =
     unlockDate && !isNaN(unlockDate.valueOf())
