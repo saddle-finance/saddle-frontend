@@ -1,9 +1,10 @@
 import { Box, Divider, Stack, Typography } from "@mui/material"
-import { POOLS_MAP, PoolTypes } from "../constants"
-import React, { ReactElement } from "react"
+import React, { ReactElement, useContext } from "react"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 
+import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { Partners } from "../utils/thirdPartyIntegrations"
+import { PoolTypes } from "../constants"
 import TokenIcon from "./TokenIcon"
 import { UserShareType } from "../hooks/usePoolData"
 import { Zero } from "@ethersproject/constants"
@@ -16,10 +17,10 @@ interface Props {
 
 function MyShareCard({ data }: Props): ReactElement | null {
   const { t } = useTranslation()
-
+  const basicPools = useContext(BasicPoolsContext)
   if (!data) return null
-  const { type: poolType } = POOLS_MAP[data.name]
-  const formattedDecimals = poolType === PoolTypes.USD ? 2 : 4
+  const { typeOfAsset } = basicPools?.[data.name] || { typeOfAsset: "" }
+  const formattedDecimals = typeOfAsset === PoolTypes.USD ? 2 : 4
 
   const formattedData = {
     share: formatBNToPercentString(data.share, 18),

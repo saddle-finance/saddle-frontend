@@ -957,7 +957,7 @@ const SBTC_CONTRACT_ADDRESSES = buildAddresses({
 export const SBTC = new Token(
   SBTC_CONTRACT_ADDRESSES,
   18,
-  "SBTC",
+  "SBTC", // TODO the mainnet symbol is sBTC but hardhat is SBTC
   "sbtc",
   "sBTC",
   true,

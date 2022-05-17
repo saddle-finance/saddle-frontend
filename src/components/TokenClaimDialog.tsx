@@ -1,3 +1,4 @@
+import { BasicPool, BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import {
   Alert,
   Box,
@@ -9,7 +10,7 @@ import {
   ListItem,
   Typography,
 } from "@mui/material"
-import { ChainId, POOLS_MAP, Pool, SDL_TOKEN } from "../constants"
+import { ChainId, SDL_TOKEN } from "../constants"
 import React, {
   ReactElement,
   useCallback,
@@ -48,6 +49,7 @@ export default function TokenClaimDialog({
 }: TokenClaimDialogProps): ReactElement {
   const { t } = useTranslation()
   const { chainId } = useActiveWeb3React()
+  const basicPools = useContext(BasicPoolsContext)
   const isClaimableNetwork =
     chainId === ChainId.MAINNET ||
     chainId === ChainId.ARBITRUM ||
@@ -72,27 +74,25 @@ export default function TokenClaimDialog({
     formatBNToString(rewardBalances.retroactiveTotal, 18, 2),
   )
   const [allPoolsWithRewards, poolsWithUserRewards] = useMemo(() => {
-    if (!chainId) return [[], []]
-    const allPoolsWithRewards = Object.values(POOLS_MAP)
-      .filter(({ addresses, rewardPids }) => {
+    if (!basicPools) return [[], []]
+    const allPoolsWithRewards = (Object.values(basicPools) as BasicPool[])
+      .filter(({ miniChefRewardsPid }) => {
         // remove pools not in this chain and without rewards
-        const isChainPool = !!addresses[chainId]
-        const hasRewards = rewardPids[chainId] !== null
-        return isChainPool && hasRewards
+        return miniChefRewardsPid !== null
       })
-      .sort(({ name: nameA }, { name: nameB }) => {
+      .sort(({ poolName: nameA }, { poolName: nameB }) => {
         const [rewardBalA, rewardBalB] = [
           rewardBalances[nameA],
           rewardBalances[nameB],
         ]
         return (rewardBalA || Zero).gte(rewardBalB || Zero) ? -1 : 1
       })
-    const poolsWithUserRewards = allPoolsWithRewards.filter(({ name }) => {
-      const hasUserRewards = rewardBalances[name]?.gt(Zero)
+    const poolsWithUserRewards = allPoolsWithRewards.filter(({ poolName }) => {
+      const hasUserRewards = rewardBalances[poolName]?.gt(Zero)
       return !!hasUserRewards
     })
     return [allPoolsWithRewards, poolsWithUserRewards]
-  }, [chainId, rewardBalances])
+  }, [basicPools, rewardBalances])
 
   return (
     <Dialog
@@ -203,12 +203,14 @@ export default function TokenClaimDialog({
             </React.Fragment>
             ))*/}
           {allPoolsWithRewards.map((pool, i, arr) => (
-            <React.Fragment key={pool.name}>
+            <React.Fragment key={pool.poolName}>
               <ClaimListItem
-                title={pool.name}
-                amount={rewardBalances[pool.name] || Zero}
+                title={pool.poolName}
+                amount={rewardBalances[pool.poolName] || Zero}
                 claimCallback={() => claimPoolReward(pool)}
-                status={claimsStatuses["allPools"] || claimsStatuses[pool.name]}
+                status={
+                  claimsStatuses["allPools"] || claimsStatuses[pool.poolName]
+                }
               />
               {i < arr.length - 1 && <Divider key={i} />}
             </React.Fragment>
@@ -308,12 +310,12 @@ function useRewardClaims() {
   )
 
   const claimPoolReward = useCallback(
-    async (pool: Pool) => {
+    async (pool: BasicPool) => {
       if (!chainId || !account || !rewardsContract) return
       try {
-        const pid = pool.rewardPids[chainId]
+        const pid = pool.miniChefRewardsPid
         if (pid === null) return
-        updateClaimStatus(pool.name, STATUSES.PENDING)
+        updateClaimStatus(pool.poolName, STATUSES.PENDING)
         let txn: ContractTransaction
         if (chainId === ChainId.MAINNET) {
           txn = await rewardsContract.harvest(pid, account)
@@ -321,12 +323,12 @@ function useRewardClaims() {
           txn = await rewardsContract.deposit(pid, Zero, account)
         }
         await enqueuePromiseToast(chainId, txn.wait(), "claim", {
-          poolName: pool.name,
+          poolName: pool.poolName,
         })
-        updateClaimStatus(pool.name, STATUSES.SUCCESS)
+        updateClaimStatus(pool.poolName, STATUSES.SUCCESS)
       } catch (e) {
         console.error(e)
-        updateClaimStatus(pool.name, STATUSES.ERROR)
+        updateClaimStatus(pool.poolName, STATUSES.ERROR)
         enqueueToast("error", "Unable to claim reward")
       }
     },
@@ -367,12 +369,12 @@ function useRewardClaims() {
   ])
 
   const claimAllPoolsRewards = useCallback(
-    async (pools: Pool[]) => {
+    async (pools: BasicPool[]) => {
       if (!chainId || !account || !rewardsContract) return
       try {
         const calls = await Promise.all(
           pools.map((pool) => {
-            const pid = pool.rewardPids[chainId] as number
+            const pid = pool.miniChefRewardsPid as number
             if (chainId === ChainId.MAINNET) {
               return rewardsContract.populateTransaction.harvest(pid, account)
             } else {

@@ -2,13 +2,14 @@ import {
   NumberInputState,
   numberInputStateCreator,
 } from "../utils/numberInputState"
-import { POOLS_MAP, PoolName, isLegacySwapABIPool } from "../constants"
 import { useCallback, useMemo, useState } from "react"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
+import { Zero } from "@ethersproject/constants"
 import { debounce } from "lodash"
+import { isLegacySwapABIPool } from "../constants"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import usePoolData from "../hooks/usePoolData"
@@ -22,7 +23,7 @@ const IMBALANCE = "IMBALANCE"
 const ALL = "ALL"
 
 interface TokenInputs {
-  [symbol: string]: NumberInputState
+  [address: string]: NumberInputState | undefined
 }
 export interface WithdrawFormState {
   percentage: string | null
@@ -34,40 +35,39 @@ export interface WithdrawFormState {
 type FormFields = Exclude<keyof WithdrawFormState, "error">
 export type WithdrawFormAction = {
   fieldName: FormFields | "reset"
-  tokenSymbol?: string
+  address?: string
   value: string
 }
 
 export default function useWithdrawFormState(
-  poolName: PoolName,
+  poolName: string,
 ): [WithdrawFormState, (action: WithdrawFormAction) => void] {
-  const POOL = POOLS_MAP[poolName]
   const swapContract = useSwapContract(poolName)
-  const [, userShareData] = usePoolData(poolName)
+  const [poolData, userShareData] = usePoolData(poolName)
   const { account } = useActiveWeb3React()
   const tokenInputStateCreators: {
-    [tokenSymbol: string]: ReturnType<typeof numberInputStateCreator>
+    [address: string]: ReturnType<typeof numberInputStateCreator>
   } = useMemo(
     () =>
-      POOL.poolTokens.reduce(
-        (acc, { symbol, decimals }) => ({
+      poolData.tokens.reduce(
+        (acc, { address, decimals }) => ({
           ...acc,
-          [symbol]: numberInputStateCreator(decimals, BigNumber.from("0")),
+          [address]: numberInputStateCreator(decimals, BigNumber.from("0")),
         }),
         {},
       ),
-    [POOL.poolTokens],
+    [poolData.tokens],
   )
   const tokenInputsEmptyState = useMemo(
     () =>
-      POOL.poolTokens.reduce(
-        (acc, { symbol }) => ({
+      poolData.tokens.reduce(
+        (acc, { address }) => ({
           ...acc,
-          [symbol]: tokenInputStateCreators[symbol]("0"),
+          [address]: tokenInputStateCreators[address]("0"),
         }),
         {},
       ),
-    [POOL.poolTokens, tokenInputStateCreators],
+    [poolData.tokens, tokenInputStateCreators],
   )
   const formEmptyState = useMemo(
     () => ({
@@ -107,13 +107,13 @@ export default function useWithdrawFormState(
       if (state.withdrawType === IMBALANCE) {
         try {
           let inputCalculatedLPTokenAmount: BigNumber
-          if (isLegacySwapABIPool(POOL.name)) {
+          if (isLegacySwapABIPool(poolData.name)) {
             inputCalculatedLPTokenAmount = await (
               swapContract as SwapFlashLoan
             ).calculateTokenAmount(
               account,
-              POOL.poolTokens.map(
-                ({ symbol }) => state.tokenInputs[symbol].valueSafe,
+              poolData.tokens.map(
+                ({ address }) => state.tokenInputs[address]?.valueSafe || Zero,
               ),
               false,
             )
@@ -121,8 +121,8 @@ export default function useWithdrawFormState(
             inputCalculatedLPTokenAmount = await (
               swapContract as SwapFlashLoanNoWithdrawFee
             ).calculateTokenAmount(
-              POOL.poolTokens.map(
-                ({ symbol }) => state.tokenInputs[symbol].valueSafe,
+              poolData.tokens.map(
+                ({ address }) => state.tokenInputs[address]?.valueSafe || Zero,
               ),
               false,
             )
@@ -166,10 +166,10 @@ export default function useWithdrawFormState(
           }
           nextState = {
             lpTokenAmountToSpend: effectiveUserLPTokenBalance,
-            tokenInputs: POOL.poolTokens.reduce(
-              (acc, { symbol }, i) => ({
+            tokenInputs: poolData.tokens.reduce(
+              (acc, { address }, i) => ({
                 ...acc,
-                [symbol]: tokenInputStateCreators[symbol](tokenAmounts[i]),
+                [address]: tokenInputStateCreators[address](tokenAmounts[i]),
               }),
               {},
             ),
@@ -186,8 +186,8 @@ export default function useWithdrawFormState(
       } else {
         try {
           if (state.percentage) {
-            const tokenIndex = POOL.poolTokens.findIndex(
-              ({ symbol }) => symbol === state.withdrawType,
+            const tokenIndex = poolData.tokens.findIndex(
+              ({ address }) => address === state.withdrawType,
             )
             let tokenAmount: BigNumber
             if (isLegacySwapABIPool(poolName)) {
@@ -208,10 +208,10 @@ export default function useWithdrawFormState(
             }
             nextState = {
               lpTokenAmountToSpend: effectiveUserLPTokenBalance,
-              tokenInputs: POOL.poolTokens.reduce(
-                (acc, { symbol }, i) => ({
+              tokenInputs: poolData.tokens.reduce(
+                (acc, { address }, i) => ({
                   ...acc,
-                  [symbol]: tokenInputStateCreators[symbol](
+                  [address]: tokenInputStateCreators[address](
                     i === tokenIndex ? tokenAmount : "0",
                   ),
                 }),
@@ -222,13 +222,14 @@ export default function useWithdrawFormState(
           } else {
             // This branch addresses a user manually inputting a value for one token
             let inputCalculatedLPTokenAmount: BigNumber
-            if (isLegacySwapABIPool(POOL.name)) {
+            if (isLegacySwapABIPool(poolData.name)) {
               inputCalculatedLPTokenAmount = await (
                 swapContract as SwapFlashLoan
               ).calculateTokenAmount(
                 account,
-                POOL.poolTokens.map(
-                  ({ symbol }) => state.tokenInputs[symbol].valueSafe,
+                poolData.tokens.map(
+                  ({ address }) =>
+                    state.tokenInputs[address]?.valueSafe || Zero,
                 ),
                 false,
               )
@@ -236,8 +237,9 @@ export default function useWithdrawFormState(
               inputCalculatedLPTokenAmount = await (
                 swapContract as SwapFlashLoanNoWithdrawFee
               ).calculateTokenAmount(
-                POOL.poolTokens.map(
-                  ({ symbol }) => state.tokenInputs[symbol].valueSafe,
+                poolData.tokens.map(
+                  ({ address }) =>
+                    state.tokenInputs[address]?.valueSafe || Zero,
                 ),
                 false,
               )
@@ -271,7 +273,7 @@ export default function useWithdrawFormState(
         ...nextState,
       }))
     }, 250),
-    [userShareData, swapContract, POOL.poolTokens, tokenInputStateCreators],
+    [userShareData, swapContract, poolData.tokens, tokenInputStateCreators],
   )
 
   const handleUpdateForm = useCallback(
@@ -281,21 +283,20 @@ export default function useWithdrawFormState(
       setFormState((prevState) => {
         let nextState: WithdrawFormState | Record<string, unknown> = {}
         if (action.fieldName === "tokenInputs") {
-          const { tokenSymbol: tokenSymbolInput = "", value: valueInput } =
-            action
+          const { address = "", value: valueInput } = action
+          console.log({ action })
           const newTokenInputs = {
             ...prevState.tokenInputs,
-            [tokenSymbolInput]:
-              tokenInputStateCreators[tokenSymbolInput](valueInput),
+            [address]: tokenInputStateCreators[address](valueInput),
           }
-          const activeInputTokens = POOL.poolTokens.filter(
-            ({ symbol }) => +newTokenInputs[symbol].valueRaw !== 0,
+          const activeInputTokens = poolData.tokens.filter(
+            ({ address }) => +(newTokenInputs[address]?.valueRaw || "0") !== 0,
           )
           let withdrawType
           if (activeInputTokens.length === 0) {
             withdrawType = ALL
           } else if (activeInputTokens.length === 1) {
-            withdrawType = activeInputTokens[0].symbol
+            withdrawType = activeInputTokens[0].address
           } else {
             withdrawType = IMBALANCE
           }
@@ -340,8 +341,8 @@ export default function useWithdrawFormState(
         }
         const pendingTokenInput =
           action.fieldName === "tokenInputs" &&
-          POOL.poolTokens.every(({ symbol }) => {
-            const stateValue = finalState.tokenInputs[symbol].valueRaw
+          poolData.tokens.every(({ address }) => {
+            const stateValue = finalState.tokenInputs[address]?.valueRaw || Zero
             return isNaN(+stateValue) || +stateValue === 0
           })
         if (!finalState.error && !pendingTokenInput) {
@@ -351,7 +352,7 @@ export default function useWithdrawFormState(
       })
     },
     [
-      POOL.poolTokens,
+      poolData.tokens,
       calculateAndUpdateDynamicFields,
       tokenInputStateCreators,
       tokenInputsEmptyState,

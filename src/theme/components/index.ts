@@ -16,6 +16,7 @@ import MenuItemTheme from "./MenuItemTheme"
 import MenuTheme from "./MenuTheme"
 import PaperTheme from "./PaperTheme"
 import RadioButtonTheme from "./RadioButtonTheme"
+import SelectTheme from "./SelectTheme"
 import TableCellTheme from "./TableCellTheme"
 import TextFieldTheme from "./TextFieldTheme"
 import ToggleButtonTheme from "./ToggleButtonTheme"
@@ -44,6 +45,7 @@ export default function componentsOverrides(theme: Theme): Components {
     ListItemButtonTheme(theme),
     ListItemIconTheme(theme),
     RadioButtonTheme(),
+    SelectTheme(theme),
     TextFieldTheme(),
   ) as Components
 }
