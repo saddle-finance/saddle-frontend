@@ -286,7 +286,7 @@ export const EVMOS_BTC_SWAP_ADDRESSES = buildAddresses({
 })
 
 export const EVMOS_4USD_SWAP_ADDRESSES = buildAddresses({
-  [ChainId.EVMOS]: "",
+  [ChainId.EVMOS]: "0x4be29402eF37c911fc33BeF349aeAD96f24f29Ef",
 })
 
 export const VETH2_SWAP_ADDRESSES = buildAddresses({
@@ -437,7 +437,7 @@ export const EVMOS_BTC_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
 })
 
 export const EVMOS_4USD_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
-  [ChainId.EVMOS]: "",
+  [ChainId.EVMOS]: "0x011C7185e40767Bb1F03db2346deFe0DcBd3eD6E",
 })
 
 export const TBTC_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
