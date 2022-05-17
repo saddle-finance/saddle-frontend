@@ -1,4 +1,5 @@
 import { BasicPool, BasicPoolsContext } from "./BasicPoolsProvider"
+import { Gauge, GaugeContext } from "./GaugeProvider"
 import {
   MulticallCall,
   MulticallContract,
@@ -31,6 +32,7 @@ export default function TokensProvider({
   const { chainId, library } = useActiveWeb3React()
   const pools = useContext(BasicPoolsContext)
   const minichefData = useContext(MinichefContext)
+  const gauges = useContext(GaugeContext)
   const [tokens, setTokens] = useState<BasicTokens>(null)
   useEffect(() => {
     async function fetchTokens() {
@@ -58,6 +60,14 @@ export default function TokensProvider({
           targetTokenAddresses.add(address)
         })
       }
+      if (gauges.gauges) {
+        // add gauge tokens
+        ;(Object.values(gauges.gauges) as Gauge[]).forEach((gauge) => {
+          gauge.rewards.forEach(({ token }) => {
+            targetTokenAddresses.add(token)
+          })
+        })
+      }
       const tokenInfos = await getTokenInfos(
         ethCallProvider,
         chainId,
@@ -70,7 +80,7 @@ export default function TokensProvider({
       setTokens(tokenInfos)
     }
     void fetchTokens()
-  }, [chainId, library, pools, minichefData])
+  }, [chainId, library, pools, minichefData, gauges.gauges])
   return (
     <TokensContext.Provider value={tokens}>{children}</TokensContext.Provider>
   )
