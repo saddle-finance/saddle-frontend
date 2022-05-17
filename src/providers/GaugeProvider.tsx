@@ -65,7 +65,6 @@ export default function GaugeProvider({
       const gauges: Gauges =
         (await getGaugeData(library, chainId, gaugeController)) ||
         initialGaugesState
-
       setGauges(gauges)
     }
 
