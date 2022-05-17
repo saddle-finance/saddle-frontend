@@ -1,11 +1,12 @@
-import { POOLS_MAP, PoolName, SPA, TRANSACTION_TYPES } from "../constants"
+import { SPA, TRANSACTION_TYPES } from "../constants"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { getContract, getTokenByAddress } from "../utils"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useLPTokenContract, useMiniChefContract } from "./useContract"
 
 import { AppState } from "../state"
+import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { IRewarder } from "../../types/ethers-contracts/IRewarder"
 import IRewarder_ABI from "../constants/abis/IRewarder.json"
@@ -14,7 +15,7 @@ import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
 
-export function useRewardsHelpers(poolName: PoolName): {
+export function useRewardsHelpers(poolName: string): {
   approveAndStake: (amount: BigNumber) => Promise<void>
   unstake: (amount: BigNumber) => Promise<void>
   claimSPA: () => Promise<void>
@@ -22,13 +23,14 @@ export function useRewardsHelpers(poolName: PoolName): {
   amountOfSpaClaimable: BigNumber
   isPoolIncentivized: boolean
 } {
-  const pool = POOLS_MAP[poolName]
+  const basicPools = useContext(BasicPoolsContext)
+  const basicPool = basicPools?.[poolName]
   const { account, chainId, library } = useActiveWeb3React()
   const dispatch = useDispatch()
   const lpTokenContract = useLPTokenContract(poolName)
   const { infiniteApproval } = useSelector((state: AppState) => state.user)
   const rewardsContract = useMiniChefContract()
-  const poolPid = chainId && pool ? pool.rewardPids[chainId] : null
+  const poolPid = basicPool ? basicPool.miniChefRewardsPid : null
   const [amountStaked, setAmountStaked] = useState(Zero)
   const [amountOfSpaClaimable, setAmountOfSpaClaimable] = useState(Zero)
   const { lastTransactionTimes } = useSelector(
