@@ -36,6 +36,7 @@ import WrongNetworkModal from "../components/WrongNetworkModal"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchSwapStats from "../utils/getSwapStats"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
+import getSnapshotVoteData from "../utils/getSnapshotVoteData"
 import { useActiveWeb3React } from "../hooks"
 import { useDispatch } from "react-redux"
 import { useIntercom } from "react-use-intercom"
@@ -84,7 +85,7 @@ export default function App(): ReactElement {
             <GaugeProvider>
               <TokensProvider>
                 <UserStateProvider>
-                  <GasAndTokenPrices>
+                  <PricesAndVoteData>
                     <PendingSwapsProvider>
                       <RewardsBalancesProvider>
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -162,7 +163,7 @@ export default function App(): ReactElement {
                         </LocalizationProvider>
                       </RewardsBalancesProvider>
                     </PendingSwapsProvider>
-                  </GasAndTokenPrices>
+                  </PricesAndVoteData>
                 </UserStateProvider>
               </TokensProvider>
             </GaugeProvider>
@@ -173,7 +174,7 @@ export default function App(): ReactElement {
   )
 }
 
-function GasAndTokenPrices({
+function PricesAndVoteData({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
   const dispatch = useDispatch<AppDispatch>()
@@ -188,8 +189,13 @@ function GasAndTokenPrices({
   const fetchAndUpdateSwapStats = useCallback(() => {
     void fetchSwapStats(dispatch)
   }, [dispatch])
-  usePoller(fetchAndUpdateGasPrice, BLOCK_TIME * 5)
-  usePoller(fetchAndUpdateTokensPrice, BLOCK_TIME * 5)
+
+  useEffect(() => {
+    void getSnapshotVoteData(dispatch)
+  }, [dispatch])
+
+  usePoller(fetchAndUpdateGasPrice, 5 * 1000)
+  usePoller(fetchAndUpdateTokensPrice, BLOCK_TIME * 3)
   usePoller(fetchAndUpdateSwapStats, BLOCK_TIME * 280) // ~ 1hr
   return <>{children}</>
 }
