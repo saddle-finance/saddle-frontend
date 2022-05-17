@@ -156,6 +156,9 @@ export default function App(): ReactElement {
                               theme={
                                 theme.palette.mode === "dark" ? "dark" : "light"
                               }
+                              style={{
+                                fontFamily: theme.typography.fontFamily,
+                              }}
                               position="top-left"
                             />
                           </AppContainer>
