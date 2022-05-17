@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   Divider,
@@ -147,6 +148,7 @@ export default function TokenClaimDialog({
           </IconButton>
         )}
       </Box>
+      <Alert severity="warning">{t("migrationGaugeWarningMsg")}</Alert>
       <Typography variant="body1" textAlign="center">
         {t("totalClaimableSDL")}
       </Typography>

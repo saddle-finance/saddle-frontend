@@ -130,6 +130,7 @@
   "migrateToGauge": "{{farmName}} Farm upgrade! Old farm is deprecated. You are no longer getting staking rewards. Please upgrade to the gauge farm.",
   "migrationAmount": "Migration Amount",
   "migrationExplain": "This pool is outdated. We recommend migrating to the new gas optimized version to earn better returns.",
+  "migrationGaugeWarningMsg": "Farm upgrade: LP rewards have migrated to the gauge. Go to the Deposit or Withdraw page. The button in the top banner automatically claims your remaining rewards",
   "minRemaining": "min remaining",
   "minutes": "min",
   "minutesLeft_plural": "{{count}} minutes left",
