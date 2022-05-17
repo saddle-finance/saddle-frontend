@@ -1,4 +1,7 @@
-import { Proposal, getVoteEscrowSnapshots } from "../state/voteEscrowSnapshots"
+import {
+  Proposal,
+  updateVoteEscrowSnapshots,
+} from "../state/voteEscrowSnapshots"
 import { AppDispatch } from "../state"
 
 interface Response {
@@ -47,7 +50,7 @@ export default function getSnapshotVoteData(
         .slice(0, 10),
     )
     .then((proposals) => {
-      dispatch(getVoteEscrowSnapshots({ snapshots: proposals }))
+      dispatch(updateVoteEscrowSnapshots({ snapshots: proposals }))
     })
     .catch((e) => {
       const error = new Error(

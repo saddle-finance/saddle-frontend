@@ -24,15 +24,15 @@ const voteEscrowSnapshotsSlice = createSlice({
   name: "voteEscrowSnapshots",
   initialState,
   reducers: {
-    getVoteEscrowSnapshots(
+    updateVoteEscrowSnapshots(
       state,
       action: PayloadAction<VoteEscrowSnapshots>,
     ): void {
-      state.snapshots = [...state.snapshots, ...action.payload.snapshots]
+      state.snapshots = action.payload.snapshots
     },
   },
 })
 
-export const { getVoteEscrowSnapshots } = voteEscrowSnapshotsSlice.actions
+export const { updateVoteEscrowSnapshots } = voteEscrowSnapshotsSlice.actions
 
 export default voteEscrowSnapshotsSlice.reducer
