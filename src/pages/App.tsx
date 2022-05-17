@@ -189,10 +189,6 @@ function PricesAndVoteData({
   const fetchAndUpdateSwapStats = useCallback(() => {
     void fetchSwapStats(dispatch)
   }, [dispatch])
-<<<<<<< HEAD
-  usePoller(fetchAndUpdateGasPrice, BLOCK_TIME * 5)
-  usePoller(fetchAndUpdateTokensPrice, BLOCK_TIME * 5)
-=======
 
   useEffect(() => {
     void getSnapshotVoteData(dispatch)
@@ -200,7 +196,6 @@ function PricesAndVoteData({
 
   usePoller(fetchAndUpdateGasPrice, 5 * 1000)
   usePoller(fetchAndUpdateTokensPrice, BLOCK_TIME * 3)
->>>>>>> 3594abe (Added redux state for Snapshot vote data and all necessary reducers and actions)
   usePoller(fetchAndUpdateSwapStats, BLOCK_TIME * 280) // ~ 1hr
   return <>{children}</>
 }
