@@ -283,7 +283,7 @@
   "basepool": "Base Pool",
   "unlock": "Unlock",
   "unlockInitiated": "Unlock initiated",
-  "unlockCompleted": "Unlock initiated",
+  "unlockCompleted": "Unlock completed",
   "unlockDate": "Unlock date",
   "basepoolAddress": "Base Pool Address",
   "unstakeComplete": "Unstake on {{poolName}} complete",

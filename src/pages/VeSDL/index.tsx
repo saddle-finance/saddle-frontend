@@ -4,7 +4,6 @@ import {
   Button,
   Container,
   Divider,
-  LinearProgress,
   Link,
   Paper,
   Stack,
@@ -53,7 +52,6 @@ export default function VeSDL(): JSX.Element {
 
   const [lockEnd, setLockEnd] = useState<Date | null>(null)
   const [unlockDate, setUnlockDate] = useState<Date | null>(null)
-  const [initialLoading, setInitialLoading] = useState<boolean>(false)
   const { infiniteApproval } = useSelector((state: AppState) => state.user)
 
   const { account, chainId } = useActiveWeb3React()
@@ -229,14 +227,10 @@ export default function VeSDL(): JSX.Element {
 
   useEffect(() => {
     const init = async () => {
-      setInitialLoading(true)
       await fetchData()
-      setInitialLoading(false)
     }
     void init()
   }, [fetchData])
-
-  if (initialLoading) return <LinearProgress />
 
   return (
     <Container sx={{ py: 3 }}>
