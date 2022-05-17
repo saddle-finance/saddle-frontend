@@ -30,6 +30,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
 import { BigNumber } from "@ethersproject/bignumber"
 import { ContractTransaction } from "@ethersproject/contracts"
 import Dialog from "./Dialog"
+import { GaugeContext } from "../providers/GaugeProvider"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
@@ -50,7 +51,11 @@ export default function TokenClaimDialog({
   const { t } = useTranslation()
   const { chainId } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
-  console.log({ basicPools })
+  const gaugeData = useContext(GaugeContext)
+  console.log({ gaugeData, basicPools })
+  // const gaugeMappedToPoolName = gaugeData.gauges.map((gauge) => {
+  //   return Object.values(basicPools).filter(({ }))
+  // })
   const isClaimableNetwork =
     chainId === ChainId.MAINNET ||
     chainId === ChainId.ARBITRUM ||
@@ -191,11 +196,11 @@ export default function TokenClaimDialog({
               </Trans>
             </Typography>
           )}
-          {/* allGaugesWithRewards.map((gauge, i, arr) => (
+          {/* gaugeData.gauges.map((gauge, i, arr) => (
             <React.Fragment key={gauge.name}>
               <ClaimListItem
-                title={gauge.name}
-                amount={rewardBalances[gauge.name] || Zero}
+                title={gauge.address}
+                amount={rewardBalances[gauge.name]}
                 claimCallback={() => claimGaugeReward(gauge)}
                 status={
                   claimsStatuses["allGauges"] || claimsStatuses[gauge.name]
@@ -336,6 +341,30 @@ function useRewardClaims() {
     },
     [chainId, account, rewardsContract, updateClaimStatus],
   )
+
+  // const claimGaugeReward = useCallback(
+  //   async (gauge: Gauge) => {
+  //     if (!chainId || !account || !rewardsContract) return
+  //     try {
+  //       // const pid = pool.miniChefRewardsPid
+  //       // if (pid === null) return
+  //       // updateClaimStatus(pool.poolName, STATUSES.PENDING)
+  //       const txn: ContractTransaction = await mintContract["mint(addr)"](
+  //         account,
+  //       )
+  //       await enqueuePromiseToast(chainId, txn.wait(), "claim", {
+  //         poolName: gauge.address,
+  //       })
+  //       // updateClaimStatus(pool.poolName, STATUSES.SUCCESS)
+  //     } catch (e) {
+  //       console.error(e)
+  //       // updateClaimStatus(pool.poolName, STATUSES.ERROR)
+  //       enqueueToast("error", "Unable to claim reward")
+  //     }
+  //   },
+  //   [chainId, account, rewardsContract, updateClaimStatus],
+  // )
+
   const claimRetroReward = useCallback(async () => {
     if (!account || !retroRewardsContract || !chainId) return
     try {
