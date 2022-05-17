@@ -154,7 +154,6 @@ function Withdraw({ poolName }: Props): ReactElement {
     withdrawLPTokenAmount,
     txnGasCost: txnGasCost,
   }
-  console.log(reviewWithdrawData.priceImpact.toString())
   poolData.tokens.forEach(({ name, decimals, symbol, address }) => {
     if (
       BigNumber.from(
