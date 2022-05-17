@@ -5,8 +5,6 @@ import {
   GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES,
   MASTER_REGISTRY_CONTRACT_ADDRESSES,
   MINICHEF_CONTRACT_ADDRESSES,
-  POOLS_MAP,
-  PoolName,
   RETROACTIVE_VESTING_CONTRACT_ADDRESSES,
   SDL_TOKEN_ADDRESSES,
   SYNTHETIX_CONTRACT_ADDRESSES,
@@ -14,13 +12,14 @@ import {
   TOKENS_MAP,
   Token,
   VOTING_ESCROW_CONTRACT_ADDRESS,
-  isLegacySwapABIPool,
-  isMetaPool,
 } from "../constants"
 
-import { useEffect, useMemo, useState } from "react"
+import { getContract, getSwapContract } from "../utils"
+import { useContext, useEffect, useMemo, useState } from "react"
+
 import { AddressZero } from "@ethersproject/constants"
 import BRIDGE_CONTRACT_ABI from "../constants/abis/bridge.json"
+import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { Bridge } from "../../types/ethers-contracts/Bridge"
 import { Contract } from "@ethersproject/contracts"
 import ERC20_ABI from "../constants/abis/erc20.json"
@@ -34,7 +33,6 @@ import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import MASTER_REGISTRY_ABI from "../constants/abis/masterRegistry.json"
-import META_SWAP_DEPOSIT_ABI from "../constants/abis/metaSwapDeposit.json"
 import MINICHEF_CONTRACT_ABI from "../constants/abis/miniChef.json"
 import { MasterRegistry } from "../../types/ethers-contracts/MasterRegistry"
 import { MetaSwapDeposit } from "../../types/ethers-contracts/MetaSwapDeposit"
@@ -46,9 +44,6 @@ import { PoolRegistry } from "../../types/ethers-contracts/PoolRegistry"
 import RETROACTIVE_VESTING_CONTRACT_ABI from "../constants/abis/retroactiveVesting.json"
 import { RetroactiveVesting } from "../../types/ethers-contracts/RetroactiveVesting"
 import SDL_TOKEN_ABI from "../constants/abis/sdl.json"
-import SWAP_FLASH_LOAN_ABI from "../constants/abis/swapFlashLoan.json"
-import SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI from "../constants/abis/swapFlashLoanNoWithdrawFee.json"
-import SWAP_GUARDED_ABI from "../constants/abis/swapGuarded.json"
 import SYNTHETIX_EXCHANGE_RATE_CONTRACT_ABI from "../constants/abis/synthetixExchangeRate.json"
 import SYNTHETIX_NETWORK_TOKEN_CONTRACT_ABI from "../constants/abis/synthetixNetworkToken.json"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
@@ -59,7 +54,6 @@ import { SynthetixNetworkToken } from "../../types/ethers-contracts/SynthetixNet
 import VOTING_ESCROW_CONTRACT_ABI from "../constants/abis/votingEscrow.json"
 import { VotingEscrow } from "../../types/ethers-contracts/VotingEscrow"
 import { formatBytes32String } from "@ethersproject/strings"
-import { getContract } from "../utils"
 import { useActiveWeb3React } from "./index"
 
 // returns null on errors
@@ -233,87 +227,54 @@ export function useTokenContract(
   return useContract(tokenAddress, ERC20_ABI, withSignerIfPossible)
 }
 
-export function useSwapContract<T extends PoolName | string>(
+export function useSwapContract<T extends string>(
   poolName?: T,
 ): T extends typeof BTC_POOL_NAME
   ? SwapGuarded | null
   : SwapFlashLoan | SwapFlashLoanNoWithdrawFee | MetaSwapDeposit | null
 export function useSwapContract(
   poolName?: string,
-):
-  | SwapGuarded
-  | SwapFlashLoan
-  | SwapFlashLoanNoWithdrawFee
-  | MetaSwapDeposit
-  | null {
-  const { chainId, account, library } = useActiveWeb3React()
+): ReturnType<typeof getSwapContract> {
+  const { account, library } = useActiveWeb3React()
+  const basicPools = useContext(BasicPoolsContext)
+  const pool = poolName ? basicPools?.[poolName] : null
   return useMemo(() => {
-    if (!poolName || !library || !chainId) return null
+    if (!pool || !library) return null
     try {
-      const pool = POOLS_MAP[poolName]
-      const poolAddress = pool.addresses[chainId]
+      const poolAddress = pool.metaSwapDepositAddress || pool.poolAddress
       if (!poolAddress) return null
-      if (poolName === BTC_POOL_NAME) {
-        return getContract(
-          poolAddress,
-          SWAP_GUARDED_ABI,
-          library,
-          account ?? undefined,
-        ) as SwapGuarded
-      } else if (isLegacySwapABIPool(poolName)) {
-        return getContract(
-          poolAddress,
-          SWAP_FLASH_LOAN_ABI,
-          library,
-          account ?? undefined,
-        ) as SwapFlashLoan
-      } else if (isMetaPool(poolName)) {
-        return getContract(
-          poolAddress,
-          META_SWAP_DEPOSIT_ABI,
-          library,
-          account ?? undefined,
-        ) as MetaSwapDeposit
-      } else if (pool) {
-        return getContract(
-          poolAddress,
-          SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI,
-          library,
-          account ?? undefined,
-        ) as SwapFlashLoanNoWithdrawFee
-      } else {
-        return null
-      }
+      return getSwapContract(library, poolAddress, pool, account ?? undefined)
     } catch (error) {
       console.error("Failed to get contract", error)
       return null
     }
-  }, [chainId, library, account, poolName])
+  }, [library, account, pool])
 }
 
-export function useLPTokenContract<T extends PoolName>(
+export function useLPTokenContract<T extends string>(
   poolName: T,
 ): T extends typeof BTC_POOL_NAME
   ? LpTokenGuarded | null
   : LpTokenUnguarded | null
 export function useLPTokenContract(
-  poolName: PoolName,
+  poolName: string,
 ): LpTokenUnguarded | LpTokenGuarded | null {
-  const { chainId, account, library } = useActiveWeb3React()
+  const { account, library } = useActiveWeb3React()
+  const basicPools = useContext(BasicPoolsContext)
+  const pool = basicPools?.[poolName]
   return useMemo(() => {
-    if (!poolName || !library || !chainId) return null
+    if (!library || !pool) return null
     try {
-      const pool = POOLS_MAP[poolName]
-      if (poolName == BTC_POOL_NAME) {
+      if (pool.isGuarded) {
         return getContract(
-          pool.lpToken.addresses[chainId],
+          pool.lpToken,
           LPTOKEN_GUARDED_ABI,
           library,
           account ?? undefined,
         ) as LpTokenGuarded
       } else {
         return getContract(
-          pool.lpToken.addresses[chainId],
+          pool.lpToken,
           LPTOKEN_UNGUARDED_ABI,
           library,
           account ?? undefined,
@@ -323,7 +284,7 @@ export function useLPTokenContract(
       console.error("Failed to get contract", error)
       return null
     }
-  }, [chainId, library, account, poolName])
+  }, [library, pool, account])
 }
 
 interface AllContractsObject {

@@ -188,8 +188,8 @@ function GasAndTokenPrices({
   const fetchAndUpdateSwapStats = useCallback(() => {
     void fetchSwapStats(dispatch)
   }, [dispatch])
-  usePoller(fetchAndUpdateGasPrice, 5 * 1000)
-  usePoller(fetchAndUpdateTokensPrice, BLOCK_TIME * 3)
+  usePoller(fetchAndUpdateGasPrice, BLOCK_TIME * 5)
+  usePoller(fetchAndUpdateTokensPrice, BLOCK_TIME * 5)
   usePoller(fetchAndUpdateSwapStats, BLOCK_TIME * 280) // ~ 1hr
   return <>{children}</>
 }

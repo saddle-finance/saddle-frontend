@@ -27,6 +27,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import GaugeVote from "./GaugeVote"
 import LockedInfo from "./LockedInfo"
 import TokenInput from "../../components/TokenInput"
+import VeTokenCalculator from "./VeTokenCalculator"
 import { Zero } from "@ethersproject/constants"
 import checkAndApproveTokenForTrade from "../../utils/checkAndApproveTokenForTrade"
 import { minBigNumber } from "../../utils/minBigNumber"
@@ -59,6 +60,7 @@ export default function VeSDL(): JSX.Element {
   const votingEscrowContract = useVotingEscrowContract()
   const sdlContract = useSdlContract()
 
+  const [openCalculator, setOpenCalculator] = useState<boolean>(false)
   const { t } = useTranslation()
 
   const fetchData = useCallback(async () => {
@@ -319,7 +321,9 @@ export default function VeSDL(): JSX.Element {
               {lockedSDLVal.isZero() ? t("createLock") : t("adjustLock")}
             </Button>
             <Typography textAlign="end">
-              <Link>{t("veTokenCalculator")}</Link>
+              <Link onClick={() => setOpenCalculator(true)}>
+                {t("veTokenCalculator")}
+              </Link>
             </Typography>
             <Divider />
             <Typography variant="h2" textAlign="center" mb={2}>
@@ -382,6 +386,10 @@ export default function VeSDL(): JSX.Element {
           <GaugeVote />
         </Stack>
       </Box>
+      <VeTokenCalculator
+        open={openCalculator}
+        onClose={() => setOpenCalculator(false)}
+      />
     </Container>
   )
 }
