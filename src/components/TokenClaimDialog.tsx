@@ -1,4 +1,3 @@
-import { BasicPool, BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import {
   Alert,
   Box,
@@ -10,6 +9,7 @@ import {
   ListItem,
   Typography,
 } from "@mui/material"
+import { BasicPool, BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { ChainId, SDL_TOKEN } from "../constants"
 import React, {
   ReactElement,
@@ -50,6 +50,7 @@ export default function TokenClaimDialog({
   const { t } = useTranslation()
   const { chainId } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
+  console.log({ basicPools })
   const isClaimableNetwork =
     chainId === ChainId.MAINNET ||
     chainId === ChainId.ARBITRUM ||
@@ -73,6 +74,7 @@ export default function TokenClaimDialog({
   const formattedTotalRetroDrop = commify(
     formatBNToString(rewardBalances.retroactiveTotal, 18, 2),
   )
+
   const [allPoolsWithRewards, poolsWithUserRewards] = useMemo(() => {
     if (!basicPools) return [[], []]
     const allPoolsWithRewards = (Object.values(basicPools) as BasicPool[])
