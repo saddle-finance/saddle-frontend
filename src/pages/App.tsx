@@ -61,6 +61,7 @@ const AppContainer = styled("div")(({ theme }) => {
     backgroundSize: "cover",
   }
 })
+
 export default function App(): ReactElement {
   const { chainId } = useActiveWeb3React()
   const theme = useTheme()
@@ -156,9 +157,6 @@ export default function App(): ReactElement {
                               theme={
                                 theme.palette.mode === "dark" ? "dark" : "light"
                               }
-                              style={{
-                                fontFamily: theme.typography.fontFamily,
-                              }}
                               position="top-left"
                             />
                           </AppContainer>
