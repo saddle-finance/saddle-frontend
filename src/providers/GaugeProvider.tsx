@@ -151,8 +151,8 @@ export async function getGaugeData(
             gaugeWeight: gaugeWeights[index],
             gaugeRelativeWeight: gaugeRelativeWeights[index],
             rewards: gaugeRewards[index].map((reward) => ({
-              period_finish: reward.period_finish,
-              last_update: reward.last_update,
+              periodFinish: reward.period_finish,
+              lastUpdate: reward.last_update,
               distributor: reward.distributor.toLowerCase(),
               rate: reward.rate,
               token: reward.token.toLowerCase(),
