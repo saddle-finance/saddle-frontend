@@ -13,6 +13,7 @@ import {
 } from "@mui/material"
 import React, { useCallback, useEffect, useState } from "react"
 import { differenceInMonths, format, getUnixTime } from "date-fns"
+import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 import { formatUnits, parseEther } from "@ethersproject/units"
 import {
   useSdlContract,
@@ -28,7 +29,6 @@ import LockedInfo from "./LockedInfo"
 import TokenInput from "../../components/TokenInput"
 import { Zero } from "@ethersproject/constants"
 import checkAndApproveTokenForTrade from "../../utils/checkAndApproveTokenForTrade"
-import { enqueueToast } from "../../components/Toastify"
 import { minBigNumber } from "../../utils/minBigNumber"
 import { useActiveWeb3React } from "../../hooks"
 import { useSelector } from "react-redux"
@@ -151,8 +151,7 @@ export default function VeSDL(): JSX.Element {
           sdlTokenValue,
           unlockTimeStamp,
         )
-        await txn.wait()
-        enqueueToast("success", "Locked SDL")
+        void enqueuePromiseToast(chainId, txn.wait(), "createLock")
       } else if (shouldIncreaseAmoutAndLockEnd) {
         const txnIncreaseAmount = await votingEscrowContract.increase_amount(
           sdlTokenValue,
@@ -163,18 +162,19 @@ export default function VeSDL(): JSX.Element {
             BigNumber.from(unlockTimeStamp),
           )
         await txnIncreaseUnlockTime.wait()
-        enqueueToast("success", "Increased unlock time")
+        enqueueToast("success", "Increased amount and unlock time")
       } else if (shouldIncreaseAmount) {
         // Deposit additional SDL into and existing lock
         const txn = await votingEscrowContract.increase_amount(sdlTokenValue)
         await txn.wait()
+        void enqueuePromiseToast(chainId, txn.wait(), "increaseLockAmt")
       } else if (shouldIncreaseLockEnd) {
         // Extend the unlock time on a lock that already exists
         const txn = await votingEscrowContract.increase_unlock_time(
           BigNumber.from(unlockTimeStamp),
         )
         await txn.wait()
-        enqueueToast("success", "Increased lock amount")
+        void enqueuePromiseToast(chainId, txn.wait(), "increaseLockEndTime")
       }
       void fetchData()
       resetFormState()
@@ -184,10 +184,9 @@ export default function VeSDL(): JSX.Element {
   }
 
   const handleUnlock = async () => {
-    if (votingEscrowContract) {
+    if (votingEscrowContract && chainId) {
       const txn = await votingEscrowContract?.force_withdraw()
-      await txn.wait()
-      enqueueToast("success", "Unlocked")
+      void enqueuePromiseToast(chainId, txn.wait(), "unlock")
       void fetchData()
     }
   }
@@ -336,7 +335,7 @@ export default function VeSDL(): JSX.Element {
             <Typography>
               {t("totalVeSdlHolding")}: {formatUnits(veSdlTokenVal)}
             </Typography>
-            {penaltyAmount && (
+            {!penaltyAmount.isZero && (
               <Alert
                 severity="error"
                 icon={false}
@@ -351,7 +350,7 @@ export default function VeSDL(): JSX.Element {
             )}
             <Button
               variant="contained"
-              data-testid="unLockVeSdlBtn"
+              data-testid="unlockVeSdlBtn"
               onClick={handleUnlock}
               size="large"
               fullWidth
