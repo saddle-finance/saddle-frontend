@@ -39,7 +39,7 @@ export const EVMOS_TESTNET_POOL_NAME = "evmosTestnetUSD"
 export const EVMOS_POOL_NAME = "evmosUSD"
 export const KAVA_TESTNET_USD_POOL_NAME = "kavaTestnetUSD"
 export const TBTC_EVMOS_BTC_METAPOOL_NAME = "tbtc-evmosBTC Meta"
-export const EVMOS_4_POOL_NAME = "Evmos 4 Pool"
+export const EVMOS_4_POOL_NAME = "Evmos 4Pool"
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof BTC_POOL_V2_NAME
