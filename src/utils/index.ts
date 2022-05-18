@@ -413,3 +413,11 @@ export function generateSnapshotVoteLink(id?: string): string {
   if (id) return `https://snapshot.org/#/saddlefinance.eth/proposal/${id}`
   return "https://snapshot.org/#/saddlefinance.eth"
 }
+
+export function lowerCaseAddresses(addresses: string[]): string[] {
+  return addresses.map((address) => address.toLowerCase())
+}
+
+export function isAddressZero(address: string | null): boolean {
+  return BigNumber.from(address).isZero()
+}

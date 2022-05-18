@@ -45,6 +45,7 @@ export const FRAX_3_POOL_NAME = "Frax 3Pool"
 export const TBTC_METAPOOL_V2_BTCV2_V3_NAME = "tBTCv2-BTCv2_v3"
 export const WCUSD_METAPOOL_V2_USDV2_V3_NAME = "wcUSD-USDv2_v3"
 export const SUSD_METAPOOL_V2_USDV2_V3_NAME = "sUSD-USDv2_v3"
+
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof BTC_POOL_V2_NAME

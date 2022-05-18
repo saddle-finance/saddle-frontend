@@ -10,7 +10,9 @@ import React, { ReactElement, useEffect, useState } from "react"
 import {
   createMultiCallContract,
   getMulticallProvider,
+  isAddressZero,
   isSynthAsset,
+  lowerCaseAddresses,
 } from "../utils"
 
 import { AppState } from "../state"
@@ -19,10 +21,27 @@ import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
+import { PoolRegistry } from "../../types/ethers-contracts/PoolRegistry"
 import { Web3Provider } from "@ethersproject/providers"
 import { getMigrationData } from "../utils/migrations"
 import { useActiveWeb3React } from "../hooks"
 import { useSelector } from "react-redux"
+import { utils } from "ethers"
+
+type RegistryPoolData = {
+  poolAddress: string
+  lpToken: string
+  typeOfAsset: number
+  poolName: string
+  targetAddress: string
+  tokens: string[]
+  underlyingTokens: string[] | null
+  basePoolAddress: string | null
+  metaSwapDepositAddress: string | null
+  isSaddleApproved: boolean
+  isRemoved: boolean
+  isGuarded: boolean
+}
 
 type SharedSwapData = {
   poolAddress: string
@@ -77,6 +96,9 @@ export default function BasicPoolsProvider({
     (state: AppState) => state.application,
   )
 
+  // Will be used when POOLS_MAP and TOKENS_MAP have been deprecated
+  // const poolRegistry = usePoolRegistry()
+
   useEffect(() => {
     async function fetchBasicPools() {
       if (!chainId || !library) {
@@ -84,6 +106,7 @@ export default function BasicPoolsProvider({
         return
       }
       const pools = await getPoolsBaseData(library, chainId)
+
       const poolsAddresses = pools.map((pool) => pool.poolAddress)
       const migrationData = await getMigrationData(
         library,
@@ -111,6 +134,171 @@ export default function BasicPoolsProvider({
   )
 }
 
+/**
+ * WILL NOT BE USED UNTIL POOLS_MAP and TOKENS_MAP have been fully deprecated in other pages
+ * Retrieve PoolData from Registry
+ * excludes outdated Pools
+ */
+/**
+ * Get all info about pools that can be read on chain.
+ * Excludes price data and user data.
+ * Will be replaced with registry.
+ */
+export async function getPoolsBaseDataFromRegistry(
+  library: Web3Provider,
+  chainId: ChainId,
+  poolRegistry: PoolRegistry,
+): Promise<SwapInfo[]> {
+  const registryPools = []
+  const poolCount = (await poolRegistry.getPoolsLength()).toNumber()
+  for (let i = 0; i < poolCount; i++) {
+    const {
+      poolAddress,
+      lpToken,
+      typeOfAsset,
+      poolName,
+      targetAddress,
+      tokens,
+      underlyingTokens,
+      basePoolAddress,
+      metaSwapDepositAddress,
+      isSaddleApproved,
+      isRemoved,
+      isGuarded,
+    } = await poolRegistry.getPoolDataAtIndex(i)
+    const parsedPoolName = utils.parseBytes32String(poolName)
+    if (!parsedPoolName.includes("outdated")) {
+      registryPools.push({
+        typeOfAsset,
+        poolName: parsedPoolName,
+        targetAddress: targetAddress.toLowerCase(),
+        tokens: lowerCaseAddresses(tokens),
+        underlyingTokens: lowerCaseAddresses(underlyingTokens),
+        basePoolAddress: basePoolAddress.toLowerCase(),
+        metaSwapDepositAddress: metaSwapDepositAddress.toLowerCase(),
+        isSaddleApproved,
+        isRemoved,
+        isGuarded,
+        poolAddress: poolAddress.toLowerCase(),
+        lpToken: lpToken.toLowerCase(),
+      })
+    }
+  }
+
+  const poolsData = await Promise.all(
+    registryPools.map((pool) =>
+      getSwapInfoWithRegistryPoolData(library, chainId, pool),
+    ),
+  )
+
+  return poolsData.filter(Boolean) as SwapInfo[]
+}
+
+/**
+ * WILL NOT BE USED UNTIL POOLS_MAP and TOKENS_MAP have been fully deprecated in other pages
+ *
+ * This gets the remaining missing fields that's not provided from the PoolData call from the Registry
+ * Fields are [
+ *  "isPaused",
+ *  "isMetaSwap",
+ *  "virtualPrice",
+ *  "adminFee",
+ *  "swapFee",
+ *  "aParameter",
+ *  "tokenBalances",
+ *  "underlyingTokenBalances",
+ *  "lpTokenSupply",
+ *  "miniChefRewardsPid",
+ * "isSynthetic"
+ * ]
+ *
+ *
+ * @param library
+ * @param chainId
+ * @param pool
+ * @returns
+ */
+export async function getSwapInfoWithRegistryPoolData(
+  library: Web3Provider,
+  chainId: ChainId,
+  pool: RegistryPoolData,
+): Promise<SwapInfo | null> {
+  try {
+    const ethCallProvider = await getMulticallProvider(library, chainId)
+    const swapContractMulticall = createMultiCallContract<MetaSwap>(
+      pool.poolAddress,
+      META_SWAP_ABI,
+    )
+    const lpTokenContract = createMultiCallContract<Erc20>(
+      pool.lpToken,
+      ERC20_ABI,
+    )
+
+    const tokens = pool.tokens
+    const isMetaSwap = isAddressZero(pool.metaSwapDepositAddress)
+    const rewardsPid = getMinichefPid(chainId, pool.poolAddress)
+
+    const [swapStorage, aParameter, isPaused, virtualPrice] =
+      await ethCallProvider.all([
+        swapContractMulticall.swapStorage(),
+        swapContractMulticall.getA(),
+        swapContractMulticall.paused(),
+        swapContractMulticall.getVirtualPrice(),
+      ])
+    const { adminFee, swapFee } = swapStorage
+    const [lpTokenSupply, ...tokenBalances] = await ethCallProvider.all([
+      lpTokenContract.totalSupply(),
+      ...tokens.map((_, i) => swapContractMulticall.getTokenBalance(i)),
+    ])
+
+    const isSynthetic = (pool.tokens || pool.underlyingTokens || []).some(
+      (addr) => isSynthAsset(chainId, addr),
+    )
+
+    const data = {
+      ...pool,
+      isPaused,
+      isMetaSwap,
+      adminFee,
+      swapFee,
+      aParameter,
+      tokenBalances,
+      underlyingTokenBalances: null,
+      virtualPrice: virtualPrice.isZero()
+        ? BigNumber.from(10).pow(18)
+        : virtualPrice,
+      lpTokenSupply,
+      miniChefRewardsPid: rewardsPid,
+      isSynthetic,
+    }
+
+    if (!isMetaSwap) {
+      data.underlyingTokens = null
+      data.basePoolAddress = null
+      data.metaSwapDepositAddress = null
+      data.underlyingTokenBalances = null
+    }
+
+    return isMetaSwap
+      ? (data as unknown as MetaSwapInfo) // TODO can we be more sure of this?
+      : (data as NonMetaSwapInfo)
+  } catch (e) {
+    const error = new Error(
+      `Unable to getSwapInfoWithRegistryPoolData for ${pool.poolName}\n${
+        (e as Error).message
+      }`,
+    )
+    error.stack = (e as Error).stack
+    console.error(error)
+    return null
+  }
+}
+
+/**
+ * Get all info about pools that can be read on chain.
+ * Excludes price data and user data.
+ * Will be replaced with registry.
+ */
 /**
  * Get all info about pools that can be read on chain.
  * Excludes price data and user data.
@@ -162,6 +350,7 @@ export async function getSwapInfo(
           addresses[chainId].toLowerCase(),
         )
       : pool.poolTokens.map(({ addresses }) => addresses[chainId].toLowerCase())
+    // console.log("TOKENS", tokens)
     const underlyingTokens = isMetaSwap
       ? pool.poolTokens.map(({ addresses }) => addresses[chainId].toLowerCase())
       : null

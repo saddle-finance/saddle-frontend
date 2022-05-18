@@ -1,3 +1,4 @@
+import { AddressZero, Zero } from "@ethersproject/constants"
 import { PoolTypes, TOKENS_MAP } from "../../constants/index"
 import {
   batchArray,
@@ -14,6 +15,8 @@ import {
   getTokenIconPath,
   getTokenSymbolForPoolType,
   intersection,
+  isAddressZero,
+  lowerCaseAddresses,
 } from "../index"
 
 import { BigNumber } from "@ethersproject/bignumber"
@@ -21,7 +24,6 @@ import { Contract } from "ethcall"
 import { Deadlines } from "../../state/user"
 import HELPER_CONTRACT_ABI from "../../../src/constants/abis/helperContract.json"
 import { HelperContract } from "../../../types/ethers-contracts/HelperContract"
-import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
 
 describe("bnSum", () => {
@@ -241,5 +243,35 @@ describe("generateSnapshotVoteLink", () => {
   it("returns link to all proposals if id is not present", () => {
     const expectedLink = `https://snapshot.org/#/saddlefinance.eth`
     expect(generateSnapshotVoteLink()).toEqual(expectedLink)
+  })
+})
+
+describe("lowerCaseAddresses", () => {
+  it("correctly lower case a list of addresses", () => {
+    const addresses = [
+      "0x9AA75e03e93f69E1F399ddeD0dA5fFCbE914D099",
+      "0xA4fe4981f7550884E7E6224F0c78245DC145b2F2",
+      "0xBC22B8E74E7fe2E217b295f4a3e1a9E8e182BECD",
+    ]
+
+    const expectedAddresses = [
+      "0x9aa75e03e93f69e1f399dded0da5ffcbe914d099",
+      "0xa4fe4981f7550884e7e6224f0c78245dc145b2f2",
+      "0xbc22b8e74e7fe2e217b295f4a3e1a9e8e182becd",
+    ]
+
+    expect(lowerCaseAddresses(addresses)).toEqual(expectedAddresses)
+  })
+})
+
+describe("isAddressZero", () => {
+  it("correctly identify Address Zero", () => {
+    expect(isAddressZero(AddressZero)).toEqual(true)
+  })
+
+  it("correctly identify a non Address Zero", () => {
+    expect(isAddressZero("0x9aa75e03e93f69e1f399dded0da5ffcbe914d099")).toEqual(
+      false,
+    )
   })
 })
