@@ -1488,6 +1488,12 @@ const minichefPids: Partial<Record<ChainId, { [pool: string]: number }>> = {
     [SUSD_META_SWAP_V2_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 6,
     [WCUSD_META_SWAP_V2_DEPOSIT_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 7,
     [WCUSD_META_SWAP_V2_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 7,
+    [TBTC_META_SWAP_V3_DEPOSIT_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 8,
+    [TBTC_META_SWAP_V3_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 8,
+    [SUSD_META_SWAP_V3_DEPOSIT_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 9,
+    [SUSD_META_SWAP_V3_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 9,
+    [WCUSD_META_SWAP_V3_DEPOSIT_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 10,
+    [WCUSD_META_SWAP_V3_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 10,
   },
   [ChainId.HARDHAT]: {
     [ALETH_SWAP_ADDRESSES[ChainId.HARDHAT].toLowerCase()]: 1,
