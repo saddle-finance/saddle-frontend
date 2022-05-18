@@ -23,6 +23,7 @@ import { commify, formatBNToString } from "../utils"
 import { enqueuePromiseToast, enqueueToast } from "./Toastify"
 import {
   useMiniChefContract,
+  useMinterContract,
   useRetroactiveVestingContract,
 } from "../hooks/useContract"
 
@@ -52,7 +53,8 @@ export default function TokenClaimDialog({
   const { chainId } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
   const gaugeData = useContext(GaugeContext)
-  console.log({ gaugeData, basicPools })
+  const minterContract = useMinterContract()
+  console.log({ gaugeData, basicPools, minterContract })
   // const gaugeMappedToPoolName = gaugeData.gauges.map((gauge) => {
   //   return Object.values(basicPools).filter(({ }))
   // })
@@ -349,7 +351,7 @@ function useRewardClaims() {
   //       // const pid = pool.miniChefRewardsPid
   //       // if (pid === null) return
   //       // updateClaimStatus(pool.poolName, STATUSES.PENDING)
-  //       const txn: ContractTransaction = await mintContract["mint(addr)"](
+  //       const txn: ContractTransaction = await minterContract["mint(addr)"](
   //         account,
   //       )
   //       await enqueuePromiseToast(chainId, txn.wait(), "claim", {

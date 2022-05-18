@@ -165,6 +165,11 @@ export const MINICHEF_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0x691ef79e40d909C715BE5e9e93738B3fF7D58534",
 })
 
+export const MINTER_ADDRESSES = buildAddresses({
+  [ChainId.HARDHAT]: "",
+  [ChainId.MAINNET]: "",
+})
+
 export const RETROACTIVE_VESTING_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0xBEc49fA140aCaA83533fB00A2BB19bDdd0290f25",
   [ChainId.MAINNET]: "0x5DCA270671935cf3dF78bd8373C22BE250198a03",
