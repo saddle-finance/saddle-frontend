@@ -4,6 +4,7 @@ import user, { initialState as userInitialState } from "./user"
 
 import application from "./application"
 import { merge } from "lodash"
+import voteEscrowSnapshots from "./voteEscrowSnapshots"
 
 const PERSISTED_KEYS: string[] = ["user"]
 const stateFromStorage = load({
@@ -12,6 +13,7 @@ const stateFromStorage = load({
 const reducer = {
   application,
   user,
+  voteEscrowSnapshots,
 }
 const store = configureStore({
   reducer,
