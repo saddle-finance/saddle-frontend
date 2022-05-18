@@ -350,7 +350,6 @@ export async function getSwapInfo(
           addresses[chainId].toLowerCase(),
         )
       : pool.poolTokens.map(({ addresses }) => addresses[chainId].toLowerCase())
-    // console.log("TOKENS", tokens)
     const underlyingTokens = isMetaSwap
       ? pool.poolTokens.map(({ addresses }) => addresses[chainId].toLowerCase())
       : null
