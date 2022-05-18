@@ -9,6 +9,7 @@ import {
   enumerate,
   formatBNToShortString,
   formatDeadlineToNumber,
+  generateSnapshotVoteLink,
   getTokenByAddress,
   getTokenIconPath,
   getTokenSymbolForPoolType,
@@ -227,5 +228,18 @@ describe("createMultiCallContrat", () => {
     expect(
       helperContractMultiCall.gaugeToPoolAddress(emptyAddress),
     ).toBeInstanceOf(Object)
+  })
+})
+
+describe("generateSnapshotVoteLink", () => {
+  it("correctly generates a snapshot link from id", () => {
+    const id = "0x0000000000000000000000000000000000000000"
+    const expectedLink = `https://snapshot.org/#/saddlefinance.eth/proposal/${id}`
+    expect(generateSnapshotVoteLink(id)).toEqual(expectedLink)
+  })
+
+  it("returns link to all proposals if id is not present", () => {
+    const expectedLink = `https://snapshot.org/#/saddlefinance.eth`
+    expect(generateSnapshotVoteLink()).toEqual(expectedLink)
   })
 })
