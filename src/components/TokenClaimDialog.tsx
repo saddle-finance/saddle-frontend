@@ -55,9 +55,6 @@ export default function TokenClaimDialog({
   const gaugeData = useContext(GaugeContext)
   const minterContract = useMinterContract()
   console.log({ gaugeData, basicPools, minterContract })
-  // const gaugeMappedToPoolName = gaugeData.gauges.map((gauge) => {
-  //   return Object.values(basicPools).filter(({ }))
-  // })
   const isClaimableNetwork =
     chainId === ChainId.MAINNET ||
     chainId === ChainId.ARBITRUM ||
@@ -138,6 +135,11 @@ export default function TokenClaimDialog({
           <img src={logo} width={138} height={138} />
         </Box>
       </Box>
+      <Box pr={4} pl={4}>
+        <Alert color="info" severity="warning">
+          {t("migrationGaugeWarningMsg")}
+        </Alert>
+      </Box>
       <Box
         display="flex"
         alignItems="center"
@@ -157,7 +159,6 @@ export default function TokenClaimDialog({
           </IconButton>
         )}
       </Box>
-      <Alert severity="warning">{t("migrationGaugeWarningMsg")}</Alert>
       <Typography variant="body1" textAlign="center">
         {t("totalClaimableSDL")}
       </Typography>
@@ -199,10 +200,10 @@ export default function TokenClaimDialog({
             </Typography>
           )}
           {/* gaugeData.gauges.map((gauge, i, arr) => (
-            <React.Fragment key={gauge.name}>
-              <ClaimListItem
-                title={gauge.address}
-                amount={rewardBalances[gauge.name]}
+            <React.Fragment key={gauge.poolName}>
+              <ClaimGaugeListItem
+                title={gauge.poolName}
+                amount={gauge.rewards.rate}
                 claimCallback={() => claimGaugeReward(gauge)}
                 status={
                   claimsStatuses["allGauges"] || claimsStatuses[gauge.name]
@@ -255,6 +256,43 @@ export default function TokenClaimDialog({
     </Dialog>
   )
 }
+
+// function ClaimGaugeListItem({
+//   title,
+//   amount,
+//   claimCallback,
+//   status,
+// }: {
+//   title: string
+//   amount: BigNumber
+//   claimCallback: () => void
+//   status?: STATUSES
+// }): ReactElement {
+//   const { t } = useTranslation()
+//   const formattedAmount = commify(formatBNToString(amount, 18, 2))
+//   const disabled =
+//     status === STATUSES.PENDING ||
+//     status === STATUSES.SUCCESS ||
+//     amount.lt(BigNumber.from(10).pow(16)) // don't let anyone try to claim less than 0.01 token
+//   return (
+//     <ListItem>
+//       <Typography variant="subtitle1" sx={{ flex: 1 }}>
+//         {title}
+//       </Typography>
+//       <Typography sx={{ flex: 1 }}>
+//         {status === STATUSES.SUCCESS ? 0 : formattedAmount}
+//       </Typography>
+//       <Button
+//         variant="contained"
+//         color="primary"
+//         onClick={claimCallback}
+//         disabled={disabled}
+//       >
+//         {t("claim")}
+//       </Button>
+//     </ListItem>
+//   )
+// }
 
 function ClaimListItem({
   title,
@@ -355,7 +393,7 @@ function useRewardClaims() {
   //         account,
   //       )
   //       await enqueuePromiseToast(chainId, txn.wait(), "claim", {
-  //         poolName: gauge.address,
+  //         poolName: gauge.poolName,
   //       })
   //       // updateClaimStatus(pool.poolName, STATUSES.SUCCESS)
   //     } catch (e) {

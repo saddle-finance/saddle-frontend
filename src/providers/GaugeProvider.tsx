@@ -1,3 +1,4 @@
+import { BigNumber, utils } from "ethers"
 import {
   ChainId,
   GAUGE_CONTROLLER_ADDRESSES,
@@ -10,7 +11,6 @@ import {
   getMulticallProvider,
 } from "../utils"
 
-import { BigNumber } from "ethers"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
 import HELPER_CONTRACT_ABI from "../constants/abis/helperContract.json"
@@ -23,6 +23,7 @@ export type Gauge = {
   address: string
   gaugeWeight: BigNumber
   poolAddress: string
+  poolName: string
   gaugeRelativeWeight: BigNumber
   workingSupply: BigNumber
   rewards: GaugeReward[]
@@ -114,6 +115,14 @@ export async function getGaugeData(
       )
     ).map((poolAddress) => poolAddress.toLowerCase())
 
+    const gaugePoolNames: string[] = (
+      await ethCallProvider.all(
+        gaugeAddresses.map((address) =>
+          helperContractMultiCall.gaugeToPoolData(address),
+        ),
+      )
+    ).map((pool) => utils.parseBytes32String(pool.poolName))
+
     const gaugeRewardsPromise = ethCallProvider.all(
       gaugeAddresses.map((address) =>
         helperContractMultiCall.getGaugeRewards(address),
@@ -147,6 +156,7 @@ export async function getGaugeData(
           [gaugePoolAddress]: {
             address: gaugeAddresses[index],
             poolAddress: gaugePoolAddress,
+            poolName: gaugePoolNames[index],
             gaugeWeight: gaugeWeights[index],
             gaugeRelativeWeight: gaugeRelativeWeights[index],
             rewards: gaugeRewards[index].map((reward) => ({
