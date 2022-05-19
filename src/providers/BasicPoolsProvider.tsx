@@ -192,6 +192,8 @@ export async function getSwapInfo(
       ...tokens.map((_, i) => swapContractMulticall.getTokenBalance(i)),
     ])
 
+    const underlyingTokenBalances = isMetaSwap ? [] : null // TODO
+
     const data = {
       // Registry Values
       poolAddress,
@@ -216,7 +218,7 @@ export async function getSwapInfo(
       swapFee,
       aParameter,
       tokenBalances, // in native token precision
-      underlyingTokenBalances: null,
+      underlyingTokenBalances,
       lpTokenSupply,
       miniChefRewardsPid: rewardsPid,
       isSynthetic,
