@@ -7,12 +7,11 @@ import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
-import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
+import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { TRANSACTION_TYPES } from "../constants"
 import { Zero } from "@ethersproject/constants"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { gasBNFromState } from "../utils/gas"
-import { getPoolByAddress } from "../utils/getPoolByAddress"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
 import { useContext } from "react"
@@ -39,16 +38,13 @@ export function useApproveAndMigrate(): (
   ): Promise<void> {
     const oldPool = oldPoolName ? basicPools?.[oldPoolName] : null
     if (!chainId || !oldPool?.newPoolAddresss) return
-    const newPoolData = getPoolByAddress(oldPool?.newPoolAddresss, chainId)
-    const newPool = newPoolData?.name ? basicPools?.[newPoolData.name] : null
     if (
       !migratorContract ||
       !account ||
       !library ||
       !oldPool ||
       !lpTokenBalance ||
-      lpTokenBalance.isZero() ||
-      !newPool
+      lpTokenBalance.isZero()
     )
       return
     const lpTokenContract = getContract(
@@ -57,29 +53,28 @@ export function useApproveAndMigrate(): (
       library,
       account,
     ) as Erc20
-    const newPoolAddress = newPool.metaSwapDepositAddress || newPool.poolAddress
-    const oldPoolAddress = oldPool.metaSwapDepositAddress || oldPool.poolAddress
+    const oldPoolAddress = oldPool.poolAddress
 
     const newPoolContract = getSwapContract(
       library,
-      newPoolAddress,
-      newPool,
+      oldPool?.newPoolAddresss,
+      {},
       account ?? undefined,
-    ) as SwapGuarded
+    ) as SwapFlashLoanNoWithdrawFee
     const oldPoolContract = getSwapContract(
       library,
       oldPoolAddress,
-      oldPool,
+      {},
       account ?? undefined,
-    )
+    ) as SwapFlashLoanNoWithdrawFee
 
     const expectedWithdrawAmounts =
-      await oldPoolContract?.calculateRemoveLiquidity(account, lpTokenBalance)
+      await oldPoolContract?.calculateRemoveLiquidity(lpTokenBalance)
+    console.log(expectedWithdrawAmounts)
     let expectedNewLPTokenBalance: BigNumber = Zero
     try {
       expectedNewLPTokenBalance = expectedWithdrawAmounts
         ? await newPoolContract?.calculateTokenAmount(
-            account,
             expectedWithdrawAmounts,
             true,
           )
