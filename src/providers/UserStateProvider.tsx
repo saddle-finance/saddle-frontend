@@ -1,5 +1,6 @@
 import { BLOCK_TIME, ChainId } from "../constants"
 import { BasicPool, BasicPoolsContext } from "./BasicPoolsProvider"
+import { GaugeRewardUserData, getGaugeRewardsUserData } from "../utils/gauges"
 import { MinichefUserData, getMinichefRewardsUserData } from "../utils/minichef"
 import { MulticallCall, MulticallContract } from "../types/ethcall"
 import React, { ReactElement, useCallback, useContext, useState } from "react"
@@ -9,6 +10,7 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "ethcall"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
+import { GaugeContext } from "./GaugeProvider"
 import { NETWORK_NATIVE_TOKENS } from "../constants/networks"
 import { TokensContext } from "./TokensProvider"
 import { Web3Provider } from "@ethersproject/providers"
@@ -20,6 +22,7 @@ type UserTokenBalances = { [address: string]: BigNumber }
 type UserState = {
   tokenBalances: UserTokenBalances | null
   minichef: MinichefUserData
+  gaugeRewards: GaugeRewardUserData | null
 } | null
 export const UserStateContext = React.createContext<UserState>(null)
 
@@ -30,12 +33,13 @@ export default function UserStateProvider({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
   const { chainId, library, account } = useActiveWeb3React()
-  const pools = useContext(BasicPoolsContext)
+  const basicPools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
+  const gauges = useContext(GaugeContext)
   const [userState, setUserState] = useState<UserState>(null)
   const fetchState = useCallback(() => {
     async function fetchUserState() {
-      if (!chainId || !library || !pools || !account || !tokens) {
+      if (!chainId || !library || !basicPools || !account || !tokens) {
         setUserState(null)
         return
       }
@@ -48,18 +52,28 @@ export default function UserStateProvider({
       const minichefData = await getMinichefRewardsUserData(
         library,
         chainId,
-        (Object.values(pools) as BasicPool[]).map(
+        (Object.values(basicPools) as BasicPool[]).map(
           ({ poolAddress }) => poolAddress,
         ),
         account,
       )
+      const gaugeRewards = gauges.gauges
+        ? await getGaugeRewardsUserData(
+            library,
+            chainId,
+            Object.keys(gauges.gauges) as string[],
+            account,
+          )
+        : null
+
       setUserState({
         tokenBalances: userTokenBalances,
         minichef: minichefData,
+        gaugeRewards,
       })
     }
     void fetchUserState()
-  }, [library, chainId, account, pools, tokens])
+  }, [library, chainId, account, basicPools, tokens, gauges.gauges])
   usePoller(fetchState, BLOCK_TIME * 2, [fetchState])
   return (
     <UserStateContext.Provider value={userState}>
