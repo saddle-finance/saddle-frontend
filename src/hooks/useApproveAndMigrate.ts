@@ -1,4 +1,5 @@
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
+import { getContract, getSwapContract } from "../utils"
 import { useDispatch, useSelector } from "react-redux"
 
 import { AppState } from "../state"
@@ -6,10 +7,12 @@ import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
+import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import { TRANSACTION_TYPES } from "../constants"
+import { Zero } from "@ethersproject/constants"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { gasBNFromState } from "../utils/gas"
-import { getContract } from "../utils"
+import { getPoolByAddress } from "../utils/getPoolByAddress"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
 import { useContext } from "react"
@@ -34,25 +37,60 @@ export function useApproveAndMigrate(): (
     oldPoolName: string | null,
     lpTokenBalance?: BigNumber,
   ): Promise<void> {
-    const basicPool = basicPools?.[oldPoolName || ""]
-
+    const oldPool = oldPoolName ? basicPools?.[oldPoolName] : null
+    if (!chainId || !oldPool?.newPoolAddresss) return
+    const newPoolData = getPoolByAddress(oldPool?.newPoolAddresss, chainId)
+    const newPool = newPoolData?.name ? basicPools?.[newPoolData.name] : null
     if (
       !migratorContract ||
-      !chainId ||
       !account ||
       !library ||
-      !oldPoolName ||
-      !basicPool ||
+      !oldPool ||
       !lpTokenBalance ||
-      lpTokenBalance.isZero()
+      lpTokenBalance.isZero() ||
+      !newPool
     )
       return
     const lpTokenContract = getContract(
-      basicPool.lpToken,
+      oldPool.lpToken,
       ERC20_ABI,
       library,
       account,
     ) as Erc20
+    const newPoolAddress = newPool.metaSwapDepositAddress || newPool.poolAddress
+    const oldPoolAddress = oldPool.metaSwapDepositAddress || oldPool.poolAddress
+
+    const newPoolContract = getSwapContract(
+      library,
+      newPoolAddress,
+      newPool,
+      account ?? undefined,
+    ) as SwapGuarded
+    const oldPoolContract = getSwapContract(
+      library,
+      oldPoolAddress,
+      oldPool,
+      account ?? undefined,
+    )
+
+    const expectedWithdrawAmounts =
+      await oldPoolContract?.calculateRemoveLiquidity(account, lpTokenBalance)
+    let expectedNewLPTokenBalance: BigNumber = Zero
+    try {
+      expectedNewLPTokenBalance = expectedWithdrawAmounts
+        ? await newPoolContract?.calculateTokenAmount(
+            account,
+            expectedWithdrawAmounts,
+            true,
+          )
+        : Zero
+    } catch (err) {
+      console.warn(err)
+      console.warn(
+        "Could not estimate new lp token balance on deposit. Using 0 as minToMint",
+      )
+    }
+
     try {
       const gasPrice = gasBNFromState(
         { gasStandard, gasFast, gasInstant },
@@ -77,16 +115,16 @@ export function useApproveAndMigrate(): (
       )
       try {
         const migrateTransaction = await migratorContract.migrate(
-          basicPool.poolAddress,
+          oldPool.poolAddress,
           lpTokenBalance,
-          lpTokenBalance.mul(1000 - 5).div(1000), // 50bps, 0.5%
+          expectedNewLPTokenBalance.mul(1000 - 5).div(1000), // 50bps, 0.5%
         )
         await enqueuePromiseToast(
           chainId,
           migrateTransaction.wait(),
           "migrate",
           {
-            poolName: basicPool.poolName,
+            poolName: oldPool.poolName,
           },
         )
         dispatch(
