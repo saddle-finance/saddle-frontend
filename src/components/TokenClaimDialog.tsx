@@ -205,7 +205,7 @@ export default function TokenClaimDialog({
             <React.Fragment key={gauge?.poolName}>
               <ClaimListItem
                 title={gauge.poolName}
-                amount={gauge.rewards[0].rate}
+                amount={gauge.rewards[0]?.rate ?? Zero}
                 claimCallback={() => claimGaugeReward(gauge)}
                 status={
                   claimsStatuses["allGauges"] || claimsStatuses[gauge.poolName]
