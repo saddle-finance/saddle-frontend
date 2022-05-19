@@ -199,6 +199,7 @@ const DepositPage = (props: Props): ReactElement => {
                 <Checkbox
                   onChange={onToggleDepositWrapped}
                   checked={shouldDepositWrapped}
+                  data-testid="deposit-wrapped-checkbox"
                 />
                 <Typography component="span" variant="body1">
                   {t("depositWrapped")}
