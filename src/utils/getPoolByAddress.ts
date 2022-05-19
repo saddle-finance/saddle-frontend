@@ -6,6 +6,6 @@ export function getPoolByAddress(
   chainId: ChainId,
 ): Pool | undefined {
   return find(POOLS_MAP, (pool) => {
-    return pool.addresses[chainId].toLowerCase() === targetAddress
+    return pool.addresses[chainId].toLowerCase() === targetAddress.toLowerCase()
   })
 }
