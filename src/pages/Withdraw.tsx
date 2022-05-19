@@ -42,9 +42,11 @@ function Withdraw({ poolName }: Props): ReactElement {
   const { account } = useActiveWeb3React()
   const [withdrawLPTokenAmount, setWithdrawLPTokenAmount] =
     useState<BigNumber>(Zero)
-
+  const withdrawTokens = poolData.isMetaSwap
+    ? poolData.underlyingTokens
+    : poolData.tokens
   const tokenInputSum = useMemo(() => {
-    return poolData.tokens.reduce(
+    return withdrawTokens.reduce(
       (sum, { address }) =>
         sum.add(
           parseEther(
@@ -54,7 +56,7 @@ function Withdraw({ poolName }: Props): ReactElement {
         ),
       Zero,
     )
-  }, [poolData.tokens, withdrawFormState.tokenInputs])
+  }, [withdrawTokens, withdrawFormState.tokenInputs])
 
   useEffect(() => {
     // evaluate if a new withdraw will exceed the pool's per-user limit
@@ -68,7 +70,7 @@ function Withdraw({ poolName }: Props): ReactElement {
         return
       }
       if (poolData.totalLocked.gt(0) && tokenInputSum.gt(0)) {
-        const withdrawTokenAmounts = poolData.tokens.map(
+        const withdrawTokenAmounts = withdrawTokens.map(
           (token) =>
             withdrawFormState.tokenInputs[token.address]?.valueSafe || Zero,
         )
@@ -96,6 +98,7 @@ function Withdraw({ poolName }: Props): ReactElement {
     tokenInputSum,
     userShareData,
     account,
+    withdrawTokens,
   ])
   async function onConfirmTransaction(): Promise<void> {
     const { withdrawType, tokenInputs, lpTokenAmountToSpend } =
@@ -110,15 +113,15 @@ function Withdraw({ poolName }: Props): ReactElement {
 
   const tokensData = React.useMemo(
     () =>
-      poolData.tokens.map(({ name, symbol, address, decimals }) => ({
+      withdrawTokens.map(({ name, symbol, address, decimals }) => ({
         name,
         symbol,
         address,
         decimals,
-        priceUSD: tokenPricesUSD?.[symbol] || 0, // @dev TODO handle lpToken Price weh nwrapped withdraw implemented
+        priceUSD: tokenPricesUSD?.[symbol] || 0, // @dev TODO handle lpToken Price when wrapped withdraw implemented
         inputValue: withdrawFormState.tokenInputs[address]?.valueRaw || "",
       })),
-    [withdrawFormState, poolData.tokens, tokenPricesUSD],
+    [withdrawFormState, withdrawTokens, tokenPricesUSD],
   )
   const gasPrice = BigNumber.from(
     formatGasToString(
@@ -154,7 +157,7 @@ function Withdraw({ poolName }: Props): ReactElement {
     withdrawLPTokenAmount,
     txnGasCost: txnGasCost,
   }
-  poolData.tokens.forEach(({ name, decimals, symbol, address }) => {
+  withdrawTokens.forEach(({ name, decimals, symbol, address }) => {
     if (
       BigNumber.from(
         withdrawFormState.tokenInputs[address]?.valueSafe || "0",

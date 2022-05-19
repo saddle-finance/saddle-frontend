@@ -39,6 +39,7 @@ export interface PoolDataType {
   reserve: BigNumber | null
   swapFee: BigNumber
   tokens: TokenShareType[]
+  underlyingTokens: TokenShareType[]
   totalLocked: BigNumber
   utilization: BigNumber | null
   virtualPrice: BigNumber
@@ -83,6 +84,7 @@ const emptyPoolData = {
   reserve: null,
   swapFee: Zero,
   tokens: [],
+  underlyingTokens: [],
   totalLocked: Zero,
   utilization: null,
   virtualPrice: Zero,
@@ -140,8 +142,18 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
         const expandedPoolTokens = basicPool.tokens.map(
           (tokenAddr) => tokens[tokenAddr],
         ) as BasicToken[]
+        const expandedUnderlyingPoolTokens = basicPool.isMetaSwap
+          ? (basicPool.underlyingTokens.map(
+              (tokenAddr) => tokens[tokenAddr],
+            ) as BasicToken[])
+          : null
         if (
-          expandedPoolTokens.filter(Boolean).length !== basicPool.tokens.length
+          expandedPoolTokens.filter(Boolean).length !==
+            basicPool.tokens.length ||
+          (basicPool.isMetaSwap &&
+            expandedUnderlyingPoolTokens &&
+            expandedUnderlyingPoolTokens.filter(Boolean).length !==
+              basicPool.underlyingTokens.length)
         ) {
           console.error("Could not find all tokens for pool", poolName)
           return
@@ -210,6 +222,14 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
           value: priceDataForPool.tokenBalances1e18[i],
           address: token.address,
         }))
+        const underlyingPoolTokens =
+          expandedUnderlyingPoolTokens?.map((token) => ({
+            symbol: token.symbol,
+            name: token.name,
+            decimals: token.decimals,
+            value: Zero, // TODO
+            address: token.address,
+          })) || []
         const userPoolTokens = expandedPoolTokens.map((token, i) => ({
           symbol: token.symbol,
           name: token.name,
@@ -225,6 +245,7 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
         const poolData = {
           name: poolName,
           tokens: poolTokens,
+          underlyingTokens: underlyingPoolTokens,
           totalLocked: basicPool.lpTokenSupply,
           virtualPrice: basicPool.virtualPrice,
           adminFee: basicPool.adminFee,
