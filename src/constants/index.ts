@@ -40,6 +40,7 @@ export const EVMOS_POOL_NAME = "evmosUSD"
 export const KAVA_TESTNET_USD_POOL_NAME = "kavaTestnetUSD"
 export const TBTC_EVMOS_BTC_METAPOOL_NAME = "tbtc-evmosBTC Meta"
 export const EVMOS_4_POOL_NAME = "Evmos 4Pool"
+export const FRAX_4_POOL_NAME = "Frax 4Pool"
 export const TBTC_METAPOOL_V2_BTCV2_V3_NAME = "tBTCv2-BTCv2_v3"
 export const WCUSD_METAPOOL_V2_USDV2_V3_NAME = "wcUSD-USDv2_v3"
 export const SUSD_METAPOOL_V2_USDV2_V3_NAME = "sUSD-USDv2_v3"
@@ -69,6 +70,7 @@ export type PoolName =
   | typeof TBTC_EVMOS_BTC_METAPOOL_NAME
   | typeof EVMOS_BTC_POOL_NAME
   | typeof EVMOS_4_POOL_NAME
+  | typeof FRAX_4_POOL_NAME
   | typeof TBTC_METAPOOL_V2_BTCV2_V3_NAME
   | typeof WCUSD_METAPOOL_V2_USDV2_V3_NAME
   | typeof SUSD_METAPOOL_V2_USDV2_V3_NAME
@@ -319,6 +321,10 @@ export const EVMOS_4_POOL_SWAP_ADDRESSES = buildAddresses({
   [ChainId.EVMOS]: "0x4be29402eF37c911fc33BeF349aeAD96f24f29Ef",
 })
 
+export const FRAX_4_POOL_SWAP_ADDRESSES = buildAddresses({
+  [ChainId.MAINNET]: "",
+})
+
 export const VETH2_SWAP_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0xdec2157831D6ABC3Ec328291119cc91B337272b5",
   [ChainId.ROPSTEN]: "0x2C019509326485AE234c6CA8a51c9F4A0F94f5fA",
@@ -478,6 +484,10 @@ export const EVMOS_4_POOL_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.EVMOS]: "0x011C7185e40767Bb1F03db2346deFe0DcBd3eD6E",
 })
 
+export const FRAX_4_POOL_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
+  [ChainId.MAINNET]: "",
+})
+
 export const TBTC_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0x122Eca07139EB368245A29FB702c9ff11E9693B7",
   [ChainId.HARDHAT]: "0xf76070F44307a4B6649fEC2081cE4B4730c37C76",
@@ -615,6 +625,16 @@ export const EVMOS_4_POOL_SWAP_TOKEN = new Token(
   18,
   "saddleEvmos4pool",
   "saddleevmos4pool",
+  "Saddle 4pool",
+  false,
+  true,
+)
+
+export const FRAX_4_POOL_SWAP_TOKEN = new Token(
+  FRAX_4_POOL_SWAP_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "saddleFrax4pool",
+  "saddlefrax4pool",
   "Saddle 4pool",
   false,
   true,
@@ -1064,6 +1084,7 @@ export const TBTC_UNDERLYING_POOL_TOKENS = [TBTC_V2, BTC_SWAP_V2_TOKEN]
 
 export const EVMOS_BTC_POOL_TOKENS = [WBTC, RENBTC]
 export const EVMOS_4_POOL_TOKENS = [DAI, USDC, USDT, FRAX]
+export const FRAX_4_POOL_TOKENS = [DAI, USDC, USDT, FRAX]
 export const TBTC_EVMOS_POOL_TOKENS = [TBTC_V2, ...EVMOS_BTC_POOL_TOKENS]
 export const TBTC_EVMOS_UNDERLYING_POOL_TOKENS = [TBTC_V2, EVMOS_BTC_SWAP_TOKEN]
 
@@ -1227,6 +1248,16 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "evmos-4pool",
+    rewardPids: buildPids({}),
+  },
+  [FRAX_4_POOL_NAME]: {
+    name: FRAX_4_POOL_NAME,
+    addresses: FRAX_4_POOL_SWAP_ADDRESSES,
+    lpToken: FRAX_4_POOL_SWAP_TOKEN,
+    poolTokens: FRAX_4_POOL_TOKENS,
+    isSynthetic: false,
+    type: PoolTypes.USD,
+    route: "frax-4pool",
     rewardPids: buildPids({}),
   },
   [STABLECOIN_POOL_NAME]: {
