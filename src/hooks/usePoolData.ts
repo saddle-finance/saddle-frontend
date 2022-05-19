@@ -27,6 +27,7 @@ interface TokenShareType {
   value: BigNumber
   decimals: number
   name: string
+  address: string
 }
 
 export interface PoolDataType {
@@ -209,12 +210,14 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
           name: token.name,
           decimals: token.decimals,
           value: priceDataForPool.tokenBalances1e18[i],
+          address: token.address,
         }))
         const userPoolTokens = expandedPoolTokens.map((token, i) => ({
           symbol: token.symbol,
           name: token.name,
           decimals: token.decimals,
           value: userPoolTokenBalances[i],
+          address: token.address,
         }))
         const { oneDayVolume, apy, utilization } =
           swapStats && basicPool.poolAddress in swapStats
