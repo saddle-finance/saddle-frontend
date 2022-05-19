@@ -43,13 +43,13 @@ export default function UserStateProvider({
         setUserState(null)
         return
       }
-      const userTokenBalances = await getUserTokenBalances(
+      const userTokenBalancesPromise = getUserTokenBalances(
         library,
         chainId,
         account,
         Object.keys(tokens) as string[],
       )
-      const minichefData = await getMinichefRewardsUserData(
+      const minichefDataPromise = getMinichefRewardsUserData(
         library,
         chainId,
         (Object.values(basicPools) as BasicPool[]).map(
@@ -57,14 +57,18 @@ export default function UserStateProvider({
         ),
         account,
       )
-      const gaugeRewards = gauges.gauges
-        ? await getGaugeRewardsUserData(
+      const gaugeRewardsPromise = gauges.gauges
+        ? getGaugeRewardsUserData(
             library,
             chainId,
             Object.keys(gauges.gauges) as string[],
             account,
           )
-        : null
+        : Promise.resolve(null)
+
+      const [userTokenBalances, minichefData, gaugeRewards] = await Promise.all(
+        [userTokenBalancesPromise, minichefDataPromise, gaugeRewardsPromise],
+      )
 
       setUserState({
         tokenBalances: userTokenBalances,
