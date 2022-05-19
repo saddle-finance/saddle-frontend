@@ -322,7 +322,7 @@ export const EVMOS_4_POOL_SWAP_ADDRESSES = buildAddresses({
 })
 
 export const FRAX_4_POOL_SWAP_ADDRESSES = buildAddresses({
-  [ChainId.MAINNET]: "",
+  [ChainId.MAINNET]: "0x101CD330D088634B6F64c2eb4276e63Bf1BbfDE3",
 })
 
 export const VETH2_SWAP_ADDRESSES = buildAddresses({
@@ -485,7 +485,7 @@ export const EVMOS_4_POOL_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
 })
 
 export const FRAX_4_POOL_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
-  [ChainId.MAINNET]: "",
+  [ChainId.MAINNET]: "0x1B4ab394327FDf9524632dDf2f0F04F9FA1Fe2eC",
 })
 
 export const TBTC_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
