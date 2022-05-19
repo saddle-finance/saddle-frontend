@@ -38,7 +38,7 @@ export type GaugeReward = {
 }
 
 export type PoolAddressToGauge = {
-  [poolAddress: string]: Gauge | undefined
+  [poolAddress: string]: Gauge
 }
 
 export type Gauges = {
