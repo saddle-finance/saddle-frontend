@@ -62,6 +62,7 @@ type SwapInfo = MetaSwapInfo | NonMetaSwapInfo
 
 export type BasicPool = {
   isMigrated: boolean
+  newPoolAddresss?: string
 } & SwapInfo
 export type BasicPools = { [poolName: string]: BasicPool | undefined } | null // indexed by name, which is unique in the Registry
 
@@ -92,6 +93,7 @@ export default function BasicPoolsProvider({
       const result = pools.reduce((acc, pool) => {
         const poolData = { ...pool } as BasicPool
         poolData.isMigrated = migrationData?.[pool.poolAddress] != null
+        poolData.newPoolAddresss = migrationData?.[pool.poolAddress]
         return {
           ...acc,
           [pool.poolName]: poolData,
