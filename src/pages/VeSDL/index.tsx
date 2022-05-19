@@ -51,7 +51,9 @@ export default function VeSDL(): JSX.Element {
   const sdlTokenValue = parseEther(sdlToken.sdlTokenInputVal.trim() || "0.0")
 
   const [lockEnd, setLockEnd] = useState<Date | null>(null)
-  const [unlockDate, setUnlockDate] = useState<Date | null>(null)
+  const [proposedUnlockDate, setProposedUnlockDate] = useState<Date | null>(
+    null,
+  )
   const { infiniteApproval } = useSelector((state: AppState) => state.user)
 
   const { account, chainId } = useActiveWeb3React()
@@ -88,17 +90,17 @@ export default function VeSDL(): JSX.Element {
       ...prev,
       sdlTokenInputVal: "",
     }))
-    setUnlockDate(null)
+    setProposedUnlockDate(null)
   }
 
   const currentTimestamp = getUnixTime(new Date())
-  const unlockDateOrLockEnd = unlockDate || lockEnd
+  const unlockDateOrLockEnd = proposedUnlockDate || lockEnd
   const expireTimestamp =
     unlockDateOrLockEnd && !isNaN(unlockDateOrLockEnd.valueOf())
       ? getUnixTime(unlockDateOrLockEnd)
       : undefined
   const totalAmount =
-    !sdlTokenValue.isZero() || unlockDate
+    !sdlTokenValue.isZero() || proposedUnlockDate
       ? sdlTokenValue.add(lockedSDLVal)
       : Zero
 
@@ -123,7 +125,9 @@ export default function VeSDL(): JSX.Element {
     : Zero
 
   const handleLock = async () => {
-    const unlockTimeStamp = unlockDate ? getUnixTime(unlockDate) : null
+    const unlockTimeStamp = proposedUnlockDate
+      ? getUnixTime(proposedUnlockDate)
+      : null
     const hasLockedSDL = !lockedSDLVal.isZero()
     const shouldCreateLock =
       !hasLockedSDL && sdlTokenValue.gt(Zero) && unlockTimeStamp
@@ -191,30 +195,30 @@ export default function VeSDL(): JSX.Element {
     }
   }
 
-  const addLockMos =
-    unlockDate && !isNaN(unlockDate.valueOf())
-      ? differenceInMonths(unlockDate, lockEnd || new Date())
+  const addLockMonths =
+    proposedUnlockDate && !isNaN(proposedUnlockDate.valueOf())
+      ? differenceInMonths(proposedUnlockDate, lockEnd || new Date())
       : 0
 
   const lockHelperText = () => {
     if (lockedSDLVal.isZero()) {
-      if (sdlTokenValue.gt(Zero) && addLockMos > 0)
+      if (sdlTokenValue.gt(Zero) && addLockMonths > 0)
         return t("lockSdl", {
           sdlAmount: sdlToken.sdlTokenInputVal,
-          period: addLockMos,
+          period: addLockMonths,
         })
     } else {
-      if (sdlTokenValue.gt(Zero) && !addLockMos) {
+      if (sdlTokenValue.gt(Zero) && !addLockMonths) {
         return t("increaseLockAmount", {
           addLockAmt: sdlToken.sdlTokenInputVal,
         })
-      } else if (sdlTokenValue.gt(Zero) && addLockMos > 0) {
+      } else if (sdlTokenValue.gt(Zero) && addLockMonths > 0) {
         return t("increaseLockAmountAndTime", {
-          addLockMos,
+          addLockMos: addLockMonths,
           addLockAmt: sdlToken.sdlTokenInputVal,
         })
-      } else if (sdlTokenValue.eq(Zero) && addLockMos > 0) {
-        return t("increaseLockTime", { addLockMos })
+      } else if (sdlTokenValue.eq(Zero) && addLockMonths > 0) {
+        return t("increaseLockTime", { addLockMos: addLockMonths })
       } else {
         return
       }
@@ -222,8 +226,8 @@ export default function VeSDL(): JSX.Element {
   }
 
   const enableLock = lockedSDLVal.isZero()
-    ? !sdlToken.sdlTokenInputVal || !unlockDate
-    : !sdlToken.sdlTokenInputVal && !unlockDate
+    ? !sdlToken.sdlTokenInputVal || !proposedUnlockDate
+    : !sdlToken.sdlTokenInputVal && !proposedUnlockDate
 
   useEffect(() => {
     const init = async () => {
@@ -269,8 +273,8 @@ export default function VeSDL(): JSX.Element {
                 </Typography>
               </div>
               <DatePicker
-                value={unlockDate}
-                onChange={(date) => setUnlockDate(date)}
+                value={proposedUnlockDate}
+                onChange={(date) => setProposedUnlockDate(date)}
                 minDate={lockEnd || new Date()}
                 maxDate={new Date((currentTimestamp + MAXTIME) * 1000)}
                 renderInput={(props) => (
