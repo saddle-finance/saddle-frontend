@@ -1,9 +1,9 @@
 context("Swap Flow", () => {
+  const SUSD_METAPOOL_V3_NAME = "sUSD-USDv2_v3"
   function testAssetSwap(poolName: string, poolTokenSymbols: string[]) {
     describe(`Swapping within ${poolName}`, () => {
       before(() => {
-        const host = Cypress.env("DAPP_HOST") as string
-        cy.visit(`${host}#/`)
+        cy.visit(`/#/`)
         cy.waitForReact()
         cy.wait(3000)
       })
@@ -24,7 +24,7 @@ context("Swap Flow", () => {
         poolTokenSymbols.forEach((tokenSymbol) => {
           cy.react("ListItem", { options: { timeout: 3000 } }).should("exist") // wait for listitem to appear
           cy.get('[data-testid="dropdownContainer"]')
-            .contains(tokenSymbol)
+            .contains(tokenSymbol, { matchCase: false })
             .should("exist")
             .should("not.include.text", "≈$0")
         })
@@ -40,22 +40,20 @@ context("Swap Flow", () => {
       })
       it("reflects token balance after selecting a token", () => {
         cy.get('[data-testid="dropdownContainer"]')
-          .contains(poolTokenSymbols[0])
+          .contains(poolTokenSymbols[0], { matchCase: false })
           .click()
         cy.react("SearchSelect", { options: { timeout: 1000 } }).should(
           "not.exist",
         )
         // cy.react("SwapTokenInput")
         //   .eq(0)
-        cy.get('[data-testid="swapTokenInputFrom"]').should(
-          "include.text",
+        cy.get('[data-testid="swapTokenInputFrom"]').contains(
           poolTokenSymbols[0],
+          { matchCase: false },
         )
-        cy.get("span")
-          .contains("Balance")
-          .siblings("button")
-          .eq(0)
-          .should("not.have", "0.0")
+        cy.get('[data-testid="swapTokenFromWalletBalance"]').should(($el) => {
+          expect(parseInt($el.text().replace(",", ""))).to.be.greaterThan(0)
+        })
       })
       it("accepts user input and updates calculated amount", () => {
         cy.get('[data-testid="tokenValueInput"]').eq(0).type("1")
@@ -104,14 +102,16 @@ context("Swap Flow", () => {
           expect($el.text()).to.match(/-?\d+\.\d+%/)
         })
       })
-      it("completes a swap", () => {
+      it("allows user to review a swap", () => {
         cy.get("button").contains("Swap").should("be.enabled").click()
+      })
+      it("completes a swap", () => {
+        cy.get("button").contains("Confirm Swap").should("be.enabled").click()
       })
     })
   }
   const testConfigs: [string, string[]][] = [
-    ["BTC V2", ["sBTC", "WBTC", "RENBTC"]],
-    ["Stablecoin V2", ["DAI", "USDC", "USDT"]],
+    [SUSD_METAPOOL_V3_NAME, ["SUSD", "DAI", "USDC", "USDT"]],
   ]
   testConfigs.forEach((info) => testAssetSwap(...info))
   // it("successfully completes a deposit of all assets", () => {
