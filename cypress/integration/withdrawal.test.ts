@@ -1,11 +1,11 @@
 import { PoolName } from "../../src/constants"
 
 const STABLECOIN_POOL_V2_NAME = "Stablecoin V2"
-const SUSD_METAPOOL_V2_NAME = "sUSD Meta V2"
-const pools = [STABLECOIN_POOL_V2_NAME, SUSD_METAPOOL_V2_NAME] // order is important basepool must have balance prior to metapool
+const SUSD_METAPOOL_V3_NAME = "sUSD-USDv2_v3"
+const pools = [STABLECOIN_POOL_V2_NAME, SUSD_METAPOOL_V3_NAME] // order is important basepool must have balance prior to metapool
 // have two seperate maps here since the naming convention is different throughout the page
 const poolTokensSymbols: { [key: string]: string[] } = {
-  [SUSD_METAPOOL_V2_NAME]: ["SUSD", "DAI", "USDC", "USDT"],
+  [SUSD_METAPOOL_V3_NAME]: ["SUSD", "DAI", "USDC", "USDT"],
   [STABLECOIN_POOL_V2_NAME]: ["DAI", "USDC", "USDT"],
 }
 

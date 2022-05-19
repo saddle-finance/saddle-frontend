@@ -1,6 +1,6 @@
 const STABLECOIN_POOL_V2_NAME = "Stablecoin V2"
-const SUSD_METAPOOL_V2_NAME = "sUSD Meta V2"
-const pools = [STABLECOIN_POOL_V2_NAME, SUSD_METAPOOL_V2_NAME] // order is important basepool must have balance prior to metapool
+const SUSD_METAPOOL_V3_NAME = "sUSD-USDv2_v3"
+const pools = [STABLECOIN_POOL_V2_NAME, SUSD_METAPOOL_V3_NAME] // order is important basepool must have balance prior to metapool
 
 context("Deposit Flow", () => {
   beforeEach(() => {
@@ -16,7 +16,7 @@ context("Deposit Flow", () => {
         .within(() => {
           cy.get("button").contains("Deposit").click()
         })
-      if (poolName === SUSD_METAPOOL_V2_NAME) {
+      if (poolName === SUSD_METAPOOL_V3_NAME) {
         cy.get("[data-testid=deposit-wrapped-checkbox]").click()
       }
       cy.get("#tokenInput input").then(($inputs) => {
