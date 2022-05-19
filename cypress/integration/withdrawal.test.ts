@@ -11,13 +11,11 @@ const poolTokensSymbols: { [key: string]: string[] } = {
 
 context("Withdrawal Flow", () => {
   beforeEach(() => {
-    const host = Cypress.env("DAPP_HOST") as string
-    cy.visit(`${host}#/pools`)
+    cy.visit(`/#/pools`)
   })
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function basicDeposit(poolName: PoolName) {
-    const host = Cypress.env("DAPP_HOST") as string
     // we need a deposit before testing withdrawal
     cy.contains(poolName)
       .parents("[data-testid=poolOverview]")
@@ -31,7 +29,7 @@ context("Withdrawal Flow", () => {
       cy.get("button").contains("Deposit").click()
       cy.get("button").contains("Confirm Deposit").click()
       cy.get(".Toastify").contains(`Deposit on ${poolName} complete`)
-      cy.visit(`${host}#/pools`)
+      cy.visit(`/#/pools`)
       cy.get(`[data-testid="${poolName}Balance"]`).contains("$")
     })
   }

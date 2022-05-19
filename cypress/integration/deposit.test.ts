@@ -1,11 +1,10 @@
-const STABLECOIN_POOL_V2_NAME = "Stablecoin V2"
+// const STABLECOIN_POOL_V2_NAME = "Stablecoin V2"
 const SUSD_METAPOOL_V3_NAME = "sUSD-USDv2_v3"
-const pools = [STABLECOIN_POOL_V2_NAME, SUSD_METAPOOL_V3_NAME] // order is important basepool must have balance prior to metapool
+// const pools = [STABLECOIN_POOL_V2_NAME, SUSD_METAPOOL_V3_NAME] // order is important basepool must have balance prior to metapool
 
 context("Deposit Flow", () => {
   beforeEach(() => {
-    const host = Cypress.env("DAPP_HOST") as string
-    cy.visit(`${host}#/pools`)
+    cy.visit(`/#/pools`)
     cy.wait(3000)
   })
 
@@ -38,5 +37,5 @@ context("Deposit Flow", () => {
     })
   }
 
-  pools.forEach(testPoolDeposit)
+  ;[SUSD_METAPOOL_V3_NAME].forEach(testPoolDeposit)
 })

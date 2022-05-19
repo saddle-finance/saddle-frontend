@@ -1,7 +1,6 @@
 context("Account detail test", () => {
   beforeEach(() => {
-    const host = Cypress.env("DAPP_HOST") as string
-    cy.visit(`${host}#/`)
+    cy.visit(`/#/`)
     cy.waitForReact()
     cy.wait(3000)
   })

@@ -2,8 +2,7 @@ context("Swap Flow", () => {
   function testAssetSwap(poolName: string, poolTokenSymbols: string[]) {
     describe(`Swapping within ${poolName}`, () => {
       before(() => {
-        const host = Cypress.env("DAPP_HOST") as string
-        cy.visit(`${host}#/`)
+        cy.visit(`/#/`)
         cy.waitForReact()
         cy.wait(3000)
       })
