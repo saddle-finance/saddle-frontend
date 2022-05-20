@@ -174,13 +174,13 @@ const DepositPage = (props: Props): ReactElement => {
                   ) => (
                     <TokenInput
                       key={index}
+                      max={max}
                       token={{
                         decimals,
                         symbol,
                         name,
                         priceUSD,
                       }}
-                      max={max}
                       inputValue={inputValue}
                       disabled={poolData?.isPaused}
                       onChange={(value): void =>
@@ -199,6 +199,7 @@ const DepositPage = (props: Props): ReactElement => {
                 <Checkbox
                   onChange={onToggleDepositWrapped}
                   checked={shouldDepositWrapped}
+                  data-testid="deposit-wrapped-checkbox"
                 />
                 <Typography component="span" variant="body1">
                   {t("depositWrapped")}

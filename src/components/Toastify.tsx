@@ -3,6 +3,7 @@ import { Box, Link } from "@mui/material"
 import React, { ReactText } from "react"
 
 import { ChainId } from "../constants"
+import { IS_PRODUCTION } from "../utils/environment"
 import LaunchIcon from "@mui/icons-material/Launch"
 import { getMultichainScanLink } from "../utils/getEtherscanLink"
 import i18n from "i18next"
@@ -163,5 +164,7 @@ export const enqueueToast = (
   toastVariation: ToastVariation,
   toastData: string,
 ): ReactText => {
-  return toastify[toastVariation](toastData)
+  return toastify[toastVariation](toastData, {
+    autoClose: IS_PRODUCTION ? 5000 : 10_000, // keep toasts around longer for slow CI tests :(
+  })
 }

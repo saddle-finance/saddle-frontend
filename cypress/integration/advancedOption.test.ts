@@ -5,8 +5,7 @@ context("Advanced option test", () => {
   const pools = ["BTC V2", "Stablecoin V2"]
 
   beforeEach(() => {
-    const host = Cypress.env("DAPP_HOST") as string
-    cy.visit(`${host}#/pools`)
+    cy.visit(`/#/pools`)
     cy.waitForReact()
     cy.wait(3000)
   })

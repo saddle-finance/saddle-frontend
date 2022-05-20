@@ -9,6 +9,7 @@ import {
   enumerate,
   getMulticallProvider,
 } from "../utils"
+
 import { BigNumber } from "ethers"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
@@ -24,6 +25,15 @@ export type Gauge = {
   poolAddress: string
   gaugeRelativeWeight: BigNumber
   workingSupply: BigNumber
+  rewards: GaugeReward[]
+}
+
+export type GaugeReward = {
+  period_finish: BigNumber
+  last_update: BigNumber
+  distributor: string
+  rate: BigNumber
+  token: string
 }
 
 export type PoolAddressToGauge = {
@@ -55,7 +65,6 @@ export default function GaugeProvider({
       const gauges: Gauges =
         (await getGaugeData(library, chainId, gaugeController)) ||
         initialGaugesState
-
       setGauges(gauges)
     }
 
@@ -105,6 +114,11 @@ export async function getGaugeData(
       )
     ).map((poolAddress) => poolAddress.toLowerCase())
 
+    const gaugeRewardsPromise = ethCallProvider.all(
+      gaugeAddresses.map((address) =>
+        helperContractMultiCall.getGaugeRewards(address),
+      ),
+    )
     const gaugeWeightsPromise: Promise<BigNumber[]> = ethCallProvider.all(
       gaugeAddresses.map((gaugeAddress) =>
         gaugeControllerMultiCall.get_gauge_weight(gaugeAddress),
@@ -119,10 +133,12 @@ export async function getGaugeData(
         ),
       )
 
-    const [gaugeWeights, gaugeRelativeWeights] = await Promise.all([
-      gaugeWeightsPromise,
-      gaugeRelativeWeightsPromise,
-    ])
+    const [gaugeWeights, gaugeRelativeWeights, gaugeRewards] =
+      await Promise.all([
+        gaugeWeightsPromise,
+        gaugeRelativeWeightsPromise,
+        gaugeRewardsPromise,
+      ])
 
     const gauges: PoolAddressToGauge = gaugePoolAddresses.reduce(
       (previousGaugeData, gaugePoolAddress, index) => {
@@ -133,6 +149,13 @@ export async function getGaugeData(
             poolAddress: gaugePoolAddress,
             gaugeWeight: gaugeWeights[index],
             gaugeRelativeWeight: gaugeRelativeWeights[index],
+            rewards: gaugeRewards[index].map((reward) => ({
+              periodFinish: reward.period_finish,
+              lastUpdate: reward.last_update,
+              distributor: reward.distributor.toLowerCase(),
+              rate: reward.rate,
+              token: reward.token.toLowerCase(),
+            })),
           },
         }
       },
