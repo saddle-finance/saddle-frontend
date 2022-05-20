@@ -1,6 +1,10 @@
 import { BLOCK_TIME, ChainId } from "../constants"
 import { BasicPool, BasicPoolsContext } from "./BasicPoolsProvider"
-import { GaugeRewardUserData, getGaugeRewardsUserData } from "../utils/gauges"
+import {
+  Gauge,
+  GaugeRewardUserData,
+  getGaugeRewardsUserData,
+} from "../utils/gauges"
 import { MinichefUserData, getMinichefRewardsUserData } from "../utils/minichef"
 import { MulticallCall, MulticallContract } from "../types/ethcall"
 import React, { ReactElement, useCallback, useContext, useState } from "react"
@@ -61,7 +65,9 @@ export default function UserStateProvider({
         ? getGaugeRewardsUserData(
             library,
             chainId,
-            Object.keys(gauges.gauges) as string[],
+            (Object.values(gauges.gauges) as Gauge[]).map(
+              ({ address }) => address,
+            ),
             account,
           )
         : Promise.resolve(null)
