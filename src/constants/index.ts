@@ -881,7 +881,7 @@ export const MAD_DAI = new Token(
   18,
   "DAI",
   "dai",
-  "madDai",
+  "madDAI",
 )
 
 const USDC_CONTRACT_ADDRESSES = buildAddresses({
