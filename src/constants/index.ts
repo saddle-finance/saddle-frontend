@@ -869,7 +869,20 @@ const DAI_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.EVMOS]: "0x63743ACF2c7cfee65A5E356A4C4A005b586fC7AA",
 })
 
+const MAD_DAI_CONTRACT_ADDRESSES = buildAddresses({
+  [ChainId.EVMOS_TESTNET]: "0x6CE6BeeEDeFd2d83C1c6EC191ceBCE0317227852",
+  [ChainId.EVMOS]: "0x63743ACF2c7cfee65A5E356A4C4A005b586fC7AA",
+})
+
 export const DAI = new Token(DAI_CONTRACT_ADDRESSES, 18, "DAI", "dai", "Dai")
+
+export const MAD_DAI = new Token(
+  MAD_DAI_CONTRACT_ADDRESSES,
+  18,
+  "DAI",
+  "dai",
+  "madDai",
+)
 
 const USDC_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
@@ -882,12 +895,26 @@ const USDC_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.EVMOS]: "0x51e44FfaD5C2B122C8b635671FCC8139dc636E82",
   [ChainId.KAVA_TESTNET]: "0x6CE6BeeEDeFd2d83C1c6EC191ceBCE0317227852",
 })
+
 export const USDC = new Token(
   USDC_CONTRACT_ADDRESSES,
   6,
   "USDC",
   "usd-coin",
   "USDC Coin",
+)
+
+const MAD_USDC_CONTRACT_ADDRESSES = buildAddresses({
+  [ChainId.EVMOS_TESTNET]: "0xF4cd157e54c7B658d7A4995d84372C3dc79D1755",
+  [ChainId.EVMOS]: "0x51e44FfaD5C2B122C8b635671FCC8139dc636E82",
+})
+
+export const MAD_USDC = new Token(
+  MAD_USDC_CONTRACT_ADDRESSES,
+  6,
+  "USDC",
+  "usd-coin",
+  "madUSDC Coin",
 )
 
 const USDT_CONTRACT_ADDRESSES = buildAddresses({
@@ -900,12 +927,26 @@ const USDT_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.EVMOS]: "0x7FF4a56B32ee13D7D4D405887E0eA37d61Ed919e",
   [ChainId.KAVA_TESTNET]: "0xF4cd157e54c7B658d7A4995d84372C3dc79D1755",
 })
+
 export const USDT = new Token(
   USDT_CONTRACT_ADDRESSES,
   6,
   "USDT",
   "tether",
   "Tether",
+)
+
+const MAD_USDT_CONTRACT_ADDRESSES = buildAddresses({
+  [ChainId.EVMOS_TESTNET]: "0x06545e8108090bA1E8448a66b65C62A8B862e7D1",
+  [ChainId.EVMOS]: "0x7FF4a56B32ee13D7D4D405887E0eA37d61Ed919e",
+})
+
+export const MAD_USDT = new Token(
+  MAD_USDT_CONTRACT_ADDRESSES,
+  6,
+  "USDT",
+  "tether",
+  "madTether",
 )
 
 const NUSD_CONTRACT_ADDRESSES = buildAddresses({
@@ -1066,7 +1107,7 @@ export const TBTC_POOL_TOKENS = [TBTC_V2, ...BTC_POOL_V2_TOKENS]
 export const TBTC_UNDERLYING_POOL_TOKENS = [TBTC_V2, BTC_SWAP_V2_TOKEN]
 
 export const EVMOS_BTC_POOL_TOKENS = [WBTC, RENBTC]
-export const EVMOS_4_POOL_TOKENS = [DAI, USDC, USDT, FRAX]
+export const EVMOS_4_POOL_TOKENS = [MAD_DAI, MAD_USDC, MAD_USDT, FRAX]
 export const TBTC_EVMOS_POOL_TOKENS = [TBTC_V2, ...EVMOS_BTC_POOL_TOKENS]
 export const TBTC_EVMOS_UNDERLYING_POOL_TOKENS = [TBTC_V2, EVMOS_BTC_SWAP_TOKEN]
 
