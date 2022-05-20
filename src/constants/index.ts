@@ -521,6 +521,11 @@ export const SDL_TOKEN_ADDRESSES = buildAddresses({
   [ChainId.FANTOM]: "",
 })
 
+export const VOTING_ESCROW_CONTRACT_ADDRESS = buildAddresses({
+  [ChainId.MAINNET]: "",
+  [ChainId.HARDHAT]: "0x4b6aB5F819A515382B0dEB6935D793817bB4af28",
+})
+
 export const SPA_TOKEN_ADDRESSES = buildAddresses({
   [ChainId.ARBITRUM]: "0x5575552988A3A80504bBaeB1311674fCFd40aD4B",
 })
