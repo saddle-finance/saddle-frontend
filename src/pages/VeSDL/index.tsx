@@ -204,6 +204,7 @@ export default function VeSDL(): JSX.Element {
 
   const duration =
     proposedUnlockDate &&
+    !isNaN(proposedUnlockDate.valueOf()) &&
     intervalToDuration({
       start: proposedUnlockDate,
       end: lockEnd || new Date(),
