@@ -1,8 +1,12 @@
 context("veSDL test", () => {
   beforeEach(() => {
     cy.visit(`/#/vesdl`)
+    cy.wait(3000)
   })
   it("veSDL test", () => {
+    cy.getBySelId("lockVeSdlBtn").should("be.disabled")
+    cy.getBySelId("unlockVeSdlBtn").should("be.disabled")
+
     cy.getBySelId("sdlTokenInput")
       .find("input")
       .should("exist")
