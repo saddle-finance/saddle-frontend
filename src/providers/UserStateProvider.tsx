@@ -98,6 +98,7 @@ async function getUserTokenBalances(
     ).flat()
 
     return batchBalanceResults.reduce((acc, result, i) => {
+      // the last call is the native token balance
       const address =
         i === batchBalanceResults.length - 1
           ? NETWORK_NATIVE_TOKENS[chainId]
