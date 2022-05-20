@@ -20,6 +20,7 @@ interface Props {
   onChange?: (value: string) => void
   disabled?: boolean
   readonly?: boolean
+  showUSDprice?: boolean
   error?: boolean
   helperText?: string
   token: {
@@ -38,6 +39,7 @@ function TokenInput({
   readonly,
   error,
   helperText,
+  showUSDprice = true,
   token: {
     symbol: tokenSymbol,
     name: tokenName,
@@ -140,20 +142,22 @@ function TokenInput({
             onFocus={(e) => e.target.select()}
             fullWidth
           />
-          <Typography
-            variant="body2"
-            color={disabled ? "text.secondary" : "text.primary"}
-            textAlign="end"
-          >
-            ≈$
-            {commify(
-              formatBNToString(
-                calculatePrice(inputValue, tokenPriceUSD || 0),
-                18,
-                2,
-              ),
-            )}
-          </Typography>
+          {showUSDprice && (
+            <Typography
+              variant="body2"
+              color={disabled ? "text.secondary" : "text.primary"}
+              textAlign="end"
+            >
+              ≈$
+              {commify(
+                formatBNToString(
+                  calculatePrice(inputValue, tokenPriceUSD || 0),
+                  18,
+                  2,
+                ),
+              )}
+            </Typography>
+          )}
         </Box>
       </Box>
       <FormHelperText
