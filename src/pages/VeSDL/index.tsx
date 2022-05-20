@@ -11,8 +11,14 @@ import {
   Typography,
 } from "@mui/material"
 import React, { useCallback, useEffect, useState } from "react"
-import { differenceInMonths, format, getUnixTime } from "date-fns"
+import { enUS, zhCN } from "date-fns/locale"
 import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
+import {
+  format,
+  formatDuration,
+  getUnixTime,
+  intervalToDuration,
+} from "date-fns"
 import { formatUnits, parseEther } from "@ethersproject/units"
 import {
   useSdlContract,
@@ -40,6 +46,7 @@ type TokenType = {
 }
 
 const MAXTIME = 86400 * 365 * 4
+const WEEK = 7
 
 export default function VeSDL(): JSX.Element {
   const [sdlToken, setSDLToken] = useState<TokenType>({
@@ -61,7 +68,7 @@ export default function VeSDL(): JSX.Element {
   const sdlContract = useSdlContract()
 
   const [openCalculator, setOpenCalculator] = useState<boolean>(false)
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   const fetchData = useCallback(async () => {
     if (account) {
@@ -195,30 +202,45 @@ export default function VeSDL(): JSX.Element {
     }
   }
 
-  const addLockMonths =
-    proposedUnlockDate && !isNaN(proposedUnlockDate.valueOf())
-      ? differenceInMonths(proposedUnlockDate, lockEnd || new Date())
-      : 0
+  const duration =
+    proposedUnlockDate &&
+    intervalToDuration({
+      start: proposedUnlockDate,
+      end: lockEnd || new Date(),
+    })
+  const additionalLockDuration =
+    duration &&
+    formatDuration(
+      {
+        ...duration,
+        weeks: Math.floor((duration.days || 0) / WEEK),
+        days: duration.days || 0 % WEEK,
+      },
+      {
+        format: ["years", "months", "weeks"],
+        locale: i18n.language === "en" ? enUS : zhCN,
+      },
+    )
 
   const lockHelperText = () => {
     if (lockedSDLVal.isZero()) {
-      if (sdlTokenValue.gt(Zero) && addLockMonths > 0)
+      if (sdlTokenValue.gt(Zero) && additionalLockDuration)
         return t("lockSdl", {
           sdlAmount: sdlToken.sdlTokenInputVal,
-          period: addLockMonths,
+          period: additionalLockDuration,
         })
     } else {
-      if (sdlTokenValue.gt(Zero) && !addLockMonths) {
+      if (sdlTokenValue.gt(Zero) && !additionalLockDuration) {
         return t("increaseLockAmount", {
           addLockAmt: sdlToken.sdlTokenInputVal,
         })
-      } else if (sdlTokenValue.gt(Zero) && addLockMonths > 0) {
+      } else if (sdlTokenValue.gt(Zero) && additionalLockDuration) {
         return t("increaseLockAmountAndTime", {
-          addLockMos: addLockMonths,
+          addLockMonths: additionalLockDuration,
           addLockAmt: sdlToken.sdlTokenInputVal,
         })
-      } else if (sdlTokenValue.eq(Zero) && addLockMonths > 0) {
-        return t("increaseLockTime", { addLockMos: addLockMonths })
+      } else if (sdlTokenValue.eq(Zero) && additionalLockDuration) {
+        return t("increaseLockTime", { addLockMonths: additionalLockDuration })
       } else {
         return
       }
