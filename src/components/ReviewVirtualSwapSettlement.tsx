@@ -1,11 +1,12 @@
 import { Box, Button, Divider, Typography } from "@mui/material"
 import React, { ReactElement, useState } from "react"
-import { SWAP_TYPES, TOKENS_MAP } from "../constants"
 import { commify, formatBNToString, formatDeadlineToNumber } from "../utils"
+
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
 import DoubleArrow from "@mui/icons-material/KeyboardDoubleArrowDown"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
+import { SWAP_TYPES } from "../constants"
 import TokenIcon from "./TokenIcon"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
@@ -47,7 +48,6 @@ function ReviewVirtualSwapSettlement({
   )
   const [hasConfirmedHighPriceImpact, setHasConfirmedHighPriceImpact] =
     useState(false)
-  const fromToken = TOKENS_MAP[data.from.symbol]
   const isHighPriceImpactTxn = Boolean(
     data.to?.value &&
       data.exchangeRateInfo &&
@@ -80,7 +80,7 @@ function ReviewVirtualSwapSettlement({
 
       <Box display="flex" alignItems="center">
         <TokenIcon
-          symbol={fromToken.symbol}
+          symbol={data.from.symbol}
           alt="icon"
           width={20}
           height={20}
