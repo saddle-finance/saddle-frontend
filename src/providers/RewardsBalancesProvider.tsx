@@ -1,30 +1,21 @@
-import {
-  BLOCK_TIME,
-  MINICHEF_CONTRACT_ADDRESSES,
-  POOLS_MAP,
-  TRANSACTION_TYPES,
-} from "../constants"
+import { BasicPool, BasicPoolsContext } from "./BasicPoolsProvider"
 import React, {
   ReactElement,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useState,
 } from "react"
 
-import { AppState } from "../state"
+import { BLOCK_TIME } from "../constants"
 import { BigNumber } from "@ethersproject/bignumber"
-import { Contract } from "ethcall"
-import MINICHEF_CONTRACT_ABI from "../constants/abis/miniChef.json"
-import { MiniChef } from "../../types/ethers-contracts/MiniChef"
-import { MulticallContract } from "../types/ethcall"
+import { UserStateContext } from "./UserStateProvider"
 import { Zero } from "@ethersproject/constants"
-import { getMulticallProvider } from "../utils"
 import { useActiveWeb3React } from "../hooks"
 import usePoller from "../hooks/usePoller"
 import { useRetroMerkleData } from "../hooks/useRetroMerkleData"
 import { useRetroactiveVestingContract } from "../hooks/useContract"
-import { useSelector } from "react-redux"
 
 type PoolsRewards = { [poolName: string]: BigNumber }
 type AggRewards = PoolsRewards & { total: BigNumber } & {
@@ -130,51 +121,26 @@ function useRetroactiveRewardBalance() {
 }
 
 function usePoolsRewardBalances() {
-  const { chainId, account, library } = useActiveWeb3React()
-  const [balances, setBalances] = useState<PoolsRewards>({})
-  const { lastTransactionTimes } = useSelector(
-    (state: AppState) => state.application,
-  )
-  const lastStakeOrClaim =
-    lastTransactionTimes[TRANSACTION_TYPES.STAKE_OR_CLAIM]
-  const fetchBalances = useCallback(async () => {
-    if (!library || !chainId || !account) return
-    const ethcallProvider = await getMulticallProvider(library, chainId)
-    const pools = Object.values(POOLS_MAP).filter(
-      ({ addresses, rewardPids }) =>
-        chainId && rewardPids[chainId] !== null && addresses[chainId],
-    )
-    if (pools.length === 0) return
-    const rewardsMulticallContract = new Contract(
-      MINICHEF_CONTRACT_ADDRESSES[chainId],
-      MINICHEF_CONTRACT_ABI,
-    ) as MulticallContract<MiniChef>
-    const pendingSDLCalls = pools.map(({ rewardPids }) =>
-      rewardsMulticallContract.pendingSaddle(
-        rewardPids[chainId] as number,
-        account,
-      ),
-    )
-    try {
-      const fetchedBalances = await ethcallProvider.tryEach(
-        pendingSDLCalls,
-        pendingSDLCalls.map(() => false),
-      )
-      setBalances(
-        fetchedBalances.reduce((acc, balance, i) => {
-          const { name } = pools[i]
-          return balance != null && balance.gt(Zero)
-            ? { ...acc, [name]: balance }
-            : acc
-        }, {} as { [poolName: string]: BigNumber }),
-      )
-    } catch (e) {
-      console.error(e)
+  const userState = useContext(UserStateContext)
+  const basicPools = useContext(BasicPoolsContext)
+  return useMemo(() => {
+    if (!userState || !basicPools) {
+      return
     }
-  }, [library, chainId, account])
-  useEffect(() => {
-    void fetchBalances()
-  }, [fetchBalances, lastStakeOrClaim])
-  usePoller(() => void fetchBalances(), BLOCK_TIME * 3)
-  return balances
+    const poolsWithRewards = (Object.values(basicPools) as BasicPool[]).filter(
+      ({ miniChefRewardsPid }) => miniChefRewardsPid != null,
+    )
+    const poolNameToMinichefSDLBalance = poolsWithRewards.reduce(
+      (acc, { miniChefRewardsPid, poolName }) => {
+        return {
+          ...acc,
+          [poolName]:
+            userState.minichef?.[miniChefRewardsPid as number].pendingSDL ??
+            Zero,
+        }
+      },
+      {} as { [poolName: string]: BigNumber },
+    )
+    return poolNameToMinichefSDLBalance
+  }, [userState, basicPools])
 }
