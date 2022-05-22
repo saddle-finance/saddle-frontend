@@ -1,10 +1,6 @@
-import parseStringToBigNumber, {
-  parseStringAndTokenToBigNumber,
-} from "../parseStringToBigNumber"
-
 import { BigNumber } from "@ethersproject/bignumber"
-import { WBTC } from "../../constants"
 import { Zero } from "@ethersproject/constants"
+import parseStringToBigNumber from "../parseStringToBigNumber"
 
 describe("parseStringToBigNumber", () => {
   it("correctly parses a string", () => {
@@ -28,32 +24,6 @@ describe("parseStringToBigNumber", () => {
   it("falls back to 0 if no fallback param provided", () => {
     const input = "1.23.a"
     expect(parseStringToBigNumber(input.toString(), 8)).toEqual({
-      value: Zero,
-      isFallback: true,
-    })
-  })
-})
-
-describe("parseStringAndTokenToBigNumber", () => {
-  it("returns the correct precision for a token", () => {
-    const input = 1.23
-    expect(parseStringAndTokenToBigNumber(input.toString(), "WBTC")).toEqual({
-      value: BigNumber.from((input * 10 ** WBTC.decimals).toString()),
-      isFallback: false,
-    })
-  })
-
-  it("defaults to 18 decimal precision when no symbol is provided", () => {
-    const input = 1.23
-    expect(parseStringAndTokenToBigNumber(input.toString())).toEqual({
-      value: BigNumber.from((input * 10 ** 18).toString()),
-      isFallback: false,
-    })
-  })
-
-  it("returns 0 if the input cannot be parsed", () => {
-    const input = "1.23.a"
-    expect(parseStringAndTokenToBigNumber(input.toString())).toEqual({
       value: Zero,
       isFallback: true,
     })
