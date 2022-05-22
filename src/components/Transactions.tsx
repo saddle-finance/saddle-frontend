@@ -1,3 +1,5 @@
+import { BasicPool, BasicPoolsContext } from "../providers/BasicPoolsProvider"
+import { BasicToken, TokensContext } from "../providers/TokensProvider"
 import {
   Box,
   Button,
@@ -7,11 +9,18 @@ import {
   Typography,
   useTheme,
 } from "@mui/material"
-import React, { ReactElement, useCallback, useEffect, useState } from "react"
+import React, {
+  ReactElement,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
+
 import LinkIcon from "@mui/icons-material/Launch"
 import { getEtherscanLink } from "../utils/getEtherscanLink"
 import { getFormattedShortTime } from "../utils/dateTime"
-import { getPoolByAddress } from "../utils/getPoolByAddress"
 import { useActiveWeb3React } from "../hooks"
 import { useTranslation } from "react-i18next"
 
@@ -66,8 +75,18 @@ export default function Transactions(): ReactElement {
     "https://api.thegraph.com/subgraphs/name/saddle-finance/saddle"
   const { t } = useTranslation()
   const theme = useTheme()
+  const basicPools = useContext(BasicPoolsContext)
+  const tokens = useContext(TokensContext)
   const { chainId, account } = useActiveWeb3React()
   const [transactionList, setTransactionList] = useState<Transaction[]>([])
+  const basicPoolsByAddress = useMemo(
+    () =>
+      (Object.values(basicPools || {}) as BasicPool[]).reduce(
+        (acc, basicPool) => ({ ...acc, [basicPool.poolAddress]: basicPool }),
+        {} as { [address: string]: BasicPool },
+      ),
+    [basicPools],
+  )
 
   const fetchTxn = useCallback(async () => {
     if (!account || !chainId) return
@@ -111,7 +130,8 @@ export default function Transactions(): ReactElement {
       .then((result: Response) => {
         const { addLiquidityEvents, removeLiquidityEvents, swaps } = result.data
         addLiquidityEvents.map((event) => {
-          const poolName = getPoolByAddress(event.swap.id, chainId)?.name
+          const poolAddress = event.swap.id.toLowerCase()
+          const poolName = basicPoolsByAddress?.[poolAddress]?.poolName
           if (poolName) {
             newTransactionList.push({
               object: `${t("depositIn")} ${poolName}`,
@@ -123,7 +143,8 @@ export default function Transactions(): ReactElement {
         })
 
         removeLiquidityEvents.map((event) => {
-          const poolName = getPoolByAddress(event.swap.id, chainId)?.name
+          const poolAddress = event.swap.id.toLowerCase()
+          const poolName = basicPoolsByAddress?.[poolAddress]?.poolName
           if (poolName) {
             newTransactionList.push({
               object: `${t("withdrawFrom")} ${poolName}`,
@@ -135,14 +156,23 @@ export default function Transactions(): ReactElement {
         })
 
         swaps.map(({ address, exchanges }) => {
-          const poolTokens = getPoolByAddress(address, chainId)?.poolTokens
+          const basicPool = basicPoolsByAddress?.[address.toLowerCase()]
+          const tokenAddresses =
+            basicPool?.underlyingTokens || basicPool?.tokens || []
+          const poolTokens = tokenAddresses.map(
+            (tokenAddr) => tokens?.[tokenAddr],
+          ) as BasicToken[]
           if (exchanges && poolTokens) {
             exchanges.map(({ soldId, boughtId, transaction, timestamp }) => {
               const soldToken = poolTokens[parseInt(soldId)].symbol
               const boughtToken = poolTokens[parseInt(boughtId)].symbol
+              const message =
+                soldToken && boughtToken
+                  ? `${t("swap")} ${soldToken} ${t("toBe")} ${boughtToken}`
+                  : t("swap")
 
               newTransactionList.push({
-                object: `${t("swap")} ${soldToken} ${t("toBe")} ${boughtToken}`,
+                object: message,
                 transaction: transaction,
                 time: getFormattedShortTime(timestamp),
                 timestamp: parseInt(timestamp),
@@ -155,7 +185,7 @@ export default function Transactions(): ReactElement {
         )
       })
       .catch(console.error)
-  }, [chainId, t, account])
+  }, [account, chainId, basicPoolsByAddress, t, tokens])
 
   useEffect(() => {
     void fetchTxn()
