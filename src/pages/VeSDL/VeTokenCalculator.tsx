@@ -50,7 +50,9 @@ export default function VeTokenCalculator({
     userVeSdlAmount,
     totalSupplyVeSDL,
   )
-  const veSdlForMaxBoost = userLPAmount.mul(totalSupplyVeSDL).div(totalLPAmount)
+  const veSdlForMaxBoost =
+    totalLPAmount.gt(Zero) &&
+    userLPAmount.mul(totalSupplyVeSDL).div(totalLPAmount)
   const boost =
     userLPAmount.gt(Zero) &&
     parseEther(MAXBOOST).mul(workingAmount).div(userLPAmount)
