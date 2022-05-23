@@ -9,8 +9,9 @@ import {
   Typography,
 } from "@mui/material"
 import React, { ReactElement, useState } from "react"
-import { SWAP_TYPES, TOKENS_MAP, getIsVirtualSwap } from "../constants"
+import { SWAP_TYPES, getIsVirtualSwap } from "../constants"
 import { formatBNToString, formatDeadlineToNumber } from "../utils"
+
 import { AppState } from "../state/index"
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -186,13 +187,11 @@ function ReviewSwap({ onClose, onConfirm, data }: Props): ReactElement {
 }
 
 function DirectSwapTokens({ data }: { data: Props["data"] }) {
-  const fromToken = TOKENS_MAP[data.from.symbol]
-  const toToken = TOKENS_MAP[data.to.symbol]
   return (
     <Stack mb={3} spacing={1}>
       <Box display="flex" alignItems="center">
         <TokenIcon
-          symbol={fromToken.symbol}
+          symbol={data.from.symbol}
           alt="icon"
           width={20}
           height={20}
@@ -206,7 +205,7 @@ function DirectSwapTokens({ data }: { data: Props["data"] }) {
       </Box>
       <DoubleArrowDown color="primary" />
       <Box display="flex" alignItems="center">
-        <TokenIcon symbol={toToken.symbol} alt="icon" />
+        <TokenIcon symbol={data.to.symbol} alt="icon" />
         <Typography component="span" ml={1}>
           {data.to.symbol}
         </Typography>
@@ -226,7 +225,6 @@ function VirtualSwapTokens({ data }: { data: Props["data"] }) {
       {data.exchangeRateInfo.route.map((symbol, i) => {
         const isFirst = i === 0
         const isLast = i === data.exchangeRateInfo.route.length - 1
-        const token = TOKENS_MAP[symbol]
         return (
           <Box
             display="flex"
@@ -237,9 +235,9 @@ function VirtualSwapTokens({ data }: { data: Props["data"] }) {
           >
             <Stack direction="row" spacing={1}>
               {!isFirst && !isLast && <ArrowDownwardIcon />}
-              <TokenIcon symbol={token.symbol} alt="icon" />
+              <TokenIcon symbol={symbol} alt="icon" />
               <Typography color={isLast ? "text.secondary" : "text.primary"}>
-                {token.symbol}
+                {symbol}
               </Typography>
 
               {(isFirst || isLast) && (

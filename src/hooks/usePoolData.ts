@@ -180,7 +180,11 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
             library,
             chainId,
             account,
-            poolName,
+            {
+              name: poolName,
+              address: basicPool.poolAddress,
+              lpTokenAddress: basicPool.lpToken,
+            },
             tokenPricesUSD,
             priceDataForPool.lpTokenPriceUSD,
           )
