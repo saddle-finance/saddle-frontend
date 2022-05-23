@@ -3,8 +3,6 @@ import {
   ChainId,
   D4_POOL_NAME,
   MINICHEF_CONTRACT_ADDRESSES,
-  POOLS_MAP,
-  PoolName,
   TBTC_METAPOOL_V2_NAME,
   USDS_ARB_USD_METAPOOL_NAME,
   VETH2_POOL_NAME,
@@ -51,7 +49,10 @@ export async function getThirdPartyDataForPool(
   library: Web3Provider,
   chainId: ChainId,
   accountId: string | undefined | null,
-  poolName: PoolName | string,
+  {
+    name: poolName,
+    lpTokenAddress,
+  }: { name: string; address: string; lpTokenAddress: string },
   tokenPricesUSD: TokenPricesUSD,
   lpTokenPriceUSD: BigNumber,
 ): Promise<ThirdPartyData> {
@@ -91,6 +92,7 @@ export async function getThirdPartyDataForPool(
           chainId,
           lpTokenPriceUSD,
           tokenPricesUSD?.[rewardSymbol],
+          lpTokenAddress,
           accountId,
         )
       result.aprs.threshold = { apr, symbol: rewardSymbol }
@@ -114,6 +116,7 @@ export async function getThirdPartyDataForPool(
         chainId,
         lpTokenPriceUSD,
         tokenPricesUSD?.[rewardSymbol],
+        lpTokenAddress,
       )
       result.aprs.sperax = { apr, symbol: rewardSymbol }
       result.amountsStaked.sperax = userStakedAmount
@@ -256,6 +259,7 @@ async function getSperaxData(
   chainId: ChainId,
   lpTokenPrice: BigNumber,
   spaPrice = 0,
+  lpTokenAddress: string,
   accountId?: string | null,
 ): Promise<[BigNumber, BigNumber]> {
   if (
@@ -270,9 +274,8 @@ async function getSperaxData(
     IREWARDER_ABI,
     library,
   ) as IRewarder
-  const pool = POOLS_MAP[USDS_ARB_USD_METAPOOL_NAME]
   const lpTokenContract = getContract(
-    pool.lpToken.addresses[chainId],
+    lpTokenAddress,
     LP_TOKEN_ABI,
     library,
   ) as LpTokenUnguarded
@@ -297,6 +300,7 @@ async function getThresholdData(
   chainId: ChainId,
   lpTokenPrice: BigNumber,
   thresholdPrice = 0,
+  lpTokenAddress: string,
   accountId?: string | null,
 ): Promise<[BigNumber, BigNumber, BigNumber]> {
   if (
@@ -312,9 +316,8 @@ async function getThresholdData(
     IREWARDER_ABI,
     library,
   ) as IRewarder
-  const pool = POOLS_MAP[TBTC_METAPOOL_V2_NAME]
   const lpTokenContract = getContract(
-    pool.lpToken.addresses[chainId],
+    lpTokenAddress,
     LP_TOKEN_ABI,
     library,
   ) as LpTokenUnguarded

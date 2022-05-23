@@ -54,6 +54,9 @@ export function useApproveAndWithdraw(
       if (!swapContract || !basicPool || !lpTokenContract)
         throw new Error("Swap contract is not loaded")
       if (state.lpTokenAmountToSpend.isZero()) return
+      const withdrawTokens = basicPool.isMetaSwap
+        ? basicPool.underlyingTokens
+        : basicPool.tokens
 
       let gasPrice
       if (gasPriceSelected === GasPrices.Custom && gasCustom?.valueSafe) {
@@ -104,7 +107,7 @@ export function useApproveAndWithdraw(
       if (state.withdrawType === "ALL") {
         spendTransaction = await swapContract.removeLiquidity(
           state.lpTokenAmountToSpend,
-          basicPool.tokens.map((address) =>
+          withdrawTokens.map((address) =>
             subtractSlippage(
               BigNumber.from(state.tokenFormState?.[address]?.valueSafe || "0"),
               slippageSelected,
@@ -115,7 +118,7 @@ export function useApproveAndWithdraw(
         )
       } else if (state.withdrawType === "IMBALANCE") {
         spendTransaction = await swapContract.removeLiquidityImbalance(
-          basicPool.tokens.map(
+          withdrawTokens.map(
             (address) => state.tokenFormState?.[address]?.valueSafe || "0",
           ),
           addSlippage(
@@ -128,9 +131,7 @@ export function useApproveAndWithdraw(
       } else {
         spendTransaction = await swapContract.removeLiquidityOneToken(
           state.lpTokenAmountToSpend,
-          basicPool.tokens.findIndex(
-            (address) => address === state.withdrawType,
-          ), // @dev withdrawType is either token address or "reset"
+          withdrawTokens.findIndex((address) => address === state.withdrawType), // @dev withdrawType is either token address or "reset"
           subtractSlippage(
             BigNumber.from(
               state.tokenFormState?.[state.withdrawType || ""]?.valueSafe ||
