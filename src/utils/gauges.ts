@@ -9,12 +9,15 @@ import {
   getMulticallProvider,
 } from "../utils"
 
-import { BigNumber } from "ethers"
+import { BigNumber } from "@ethersproject/bignumber"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
 import HELPER_CONTRACT_ABI from "../constants/abis/helperContract.json"
 import { HelperContract } from "../../types/ethers-contracts/HelperContract"
+import LIQUIDITY_GAUGE_V5_ABI from "../constants/abis/liquidityGaugeV5.json"
+import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { Web3Provider } from "@ethersproject/providers"
+import { Zero } from "@ethersproject/constants"
 
 export type Gauge = {
   address: string
@@ -43,7 +46,13 @@ export type Gauges = {
 }
 
 export type GaugeRewardUserData = {
-  [gaugeAddress: string]: BigNumber[]
+  [gaugeAddress: string]:
+    | {
+        amountStaked: BigNumber
+        claimableExternalRewards: BigNumber[]
+        claimableSDL: BigNumber
+      }
+    | undefined
 }
 
 export const initialGaugesState: Gauges = {
@@ -172,18 +181,58 @@ export async function getGaugeRewardsUserData(
   )
     return null
   try {
-    const gaugeUserRewardsCalls = gaugeAddresses.map((gaugeAddress) =>
-      helperContractMultiCall.getClaimableRewards(gaugeAddress, account),
+    const gaugeMulticallContracts = gaugeAddresses.map((gaugeAddress) =>
+      createMultiCallContract<LiquidityGaugeV5>(
+        gaugeAddress,
+        LIQUIDITY_GAUGE_V5_ABI,
+      ),
     )
-    const gaugeUserRewards = await ethCallProvider.all(gaugeUserRewardsCalls)
-    return gaugeUserRewards.reduce((acc, gaugeUserReward, index) => {
-      // don't include 0 rewards
-      if (!gaugeUserReward.some((reward) => reward.gt(0))) {
-        return acc
-      }
+    // Gauges divide rewards into SDL (#claimable_tokens) and non-SDL (#claimable_reward)
+    const gaugeUserClaimableSDLPromise = ethCallProvider.all(
+      gaugeMulticallContracts.map((gaugeContract) =>
+        gaugeContract.claimable_tokens(account),
+      ),
+    )
+    const gaugeUserClaimableExternalRewardsPromise = ethCallProvider.all(
+      gaugeAddresses.map((gaugeAddress) =>
+        helperContractMultiCall.getClaimableRewards(gaugeAddress, account),
+      ),
+    )
+    const gaugeUserDepositBalancesPromise = ethCallProvider.all(
+      gaugeMulticallContracts.map((gaugeContract) =>
+        gaugeContract.balanceOf(account),
+      ),
+    )
+    const [
+      gaugeUserClaimableSDL,
+      gaugeUserClaimableExternalRewards,
+      gaugeUserDepositBalances,
+    ] = await Promise.all([
+      gaugeUserClaimableSDLPromise,
+      gaugeUserClaimableExternalRewardsPromise,
+      gaugeUserDepositBalancesPromise,
+    ])
+
+    return gaugeAddresses.reduce((acc, gaugeAddress, i) => {
+      const amountStaked = gaugeUserDepositBalances[i]
+      const claimableExternalRewards = gaugeUserClaimableExternalRewards[i]
+      const claimableSDL = gaugeUserClaimableSDL[i]
+
+      const hasSDLRewards = claimableSDL.gt(Zero)
+      const hasDeposit = amountStaked.gt(Zero)
+      const hasExternalRewards =
+        claimableExternalRewards.length > 0 &&
+        claimableExternalRewards.some((reward) => reward.gt(Zero))
+
+      if (!hasExternalRewards && !hasSDLRewards && !hasDeposit) return acc // don't include 0 rewards
+
       return {
         ...acc,
-        [gaugeAddresses[index]]: gaugeUserReward,
+        [gaugeAddress]: {
+          amountStaked,
+          claimableExternalRewards,
+          claimableSDL,
+        },
       }
     }, {})
   } catch (e) {
