@@ -3,6 +3,7 @@ import { Box, Link } from "@mui/material"
 import React, { ReactText } from "react"
 
 import { ChainId } from "../constants"
+import { IS_PRODUCTION } from "../utils/environment"
 import LaunchIcon from "@mui/icons-material/Launch"
 import { getMultichainScanLink } from "../utils/getEtherscanLink"
 import i18n from "i18next"
@@ -19,6 +20,11 @@ type TxType =
   | "migrate"
   | "stake"
   | "unstake"
+  | "createLock"
+  | "increaseLockAmt"
+  | "increaseLockEndTime"
+  | "increaseLockAmtAndEndTime"
+  | "unlock"
 
 export const enqueuePromiseToast = (
   chainId: ChainId,
@@ -26,7 +32,7 @@ export const enqueuePromiseToast = (
   type: TxType,
   additionalData?: { tokenName?: string; poolName?: string },
 ): Promise<unknown> => {
-  const renderPendingContentBasedOnType = (type: string) => {
+  const renderPendingContentBasedOnType = (type: TxType) => {
     switch (type) {
       case "createPermissionlessPool":
         return `Permissionless Pool ${additionalData?.poolName} initiated`
@@ -46,6 +52,14 @@ export const enqueuePromiseToast = (
         return i18n.t("stakeInitiated")
       case "unstake":
         return i18n.t("unstakeInitiated")
+      case "createLock":
+        return i18n.t("lockInitiated")
+      case "increaseLockAmt":
+        return i18n.t("increaseAmtInitiated")
+      case "increaseLockEndTime":
+        return i18n.t("increaseLockTimeInitiate")
+      case "unlock":
+        return i18n.t("unlockInitiated")
       default:
         return i18n.t("transactionInitiated")
     }
@@ -81,6 +95,23 @@ export const enqueuePromiseToast = (
         })
       case "unstake":
         return i18n.t("unstakeComplete", {
+          poolName: additionalData?.poolName,
+        })
+      // vesdl lock
+      case "createLock":
+        return i18n.t("lockCompleted", {
+          poolName: additionalData?.poolName,
+        })
+      case "increaseLockAmt":
+        return i18n.t("increaseAmtComplete", {
+          poolName: additionalData?.poolName,
+        })
+      case "increaseLockEndTime":
+        return i18n.t("increaseLockTimeComplete", {
+          poolName: additionalData?.poolName,
+        })
+      case "unlock":
+        return i18n.t("unlockCompleted", {
           poolName: additionalData?.poolName,
         })
       default:
@@ -133,5 +164,7 @@ export const enqueueToast = (
   toastVariation: ToastVariation,
   toastData: string,
 ): ReactText => {
-  return toastify[toastVariation](toastData)
+  return toastify[toastVariation](toastData, {
+    autoClose: IS_PRODUCTION ? 5000 : 10_000, // keep toasts around longer for slow CI tests :(
+  })
 }
