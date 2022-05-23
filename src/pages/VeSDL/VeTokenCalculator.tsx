@@ -102,15 +102,16 @@ export default function VeTokenCalculator({
             label={t("depositAmount")}
             value={userShare ? formatBNToString(userShare?.usdBalance, 18) : ""}
           />
-          <Typography>
+          {/* TODO: should confirm the correct formula */}
+          {/* <Typography>
             {t("maxBoost")}:{"..."}
-          </Typography>
+          </Typography> */}
           <Typography>
             <CalculateIcon
               color="primary"
               sx={{ verticalAlign: "text-bottom", mr: 1 }}
             />
-            {t("veSdlMaxBoost")}:{" "}
+            {t("veSdlMaxBoost")}:
             {veSdlForMaxBoost ? formatBNToString(veSdlForMaxBoost, 18) : "..."}
           </Typography>
           <Divider />
@@ -136,7 +137,7 @@ export default function VeTokenCalculator({
             />
             {t("boost")}:
             <Typography component="span" color="primary" ml={1}>
-              {boost && formatBNToString(boost, 18)} (0 veSDL)
+              {boost ? formatBNToString(boost, 18) : "..."}
             </Typography>
           </Typography>
         </Stack>
