@@ -58,8 +58,6 @@ export default function VeSDL(): JSX.Element {
   const sdlTokenValue = parseEther(sdlToken.sdlTokenInputVal.trim() || "0.0")
   const [veSdlTotalSupply, setVeSdlTotalSupply] = useState<BigNumber>(Zero)
 
-  console.log("vesdl total supply ==>", formatUnits(veSdlTotalSupply))
-
   const [lockEnd, setLockEnd] = useState<Date | null>(null)
   const [proposedUnlockDate, setProposedUnlockDate] = useState<Date | null>(
     null,

@@ -416,13 +416,16 @@ export function generateSnapshotVoteLink(id?: string): string {
 }
 
 /**
+ * calculate effective working LP amount that gets applied when user deposits into a gauge with given total LP deposit amount
+ * You can compare userLPAmount and the returned value to calculate boost ratio
+ * reference https://www.notion.so/saddle-finance/Gauge-Data-1919b6d6317245baa5f58cc25b17ed98#d2025bd485a641fca2730ac617dad82b
  *
  * @param userLPAmount user's lp amount
  * @param totalLPDeposit total lp deposit in the gauge contract
  * @param userBalanceVeSDL user veSDL balance
  * @param totalSupplyVeSDL veSDL total supply
  * @returns return the working amount in BigNumber
- * reference https://www.notion.so/saddle-finance/Gauge-Data-1919b6d6317245baa5f58cc25b17ed98#d2025bd485a641fca2730ac617dad82b
+ *
  */
 export const calculateWorkingAmount = (
   userLPAmount: BigNumber,
