@@ -24,6 +24,7 @@ import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFla
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import { TokenPricesUSD } from "../state/application"
 import { getAddress } from "@ethersproject/address"
+import { minBigNumber } from "./minBigNumber"
 
 export function isSynthAsset(chainId: ChainId, tokenAddress: string): boolean {
   return SYNTHETIX_TOKENS[chainId]?.includes(tokenAddress) || false
@@ -412,4 +413,30 @@ export function createMultiCallContract<T>(
 export function generateSnapshotVoteLink(id?: string): string {
   if (id) return `https://snapshot.org/#/saddlefinance.eth/proposal/${id}`
   return "https://snapshot.org/#/saddlefinance.eth"
+}
+
+/**
+ *
+ * @param userLPAmount user's lp amount
+ * @param totalLPDeposit total lp deposit in the gauge contract
+ * @param userBalanceVeSDL user veSDL balance
+ * @param totalSupplyVeSDL veSDL total supply
+ * @returns return the working amount in BigNumber
+ * reference https://www.notion.so/saddle-finance/Gauge-Data-1919b6d6317245baa5f58cc25b17ed98#d2025bd485a641fca2730ac617dad82b
+ */
+export const calculateWorkingAmount = (
+  userLPAmount: BigNumber,
+  totalLPDeposit: BigNumber,
+  userBalanceVeSDL: BigNumber,
+  totalSupplyVeSDL: BigNumber,
+): BigNumber => {
+  let minAmount = userLPAmount.mul(BigNumber.from(40)).div(BigNumber.from(10))
+  if (totalSupplyVeSDL.isZero()) return Zero
+  minAmount = minAmount.add(
+    totalLPDeposit
+      .mul(userBalanceVeSDL)
+      .div(totalSupplyVeSDL)
+      .mul(BigNumber.from(60).div(BigNumber.from(100))),
+  )
+  return minBigNumber(minAmount, userLPAmount)
 }

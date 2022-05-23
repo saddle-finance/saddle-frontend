@@ -76,7 +76,7 @@ export interface UserShareType {
 export type PoolDataHookReturnType = [
   PoolDataType,
   UserShareType | null,
-  React.Dispatch<React.SetStateAction<string | undefined>> | null,
+  React.Dispatch<React.SetStateAction<string | undefined>>,
 ]
 
 const emptyPoolData = {
@@ -119,15 +119,6 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
     name: poolName || "",
   })
   const [userShare, setUserShare] = useState<UserShareType | null>(null)
-  // const [poolData, setPoolData] = useState<
-  //   [PoolDataType, UserShareType | null]
-  // >([
-  //   {
-  //     ...emptyPoolData,
-  //     name: poolName || "",
-  //   },
-  //   null,
-  // ])
 
   useEffect(() => {
     async function getSwapData(): Promise<void> {
