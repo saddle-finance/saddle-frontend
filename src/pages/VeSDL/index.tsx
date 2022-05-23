@@ -56,6 +56,9 @@ export default function VeSDL(): JSX.Element {
   const [veSdlTokenVal, setVeSdlTokenVal] = useState<BigNumber>(Zero)
   const [lockedSDLVal, setLockedSDLVal] = useState<BigNumber>(Zero)
   const sdlTokenValue = parseEther(sdlToken.sdlTokenInputVal.trim() || "0.0")
+  const [veSdlTotalSupply, setVeSdlTotalSupply] = useState<BigNumber>(Zero)
+
+  console.log("vesdl total supply ==>", formatUnits(veSdlTotalSupply))
 
   const [lockEnd, setLockEnd] = useState<Date | null>(null)
   const [proposedUnlockDate, setProposedUnlockDate] = useState<Date | null>(
@@ -80,6 +83,8 @@ export default function VeSDL(): JSX.Element {
       const vesdlBal = await votingEscrowContract?.["balanceOf(address)"](
         account,
       )
+      const totalSupply = await votingEscrowContract["totalSupply()"]()
+      setVeSdlTotalSupply(totalSupply)
       setVeSdlTokenVal(vesdlBal || Zero)
 
       const prevLockEnd =
@@ -92,6 +97,7 @@ export default function VeSDL(): JSX.Element {
       setLockedSDLVal(veSdlToken?.amount || Zero)
     }
   }, [account, sdlContract, votingEscrowContract])
+
   const resetFormState = () => {
     setSDLToken((prev) => ({
       ...prev,
@@ -408,6 +414,8 @@ export default function VeSDL(): JSX.Element {
         </Stack>
       </Box>
       <VeTokenCalculator
+        userBalaceVeSDL={veSdlTokenVal}
+        totalSupplyVeSDL={veSdlTotalSupply}
         open={openCalculator}
         onClose={() => setOpenCalculator(false)}
       />

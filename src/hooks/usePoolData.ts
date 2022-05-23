@@ -8,8 +8,8 @@ import {
   Partners,
   getThirdPartyDataForPool,
 } from "../utils/thirdPartyIntegrations"
+import React, { useContext, useEffect, useState } from "react"
 import { bnSum, getTokenSymbolForPoolType } from "../utils"
-import { useContext, useEffect, useState } from "react"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -73,7 +73,11 @@ export interface UserShareType {
   amountsStaked: Partial<Record<Partners, BigNumber>>
 }
 
-export type PoolDataHookReturnType = [PoolDataType, UserShareType | null]
+export type PoolDataHookReturnType = [
+  PoolDataType,
+  UserShareType | null,
+  React.Dispatch<React.SetStateAction<string | undefined>> | null,
+]
 
 const emptyPoolData = {
   adminFee: Zero,
@@ -100,7 +104,8 @@ const emptyPoolData = {
   poolType: PoolTypes.OTHER,
 } as PoolDataType
 
-export default function usePoolData(poolName?: string): PoolDataHookReturnType {
+export default function usePoolData(name?: string): PoolDataHookReturnType {
+  const [poolName, setPoolName] = useState<string | undefined>(name)
   const { account, library, chainId } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
@@ -109,13 +114,20 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
   const { tokenPricesUSD, swapStats } = useSelector(
     (state: AppState) => state.application,
   )
-  const [poolData, setPoolData] = useState<PoolDataHookReturnType>([
-    {
-      ...emptyPoolData,
-      name: poolName || "",
-    },
-    null,
-  ])
+  const [poolData, setPoolData] = useState<PoolDataType>({
+    ...emptyPoolData,
+    name: poolName || "",
+  })
+  const [userShare, setUserShare] = useState<UserShareType | null>(null)
+  // const [poolData, setPoolData] = useState<
+  //   [PoolDataType, UserShareType | null]
+  // >([
+  //   {
+  //     ...emptyPoolData,
+  //     name: poolName || "",
+  //   },
+  //   null,
+  // ])
 
   useEffect(() => {
     async function getSwapData(): Promise<void> {
@@ -128,13 +140,11 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
         chainId == null ||
         basicPool == null
       ) {
-        setPoolData([
-          {
-            ...emptyPoolData,
-            name: poolName || "",
-          },
-          null,
-        ])
+        setPoolData({
+          ...emptyPoolData,
+          name: poolName || "",
+        })
+        setUserShare(null)
         return
       }
       try {
@@ -291,7 +301,8 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
               }, {}), // this is # of underlying tokens (eg btc), not lpTokens
             }
           : null
-        setPoolData([poolData, userShareData])
+        setPoolData(poolData)
+        setUserShare(userShareData)
       } catch (err) {
         console.log("Error on getSwapData,", err)
       }
@@ -311,7 +322,7 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
     userState?.tokenBalances,
   ])
 
-  return poolData
+  return [poolData, userShare, setPoolName]
 }
 
 function calculateFraction(

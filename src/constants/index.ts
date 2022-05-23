@@ -523,7 +523,7 @@ export const SDL_TOKEN_ADDRESSES = buildAddresses({
 
 export const VOTING_ESCROW_CONTRACT_ADDRESS = buildAddresses({
   [ChainId.MAINNET]: "",
-  [ChainId.HARDHAT]: "0x4b6aB5F819A515382B0dEB6935D793817bB4af28",
+  [ChainId.HARDHAT]: "0xE3011A37A904aB90C8881a99BD1F6E21401f1522",
 })
 
 export const SPA_TOKEN_ADDRESSES = buildAddresses({
