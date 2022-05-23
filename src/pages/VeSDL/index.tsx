@@ -412,8 +412,8 @@ export default function VeSDL(): JSX.Element {
         </Stack>
       </Box>
       <VeTokenCalculator
-        userBalaceVeSDL={veSdlTokenVal}
-        totalSupplyVeSDL={veSdlTotalSupply}
+        userBalaceVeSdl={veSdlTokenVal}
+        totalSupplyVeSdl={veSdlTotalSupply}
         open={openCalculator}
         onClose={() => setOpenCalculator(false)}
       />

@@ -21,15 +21,15 @@ import { useTranslation } from "react-i18next"
 type Props = {
   open: boolean
   onClose: () => void
-  userBalaceVeSDL: BigNumber
-  totalSupplyVeSDL: BigNumber
+  userBalaceVeSdl: BigNumber
+  totalSupplyVeSdl: BigNumber
 }
 const MAXBOOST = "2.5"
 export default function VeTokenCalculator({
   open,
   onClose,
-  totalSupplyVeSDL,
-  userBalaceVeSDL,
+  totalSupplyVeSdl,
+  userBalaceVeSdl,
 }: Props): JSX.Element {
   const { t } = useTranslation()
   const [poolNameValue, setPoolNameValue] = useState<string>("D4")
@@ -38,7 +38,7 @@ export default function VeTokenCalculator({
   const [poolData, userShare, setPoolDataName] = usePoolData("D4")
 
   const userVeSdlAmount = userVeSdlInputAmount.isZero()
-    ? userBalaceVeSDL
+    ? userBalaceVeSdl
     : userVeSdlInputAmount
 
   const userLPAmount = userShare?.usdBalance || Zero
@@ -48,11 +48,11 @@ export default function VeTokenCalculator({
     userLPAmount,
     totalLPAmount,
     userVeSdlAmount,
-    totalSupplyVeSDL,
+    totalSupplyVeSdl,
   )
   const veSdlForMaxBoost =
     totalLPAmount.gt(Zero) &&
-    userLPAmount.mul(totalSupplyVeSDL).div(totalLPAmount)
+    userLPAmount.mul(totalSupplyVeSdl).div(totalLPAmount)
   const boost =
     userLPAmount.gt(Zero) &&
     parseEther(MAXBOOST).mul(workingAmount).div(userLPAmount)
@@ -70,7 +70,7 @@ export default function VeTokenCalculator({
         <Stack direction="column" spacing={3}>
           <TextField
             label={t("totalVeSdl")}
-            value={formatBNToString(totalSupplyVeSDL, 18)}
+            value={formatBNToString(totalSupplyVeSdl, 18)}
             fullWidth
           />
           <Divider />
@@ -120,7 +120,7 @@ export default function VeTokenCalculator({
             label="My veSDL Amount"
             value={formatBNToString(
               userVeSdlInputAmount.isZero()
-                ? userBalaceVeSDL
+                ? userBalaceVeSdl
                 : userVeSdlInputAmount,
               18,
             )}
