@@ -390,7 +390,7 @@ function useRewardClaims() {
       if (!chainId || !account || !rewardsContract) return
       try {
         updateClaimStatus(gauge.poolName, STATUSES.PENDING)
-        // const txn = await minterContract["mint(addr)"](account)
+        // const txn = await minterContract["mint(addr)"](gauge.address)
         // await enqueuePromiseToast(chainId, txn.wait(), "claim", {
         //   poolName: gauge.poolName,
         // })
