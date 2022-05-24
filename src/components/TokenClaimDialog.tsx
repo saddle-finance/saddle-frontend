@@ -138,11 +138,9 @@ export default function TokenClaimDialog({
           <img src={logo} width={138} height={138} />
         </Box>
       </Box>
-      <Box p={4}>
-        <Alert color="info" severity="warning">
-          {t("migrationGaugeWarningMsg")}
-        </Alert>
-      </Box>
+      <Alert color="info" severity="warning" sx={{ m: 4 }}>
+        {t("migrationGaugeWarningMsg")}
+      </Alert>
       <Box
         display="flex"
         alignItems="center"
