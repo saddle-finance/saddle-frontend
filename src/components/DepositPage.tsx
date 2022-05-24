@@ -234,9 +234,13 @@ const DepositPage = (props: Props): ReactElement => {
               ) : null}
               <Stack direction="column" spacing={2}>
                 {tokens.map(
-                  ({ decimals, symbol, name, priceUSD, inputValue }, index) => (
+                  (
+                    { decimals, symbol, name, priceUSD, inputValue, max },
+                    index,
+                  ) => (
                     <TokenInput
                       key={index}
+                      max={max}
                       token={{
                         decimals,
                         symbol,
@@ -261,6 +265,7 @@ const DepositPage = (props: Props): ReactElement => {
                 <Checkbox
                   onChange={onToggleDepositWrapped}
                   checked={shouldDepositWrapped}
+                  data-testid="deposit-wrapped-checkbox"
                 />
                 <Typography component="span" variant="body1">
                   {t("depositWrapped")}

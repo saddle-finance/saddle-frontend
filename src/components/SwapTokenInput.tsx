@@ -7,11 +7,7 @@ import {
   Typography,
 } from "@mui/material"
 import React, { useEffect } from "react"
-import {
-  SWAP_TYPES,
-  TOKENS_MAP,
-  readableDecimalNumberRegex,
-} from "../constants"
+import { SWAP_TYPES, readableDecimalNumberRegex } from "../constants"
 import { commify, formatBNToString } from "../utils"
 import { styled, useTheme } from "@mui/material/styles"
 import { useRef, useState } from "react"
@@ -48,7 +44,7 @@ interface SwapTokenInputProps {
 
 export default function SwapTokenInput({
   tokens,
-  selected,
+  selected: selectedTokenSymbol,
   inputValue,
   inputValueUSD,
   isSwapFrom,
@@ -96,8 +92,6 @@ export default function SwapTokenInput({
     event.target.select()
   }
   const open = Boolean(anchorEl)
-  const selectedToken =
-    typeof selected === "string" ? TOKENS_MAP[selected] : undefined
 
   return (
     <div {...rest}>
@@ -110,11 +104,11 @@ export default function SwapTokenInput({
         bgcolor={theme.palette.background.paper}
         ref={containerRef}
       >
-        {selectedToken && (
+        {selectedTokenSymbol && (
           <Box width={24} height={24} marginRight={1}>
             <TokenIcon
-              symbol={selectedToken?.symbol}
-              alt={selectedToken?.name}
+              symbol={selectedTokenSymbol}
+              alt={selectedTokenSymbol}
               width="100%"
               height="100%"
             />
@@ -127,7 +121,7 @@ export default function SwapTokenInput({
             data-testid="listOpenBtn"
           >
             <Typography variant="subtitle1">
-              {selectedToken?.symbol || "Choose"}
+              {selectedTokenSymbol || "Choose"}
             </Typography>
           </Button>
           <Typography
@@ -136,7 +130,7 @@ export default function SwapTokenInput({
             paddingLeft={1}
             color="text.secondary"
           >
-            {selectedToken?.name}
+            {selectedTokenSymbol}
           </Typography>
         </Box>
         <Box flex={1}>

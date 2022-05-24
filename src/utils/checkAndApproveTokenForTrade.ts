@@ -26,7 +26,7 @@ export default async function checkAndApproveTokenForTrade(
   spendingValue: BigNumber, // max is MaxUint256
   infiniteApproval = false,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  gasPrice: BigNumber, // @dev unused
+  gasPrice?: BigNumber, // @dev unused
   callbacks: {
     onTransactionError?: (error: Error | string) => () => void
   } = {},

@@ -1,9 +1,12 @@
 context("veSDL test", () => {
   beforeEach(() => {
-    const host = Cypress.env("DAPP_HOST") as string
-    cy.visit(`${host}#/vesdl`)
+    cy.visit(`/#/vesdl`)
+    cy.wait(3000)
   })
   it("veSDL test", () => {
+    cy.getBySelId("lockVeSdlBtn").should("be.disabled")
+    cy.getBySelId("unlockVeSdlBtn").should("be.disabled")
+
     cy.getBySelId("sdlTokenInput")
       .find("input")
       .should("exist")

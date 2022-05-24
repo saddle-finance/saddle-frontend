@@ -62,6 +62,7 @@ const AppContainer = styled("div")(({ theme }) => {
     backgroundSize: "cover",
   }
 })
+
 export default function App(): ReactElement {
   const { chainId } = useActiveWeb3React()
   const theme = useTheme()

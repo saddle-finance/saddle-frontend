@@ -123,6 +123,7 @@ const SwapPage = (props: Props): ReactElement => {
                 &nbsp;
                 <Button
                   size="small"
+                  data-testid="swapTokenFromWalletBalance"
                   onClick={() => {
                     if (fromToken == null) return
                     const amtStr = formatBNToString(

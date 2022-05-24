@@ -45,29 +45,32 @@ export default function useWithdrawFormState(
   const swapContract = useSwapContract(poolName)
   const [poolData, userShareData] = usePoolData(poolName)
   const { account } = useActiveWeb3React()
+  const withdrawTokens = poolData.isMetaSwap
+    ? poolData.underlyingTokens
+    : poolData.tokens
   const tokenInputStateCreators: {
     [address: string]: ReturnType<typeof numberInputStateCreator>
   } = useMemo(
     () =>
-      poolData.tokens.reduce(
+      withdrawTokens.reduce(
         (acc, { address, decimals }) => ({
           ...acc,
           [address]: numberInputStateCreator(decimals, BigNumber.from("0")),
         }),
         {},
       ),
-    [poolData.tokens],
+    [withdrawTokens],
   )
   const tokenInputsEmptyState = useMemo(
     () =>
-      poolData.tokens.reduce(
+      withdrawTokens.reduce(
         (acc, { address }) => ({
           ...acc,
           [address]: tokenInputStateCreators[address]("0"),
         }),
         {},
       ),
-    [poolData.tokens, tokenInputStateCreators],
+    [withdrawTokens, tokenInputStateCreators],
   )
   const formEmptyState = useMemo(
     () => ({
@@ -112,7 +115,7 @@ export default function useWithdrawFormState(
               swapContract as SwapFlashLoan
             ).calculateTokenAmount(
               account,
-              poolData.tokens.map(
+              withdrawTokens.map(
                 ({ address }) => state.tokenInputs[address]?.valueSafe || Zero,
               ),
               false,
@@ -121,7 +124,7 @@ export default function useWithdrawFormState(
             inputCalculatedLPTokenAmount = await (
               swapContract as SwapFlashLoanNoWithdrawFee
             ).calculateTokenAmount(
-              poolData.tokens.map(
+              withdrawTokens.map(
                 ({ address }) => state.tokenInputs[address]?.valueSafe || Zero,
               ),
               false,
@@ -166,7 +169,7 @@ export default function useWithdrawFormState(
           }
           nextState = {
             lpTokenAmountToSpend: effectiveUserLPTokenBalance,
-            tokenInputs: poolData.tokens.reduce(
+            tokenInputs: withdrawTokens.reduce(
               (acc, { address }, i) => ({
                 ...acc,
                 [address]: tokenInputStateCreators[address](tokenAmounts[i]),
@@ -186,7 +189,7 @@ export default function useWithdrawFormState(
       } else {
         try {
           if (state.percentage) {
-            const tokenIndex = poolData.tokens.findIndex(
+            const tokenIndex = withdrawTokens.findIndex(
               ({ address }) => address === state.withdrawType,
             )
             let tokenAmount: BigNumber
@@ -208,7 +211,7 @@ export default function useWithdrawFormState(
             }
             nextState = {
               lpTokenAmountToSpend: effectiveUserLPTokenBalance,
-              tokenInputs: poolData.tokens.reduce(
+              tokenInputs: withdrawTokens.reduce(
                 (acc, { address }, i) => ({
                   ...acc,
                   [address]: tokenInputStateCreators[address](
@@ -227,7 +230,7 @@ export default function useWithdrawFormState(
                 swapContract as SwapFlashLoan
               ).calculateTokenAmount(
                 account,
-                poolData.tokens.map(
+                withdrawTokens.map(
                   ({ address }) =>
                     state.tokenInputs[address]?.valueSafe || Zero,
                 ),
@@ -237,7 +240,7 @@ export default function useWithdrawFormState(
               inputCalculatedLPTokenAmount = await (
                 swapContract as SwapFlashLoanNoWithdrawFee
               ).calculateTokenAmount(
-                poolData.tokens.map(
+                withdrawTokens.map(
                   ({ address }) =>
                     state.tokenInputs[address]?.valueSafe || Zero,
                 ),
@@ -273,7 +276,7 @@ export default function useWithdrawFormState(
         ...nextState,
       }))
     }, 250),
-    [userShareData, swapContract, poolData.tokens, tokenInputStateCreators],
+    [userShareData, swapContract, withdrawTokens, tokenInputStateCreators],
   )
 
   const handleUpdateForm = useCallback(
@@ -284,12 +287,11 @@ export default function useWithdrawFormState(
         let nextState: WithdrawFormState | Record<string, unknown> = {}
         if (action.fieldName === "tokenInputs") {
           const { address = "", value: valueInput } = action
-          console.log({ action })
           const newTokenInputs = {
             ...prevState.tokenInputs,
             [address]: tokenInputStateCreators[address](valueInput),
           }
-          const activeInputTokens = poolData.tokens.filter(
+          const activeInputTokens = withdrawTokens.filter(
             ({ address }) => +(newTokenInputs[address]?.valueRaw || "0") !== 0,
           )
           let withdrawType
@@ -341,7 +343,7 @@ export default function useWithdrawFormState(
         }
         const pendingTokenInput =
           action.fieldName === "tokenInputs" &&
-          poolData.tokens.every(({ address }) => {
+          withdrawTokens.every(({ address }) => {
             const stateValue = finalState.tokenInputs[address]?.valueRaw || Zero
             return isNaN(+stateValue) || +stateValue === 0
           })
@@ -352,7 +354,7 @@ export default function useWithdrawFormState(
       })
     },
     [
-      poolData.tokens,
+      withdrawTokens,
       calculateAndUpdateDynamicFields,
       tokenInputStateCreators,
       tokenInputsEmptyState,

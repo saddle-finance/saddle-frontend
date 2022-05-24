@@ -1,7 +1,6 @@
 context("Risk Flow", () => {
   beforeEach(() => {
-    const host = Cypress.env("DAPP_HOST") as string
-    cy.visit(`${host}#/risk`)
+    cy.visit(`/#/risk`)
   })
 
   it("renders the Risk view and its contents", () => {
