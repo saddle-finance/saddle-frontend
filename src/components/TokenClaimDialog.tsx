@@ -11,7 +11,6 @@ import {
 } from "@mui/material"
 import { BasicPool, BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { ChainId, SDL_TOKEN } from "../constants"
-import { Gauge, GaugeContext, Gauges } from "../providers/GaugeProvider"
 import React, {
   ReactElement,
   useCallback,
@@ -32,6 +31,8 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
 import { BigNumber } from "@ethersproject/bignumber"
 import { ContractTransaction } from "@ethersproject/contracts"
 import Dialog from "./Dialog"
+import { Gauge } from "../utils/gauges"
+import { GaugeContext } from "../providers/GaugeProvider"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
@@ -52,7 +53,7 @@ export default function TokenClaimDialog({
   const { t } = useTranslation()
   const { chainId } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
-  const gaugeData: Gauges = useContext(GaugeContext)
+  const gaugeData = useContext(GaugeContext)
   const minterContract = useMinterContract()
   const gauges = Object.values(gaugeData.gauges)
   console.log({ gaugeData, basicPools, minterContract })
@@ -205,7 +206,7 @@ export default function TokenClaimDialog({
             <React.Fragment key={gauge?.poolName}>
               <ClaimListItem
                 title={gauge.poolName}
-                amount={gauge.rewards[0]?.rate ?? Zero}
+                amount={gauge?.rewards[0]?.rate ?? Zero}
                 claimCallback={() => claimGaugeReward(gauge)}
                 status={
                   claimsStatuses["allGauges"] || claimsStatuses[gauge.poolName]
@@ -387,7 +388,7 @@ function useRewardClaims() {
   const claimGaugeReward = useCallback(
     // async (gauge: Gauge) => {
     (gauge: Gauge) => {
-      if (!chainId || !account || !rewardsContract) return
+      if (!chainId || !account || !gauge) return
       try {
         updateClaimStatus(gauge.poolName, STATUSES.PENDING)
         // const txn = await minterContract["mint(addr)"](gauge.address)
@@ -401,7 +402,7 @@ function useRewardClaims() {
         enqueueToast("error", "Unable to claim reward")
       }
     },
-    [chainId, account, rewardsContract, updateClaimStatus],
+    [chainId, account, updateClaimStatus],
   )
 
   const claimRetroReward = useCallback(async () => {
