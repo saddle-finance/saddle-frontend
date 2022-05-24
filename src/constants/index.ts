@@ -174,7 +174,7 @@ export const MINICHEF_CONTRACT_ADDRESSES = buildAddresses({
 })
 
 export const MINTER_ADDRESSES = buildAddresses({
-  [ChainId.HARDHAT]: "",
+  [ChainId.HARDHAT]: "0xc0F115A19107322cFBf1cDBC7ea011C19EbDB4F8",
   [ChainId.MAINNET]: "",
 })
 

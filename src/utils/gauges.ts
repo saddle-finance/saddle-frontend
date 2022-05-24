@@ -141,9 +141,9 @@ export async function getGaugeData(
           [gaugePoolAddress]: {
             address: gaugeAddresses[index],
             poolAddress: gaugePoolAddress,
+            poolName: gaugePoolNames[index],
             gaugeWeight: gaugeWeights[index],
             gaugeRelativeWeight: gaugeRelativeWeights[index],
-            gaugePoolName: gaugePoolNames[index],
             rewards: gaugeRewards[index].map((reward) => ({
               periodFinish: reward.period_finish,
               lastUpdate: reward.last_update,
