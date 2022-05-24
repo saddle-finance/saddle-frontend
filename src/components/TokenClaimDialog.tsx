@@ -57,7 +57,6 @@ export default function TokenClaimDialog({
   const userState = useContext(UserStateContext)
   const gaugeData = useContext(GaugeContext)
   const gauges = Object.values(gaugeData.gauges)
-  console.log({ gaugeData, basicPools, userState })
   const isClaimableNetwork =
     chainId === ChainId.MAINNET ||
     chainId === ChainId.ARBITRUM ||
@@ -203,22 +202,28 @@ export default function TokenClaimDialog({
               </Trans>
             </Typography>
           )}
-          {gauges.map((gauge, i, arr) => (
-            <React.Fragment key={gauge?.poolName}>
-              <ClaimListItem
-                title={gauge.poolName}
-                amount={
-                  userState?.gaugeRewards?.[gauge?.address]?.amountStaked ??
-                  Zero
-                }
-                claimCallback={() => claimGaugeReward(gauge)}
-                status={
-                  claimsStatuses["allGauges"] || claimsStatuses[gauge.poolName]
-                }
-              />
-              {i < arr.length - 1 && <Divider key={i} />}
-            </React.Fragment>
-          ))}
+          {gauges.map(
+            (gauge, i, arr) =>
+              userState?.gaugeRewards?.[gauge?.address]?.claimableSDL.gt(
+                Zero,
+              ) && (
+                <React.Fragment key={gauge?.poolName}>
+                  <ClaimListItem
+                    title={gauge.poolName}
+                    amount={
+                      userState?.gaugeRewards?.[gauge?.address]?.claimableSDL ??
+                      Zero
+                    }
+                    claimCallback={() => claimGaugeReward(gauge)}
+                    status={
+                      claimsStatuses["allGauges"] ||
+                      claimsStatuses[gauge.poolName]
+                    }
+                  />
+                  {i < arr.length - 1 && <Divider key={i} />}
+                </React.Fragment>
+              ),
+          )}
           {/* {allPoolsWithRewards.map((pool, i, arr) => ( */}
           {/*   <React.Fragment key={pool.poolName}> */}
           {/*     <ClaimListItem */}
