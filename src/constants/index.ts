@@ -40,6 +40,7 @@ export const EVMOS_POOL_NAME = "evmosUSD"
 export const KAVA_TESTNET_USD_POOL_NAME = "kavaTestnetUSD"
 export const TBTC_EVMOS_BTC_METAPOOL_NAME = "tbtc-evmosBTC Meta"
 export const EVMOS_4_POOL_NAME = "Evmos 4Pool"
+export const EVMOS_4_POOL_NAME_OUTDATED = "Evmos 4Pool Outdated"
 export const TBTC_METAPOOL_V2_BTCV2_V3_NAME = "tBTCv2-BTCv2_v3"
 export const WCUSD_METAPOOL_V2_USDV2_V3_NAME = "wcUSD-USDv2_v3"
 export const SUSD_METAPOOL_V2_USDV2_V3_NAME = "sUSD-USDv2_v3"
@@ -69,6 +70,7 @@ export type PoolName =
   | typeof TBTC_EVMOS_BTC_METAPOOL_NAME
   | typeof EVMOS_BTC_POOL_NAME
   | typeof EVMOS_4_POOL_NAME
+  | typeof EVMOS_4_POOL_NAME_OUTDATED
   | typeof TBTC_METAPOOL_V2_BTCV2_V3_NAME
   | typeof WCUSD_METAPOOL_V2_USDV2_V3_NAME
   | typeof SUSD_METAPOOL_V2_USDV2_V3_NAME
@@ -321,6 +323,10 @@ export const EVMOS_4_POOL_SWAP_ADDRESSES = buildAddresses({
   [ChainId.EVMOS]: "0x81272C5c573919eF0C719D6d63317a4629F161da",
 })
 
+export const EVMOS_4_POOL_SWAP_ADDRESSES_OUTDATED = buildAddresses({
+  [ChainId.EVMOS]: "0x4be29402eF37c911fc33BeF349aeAD96f24f29Ef",
+})
+
 export const VETH2_SWAP_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0xdec2157831D6ABC3Ec328291119cc91B337272b5",
   [ChainId.ROPSTEN]: "0x2C019509326485AE234c6CA8a51c9F4A0F94f5fA",
@@ -481,6 +487,11 @@ export const EVMOS_4_POOL_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.EVMOS]: "0x9A34c72Bb85f0Da63578aC18047325E2a246f273",
 })
 
+export const EVMOS_4_POOL_SWAP_TOKEN_CONTRACT_ADDRESSES_OUTDATED =
+  buildAddresses({
+    [ChainId.EVMOS]: "0x011C7185e40767Bb1F03db2346deFe0DcBd3eD6E",
+  })
+
 export const TBTC_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0x122Eca07139EB368245A29FB702c9ff11E9693B7",
   [ChainId.HARDHAT]: "0xf76070F44307a4B6649fEC2081cE4B4730c37C76",
@@ -620,6 +631,16 @@ export const EVMOS_BTC_SWAP_TOKEN = new Token(
 
 export const EVMOS_4_POOL_SWAP_TOKEN = new Token(
   EVMOS_4_POOL_SWAP_TOKEN_CONTRACT_ADDRESSES,
+  18,
+  "saddleEvmos4pool",
+  "saddleevmos4pool",
+  "Saddle 4pool",
+  false,
+  true,
+)
+
+export const EVMOS_4_POOL_SWAP_TOKEN_OUTDATED = new Token(
+  EVMOS_4_POOL_SWAP_TOKEN_CONTRACT_ADDRESSES_OUTDATED,
   18,
   "saddleEvmos4pool",
   "saddleevmos4pool",
@@ -986,12 +1007,30 @@ const FRAX_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.EVMOS]: "0xE03494D0033687543a80c9B1ca7D6237F2EA8BD8",
 })
 
+const FRAX_CONTRACT_ADDRESSES_OUTDATED = buildAddresses({
+  [ChainId.MAINNET]: "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+  [ChainId.ROPSTEN]: "0xb295E36469C8Aef7d76b661aD5af02cdB258D662",
+  [ChainId.HARDHAT]: "0x851356ae760d987E095750cCeb3bC6014560891C",
+  [ChainId.ARBITRUM]: "0x17fc002b466eec40dae837fc4be5c67993ddbd6f",
+  [ChainId.OPTIMISM]: "0x2E3D870790dC77A83DD1d18184Acc7439A53f475",
+  [ChainId.FANTOM]: "0xdc301622e621166bd8e82f2ca0a26c13ad0be355",
+  [ChainId.EVMOS]: "0x28eC4B29657959F4A5052B41079fe32919Ec3Bd3",
+})
+
 const USDS_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.ARBITRUM]: "0xd74f5255d557944cf7dd0e45ff521520002d5748",
 })
 
 export const FRAX = new Token(
   FRAX_CONTRACT_ADDRESSES,
+  18,
+  "FRAX",
+  "frax",
+  "Frax",
+)
+
+export const FRAX_OUTDATED = new Token(
+  FRAX_CONTRACT_ADDRESSES_OUTDATED,
   18,
   "FRAX",
   "frax",
@@ -1113,6 +1152,7 @@ export const TBTC_UNDERLYING_POOL_TOKENS = [TBTC_V2, BTC_SWAP_V2_TOKEN]
 
 export const EVMOS_BTC_POOL_TOKENS = [WBTC, RENBTC]
 export const EVMOS_4_POOL_TOKENS = [MAD_DAI, MAD_USDC, MAD_USDT, FRAX]
+export const EVMOS_4_POOL_TOKENS_OUTDATED = [DAI, USDC, USDT, FRAX_OUTDATED]
 export const TBTC_EVMOS_POOL_TOKENS = [TBTC_V2, ...EVMOS_BTC_POOL_TOKENS]
 export const TBTC_EVMOS_UNDERLYING_POOL_TOKENS = [TBTC_V2, EVMOS_BTC_SWAP_TOKEN]
 
@@ -1276,6 +1316,17 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "evmos-4pool",
+    rewardPids: buildPids({}),
+  },
+  [EVMOS_4_POOL_NAME_OUTDATED]: {
+    name: EVMOS_4_POOL_NAME_OUTDATED,
+    addresses: EVMOS_4_POOL_SWAP_ADDRESSES_OUTDATED,
+    lpToken: EVMOS_4_POOL_SWAP_TOKEN_OUTDATED,
+    poolTokens: EVMOS_4_POOL_TOKENS_OUTDATED,
+    isSynthetic: false,
+    isOutdated: true,
+    type: PoolTypes.USD,
+    route: "evmos-4pool-outdated",
     rewardPids: buildPids({}),
   },
   [STABLECOIN_POOL_NAME]: {
