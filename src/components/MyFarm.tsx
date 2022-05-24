@@ -77,7 +77,6 @@ export default function MyFarm({
               size="large"
               fullWidth
               disabled={lpWalletBalance.isZero()}
-              // onClick={() => approveAndStake(lpWalletBalance)}
               onClick={
                 veSDLFeatureReady
                   ? async () => {
@@ -121,7 +120,6 @@ export default function MyFarm({
                   ? userGaugeBalance.isZero()
                   : amountStaked.isZero()
               }
-              // onClick={() => unstake(amountStaked)}
               onClick={
                 veSDLFeatureReady
                   ? async () => {
