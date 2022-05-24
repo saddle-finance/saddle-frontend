@@ -24,7 +24,7 @@ type Props = {
   userBalaceVeSdl: BigNumber
   totalSupplyVeSdl: BigNumber
 }
-const MAXBOOST = "2.5"
+const MAX_BOOST = "2.5"
 export default function VeTokenCalculator({
   open,
   onClose,
