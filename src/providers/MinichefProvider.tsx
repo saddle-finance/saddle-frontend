@@ -1,7 +1,7 @@
-import { BasicPool, BasicPoolsContext } from "./BasicPoolsProvider"
 import { MinichefData, getMinichefRewardsPoolsData } from "../utils/minichef"
 import React, { ReactElement, useContext, useEffect, useState } from "react"
 
+import { BasicPoolsContext } from "./BasicPoolsProvider"
 import { useActiveWeb3React } from "../hooks"
 
 export const MinichefContext = React.createContext<MinichefData | null>(null)
@@ -18,7 +18,7 @@ export default function MinichefProvider({
         setRewardsData(null)
         return
       }
-      const poolAddresses = (Object.values(pools || {}) as BasicPool[]).map(
+      const poolAddresses = Object.values(pools || {}).map(
         ({ poolAddress }) => poolAddress,
       )
       const rewardsData = await getMinichefRewardsPoolsData(
