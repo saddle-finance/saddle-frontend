@@ -17,9 +17,9 @@ import { useActiveWeb3React } from "."
 
 export function useRewardsHelpers(poolName: string): {
   approveAndStake: (amount: BigNumber) => Promise<void>
-  unstake: (amount: BigNumber) => Promise<void>
+  unstakeMinichef: (amount: BigNumber) => Promise<void>
   claimSPA: () => Promise<void>
-  amountStaked: BigNumber
+  amountStakedMinichef: BigNumber
   amountOfSpaClaimable: BigNumber
   isPoolIncentivized: boolean
 } {
@@ -31,7 +31,7 @@ export function useRewardsHelpers(poolName: string): {
   const { infiniteApproval } = useSelector((state: AppState) => state.user)
   const rewardsContract = useMiniChefContract()
   const poolPid = basicPool ? basicPool.miniChefRewardsPid : null
-  const [amountStaked, setAmountStaked] = useState(Zero)
+  const [amountStakedMinichef, setAmountStakedMinichef] = useState(Zero)
   const [amountOfSpaClaimable, setAmountOfSpaClaimable] = useState(Zero)
   const { lastTransactionTimes } = useSelector(
     (state: AppState) => state.application,
@@ -88,7 +88,7 @@ export function useRewardsHelpers(poolName: string): {
     ],
   )
 
-  const unstake = useCallback(
+  const unstakeMinichef = useCallback(
     async (amount: BigNumber) => {
       if (
         !lpTokenContract ||
@@ -168,7 +168,7 @@ export function useRewardsHelpers(poolName: string): {
       const userInfo = await rewardsContract
         .userInfo(poolPid, account)
         .catch(console.error)
-      setAmountStaked(userInfo ? userInfo.amount : Zero)
+      setAmountStakedMinichef(userInfo ? userInfo.amount : Zero)
       try {
         const rewarderAddress = await rewardsContract.rewarder(poolPid)
         const rewarder = getContract(
@@ -201,9 +201,9 @@ export function useRewardsHelpers(poolName: string): {
 
   return {
     approveAndStake,
-    unstake,
+    unstakeMinichef,
     claimSPA,
-    amountStaked,
+    amountStakedMinichef,
     amountOfSpaClaimable,
     isPoolIncentivized: poolPid !== null,
   }

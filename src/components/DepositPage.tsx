@@ -1,6 +1,5 @@
 import {
   ALETH_POOL_NAME,
-  PoolName,
   TBTC_METAPOOL_V2_NAME,
   VETH2_POOL_NAME,
   isMetaPool,
@@ -83,32 +82,33 @@ const DepositPage = (props: Props): ReactElement => {
     onToggleDepositWrapped,
   } = props
   const { account, chainId, library } = useActiveWeb3React()
-  const { unstake, amountStaked } = useRewardsHelpers(
-    poolData?.name as PoolName,
+  const { unstakeMinichef, amountStakedMinichef } = useRewardsHelpers(
+    poolData?.name ?? "",
   )
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const [liquidityGaugeContract, setLiquidityGaugeContract] =
-    useState<LiquidityGaugeV5>()
-  const lpTokenContract = useLPTokenContract(poolData?.name as PoolName)
+    useState<LiquidityGaugeV5 | null>(null)
+  const lpTokenContract = useLPTokenContract(poolData?.name ?? "")
   const validDepositAmount = transactionData.to.totalAmount.gt(0)
   const shouldDisplayWrappedOption = isMetaPool(poolData?.name)
   const theme = useTheme()
   const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
   const { gauges } = useContext(GaugeContext)
+  const gaugeAddr = gauges?.[poolData?.poolAddress ?? ""]?.address ?? ""
 
   useEffect(() => {
-    if (!library || !account || !chainId || !poolData) return
-    const gaugeAddr = gauges?.[poolData.poolAddress]?.address ?? ""
-    if (gaugeAddr) {
-      const liquidityGaugeContract = getContract(
-        gaugeAddr,
-        LIQUIDITY_GAUGE_V5_ABI,
-        library,
-        account,
-      ) as LiquidityGaugeV5
-      setLiquidityGaugeContract(liquidityGaugeContract)
+    if (!library || !account || !chainId || !poolData || !gaugeAddr) {
+      setLiquidityGaugeContract(null)
+      return
     }
-  }, [library, account, chainId, poolData, gauges])
+    const liquidityGaugeContract = getContract(
+      gaugeAddr,
+      LIQUIDITY_GAUGE_V5_ABI,
+      library,
+      account,
+    ) as LiquidityGaugeV5
+    setLiquidityGaugeContract(liquidityGaugeContract)
+  }, [library, account, chainId, poolData, gauges, gaugeAddr])
 
   const onMigrateToGaugeClick = async () => {
     if (
@@ -120,7 +120,7 @@ const DepositPage = (props: Props): ReactElement => {
     )
       return
     try {
-      void unstake(amountStaked)
+      await unstakeMinichef(amountStakedMinichef)
       await checkAndApproveTokenForTrade(
         lpTokenContract,
         liquidityGaugeContract.address,
@@ -176,7 +176,7 @@ const DepositPage = (props: Props): ReactElement => {
           </Typography>
         </Alert>
       )}
-      {veSDLFeatureReady && amountStaked.gt(Zero) && (
+      {veSDLFeatureReady && amountStakedMinichef.gt(Zero) && (
         <Alert severity="error" sx={{ mb: 2 }}>
           <Box display="flex" alignItems="center" justifyContent="space-around">
             <Typography>
@@ -375,6 +375,7 @@ const DepositPage = (props: Props): ReactElement => {
               liquidityGaugeContract={liquidityGaugeContract}
               lpWalletBalance={myShareData?.lpTokenBalance || Zero}
               poolName={poolData.name}
+              gaugeAddress={gaugeAddr}
             />
           )}
           <Paper>
