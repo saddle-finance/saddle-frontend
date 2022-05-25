@@ -155,7 +155,7 @@ export async function getMinichefRewardsRewardersData(
       [pid: number]: MulticallContract<IRewarder>
     }
     rewarderAddresses.forEach((address, i) => {
-      if (address !== AddressZero) {
+      if (address && address !== AddressZero) {
         const pid = addressesPidTuples[i][1]
         rewarderContractsMap[pid] = createMultiCallContract<IRewarder>(
           address,
@@ -181,9 +181,10 @@ export async function getMinichefRewardsRewardersData(
     )
     const poolsRewarderData = rewarderPids.reduce((acc, pid, i) => {
       const rewarderContract = rewarderContractsMap[pid]
-      const rewardTokenAddress = rewarderTokens[i].toLowerCase()
+      const rewardTokenAddress = rewarderTokens[i]?.toLowerCase()
       const rewardPerSecond = rewarderAmountPerSeconds[i]
-      const rewardPerDay = rewardPerSecond.mul(oneDaySecs)
+      const rewardPerDay = rewardPerSecond?.mul(oneDaySecs)
+      if (!rewardTokenAddress || !rewardPerSecond || !rewardPerDay) return acc
       return {
         ...acc,
         [pid]: {
