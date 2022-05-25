@@ -10,14 +10,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: "16"
           cache: "npm"
       # fix for forcing git to use https when pulling deps
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
-      - run: npm ci
+      - run: npm ci --silent
       - run: npm run build --if-present
       - name: Run BundleMon
         run: npm run bundlemon
@@ -26,7 +26,7 @@ jobs:
           CI_COMMIT_SHA: ${{github.event.pull_request.head.sha || github.sha}} # important!
       # Keeping in case we ever want to save build artifacts
       # - name: Zip artifact
-      #   run: zip build-artifact -r ./build ./node_modules
+      #   run: zip build-artifact -r ./build
       # - uses: actions/upload-artifact@v3
       #   with:
       #     name: build-artifact
@@ -34,27 +34,27 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: "16"
           cache: "npm"
       # fix for forcing git to use https when pulling deps
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
-      - run: npm ci
+      - run: npm ci --silent
       - run: npm run lint
 
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: "16"
           cache: "npm"
       # fix for forcing git to use https when pulling deps
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
-      - run: npm ci
+      - run: npm ci --silent
       - run: npm test
         env:
           CI: true
@@ -62,13 +62,13 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: "16"
       # fix for forcing git to use https when pulling deps
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
-      - run: npm ci
+      - run: npm ci --silent
       - run: npm test -- --coverage
         env:
           CI: true
@@ -86,14 +86,25 @@ jobs:
         ports:
           - 8545:8545
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: "16"
           cache: "npm"
+      - name: Cache Cypress
+        id: cache-cypress
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      # - uses: actions/download-artifact@v2
+      #   with:
+      #     name: build-artifact
+      # - name: Unzip artifact
+      #   run: unzip -qq build-artifact.zip -d .
       # fix for forcing git to use https when pulling deps
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
-      - run: npm ci
+      - run: npm ci --silent
       - run: npm run cy:coverage
         env:
           CHOKIDAR_USEPOLLING: 1

@@ -7,7 +7,7 @@ context("Advanced option test", () => {
   beforeEach(() => {
     cy.visit(`/#/pools`)
     cy.waitForReact()
-    cy.wait(3000)
+    cy.wait(2000)
   })
 
   function advancedOptionTest(poolName: PoolName) {
