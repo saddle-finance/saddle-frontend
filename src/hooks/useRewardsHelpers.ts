@@ -17,9 +17,9 @@ import { useActiveWeb3React } from "."
 
 export function useRewardsHelpers(poolName: string): {
   approveAndStake: (amount: BigNumber) => Promise<void>
-  unstake: (amount: BigNumber) => Promise<void>
+  unstakeMinichef: (amount: BigNumber) => Promise<void>
   claimSPA: () => Promise<void>
-  amountStaked: BigNumber
+  amountStakedMinichef: BigNumber
   amountOfSpaClaimable: BigNumber
   isPoolIncentivized: boolean
 } {
@@ -34,7 +34,7 @@ export function useRewardsHelpers(poolName: string): {
   const { infiniteApproval } = useSelector((state: AppState) => state.user)
   const rewardsContract = useMiniChefContract()
   const poolPid = basicPool ? basicPool.miniChefRewardsPid : null
-  const [amountStaked, setAmountStaked] = useState(Zero)
+  const [amountStakedMinichef, setAmountStakedMinichef] = useState(Zero)
   const [amountOfSpaClaimable, setAmountOfSpaClaimable] = useState(Zero)
 
   const approveAndStake = useCallback(
@@ -86,7 +86,7 @@ export function useRewardsHelpers(poolName: string): {
     ],
   )
 
-  const unstake = useCallback(
+  const unstakeMinichef = useCallback(
     async (amount: BigNumber) => {
       if (!rewardsContract || !account || poolPid === null || !chainId) return
       try {
@@ -130,7 +130,7 @@ export function useRewardsHelpers(poolName: string): {
     const rewardTokenAddress = minichefInfo?.rewards?.rewardTokenAddress
     const rewardToken = rewardTokenAddress ? tokens?.[rewardTokenAddress] : null
 
-    setAmountStaked(userInfo ? userInfo.amountStaked : Zero)
+    setAmountStakedMinichef(userInfo ? userInfo.amountStaked : Zero)
     if (rewardToken?.symbol === "SPA") {
       setAmountOfSpaClaimable(userInfo ? userInfo.pendingExternal : Zero)
     }
@@ -138,9 +138,9 @@ export function useRewardsHelpers(poolName: string): {
 
   return {
     approveAndStake,
-    unstake,
+    unstakeMinichef,
     claimSPA,
-    amountStaked,
+    amountStakedMinichef,
     amountOfSpaClaimable,
     isPoolIncentivized: poolPid !== null,
   }
