@@ -182,7 +182,7 @@ async function getSharedStakeData(
     userStakedAmount,
   ] = await ethcallProvider.tryEach(
     multicalls,
-    multicalls.map(() => false),
+    multicalls.map(() => false) as false[],
   )
   const nowSeconds = BigNumber.from(Math.floor(Date.now() / 1000))
   const remainingDays = until.sub(nowSeconds).div(60 * 60 * 24) // 1e0
@@ -243,7 +243,7 @@ async function getAlEthData(
   const [alcxRewardPerBlock, poolTotalDeposited, userStakedAmount] =
     await ethcallProvider.tryEach(
       multicalls,
-      multicalls.map(() => false),
+      multicalls.map(() => false) as false[],
     )
   const alcxPerYear = alcxRewardPerBlock.mul(52 * 45000) // 1e18 // blocks/year rate from Alchemix's own logic
   const alcxPerYearUSD = alcxPerYear.mul(parseUnits(alcxPrice.toFixed(2), 2)) // 1e20
