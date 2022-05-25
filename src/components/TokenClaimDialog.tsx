@@ -56,7 +56,8 @@ export default function TokenClaimDialog({
   const basicPools = useContext(BasicPoolsContext)
   const userState = useContext(UserStateContext)
   const gaugeData = useContext(GaugeContext)
-  const gauges = Object.values(gaugeData.gauges)
+  const gauges: Gauge[] = Object.values(gaugeData.gauges)
+  console.log({ gauges, basicPools })
   const isClaimableNetwork =
     chainId === ChainId.MAINNET ||
     chainId === ChainId.ARBITRUM ||
@@ -66,7 +67,6 @@ export default function TokenClaimDialog({
   const rewardBalances = useContext(RewardsBalancesContext)
   const {
     claimsStatuses,
-    // claimPoolReward,
     claimGaugeReward,
     claimAllPoolsRewards,
     claimRetroReward,
@@ -222,19 +222,6 @@ export default function TokenClaimDialog({
                 </React.Fragment>
               ),
           )}
-          {/* {allPoolsWithRewards.map((pool, i, arr) => ( */}
-          {/*   <React.Fragment key={pool.poolName}> */}
-          {/*     <ClaimListItem */}
-          {/*       title={pool.poolName} */}
-          {/*       amount={rewardBalances[pool.poolName] || Zero} */}
-          {/*       claimCallback={() => claimPoolReward(pool)} */}
-          {/*       status={ */}
-          {/*         claimsStatuses["allPools"] || claimsStatuses[pool.poolName] */}
-          {/*       } */}
-          {/*     /> */}
-          {/*     {i < arr.length - 1 && <Divider key={i} />} */}
-          {/*   </React.Fragment> */}
-          {/* ))} */}
         </List>
 
         <Typography my={3}>
@@ -361,7 +348,10 @@ function useRewardClaims() {
       if (!chainId || !account || !minterContract) return
       try {
         updateClaimStatus(gauge.poolName, STATUSES.PENDING)
-        const txn = await minterContract["mint(address)"](gauge.address)
+        // if (gauge.rewards.length > 0) {
+        //   liquidityContract.claim_rewards(account)
+        // }
+        const txn = await minterContract.mint(gauge.address)
         await enqueuePromiseToast(chainId, txn.wait(), "claim", {
           poolName: gauge.poolName,
         })
