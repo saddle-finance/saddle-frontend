@@ -1,5 +1,4 @@
 import { BasicPool, BasicPoolsContext } from "./BasicPoolsProvider"
-import { Gauge, GaugeContext } from "./GaugeProvider"
 import {
   MulticallCall,
   MulticallContract,
@@ -12,6 +11,8 @@ import { ChainId } from "../constants"
 import { Contract } from "ethcall"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
+import { Gauge } from "../utils/gauges"
+import { GaugeContext } from "./GaugeProvider"
 import { MinichefContext } from "./MinichefProvider"
 import { useActiveWeb3React } from "../hooks"
 

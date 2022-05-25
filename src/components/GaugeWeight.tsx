@@ -1,12 +1,13 @@
 import { BasicPool, BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { CircularProgress, useTheme } from "@mui/material"
 import React, { useContext, useRef } from "react"
+
 import { BigNumber } from "@ethersproject/bignumber"
 import Highcharts from "highcharts"
 import HighchartsExporting from "highcharts/modules/exporting"
 import HighchartsReact from "highcharts-react-official"
 import PieChart from "highcharts-react-official"
-import { PoolAddressToGauge } from "../providers/GaugeProvider"
+import { PoolAddressToGauge } from "../utils/gauges"
 
 interface Props {
   gauges: PoolAddressToGauge
