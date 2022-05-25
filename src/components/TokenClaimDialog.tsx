@@ -375,9 +375,8 @@ function useRewardClaims() {
           const txn = await liquidityGaugeContract["claim_rewards(address)"](
             account,
           )
-          await enqueuePromiseToast(chainId, txn.wait(), "claim", {
-            poolName: gauge.poolName,
-          })
+          await txn.wait()
+          enqueueToast("success", "Claimed liquidity gauge rewards")
         }
         const txn = await minterContract.mint(gauge.address)
         await enqueuePromiseToast(chainId, txn.wait(), "claim", {
