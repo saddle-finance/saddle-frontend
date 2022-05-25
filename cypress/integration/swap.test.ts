@@ -5,7 +5,7 @@ context("Swap Flow", () => {
       before(() => {
         cy.visit(`/#/`)
         cy.waitForReact()
-        cy.wait(3000)
+        cy.wait(2000)
       })
       it("starts in a neutral state", () => {
         cy.get('[data-testid="swapTokenInputFrom"]')
