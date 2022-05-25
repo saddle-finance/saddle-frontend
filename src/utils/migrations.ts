@@ -37,7 +37,7 @@ export async function getMigrationData(
     )
     const results = await ethCallProvider.tryEach(
       calls,
-      Array(calls.length).fill(true),
+      Array(calls.length).fill(true) as true[],
     )
     const parsedData = poolAddresses.reduce((acc, address, i) => {
       const result = results[i]?.newPoolAddress
