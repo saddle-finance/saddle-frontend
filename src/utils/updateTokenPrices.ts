@@ -6,6 +6,7 @@ import { BigNumber } from "@ethersproject/bignumber"
 import SWAP_ABI from "../constants/abis/swapFlashLoan.json"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { Web3Provider } from "@ethersproject/providers"
+import { chunk } from "lodash"
 import { getContract } from "./index"
 import retry from "async-retry"
 import { updateTokensPricesUSD } from "../state/application"
@@ -29,6 +30,8 @@ const otherTokens = {
   [SPA.symbol]: SPA.geckoId,
 }
 
+const MAX_ADDRESSES_PER_COINGECKO_REQUEST = 30
+
 export default function fetchTokenPricesUSD(
   dispatch: AppDispatch,
   chainId?: ChainId,
@@ -48,7 +51,9 @@ export default function fetchTokenPricesUSD(
         tokenIds.join(","),
       )}&vs_currencies=usd
     `)
-        .then((res) => res.json())
+        .then((res) => {
+          return res.json()
+        })
         .then(async (body: CoinGeckoReponse) => {
           const otherTokensResult = Object.keys(otherTokens).reduce(
             (acc, key) => {
@@ -102,4 +107,32 @@ async function getVeth2Price(
     console.error(e)
     return etherPrice
   }
+}
+
+export const getTokenPrice = async (
+  addresses: string[],
+  platform = "ethereum",
+) => {
+  const addressesChunk = chunk(addresses, MAX_ADDRESSES_PER_COINGECKO_REQUEST)
+
+  const pricesChunked = await Promise.all(
+    addressesChunk.map(async (chunkedAddress) => {
+      try {
+        return await retry(
+          async () => {
+            const result = await fetch(
+              `https://api.coingecko.com/api/v3/simple/token_price/${platform}?contract_addresses=${chunkedAddress.join(
+                ",",
+              )}&vs_currencies=usd`,
+            )
+            return (await result.json()) as CoinGeckoReponse
+          },
+          { retries: 3 },
+        )
+      } catch (error) {
+        console.error("Error on fetching price from coingeoco ==>", error)
+      }
+    }),
+  )
+  console.log(pricesChunked)
 }

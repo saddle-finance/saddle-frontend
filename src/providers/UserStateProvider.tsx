@@ -1,4 +1,4 @@
-import { BLOCK_TIME, ChainId } from "../constants"
+import { BLOCK_TIME, ChainId, PoolTypes } from "../constants"
 import { BasicPool, BasicPoolsContext } from "./BasicPoolsProvider"
 import {
   Gauge,
@@ -15,10 +15,12 @@ import { Contract } from "ethcall"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
 import { GaugeContext } from "./GaugeProvider"
+import { IS_DEVELOPMENT } from "../utils/environment"
 import { NETWORK_NATIVE_TOKENS } from "../constants/networks"
 import { TokensContext } from "./TokensProvider"
 import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
+import { getTokenPrice } from "../utils/updateTokenPrices"
 import { useActiveWeb3React } from "../hooks"
 import usePoller from "../hooks/usePoller"
 
@@ -39,6 +41,34 @@ export default function UserStateProvider({
   const { chainId, library, account } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
+
+  const BTC_ADDRESS = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
+  const ETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+  const USDT_ADDRESS = "0xdac17f958d2ee523a2206206994597c13d831ec7"
+  const tokenAddresses =
+    tokens &&
+    Object.keys(tokens).map((tokenAddress) => {
+      if (IS_DEVELOPMENT) {
+        switch (tokens[tokenAddress]?.typeAsset) {
+          case PoolTypes.BTC:
+            return BTC_ADDRESS
+            break
+          case PoolTypes.ETH:
+            return ETH_ADDRESS
+            break
+          case PoolTypes.USD:
+            return USDT_ADDRESS
+            break
+          default:
+            return ""
+            break
+        }
+      } else {
+        return tokenAddress
+      }
+    })
+  getTokenPrice(tokenAddresses as string[])
+
   const gauges = useContext(GaugeContext)
   const [userState, setUserState] = useState<UserState>(null)
   const fetchState = useCallback(() => {
