@@ -43,7 +43,7 @@ export function useCalculateSwapPairs(): (token?: Token) => SwapData[] {
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const [poolsSortedByTVL, tokenToPoolsMapSorted] = useMemo(() => {
     if (basicPools === null || tokens === null) return []
-    const basicPoolsWithPriceData = (Object.values(basicPools) as BasicPool[])
+    const basicPoolsWithPriceData = Object.values(basicPools)
       .map((pool) => {
         const priceData = getPriceDataForPool(tokens, pool, tokenPricesUSD)
         const expandedTokens = pool.tokens.map((addr) => tokens?.[addr])
@@ -170,7 +170,7 @@ function getTradingPairsForToken(
       (acc, pool) => ({ ...acc, [pool.poolName]: pool }),
       {},
     )
-  const allTokens = (Object.values(tokensMap) as BasicToken[]).filter(
+  const allTokens = Object.values(tokensMap).filter(
     ({ isLPToken, address }) => !isLPToken && tokenToPoolsMap[address],
   ) // @dev tokens includes non-pool tokens like rewards as well, so filter only tokens in pools
   const synthPoolsSet = new Set(
