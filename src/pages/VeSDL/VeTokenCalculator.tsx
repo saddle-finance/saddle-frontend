@@ -111,10 +111,14 @@ export default function VeTokenCalculator({
           <Typography>
             <CalculateIcon
               color="primary"
-              sx={{ verticalAlign: "text-bottom", mr: 1 }}
+              sx={{ verticalAlign: "text-bottom", mr: 0.5 }}
             />
-            {t("veSdlMaxBoost")}:
-            {veSdlForMaxBoost ? formatBNToString(veSdlForMaxBoost, 18) : "..."}
+            <Typography component="span" mr={1}>
+              {t("veSdlMaxBoost")}:
+            </Typography>
+            {veSdlForMaxBoost
+              ? formatBNToString(veSdlForMaxBoost, 18)
+              : t("minVeSDLForMaxBoost")}
           </Typography>
           <Divider />
           <Typography variant="subtitle1">{t("myBoostCalculator")}</Typography>
@@ -135,7 +139,7 @@ export default function VeTokenCalculator({
           <Typography>
             <CalculateIcon
               color="primary"
-              sx={{ verticalAlign: "text-bottom", mr: 1 }}
+              sx={{ verticalAlign: "text-bottom", mr: 0.5 }}
             />
             {t("boost")}:
             <Typography component="span" color="primary" ml={1}>
