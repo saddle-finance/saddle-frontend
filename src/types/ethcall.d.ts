@@ -51,38 +51,68 @@ export class MulticallProvider extends Provider {
     block?: number,
   ): Promise<[A["outputs"], B["outputs"], C["outputs"], D["outputs"]]>
   all<O>(calls: MulticallCall<I, O>[], block?: number): Promise<O[]> // fallthrough to array type
-  tryEach<A extends MulticallCall>(
+  tryEach<A extends MulticallCall, CanFailA extends boolean>(
     calls: readonly [A],
-    canFail: boolean[],
+    canFail: [CanFailA],
     block?: number,
-  ): Promise<[A["outputs"]]>
-  tryEach<A extends MulticallCall, B extends MulticallCall>(
+  ): Promise<[CanFailA extends true ? A["outputs"] | null : A["outputs"]]>
+  tryEach<
+    A extends MulticallCall,
+    B extends MulticallCall,
+    CanFailA extends boolean,
+    CanFailB extends boolean,
+  >(
     calls: readonly [A, B],
-    canFail: boolean[],
+    canFail: [CanFailA, CanFailB],
     block?: number,
-  ): Promise<[A["outputs"], B["outputs"]]>
+  ): Promise<
+    [
+      CanFailA extends true ? A["outputs"] | null : A["outputs"],
+      CanFailB extends true ? B["outputs"] | null : B["outputs"],
+    ]
+  >
   tryEach<
     A extends MulticallCall,
     B extends MulticallCall,
     C extends MulticallCall,
+    CanFailA extends boolean,
+    CanFailB extends boolean,
+    CanFailC extends boolean,
   >(
     calls: readonly [A, B, C],
-    canFail: boolean[],
+    canFail: [CanFailA, CanFailB, CanFailC],
     block?: number,
-  ): Promise<[A["outputs"], B["outputs"], C["outputs"]]>
+  ): Promise<
+    [
+      CanFailA extends true ? A["outputs"] | null : A["outputs"],
+      CanFailB extends true ? B["outputs"] | null : B["outputs"],
+      CanFailC extends true ? C["outputs"] | null : C["outputs"],
+    ]
+  >
   tryEach<
     A extends MulticallCall,
     B extends MulticallCall,
     C extends MulticallCall,
     D extends MulticallCall,
+    CanFailA extends boolean,
+    CanFailB extends boolean,
+    CanFailC extends boolean,
+    CanFailD extends boolean,
   >(
     calls: readonly [A, B, C, D],
-    canFail: boolean[],
+    canFail: [CanFailA, CanFailB, CanFailC, CanFailD],
     block?: number,
-  ): Promise<[A["outputs"], B["outputs"], C["outputs"], D["outputs"]]>
-  tryEach<O>(
+  ): Promise<
+    [
+      CanFailA extends true ? A["outputs"] | null : A["outputs"],
+      CanFailB extends true ? B["outputs"] | null : B["outputs"],
+      CanFailC extends true ? C["outputs"] | null : C["outputs"],
+      CanFailD extends true ? D["outputs"] | null : D["outputs"],
+    ]
+  >
+  tryEach<O, CanFailO extends boolean>(
     calls: MulticallCall<I, O>[],
-    canFail: boolean[],
+    canFail: CanFailO[],
     block?: number,
-  ): Promise<O[]> // fallthrough to array type
+  ): Promise<(CanFailO extends true ? O | null : O)[]> // fallthrough to array type
 }
