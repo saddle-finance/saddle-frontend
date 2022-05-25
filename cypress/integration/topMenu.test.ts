@@ -2,7 +2,7 @@ context("Top menu test", () => {
   before(() => {
     cy.visit(`/#/pools`)
     cy.waitForReact()
-    cy.wait(3000)
+    cy.wait(2000)
   })
 
   it("render top menu", () => {
