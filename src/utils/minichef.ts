@@ -1,12 +1,12 @@
+import { AddressZero, Zero } from "@ethersproject/constants"
 import {
   ChainId,
   MINICHEF_CONTRACT_ADDRESSES,
   getMinichefPid,
 } from "../constants"
+import { createMultiCallContract, getMulticallProvider } from "."
 
-import { AddressZero } from "@ethersproject/constants"
 import { BigNumber } from "@ethersproject/bignumber"
-import { Contract } from "@ethersproject/contracts"
 import { Contract as EthcallContract } from "ethcall"
 import { IRewarder } from "../../types/ethers-contracts/IRewarder"
 import IRewarder_ABI from "../constants/abis/IRewarder.json"
@@ -14,7 +14,6 @@ import MINICHEF_CONTRACT_ABI from "../constants/abis/miniChef.json"
 import { MiniChef } from "../../types/ethers-contracts/MiniChef"
 import { MulticallContract } from "../types/ethcall"
 import { Web3Provider } from "@ethersproject/providers"
-import { getMulticallProvider } from "."
 
 export type MinichefPoolData = {
   sdlPerDay: BigNumber
@@ -30,7 +29,8 @@ export type MinichefData = {
 export type MinichefUserData = {
   [pid: number]: {
     amountStaked: BigNumber
-    rewardDebt: BigNumber
+    pendingSDL: BigNumber
+    pendingExternal: BigNumber
   }
 } | null
 export type Rewards = {
@@ -142,39 +142,49 @@ export async function getMinichefRewardsRewardersData(
   if (!addressesPidTuples.length || !minichefAddress || !ethCallProvider)
     return null
   try {
-    const minichefContract = new EthcallContract(
+    const minichefContract = createMultiCallContract<MiniChef>(
       minichefAddress,
       MINICHEF_CONTRACT_ABI,
-    ) as MulticallContract<MiniChef>
+    )
     // Fetch Rewarder Data
     const rewarderAddresses = await ethCallProvider.tryEach(
       addressesPidTuples.map(([, pid]) => minichefContract.rewarder(pid)),
       Array(addressesPidTuples.length).fill(true),
     )
-    const rewarderContractsMap = {} as { [pid: number]: IRewarder }
+    const rewarderContractsMap = {} as {
+      [pid: number]: MulticallContract<IRewarder>
+    }
     rewarderAddresses.forEach((address, i) => {
       if (address && address !== AddressZero) {
         const pid = addressesPidTuples[i][1]
-        rewarderContractsMap[pid] = new Contract(
+        rewarderContractsMap[pid] = createMultiCallContract<IRewarder>(
           address,
           IRewarder_ABI,
-          library,
-        ) as IRewarder
+        )
       }
     })
-    // const rewarderTokens = {} as { [pid: number]: string }
     const rewarderPids = Object.keys(rewarderContractsMap)
-    const rewarderTokens = await Promise.all(
+    const rewarderTokensPromise = ethCallProvider.tryEach(
       rewarderPids.map((pid) => rewarderContractsMap[pid].rewardToken()),
+      Array(rewarderPids.length).fill(true),
     )
-    const rewarderAmountPerSeconds = await Promise.all(
+    const rewarderAmountPerSecondsPromise = ethCallProvider.tryEach(
+      rewarderPids.map((pid) => rewarderContractsMap[pid].rewardPerSecond()),
+      Array(rewarderPids.length).fill(true),
+    )
+    const [rewarderTokens, rewarderAmountPerSeconds] = await Promise.all([
+      rewarderTokensPromise,
+      rewarderAmountPerSecondsPromise,
+    ])
+    await Promise.all(
       rewarderPids.map((pid) => rewarderContractsMap[pid].rewardPerSecond()),
     )
     const poolsRewarderData = rewarderPids.reduce((acc, pid, i) => {
       const rewarderContract = rewarderContractsMap[pid]
-      const rewardTokenAddress = rewarderTokens[i].toLowerCase()
+      const rewardTokenAddress = rewarderTokens[i]?.toLowerCase()
       const rewardPerSecond = rewarderAmountPerSeconds[i]
-      const rewardPerDay = rewardPerSecond.mul(oneDaySecs)
+      const rewardPerDay = rewardPerSecond?.mul(oneDaySecs)
+      if (!rewardTokenAddress || !rewardPerSecond || !rewardPerDay) return acc
       return {
         ...acc,
         [pid]: {
@@ -215,20 +225,66 @@ export async function getMinichefRewardsUserData(
       minichefAddress,
       MINICHEF_CONTRACT_ABI,
     ) as MulticallContract<MiniChef>
-    const userPoolsInfo = await ethCallProvider.tryEach(
+
+    // amount of lpToken staked, and SDL reward debt to user
+    const userPoolsInfoPromise = ethCallProvider.all(
       addressesPidTuples.map(([, pid]) =>
         minichefContract.userInfo(pid, account),
       ),
-      Array(addressesPidTuples.length).fill(true),
     )
-    return userPoolsInfo.reduce((acc, poolInfo, i) => {
-      const [, pid] = addressesPidTuples[i]
-      if (!poolInfo) return acc
+    const pendingSDLAmountsPromise = ethCallProvider.all(
+      addressesPidTuples.map(([, pid]) =>
+        minichefContract.pendingSaddle(pid, account),
+      ),
+    )
+    // TODO rewarderAddresses are already fetched in getMinichefRewardsRewardersData and could be resused
+    // addresses of rewarder contracts for third-party rewards
+    const rewarderAddressesPromise = ethCallProvider.all(
+      addressesPidTuples.map(([, pid]) => minichefContract.rewarder(pid)),
+    )
+    const [userPoolsInfo, pendingSDLAmounts, rewarderAddresses] =
+      await Promise.all([
+        userPoolsInfoPromise,
+        pendingSDLAmountsPromise,
+        rewarderAddressesPromise,
+      ])
+
+    const rewarderContractsMap = {} as {
+      [pid: number]: MulticallContract<IRewarder>
+    }
+    rewarderAddresses.forEach((address, i) => {
+      if (address !== AddressZero) {
+        const pid = addressesPidTuples[i][1]
+        rewarderContractsMap[pid] = createMultiCallContract<IRewarder>(
+          address,
+          IRewarder_ABI,
+        )
+      }
+    })
+    const rewarderPids = Object.keys(rewarderContractsMap)
+    // @dev note that pendingTokens returns arrays for tokens and values, but will only have 1 entry. See SimpleRewarder
+    const usersPoolsPendingTokens = await ethCallProvider.all(
+      rewarderPids.map((pid) =>
+        rewarderContractsMap[pid].pendingTokens(pid, account, 0),
+      ),
+    )
+    const pidToExternalRewardsMap = rewarderPids.reduce((acc, pid, i) => {
+      return {
+        ...acc,
+        [pid]: usersPoolsPendingTokens[i].rewardAmounts[0], // only has 1 entry
+      }
+    }, {} as { [pid: number]: BigNumber })
+
+    return addressesPidTuples.reduce((acc, [, pid], i) => {
+      const userPoolInfo = userPoolsInfo[i]
+      const pendingSDL = pendingSDLAmounts[i]
+      const pendingExternal = pidToExternalRewardsMap[pid] || Zero // denominated in rewarder.token
       return {
         ...acc,
         [pid]: {
-          amountStaked: poolInfo.amount,
-          rewardDebt: poolInfo.rewardDebt,
+          amountStaked: userPoolInfo.amount,
+          pendingSDL,
+          pendingExternal,
         },
       }
     }, {} as MinichefUserData)
