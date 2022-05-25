@@ -1,15 +1,11 @@
 import { BLOCK_TIME, ChainId } from "../constants"
-import { BasicPool, BasicPoolsContext } from "./BasicPoolsProvider"
-import {
-  Gauge,
-  GaugeRewardUserData,
-  getGaugeRewardsUserData,
-} from "../utils/gauges"
+import { GaugeRewardUserData, getGaugeRewardsUserData } from "../utils/gauges"
 import { MinichefUserData, getMinichefRewardsUserData } from "../utils/minichef"
 import { MulticallCall, MulticallContract } from "../types/ethcall"
 import React, { ReactElement, useCallback, useContext, useState } from "react"
 import { batchArray, getMulticallProvider } from "../utils"
 
+import { BasicPoolsContext } from "./BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "ethcall"
 import ERC20_ABI from "../constants/abis/erc20.json"
@@ -56,18 +52,14 @@ export default function UserStateProvider({
       const minichefDataPromise = getMinichefRewardsUserData(
         library,
         chainId,
-        (Object.values(basicPools) as BasicPool[]).map(
-          ({ poolAddress }) => poolAddress,
-        ),
+        Object.values(basicPools).map(({ poolAddress }) => poolAddress),
         account,
       )
       const gaugeRewardsPromise = gauges.gauges
         ? getGaugeRewardsUserData(
             library,
             chainId,
-            (Object.values(gauges.gauges) as Gauge[]).map(
-              ({ address }) => address,
-            ),
+            Object.values(gauges.gauges).map(({ address }) => address),
             account,
           )
         : Promise.resolve(null)

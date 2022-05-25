@@ -1,4 +1,3 @@
-import { BasicPool, BasicPoolsContext } from "./BasicPoolsProvider"
 import React, {
   ReactElement,
   useCallback,
@@ -9,6 +8,7 @@ import React, {
 } from "react"
 
 import { BLOCK_TIME } from "../constants"
+import { BasicPoolsContext } from "./BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { UserStateContext } from "./UserStateProvider"
 import { Zero } from "@ethersproject/constants"
@@ -127,7 +127,7 @@ function usePoolsRewardBalances() {
     if (!userState || !basicPools) {
       return
     }
-    const poolsWithRewards = (Object.values(basicPools) as BasicPool[]).filter(
+    const poolsWithRewards = Object.values(basicPools).filter(
       ({ miniChefRewardsPid }) => miniChefRewardsPid != null,
     )
     const poolNameToMinichefSDLBalance = poolsWithRewards.reduce(
