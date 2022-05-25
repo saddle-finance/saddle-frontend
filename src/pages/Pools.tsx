@@ -1,8 +1,8 @@
-import { BasicPool, BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { Box, Button, Chip, Container, Stack, TextField } from "@mui/material"
 import React, { ReactElement, useContext, useEffect, useState } from "react"
 
 import { AppState } from "../state"
+import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "ethers"
 import ConfirmTransaction from "../components/ConfirmTransaction"
 import Dialog from "../components/Dialog"
@@ -101,7 +101,7 @@ function Pools(): ReactElement | null {
       </Stack>
 
       <Stack spacing={3}>
-        {(Object.values(basicPools || {}) as BasicPool[])
+        {Object.values(basicPools || {})
           .filter(
             (basicPool) =>
               filter === "all" ||
