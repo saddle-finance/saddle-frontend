@@ -54,11 +54,26 @@ export default function MyFarm({
 
   const onUnstakeClick = useCallback(async () => {
     if (!liquidityGaugeContract || !account || !chainId) return
-    const txn = await liquidityGaugeContract["withdraw(uint256)"](gaugeBalance)
+    const txn = await liquidityGaugeContract["withdraw(uint256)"](
+      await liquidityGaugeContract.balanceOf(account),
+    )
     await enqueuePromiseToast(chainId, txn.wait(), "unstake", {
       poolName,
     })
-  }, [account, chainId, gaugeBalance, liquidityGaugeContract, poolName])
+  }, [account, chainId, liquidityGaugeContract, poolName])
+
+  const onStakeClick = useCallback(async () => {
+    if (!liquidityGaugeContract || !lpTokenContract || !account || !chainId)
+      return
+    const txn = await liquidityGaugeContract["deposit(uint256,address,bool)"](
+      await lpTokenContract.balanceOf(account),
+      account,
+      true,
+    )
+    await enqueuePromiseToast(chainId, txn.wait(), "stake", {
+      poolName,
+    })
+  }, [account, chainId, liquidityGaugeContract, lpTokenContract, poolName])
 
   const veSDLFeatureReady = false
 
@@ -83,21 +98,7 @@ export default function MyFarm({
               disabled={lpWalletBalance.isZero()}
               onClick={
                 veSDLFeatureReady
-                  ? async () => {
-                      if (
-                        !liquidityGaugeContract ||
-                        !lpTokenContract ||
-                        !account ||
-                        !chainId
-                      )
-                        return
-                      const txn = await liquidityGaugeContract[
-                        "deposit(uint256,address,bool)"
-                      ](await lpTokenContract.balanceOf(account), account, true)
-                      await enqueuePromiseToast(chainId, txn.wait(), "stake", {
-                        poolName,
-                      })
-                    }
+                  ? onStakeClick
                   : () => approveAndStake(lpWalletBalance)
               }
             >
