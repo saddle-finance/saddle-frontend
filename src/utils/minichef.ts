@@ -153,7 +153,7 @@ export async function getMinichefRewardsRewardersData(
     )
     const rewarderContractsMap = {} as { [pid: number]: IRewarder }
     rewarderAddresses.forEach((address, i) => {
-      if (address !== AddressZero) {
+      if (address && address !== AddressZero) {
         const pid = addressesPidTuples[i][1]
         rewarderContractsMap[pid] = new Contract(
           address,
@@ -223,6 +223,7 @@ export async function getMinichefRewardsUserData(
     )
     return userPoolsInfo.reduce((acc, poolInfo, i) => {
       const [, pid] = addressesPidTuples[i]
+      if (!poolInfo) return acc
       return {
         ...acc,
         [pid]: {
