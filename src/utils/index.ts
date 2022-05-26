@@ -427,19 +427,46 @@ export function generateSnapshotVoteLink(id?: string): string {
  * @returns return the working amount in BigNumber
  *
  */
-export const calculateWorkingAmount = (
+export const calculateWorkingAmountAndBoost = (
   userLPAmount: BigNumber,
   totalLPDeposit: BigNumber,
+  totalWorkingSupply: BigNumber,
   userBalanceVeSDL: BigNumber,
   totalSupplyVeSDL: BigNumber,
-): BigNumber => {
-  let minAmount = userLPAmount.mul(BigNumber.from(40)).div(BigNumber.from(10))
-  if (totalSupplyVeSDL.isZero()) return Zero
-  minAmount = minAmount.add(
-    totalLPDeposit
-      .mul(userBalanceVeSDL)
-      .div(totalSupplyVeSDL)
-      .mul(BigNumber.from(60).div(BigNumber.from(100))),
-  )
-  return minBigNumber(minAmount, userLPAmount)
+): {
+  workingAmount: BigNumber
+  boost: BigNumber
+} => {
+  const minAmount = userLPAmount
+    .mul(BigNumber.from(40))
+    .div(BigNumber.from(100))
+  let workingAmount = minAmount
+
+  // If there are veSDL in the world, calculate the extra boost
+  // Increase in your total share of veSDL will increase the boost
+
+  if (totalSupplyVeSDL.gt(Zero))
+    workingAmount = workingAmount
+      .add(
+        totalLPDeposit
+          .add(userLPAmount)
+          .mul(userBalanceVeSDL)
+          .div(totalSupplyVeSDL),
+      )
+      .mul(BigNumber.from(60))
+      .div(BigNumber.from(100))
+
+  // Clip max boost at userLPAmount
+  workingAmount = minBigNumber(workingAmount, userLPAmount)
+
+  // Compare the difference in ownership of working supply between two cases: with no veSDL and with veSDL boost.
+  const boost =
+    totalWorkingSupply.gt(Zero) &&
+    minAmount.div(totalWorkingSupply.add(minAmount)).gt(Zero)
+      ? workingAmount
+          .div(totalWorkingSupply.add(workingAmount))
+          .div(minAmount.div(totalWorkingSupply.add(minAmount)))
+      : BigNumber.from(1.0)
+
+  return { workingAmount, boost }
 }

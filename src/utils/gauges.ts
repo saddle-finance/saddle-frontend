@@ -21,6 +21,8 @@ import { Zero } from "@ethersproject/constants"
 
 export type Gauge = {
   address: string
+  gaugeBalance: BigNumber
+  gaugeTotalSupply: BigNumber
   gaugeWeight: BigNumber
   poolAddress: string
   gaugeRelativeWeight: BigNumber
@@ -64,6 +66,7 @@ export async function getGaugeData(
   library: Web3Provider,
   chainId: ChainId,
   gaugeController: GaugeController,
+  account: string,
 ): Promise<Gauges | null> {
   if (chainId !== ChainId.HARDHAT) return initialGaugesState
   try {
@@ -117,12 +120,43 @@ export async function getGaugeData(
         ),
       )
 
-    const [gaugeWeights, gaugeRelativeWeights, gaugeRewards] =
-      await Promise.all([
-        gaugeWeightsPromise,
-        gaugeRelativeWeightsPromise,
-        gaugeRewardsPromise,
-      ])
+    const gaugeMulticallContracts = gaugeAddresses.map((gaugeAddress) =>
+      createMultiCallContract<LiquidityGaugeV5>(
+        gaugeAddress,
+        LIQUIDITY_GAUGE_V5_ABI,
+      ),
+    )
+    const gaugeBalancePromise = ethCallProvider.all(
+      gaugeMulticallContracts.map((gaugeContract) =>
+        gaugeContract.balanceOf(account),
+      ),
+    )
+    const gaugeWorkingSupplyPromise = ethCallProvider.all(
+      gaugeMulticallContracts.map((gaugeContract) =>
+        gaugeContract.working_supply(),
+      ),
+    )
+    const gaugeTotalSupplyPromise = ethCallProvider.all(
+      gaugeMulticallContracts.map((gaugeContract) =>
+        gaugeContract.totalSupply(),
+      ),
+    )
+
+    const [
+      gaugeWeights,
+      gaugeRelativeWeights,
+      gaugeRewards,
+      gaugeBalances,
+      gaugeWorkingSupplies,
+      gaugeTotalSupplies,
+    ] = await Promise.all([
+      gaugeWeightsPromise,
+      gaugeRelativeWeightsPromise,
+      gaugeRewardsPromise,
+      gaugeBalancePromise,
+      gaugeWorkingSupplyPromise,
+      gaugeTotalSupplyPromise,
+    ])
 
     const gauges: PoolAddressToGauge = gaugePoolAddresses.reduce(
       (previousGaugeData, gaugePoolAddress, index) => {
@@ -133,6 +167,9 @@ export async function getGaugeData(
             poolAddress: gaugePoolAddress,
             gaugeWeight: gaugeWeights[index],
             gaugeRelativeWeight: gaugeRelativeWeights[index],
+            gaugeTotalSupply: gaugeTotalSupplies[index],
+            gaugeWorkingSupply: gaugeWorkingSupplies[index],
+            gaugeBalance: gaugeBalances[index],
             rewards: gaugeRewards[index].map((reward) => ({
               periodFinish: reward.period_finish,
               lastUpdate: reward.last_update,

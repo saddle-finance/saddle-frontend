@@ -9,21 +9,21 @@ export const GaugeContext = React.createContext<Gauges>(initialGaugesState)
 export default function GaugeProvider({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
-  const { chainId, library } = useActiveWeb3React()
+  const { chainId, library, account } = useActiveWeb3React()
   const gaugeController = useGaugeControllerContract()
   const [gauges, setGauges] = useState<Gauges>(initialGaugesState)
 
   useEffect(() => {
     async function fetchGauges() {
-      if (!gaugeController || !chainId || !library) return
+      if (!gaugeController || !chainId || !library || !account) return
       const gauges: Gauges =
-        (await getGaugeData(library, chainId, gaugeController)) ||
+        (await getGaugeData(library, chainId, gaugeController, account)) ||
         initialGaugesState
       setGauges(gauges)
     }
 
     void fetchGauges()
-  }, [chainId, library, gaugeController])
+  }, [chainId, library, gaugeController, account])
 
   return (
     <GaugeContext.Provider value={gauges}>{children}</GaugeContext.Provider>

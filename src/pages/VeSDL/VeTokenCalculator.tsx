@@ -6,17 +6,17 @@ import {
   TextField,
   Typography,
 } from "@mui/material"
-import React, { useContext, useEffect, useState } from "react"
-import { calculateWorkingAmount, formatBNToString } from "../../utils"
+import React, { useContext, useState } from "react"
+import { calculateWorkingAmountAndBoost, formatBNToString } from "../../utils"
 import ArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
 import { BasicPoolsContext } from "../../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import CalculateIcon from "@mui/icons-material/Calculate"
 import Dialog from "../../components/Dialog"
+import { GaugeContext } from "../../providers/GaugeProvider"
 import { Zero } from "@ethersproject/constants"
 import { parseEther } from "@ethersproject/units"
 import { readableDecimalNumberRegex } from "../../constants"
-import usePoolData from "../../hooks/usePoolData"
 import { useTranslation } from "react-i18next"
 
 type Props = {
@@ -34,34 +34,34 @@ export default function VeTokenCalculator({
 }: Props): JSX.Element {
   const { t } = useTranslation()
   const basicPools = useContext(BasicPoolsContext)
+  const gaugeData = useContext(GaugeContext)
   const [poolNameValue, setPoolNameValue] = useState<string>("D4")
   const [userVeSdlInputAmount, setUserVeSdlInputAmount] =
     useState<BigNumber>(Zero)
-  const [poolData, userShare, setPoolDataName] = usePoolData("D4")
+  const pool = basicPools && basicPools[poolNameValue]
+  const gauge =
+    !!pool?.poolAddress &&
+    gaugeData.gauges &&
+    gaugeData.gauges[pool.poolAddress]
 
   const userVeSdlAmount = userVeSdlInputAmount.isZero()
     ? userBalanceVeSdl
     : userVeSdlInputAmount
 
-  const userLPAmount = userShare?.usdBalance || Zero
-  const totalLPAmount = poolData.reserve || Zero
+  const userLPAmount = gauge ? gauge.gaugeBalance : Zero
+  const totalLPAmount = gauge ? gauge.gaugeTotalSupply : Zero
+  const totalWorkingSupply = gauge ? gauge.workingSupply : Zero
 
-  const workingAmount = calculateWorkingAmount(
+  const { boost } = calculateWorkingAmountAndBoost(
     userLPAmount,
     totalLPAmount,
+    totalWorkingSupply,
     userVeSdlAmount,
     totalSupplyVeSdl,
   )
   const veSdlForMaxBoost =
     totalLPAmount.gt(Zero) &&
     userLPAmount.mul(totalSupplyVeSdl).div(totalLPAmount)
-  const boost =
-    userLPAmount.gt(Zero) &&
-    parseEther(MAX_BOOST).mul(workingAmount).div(userLPAmount)
-
-  useEffect(() => {
-    setPoolDataName(poolNameValue)
-  }, [poolNameValue, setPoolDataName])
 
   return (
     <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose}>
@@ -103,7 +103,7 @@ export default function VeTokenCalculator({
           />
           <TextField
             label={t("depositAmount")}
-            value={userShare ? formatBNToString(userShare?.usdBalance, 18) : ""}
+            value={formatBNToString(userLPAmount, 18)}
           />
           <Typography>
             {t("maxBoost")}: {MAX_BOOST}
