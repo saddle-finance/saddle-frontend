@@ -2,7 +2,7 @@ context("Account detail test", () => {
   beforeEach(() => {
     cy.visit(`/#/`)
     cy.waitForReact()
-    cy.wait(3000)
+    cy.wait(2000)
   })
 
   it("renders account detail after click account avatar", () => {

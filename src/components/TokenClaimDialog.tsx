@@ -74,7 +74,7 @@ export default function TokenClaimDialog({
   )
   const [allPoolsWithRewards, poolsWithUserRewards] = useMemo(() => {
     if (!basicPools) return [[], []]
-    const allPoolsWithRewards = (Object.values(basicPools) as BasicPool[])
+    const allPoolsWithRewards = Object.values(basicPools)
       .filter(({ miniChefRewardsPid }) => {
         // remove pools not in this chain and without rewards
         return miniChefRewardsPid !== null
