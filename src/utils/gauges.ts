@@ -18,7 +18,6 @@ import LIQUIDITY_GAUGE_V5_ABI from "../constants/abis/liquidityGaugeV5.json"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
-import { parseBytes32String } from "@ethersproject/strings"
 
 export type Gauge = {
   address: string
@@ -39,7 +38,7 @@ export type GaugeReward = {
 }
 
 export type PoolAddressToGauge = {
-  [poolAddress: string]: Gauge
+  [poolAddress: string]: Gauge | undefined
 }
 
 export type Gauges = {
@@ -100,14 +99,6 @@ export async function getGaugeData(
       )
     ).map((poolAddress) => poolAddress.toLowerCase())
 
-    const gaugePoolNames: string[] = (
-      await ethCallProvider.all(
-        gaugeAddresses.map((address) =>
-          helperContractMultiCall.gaugeToPoolData(address),
-        ),
-      )
-    ).map((pool) => parseBytes32String(pool.poolName))
-
     const gaugeRewardsPromise = ethCallProvider.all(
       gaugeAddresses.map((address) =>
         helperContractMultiCall.getGaugeRewards(address),
@@ -141,7 +132,6 @@ export async function getGaugeData(
           [gaugePoolAddress]: {
             address: gaugeAddresses[index],
             poolAddress: gaugePoolAddress,
-            poolName: gaugePoolNames[index],
             gaugeWeight: gaugeWeights[index],
             gaugeRelativeWeight: gaugeRelativeWeights[index],
             rewards: gaugeRewards[index].map((reward) => ({
