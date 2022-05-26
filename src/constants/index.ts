@@ -1307,7 +1307,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "evmos-frax-3pool",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.EVMOS]: 1 }),
   },
   [STABLECOIN_POOL_NAME]: {
     name: STABLECOIN_POOL_NAME,
@@ -1616,6 +1616,9 @@ const minichefPids: Partial<Record<ChainId, { [pool: string]: number }>> = {
   [ChainId.ARBITRUM]: {
     [ARB_USD_SWAP_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 1,
     [USDS_ARB_USD_SWAP_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 2,
+  },
+  [ChainId.EVMOS]: {
+    [EVMOS_FRAX_3_POOL_SWAP_ADDRESSES[ChainId.EVMOS].toLowerCase()]: 1,
   },
 }
 
