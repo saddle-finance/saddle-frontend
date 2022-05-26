@@ -89,7 +89,8 @@ export default function TokenClaimDialog({
     chainId === ChainId.MAINNET ||
     chainId === ChainId.ARBITRUM ||
     chainId === ChainId.HARDHAT ||
-    chainId === ChainId.ROPSTEN
+    chainId === ChainId.ROPSTEN ||
+    chainId === ChainId.EVMOS
 
   const rewardBalances = useContext(RewardsBalancesContext)
   const {
