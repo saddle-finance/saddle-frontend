@@ -1,3 +1,5 @@
+//@ts-nocheck
+/* eslint-disable */
 import {
   ChainId,
   POOLS_MAP,
@@ -6,15 +8,25 @@ import {
   Token,
   getMinichefPid,
 } from "../constants"
+import { MulticallContract, MulticallProvider } from "../types/ethcall"
 import React, { ReactElement, useEffect, useState } from "react"
 import {
   createMultiCallContract,
+  EMPTY_CONTRACT_CALL,
+  enumerate,
   getMulticallProvider,
   isAddressZero,
   isSynthAsset,
   lowerCaseAddresses,
+  multicallInBatch,
+  resolveMultiCallParallel,
+  resolveMultiCallParallelInBatch,
 } from "../utils"
 
+import {
+  usePoolRegistry,
+  usePoolRegistryMultiCall,
+} from "../hooks/useContract"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import ERC20_ABI from "../constants/abis/erc20.json"
@@ -28,19 +40,22 @@ import { useActiveWeb3React } from "../hooks"
 import { useSelector } from "react-redux"
 import { utils } from "ethers"
 
-type RegistryPoolData = {
+type RegistryPoolData ={
   poolAddress: string
   lpToken: string
   typeOfAsset: number
   poolName: string
   targetAddress: string
   tokens: string[]
-  underlyingTokens: string[] | null
-  basePoolAddress: string | null
-  metaSwapDepositAddress: string | null
+  underlyingTokens: string[]
+  basePoolAddress: string
+  metaSwapDepositAddress: string
   isSaddleApproved: boolean
   isRemoved: boolean
   isGuarded: boolean
+  isMetaSwap: boolean
+  miniChefRewardsPid: number | null
+  isSynthetic: boolean
 }
 
 type SharedSwapData = {
@@ -97,22 +112,36 @@ export default function BasicPoolsProvider({
   )
 
   // Will be used when POOLS_MAP and TOKENS_MAP have been deprecated
-  // const poolRegistry = usePoolRegistry()
-
+  const poolRegistry = usePoolRegistry()
+  const poolRegistryMultiCall = usePoolRegistryMultiCall()
   useEffect(() => {
     async function fetchBasicPools() {
-      if (!chainId || !library) {
+      if (!chainId || !library || !poolRegistry || !poolRegistryMultiCall) {
         setBasicPools(null)
         return
       }
-      const pools = await getPoolsBaseData(library, chainId)
 
-      const poolsAddresses = pools.map((pool) => pool.poolAddress)
+      const ethCallProvider = await getMulticallProvider(library, chainId)
+      const pools = await getPoolsBaseData(
+        poolRegistry,
+        poolRegistryMultiCall,
+        ethCallProvider,
+      )
+
+      await getPoolsDataFromRegistry(
+        chainId,
+        poolRegistry,
+        poolRegistryMultiCall,
+        ethCallProvider,
+      )
+
+      const poolsAddresses = pools.map(({ poolAddress }) => poolAddress)
       const migrationData = await getMigrationData(
         library,
         chainId,
         poolsAddresses,
       )
+
       const result = pools.reduce((acc, pool) => {
         const poolData = { ...pool } as BasicPool
         poolData.isMigrated = migrationData?.[pool.poolAddress] != null
@@ -125,7 +154,13 @@ export default function BasicPoolsProvider({
       setBasicPools(result)
     }
     void fetchBasicPools()
-  }, [chainId, library, lastTransactionTimes])
+  }, [
+    chainId,
+    library,
+    lastTransactionTimes,
+    poolRegistry,
+    poolRegistryMultiCall,
+  ])
 
   return (
     <BasicPoolsContext.Provider value={basicPools}>
@@ -144,54 +179,82 @@ export default function BasicPoolsProvider({
  * Excludes price data and user data.
  * Will be replaced with registry.
  */
-export async function getPoolsBaseDataFromRegistry(
-  library: Web3Provider,
+export async function getPoolsDataFromRegistry(
   chainId: ChainId,
   poolRegistry: PoolRegistry,
+  poolRegistryMultiCall: MulticallContract<PoolRegistry>,
+  ethCallProvider: MulticallProvider,
 ): Promise<SwapInfo[]> {
-  const registryPools = []
   const poolCount = (await poolRegistry.getPoolsLength()).toNumber()
-  for (let i = 0; i < poolCount; i++) {
-    const {
-      poolAddress,
-      lpToken,
-      typeOfAsset,
-      poolName,
-      targetAddress,
-      tokens,
-      underlyingTokens,
-      basePoolAddress,
-      metaSwapDepositAddress,
-      isSaddleApproved,
-      isRemoved,
-      isGuarded,
-    } = await poolRegistry.getPoolDataAtIndex(i)
-    const parsedPoolName = utils.parseBytes32String(poolName)
-    if (!parsedPoolName.includes("outdated")) {
-      registryPools.push({
-        typeOfAsset,
-        poolName: parsedPoolName,
-        targetAddress: targetAddress.toLowerCase(),
-        tokens: lowerCaseAddresses(tokens),
-        underlyingTokens: lowerCaseAddresses(underlyingTokens),
-        basePoolAddress: basePoolAddress.toLowerCase(),
-        metaSwapDepositAddress: metaSwapDepositAddress.toLowerCase(),
-        isSaddleApproved,
-        isRemoved,
-        isGuarded,
-        poolAddress: poolAddress.toLowerCase(),
-        lpToken: lpToken.toLowerCase(),
-      })
-    }
-  }
-
-  const poolsData = await Promise.all(
-    registryPools.map((pool) =>
-      getSwapInfoWithRegistryPoolData(library, chainId, pool),
-    ),
+  const registryPoolDataMultiCalls = enumerate(poolCount).map((index) =>
+    poolRegistryMultiCall.getPoolDataAtIndex(index),
   )
 
-  return poolsData.filter(Boolean) as SwapInfo[]
+
+  const registryPoolData = await ethCallProvider.tryAll(registryPoolDataMultiCalls)
+
+  const arePoolsPausedMulticalls = []
+  const virtualPricesMulticalls = []
+  const swapStoragesMulticalls = []
+  const aParametersMultiCalls = []
+  const tokenBalancesMultiCalls = []
+  const underlyingTokenBalancesMultiCalls = []
+  const lpTokenTotalSuppliesMultiCalls = []
+
+  registryPoolData.forEach(({ lpToken, poolAddress }) => {
+    if (isAddressZero(lpToken)) {
+      lpTokenTotalSuppliesMultiCalls.push(EMPTY_CONTRACT_CALL)
+    } else {
+      const lpTokenContract = createMultiCallContract<Erc20>(lpToken, ERC20_ABI)
+      lpTokenTotalSuppliesMultiCalls.push(lpTokenContract.totalSupply())
+    }
+  
+    arePoolsPausedMulticalls.push(poolRegistryMultiCall.getPaused(poolAddress))
+    virtualPricesMulticalls.push(
+      poolRegistryMultiCall.getVirtualPrice(poolAddress),
+    )
+    swapStoragesMulticalls.push(
+      poolRegistryMultiCall.getSwapStorage(poolAddress),
+    )
+    aParametersMultiCalls.push(poolRegistryMultiCall.getA(poolAddress))
+    tokenBalancesMultiCalls.push(
+      poolRegistryMultiCall.getTokenBalances(poolAddress),
+    )
+    underlyingTokenBalancesMultiCalls.push(
+      poolRegistryMultiCall.getUnderlyingTokenBalances(poolAddress),
+    )
+  })
+  
+  const [
+    isPaused,
+    virtualPrice,
+    { adminFee, swapFee },
+    aParameter,
+    tokenBalances,
+    underlyingTokenBalances,
+    lpTokenSupply
+  ] = await Promise.all([
+    ethCallProvider.tryAll(arePoolsPausedMulticalls),
+    ethCallProvider.tryAll(virtualPricesMulticalls),
+    ethCallProvider.tryAll(swapStoragesMulticalls),
+    ethCallProvider.tryAll(aParametersMultiCalls),
+    ethCallProvider.tryAll(tokenBalancesMultiCalls),
+    multicallInBatch<BigNumber>(underlyingTokenBalancesMultiCalls, ethCallProvider, 2),
+    ethCallProvider.tryAll(lpTokenTotalSuppliesMultiCalls),
+  ])
+
+  const remainingSwapInfoPoolsData = {
+    isPaused,
+    virtualPrice,
+    adminFee,
+    swapFee,
+    aParameter,
+    tokenBalances,
+    underlyingTokenBalances,
+    lpTokenSupply,
+  }
+
+  console.log("REMAINING SWAP INFO", remainingSwapInfoPoolsData)
 }
 
 /**
@@ -208,8 +271,6 @@ export async function getPoolsBaseDataFromRegistry(
  *  "tokenBalances",
  *  "underlyingTokenBalances",
  *  "lpTokenSupply",
- *  "miniChefRewardsPid",
- * "isSynthetic"
  * ]
  *
  *
@@ -218,42 +279,97 @@ export async function getPoolsBaseDataFromRegistry(
  * @param pool
  * @returns
  */
-export async function getSwapInfoWithRegistryPoolData(
+export async function getSwapInfosWithRegistryPoolsData(
   library: Web3Provider,
   chainId: ChainId,
-  pool: RegistryPoolData,
+  ethCallProvider: MulticallProvider,
+  poolRegistryMultiCall: MulticallContract<PoolRegistry>,
+  pools: RegistryPoolData[],
 ): Promise<SwapInfo | null> {
+  // for (let i = 0; i < poolCount; i++) {
+  // const {
+  //   poolAddress,
+  //   lpToken,
+  //   typeOfAsset,
+  //   poolName,
+  //   targetAddress,
+  //   tokens,
+  //   underlyingTokens,
+  //   basePoolAddress,
+  //   metaSwapDepositAddress,
+  //   isSaddleApproved,
+  //   isRemoved,
+  //   isGuarded,
+  // } = await poolRegistry.getPoolDataAtIndex(i)
+
+  //   const parsedPoolName = utils.parseBytes32String(poolName)
+  //   if (!parsedPoolName.includes("outdated")) {
+  //     registryPools.push({
+  //       typeOfAsset,
+  //       poolName: parsedPoolName,
+  //       targetAddress: targetAddress.toLowerCase(),
+  //       tokens: lowerCaseAddresses(tokens),
+  //       underlyingTokens: lowerCaseAddresses(underlyingTokens),
+  //       basePoolAddress: basePoolAddress.toLowerCase(),
+  //       metaSwapDepositAddress: metaSwapDepositAddress.toLowerCase(),
+  //       isSaddleApproved,
+  //       isRemoved,
+  //       isGuarded,
+  //       poolAddress: poolAddress.toLowerCase(),
+  //       lpToken: lpToken.toLowerCase(),
+  //       isPaused,
+  //       isMetaSwap,
+  //       virtualPrice: virtualPrice.isZero()
+  //         ? BigNumber.from(10).pow(18)
+  //         : virtualPrice,
+  //       adminFee,
+  //       swapFee,
+  //       aParameter,
+  //       tokenBalances,
+  //       underlyingTokenBalances,
+  //       lpTokenSupply: Zero,
+  //       miniChefRewardsPid,
+  //       isSynthetic,
+  //     })
+  //   }
+  // }
+
+  // return registryPools.filter(Boolean) as SwapInfo[]
   try {
-    const ethCallProvider = await getMulticallProvider(library, chainId)
-    const swapContractMulticall = createMultiCallContract<MetaSwap>(
-      pool.poolAddress,
-      META_SWAP_ABI,
-    )
+    const poolAddresses: string[] = pools.map((pool) => {})
     const lpTokenContract = createMultiCallContract<Erc20>(
       pool.lpToken,
       ERC20_ABI,
     )
+    const isMetaSwap = isAddressZero(pool.metaSwapDepositAddress)
+    const poolMetaSwapInfoMultiCalls = []
+
+    const poolMetaSwapInfoPromise = await ethCallProvider.all(
+      poolMetaSwapInfoMultiCalls,
+    )
 
     const tokens = pool.tokens
-    const isMetaSwap = isAddressZero(pool.metaSwapDepositAddress)
+    // const isMetaSwap = isAddressZero(pool.metaSwapDepositAddress)
+    const isSynthetic = (pool.tokens || pool.underlyingTokens).some((addr) =>
+      isSynthAsset(chainId, addr),
+    )
+    const miniChefRewardsPid = getMinichefPid(chainId, pool.poolAddress)
+    // const isPaused = await poolRegistry.getPaused(poolAddress)
+    // const { adminFee, swapFee } = await poolRegistry.getSwapStorage(poolAddress)
+    // const aParameter = await poolRegistry.getA(poolAddress)
+    // const tokenBalances = await poolRegistry.getTokenBalances(poolAddress)
+    // const underlyingTokenBalances =
+    //   await poolRegistry.getUnderlyingTokenBalances(poolAddress)
+    // const virtualPrice = await poolRegistry.getVirtualPrice(poolAddress)
+
     const rewardsPid = getMinichefPid(chainId, pool.poolAddress)
 
-    const [swapStorage, aParameter, isPaused, virtualPrice] =
-      await ethCallProvider.all([
-        swapContractMulticall.swapStorage(),
-        swapContractMulticall.getA(),
-        swapContractMulticall.paused(),
-        swapContractMulticall.getVirtualPrice(),
-      ])
+    //
     const { adminFee, swapFee } = swapStorage
-    const [lpTokenSupply, ...tokenBalances] = await ethCallProvider.all([
-      lpTokenContract.totalSupply(),
-      ...tokens.map((_, i) => swapContractMulticall.getTokenBalance(i)),
-    ])
-
-    const isSynthetic = (pool.tokens || pool.underlyingTokens || []).some(
-      (addr) => isSynthAsset(chainId, addr),
-    )
+    // const [lpTokenSupply, ...tokenBalances] = await ethCallProvider.all([
+    //   lpTokenContract.totalSupply(),
+    //   ...tokens.map((_, i) => swapContractMulticall.getTokenBalance(i)),
+    // ])
 
     const data = {
       ...pool,
@@ -357,7 +473,7 @@ export async function getSwapInfo(
       ? POOLS_MAP[pool.underlyingPool].addresses[chainId]?.toLowerCase()
       : null
     const typeOfAsset = pool.type
-    const isSynthetic = (tokens || underlyingTokens || []).some((addr) =>
+    const isSynthetic = (tokens.length || underlyingTokens || []).some((addr) =>
       isSynthAsset(chainId, addr),
     )
 

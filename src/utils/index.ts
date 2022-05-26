@@ -1,12 +1,16 @@
 import { AddressZero, Zero } from "@ethersproject/constants"
+import { CallOverrides, ContractInterface } from "ethers"
 import { ChainId, PoolTypes, TOKENS_MAP, Token } from "../constants"
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
-import { MulticallContract, MulticallProvider } from "../types/ethcall"
+import {
+  MulticallCall,
+  MulticallContract,
+  MulticallProvider,
+} from "../types/ethcall"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "@ethersproject/contracts"
-import { ContractInterface } from "ethers"
 import { Deadlines } from "../state/user"
 import { Contract as EthcallContract } from "ethcall"
 import { JsonFragment } from "@ethersproject/abi"
@@ -23,6 +27,7 @@ import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import { TokenPricesUSD } from "../state/application"
+import { chunk } from "lodash"
 import { getAddress } from "@ethersproject/address"
 
 export function isSynthAsset(chainId: ChainId, tokenAddress: string): boolean {
@@ -419,5 +424,26 @@ export function lowerCaseAddresses(addresses: string[]): string[] {
 }
 
 export function isAddressZero(address: string | null): boolean {
-  return BigNumber.from(address).isZero()
+  return address === AddressZero
+}
+
+export async function multicallInBatch<T>(
+  multiCallCalls: MulticallCall<CallOverrides, T>[],
+  ethCallProvider: MulticallProvider,
+  batchSize: number,
+): Promise<MulticallCall<CallOverrides, T>[] | (T | null)[]> {
+  const multiCallCallsBatch = chunk(multiCallCalls, batchSize).map((batch) =>
+    ethCallProvider.tryAll(batch),
+  )
+  return (await Promise.all(multiCallCallsBatch)).flat()
+}
+
+export const EMPTY_CONTRACT_CALL = {
+  contract: {
+    address: AddressZero,
+  },
+  name: "",
+  inputs: [],
+  outputs: [],
+  params: [],
 }
