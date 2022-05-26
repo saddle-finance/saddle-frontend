@@ -19,14 +19,9 @@ import {
   isSynthAsset,
   lowerCaseAddresses,
   multicallInBatch,
-  resolveMultiCallParallel,
-  resolveMultiCallParallelInBatch,
 } from "../utils"
 
-import {
-  usePoolRegistry,
-  usePoolRegistryMultiCall,
-} from "../hooks/useContract"
+import { usePoolRegistry, usePoolRegistryMultiCall } from "../hooks/useContract"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import ERC20_ABI from "../constants/abis/erc20.json"
@@ -40,7 +35,7 @@ import { useActiveWeb3React } from "../hooks"
 import { useSelector } from "react-redux"
 import { utils } from "ethers"
 
-type RegistryPoolData ={
+type RegistryPoolData = {
   poolAddress: string
   lpToken: string
   typeOfAsset: number
@@ -120,13 +115,11 @@ export default function BasicPoolsProvider({
         setBasicPools(null)
         return
       }
-
       const ethCallProvider = await getMulticallProvider(library, chainId)
-      const pools = await getPoolsBaseData(
-        poolRegistry,
-        poolRegistryMultiCall,
-        ethCallProvider,
-      )
+
+      const pools = await getPoolsBaseData(library, chainId)
+
+      console.log({ pools })
 
       await getPoolsDataFromRegistry(
         chainId,
@@ -190,8 +183,9 @@ export async function getPoolsDataFromRegistry(
     poolRegistryMultiCall.getPoolDataAtIndex(index),
   )
 
-
-  const registryPoolData = await ethCallProvider.tryAll(registryPoolDataMultiCalls)
+  const registryPoolData = await ethCallProvider.tryAll(
+    registryPoolDataMultiCalls,
+  )
 
   const arePoolsPausedMulticalls = []
   const virtualPricesMulticalls = []
@@ -208,7 +202,7 @@ export async function getPoolsDataFromRegistry(
       const lpTokenContract = createMultiCallContract<Erc20>(lpToken, ERC20_ABI)
       lpTokenTotalSuppliesMultiCalls.push(lpTokenContract.totalSupply())
     }
-  
+
     arePoolsPausedMulticalls.push(poolRegistryMultiCall.getPaused(poolAddress))
     virtualPricesMulticalls.push(
       poolRegistryMultiCall.getVirtualPrice(poolAddress),
@@ -224,7 +218,7 @@ export async function getPoolsDataFromRegistry(
       poolRegistryMultiCall.getUnderlyingTokenBalances(poolAddress),
     )
   })
-  
+
   const [
     isPaused,
     virtualPrice,
@@ -232,14 +226,18 @@ export async function getPoolsDataFromRegistry(
     aParameter,
     tokenBalances,
     underlyingTokenBalances,
-    lpTokenSupply
+    lpTokenSupply,
   ] = await Promise.all([
     ethCallProvider.tryAll(arePoolsPausedMulticalls),
     ethCallProvider.tryAll(virtualPricesMulticalls),
     ethCallProvider.tryAll(swapStoragesMulticalls),
     ethCallProvider.tryAll(aParametersMultiCalls),
     ethCallProvider.tryAll(tokenBalancesMultiCalls),
-    multicallInBatch<BigNumber>(underlyingTokenBalancesMultiCalls, ethCallProvider, 2),
+    multicallInBatch<BigNumber>(
+      underlyingTokenBalancesMultiCalls,
+      ethCallProvider,
+      2,
+    ),
     ethCallProvider.tryAll(lpTokenTotalSuppliesMultiCalls),
   ])
 
