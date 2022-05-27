@@ -16,7 +16,7 @@ interface SwapStats {
   }
 }
 export interface TokenPricesUSD {
-  [x: string]: number
+  [tokenSymbol: string]: number
 }
 interface LastTransactionTimes {
   [transactionType: string]: number

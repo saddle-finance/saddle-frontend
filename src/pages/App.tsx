@@ -6,13 +6,10 @@ import React, {
   Suspense,
   lazy,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
 } from "react"
 import { Redirect, Route, Switch } from "react-router-dom"
-import TokensProvider, { TokensContext } from "../providers/TokensProvider"
-import fetchTokenPricesUSD, { getTokenPrice } from "../utils/updateTokenPrices"
 import { styled, useTheme } from "@mui/material"
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
@@ -28,6 +25,7 @@ import Pools from "./Pools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import Swap from "./Swap"
 import { ToastContainer } from "react-toastify"
+import TokensProvider from "../providers/TokensProvider"
 import TopMenu from "../components/TopMenu"
 import UserStateProvider from "../providers/UserStateProvider"
 import VeSDL from "./VeSDL"
@@ -37,6 +35,7 @@ import Withdraw from "./Withdraw"
 import WrongNetworkModal from "../components/WrongNetworkModal"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchSwapStats from "../utils/getSwapStats"
+import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import getSnapshotVoteData from "../utils/getSnapshotVoteData"
 import { useActiveWeb3React } from "../hooks"
 import { useDispatch } from "react-redux"
@@ -180,7 +179,6 @@ function PricesAndVoteData({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
   const dispatch = useDispatch<AppDispatch>()
-  const tokens = useContext(TokensContext)
   const { chainId, library } = useActiveWeb3React()
 
   const fetchAndUpdateGasPrice = useCallback(() => {
@@ -188,8 +186,7 @@ function PricesAndVoteData({
   }, [dispatch])
   const fetchAndUpdateTokensPrice = useCallback(() => {
     fetchTokenPricesUSD(dispatch, chainId, library)
-    void getTokenPrice(tokens, dispatch, chainId, library)
-  }, [dispatch, chainId, library, tokens])
+  }, [dispatch, chainId, library])
   const fetchAndUpdateSwapStats = useCallback(() => {
     void fetchSwapStats(dispatch)
   }, [dispatch])

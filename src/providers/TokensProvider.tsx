@@ -22,7 +22,7 @@ export type BasicToken = {
   decimals: number
   isLPToken: boolean
   isSynthetic: boolean
-  typeAsset?: PoolTypes
+  typeAsset: PoolTypes
 }
 export type BasicTokens = { [address: string]: BasicToken | undefined } | null
 export const TokensContext = React.createContext<BasicTokens>(null)
@@ -85,7 +85,8 @@ export default function TokensProvider({
       if (!tokenInfos) return
       Object.keys(tokenInfos).forEach((address) => {
         ;(tokenInfos[address] as BasicToken).isLPToken = lpTokens.has(address)
-        ;(tokenInfos[address] as BasicToken).typeAsset = tokenType[address]
+        ;(tokenInfos[address] as BasicToken).typeAsset =
+          tokenType[address] ?? PoolTypes.OTHER
       })
       setTokens(tokenInfos)
     }
