@@ -1,5 +1,4 @@
 import { AddressZero, Zero } from "@ethersproject/constants"
-import { CallOverrides, ContractInterface } from "ethers"
 import { ChainId, PoolTypes, TOKENS_MAP, Token } from "../constants"
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
 import {
@@ -11,6 +10,7 @@ import { formatUnits, parseUnits } from "@ethersproject/units"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "@ethersproject/contracts"
+import { ContractInterface } from "ethers"
 import { Deadlines } from "../state/user"
 import { Contract as EthcallContract } from "ethcall"
 import { JsonFragment } from "@ethersproject/abi"
@@ -428,22 +428,16 @@ export function isAddressZero(address: string | null): boolean {
 }
 
 export async function multicallInBatch<T>(
-  multiCallCalls: MulticallCall<CallOverrides, T>[],
+  multiCallCalls: MulticallCall<unknown, T>[],
   ethCallProvider: MulticallProvider,
   batchSize: number,
-): Promise<MulticallCall<CallOverrides, T>[] | (T | null)[]> {
+): Promise<(T | null)[]> {
   const multiCallCallsBatch = chunk(multiCallCalls, batchSize).map((batch) =>
     ethCallProvider.tryAll(batch),
   )
   return (await Promise.all(multiCallCallsBatch)).flat()
 }
 
-export const EMPTY_CONTRACT_CALL = {
-  contract: {
-    address: AddressZero,
-  },
-  name: "",
-  inputs: [],
-  outputs: [],
-  params: [],
+export type DeepNullable<T> = {
+  [K in keyof T]: DeepNullable<T[K]> | null
 }

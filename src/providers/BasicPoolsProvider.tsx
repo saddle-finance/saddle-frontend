@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import {
   ChainId,
   POOLS_MAP,
@@ -8,11 +6,9 @@ import {
   Token,
   getMinichefPid,
 } from "../constants"
-import { MulticallContract, MulticallProvider } from "../types/ethcall"
-import React, { ReactElement, useEffect, useState } from "react"
 import {
+  DeepNullable,
   createMultiCallContract,
-  EMPTY_CONTRACT_CALL,
   enumerate,
   getMulticallProvider,
   isAddressZero,
@@ -20,7 +16,13 @@ import {
   lowerCaseAddresses,
   multicallInBatch,
 } from "../utils"
+import {
+  MulticallCall,
+  MulticallContract,
+  MulticallProvider,
+} from "../types/ethcall"
 
+import React, { ReactElement, useEffect, useState } from "react"
 import { usePoolRegistry, usePoolRegistryMultiCall } from "../hooks/useContract"
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -31,27 +33,9 @@ import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { PoolRegistry } from "../../types/ethers-contracts/PoolRegistry"
 import { Web3Provider } from "@ethersproject/providers"
 import { getMigrationData } from "../utils/migrations"
+import { parseBytes32String } from "ethers/lib/utils"
 import { useActiveWeb3React } from "../hooks"
 import { useSelector } from "react-redux"
-import { utils } from "ethers"
-
-type RegistryPoolData = {
-  poolAddress: string
-  lpToken: string
-  typeOfAsset: number
-  poolName: string
-  targetAddress: string
-  tokens: string[]
-  underlyingTokens: string[]
-  basePoolAddress: string
-  metaSwapDepositAddress: string
-  isSaddleApproved: boolean
-  isRemoved: boolean
-  isGuarded: boolean
-  isMetaSwap: boolean
-  miniChefRewardsPid: number | null
-  isSynthetic: boolean
-}
 
 type SharedSwapData = {
   poolAddress: string
@@ -73,13 +57,15 @@ type SharedSwapData = {
   miniChefRewardsPid: number | null
   isSynthetic: boolean
 }
+
 type MetaSwapInfo = SharedSwapData & {
   underlyingTokens: string[]
   basePoolAddress: string
   metaSwapDepositAddress: string
   underlyingTokenBalances: BigNumber[]
-  isMetaSwap: true
+  isMetaSwap: boolean
 }
+
 type NonMetaSwapInfo = SharedSwapData & {
   underlyingTokens: null
   basePoolAddress: null
@@ -87,6 +73,7 @@ type NonMetaSwapInfo = SharedSwapData & {
   underlyingTokenBalances: null
   isMetaSwap: false
 }
+
 type SwapInfo = MetaSwapInfo | NonMetaSwapInfo
 
 export type BasicPool = {
@@ -94,6 +81,24 @@ export type BasicPool = {
   newPoolAddresss?: string
 } & SwapInfo
 export type BasicPools = { [poolName: string]: BasicPool | undefined } | null // indexed by name, which is unique in the Registry
+
+type SwapStorage = [
+  BigNumber,
+  BigNumber,
+  BigNumber,
+  BigNumber,
+  BigNumber,
+  BigNumber,
+  string,
+] & {
+  initialA: BigNumber
+  futureA: BigNumber
+  initialATime: BigNumber
+  futureATime: BigNumber
+  swapFee: BigNumber
+  adminFee: BigNumber
+  lpToken: string
+}
 
 export const BasicPoolsContext = React.createContext<BasicPools>(null)
 
@@ -106,7 +111,6 @@ export default function BasicPoolsProvider({
     (state: AppState) => state.application,
   )
 
-  // Will be used when POOLS_MAP and TOKENS_MAP have been deprecated
   const poolRegistry = usePoolRegistry()
   const poolRegistryMultiCall = usePoolRegistryMultiCall()
   useEffect(() => {
@@ -115,26 +119,13 @@ export default function BasicPoolsProvider({
         setBasicPools(null)
         return
       }
-      const ethCallProvider = await getMulticallProvider(library, chainId)
-
       const pools = await getPoolsBaseData(library, chainId)
-
-      console.log({ pools })
-
-      await getPoolsDataFromRegistry(
-        chainId,
-        poolRegistry,
-        poolRegistryMultiCall,
-        ethCallProvider,
-      )
-
       const poolsAddresses = pools.map(({ poolAddress }) => poolAddress)
       const migrationData = await getMigrationData(
         library,
         chainId,
         poolsAddresses,
       )
-
       const result = pools.reduce((acc, pool) => {
         const poolData = { ...pool } as BasicPool
         poolData.isMigrated = migrationData?.[pool.poolAddress] != null
@@ -177,7 +168,7 @@ export async function getPoolsDataFromRegistry(
   poolRegistry: PoolRegistry,
   poolRegistryMultiCall: MulticallContract<PoolRegistry>,
   ethCallProvider: MulticallProvider,
-): Promise<SwapInfo[]> {
+): Promise<DeepNullable<SwapInfo>[]> {
   const poolCount = (await poolRegistry.getPoolsLength()).toNumber()
   const registryPoolDataMultiCalls = enumerate(poolCount).map((index) =>
     poolRegistryMultiCall.getPoolDataAtIndex(index),
@@ -187,53 +178,62 @@ export async function getPoolsDataFromRegistry(
     registryPoolDataMultiCalls,
   )
 
-  const arePoolsPausedMulticalls = []
-  const virtualPricesMulticalls = []
-  const swapStoragesMulticalls = []
-  const aParametersMultiCalls = []
-  const tokenBalancesMultiCalls = []
-  const underlyingTokenBalancesMultiCalls = []
-  const lpTokenTotalSuppliesMultiCalls = []
+  const arePoolsPausedMulticalls: MulticallCall<unknown, boolean>[] = []
+  const virtualPricesMulticalls: MulticallCall<unknown, BigNumber>[] = []
+  const swapStoragesMulticalls: MulticallCall<unknown, SwapStorage>[] = []
+  const aParametersMultiCalls: MulticallCall<unknown, BigNumber>[] = []
+  const tokenBalancesMultiCalls: MulticallCall<unknown, BigNumber[]>[] = []
+  const underlyingTokenBalancesMultiCalls: MulticallCall<
+    unknown,
+    BigNumber[]
+  >[] = []
+  const lpTokenTotalSuppliesMultiCalls: MulticallCall<unknown, BigNumber>[] = []
 
-  registryPoolData.forEach(({ lpToken, poolAddress }) => {
-    if (isAddressZero(lpToken)) {
-      lpTokenTotalSuppliesMultiCalls.push(EMPTY_CONTRACT_CALL)
-    } else {
-      const lpTokenContract = createMultiCallContract<Erc20>(lpToken, ERC20_ABI)
+  console.log({ registryPoolData })
+
+  registryPoolData.forEach((poolData) => {
+    if (poolData != null) {
+      const { lpToken, poolAddress } = poolData
+      const lpTokenContract = createMultiCallContract<Erc20>(
+        lpToken.toLowerCase(),
+        ERC20_ABI,
+      )
+
       lpTokenTotalSuppliesMultiCalls.push(lpTokenContract.totalSupply())
+      arePoolsPausedMulticalls.push(
+        poolRegistryMultiCall.getPaused(poolAddress),
+      )
+      virtualPricesMulticalls.push(
+        poolRegistryMultiCall.getVirtualPrice(poolAddress),
+      )
+      swapStoragesMulticalls.push(
+        poolRegistryMultiCall.getSwapStorage(poolAddress),
+      )
+      aParametersMultiCalls.push(poolRegistryMultiCall.getA(poolAddress))
+      tokenBalancesMultiCalls.push(
+        poolRegistryMultiCall.getTokenBalances(poolAddress),
+      )
+      underlyingTokenBalancesMultiCalls.push(
+        poolRegistryMultiCall.getUnderlyingTokenBalances(poolAddress),
+      )
     }
-
-    arePoolsPausedMulticalls.push(poolRegistryMultiCall.getPaused(poolAddress))
-    virtualPricesMulticalls.push(
-      poolRegistryMultiCall.getVirtualPrice(poolAddress),
-    )
-    swapStoragesMulticalls.push(
-      poolRegistryMultiCall.getSwapStorage(poolAddress),
-    )
-    aParametersMultiCalls.push(poolRegistryMultiCall.getA(poolAddress))
-    tokenBalancesMultiCalls.push(
-      poolRegistryMultiCall.getTokenBalances(poolAddress),
-    )
-    underlyingTokenBalancesMultiCalls.push(
-      poolRegistryMultiCall.getUnderlyingTokenBalances(poolAddress),
-    )
   })
 
   const [
-    isPaused,
-    virtualPrice,
-    { adminFee, swapFee },
-    aParameter,
-    tokenBalances,
-    underlyingTokenBalances,
-    lpTokenSupply,
+    arePoolsPaused,
+    virtualPrices,
+    swapStorages,
+    aParameters,
+    tokensBalances,
+    underlyingTokensBalances,
+    lpTokensSupplies,
   ] = await Promise.all([
     ethCallProvider.tryAll(arePoolsPausedMulticalls),
     ethCallProvider.tryAll(virtualPricesMulticalls),
     ethCallProvider.tryAll(swapStoragesMulticalls),
     ethCallProvider.tryAll(aParametersMultiCalls),
     ethCallProvider.tryAll(tokenBalancesMultiCalls),
-    multicallInBatch<BigNumber>(
+    multicallInBatch<BigNumber[]>(
       underlyingTokenBalancesMultiCalls,
       ethCallProvider,
       2,
@@ -241,178 +241,82 @@ export async function getPoolsDataFromRegistry(
     ethCallProvider.tryAll(lpTokenTotalSuppliesMultiCalls),
   ])
 
-  const remainingSwapInfoPoolsData = {
-    isPaused,
-    virtualPrice,
-    adminFee,
-    swapFee,
-    aParameter,
-    tokenBalances,
-    underlyingTokenBalances,
-    lpTokenSupply,
-  }
+  console.log({
+    arePoolsPaused,
+    virtualPrices,
+    swapStorages,
+    aParameters,
+    tokensBalances,
+    underlyingTokensBalances,
+    lpTokensSupplies,
+  })
 
-  console.log("REMAINING SWAP INFO", remainingSwapInfoPoolsData)
+  const swapInfos: DeepNullable<SwapInfo>[] = []
+
+  registryPoolData.forEach((poolData, index) => {
+    if (poolData != null) {
+      const isMetaSwap = !isAddressZero(poolData.metaSwapDepositAddress)
+      const rewardsPid = getMinichefPid(
+        chainId,
+        poolData.poolAddress.toLowerCase(),
+      )
+      const isSynthetic = (
+        lowerCaseAddresses(poolData.tokens) ||
+        underlyingTokensBalances[index] ||
+        []
+      ).some((addr) => isSynthAsset(chainId, addr || ""))
+      const isPaused = arePoolsPaused[index]
+      const virtualPrice = virtualPrices[index]
+      const swapStorage = swapStorages[index]
+      const aParameter = aParameters[index]
+      const tokenBalances = tokensBalances[index]
+      const underlyingTokenBalances = underlyingTokensBalances[index]
+      const lpTokenSupply = lpTokensSupplies[index]
+
+      if (
+        isPaused == null ||
+        virtualPrice == null ||
+        aParameter == null ||
+        swapStorage == null ||
+        tokenBalances == null ||
+        lpTokenSupply == null
+      ) {
+        return
+      }
+
+      swapInfos.push({
+        poolAddress: poolData.poolAddress.toLowerCase(),
+        lpToken: poolData.lpToken.toLowerCase(),
+        typeOfAsset: poolData.typeOfAsset,
+        poolName: parseBytes32String(poolData.poolName),
+        targetAddress: poolData.targetAddress,
+        tokens: lowerCaseAddresses(poolData.tokens),
+        underlyingTokens: poolData.underlyingTokens,
+        basePoolAddress: poolData.basePoolAddress,
+        metaSwapDepositAddress: poolData.metaSwapDepositAddress,
+        isSaddleApproved: poolData.isSaddleApproved,
+        isRemoved: poolData.isRemoved,
+        isGuarded: poolData.isGuarded,
+        isMetaSwap,
+        isPaused,
+        virtualPrice: virtualPrice.isZero()
+          ? BigNumber.from(10).pow(18)
+          : virtualPrice,
+        adminFee: swapStorage.adminFee,
+        swapFee: swapStorage.swapFee,
+        aParameter,
+        tokenBalances,
+        underlyingTokenBalances,
+        lpTokenSupply,
+        miniChefRewardsPid: rewardsPid,
+        isSynthetic,
+      })
+    }
+  })
+
+  return swapInfos
 }
 
-/**
- * WILL NOT BE USED UNTIL POOLS_MAP and TOKENS_MAP have been fully deprecated in other pages
- *
- * This gets the remaining missing fields that's not provided from the PoolData call from the Registry
- * Fields are [
- *  "isPaused",
- *  "isMetaSwap",
- *  "virtualPrice",
- *  "adminFee",
- *  "swapFee",
- *  "aParameter",
- *  "tokenBalances",
- *  "underlyingTokenBalances",
- *  "lpTokenSupply",
- * ]
- *
- *
- * @param library
- * @param chainId
- * @param pool
- * @returns
- */
-export async function getSwapInfosWithRegistryPoolsData(
-  library: Web3Provider,
-  chainId: ChainId,
-  ethCallProvider: MulticallProvider,
-  poolRegistryMultiCall: MulticallContract<PoolRegistry>,
-  pools: RegistryPoolData[],
-): Promise<SwapInfo | null> {
-  // for (let i = 0; i < poolCount; i++) {
-  // const {
-  //   poolAddress,
-  //   lpToken,
-  //   typeOfAsset,
-  //   poolName,
-  //   targetAddress,
-  //   tokens,
-  //   underlyingTokens,
-  //   basePoolAddress,
-  //   metaSwapDepositAddress,
-  //   isSaddleApproved,
-  //   isRemoved,
-  //   isGuarded,
-  // } = await poolRegistry.getPoolDataAtIndex(i)
-
-  //   const parsedPoolName = utils.parseBytes32String(poolName)
-  //   if (!parsedPoolName.includes("outdated")) {
-  //     registryPools.push({
-  //       typeOfAsset,
-  //       poolName: parsedPoolName,
-  //       targetAddress: targetAddress.toLowerCase(),
-  //       tokens: lowerCaseAddresses(tokens),
-  //       underlyingTokens: lowerCaseAddresses(underlyingTokens),
-  //       basePoolAddress: basePoolAddress.toLowerCase(),
-  //       metaSwapDepositAddress: metaSwapDepositAddress.toLowerCase(),
-  //       isSaddleApproved,
-  //       isRemoved,
-  //       isGuarded,
-  //       poolAddress: poolAddress.toLowerCase(),
-  //       lpToken: lpToken.toLowerCase(),
-  //       isPaused,
-  //       isMetaSwap,
-  //       virtualPrice: virtualPrice.isZero()
-  //         ? BigNumber.from(10).pow(18)
-  //         : virtualPrice,
-  //       adminFee,
-  //       swapFee,
-  //       aParameter,
-  //       tokenBalances,
-  //       underlyingTokenBalances,
-  //       lpTokenSupply: Zero,
-  //       miniChefRewardsPid,
-  //       isSynthetic,
-  //     })
-  //   }
-  // }
-
-  // return registryPools.filter(Boolean) as SwapInfo[]
-  try {
-    const poolAddresses: string[] = pools.map((pool) => {})
-    const lpTokenContract = createMultiCallContract<Erc20>(
-      pool.lpToken,
-      ERC20_ABI,
-    )
-    const isMetaSwap = isAddressZero(pool.metaSwapDepositAddress)
-    const poolMetaSwapInfoMultiCalls = []
-
-    const poolMetaSwapInfoPromise = await ethCallProvider.all(
-      poolMetaSwapInfoMultiCalls,
-    )
-
-    const tokens = pool.tokens
-    // const isMetaSwap = isAddressZero(pool.metaSwapDepositAddress)
-    const isSynthetic = (pool.tokens || pool.underlyingTokens).some((addr) =>
-      isSynthAsset(chainId, addr),
-    )
-    const miniChefRewardsPid = getMinichefPid(chainId, pool.poolAddress)
-    // const isPaused = await poolRegistry.getPaused(poolAddress)
-    // const { adminFee, swapFee } = await poolRegistry.getSwapStorage(poolAddress)
-    // const aParameter = await poolRegistry.getA(poolAddress)
-    // const tokenBalances = await poolRegistry.getTokenBalances(poolAddress)
-    // const underlyingTokenBalances =
-    //   await poolRegistry.getUnderlyingTokenBalances(poolAddress)
-    // const virtualPrice = await poolRegistry.getVirtualPrice(poolAddress)
-
-    const rewardsPid = getMinichefPid(chainId, pool.poolAddress)
-
-    //
-    const { adminFee, swapFee } = swapStorage
-    // const [lpTokenSupply, ...tokenBalances] = await ethCallProvider.all([
-    //   lpTokenContract.totalSupply(),
-    //   ...tokens.map((_, i) => swapContractMulticall.getTokenBalance(i)),
-    // ])
-
-    const data = {
-      ...pool,
-      isPaused,
-      isMetaSwap,
-      adminFee,
-      swapFee,
-      aParameter,
-      tokenBalances,
-      underlyingTokenBalances: null,
-      virtualPrice: virtualPrice.isZero()
-        ? BigNumber.from(10).pow(18)
-        : virtualPrice,
-      lpTokenSupply,
-      miniChefRewardsPid: rewardsPid,
-      isSynthetic,
-    }
-
-    if (!isMetaSwap) {
-      data.underlyingTokens = null
-      data.basePoolAddress = null
-      data.metaSwapDepositAddress = null
-      data.underlyingTokenBalances = null
-    }
-
-    return isMetaSwap
-      ? (data as unknown as MetaSwapInfo) // TODO can we be more sure of this?
-      : (data as NonMetaSwapInfo)
-  } catch (e) {
-    const error = new Error(
-      `Unable to getSwapInfoWithRegistryPoolData for ${pool.poolName}\n${
-        (e as Error).message
-      }`,
-    )
-    error.stack = (e as Error).stack
-    console.error(error)
-    return null
-  }
-}
-
-/**
- * Get all info about pools that can be read on chain.
- * Excludes price data and user data.
- * Will be replaced with registry.
- */
 /**
  * Get all info about pools that can be read on chain.
  * Excludes price data and user data.
@@ -471,7 +375,7 @@ export async function getSwapInfo(
       ? POOLS_MAP[pool.underlyingPool].addresses[chainId]?.toLowerCase()
       : null
     const typeOfAsset = pool.type
-    const isSynthetic = (tokens.length || underlyingTokens || []).some((addr) =>
+    const isSynthetic = (tokens || underlyingTokens || []).some((addr) =>
       isSynthAsset(chainId, addr),
     )
 
