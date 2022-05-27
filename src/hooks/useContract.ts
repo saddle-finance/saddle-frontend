@@ -1,6 +1,7 @@
 import {
   BRIDGE_CONTRACT_ADDRESSES,
   BTC_POOL_NAME,
+  FEE_DISTRIBUTOR_ADDRESSES,
   GAUGE_CONTROLLER_ADDRESSES,
   GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES,
   MASTER_REGISTRY_CONTRACT_ADDRESSES,
@@ -13,7 +14,6 @@ import {
   Token,
   VOTING_ESCROW_CONTRACT_ADDRESS,
 } from "../constants"
-
 import { getContract, getSwapContract } from "../utils"
 import { useContext, useEffect, useMemo, useState } from "react"
 
@@ -24,6 +24,8 @@ import { Bridge } from "../../types/ethers-contracts/Bridge"
 import { Contract } from "@ethersproject/contracts"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
+import FEE_DISTRIBUTOR_ABI from "../constants/abis/feeDistributor.json"
+import { FeeDistributor } from "../../types/ethers-contracts/FeeDistributor"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
 import GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI from "../constants/abis/generalizedSwapMigrator.json"
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
@@ -342,4 +344,12 @@ export const useVotingEscrowContract = (): VotingEscrow => {
     contractAddress,
     VOTING_ESCROW_CONTRACT_ABI,
   ) as VotingEscrow
+}
+
+export const useFeeDistributor = (): FeeDistributor => {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress = chainId
+    ? FEE_DISTRIBUTOR_ADDRESSES[chainId]
+    : undefined
+  return useContract(contractAddress, FEE_DISTRIBUTOR_ABI) as FeeDistributor
 }
