@@ -48,6 +48,7 @@ import { RetroactiveVesting } from "../../types/ethers-contracts/RetroactiveVest
 import SDL_TOKEN_ABI from "../constants/abis/sdl.json"
 import SYNTHETIX_EXCHANGE_RATE_CONTRACT_ABI from "../constants/abis/synthetixExchangeRate.json"
 import SYNTHETIX_NETWORK_TOKEN_CONTRACT_ABI from "../constants/abis/synthetixNetworkToken.json"
+import { Sdl } from "../../types/ethers-contracts/Sdl"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
@@ -334,10 +335,10 @@ export function useGaugeControllerContract(): GaugeController | null {
   return useContract(contractAddress, GAUGE_CONTROLLER_ABI) as GaugeController
 }
 
-export const useSdlContract = (): Erc20 => {
+export const useSdlContract = (): Sdl => {
   const { chainId } = useActiveWeb3React()
   const contractAddress = chainId ? SDL_TOKEN_ADDRESSES[chainId] : undefined
-  return useContract(contractAddress, SDL_TOKEN_ABI) as Erc20
+  return useContract(contractAddress, SDL_TOKEN_ABI) as Sdl
 }
 
 export const useVotingEscrowContract = (): VotingEscrow => {

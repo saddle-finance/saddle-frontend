@@ -1841,7 +1841,13 @@ export const SYNTH_TRACKING_ID =
 export const IS_VIRTUAL_SWAP_ACTIVE = true
 export const IS_L2_SUPPORTED = true
 export const IS_SDL_LIVE = true
+export const IS_VESDL_LIVE = false
 // FLAGS END
 
 // Regex for readable decimal number
 export const readableDecimalNumberRegex = /^[0-9]*[.,]?[0-9]*$/
+
+// Numbers and durations
+export const BN_1E18 = BigNumber.from(10).pow(18)
+export const BN_DAY_IN_SECONDS = BigNumber.from(24 * 60 * 60)
+export const BN_YEAR_IN_SECONDS = BN_DAY_IN_SECONDS.mul(365)
