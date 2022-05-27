@@ -1,5 +1,5 @@
 import { Box, Button, Paper, Stack, Typography } from "@mui/material"
-import { ChainId, IS_SDL_LIVE } from "../constants"
+import { ChainId, IS_SDL_LIVE, IS_VESDL_LIVE } from "../constants"
 import React, { ReactElement, useCallback, useContext } from "react"
 import { commify, formatBNToString } from "../utils"
 
@@ -75,13 +75,11 @@ export default function MyFarm({
     })
   }, [account, chainId, liquidityGaugeContract, lpTokenContract, poolName])
 
-  const veSDLFeatureReady = false
-
   return isPoolIncentivized && IS_SDL_LIVE ? (
     <Paper sx={{ flex: 1 }}>
       <Stack spacing={2} p={4}>
         <Typography variant="h1">
-          {veSDLFeatureReady ? t("myGaugeFarm") : t("myFarm")}
+          {IS_VESDL_LIVE ? t("myGaugeFarm") : t("myFarm")}
         </Typography>
         <Box display="flex" alignItems="center">
           <Box flex={1}>
@@ -97,7 +95,7 @@ export default function MyFarm({
               fullWidth
               disabled={lpWalletBalance.isZero()}
               onClick={
-                veSDLFeatureReady
+                IS_VESDL_LIVE
                   ? onStakeClick
                   : () => approveAndStake(lpWalletBalance)
               }
@@ -110,7 +108,7 @@ export default function MyFarm({
           <Box flex={1}>
             <Typography>{t("lpStaked")}</Typography>
             <Typography variant="subtitle1">
-              {veSDLFeatureReady
+              {IS_VESDL_LIVE
                 ? formattedLiquidityGaugeLpStakedBalance
                 : formattedLpStakedBalance}
             </Typography>
@@ -121,12 +119,12 @@ export default function MyFarm({
               size="large"
               fullWidth
               disabled={
-                veSDLFeatureReady
+                IS_VESDL_LIVE
                   ? gaugeBalance.isZero()
                   : amountStakedMinichef.isZero()
               }
               onClick={
-                veSDLFeatureReady
+                IS_VESDL_LIVE
                   ? onUnstakeClick
                   : () => unstakeMinichef(amountStakedMinichef)
               }
