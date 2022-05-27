@@ -35,26 +35,37 @@ export default function VeTokenCalculator({
   const { t } = useTranslation()
   const basicPools = useContext(BasicPoolsContext)
   const gaugeData = useContext(GaugeContext)
+  const [userLPAmountInput, setUserLPAmountInput] = useState<string>()
+  const [totalLPAmountInput, setTotalLPAmountInput] = useState<string>()
   const [poolNameValue, setPoolNameValue] = useState<string>("D4")
   const [userVeSdlInputAmount, setUserVeSdlInputAmount] =
     useState<BigNumber>(Zero)
   const pool = basicPools && basicPools[poolNameValue]
   const gauge =
-    !!pool?.poolAddress &&
-    gaugeData.gauges &&
-    gaugeData.gauges[pool.poolAddress]
+    !!pool?.poolAddress && gaugeData.gauges
+      ? gaugeData.gauges[pool.poolAddress]
+      : undefined
 
   const userVeSdlAmount = userVeSdlInputAmount.isZero()
     ? userBalanceVeSdl
     : userVeSdlInputAmount
+  const userLPAmountBN = parseEther(userLPAmountInput || "0")
+  const totalLPAmountBN = parseEther(totalLPAmountInput || "0")
 
-  const userLPAmount = gauge ? gauge.gaugeBalance : Zero
-  const totalLPAmount = gauge ? gauge.gaugeTotalSupply : Zero
+  const userLPAmount =
+    userLPAmountInput === undefined
+      ? gauge?.gaugeBalance || Zero
+      : userLPAmountBN
+  const totalLPAmount =
+    totalLPAmountInput === undefined
+      ? gauge?.gaugeTotalSupply || Zero
+      : totalLPAmountBN
+
   const totalWorkingSupply = gauge ? gauge.workingSupply : Zero
 
   const { boost } = calculateWorkingAmountAndBoost(
-    userLPAmount,
-    totalLPAmount,
+    userLPAmountBN,
+    totalLPAmountBN,
     totalWorkingSupply,
     userVeSdlAmount,
     totalSupplyVeSdl,
@@ -99,11 +110,27 @@ export default function VeTokenCalculator({
 
           <TextField
             label={t("poolLiquidity")}
-            value={formatBNToString(totalLPAmount, 18)}
+            value={userLPAmountInput}
+            onChange={(e) => {
+              if (
+                readableDecimalNumberRegex.test(e.target.value) ||
+                e.target.value === ""
+              ) {
+                setUserLPAmountInput(e.target.value)
+              }
+            }}
           />
           <TextField
             label={t("depositAmount")}
-            value={formatBNToString(userLPAmount, 18)}
+            value={totalLPAmountInput}
+            onChange={(e) => {
+              if (
+                readableDecimalNumberRegex.test(e.target.value) ||
+                e.target.value === ""
+              ) {
+                setTotalLPAmountInput(e.target.value)
+              }
+            }}
           />
           <Typography>
             {t("maxBoost")}: {MAX_BOOST}
