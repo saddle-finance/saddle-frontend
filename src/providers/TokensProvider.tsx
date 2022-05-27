@@ -23,7 +23,7 @@ export type BasicToken = {
   decimals: number
   isLPToken: boolean
   isSynthetic: boolean
-  typeAsset: PoolTypes
+  typeAsset?: PoolTypes
 }
 export type BasicTokens = { [address: string]: BasicToken | undefined } | null
 export const TokensContext = React.createContext<BasicTokens>(null)
@@ -44,7 +44,7 @@ export default function TokensProvider({
       }
       const ethCallProvider = await getMulticallProvider(library, chainId)
       const lpTokens = new Set()
-      let tokenType: Record<string, PoolTypes> = {}
+      const tokenType: { [tokenAddress: string]: PoolTypes | undefined } = {}
       const targetTokenAddresses = new Set(
         (Object.values(pools) as BasicPool[])
           .map((pool) => {
@@ -54,7 +54,7 @@ export default function TokensProvider({
               ...(pool.underlyingTokens || []),
               pool.lpToken,
             ]
-            tokenType = Object.assign(
+            Object.assign(
               tokenType,
               ...tokensInPool.map((address) => ({
                 [address]: pool.typeOfAsset,

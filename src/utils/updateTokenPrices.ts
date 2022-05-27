@@ -1,7 +1,15 @@
-import { ChainId, SPA, TOKENS_MAP, VETH2_SWAP_ADDRESSES } from "../constants"
+import {
+  ChainId,
+  PoolTypes,
+  SPA,
+  TOKENS_MAP,
+  VETH2_SWAP_ADDRESSES,
+} from "../constants"
+import { TokenPricesUSD, updateTokensPricesUSD } from "../state/application"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 
 import { AppDispatch } from "../state"
+import { BasicTokens } from "../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import SWAP_ABI from "../constants/abis/swapFlashLoan.json"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
@@ -9,7 +17,6 @@ import { Web3Provider } from "@ethersproject/providers"
 import { chunk } from "lodash"
 import { getContract } from "./index"
 import retry from "async-retry"
-import { updateTokensPricesUSD } from "../state/application"
 
 const coinGeckoAPI = "https://api.coingecko.com/api/v3/simple/price"
 
@@ -51,9 +58,7 @@ export default function fetchTokenPricesUSD(
         tokenIds.join(","),
       )}&vs_currencies=usd
     `)
-        .then((res) => {
-          return res.json()
-        })
+        .then((res) => res.json())
         .then(async (body: CoinGeckoReponse) => {
           const otherTokensResult = Object.keys(otherTokens).reduce(
             (acc, key) => {
@@ -109,30 +114,90 @@ async function getVeth2Price(
   }
 }
 
-export const getTokenPrice = async (
-  addresses: string[],
-  platform = "ethereum",
-) => {
-  const addressesChunk = chunk(addresses, MAX_ADDRESSES_PER_COINGECKO_REQUEST)
+const BTC_ADDRESS = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
+const ETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+const USDT_ADDRESS = "0xdac17f958d2ee523a2206206994597c13d831ec7"
 
-  const pricesChunked = await Promise.all(
-    addressesChunk.map(async (chunkedAddress) => {
-      try {
-        return await retry(
-          async () => {
-            const result = await fetch(
+export const getTokenPrice = async (
+  tokens: BasicTokens,
+  dispatch: AppDispatch,
+  chainId?: ChainId,
+  library?: Web3Provider,
+) => {
+  console.log("library", library)
+  const tokenAddresses =
+    tokens &&
+    Object.keys(tokens).map((tokenAddress) => {
+      if (chainId === ChainId.HARDHAT) {
+        switch (tokens[tokenAddress]?.typeAsset) {
+          case PoolTypes.BTC:
+            return BTC_ADDRESS
+            break
+          case PoolTypes.ETH:
+            return ETH_ADDRESS
+            break
+          case PoolTypes.USD:
+            return USDT_ADDRESS
+            break
+          default:
+            return ""
+            break
+        }
+      } else {
+        return tokenAddress
+      }
+    })
+  const addressesChunk = chunk(
+    tokenAddresses,
+    MAX_ADDRESSES_PER_COINGECKO_REQUEST,
+  )
+
+  const platform = "ethereum"
+  try {
+    const pricesChunks = await Promise.all(
+      addressesChunk.map((chunkedAddress) =>
+        retry(
+          () =>
+            fetch(
               `https://api.coingecko.com/api/v3/simple/token_price/${platform}?contract_addresses=${chunkedAddress.join(
                 ",",
               )}&vs_currencies=usd`,
             )
-            return (await result.json()) as CoinGeckoReponse
-          },
+              .then((res) => res.json())
+              .then((prices: CoinGeckoReponse) =>
+                arrayToHashmap(
+                  Array.from(
+                    Object.entries(prices).map(
+                      ([address, { usd: usdPrice }]) => [
+                        address.toLocaleLowerCase(),
+                        usdPrice,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
           { retries: 3 },
-        )
-      } catch (error) {
-        console.error("Error on fetching price from coingeoco ==>", error)
-      }
-    }),
-  )
-  console.log(pricesChunked)
+        ),
+      ),
+    )
+    const mergedPrices = Object.assign({}, ...pricesChunks) as Record<
+      string,
+      number
+    >
+    const tokenPriceUSD = Object.assign(
+      {},
+      ...Object.keys(tokens)?.map((address) => ({
+        [address]: mergedPrices[address],
+      })),
+    ) as TokenPricesUSD
+    dispatch(updateTokensPricesUSD(tokenPriceUSD))
+  } catch (error) {
+    console.error("Error on fetching price from coingecko ==>", error)
+  }
 }
+
+const arrayToHashmap = (array: (string | number)[][]) =>
+  Object.assign({}, ...array.map(([key, val]) => ({ [key]: val }))) as Record<
+    string,
+    number
+  >
