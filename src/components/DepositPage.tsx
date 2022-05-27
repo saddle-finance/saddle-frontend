@@ -1,5 +1,6 @@
 import {
   ALETH_POOL_NAME,
+  IS_VESDL_LIVE,
   TBTC_METAPOOL_V2_NAME,
   VETH2_POOL_NAME,
   isMetaPool,
@@ -149,8 +150,6 @@ const DepositPage = (props: Props): ReactElement => {
     }
   }
 
-  const veSDLFeatureReady = false // TODO: delete after release.
-
   return (
     <Container maxWidth={isLgDown ? "sm" : "lg"} sx={{ pt: 5, pb: 10 }}>
       {poolData?.name === VETH2_POOL_NAME &&
@@ -176,7 +175,7 @@ const DepositPage = (props: Props): ReactElement => {
           </Typography>
         </Alert>
       )}
-      {veSDLFeatureReady && amountStakedMinichef.gt(Zero) && (
+      {IS_VESDL_LIVE && amountStakedMinichef.gt(Zero) && (
         <Alert severity="error" sx={{ mb: 2 }}>
           <Box display="flex" alignItems="center" justifyContent="space-around">
             <Typography>
