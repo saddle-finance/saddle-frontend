@@ -1,49 +1,85 @@
 import { Box, Button, Paper, Stack, Typography } from "@mui/material"
-import { ChainId, IS_SDL_LIVE, PoolName } from "../constants"
-import React, { ReactElement } from "react"
+import { ChainId, IS_SDL_LIVE, IS_VESDL_LIVE } from "../constants"
+import React, { ReactElement, useCallback, useContext } from "react"
 import { commify, formatBNToString } from "../utils"
 
 import { BigNumber } from "@ethersproject/bignumber"
+import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
+import { UserStateContext } from "../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
+import { enqueuePromiseToast } from "./Toastify"
 import { useActiveWeb3React } from "../hooks"
+import { useLPTokenContract } from "../hooks/useContract"
 import { useRewardsHelpers } from "../hooks/useRewardsHelpers"
 import { useTranslation } from "react-i18next"
 
 type Props = {
+  liquidityGaugeContract?: LiquidityGaugeV5 | undefined | null
   lpWalletBalance: BigNumber
   poolName: string
+  gaugeAddress?: string
 }
 export default function MyFarm({
+  liquidityGaugeContract,
   lpWalletBalance,
   poolName,
+  gaugeAddress,
 }: Props): ReactElement | null {
   const {
     approveAndStake,
     claimSPA,
-    unstake,
-    amountStaked,
+    unstakeMinichef,
+    amountStakedMinichef,
     amountOfSpaClaimable,
     isPoolIncentivized,
-  } = useRewardsHelpers(poolName as PoolName)
-  const { chainId } = useActiveWeb3React()
+  } = useRewardsHelpers(poolName)
+  const lpTokenContract = useLPTokenContract(poolName)
+  const userState = useContext(UserStateContext)
+  const gaugeBalance =
+    userState?.gaugeRewards?.[gaugeAddress ?? ""]?.amountStaked || Zero
+  const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
   const formattedLpWalletBalance = commify(
     formatBNToString(lpWalletBalance, 18, 4),
   )
   const formattedLpStakedBalance = commify(
-    formatBNToString(amountStaked, 18, 4),
+    formatBNToString(amountStakedMinichef, 18, 4),
+  )
+  const formattedLiquidityGaugeLpStakedBalance = commify(
+    formatBNToString(gaugeBalance, 18, 4),
   )
   const formattedSpaClaimableBalance = commify(
     formatBNToString(amountOfSpaClaimable, 18, 4),
   )
 
-  const veSDLFeatureReady = false
+  const onUnstakeClick = useCallback(async () => {
+    if (!liquidityGaugeContract || !account || !chainId) return
+    const txn = await liquidityGaugeContract["withdraw(uint256)"](
+      await liquidityGaugeContract.balanceOf(account),
+    )
+    await enqueuePromiseToast(chainId, txn.wait(), "unstake", {
+      poolName,
+    })
+  }, [account, chainId, liquidityGaugeContract, poolName])
+
+  const onStakeClick = useCallback(async () => {
+    if (!liquidityGaugeContract || !lpTokenContract || !account || !chainId)
+      return
+    const txn = await liquidityGaugeContract["deposit(uint256,address,bool)"](
+      await lpTokenContract.balanceOf(account),
+      account,
+      true,
+    )
+    await enqueuePromiseToast(chainId, txn.wait(), "stake", {
+      poolName,
+    })
+  }, [account, chainId, liquidityGaugeContract, lpTokenContract, poolName])
 
   return isPoolIncentivized && IS_SDL_LIVE ? (
     <Paper sx={{ flex: 1 }}>
       <Stack spacing={2} p={4}>
         <Typography variant="h1">
-          {veSDLFeatureReady ? t("myGaugeFarm") : t("myFarm")}
+          {IS_VESDL_LIVE ? t("myGaugeFarm") : t("myFarm")}
         </Typography>
         <Box display="flex" alignItems="center">
           <Box flex={1}>
@@ -58,7 +94,11 @@ export default function MyFarm({
               size="large"
               fullWidth
               disabled={lpWalletBalance.isZero()}
-              onClick={() => approveAndStake(lpWalletBalance)}
+              onClick={
+                IS_VESDL_LIVE
+                  ? onStakeClick
+                  : () => approveAndStake(lpWalletBalance)
+              }
             >
               {t("stakeAll")}
             </Button>
@@ -68,7 +108,9 @@ export default function MyFarm({
           <Box flex={1}>
             <Typography>{t("lpStaked")}</Typography>
             <Typography variant="subtitle1">
-              {formattedLpStakedBalance}
+              {IS_VESDL_LIVE
+                ? formattedLiquidityGaugeLpStakedBalance
+                : formattedLpStakedBalance}
             </Typography>
           </Box>
           <Box flex={1}>
@@ -76,8 +118,16 @@ export default function MyFarm({
               variant="outlined"
               size="large"
               fullWidth
-              disabled={amountStaked.isZero()}
-              onClick={() => unstake(amountStaked)}
+              disabled={
+                IS_VESDL_LIVE
+                  ? gaugeBalance.isZero()
+                  : amountStakedMinichef.isZero()
+              }
+              onClick={
+                IS_VESDL_LIVE
+                  ? onUnstakeClick
+                  : () => unstakeMinichef(amountStakedMinichef)
+              }
             >
               {t("unstakeAll")}
             </Button>

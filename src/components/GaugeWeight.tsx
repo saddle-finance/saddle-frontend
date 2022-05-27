@@ -1,7 +1,7 @@
-import { BasicPool, BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { CircularProgress, useTheme } from "@mui/material"
 import React, { useContext, useRef } from "react"
 
+import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import Highcharts from "highcharts"
 import HighchartsExporting from "highcharts/modules/exporting"
@@ -25,11 +25,11 @@ export default function GaugeWeight({
 }: Props & HighchartsReact.Props): JSX.Element {
   HighchartsExporting(Highcharts)
   const chartComponentRef = useRef<HighchartsReact.RefObject>(null)
-  const pools = useContext(BasicPoolsContext)
+  const basicPools = useContext(BasicPoolsContext)
   const theme = useTheme()
-  if (pools == undefined) return <CircularProgress color="secondary" />
+  if (basicPools == undefined) return <CircularProgress color="secondary" />
 
-  const gaugesInfo = (Object.values(pools) as BasicPool[])
+  const gaugesInfo = Object.values(basicPools)
     .map((pool) => {
       const gaugePoolAddress = pool.poolAddress
       const gauge = gauges[gaugePoolAddress]

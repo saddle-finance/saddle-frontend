@@ -1,4 +1,3 @@
-import { BasicPool, BasicPoolsContext } from "./BasicPoolsProvider"
 import { ChainId, PoolTypes } from "../constants"
 import {
   MulticallCall,
@@ -8,10 +7,10 @@ import {
 import React, { ReactElement, useContext, useEffect, useState } from "react"
 import { getMulticallProvider, isSynthAsset } from "../utils"
 
+import { BasicPoolsContext } from "./BasicPoolsProvider"
 import { Contract } from "ethcall"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
-import { Gauge } from "../utils/gauges"
 import { GaugeContext } from "./GaugeProvider"
 import { MinichefContext } from "./MinichefProvider"
 import { useActiveWeb3React } from "../hooks"
@@ -32,13 +31,13 @@ export default function TokensProvider({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
   const { chainId, library } = useActiveWeb3React()
-  const pools = useContext(BasicPoolsContext)
+  const basicPools = useContext(BasicPoolsContext)
   const minichefData = useContext(MinichefContext)
   const gauges = useContext(GaugeContext)
   const [tokens, setTokens] = useState<BasicTokens>(null)
   useEffect(() => {
     async function fetchTokens() {
-      if (!chainId || !library || !pools) {
+      if (!chainId || !library || !basicPools) {
         setTokens(null)
         return
       }
@@ -46,7 +45,7 @@ export default function TokensProvider({
       const lpTokens = new Set()
       const tokenType: { [tokenAddress: string]: PoolTypes | undefined } = {}
       const targetTokenAddresses = new Set(
-        (Object.values(pools) as BasicPool[])
+        Object.values(basicPools)
           .map((pool) => {
             lpTokens.add(pool.lpToken)
             const tokensInPool = [
@@ -72,7 +71,7 @@ export default function TokensProvider({
       }
       if (gauges.gauges) {
         // add gauge tokens
-        ;(Object.values(gauges.gauges) as Gauge[]).forEach((gauge) => {
+        Object.values(gauges.gauges).forEach((gauge) => {
           gauge.rewards.forEach(({ token }) => {
             targetTokenAddresses.add(token)
           })
@@ -91,7 +90,7 @@ export default function TokensProvider({
       setTokens(tokenInfos)
     }
     void fetchTokens()
-  }, [chainId, library, pools, minichefData, gauges.gauges])
+  }, [chainId, library, basicPools, minichefData, gauges.gauges])
   return (
     <TokensContext.Provider value={tokens}>{children}</TokensContext.Provider>
   )
