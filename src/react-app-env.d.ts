@@ -45,4 +45,7 @@ type ObjectKeys<T> = T extends object
 
 interface ObjectConstructor {
   keys<T>(o: T): ObjectKeys<T>
+  values<T>(o: { [s: string]: T } | ArrayLike<T>): Exclude<T, undefined>[]
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  values(o: {}): any[]
 }

@@ -81,7 +81,7 @@ export default function Transactions(): ReactElement {
   const [transactionList, setTransactionList] = useState<Transaction[]>([])
   const basicPoolsByAddress = useMemo(
     () =>
-      (Object.values(basicPools || {}) as BasicPool[]).reduce(
+      Object.values(basicPools || {}).reduce(
         (acc, basicPool) => ({ ...acc, [basicPool.poolAddress]: basicPool }),
         {} as { [address: string]: BasicPool },
       ),
