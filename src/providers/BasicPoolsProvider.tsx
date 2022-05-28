@@ -119,8 +119,16 @@ export default function BasicPoolsProvider({
         setBasicPools(null)
         return
       }
-      const pools = await getPoolsBaseData(library, chainId)
-      const poolsAddresses = pools.map(({ poolAddress }) => poolAddress)
+      const ethCallProvider = await getMulticallProvider(library, chainId)
+      const pools = await getPoolsDataFromRegistry(
+        chainId,
+        poolRegistry,
+        poolRegistryMultiCall,
+        ethCallProvider,
+      )
+      const poolsAddresses = pools
+        .map(({ poolAddress }) => poolAddress)
+        .filter(Boolean) as string[]
       const migrationData = await getMigrationData(
         library,
         chainId,
@@ -128,11 +136,17 @@ export default function BasicPoolsProvider({
       )
       const result = pools.reduce((acc, pool) => {
         const poolData = { ...pool } as BasicPool
-        poolData.isMigrated = migrationData?.[pool.poolAddress] != null
-        poolData.newPoolAddresss = migrationData?.[pool.poolAddress]
-        return {
-          ...acc,
-          [pool.poolName]: poolData,
+        if (pool.poolAddress && pool.poolName) {
+          poolData.isMigrated = migrationData?.[pool.poolAddress] != null
+          poolData.newPoolAddresss = migrationData?.[pool.poolAddress]
+          return {
+            ...acc,
+            [pool.poolName]: poolData,
+          }
+        } else {
+          return {
+            ...acc,
+          }
         }
       }, {} as BasicPools)
       setBasicPools(result)
@@ -279,7 +293,7 @@ export async function getPoolsDataFromRegistry(
         poolName: parseBytes32String(poolData.poolName),
         targetAddress: poolData.targetAddress,
         tokens: lowerCaseAddresses(poolData.tokens),
-        underlyingTokens: poolData.underlyingTokens,
+        underlyingTokens: lowerCaseAddresses(poolData.underlyingTokens),
         basePoolAddress: poolData.basePoolAddress,
         metaSwapDepositAddress: poolData.metaSwapDepositAddress,
         isSaddleApproved: poolData.isSaddleApproved,
