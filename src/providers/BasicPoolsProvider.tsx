@@ -189,8 +189,6 @@ export async function getPoolsDataFromRegistry(
   >[] = []
   const lpTokenTotalSuppliesMultiCalls: MulticallCall<unknown, BigNumber>[] = []
 
-  console.log({ registryPoolData })
-
   registryPoolData.forEach((poolData) => {
     if (poolData != null) {
       const { lpToken, poolAddress } = poolData
@@ -240,16 +238,6 @@ export async function getPoolsDataFromRegistry(
     ),
     ethCallProvider.tryAll(lpTokenTotalSuppliesMultiCalls),
   ])
-
-  console.log({
-    arePoolsPaused,
-    virtualPrices,
-    swapStorages,
-    aParameters,
-    tokensBalances,
-    underlyingTokensBalances,
-    lpTokensSupplies,
-  })
 
   const swapInfos: DeepNullable<SwapInfo>[] = []
 
