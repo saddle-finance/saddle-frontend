@@ -1338,7 +1338,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "frax-3pool",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.MAINNET]: 11 }),
   },
   [STABLECOIN_POOL_NAME]: {
     name: STABLECOIN_POOL_NAME,
@@ -1637,6 +1637,7 @@ const minichefPids: Partial<Record<ChainId, { [pool: string]: number }>> = {
     [SUSD_META_SWAP_V3_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 9,
     [WCUSD_META_SWAP_V3_DEPOSIT_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 10,
     [WCUSD_META_SWAP_V3_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 10,
+    [FRAX_3_POOL_SWAP_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 11,
   },
   [ChainId.HARDHAT]: {
     [ALETH_SWAP_ADDRESSES[ChainId.HARDHAT].toLowerCase()]: 1,
