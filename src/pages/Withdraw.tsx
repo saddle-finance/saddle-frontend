@@ -45,6 +45,7 @@ function Withdraw({ poolName }: Props): ReactElement {
   const withdrawTokens = poolData.isMetaSwap
     ? poolData.underlyingTokens
     : poolData.tokens
+
   const tokenInputSum = useMemo(() => {
     return withdrawTokens.reduce(
       (sum, { address }) =>
@@ -173,7 +174,7 @@ function Withdraw({ poolName }: Props): ReactElement {
         ),
         symbol,
       })
-      if (tokenPricesUSD != null) {
+      if (tokenPricesUSD && tokenPricesUSD[symbol]) {
         reviewWithdrawData.rates.push({
           name,
           value: formatUnits(
