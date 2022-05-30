@@ -35,6 +35,7 @@ export default function UserStateProvider({
   const { chainId, library, account } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
+
   const gauges = useContext(GaugeContext)
   const [userState, setUserState] = useState<UserState>(null)
   const fetchState = useCallback(() => {

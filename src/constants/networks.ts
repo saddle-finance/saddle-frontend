@@ -30,6 +30,7 @@ type SupportedNetworks = {
   [chainId in ChainId]?: {
     chainId: string
     chainName: string
+    coingeckoPlatformID: string
     nativeCurrency: {
       name: string
       symbol: string
@@ -45,6 +46,7 @@ export const SUPPORTED_NETWORKS: SupportedNetworks = {
   [ChainId.MAINNET]: {
     chainId: "0x1",
     chainName: "Ethereum",
+    coingeckoPlatformID: "ethereum",
     nativeCurrency: {
       name: "Ethereum",
       symbol: "ETH",
@@ -56,6 +58,7 @@ export const SUPPORTED_NETWORKS: SupportedNetworks = {
   [ChainId.ARBITRUM]: {
     chainId: "0xA4B1",
     chainName: "Arbitrum",
+    coingeckoPlatformID: "arbitrum-one",
     nativeCurrency: {
       name: "Ethereum",
       symbol: "ETH",
@@ -67,6 +70,7 @@ export const SUPPORTED_NETWORKS: SupportedNetworks = {
   [ChainId.OPTIMISM]: {
     chainId: "0xA",
     chainName: "Optimism",
+    coingeckoPlatformID: "optimistic-ethereum",
     nativeCurrency: {
       name: "Ethereum",
       symbol: "ETH",
@@ -78,6 +82,7 @@ export const SUPPORTED_NETWORKS: SupportedNetworks = {
   [ChainId.FANTOM]: {
     chainId: "0xFA",
     chainName: "Fantom",
+    coingeckoPlatformID: "fantom",
     nativeCurrency: {
       name: "Fantom",
       symbol: "FTM",
@@ -89,6 +94,7 @@ export const SUPPORTED_NETWORKS: SupportedNetworks = {
   [ChainId.EVMOS]: {
     chainId: hexlify(9001),
     chainName: "Evmos",
+    coingeckoPlatformID: "evmos",
     nativeCurrency: {
       name: "Evmos",
       symbol: "EVMOS",
@@ -104,6 +110,7 @@ export const DEV_SUPPORTED_NETWORKS: SupportedNetworks = {
   [ChainId.EVMOS_TESTNET]: {
     chainId: hexlify(9000),
     chainName: "Evmos Testnet",
+    coingeckoPlatformID: "evmos",
     nativeCurrency: {
       name: "Evmos",
       symbol: "tEVMOS",
@@ -115,6 +122,7 @@ export const DEV_SUPPORTED_NETWORKS: SupportedNetworks = {
   [ChainId.KAVA_TESTNET]: {
     chainId: hexlify(2221),
     chainName: "Kava Testnet",
+    coingeckoPlatformID: "kava",
     nativeCurrency: {
       name: "Kava",
       symbol: "KAVA",
