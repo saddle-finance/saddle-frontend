@@ -174,6 +174,7 @@ function Withdraw({ poolName }: Props): ReactElement {
         ),
         symbol,
       })
+      console.log("token price usd ==>", tokenPricesUSD)
       if (tokenPricesUSD && tokenPricesUSD[symbol]) {
         reviewWithdrawData.rates.push({
           name,
