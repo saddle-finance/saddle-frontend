@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material"
 import { BasicPool, BasicPoolsContext } from "../providers/BasicPoolsProvider"
-import { ChainId, SDL_TOKEN } from "../constants"
+import { ChainId, IS_VESDL_LIVE, SDL_TOKEN } from "../constants"
 import React, {
   ReactElement,
   useCallback,
@@ -67,10 +67,10 @@ export default function TokenClaimDialog({
   >(() => {
     return Object.values(basicPools || {})
       .map((pool) => {
-        const gauge = gaugeData.gauges[pool?.poolAddress || ""]
+        const gauge = gaugeData.gauges[pool.poolAddress]
         if (!gauge) return null
         return {
-          poolName: pool?.poolName ?? "",
+          poolName: pool.poolName,
           address: gauge.address,
           rewards: gauge.rewards,
         }
@@ -131,8 +131,6 @@ export default function TokenClaimDialog({
     })
     return [allPoolsWithRewards, poolsWithUserRewards]
   }, [basicPools, rewardBalances])
-
-  const isVeSdlEnabled = false
 
   return (
     <Dialog
@@ -210,9 +208,7 @@ export default function TokenClaimDialog({
               </Typography>
 
               {Boolean(
-                isVeSdlEnabled
-                  ? gaugesWithPoolName.length
-                  : allPoolsWithRewards,
+                IS_VESDL_LIVE ? gaugesWithPoolName.length : allPoolsWithRewards,
               ) && <div style={{ height: "32px" }} />}
             </>
           )}
@@ -233,7 +229,7 @@ export default function TokenClaimDialog({
               </Trans>
             </Typography>
           )}
-          {!isVeSdlEnabled
+          {!IS_VESDL_LIVE && chainId === ChainId.MAINNET
             ? allPoolsWithRewards.map((pool, i, arr) => (
                 <React.Fragment key={pool.poolName}>
                   <ClaimListItem
@@ -256,12 +252,12 @@ export default function TokenClaimDialog({
                   userClaimableSdl?.gt(Zero) && (
                     <React.Fragment key={gauge?.poolName}>
                       <ClaimListItem
-                        title={gauge?.poolName || ""}
+                        title={gauge?.poolName ?? ""}
                         amount={userClaimableSdl ?? Zero}
                         claimCallback={() => claimGaugeReward(gauge)}
                         status={
                           claimsStatuses["allGauges"] ||
-                          claimsStatuses[gauge?.poolName || ""]
+                          claimsStatuses[gauge?.poolName ?? ""]
                         }
                       />
                       {i < arr.length - 1 && <Divider key={i} />}
@@ -287,7 +283,7 @@ export default function TokenClaimDialog({
         </Typography>
 
         {/* TODO: Follow up potentially P1 for gauges */}
-        {!isVeSdlEnabled && (
+        {!IS_VESDL_LIVE && (
           <Button
             variant="contained"
             color="primary"
@@ -396,14 +392,14 @@ function useRewardClaims() {
   const claimGaugeReward = useCallback(
     async (
       gauge: {
-        poolName: string | undefined
+        poolName: string
         address: string
         rewards: GaugeReward[]
       } | null,
     ) => {
       if (!chainId || !account || !minterContract || !library || !gauge) return
       try {
-        updateClaimStatus(gauge?.poolName ?? "", STATUSES.PENDING)
+        updateClaimStatus(gauge.poolName, STATUSES.PENDING)
         const claimPromises = []
         if (gauge.rewards.length > 0 && gauge.address) {
           const liquidityGaugeContract = getContract(
@@ -424,10 +420,10 @@ function useRewardClaims() {
           "claim",
           { poolName: gauge.poolName },
         )
-        updateClaimStatus(gauge?.poolName ?? "", STATUSES.SUCCESS)
+        updateClaimStatus(gauge.poolName, STATUSES.SUCCESS)
       } catch (e) {
         console.error(e)
-        updateClaimStatus(gauge?.poolName ?? "", STATUSES.ERROR)
+        updateClaimStatus(gauge.poolName, STATUSES.ERROR)
         enqueueToast("error", "Unable to claim reward")
       }
     },
