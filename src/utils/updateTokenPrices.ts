@@ -1,5 +1,9 @@
 import { BasicToken, BasicTokens } from "../providers/TokensProvider"
 import {
+  COINGECKO_PLATFORM_ID,
+  SUPPORTED_NETWORKS,
+} from "../constants/networks"
+import {
   ChainId,
   PoolTypes,
   SPA,
@@ -12,7 +16,6 @@ import { formatUnits, parseUnits } from "@ethersproject/units"
 
 import { AppDispatch } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
-import { SUPPORTED_NETWORKS } from "../constants/networks"
 import SWAP_ABI from "../constants/abis/swapFlashLoan.json"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { Web3Provider } from "@ethersproject/providers"
@@ -123,7 +126,7 @@ export const getTokenPrice = async (
 ): Promise<void> => {
   if (!tokens) return
   const tokenAddresses = Object.keys(tokens)
-  const platform = SUPPORTED_NETWORKS[chainId]?.coingeckoPlatformID
+  const platform = COINGECKO_PLATFORM_ID[chainId]
   const addressesChunk = chunk(
     tokenAddresses,
     MAX_ADDRESSES_PER_COINGECKO_REQUEST,
