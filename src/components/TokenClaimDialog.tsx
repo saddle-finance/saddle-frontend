@@ -381,7 +381,7 @@ function useRewardClaims() {
         })
         updateClaimStatus(pool.poolName, STATUSES.SUCCESS)
       } catch (e) {
-        console.error(e)
+        console.error(e, "ok")
         updateClaimStatus(pool.poolName, STATUSES.ERROR)
         enqueueToast("error", "Unable to claim reward")
       }
