@@ -1,4 +1,17 @@
-import { ChainId, SPA, TOKENS_MAP, VETH2_SWAP_ADDRESSES } from "../constants"
+import { BasicToken, BasicTokens } from "../providers/TokensProvider"
+import {
+  COINGECKO_PLATFORM_ID,
+  SUPPORTED_NETWORKS,
+} from "../constants/networks"
+import {
+  ChainId,
+  PoolTypes,
+  SPA,
+  TOKENS_MAP,
+  VETH2_SWAP_ADDRESSES,
+} from "../constants"
+import { TokenPricesUSD, updateTokensPricesUSD } from "../state/application"
+import { arrayToHashmap, getContract } from "./index"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 
 import { AppDispatch } from "../state"
@@ -6,12 +19,14 @@ import { BigNumber } from "@ethersproject/bignumber"
 import SWAP_ABI from "../constants/abis/swapFlashLoan.json"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { Web3Provider } from "@ethersproject/providers"
-import { getContract } from "./index"
+import { chunk } from "lodash"
 import retry from "async-retry"
-import { updateTokensPricesUSD } from "../state/application"
 
 const coinGeckoAPI = "https://api.coingecko.com/api/v3/simple/price"
 
+const nativeTokenID = ["bitcoin", "ethereum"]
+
+const MAX_ADDRESSES_PER_COINGECKO_REQUEST = 30
 interface CoinGeckoReponse {
   [tokenSymbol: string]: {
     usd: number
@@ -101,5 +116,103 @@ async function getVeth2Price(
   } catch (e) {
     console.error(e)
     return etherPrice
+  }
+}
+
+export const getTokenPrice = async (
+  tokens: BasicTokens,
+  dispatch: AppDispatch,
+  chainId: ChainId,
+): Promise<void> => {
+  if (!tokens) return
+  const tokenAddresses = Object.keys(tokens)
+  const platform = COINGECKO_PLATFORM_ID[chainId]
+  const addressesChunk = chunk(
+    tokenAddresses,
+    MAX_ADDRESSES_PER_COINGECKO_REQUEST,
+  )
+  if (SUPPORTED_NETWORKS[chainId] && platform) {
+    try {
+      const pricesChunks = await Promise.all(
+        addressesChunk.map((chunkedAddress) =>
+          retry(
+            () =>
+              fetch(
+                `https://api.coingecko.com/api/v3/simple/token_price/${platform}?contract_addresses=${chunkedAddress.join(
+                  ",",
+                )}&vs_currencies=usd`,
+              )
+                .then((res) => res.json())
+                .then((prices: CoinGeckoReponse) =>
+                  arrayToHashmap(
+                    Array.from(
+                      Object.entries(prices).map(
+                        ([address, { usd: usdPrice }]) => [
+                          (tokens[address] as BasicToken).symbol,
+                          usdPrice,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+            { retries: 3 },
+          ),
+        ),
+      )
+
+      const tokenPricesUSD = Object.assign(
+        {},
+        ...pricesChunks,
+      ) as TokenPricesUSD
+      dispatch(updateTokensPricesUSD(tokenPricesUSD))
+    } catch (error) {
+      console.error("Error on fetching price from coingecko ==>", error)
+    }
+  } else {
+    try {
+      void retry(
+        () =>
+          fetch(`${coinGeckoAPI}?ids=${encodeURIComponent(
+            nativeTokenID.join(","),
+          )}&vs_currencies=usd
+    `)
+            .then((res) => res.json())
+            .then((data: CoinGeckoReponse) => {
+              const nativeTokenPrice = {
+                btc: data.bitcoin.usd,
+                eth: data.ethereum.usd,
+              }
+              const tokenPricesUSD = Object.assign(
+                {},
+                ...Object.keys(tokens).map((tokenAddress) => {
+                  switch (tokens[tokenAddress]?.typeAsset) {
+                    case PoolTypes.BTC:
+                      return {
+                        [(tokens[tokenAddress] as BasicToken).symbol]:
+                          nativeTokenPrice.btc,
+                      }
+                    case PoolTypes.ETH:
+                      return {
+                        [(tokens[tokenAddress] as BasicToken).symbol]:
+                          nativeTokenPrice.eth,
+                      }
+                    case PoolTypes.USD:
+                      return {
+                        [(tokens[tokenAddress] as BasicToken).symbol]: 1,
+                      }
+                    default:
+                      return {
+                        [(tokens[tokenAddress] as BasicToken).symbol]: 100, //100 is fake price for OTHER or "unknown" token
+                      }
+                  }
+                }),
+              ) as TokenPricesUSD
+              dispatch(updateTokensPricesUSD(tokenPricesUSD))
+            }),
+        { retries: 3 },
+      )
+    } catch (error) {
+      console.error("Error on fetching price from coingecko ==>", error)
+    }
   }
 }

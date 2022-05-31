@@ -413,3 +413,10 @@ export function generateSnapshotVoteLink(id?: string): string {
   if (id) return `https://snapshot.org/#/saddlefinance.eth/proposal/${id}`
   return "https://snapshot.org/#/saddlefinance.eth"
 }
+
+export const arrayToHashmap = <K extends string | number, V>(
+  array: [K, V][],
+): { [key: string]: V } =>
+  Object.assign({}, ...array.map(([key, val]) => ({ [key]: val }))) as {
+    [key: string]: V
+  }

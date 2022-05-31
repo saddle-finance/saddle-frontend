@@ -175,6 +175,7 @@ export const MINICHEF_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0x2B0d36FACD61B71CC05ab8F3D2355ec3631C0dd5",
   [ChainId.ARBITRUM]: "0x2069043d7556B1207a505eb459D18d908DF29b55",
   [ChainId.MAINNET]: "0x691ef79e40d909C715BE5e9e93738B3fF7D58534",
+  [ChainId.EVMOS]: "0x0232e0b6df048c8CC4037c52Bc90cf943c9C8cC6",
 })
 
 export const MINTER_ADDRESSES = buildAddresses({
@@ -1343,7 +1344,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "frax-3pool",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.MAINNET]: 11 }),
   },
   [STABLECOIN_POOL_NAME]: {
     name: STABLECOIN_POOL_NAME,
@@ -1642,6 +1643,7 @@ const minichefPids: Partial<Record<ChainId, { [pool: string]: number }>> = {
     [SUSD_META_SWAP_V3_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 9,
     [WCUSD_META_SWAP_V3_DEPOSIT_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 10,
     [WCUSD_META_SWAP_V3_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 10,
+    [FRAX_3_POOL_SWAP_ADDRESSES[ChainId.MAINNET].toLowerCase()]: 11,
   },
   [ChainId.HARDHAT]: {
     [ALETH_SWAP_ADDRESSES[ChainId.HARDHAT].toLowerCase()]: 1,

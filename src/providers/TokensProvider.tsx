@@ -1,3 +1,4 @@
+import { ChainId, PoolTypes } from "../constants"
 import {
   MulticallCall,
   MulticallContract,
@@ -7,7 +8,6 @@ import React, { ReactElement, useContext, useEffect, useState } from "react"
 import { getMulticallProvider, isSynthAsset } from "../utils"
 
 import { BasicPoolsContext } from "./BasicPoolsProvider"
-import { ChainId } from "../constants"
 import { Contract } from "ethcall"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
@@ -22,6 +22,7 @@ export type BasicToken = {
   decimals: number
   isLPToken: boolean
   isSynthetic: boolean
+  typeAsset: PoolTypes
 }
 export type BasicTokens = { [address: string]: BasicToken | undefined } | null
 export const TokensContext = React.createContext<BasicTokens>(null)
@@ -42,15 +43,23 @@ export default function TokensProvider({
       }
       const ethCallProvider = await getMulticallProvider(library, chainId)
       const lpTokens = new Set()
+      const tokenType: { [tokenAddress: string]: PoolTypes | undefined } = {}
       const targetTokenAddresses = new Set(
         Object.values(basicPools)
           .map((pool) => {
             lpTokens.add(pool.lpToken)
-            return [
+            const tokensInPool = [
               ...pool.tokens,
               ...(pool.underlyingTokens || []),
               pool.lpToken,
             ]
+            Object.assign(
+              tokenType,
+              ...tokensInPool.map((address) => ({
+                [address]: pool.typeOfAsset,
+              })),
+            ) as Record<string, PoolTypes>
+            return tokensInPool
           })
           .flat(),
       )
@@ -76,6 +85,8 @@ export default function TokensProvider({
       if (!tokenInfos) return
       Object.keys(tokenInfos).forEach((address) => {
         ;(tokenInfos[address] as BasicToken).isLPToken = lpTokens.has(address)
+        ;(tokenInfos[address] as BasicToken).typeAsset =
+          tokenType[address] ?? PoolTypes.OTHER
       })
       setTokens(tokenInfos)
     }

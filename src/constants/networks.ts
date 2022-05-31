@@ -25,6 +25,17 @@ export const NETWORK_NATIVE_TOKENS: Record<ChainId, string> = {
   [ChainId.KAVA_TESTNET]: "KAVA",
   [ChainId.HARDHAT]: "ETH",
 }
+export const COINGECKO_PLATFORM_ID: Record<ChainId, string | null> = {
+  [ChainId.MAINNET]: "ethereum",
+  [ChainId.ARBITRUM]: "arbitrum-one",
+  [ChainId.OPTIMISM]: "optimistic-ethereum",
+  [ChainId.FANTOM]: "fantom",
+  [ChainId.ROPSTEN]: null,
+  [ChainId.EVMOS]: "evmos",
+  [ChainId.EVMOS_TESTNET]: null,
+  [ChainId.KAVA_TESTNET]: null,
+  [ChainId.HARDHAT]: null,
+}
 
 type SupportedNetworks = {
   [chainId in ChainId]?: {
