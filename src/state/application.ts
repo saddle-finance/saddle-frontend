@@ -7,17 +7,17 @@ interface GasPrices {
   gasFast?: number
   gasInstant?: number
 }
-interface SwapStats {
+type SwapStats = Partial<{
   [swapAddress: string]: {
     oneDayVolume: string
     apy: string
     tvl: string
     utilization: string
   }
-}
-export interface TokenPricesUSD {
+}>
+export type TokenPricesUSD = Partial<{
   [tokenSymbol: string]: number
-}
+}>
 interface LastTransactionTimes {
   [transactionType: string]: number
 }
