@@ -30,6 +30,7 @@ import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
 import GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI from "../constants/abis/generalizedSwapMigrator.json"
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
 import { GeneralizedSwapMigrator } from "../../types/ethers-contracts/GeneralizedSwapMigrator"
+import { IS_VESDL_LIVE } from "./../constants/index"
 import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
@@ -347,10 +348,9 @@ export const useVotingEscrowContract = (): VotingEscrow => {
   ) as VotingEscrow
 }
 
-export const useFeeDistributor = (): FeeDistributor => {
+export const useFeeDistributor = (): FeeDistributor | null => {
   const { chainId } = useActiveWeb3React()
-  const contractAddress = chainId
-    ? FEE_DISTRIBUTOR_ADDRESSES[chainId]
-    : undefined
+  const contractAddress =
+    chainId && IS_VESDL_LIVE ? FEE_DISTRIBUTOR_ADDRESSES[chainId] : undefined
   return useContract(contractAddress, FEE_DISTRIBUTOR_ABI) as FeeDistributor
 }
