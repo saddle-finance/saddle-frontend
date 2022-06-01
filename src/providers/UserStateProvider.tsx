@@ -16,6 +16,7 @@ import { TokensContext } from "./TokensProvider"
 import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
 import { useActiveWeb3React } from "../hooks"
+import { useFeeDistributor } from "../hooks/useContract"
 import usePoller from "../hooks/usePoller"
 
 type UserTokenBalances = { [address: string]: BigNumber }
@@ -23,6 +24,7 @@ type UserState = {
   tokenBalances: UserTokenBalances | null
   minichef: MinichefUserData
   gaugeRewards: GaugeRewardUserData | null
+  feeDistributorRewards: BigNumber
 } | null
 export const UserStateContext = React.createContext<UserState>(null)
 
@@ -37,6 +39,7 @@ export default function UserStateProvider({
   const tokens = useContext(TokensContext)
 
   const gauges = useContext(GaugeContext)
+  const feeDistributorContract = useFeeDistributor()
   const [userState, setUserState] = useState<UserState>(null)
   const fetchState = useCallback(() => {
     async function fetchUserState() {
@@ -65,18 +68,39 @@ export default function UserStateProvider({
           )
         : Promise.resolve(null)
 
-      const [userTokenBalances, minichefData, gaugeRewards] = await Promise.all(
-        [userTokenBalancesPromise, minichefDataPromise, gaugeRewardsPromise],
-      )
+      const feedDistributorRewardsPromise = feeDistributorContract
+        ? feeDistributorContract["claimable(address)"](account)
+        : Promise.resolve(Zero)
+
+      const [
+        userTokenBalances,
+        minichefData,
+        gaugeRewards,
+        feeDistributorRewards,
+      ] = await Promise.all([
+        userTokenBalancesPromise,
+        minichefDataPromise,
+        gaugeRewardsPromise,
+        feedDistributorRewardsPromise,
+      ])
 
       setUserState({
         tokenBalances: userTokenBalances,
         minichef: minichefData,
         gaugeRewards,
+        feeDistributorRewards,
       })
     }
     void fetchUserState()
-  }, [library, chainId, account, basicPools, tokens, gauges.gauges])
+  }, [
+    library,
+    chainId,
+    account,
+    basicPools,
+    tokens,
+    gauges.gauges,
+    feeDistributorContract,
+  ])
   usePoller(fetchState, BLOCK_TIME * 2, [fetchState])
   return (
     <UserStateContext.Provider value={userState}>
