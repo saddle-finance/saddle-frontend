@@ -419,14 +419,34 @@ export function generateSnapshotVoteLink(id?: string): string {
   return "https://snapshot.org/#/saddlefinance.eth"
 }
 
+/**
+ * Lowercase a list of addresses
+ *
+ * @param addresses list of addresses
+ * @returns lower cased list of addresses
+ */
 export function lowerCaseAddresses(addresses: string[]): string[] {
   return addresses.map((address) => address.toLowerCase())
 }
 
+/**
+ * Verify if an address is Address Zero
+ *
+ * @param address address string to be verified
+ * @returns  boolean check
+ */
 export function isAddressZero(address: string | null): boolean {
   return address === AddressZero
 }
 
+/**
+ * Resolve multicall promises in batch sizes
+ *
+ * @param multiCallCalls
+ * @param ethCallProvider
+ * @param batchSize
+ * @returns
+ */
 export async function multicallInBatch<T>(
   multiCallCalls: MulticallCall<unknown, T>[],
   ethCallProvider: MulticallProvider,

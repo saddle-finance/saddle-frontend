@@ -1,5 +1,6 @@
 import {
   ChainId,
+  IS_POOL_REGISTRY_MIGRATION_LIVE,
   POOLS_MAP,
   PoolName,
   PoolTypes,
@@ -56,14 +57,14 @@ type SharedSwapData = {
   lpTokenSupply: BigNumber
   miniChefRewardsPid: number | null
   isSynthetic: boolean
-}
-
-type MetaSwapInfo = SharedSwapData & {
   underlyingTokens: string[]
   basePoolAddress: string
   metaSwapDepositAddress: string
   underlyingTokenBalances: BigNumber[]
-  isMetaSwap: boolean
+}
+
+type MetaSwapInfo = SharedSwapData & {
+  isMetaSwap: true
 }
 
 type NonMetaSwapInfo = SharedSwapData & {
@@ -81,24 +82,6 @@ export type BasicPool = {
   newPoolAddresss?: string
 } & SwapInfo
 export type BasicPools = { [poolName: string]: BasicPool | undefined } | null // indexed by name, which is unique in the Registry
-
-type SwapStorage = [
-  BigNumber,
-  BigNumber,
-  BigNumber,
-  BigNumber,
-  BigNumber,
-  BigNumber,
-  string,
-] & {
-  initialA: BigNumber
-  futureA: BigNumber
-  initialATime: BigNumber
-  futureATime: BigNumber
-  swapFee: BigNumber
-  adminFee: BigNumber
-  lpToken: string
-}
 
 export const BasicPoolsContext = React.createContext<BasicPools>(null)
 
@@ -120,15 +103,15 @@ export default function BasicPoolsProvider({
         return
       }
       const ethCallProvider = await getMulticallProvider(library, chainId)
-      const pools = await getPoolsDataFromRegistry(
-        chainId,
-        poolRegistry,
-        poolRegistryMultiCall,
-        ethCallProvider,
-      )
-      const poolsAddresses = pools
-        .map(({ poolAddress }) => poolAddress)
-        .filter(Boolean) as string[]
+      const pools = IS_POOL_REGISTRY_MIGRATION_LIVE
+        ? await getPoolsDataFromRegistry(
+            chainId,
+            poolRegistry,
+            poolRegistryMultiCall,
+            ethCallProvider,
+          )
+        : await getPoolsBaseData(library, chainId)
+      const poolsAddresses = pools.map(({ poolAddress }) => poolAddress)
       const migrationData = await getMigrationData(
         library,
         chainId,
@@ -182,7 +165,7 @@ export async function getPoolsDataFromRegistry(
   poolRegistry: PoolRegistry,
   poolRegistryMultiCall: MulticallContract<PoolRegistry>,
   ethCallProvider: MulticallProvider,
-): Promise<DeepNullable<SwapInfo>[]> {
+): Promise<SwapInfo[]> {
   const poolCount = (await poolRegistry.getPoolsLength()).toNumber()
   const registryPoolDataMultiCalls = enumerate(poolCount).map((index) =>
     poolRegistryMultiCall.getPoolDataAtIndex(index),
@@ -192,14 +175,22 @@ export async function getPoolsDataFromRegistry(
     registryPoolDataMultiCalls,
   )
 
-  const arePoolsPausedMulticalls: MulticallCall<unknown, boolean>[] = []
-  const virtualPricesMulticalls: MulticallCall<unknown, BigNumber>[] = []
-  const swapStoragesMulticalls: MulticallCall<unknown, SwapStorage>[] = []
-  const aParametersMultiCalls: MulticallCall<unknown, BigNumber>[] = []
-  const tokenBalancesMultiCalls: MulticallCall<unknown, BigNumber[]>[] = []
-  const underlyingTokenBalancesMultiCalls: MulticallCall<
-    unknown,
-    BigNumber[]
+  const arePoolsPausedMulticalls: ReturnType<
+    typeof poolRegistryMultiCall.getPaused
+  >[] = []
+  const virtualPricesMulticalls: ReturnType<
+    typeof poolRegistryMultiCall.getVirtualPrice
+  >[] = []
+  const swapStoragesMulticalls: ReturnType<
+    typeof poolRegistryMultiCall.getSwapStorage
+  >[] = []
+  const aParametersMultiCalls: ReturnType<typeof poolRegistryMultiCall.getA>[] =
+    []
+  const tokenBalancesMultiCalls: ReturnType<
+    typeof poolRegistryMultiCall.getTokenBalances
+  >[] = []
+  const underlyingTokenBalancesMultiCalls: ReturnType<
+    typeof poolRegistryMultiCall.getUnderlyingTokenBalances
   >[] = []
   const lpTokenTotalSuppliesMultiCalls: MulticallCall<unknown, BigNumber>[] = []
 
@@ -253,7 +244,7 @@ export async function getPoolsDataFromRegistry(
     ethCallProvider.tryAll(lpTokenTotalSuppliesMultiCalls),
   ])
 
-  const swapInfos: DeepNullable<SwapInfo>[] = []
+  const swapInfos: SwapInfo[] = []
 
   registryPoolData.forEach((poolData, index) => {
     if (poolData != null) {
@@ -272,7 +263,7 @@ export async function getPoolsDataFromRegistry(
       const swapStorage = swapStorages[index]
       const aParameter = aParameters[index]
       const tokenBalances = tokensBalances[index]
-      const underlyingTokenBalances = underlyingTokensBalances[index]
+      const underlyingTokenBalances = underlyingTokensBalances[index] || []
       const lpTokenSupply = lpTokensSupplies[index]
 
       if (
@@ -286,7 +277,7 @@ export async function getPoolsDataFromRegistry(
         return
       }
 
-      swapInfos.push({
+      const sharedSwapData: SharedSwapData = {
         poolAddress: poolData.poolAddress.toLowerCase(),
         lpToken: poolData.lpToken.toLowerCase(),
         typeOfAsset: poolData.typeOfAsset,
@@ -294,12 +285,11 @@ export async function getPoolsDataFromRegistry(
         targetAddress: poolData.targetAddress,
         tokens: lowerCaseAddresses(poolData.tokens),
         underlyingTokens: lowerCaseAddresses(poolData.underlyingTokens),
-        basePoolAddress: poolData.basePoolAddress,
-        metaSwapDepositAddress: poolData.metaSwapDepositAddress,
+        basePoolAddress: poolData.basePoolAddress.toLowerCase(),
+        metaSwapDepositAddress: poolData.metaSwapDepositAddress.toLowerCase(),
         isSaddleApproved: poolData.isSaddleApproved,
         isRemoved: poolData.isRemoved,
         isGuarded: poolData.isGuarded,
-        isMetaSwap,
         isPaused,
         virtualPrice: virtualPrice.isZero()
           ? BigNumber.from(10).pow(18)
@@ -312,11 +302,31 @@ export async function getPoolsDataFromRegistry(
         lpTokenSupply,
         miniChefRewardsPid: rewardsPid,
         isSynthetic,
-      })
+      }
+      swapInfos.push(buildMetaInfo(sharedSwapData, isMetaSwap))
     }
   })
-
   return swapInfos
+}
+
+function buildMetaInfo(
+  sharedSwapData: DeepNullable<SharedSwapData>,
+  isMetaSwap: boolean,
+): MetaSwapInfo {
+  if (isMetaSwap === false) {
+    return {
+      ...sharedSwapData,
+      isMetaSwap: false,
+      underlyingTokens: null,
+      basePoolAddress: null,
+      metaSwapDepositAddress: null,
+      underlyingTokenBalances: null,
+    } as NonMetaSwapInfo
+  }
+  return {
+    ...sharedSwapData,
+    isMetaSwap: true,
+  } as MetaSwapInfo
 }
 
 /**
