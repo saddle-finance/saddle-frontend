@@ -43,10 +43,10 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
   const basicPool = basicPools[data.name]
   const poolAddress = basicPool?.poolAddress
   if (!poolAddress) return null
-  const { oneDayVolume, utilization } =
-    swapStats && poolAddress in swapStats
-      ? swapStats[poolAddress]
-      : { oneDayVolume: null, utilization: null }
+  const { oneDayVolume, utilization } = swapStats?.[poolAddress] || {
+    oneDayVolume: null,
+    utilization: null,
+  }
   const formattedDecimals = data?.poolType === PoolTypes.USD ? 2 : 4
   const swapFee = data?.swapFee
     ? formatBNToPercentString(data.swapFee, POOL_FEE_PRECISION)

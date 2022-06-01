@@ -24,7 +24,7 @@ export type BasicToken = {
   isSynthetic: boolean
   typeAsset: PoolTypes
 }
-export type BasicTokens = { [address: string]: BasicToken | undefined } | null
+export type BasicTokens = Partial<{ [address: string]: BasicToken }> | null
 export const TokensContext = React.createContext<BasicTokens>(null)
 
 export default function TokensProvider({
@@ -43,7 +43,7 @@ export default function TokensProvider({
       }
       const ethCallProvider = await getMulticallProvider(library, chainId)
       const lpTokens = new Set()
-      const tokenType: { [tokenAddress: string]: PoolTypes | undefined } = {}
+      const tokenType: Partial<{ [tokenAddress: string]: PoolTypes }> = {}
       const targetTokenAddresses = new Set(
         Object.values(basicPools)
           .map((pool) => {
