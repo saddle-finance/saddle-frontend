@@ -37,19 +37,19 @@ export const COINGECKO_PLATFORM_ID: Record<ChainId, string | null> = {
   [ChainId.HARDHAT]: null,
 }
 
-type SupportedNetworks = {
-  [chainId in ChainId]?: {
-    chainId: string
-    chainName: string
-    nativeCurrency: {
-      name: string
-      symbol: string
-      decimals: number
-    }
-    rpcUrls: string[]
-    blockExplorerUrls: string[]
+export type SupportedNetwork = {
+  chainId: string
+  chainName: string
+  nativeCurrency: {
+    name: string
+    symbol: string
+    decimals: number
   }
+  rpcUrls: string[]
+  blockExplorerUrls: string[]
 }
+
+export type SupportedNetworks = Partial<{ [key in ChainId]: SupportedNetwork }>
 
 // refer to https://github.com/sushiswap/sushiswap-interface/blob/canary/src/modals/NetworkModal/index.tsx#L13
 export const SUPPORTED_NETWORKS: SupportedNetworks = {
