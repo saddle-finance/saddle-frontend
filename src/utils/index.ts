@@ -19,6 +19,7 @@ import SWAP_FLASH_LOAN_ABI from "../constants/abis/swapFlashLoan.json"
 import SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI from "../constants/abis/swapFlashLoanNoWithdrawFee.json"
 import SWAP_GUARDED_ABI from "../constants/abis/swapGuarded.json"
 import { SYNTHETIX_TOKENS } from "./../constants/index"
+import { SupportedNetwork } from "../constants/networks"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
@@ -469,4 +470,33 @@ export const calculateWorkingAmountAndBoost = (
       : BigNumber.from(1.0)
 
   return { workingAmount, boost }
+}
+
+export const arrayToHashmap = <K extends string | number, V>(
+  array: [K, V][],
+): { [key: string]: V } =>
+  Object.assign({}, ...array.map(([key, val]) => ({ [key]: val }))) as {
+    [key: string]: V
+  }
+
+/**
+ * Return the strict structure required by the `wallet_addEthereumChain` call
+ */
+export function extractAddEthereumChainArgs(
+  networkObj: SupportedNetwork,
+): SupportedNetwork {
+  const { chainId, chainName, rpcUrls, blockExplorerUrls, nativeCurrency } =
+    networkObj
+  const { name, symbol, decimals } = nativeCurrency
+  return {
+    chainId,
+    chainName,
+    rpcUrls,
+    blockExplorerUrls,
+    nativeCurrency: {
+      name,
+      symbol,
+      decimals,
+    },
+  }
 }

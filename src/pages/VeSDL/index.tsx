@@ -10,7 +10,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material"
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useContext, useEffect, useState } from "react"
+import { commify, formatUnits, parseEther } from "@ethersproject/units"
 import { enUS, zhCN } from "date-fns/locale"
 import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 import {
@@ -19,8 +20,9 @@ import {
   getUnixTime,
   intervalToDuration,
 } from "date-fns"
-import { formatUnits, parseEther } from "@ethersproject/units"
+import { useDispatch, useSelector } from "react-redux"
 import {
+  useFeeDistributor,
   useSdlContract,
   useVotingEscrowContract,
 } from "../../hooks/useContract"
@@ -31,13 +33,16 @@ import { BigNumber } from "ethers"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import GaugeVote from "./GaugeVote"
 import LockedInfo from "./LockedInfo"
+import { TRANSACTION_TYPES } from "../../constants"
 import TokenInput from "../../components/TokenInput"
+import { UserStateContext } from "../../providers/UserStateProvider"
 import VeTokenCalculator from "./VeTokenCalculator"
 import { Zero } from "@ethersproject/constants"
 import checkAndApproveTokenForTrade from "../../utils/checkAndApproveTokenForTrade"
+import { formatBNToString } from "../../utils"
 import { minBigNumber } from "../../utils/minBigNumber"
+import { updateLastTransactionTimes } from "../../state/application"
 import { useActiveWeb3React } from "../../hooks"
-import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
 type TokenType = {
@@ -67,6 +72,9 @@ export default function VeSDL(): JSX.Element {
   const { account, chainId } = useActiveWeb3React()
   const votingEscrowContract = useVotingEscrowContract()
   const sdlContract = useSdlContract()
+  const userState = useContext(UserStateContext)
+  const feeDistributorContract = useFeeDistributor()
+  const dispatch = useDispatch()
 
   const [openCalculator, setOpenCalculator] = useState<boolean>(false)
   const { t, i18n } = useTranslation()
@@ -104,6 +112,7 @@ export default function VeSDL(): JSX.Element {
     setProposedUnlockDate(null)
   }
 
+  const feeDistributorRewards = userState?.feeDistributorRewards
   const currentTimestamp = getUnixTime(new Date())
   const unlockDateOrLockEnd = proposedUnlockDate || lockEnd
   const expireTimestamp =
@@ -134,6 +143,20 @@ export default function VeSDL(): JSX.Element {
           .div(BigNumber.from(MAXTIME)),
       )
     : Zero
+
+  const claimFeeDistributorRewards = useCallback(() => {
+    if (!chainId || !feeDistributorContract) return
+    feeDistributorContract["claim()"]()
+      .then((txn) => {
+        void enqueuePromiseToast(chainId, txn.wait(), "claim")
+        dispatch(
+          updateLastTransactionTimes({
+            [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
+          }),
+        )
+      })
+      .catch(console.error)
+  }, [chainId, feeDistributorContract, dispatch])
 
   const handleLock = async () => {
     const unlockTimeStamp = proposedUnlockDate
@@ -191,6 +214,11 @@ export default function VeSDL(): JSX.Element {
         await txn.wait()
         void enqueuePromiseToast(chainId, txn.wait(), "increaseLockEndTime")
       }
+      dispatch(
+        updateLastTransactionTimes({
+          [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
+        }),
+      )
       void fetchData()
       resetFormState()
     } catch (err) {
@@ -202,6 +230,11 @@ export default function VeSDL(): JSX.Element {
     if (votingEscrowContract && chainId) {
       const txn = await votingEscrowContract?.force_withdraw()
       void enqueuePromiseToast(chainId, txn.wait(), "unlock")
+      dispatch(
+        updateLastTransactionTimes({
+          [TRANSACTION_TYPES.DEPOSIT]: Date.now(),
+        }),
+      )
       void fetchData()
     }
   }
@@ -398,8 +431,18 @@ export default function VeSDL(): JSX.Element {
               alignItems="center"
               gap={2}
             >
-              <Typography>{t("yourSdlFee")}: 200</Typography>
-              <Button variant="contained" size="large">
+              <Typography>
+                {t("yourSdlFee")}:{" "}
+                {commify(
+                  formatBNToString(feeDistributorRewards || Zero, 18, 2),
+                )}
+              </Typography>
+              <Button
+                variant="contained"
+                size="large"
+                disabled={!feeDistributorRewards?.gt(Zero)}
+                onClick={claimFeeDistributorRewards}
+              >
                 {t("claim")}
               </Button>
             </Box>

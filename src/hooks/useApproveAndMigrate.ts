@@ -70,7 +70,6 @@ export function useApproveAndMigrate(): (
 
     const expectedWithdrawAmounts =
       await oldPoolContract?.calculateRemoveLiquidity(lpTokenBalance)
-    console.log(expectedWithdrawAmounts)
     let expectedNewLPTokenBalance: BigNumber = Zero
     try {
       expectedNewLPTokenBalance = expectedWithdrawAmounts
