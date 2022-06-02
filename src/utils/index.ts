@@ -431,45 +431,29 @@ export function generateSnapshotVoteLink(id?: string): string {
 export const calculateWorkingAmountAndBoost = (
   userLPAmount: BigNumber,
   totalLPDeposit: BigNumber,
+  workingBalances: BigNumber,
   totalWorkingSupply: BigNumber,
   userBalanceVeSDL: BigNumber,
   totalSupplyVeSDL: BigNumber,
-): {
-  workingAmount: BigNumber
-  boost: BigNumber
-} => {
-  const minAmount = userLPAmount
+): BigNumber | undefined => {
+  if (totalSupplyVeSDL.isZero()) return
+  let lim = userLPAmount.mul(BigNumber.from(40)).div(BigNumber.from(100))
+  const L = totalLPDeposit.add(userLPAmount)
+  lim = L.mul(userBalanceVeSDL)
+    .div(totalSupplyVeSDL)
+    .mul(BigNumber.from(60))
+    .div(BigNumber.from(100))
+  lim = minBigNumber(userLPAmount, lim)
+
+  const noBoostLim = userLPAmount
     .mul(BigNumber.from(40))
     .div(BigNumber.from(100))
-  let workingAmount = minAmount
+  const noBoostSupply = totalWorkingSupply.add(noBoostLim).sub(workingBalances)
+  const newWorkingSupply = totalWorkingSupply.add(lim).sub(workingBalances)
+  if (newWorkingSupply.mul(noBoostLim).isZero()) return
 
-  // If there are veSDL in the world, calculate the extra boost
-  // Increase in your total share of veSDL will increase the boost
-
-  if (totalSupplyVeSDL.gt(Zero))
-    workingAmount = workingAmount
-      .add(
-        totalLPDeposit
-          .add(userLPAmount)
-          .mul(userBalanceVeSDL)
-          .div(totalSupplyVeSDL),
-      )
-      .mul(BigNumber.from(60))
-      .div(BigNumber.from(100))
-
-  // Clip max boost at userLPAmount
-  workingAmount = minBigNumber(workingAmount, userLPAmount)
-
-  // Compare the difference in ownership of working supply between two cases: with no veSDL and with veSDL boost.
-  const boost =
-    totalWorkingSupply.gt(Zero) &&
-    minAmount.div(totalWorkingSupply.add(minAmount)).gt(Zero)
-      ? workingAmount
-          .div(totalWorkingSupply.add(workingAmount))
-          .div(minAmount.div(totalWorkingSupply.add(minAmount)))
-      : BigNumber.from(1.0)
-
-  return { workingAmount, boost }
+  const boost = lim.mul(noBoostSupply).div(newWorkingSupply.mul(noBoostLim))
+  return boost
 }
 
 export const arrayToHashmap = <K extends string | number, V>(

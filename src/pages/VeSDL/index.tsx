@@ -89,8 +89,8 @@ export default function VeSDL(): JSX.Element {
       const vesdlBal = await votingEscrowContract?.["balanceOf(address)"](
         account,
       )
-      const totalSupply = await votingEscrowContract["totalSupply()"]()
-      setVeSdlTotalSupply(totalSupply)
+      const totalSupply = await votingEscrowContract?.["totalSupply()"]()
+      setVeSdlTotalSupply(totalSupply || Zero)
       setVeSdlTokenVal(vesdlBal || Zero)
 
       const prevLockEnd =

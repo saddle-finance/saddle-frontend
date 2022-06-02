@@ -49,6 +49,7 @@ export default function VeTokenCalculator({
   const userVeSdlAmount = userVeSdlInputAmount.isZero()
     ? userBalanceVeSdl
     : userVeSdlInputAmount
+  console.log("user vesdl ==>", userVeSdlAmount)
   const userLPAmountBN = parseEther(userLPAmountInput || "0")
   const totalLPAmountBN = parseEther(totalLPAmountInput || "0")
 
@@ -61,15 +62,16 @@ export default function VeTokenCalculator({
       ? gauge?.gaugeTotalSupply || Zero
       : totalLPAmountBN
 
-  const totalWorkingSupply = gauge ? gauge.workingSupply : Zero
-
-  const { boost } = calculateWorkingAmountAndBoost(
-    userLPAmountBN,
-    totalLPAmountBN,
-    totalWorkingSupply,
-    userVeSdlAmount,
-    totalSupplyVeSdl,
-  )
+  const boost =
+    gauge &&
+    calculateWorkingAmountAndBoost(
+      userLPAmountBN,
+      gauge.gaugeTotalSupply,
+      gauge.workingBalances,
+      gauge.workingSupply,
+      userVeSdlAmount,
+      totalSupplyVeSdl,
+    )
   const veSdlForMaxBoost =
     totalLPAmount.gt(Zero) &&
     userLPAmount.mul(totalSupplyVeSdl).div(totalLPAmount)
@@ -170,7 +172,7 @@ export default function VeTokenCalculator({
             />
             {t("boost")}:
             <Typography component="span" color="primary" ml={1}>
-              {boost ? formatBNToString(boost, 18) : "1.0x"}
+              {boost && formatBNToString(boost, 18)}
             </Typography>
           </Typography>
         </Stack>

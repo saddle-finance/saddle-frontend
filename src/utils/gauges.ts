@@ -26,6 +26,7 @@ export type Gauge = {
   gaugeWeight: BigNumber
   poolAddress: string
   gaugeRelativeWeight: BigNumber
+  workingBalances: BigNumber
   workingSupply: BigNumber
   rewards: GaugeReward[]
 }
@@ -129,23 +130,30 @@ export async function getGaugeData(
         gaugeContract.balanceOf(account),
       ),
     )
-    const gaugeWorkingSupplyPromise = ethCallProvider.all(
-      gaugeMulticallContracts.map((gaugeContract) =>
-        gaugeContract.working_supply(),
-      ),
-    )
     const gaugeTotalSupplyPromise = ethCallProvider.all(
       gaugeMulticallContracts.map((gaugeContract) =>
         gaugeContract.totalSupply(),
       ),
     )
 
+    const gaugeWorkingSupplyPromise = ethCallProvider.all(
+      gaugeMulticallContracts.map((gaugeContract) =>
+        gaugeContract.working_supply(),
+      ),
+    )
+
+    const gaugeWorkingBalancesPromise = ethCallProvider.all(
+      gaugeMulticallContracts.map((gaugeContract) =>
+        gaugeContract.working_balances(account),
+      ),
+    )
     const [
       gaugeWeights,
       gaugeRelativeWeights,
       gaugeRewards,
       gaugeBalances,
       gaugeWorkingSupplies,
+      gaugeWorkingBalances,
       gaugeTotalSupplies,
     ] = await Promise.all([
       gaugeWeightsPromise,
@@ -153,6 +161,7 @@ export async function getGaugeData(
       gaugeRewardsPromise,
       gaugeBalancePromise,
       gaugeWorkingSupplyPromise,
+      gaugeWorkingBalancesPromise,
       gaugeTotalSupplyPromise,
     ])
 
@@ -167,6 +176,7 @@ export async function getGaugeData(
             gaugeRelativeWeight: gaugeRelativeWeights[index],
             gaugeTotalSupply: gaugeTotalSupplies[index],
             workingSupply: gaugeWorkingSupplies[index],
+            workingBalances: gaugeWorkingBalances[index],
             gaugeBalance: gaugeBalances[index],
             rewards: gaugeRewards[index].map((reward) => ({
               periodFinish: reward.period_finish,
