@@ -2,7 +2,7 @@ import { AddressZero, Zero } from "@ethersproject/constants"
 import { ChainId, PoolTypes, TOKENS_MAP, Token } from "../constants"
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
 import { MulticallContract, MulticallProvider } from "../types/ethcall"
-import { formatUnits, parseUnits } from "@ethersproject/units"
+import { formatUnits, parseEther, parseUnits } from "@ethersproject/units"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "@ethersproject/contracts"
@@ -436,13 +436,18 @@ export const calculateWorkingAmountAndBoost = (
   userBalanceVeSDL: BigNumber,
   totalSupplyVeSDL: BigNumber,
 ): BigNumber | undefined => {
-  if (totalSupplyVeSDL.isZero()) return
+  if (totalSupplyVeSDL.isZero()) return parseEther("1")
+
   let lim = userLPAmount.mul(BigNumber.from(40)).div(BigNumber.from(100))
-  const L = totalLPDeposit.add(userLPAmount)
-  lim = L.mul(userBalanceVeSDL)
-    .div(totalSupplyVeSDL)
-    .mul(BigNumber.from(60))
-    .div(BigNumber.from(100))
+  const newTotalLPDeposit = totalLPDeposit.add(userLPAmount)
+  lim = lim.add(
+    newTotalLPDeposit
+      .mul(userBalanceVeSDL)
+      .div(totalSupplyVeSDL)
+      .mul(BigNumber.from(60))
+      .div(BigNumber.from(100)),
+  )
+
   lim = minBigNumber(userLPAmount, lim)
 
   const noBoostLim = userLPAmount
@@ -450,9 +455,14 @@ export const calculateWorkingAmountAndBoost = (
     .div(BigNumber.from(100))
   const noBoostSupply = totalWorkingSupply.add(noBoostLim).sub(workingBalances)
   const newWorkingSupply = totalWorkingSupply.add(lim).sub(workingBalances)
-  if (newWorkingSupply.mul(noBoostLim).isZero()) return
 
-  const boost = lim.mul(noBoostSupply).div(newWorkingSupply.mul(noBoostLim))
+  if (newWorkingSupply.mul(noBoostLim).isZero()) return parseEther("1")
+
+  const boost = lim
+    .mul(noBoostSupply)
+    .mul(parseEther("1"))
+    .div(newWorkingSupply.mul(noBoostLim))
+
   return boost
 }
 

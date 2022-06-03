@@ -6,7 +6,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material"
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { calculateWorkingAmountAndBoost, formatBNToString } from "../../utils"
 import ArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
 import { BasicPoolsContext } from "../../providers/BasicPoolsProvider"
@@ -14,7 +14,6 @@ import { BigNumber } from "@ethersproject/bignumber"
 import CalculateIcon from "@mui/icons-material/Calculate"
 import Dialog from "../../components/Dialog"
 import { GaugeContext } from "../../providers/GaugeProvider"
-import { Zero } from "@ethersproject/constants"
 import { parseEther } from "@ethersproject/units"
 import { readableDecimalNumberRegex } from "../../constants"
 import { useTranslation } from "react-i18next"
@@ -25,7 +24,7 @@ type Props = {
   userBalanceVeSdl: BigNumber
   totalSupplyVeSdl: BigNumber
 }
-const MAX_BOOST = "2.5"
+
 export default function VeTokenCalculator({
   open,
   onClose,
@@ -35,46 +34,60 @@ export default function VeTokenCalculator({
   const { t } = useTranslation()
   const basicPools = useContext(BasicPoolsContext)
   const gaugeData = useContext(GaugeContext)
-  const [userLPAmountInput, setUserLPAmountInput] = useState<string>()
-  const [totalLPAmountInput, setTotalLPAmountInput] = useState<string>()
+  const [userLPAmountInput, setUserLPAmountInput] = useState<string>("")
+  const [totalLPAmountInput, setTotalLPAmountInput] = useState<string>("")
   const [poolNameValue, setPoolNameValue] = useState<string>("D4")
-  const [userVeSdlInputAmount, setUserVeSdlInputAmount] =
-    useState<BigNumber>(Zero)
+  const [userVeSdlInputAmount, setUserVeSdlInputAmount] = useState<string>(
+    formatBNToString(userBalanceVeSdl, 18),
+  )
+  const [totalVeSDLInput, setTotalVeSDLInput] = useState<string>(
+    formatBNToString(totalSupplyVeSdl, 18),
+  )
+
   const pool = basicPools && basicPools[poolNameValue]
   const gauge =
     !!pool?.poolAddress && gaugeData.gauges
       ? gaugeData.gauges[pool.poolAddress]
       : undefined
 
-  const userVeSdlAmount = userVeSdlInputAmount.isZero()
-    ? userBalanceVeSdl
-    : userVeSdlInputAmount
-  console.log("user vesdl ==>", userVeSdlAmount)
   const userLPAmountBN = parseEther(userLPAmountInput || "0")
   const totalLPAmountBN = parseEther(totalLPAmountInput || "0")
-
-  const userLPAmount =
-    userLPAmountInput === undefined
-      ? gauge?.gaugeBalance || Zero
-      : userLPAmountBN
-  const totalLPAmount =
-    totalLPAmountInput === undefined
-      ? gauge?.gaugeTotalSupply || Zero
-      : totalLPAmountBN
 
   const boost =
     gauge &&
     calculateWorkingAmountAndBoost(
       userLPAmountBN,
-      gauge.gaugeTotalSupply,
+      totalLPAmountBN,
       gauge.workingBalances,
       gauge.workingSupply,
-      userVeSdlAmount,
-      totalSupplyVeSdl,
+      parseEther(userVeSdlInputAmount || "0"),
+      parseEther(totalVeSDLInput || "0"),
     )
-  const veSdlForMaxBoost =
-    totalLPAmount.gt(Zero) &&
-    userLPAmount.mul(totalSupplyVeSdl).div(totalLPAmount)
+
+  const minVeSDL =
+    !totalLPAmountBN.add(userLPAmountBN).isZero() &&
+    parseEther(totalVeSDLInput || "0")
+      .mul(totalLPAmountBN)
+      .div(totalLPAmountBN.add(userLPAmountBN))
+
+  const maxBoostPossible =
+    gauge &&
+    minVeSDL &&
+    calculateWorkingAmountAndBoost(
+      userLPAmountBN,
+      totalLPAmountBN,
+      gauge.workingBalances,
+      gauge.workingSupply,
+      minVeSDL,
+      parseEther(totalVeSDLInput || "0"),
+    )
+
+  useEffect(() => {
+    if (gauge) {
+      setUserLPAmountInput(formatBNToString(gauge.gaugeBalance, 18))
+      setTotalLPAmountInput(formatBNToString(gauge.gaugeTotalSupply, 18))
+    }
+  }, [gauge])
 
   return (
     <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose}>
@@ -85,7 +98,11 @@ export default function VeTokenCalculator({
         <Stack direction="column" spacing={3}>
           <TextField
             label={t("totalVeSdl")}
-            value={formatBNToString(totalSupplyVeSdl, 18)}
+            value={totalVeSDLInput}
+            onChange={(e) =>
+              readableDecimalNumberRegex.test(e.target.value) &&
+              setTotalVeSDLInput(e.target.value)
+            }
             fullWidth
           />
           <Divider />
@@ -135,7 +152,8 @@ export default function VeTokenCalculator({
             }}
           />
           <Typography>
-            {t("maxBoost")}: {MAX_BOOST}
+            {t("maxBoost")}:{" "}
+            {maxBoostPossible && formatBNToString(maxBoostPossible, 18)}
           </Typography>
           <Typography>
             <CalculateIcon
@@ -145,23 +163,18 @@ export default function VeTokenCalculator({
             <Typography component="span" mr={1}>
               {t("veSdlMaxBoost")}:
             </Typography>
-            {veSdlForMaxBoost
-              ? formatBNToString(veSdlForMaxBoost, 18)
+            {minVeSDL
+              ? formatBNToString(minVeSDL, 18)
               : t("minVeSDLForMaxBoost")}
           </Typography>
           <Divider />
           <Typography variant="subtitle1">{t("myBoostCalculator")}</Typography>
           <TextField
             label="My veSDL Amount"
-            value={formatBNToString(
-              userVeSdlInputAmount.isZero()
-                ? userBalanceVeSdl
-                : userVeSdlInputAmount,
-              18,
-            )}
+            value={userVeSdlInputAmount}
             onChange={(e) =>
               readableDecimalNumberRegex.test(e.target.value) &&
-              setUserVeSdlInputAmount(parseEther(e.target.value.trim() || "0"))
+              setUserVeSdlInputAmount(e.target.value)
             }
             fullWidth
           />
