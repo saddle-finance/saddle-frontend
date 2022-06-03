@@ -52,6 +52,7 @@ type TokenType = {
 
 const MAXTIME = 86400 * 365 * 4
 const WEEK = 7
+const THURSDAY = 4
 
 export default function VeSDL(): JSX.Element {
   const [sdlToken, setSDLToken] = useState<TokenType>({
@@ -333,6 +334,7 @@ export default function VeSDL(): JSX.Element {
                 onChange={(date) => setProposedUnlockDate(date)}
                 minDate={lockEnd || new Date()}
                 maxDate={new Date((currentTimestamp + MAXTIME) * 1000)}
+                shouldDisableDate={(date) => date.getDay() !== THURSDAY}
                 renderInput={(props) => (
                   <TextField
                     data-testid="veSdlUnlockData"
