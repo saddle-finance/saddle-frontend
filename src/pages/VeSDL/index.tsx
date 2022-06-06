@@ -43,6 +43,7 @@ import { formatBNToString } from "../../utils"
 import { minBigNumber } from "../../utils/minBigNumber"
 import { updateLastTransactionTimes } from "../../state/application"
 import { useActiveWeb3React } from "../../hooks"
+import { useConfirmModal } from "../../hooks/useConfirmModal"
 import { useTranslation } from "react-i18next"
 
 type TokenType = {
@@ -75,6 +76,7 @@ export default function VeSDL(): JSX.Element {
   const userState = useContext(UserStateContext)
   const feeDistributorContract = useFeeDistributor()
   const dispatch = useDispatch()
+  const { enqueueConfirmModal } = useConfirmModal()
 
   const [openCalculator, setOpenCalculator] = useState<boolean>(false)
   const { t, i18n } = useTranslation()
@@ -223,16 +225,23 @@ export default function VeSDL(): JSX.Element {
     }
   }
 
-  const handleUnlock = async () => {
+  const handleUnlock = () => {
     if (votingEscrowContract && chainId) {
-      const txn = await votingEscrowContract?.force_withdraw()
-      void enqueuePromiseToast(chainId, txn.wait(), "unlock")
-      dispatch(
-        updateLastTransactionTimes({
-          [TRANSACTION_TYPES.DEPOSIT]: Date.now(),
-        }),
-      )
-      void fetchData()
+      enqueueConfirmModal({
+        options: {
+          modalText: t("confirmUnlock"),
+          onOK: async () => {
+            const txn = await votingEscrowContract?.force_withdraw()
+            void enqueuePromiseToast(chainId, txn.wait(), "unlock")
+            dispatch(
+              updateLastTransactionTimes({
+                [TRANSACTION_TYPES.DEPOSIT]: Date.now(),
+              }),
+            )
+            void fetchData()
+          },
+        },
+      })
     }
   }
 
