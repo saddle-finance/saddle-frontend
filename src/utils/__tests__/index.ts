@@ -16,7 +16,7 @@ import {
   getTokenSymbolForPoolType,
   intersection,
   isAddressZero,
-  lowerCaseAddresses,
+  mapToLowerCase,
 } from "../index"
 
 import { BigNumber } from "@ethersproject/bignumber"
@@ -246,8 +246,8 @@ describe("generateSnapshotVoteLink", () => {
   })
 })
 
-describe("lowerCaseAddresses", () => {
-  it("correctly lower case a list of addresses", () => {
+describe("mapToLowerCase", () => {
+  it("correctly lower case a list of strings", () => {
     const addresses = [
       "0x9AA75e03e93f69E1F399ddeD0dA5fFCbE914D099",
       "0xA4fe4981f7550884E7E6224F0c78245DC145b2F2",
@@ -260,7 +260,7 @@ describe("lowerCaseAddresses", () => {
       "0xbc22b8e74e7fe2e217b295f4a3e1a9e8e182becd",
     ]
 
-    expect(lowerCaseAddresses(addresses)).toEqual(expectedAddresses)
+    expect(mapToLowerCase(addresses)).toEqual(expectedAddresses)
   })
 })
 

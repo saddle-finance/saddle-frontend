@@ -420,13 +420,13 @@ export function generateSnapshotVoteLink(id?: string): string {
 }
 
 /**
- * Lowercase a list of addresses
+ * Lowercase a list of strings
  *
- * @param addresses list of addresses
- * @returns lower cased list of addresses
+ * @param strings list of strings
+ * @returns lower cased list of strings
  */
-export function lowerCaseAddresses(addresses: string[]): string[] {
-  return addresses.map((address) => address.toLowerCase())
+export function mapToLowerCase(strings: string[]): string[] {
+  return strings.map((address) => address.toLowerCase())
 }
 
 /**
@@ -440,22 +440,22 @@ export function isAddressZero(address: string | null): boolean {
 }
 
 /**
- * Resolve multicall promises in batch sizes
+ * Resolve multicall promises in chunks
  *
  * @param multiCallCalls
  * @param ethCallProvider
- * @param batchSize
+ * @param chunkSize
  * @returns
  */
-export async function multicallInBatch<T>(
+export async function chunkedTryAll<T>(
   multiCallCalls: MulticallCall<unknown, T>[],
   ethCallProvider: MulticallProvider,
-  batchSize: number,
+  chunkSize: number,
 ): Promise<(T | null)[]> {
-  const multiCallCallsBatch = chunk(multiCallCalls, batchSize).map((batch) =>
+  const multicallCallChunk = chunk(multiCallCalls, chunkSize).map((batch) =>
     ethCallProvider.tryAll(batch),
   )
-  return (await Promise.all(multiCallCallsBatch)).flat()
+  return (await Promise.all(multicallCallChunk)).flat()
 }
 
 export type DeepNullable<T> = {
