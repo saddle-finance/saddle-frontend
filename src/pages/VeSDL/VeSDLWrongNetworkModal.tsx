@@ -22,7 +22,8 @@ export default function VeSDLWrongNetworkModal(): JSX.Element {
     if (chainId) {
       const isValidNetwork =
         chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT
-      setOpenDialog(!isValidNetwork && !!chainName)
+      const networkName = SUPPORTED_NETWORKS[chainId]?.chainName
+      setOpenDialog(!isValidNetwork && !!networkName)
     }
   }, [chainId])
 
