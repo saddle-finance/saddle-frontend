@@ -11,8 +11,6 @@ export default function WrongNetworkModal(): ReactElement {
   const isUnsupportChainIdError = error instanceof UnsupportedChainIdError
   const { t } = useTranslation()
 
-  console.log("error", error?.message)
-
   return (
     <Dialog
       open={open ?? isUnsupportChainIdError}
