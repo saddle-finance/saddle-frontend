@@ -81,7 +81,7 @@ export type BasicPool = {
   isMigrated: boolean
   newPoolAddresss?: string
 } & SwapInfo
-export type BasicPools = { [poolName: string]: BasicPool | undefined } | null // indexed by name, which is unique in the Registry
+export type BasicPools = Partial<{ [poolName: string]: BasicPool }> | null // indexed by name, which is unique in the Registry
 
 export const BasicPoolsContext = React.createContext<BasicPools>(null)
 

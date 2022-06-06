@@ -173,14 +173,16 @@ function Withdraw({ poolName }: Props): ReactElement {
         ),
         symbol,
       })
-      if (tokenPricesUSD != null) {
+      if (tokenPricesUSD?.[symbol] != null) {
+        // null check since price may be 0
+        const tokenPrice = tokenPricesUSD[symbol] as number
         reviewWithdrawData.rates.push({
           name,
           value: formatUnits(
             withdrawFormState.tokenInputs[address]?.valueSafe || "0",
             decimals,
           ),
-          rate: commify(tokenPricesUSD[symbol]?.toFixed(2)), // TODO
+          rate: commify(tokenPrice.toFixed(2)),
         })
       }
     }
