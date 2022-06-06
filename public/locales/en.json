@@ -294,7 +294,7 @@
   "utilization": "Utilization",
   "veSdl": "veSDL",
   "veSdlCalculator": "veSDL calculator",
-  "veSdlNetworkText": "veSDL is available on mainnet! \n Please switch to Ethereum mainnet.",
+  "veSdlNetworkText": "Seems like you are in {{chainName}} network.\n veSDL is available on mainnet! \n Please switch to Ethereum mainnet.",
   "veSdlMaxBoost": "veSDL for Max boost",
   "veSdlUnlock": "veSDL Unlock",
   "veSdlHolderFeeClaim": "veSDL Holder Fee Claim",

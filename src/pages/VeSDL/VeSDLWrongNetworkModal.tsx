@@ -2,6 +2,7 @@ import { Button, DialogContent, Typography } from "@mui/material"
 import React, { useEffect, useState } from "react"
 import { ChainId } from "../../constants"
 import Dialog from "../../components/Dialog"
+import { SUPPORTED_NETWORKS } from "../../constants/networks"
 import { useActiveWeb3React } from "../../hooks"
 import { useTranslation } from "react-i18next"
 
@@ -15,12 +16,13 @@ export default function VeSDLWrongNetworkModal(): JSX.Element {
       account,
     ])
   }
+  const chainName = chainId && SUPPORTED_NETWORKS[chainId]?.chainName
 
   useEffect(() => {
     if (chainId) {
       const isValidNetwork =
         chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT
-      setOpenDialog(!isValidNetwork)
+      setOpenDialog(!isValidNetwork && !!chainName)
     }
   }, [chainId])
 
@@ -28,7 +30,7 @@ export default function VeSDLWrongNetworkModal(): JSX.Element {
     <Dialog open={openDialog} fullWidth onClose={() => setOpenDialog(false)}>
       <DialogContent>
         <Typography textAlign="center" mt={3} whiteSpace="pre-line">
-          {t("veSdlNetworkText")}
+          {t("veSdlNetworkText", { chainName })}
         </Typography>
         <Button
           variant="contained"
