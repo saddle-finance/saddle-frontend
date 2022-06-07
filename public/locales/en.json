@@ -3,7 +3,7 @@
   "approveSpend": "Approve {{tokenName}} spend",
   "available": "Available",
   "avgLockTime": "Avg. lock time",
-  "confirmUnlock": "Do you want to unlock your veSDL?",
+  "confirmUnlock": "Are you sure you want to unlock early?\n\n You will only receive {{penaltyPercent}}% of your locked sdl and you will lose the rest",
   "totalRetroactiveDrop": "Total Retroactive Drop (incl. unvested)",
   "totalClaimableSDL": "Total Claimable SDL",
   "retroactiveDrop": "Retroactive Drop",

@@ -28,19 +28,9 @@ export enum Deadlines {
   Custom = "CUSTOM",
 }
 
-export type ConfirmModalType = {
-  open: boolean
-  options?: {
-    modalTitle?: string
-    modalText?: string
-    onOK?: () => void
-    onCancel?: () => void
-  }
-}
 interface UserState {
   userSwapAdvancedMode: boolean
   userPoolAdvancedMode: boolean
-  confirmModalOption: ConfirmModalType
   gasCustom?: NumberInputState
   gasPriceSelected: GasPrices
   slippageCustom?: NumberInputState
@@ -53,7 +43,6 @@ interface UserState {
 export const initialState: UserState = {
   userSwapAdvancedMode: false,
   userPoolAdvancedMode: false,
-  confirmModalOption: { open: false },
   gasPriceSelected: GasPrices.Standard,
   slippageSelected: Slippages.OneTenth,
   infiniteApproval: false,
@@ -139,19 +128,12 @@ const userSlice = createSlice({
     ): void {
       state.transactionDeadlineCustom = action.payload
     },
-    updateConfirmModal(
-      state: UserState,
-      action: PayloadAction<ConfirmModalType>,
-    ): void {
-      state.confirmModalOption = action.payload
-    },
   },
 })
 
 export const {
   updateSwapAdvancedMode,
   updatePoolAdvancedMode,
-  updateConfirmModal,
   updateGasPriceCustom,
   updateGasPriceSelected,
   updateSlippageCustom,

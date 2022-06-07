@@ -30,6 +30,7 @@ import {
 import { AppState } from "../../state"
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
 import { BigNumber } from "ethers"
+import ConfirmModal from "../../components/ConfirmModal"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import GaugeVote from "./GaugeVote"
 import LockedInfo from "./LockedInfo"
@@ -43,7 +44,6 @@ import { formatBNToString } from "../../utils"
 import { minBigNumber } from "../../utils/minBigNumber"
 import { updateLastTransactionTimes } from "../../state/application"
 import { useActiveWeb3React } from "../../hooks"
-import { useConfirmModal } from "../../hooks/useConfirmModal"
 import { useTranslation } from "react-i18next"
 
 type TokenType = {
@@ -62,6 +62,7 @@ export default function VeSDL(): JSX.Element {
   })
   const [veSdlTokenVal, setVeSdlTokenVal] = useState<BigNumber>(Zero)
   const [lockedSDLVal, setLockedSDLVal] = useState<BigNumber>(Zero)
+  const [unlockConfirmOpen, setUnlockConfirmOpen] = useState<boolean>(true)
   const sdlTokenValue = parseEther(sdlToken.sdlTokenInputVal.trim() || "0.0")
 
   const [lockEnd, setLockEnd] = useState<Date | null>(null)
@@ -76,7 +77,6 @@ export default function VeSDL(): JSX.Element {
   const userState = useContext(UserStateContext)
   const feeDistributorContract = useFeeDistributor()
   const dispatch = useDispatch()
-  const { enqueueConfirmModal } = useConfirmModal()
 
   const [openCalculator, setOpenCalculator] = useState<boolean>(false)
   const { t, i18n } = useTranslation()
@@ -141,6 +141,10 @@ export default function VeSDL(): JSX.Element {
           .mul(BigNumber.from(leftTimeForUnlock))
           .div(BigNumber.from(MAXTIME)),
       )
+    : Zero
+
+  const penaltyPercent = !lockedSDLVal.isZero()
+    ? penaltyAmount.div(lockedSDLVal).mul(BigNumber.from(100))
     : Zero
 
   const claimFeeDistributorRewards = useCallback(() => {
@@ -225,23 +229,24 @@ export default function VeSDL(): JSX.Element {
     }
   }
 
-  const handleUnlock = () => {
+  const unlock = async () => {
     if (votingEscrowContract && chainId) {
-      enqueueConfirmModal({
-        options: {
-          modalText: t("confirmUnlock"),
-          onOK: async () => {
-            const txn = await votingEscrowContract?.force_withdraw()
-            void enqueuePromiseToast(chainId, txn.wait(), "unlock")
-            dispatch(
-              updateLastTransactionTimes({
-                [TRANSACTION_TYPES.DEPOSIT]: Date.now(),
-              }),
-            )
-            void fetchData()
-          },
-        },
-      })
+      const txn = await votingEscrowContract?.force_withdraw()
+      void enqueuePromiseToast(chainId, txn.wait(), "unlock")
+      dispatch(
+        updateLastTransactionTimes({
+          [TRANSACTION_TYPES.DEPOSIT]: Date.now(),
+        }),
+      )
+      void fetchData()
+    }
+  }
+
+  const handleUnlock = () => {
+    if (penaltyAmount.isZero()) {
+      void unlock()
+    } else {
+      setUnlockConfirmOpen(true)
     }
   }
 
@@ -464,6 +469,14 @@ export default function VeSDL(): JSX.Element {
       <VeTokenCalculator
         open={openCalculator}
         onClose={() => setOpenCalculator(false)}
+      />
+      <ConfirmModal
+        open={unlockConfirmOpen}
+        modalText={t("confirmUnlock", {
+          penaltyPercent: formatBNToString(penaltyPercent, 18),
+        })}
+        onOK={unlock}
+        onClose={() => setUnlockConfirmOpen(false)}
       />
     </Container>
   )

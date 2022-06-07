@@ -15,7 +15,6 @@ import { styled, useTheme } from "@mui/material"
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 import { AppDispatch } from "../state"
 import BasicPoolsProvider from "../providers/BasicPoolsProvider"
-import ConfirmModal from "../components/ConfirmModal"
 import CreatePool from "./CreatePool"
 import Deposit from "./Deposit"
 import GaugeProvider from "../providers/GaugeProvider"
@@ -93,7 +92,6 @@ export default function App(): ReactElement {
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                           <AppContainer>
                             <TopMenu />
-                            <ConfirmModal />
                             <Switch>
                               <Route exact path="/" component={Swap} />
                               <Route exact path="/pools" component={Pools} />

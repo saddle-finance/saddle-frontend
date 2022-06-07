@@ -1,29 +1,33 @@
 import { Box, Button, Dialog, DialogContent, Typography } from "@mui/material"
-import { useDispatch, useSelector } from "react-redux"
-import { AppState } from "../state"
 import React from "react"
-import { updateConfirmModal } from "../state/user"
 
-export default function ConfirmModal(): JSX.Element {
-  const {
-    confirmModalOption: { open, options },
-  } = useSelector((state: AppState) => state.user)
-  const dispatch = useDispatch()
-  const onOK = options?.onOK
-  const onCancel = options?.onCancel
-  const modalText = options?.modalText || "Are you sure?"
+type ConfirmModalType = {
+  open: boolean
+  modalTitle?: string
+  modalText?: string | Element
+  onOK?: () => void
+  onCancel?: () => void
+  onClose: () => void
+}
+export default function ConfirmModal({
+  open,
+  modalText,
+  onOK,
+  onCancel,
+  onClose,
+}: ConfirmModalType): JSX.Element {
   const handleClickOK = () => {
-    dispatch(updateConfirmModal({ open: false }))
     onOK && onOK()
+    onClose()
   }
   const handleClickCancel = () => {
-    dispatch(updateConfirmModal({ open: false }))
     onCancel && onCancel()
+    onClose()
   }
   return (
     <Dialog open={open} fullWidth maxWidth="xs">
       <DialogContent>
-        <Typography>{modalText}</Typography>
+        <Typography textAlign="center">{modalText}</Typography>
         <Box mt={3} display="flex" justifyContent="space-between">
           <Button variant="contained" onClick={handleClickOK}>
             OK
