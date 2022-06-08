@@ -62,7 +62,7 @@ export default function VeSDL(): JSX.Element {
   })
   const [veSdlTokenVal, setVeSdlTokenVal] = useState<BigNumber>(Zero)
   const [lockedSDLVal, setLockedSDLVal] = useState<BigNumber>(Zero)
-  const [unlockConfirmOpen, setUnlockConfirmOpen] = useState<boolean>(true)
+  const [unlockConfirmOpen, setUnlockConfirmOpen] = useState<boolean>(false)
   const sdlTokenValue = parseEther(sdlToken.sdlTokenInputVal.trim() || "0.0")
 
   const [lockEnd, setLockEnd] = useState<Date | null>(null)
