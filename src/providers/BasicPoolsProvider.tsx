@@ -8,7 +8,12 @@ import {
   getMinichefPid,
 } from "../constants"
 import {
-  DeepNullable,
+  MulticallCall,
+  MulticallContract,
+  MulticallProvider,
+} from "../types/ethcall"
+import React, { ReactElement, useEffect, useState } from "react"
+import {
   chunkedTryAll,
   createMultiCallContract,
   enumerate,
@@ -17,14 +22,8 @@ import {
   isSynthAsset,
   mapToLowerCase,
 } from "../utils"
-import {
-  MulticallCall,
-  MulticallContract,
-  MulticallProvider,
-} from "../types/ethcall"
-
-import React, { ReactElement, useEffect, useState } from "react"
 import { usePoolRegistry, usePoolRegistryMultiCall } from "../hooks/useContract"
+
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
 import ERC20_ABI from "../constants/abis/erc20.json"
@@ -33,54 +32,61 @@ import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { PoolRegistry } from "../../types/ethers-contracts/PoolRegistry"
 import { Web3Provider } from "@ethersproject/providers"
+import { Zero } from "@ethersproject/constants"
 import { getMigrationData } from "../utils/migrations"
-import { parseBytes32String } from "ethers/lib/utils"
+import { parseBytes32String } from "@ethersproject/strings"
 import { useActiveWeb3React } from "../hooks"
 import { useSelector } from "react-redux"
 
 type SharedSwapData = {
-  poolAddress: string
-  lpToken: string
-  typeOfAsset: PoolTypes
-  poolName: string
-  targetAddress: string | null
-  tokens: string[]
-  isSaddleApproved: boolean
-  isRemoved: boolean
+  adminFee: BigNumber
+  aParameter: BigNumber
   isGuarded: boolean
   isPaused: boolean
-  virtualPrice: BigNumber
-  adminFee: BigNumber
-  swapFee: BigNumber
-  aParameter: BigNumber
-  tokenBalances: BigNumber[]
+  isRemoved: boolean
+  isSaddleApproved: boolean
+  isSynthetic: boolean
+  lpToken: string
   lpTokenSupply: BigNumber
   miniChefRewardsPid: number | null
-  isSynthetic: boolean
-  underlyingTokens: string[]
-  basePoolAddress: string
-  metaSwapDepositAddress: string
-  underlyingTokenBalances: BigNumber[]
+  poolAddress: string
+  poolName: string
+  swapFee: BigNumber
+  targetAddress: string | null // the address from which a pool was cloned
+  tokenBalances: BigNumber[]
+  tokens: string[]
+  typeOfAsset: PoolTypes
+  virtualPrice: BigNumber
 }
 
 type MetaSwapInfo = SharedSwapData & {
+  basePoolAddress: string
   isMetaSwap: true
+  metaSwapDepositAddress: string
+  underlyingTokenBalances: BigNumber[]
+  underlyingTokens: string[]
 }
 
 type NonMetaSwapInfo = SharedSwapData & {
-  underlyingTokens: null
   basePoolAddress: null
+  isMetaSwap: false
   metaSwapDepositAddress: null
   underlyingTokenBalances: null
-  isMetaSwap: false
+  underlyingTokens: null
 }
 
 type SwapInfo = MetaSwapInfo | NonMetaSwapInfo
+type PoolMigrationData =
+  | {
+      isMigrated: true
+      newPoolAddress: string
+    }
+  | {
+      isMigrated: false
+      newPoolAddress: undefined
+    }
 
-export type BasicPool = {
-  isMigrated: boolean
-  newPoolAddresss?: string
-} & SwapInfo
+export type BasicPool = SwapInfo & PoolMigrationData
 export type BasicPools = Partial<{ [poolName: string]: BasicPool }> | null // indexed by name, which is unique in the Registry
 
 export const BasicPoolsContext = React.createContext<BasicPools>(null)
@@ -121,7 +127,7 @@ export default function BasicPoolsProvider({
         const poolData = { ...pool } as BasicPool
         if (pool.poolAddress && pool.poolName) {
           poolData.isMigrated = migrationData?.[pool.poolAddress] != null
-          poolData.newPoolAddresss = migrationData?.[pool.poolAddress]
+          poolData.newPoolAddress = migrationData?.[pool.poolAddress]
           return {
             ...acc,
             [pool.poolName]: poolData,
@@ -166,6 +172,10 @@ export async function getPoolsDataFromRegistry(
   poolRegistryMultiCall: MulticallContract<PoolRegistry>,
   ethCallProvider: MulticallProvider,
 ): Promise<SwapInfo[]> {
+  // curried fn to avoid passing in redundant arguments
+  function chunkedTryAll20<T>(calls: MulticallCall<unknown, T>[]) {
+    return chunkedTryAll(calls, ethCallProvider, 20)
+  }
   try {
     const poolCount = (await poolRegistry.getPoolsLength()).toNumber()
     const registryPoolDataMultiCalls = enumerate(poolCount).map((index) =>
@@ -176,75 +186,43 @@ export async function getPoolsDataFromRegistry(
       registryPoolDataMultiCalls,
     )
 
-    const arePoolsPausedMulticalls: ReturnType<
-      typeof poolRegistryMultiCall.getPaused
-    >[] = []
-    const virtualPricesMulticalls: ReturnType<
-      typeof poolRegistryMultiCall.getVirtualPrice
-    >[] = []
-    const swapStoragesMulticalls: ReturnType<
-      typeof poolRegistryMultiCall.getSwapStorage
-    >[] = []
-    const aParametersMultiCalls: ReturnType<
-      typeof poolRegistryMultiCall.getA
-    >[] = []
-    const tokenBalancesMultiCalls: ReturnType<
-      typeof poolRegistryMultiCall.getTokenBalances
-    >[] = []
-    const underlyingTokenBalancesMultiCalls: ReturnType<
-      typeof poolRegistryMultiCall.getUnderlyingTokenBalances
-    >[] = []
-    const lpTokenTotalSuppliesMultiCalls: MulticallCall<unknown, BigNumber>[] =
-      []
-
-    registryPoolData.forEach((poolData) => {
-      if (poolData != null) {
-        const { lpToken, poolAddress } = poolData
-        const lpTokenContract = createMultiCallContract<Erc20>(
-          lpToken.toLowerCase(),
-          ERC20_ABI,
-        )
-
-        lpTokenTotalSuppliesMultiCalls.push(lpTokenContract.totalSupply())
-        arePoolsPausedMulticalls.push(
-          poolRegistryMultiCall.getPaused(poolAddress),
-        )
-        virtualPricesMulticalls.push(
-          poolRegistryMultiCall.getVirtualPrice(poolAddress),
-        )
-        swapStoragesMulticalls.push(
-          poolRegistryMultiCall.getSwapStorage(poolAddress),
-        )
-        aParametersMultiCalls.push(poolRegistryMultiCall.getA(poolAddress))
-        tokenBalancesMultiCalls.push(
-          poolRegistryMultiCall.getTokenBalances(poolAddress),
-        )
-        underlyingTokenBalancesMultiCalls.push(
-          poolRegistryMultiCall.getUnderlyingTokenBalances(poolAddress),
-        )
-      }
+    const poolMulticalls = (
+      registryPoolData.filter(Boolean) as {
+        lpToken: string
+        poolAddress: string
+      }[]
+    ).map(({ lpToken, poolAddress }) => {
+      const lpTokenContract = createMultiCallContract<Erc20>(
+        lpToken.toLowerCase(),
+        ERC20_ABI,
+      )
+      return [
+        lpTokenContract.totalSupply(),
+        poolRegistryMultiCall.getA(poolAddress),
+        poolRegistryMultiCall.getPaused(poolAddress),
+        poolRegistryMultiCall.getSwapStorage(poolAddress),
+        poolRegistryMultiCall.getTokenBalances(poolAddress),
+        poolRegistryMultiCall.getUnderlyingTokenBalances(poolAddress),
+        poolRegistryMultiCall.getVirtualPrice(poolAddress),
+      ] as const
     })
 
     const [
-      arePoolsPaused,
-      virtualPrices,
-      swapStorages,
+      lpTokensSupplies,
       aParameters,
+      arePoolsPaused,
+      swapStorages,
       tokensBalances,
       underlyingTokensBalances,
-      lpTokensSupplies,
+      virtualPrices,
     ] = await Promise.all([
-      ethCallProvider.tryAll(arePoolsPausedMulticalls),
-      ethCallProvider.tryAll(virtualPricesMulticalls),
-      ethCallProvider.tryAll(swapStoragesMulticalls),
-      ethCallProvider.tryAll(aParametersMultiCalls),
-      ethCallProvider.tryAll(tokenBalancesMultiCalls),
-      chunkedTryAll<BigNumber[]>(
-        underlyingTokenBalancesMultiCalls,
-        ethCallProvider,
-        2,
-      ),
-      ethCallProvider.tryAll(lpTokenTotalSuppliesMultiCalls),
+      chunkedTryAll20(poolMulticalls.map((a) => a[0])), // lpTokenSupply
+      chunkedTryAll20(poolMulticalls.map((a) => a[1])), // getA
+      chunkedTryAll20(poolMulticalls.map((a) => a[2])), // getPaused
+      chunkedTryAll20(poolMulticalls.map((a) => a[3])), // getSwapStorage
+      chunkedTryAll20(poolMulticalls.map((a) => a[4])), // getTokenBalances
+      chunkedTryAll20(poolMulticalls.map((a) => a[5])), // getUnderlyingTokenBalances
+      chunkedTryAll20(poolMulticalls.map((a) => a[6])), // getVirtualPrice
     ])
 
     const swapInfos: SwapInfo[] = []
@@ -256,55 +234,55 @@ export async function getPoolsDataFromRegistry(
           chainId,
           poolData.poolAddress.toLowerCase(),
         )
-        const isSynthetic = (
-          mapToLowerCase(poolData.tokens) ||
-          underlyingTokensBalances[index] ||
-          []
-        ).some((addr) => isSynthAsset(chainId, addr || ""))
+        const isSynthetic = mapToLowerCase(
+          isMetaSwap ? poolData.underlyingTokens : poolData.tokens,
+        ).some((addr) => isSynthAsset(chainId, addr))
         const isPaused = arePoolsPaused[index]
         const virtualPrice = virtualPrices[index]
         const swapStorage = swapStorages[index]
         const aParameter = aParameters[index]
         const tokenBalances = tokensBalances[index]
-        const underlyingTokenBalances = underlyingTokensBalances[index] || []
+        const underlyingTokenBalances =
+          underlyingTokensBalances[index] ||
+          Array(poolData.underlyingTokens.length).fill(Zero)
         const lpTokenSupply = lpTokensSupplies[index]
 
         if (
-          isPaused == null ||
-          virtualPrice == null ||
           aParameter == null ||
+          isPaused == null ||
+          lpTokenSupply == null ||
           swapStorage == null ||
           tokenBalances == null ||
-          lpTokenSupply == null
+          virtualPrice == null
         ) {
           return
         }
 
-        const sharedSwapData: SharedSwapData = {
-          poolAddress: poolData.poolAddress.toLowerCase(),
-          lpToken: poolData.lpToken.toLowerCase(),
-          typeOfAsset: poolData.typeOfAsset,
-          poolName: parseBytes32String(poolData.poolName),
-          targetAddress: poolData.targetAddress,
-          tokens: mapToLowerCase(poolData.tokens),
-          underlyingTokens: mapToLowerCase(poolData.underlyingTokens),
+        const sharedSwapData = {
+          adminFee: swapStorage.adminFee,
+          aParameter,
           basePoolAddress: poolData.basePoolAddress.toLowerCase(),
-          metaSwapDepositAddress: poolData.metaSwapDepositAddress.toLowerCase(),
-          isSaddleApproved: poolData.isSaddleApproved,
-          isRemoved: poolData.isRemoved,
           isGuarded: poolData.isGuarded,
           isPaused,
+          isRemoved: poolData.isRemoved,
+          isSaddleApproved: poolData.isSaddleApproved,
+          isSynthetic,
+          lpToken: poolData.lpToken.toLowerCase(),
+          lpTokenSupply,
+          metaSwapDepositAddress: poolData.metaSwapDepositAddress.toLowerCase(),
+          miniChefRewardsPid: rewardsPid,
+          poolAddress: poolData.poolAddress.toLowerCase(),
+          poolName: parseBytes32String(poolData.poolName),
+          swapFee: swapStorage.swapFee,
+          targetAddress: poolData.targetAddress.toLowerCase(),
+          tokenBalances,
+          tokens: mapToLowerCase(poolData.tokens),
+          typeOfAsset: poolData.typeOfAsset,
+          underlyingTokenBalances,
+          underlyingTokens: mapToLowerCase(poolData.underlyingTokens),
           virtualPrice: virtualPrice.isZero()
             ? BigNumber.from(10).pow(18)
             : virtualPrice,
-          adminFee: swapStorage.adminFee,
-          swapFee: swapStorage.swapFee,
-          aParameter,
-          tokenBalances,
-          underlyingTokenBalances,
-          lpTokenSupply,
-          miniChefRewardsPid: rewardsPid,
-          isSynthetic,
         }
         swapInfos.push(buildMetaInfo(sharedSwapData, isMetaSwap))
       }
@@ -321,12 +299,12 @@ export async function getPoolsDataFromRegistry(
 }
 
 function buildMetaInfo(
-  sharedSwapData: DeepNullable<SharedSwapData>,
+  swapInfo: Omit<MetaSwapInfo | NonMetaSwapInfo, "isMetaSwap">,
   isMetaSwap: boolean,
-): MetaSwapInfo {
+): MetaSwapInfo | NonMetaSwapInfo {
   if (isMetaSwap === false) {
     return {
-      ...sharedSwapData,
+      ...swapInfo,
       isMetaSwap: false,
       underlyingTokens: null,
       basePoolAddress: null,
@@ -335,7 +313,7 @@ function buildMetaInfo(
     } as NonMetaSwapInfo
   }
   return {
-    ...sharedSwapData,
+    ...swapInfo,
     isMetaSwap: true,
   } as MetaSwapInfo
 }

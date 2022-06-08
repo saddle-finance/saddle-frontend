@@ -436,7 +436,7 @@ export function mapToLowerCase(strings: string[]): string[] {
  * @param address address string to be verified
  * @returns  boolean check
  */
-export function isAddressZero(address: string | null): boolean {
+export function isAddressZero(address: unknown): boolean {
   return address === AddressZero
 }
 
