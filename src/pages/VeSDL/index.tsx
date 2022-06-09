@@ -30,6 +30,7 @@ import {
 import { AppState } from "../../state"
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
 import { BigNumber } from "ethers"
+import ConfirmModal from "../../components/ConfirmModal"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import GaugeVote from "./GaugeVote"
 import LockedInfo from "./LockedInfo"
@@ -52,6 +53,7 @@ type TokenType = {
 
 const MAXTIME = 86400 * 365 * 4
 const WEEK = 7
+const THURSDAY = 4
 
 export default function VeSDL(): JSX.Element {
   const [sdlToken, setSDLToken] = useState<TokenType>({
@@ -60,6 +62,7 @@ export default function VeSDL(): JSX.Element {
   })
   const [veSdlTokenVal, setVeSdlTokenVal] = useState<BigNumber>(Zero)
   const [lockedSDLVal, setLockedSDLVal] = useState<BigNumber>(Zero)
+  const [unlockConfirmOpen, setUnlockConfirmOpen] = useState<boolean>(false)
   const sdlTokenValue = parseEther(sdlToken.sdlTokenInputVal.trim() || "0.0")
   const [veSdlTotalSupply, setVeSdlTotalSupply] = useState<BigNumber>(Zero)
 
@@ -144,6 +147,10 @@ export default function VeSDL(): JSX.Element {
       )
     : Zero
 
+  const penaltyPercent = !lockedSDLVal.isZero()
+    ? penaltyAmount.div(lockedSDLVal).mul(BigNumber.from(100))
+    : Zero
+
   const claimFeeDistributorRewards = useCallback(() => {
     if (!chainId || !feeDistributorContract) return
     feeDistributorContract["claim()"]()
@@ -226,7 +233,7 @@ export default function VeSDL(): JSX.Element {
     }
   }
 
-  const handleUnlock = async () => {
+  const unlock = async () => {
     if (votingEscrowContract && chainId) {
       const txn = await votingEscrowContract?.force_withdraw()
       void enqueuePromiseToast(chainId, txn.wait(), "unlock")
@@ -236,6 +243,14 @@ export default function VeSDL(): JSX.Element {
         }),
       )
       void fetchData()
+    }
+  }
+
+  const handleUnlock = () => {
+    if (penaltyAmount.isZero()) {
+      void unlock()
+    } else {
+      setUnlockConfirmOpen(true)
     }
   }
 
@@ -337,6 +352,7 @@ export default function VeSDL(): JSX.Element {
                 onChange={(date) => setProposedUnlockDate(date)}
                 minDate={lockEnd || new Date()}
                 maxDate={new Date((currentTimestamp + MAXTIME) * 1000)}
+                shouldDisableDate={(date) => date.getDay() !== THURSDAY}
                 renderInput={(props) => (
                   <TextField
                     data-testid="veSdlUnlockData"
@@ -459,6 +475,14 @@ export default function VeSDL(): JSX.Element {
         totalSupplyVeSdl={veSdlTotalSupply}
         open={openCalculator}
         onClose={() => setOpenCalculator(false)}
+      />
+      <ConfirmModal
+        open={unlockConfirmOpen}
+        modalText={t("confirmUnlock", {
+          penaltyPercent: formatBNToString(penaltyPercent, 18),
+        })}
+        onOK={unlock}
+        onClose={() => setUnlockConfirmOpen(false)}
       />
     </Container>
   )

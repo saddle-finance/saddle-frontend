@@ -31,7 +31,6 @@ export enum Deadlines {
 interface UserState {
   userSwapAdvancedMode: boolean
   userPoolAdvancedMode: boolean
-  userDarkMode: boolean
   gasCustom?: NumberInputState
   gasPriceSelected: GasPrices
   slippageCustom?: NumberInputState
@@ -44,7 +43,6 @@ interface UserState {
 export const initialState: UserState = {
   userSwapAdvancedMode: false,
   userPoolAdvancedMode: false,
-  userDarkMode: false,
   gasPriceSelected: GasPrices.Standard,
   slippageSelected: Slippages.OneTenth,
   infiniteApproval: false,
@@ -75,10 +73,6 @@ const userSlice = createSlice({
       action: PayloadAction<boolean>,
     ): void {
       state.userPoolAdvancedMode = action.payload
-    },
-    updateDarkMode(state: UserState, action: PayloadAction<boolean>): void {
-      // this will be phased out in favor of chakra's colorMode
-      state.userDarkMode = action.payload
     },
     updateGasPriceCustom(
       state: UserState,
@@ -140,7 +134,6 @@ const userSlice = createSlice({
 export const {
   updateSwapAdvancedMode,
   updatePoolAdvancedMode,
-  updateDarkMode,
   updateGasPriceCustom,
   updateGasPriceSelected,
   updateSlippageCustom,
