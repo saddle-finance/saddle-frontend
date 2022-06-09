@@ -30,6 +30,7 @@ import {
 import { AppState } from "../../state"
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
 import { BigNumber } from "ethers"
+import ConfirmModal from "../../components/ConfirmModal"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import GaugeVote from "./GaugeVote"
 import LockedInfo from "./LockedInfo"
@@ -61,6 +62,7 @@ export default function VeSDL(): JSX.Element {
   })
   const [veSdlTokenVal, setVeSdlTokenVal] = useState<BigNumber>(Zero)
   const [lockedSDLVal, setLockedSDLVal] = useState<BigNumber>(Zero)
+  const [unlockConfirmOpen, setUnlockConfirmOpen] = useState<boolean>(false)
   const sdlTokenValue = parseEther(sdlToken.sdlTokenInputVal.trim() || "0.0")
 
   const [lockEnd, setLockEnd] = useState<Date | null>(null)
@@ -139,6 +141,10 @@ export default function VeSDL(): JSX.Element {
           .mul(BigNumber.from(leftTimeForUnlock))
           .div(BigNumber.from(MAXTIME)),
       )
+    : Zero
+
+  const penaltyPercent = !lockedSDLVal.isZero()
+    ? penaltyAmount.div(lockedSDLVal).mul(BigNumber.from(100))
     : Zero
 
   const claimFeeDistributorRewards = useCallback(() => {
@@ -223,7 +229,7 @@ export default function VeSDL(): JSX.Element {
     }
   }
 
-  const handleUnlock = async () => {
+  const unlock = async () => {
     if (votingEscrowContract && chainId) {
       const txn = await votingEscrowContract?.force_withdraw()
       void enqueuePromiseToast(chainId, txn.wait(), "unlock")
@@ -233,6 +239,14 @@ export default function VeSDL(): JSX.Element {
         }),
       )
       void fetchData()
+    }
+  }
+
+  const handleUnlock = () => {
+    if (penaltyAmount.isZero()) {
+      void unlock()
+    } else {
+      setUnlockConfirmOpen(true)
     }
   }
 
@@ -455,6 +469,14 @@ export default function VeSDL(): JSX.Element {
       <VeTokenCalculator
         open={openCalculator}
         onClose={() => setOpenCalculator(false)}
+      />
+      <ConfirmModal
+        open={unlockConfirmOpen}
+        modalText={t("confirmUnlock", {
+          penaltyPercent: formatBNToString(penaltyPercent, 18),
+        })}
+        onOK={unlock}
+        onClose={() => setUnlockConfirmOpen(false)}
       />
     </Container>
   )
