@@ -221,7 +221,11 @@ export async function getPoolsDataFromRegistry(
       chunkedTryAll20(poolMulticalls.map((a) => a[2])), // getPaused
       chunkedTryAll20(poolMulticalls.map((a) => a[3])), // getSwapStorage
       chunkedTryAll20(poolMulticalls.map((a) => a[4])), // getTokenBalances
-      chunkedTryAll20(poolMulticalls.map((a) => a[5])), // getUnderlyingTokenBalances
+      chunkedTryAll(
+        poolMulticalls.map((a) => a[5]),
+        ethCallProvider,
+        2,
+      ), // getUnderlyingTokenBalances
       chunkedTryAll20(poolMulticalls.map((a) => a[6])), // getVirtualPrice
     ])
 
