@@ -1847,7 +1847,7 @@ export const SYNTH_TRACKING_ID =
 export const IS_VIRTUAL_SWAP_ACTIVE = true
 export const IS_L2_SUPPORTED = true
 export const IS_SDL_LIVE = true
-export const IS_VESDL_LIVE = false
+export const IS_VESDL_LIVE = true
 // FLAGS END
 
 // Regex for readable decimal number
