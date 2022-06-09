@@ -110,7 +110,6 @@ export default function VeSDL(): JSX.Element {
     }))
     setProposedUnlockDate(null)
   }
-
   const feeDistributorRewards = userState?.feeDistributorRewards
   const currentTimestamp = getUnixTime(new Date())
   const unlockDateOrLockEnd = proposedUnlockDate || lockEnd
