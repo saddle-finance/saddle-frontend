@@ -17,7 +17,7 @@ jobs:
           cache: "npm"
       # fix for forcing git to use https when pulling deps
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
-      - run: npm ci --silent
+      - run: npm ci
       - run: npm run build --if-present
       - name: Run BundleMon
         run: npm run bundlemon
