@@ -143,7 +143,7 @@ export default function VeSDL(): JSX.Element {
     : Zero
 
   const penaltyPercent = !lockedSDLVal.isZero()
-    ? lockedSDLVal.sub(penaltyAmount).mul(parseEther("100")).div(lockedSDLVal)
+    ? penaltyAmount.mul(parseEther("100")).div(lockedSDLVal)
     : Zero
 
   const claimFeeDistributorRewards = useCallback(() => {
