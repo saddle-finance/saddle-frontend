@@ -1,6 +1,7 @@
 import {
   BRIDGE_CONTRACT_ADDRESSES,
   BTC_POOL_NAME,
+  FEE_DISTRIBUTOR_ADDRESSES,
   GAUGE_CONTROLLER_ADDRESSES,
   GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES,
   MASTER_REGISTRY_CONTRACT_ADDRESSES,
@@ -24,10 +25,13 @@ import { Bridge } from "../../types/ethers-contracts/Bridge"
 import { Contract } from "@ethersproject/contracts"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
+import FEE_DISTRIBUTOR_ABI from "../constants/abis/feeDistributor.json"
+import { FeeDistributor } from "../../types/ethers-contracts/FeeDistributor"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
 import GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI from "../constants/abis/generalizedSwapMigrator.json"
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
 import { GeneralizedSwapMigrator } from "../../types/ethers-contracts/GeneralizedSwapMigrator"
+import { IS_VESDL_LIVE } from "./../constants/index"
 import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
@@ -48,6 +52,7 @@ import { RetroactiveVesting } from "../../types/ethers-contracts/RetroactiveVest
 import SDL_TOKEN_ABI from "../constants/abis/sdl.json"
 import SYNTHETIX_EXCHANGE_RATE_CONTRACT_ABI from "../constants/abis/synthetixExchangeRate.json"
 import SYNTHETIX_NETWORK_TOKEN_CONTRACT_ABI from "../constants/abis/synthetixNetworkToken.json"
+import { Sdl } from "../../types/ethers-contracts/Sdl"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
@@ -334,10 +339,10 @@ export function useGaugeControllerContract(): GaugeController | null {
   return useContract(contractAddress, GAUGE_CONTROLLER_ABI) as GaugeController
 }
 
-export const useSdlContract = (): Erc20 => {
+export const useSdlContract = (): Sdl => {
   const { chainId } = useActiveWeb3React()
   const contractAddress = chainId ? SDL_TOKEN_ADDRESSES[chainId] : undefined
-  return useContract(contractAddress, SDL_TOKEN_ABI) as Erc20
+  return useContract(contractAddress, SDL_TOKEN_ABI) as Sdl
 }
 
 export const useVotingEscrowContract = (): VotingEscrow => {
@@ -350,4 +355,11 @@ export const useVotingEscrowContract = (): VotingEscrow => {
     contractAddress,
     VOTING_ESCROW_CONTRACT_ABI,
   ) as VotingEscrow
+}
+
+export const useFeeDistributor = (): FeeDistributor | null => {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress =
+    chainId && IS_VESDL_LIVE ? FEE_DISTRIBUTOR_ADDRESSES[chainId] : undefined
+  return useContract(contractAddress, FEE_DISTRIBUTOR_ABI) as FeeDistributor
 }

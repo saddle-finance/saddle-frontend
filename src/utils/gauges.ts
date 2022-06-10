@@ -38,24 +38,22 @@ export type GaugeReward = {
   token: string
 }
 
-export type PoolAddressToGauge = {
+export type PoolAddressToGauge = Partial<{
   [poolAddress: string]: Gauge
-}
+}>
 
 export type Gauges = {
   gaugeCount: number
   gauges: PoolAddressToGauge
 }
 
-export type GaugeRewardUserData = {
-  [gaugeAddress: string]:
-    | {
-        amountStaked: BigNumber
-        claimableExternalRewards: BigNumber[]
-        claimableSDL: BigNumber
-      }
-    | undefined
-}
+export type GaugeRewardUserData = Partial<{
+  [gaugeAddress: string]: {
+    amountStaked: BigNumber
+    claimableExternalRewards: BigNumber[]
+    claimableSDL: BigNumber
+  }
+}>
 
 export const initialGaugesState: Gauges = {
   gaugeCount: 0,

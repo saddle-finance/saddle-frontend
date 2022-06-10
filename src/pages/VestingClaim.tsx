@@ -1,6 +1,5 @@
 import { Box, Button, IconButton, Link, Typography } from "@mui/material"
 import React, { ReactElement, useEffect, useState } from "react"
-import { SDL_TOKEN, SDL_TOKEN_ADDRESSES } from "../constants"
 import { Trans, useTranslation } from "react-i18next"
 import { commify, formatBNToString, getContract } from "../utils"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
@@ -8,13 +7,13 @@ import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
 import { BigNumber } from "@ethersproject/bignumber"
 import INVESTOR_EMPLOYEE_VESTING_CONTRACT_ABI from "../constants/abis/vesting.json"
-import SDL_TOKEN_ABI from "../constants/abis/sdl.json"
-import { Sdl } from "../../types/ethers-contracts/Sdl"
+import { SDL_TOKEN } from "../constants"
 import { Vesting } from "../../types/ethers-contracts/Vesting"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
 import { useActiveWeb3React } from "../hooks"
 import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
+import { useSdlContract } from "../hooks/useContract"
 
 function VestingClaim(): ReactElement {
   const { t } = useTranslation()
@@ -22,6 +21,7 @@ function VestingClaim(): ReactElement {
   const { addToken, canAdd } = useAddTokenToMetamask({
     ...SDL_TOKEN,
   })
+  const sdlContract = useSdlContract()
 
   const [isValidBeneficiary, setIsValidBeneficiary] = useState(false)
   const [claimableVestedAmount, setClaimableVestedAmount] = useState(Zero)
@@ -33,17 +33,11 @@ function VestingClaim(): ReactElement {
 
   useEffect(() => {
     const fetchBeneficiaries = async () => {
-      if (!library || !chainId || !account) return
-      const SDLContract = getContract(
-        SDL_TOKEN_ADDRESSES[chainId],
-        SDL_TOKEN_ABI,
-        library,
-        account,
-      ) as Sdl
+      if (!library || !chainId || !account || !sdlContract) return
       const vestingContractDeployedFilter =
-        SDLContract.filters.VestingContractDeployed(null, null)
+        sdlContract.filters.VestingContractDeployed(null, null)
       try {
-        const events = await SDLContract.queryFilter(
+        const events = await sdlContract.queryFilter(
           vestingContractDeployedFilter,
         )
         const currentBeneficiaryEvents = events.filter(
@@ -79,7 +73,7 @@ function VestingClaim(): ReactElement {
           ) as Vesting
           setVestingContract(vestingContract)
           try {
-            const remainingAmount = await SDLContract.balanceOf(
+            const remainingAmount = await sdlContract.balanceOf(
               vestingContract.address,
             )
             setRemainingAmount(remainingAmount)
@@ -101,7 +95,7 @@ function VestingClaim(): ReactElement {
       }
     }
     void fetchBeneficiaries()
-  }, [account, chainId, library])
+  }, [account, chainId, library, sdlContract])
 
   const onClaimClick: () => void = async () => {
     if (!vestingContract || !chainId) return

@@ -25,6 +25,7 @@ import React, { ReactElement, useState } from "react"
 import CheckIcon from "@mui/icons-material/Check"
 import { IS_DEVELOPMENT } from "../utils/environment"
 import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
+import { extractAddEthereumChainArgs } from "../utils"
 import { useActiveWeb3React } from "../hooks"
 import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
 import { useThemeSettings } from "../providers/ThemeSettingsProvider"
@@ -113,7 +114,7 @@ function NetworkSection(): ReactElement {
             ? DEV_SUPPORTED_NETWORKS[chainId]
             : SUPPORTED_NETWORKS[chainId]
 
-          return (
+          return params ? (
             <ListItemButton
               onClick={() => {
                 if (chainId === ChainId.MAINNET) {
@@ -123,7 +124,7 @@ function NetworkSection(): ReactElement {
                   ])
                 } else {
                   void library?.send("wallet_addEthereumChain", [
-                    params,
+                    extractAddEthereumChainArgs(params),
                     account,
                   ])
                 }
@@ -135,7 +136,7 @@ function NetworkSection(): ReactElement {
               </ListItemIcon>
               <ListItemText primary={params?.chainName} />
             </ListItemButton>
-          )
+          ) : null
         })}
       </Collapse>
     </div>

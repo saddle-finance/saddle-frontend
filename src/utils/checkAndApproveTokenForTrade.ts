@@ -1,8 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber"
 import { ChainId } from "../constants"
-import { Erc20 } from "../../types/ethers-contracts/Erc20"
-import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
-import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
+import { GenericToken } from "../../types/ethers-contracts/GenericToken"
 import { MaxUint256 } from "@ethersproject/constants"
 import { Zero } from "@ethersproject/constants"
 import { enqueuePromiseToast } from "../components/Toastify"
@@ -20,7 +18,7 @@ import { enqueuePromiseToast } from "../components/Toastify"
  * @return {Promise<void>}
  */
 export default async function checkAndApproveTokenForTrade(
-  srcTokenContract: Erc20 | LpTokenGuarded | LpTokenUnguarded,
+  srcTokenContract: GenericToken,
   spenderAddress: string,
   ownerAddress: string,
   spendingValue: BigNumber, // max is MaxUint256

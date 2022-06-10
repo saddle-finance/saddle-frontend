@@ -1,11 +1,11 @@
 import { BLOCK_TIME, ChainId } from "../constants"
-import { BasicPool, BasicPoolsContext } from "./BasicPoolsProvider"
 import { GaugeRewardUserData, getGaugeRewardsUserData } from "../utils/gauges"
 import { MinichefUserData, getMinichefRewardsUserData } from "../utils/minichef"
 import { MulticallCall, MulticallContract } from "../types/ethcall"
 import React, { ReactElement, useCallback, useContext, useState } from "react"
 import { batchArray, getMulticallProvider } from "../utils"
 
+import { BasicPoolsContext } from "./BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "ethcall"
 import ERC20_ABI from "../constants/abis/erc20.json"
@@ -16,6 +16,7 @@ import { TokensContext } from "./TokensProvider"
 import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
 import { useActiveWeb3React } from "../hooks"
+import { useFeeDistributor } from "../hooks/useContract"
 import usePoller from "../hooks/usePoller"
 
 type UserTokenBalances = { [address: string]: BigNumber }
@@ -23,6 +24,7 @@ type UserState = {
   tokenBalances: UserTokenBalances | null
   minichef: MinichefUserData
   gaugeRewards: GaugeRewardUserData | null
+  feeDistributorRewards: BigNumber
 } | null
 export const UserStateContext = React.createContext<UserState>(null)
 
@@ -35,7 +37,9 @@ export default function UserStateProvider({
   const { chainId, library, account } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
+
   const gauges = useContext(GaugeContext)
+  const feeDistributorContract = useFeeDistributor()
   const [userState, setUserState] = useState<UserState>(null)
   const fetchState = useCallback(() => {
     async function fetchUserState() {
@@ -52,9 +56,7 @@ export default function UserStateProvider({
       const minichefDataPromise = getMinichefRewardsUserData(
         library,
         chainId,
-        (Object.values(basicPools) as BasicPool[]).map(
-          ({ poolAddress }) => poolAddress,
-        ),
+        Object.values(basicPools).map(({ poolAddress }) => poolAddress),
         account,
       )
       const gaugeRewardsPromise = gauges.gauges
@@ -66,18 +68,39 @@ export default function UserStateProvider({
           )
         : Promise.resolve(null)
 
-      const [userTokenBalances, minichefData, gaugeRewards] = await Promise.all(
-        [userTokenBalancesPromise, minichefDataPromise, gaugeRewardsPromise],
-      )
+      const feedDistributorRewardsPromise = feeDistributorContract
+        ? feeDistributorContract["claimable(address)"](account)
+        : Promise.resolve(Zero)
+
+      const [
+        userTokenBalances,
+        minichefData,
+        gaugeRewards,
+        feeDistributorRewards,
+      ] = await Promise.all([
+        userTokenBalancesPromise,
+        minichefDataPromise,
+        gaugeRewardsPromise,
+        feedDistributorRewardsPromise,
+      ])
 
       setUserState({
         tokenBalances: userTokenBalances,
         minichef: minichefData,
         gaugeRewards,
+        feeDistributorRewards,
       })
     }
     void fetchUserState()
-  }, [library, chainId, account, basicPools, tokens, gauges.gauges])
+  }, [
+    library,
+    chainId,
+    account,
+    basicPools,
+    tokens,
+    gauges.gauges,
+    feeDistributorContract,
+  ])
   usePoller(fetchState, BLOCK_TIME * 2, [fetchState])
   return (
     <UserStateContext.Provider value={userState}>
