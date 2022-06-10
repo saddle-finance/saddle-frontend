@@ -225,9 +225,9 @@ export function useSynthetixExchangeRatesContract(): SynthetixExchangeRate | nul
   ) as SynthetixExchangeRate
 }
 
-export function useMinterContract(): Minter {
+export function useMinterContract(): Minter | null {
   const { chainId } = useActiveWeb3React()
-  const contractAddress = chainId ? MINTER_ADDRESSES[chainId] : undefined
+  const contractAddress = chainId && MINTER_ADDRESSES[chainId]
   return useContract(contractAddress, MINTER_ABI) as Minter
 }
 
