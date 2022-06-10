@@ -232,64 +232,63 @@ export async function getPoolsDataFromRegistry(
     const swapInfos: SwapInfo[] = []
 
     registryPoolData.forEach((poolData, index) => {
-      if (poolData != null) {
-        const isMetaSwap = !isAddressZero(poolData.metaSwapDepositAddress)
-        const rewardsPid = getMinichefPid(
-          chainId,
-          poolData.poolAddress.toLowerCase(),
-        )
-        const isSynthetic = mapToLowerCase(
-          isMetaSwap ? poolData.underlyingTokens : poolData.tokens,
-        ).some((addr) => isSynthAsset(chainId, addr))
-        const isPaused = arePoolsPaused[index]
-        const virtualPrice = virtualPrices[index]
-        const swapStorage = swapStorages[index]
-        const aParameter = aParameters[index]
-        const tokenBalances = tokensBalances[index]
-        const underlyingTokenBalances =
-          underlyingTokensBalances[index] ||
-          Array(poolData.underlyingTokens.length).fill(Zero)
-        const lpTokenSupply = lpTokensSupplies[index]
+      if (poolData == null) return
+      const isMetaSwap = !isAddressZero(poolData.metaSwapDepositAddress)
+      const rewardsPid = getMinichefPid(
+        chainId,
+        poolData.poolAddress.toLowerCase(),
+      )
+      const isSynthetic = mapToLowerCase(
+        isMetaSwap ? poolData.underlyingTokens : poolData.tokens,
+      ).some((addr) => isSynthAsset(chainId, addr))
+      const isPaused = arePoolsPaused[index]
+      const virtualPrice = virtualPrices[index]
+      const swapStorage = swapStorages[index]
+      const aParameter = aParameters[index]
+      const tokenBalances = tokensBalances[index]
+      const underlyingTokenBalances =
+        underlyingTokensBalances[index] ||
+        Array(poolData.underlyingTokens.length).fill(Zero)
+      const lpTokenSupply = lpTokensSupplies[index]
 
-        if (
-          aParameter == null ||
-          isPaused == null ||
-          lpTokenSupply == null ||
-          swapStorage == null ||
-          tokenBalances == null ||
-          virtualPrice == null
-        ) {
-          return
-        }
-
-        const sharedSwapData = {
-          adminFee: swapStorage.adminFee,
-          aParameter,
-          basePoolAddress: poolData.basePoolAddress.toLowerCase(),
-          isGuarded: poolData.isGuarded,
-          isPaused,
-          isRemoved: poolData.isRemoved,
-          isSaddleApproved: poolData.isSaddleApproved,
-          isSynthetic,
-          lpToken: poolData.lpToken.toLowerCase(),
-          lpTokenSupply,
-          metaSwapDepositAddress: poolData.metaSwapDepositAddress.toLowerCase(),
-          miniChefRewardsPid: rewardsPid,
-          poolAddress: poolData.poolAddress.toLowerCase(),
-          poolName: parseBytes32String(poolData.poolName),
-          swapFee: swapStorage.swapFee,
-          targetAddress: poolData.targetAddress.toLowerCase(),
-          tokenBalances,
-          tokens: mapToLowerCase(poolData.tokens),
-          typeOfAsset: poolData.typeOfAsset,
-          underlyingTokenBalances,
-          underlyingTokens: mapToLowerCase(poolData.underlyingTokens),
-          virtualPrice: virtualPrice.isZero()
-            ? BigNumber.from(10).pow(18)
-            : virtualPrice,
-        }
-        swapInfos.push(buildMetaInfo(sharedSwapData, isMetaSwap))
+      if (
+        aParameter == null ||
+        isPaused == null ||
+        lpTokenSupply == null ||
+        swapStorage == null ||
+        tokenBalances == null ||
+        virtualPrice == null
+      ) {
+        return
       }
+
+      const sharedSwapData = {
+        adminFee: swapStorage.adminFee,
+        aParameter,
+        basePoolAddress: poolData.basePoolAddress.toLowerCase(),
+        isGuarded: poolData.isGuarded,
+        isPaused,
+        isRemoved: poolData.isRemoved,
+        isSaddleApproved: poolData.isSaddleApproved,
+        isSynthetic,
+        lpToken: poolData.lpToken.toLowerCase(),
+        lpTokenSupply,
+        metaSwapDepositAddress: poolData.metaSwapDepositAddress.toLowerCase(),
+        miniChefRewardsPid: rewardsPid,
+        poolAddress: poolData.poolAddress.toLowerCase(),
+        poolName: parseBytes32String(poolData.poolName),
+        swapFee: swapStorage.swapFee,
+        targetAddress: poolData.targetAddress.toLowerCase(),
+        tokenBalances,
+        tokens: mapToLowerCase(poolData.tokens),
+        typeOfAsset: poolData.typeOfAsset,
+        underlyingTokenBalances,
+        underlyingTokens: mapToLowerCase(poolData.underlyingTokens),
+        virtualPrice: virtualPrice.isZero()
+          ? BigNumber.from(10).pow(18)
+          : virtualPrice,
+      }
+      swapInfos.push(buildMetaInfo(sharedSwapData, isMetaSwap))
     })
     return swapInfos
   } catch (e) {
