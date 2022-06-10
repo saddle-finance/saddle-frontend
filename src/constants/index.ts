@@ -149,7 +149,7 @@ export const BLOCK_TIME = 13000 // ms
 // TODO: Update with mainnet and ropsten addresses
 export const PERMISSIONLESS_DEPLOYER_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0xD5ac451B0c50B9476107823Af206eD814a2e2580",
-  [ChainId.MAINNET]: "",
+  [ChainId.MAINNET]: "0x8f43fBDDc10b822AFA26812fB9058CA1fC22078F",
   [ChainId.ROPSTEN]: "",
 })
 
@@ -180,7 +180,7 @@ export const MINICHEF_CONTRACT_ADDRESSES = buildAddresses({
 
 export const MINTER_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0xc0F115A19107322cFBf1cDBC7ea011C19EbDB4F8",
-  [ChainId.MAINNET]: "",
+  [ChainId.MAINNET]: "0x818d3c0a6414392bA253Df358E50fd5703ae2643",
 })
 
 export const RETROACTIVE_VESTING_CONTRACT_ADDRESSES = buildAddresses({
@@ -548,7 +548,7 @@ export const SDL_TOKEN_ADDRESSES = buildAddresses({
 })
 
 export const VOTING_ESCROW_CONTRACT_ADDRESS = buildAddresses({
-  [ChainId.MAINNET]: "",
+  [ChainId.MAINNET]: "0xb6beB7b30E3e6e041Ee590776C5807B6cf0439CA",
   [ChainId.HARDHAT]: "0x4b6aB5F819A515382B0dEB6935D793817bB4af28",
 })
 
