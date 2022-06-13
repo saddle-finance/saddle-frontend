@@ -37,7 +37,7 @@ export function useApproveAndMigrate(): (
     lpTokenBalance?: BigNumber,
   ): Promise<void> {
     const oldPool = oldPoolName ? basicPools?.[oldPoolName] : null
-    if (!chainId || !oldPool?.newPoolAddresss) return
+    if (!chainId || !oldPool?.newPoolAddress) return
     if (
       !migratorContract ||
       !account ||
@@ -57,7 +57,7 @@ export function useApproveAndMigrate(): (
 
     const newPoolContract = getSwapContract(
       library,
-      oldPool?.newPoolAddresss,
+      oldPool?.newPoolAddress,
       {},
       account ?? undefined,
     ) as SwapFlashLoanNoWithdrawFee

@@ -2,7 +2,7 @@ import { PoolName } from "../../src/constants"
 
 context("Advanced option test", () => {
   // have two seperate maps here since the naming convention is different throughout the page
-  const pools = ["BTC V2", "Stablecoin V2"]
+  const pools = ["BTC V2", "USDv2"]
 
   beforeEach(() => {
     cy.visit(`/#/pools`)

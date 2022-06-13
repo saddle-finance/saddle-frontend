@@ -110,7 +110,6 @@ export default function VeSDL(): JSX.Element {
     }))
     setProposedUnlockDate(null)
   }
-
   const feeDistributorRewards = userState?.feeDistributorRewards
   const currentTimestamp = getUnixTime(new Date())
   const unlockDateOrLockEnd = proposedUnlockDate || lockEnd
@@ -144,7 +143,7 @@ export default function VeSDL(): JSX.Element {
     : Zero
 
   const penaltyPercent = !lockedSDLVal.isZero()
-    ? penaltyAmount.div(lockedSDLVal).mul(BigNumber.from(100))
+    ? penaltyAmount.mul(parseEther("100")).div(lockedSDLVal)
     : Zero
 
   const claimFeeDistributorRewards = useCallback(() => {
@@ -409,7 +408,7 @@ export default function VeSDL(): JSX.Element {
             <Typography>
               {t("totalVeSdlHolding")}: {formatUnits(veSdlTokenVal)}
             </Typography>
-            {!penaltyAmount.isZero && (
+            {!penaltyAmount.isZero() && (
               <Alert
                 severity="error"
                 icon={false}
@@ -473,7 +472,7 @@ export default function VeSDL(): JSX.Element {
       <ConfirmModal
         open={unlockConfirmOpen}
         modalText={t("confirmUnlock", {
-          penaltyPercent: formatBNToString(penaltyPercent, 18),
+          penaltyPercent: formatBNToString(penaltyPercent, 18, 3),
         })}
         onOK={unlock}
         onClose={() => setUnlockConfirmOpen(false)}

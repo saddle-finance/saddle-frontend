@@ -18,8 +18,8 @@ export const NetworkContextName = "NETWORK"
 export const BTC_POOL_NAME = "BTC"
 export const BTC_POOL_V2_NAME = "BTC V2"
 export const EVMOS_BTC_POOL_NAME = "Evmos BTC"
-export const STABLECOIN_POOL_NAME = "Stablecoin"
-export const STABLECOIN_POOL_V2_NAME = "Stablecoin V2"
+export const STABLECOIN_POOL_NAME = "USD"
+export const STABLECOIN_POOL_V2_NAME = "USDv2"
 export const VETH2_POOL_NAME = "vETH2"
 export const ALETH_POOL_NAME = "alETH"
 export const D4_POOL_NAME = "D4"
@@ -45,6 +45,7 @@ export const FRAX_3_POOL_NAME = "Frax 3Pool"
 export const TBTC_METAPOOL_V2_BTCV2_V3_NAME = "tBTCv2-BTCv2_v3"
 export const WCUSD_METAPOOL_V2_USDV2_V3_NAME = "wcUSD-USDv2_v3"
 export const SUSD_METAPOOL_V2_USDV2_V3_NAME = "sUSD-USDv2_v3"
+
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof BTC_POOL_V2_NAME
@@ -1847,7 +1848,8 @@ export const SYNTH_TRACKING_ID =
 export const IS_VIRTUAL_SWAP_ACTIVE = true
 export const IS_L2_SUPPORTED = true
 export const IS_SDL_LIVE = true
-export const IS_VESDL_LIVE = true
+export const IS_VESDL_LIVE = false
+export const IS_POOL_REGISTRY_MIGRATION_LIVE = false
 // FLAGS END
 
 // Regex for readable decimal number
