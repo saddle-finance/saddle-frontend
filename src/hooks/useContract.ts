@@ -6,6 +6,7 @@ import {
   GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES,
   MASTER_REGISTRY_CONTRACT_ADDRESSES,
   MINICHEF_CONTRACT_ADDRESSES,
+  MINTER_ADDRESSES,
   RETROACTIVE_VESTING_CONTRACT_ADDRESSES,
   SDL_TOKEN_ADDRESSES,
   SYNTHETIX_CONTRACT_ADDRESSES,
@@ -38,9 +39,11 @@ import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import MASTER_REGISTRY_ABI from "../constants/abis/masterRegistry.json"
 import MINICHEF_CONTRACT_ABI from "../constants/abis/miniChef.json"
+import MINTER_ABI from "../constants/abis/minter.json"
 import { MasterRegistry } from "../../types/ethers-contracts/MasterRegistry"
 import { MetaSwapDeposit } from "../../types/ethers-contracts/MetaSwapDeposit"
 import { MiniChef } from "../../types/ethers-contracts/MiniChef"
+import { Minter } from "../../types/ethers-contracts/Minter"
 import { MulticallContract } from "../types/ethcall"
 import PERMISSIONLESS_DEPLOYER_ABI from "../constants/abis/permissionlessDeployer.json"
 import POOL_REGISTRY_ABI from "../constants/abis/poolRegistry.json"
@@ -253,6 +256,12 @@ export function useSynthetixExchangeRatesContract(): SynthetixExchangeRate | nul
     contractAddress,
     SYNTHETIX_EXCHANGE_RATE_CONTRACT_ABI,
   ) as SynthetixExchangeRate
+}
+
+export function useMinterContract(): Minter | null {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress = chainId && MINTER_ADDRESSES[chainId]
+  return useContract(contractAddress, MINTER_ABI) as Minter
 }
 
 export function useTokenContract(

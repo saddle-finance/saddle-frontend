@@ -23,6 +23,7 @@ export type Gauge = {
   address: string
   gaugeWeight: BigNumber
   poolAddress: string
+  poolName: string
   gaugeRelativeWeight: BigNumber
   workingSupply: BigNumber
   rewards: GaugeReward[]
