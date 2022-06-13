@@ -16,6 +16,7 @@ import HELPER_CONTRACT_ABI from "../constants/abis/helperContract.json"
 import { HelperContract } from "../../types/ethers-contracts/HelperContract"
 import LIQUIDITY_GAUGE_V5_ABI from "../constants/abis/liquidityGaugeV5.json"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
+import { Minter } from "../../types/ethers-contracts/Minter"
 import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
 
@@ -63,7 +64,9 @@ export async function getGaugeData(
   library: Web3Provider,
   chainId: ChainId,
   gaugeController: GaugeController,
+  minterContract?: Minter,
 ): Promise<Gauges | null> {
+  // TODO switch to IS_VESDL_LIVE
   if (chainId !== ChainId.HARDHAT) return initialGaugesState
   try {
     const gaugeCount = (await gaugeController.n_gauges()).toNumber()
@@ -107,7 +110,6 @@ export async function getGaugeData(
         gaugeControllerMultiCall.get_gauge_weight(gaugeAddress),
       ),
     )
-
     const gaugeRelativeWeightsPromise: Promise<BigNumber[]> =
       ethCallProvider.all(
         gaugeAddresses.map((gaugeAddress) =>
@@ -115,13 +117,31 @@ export async function getGaugeData(
           gaugeControllerMultiCall.gauge_relative_weight(gaugeAddress),
         ),
       )
+    const gaugeWorkingSuppliesPromise: Promise<BigNumber[]> =
+      ethCallProvider.all(
+        gaugeAddresses.map((gaugeAddress) => {
+          const liquidityGaugeContract =
+            createMultiCallContract<LiquidityGaugeV5>(
+              gaugeAddress,
+              LIQUIDITY_GAUGE_V5_ABI,
+            )
+          return liquidityGaugeContract.working_supply()
+        }),
+      )
 
-    const [gaugeWeights, gaugeRelativeWeights, gaugeRewards] =
-      await Promise.all([
-        gaugeWeightsPromise,
-        gaugeRelativeWeightsPromise,
-        gaugeRewardsPromise,
-      ])
+    const [
+      gaugeWeights,
+      gaugeRelativeWeights,
+      gaugeRewards,
+      gaugeWorkingSupplies,
+      minterSDLRate,
+    ] = await Promise.all([
+      gaugeWeightsPromise,
+      gaugeRelativeWeightsPromise,
+      gaugeRewardsPromise,
+      gaugeWorkingSuppliesPromise,
+      minterContract ? minterContract.rate() : Promise.resolve(Zero),
+    ])
 
     const gauges: PoolAddressToGauge = gaugePoolAddresses.reduce(
       (previousGaugeData, gaugePoolAddress, index) => {
@@ -132,6 +152,8 @@ export async function getGaugeData(
             poolAddress: gaugePoolAddress,
             gaugeWeight: gaugeWeights[index],
             gaugeRelativeWeight: gaugeRelativeWeights[index],
+            gaugeWorkingSupply: gaugeWorkingSupplies[index],
+            sdlRate: minterSDLRate,
             rewards: gaugeRewards[index].map((reward) => ({
               periodFinish: reward.period_finish,
               lastUpdate: reward.last_update,
