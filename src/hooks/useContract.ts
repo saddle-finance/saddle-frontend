@@ -14,7 +14,8 @@ import {
   Token,
   VOTING_ESCROW_CONTRACT_ADDRESS,
 } from "../constants"
-import { getContract, getSwapContract } from "../utils"
+
+import { createMultiCallContract, getContract, getSwapContract } from "../utils"
 import { useContext, useEffect, useMemo, useState } from "react"
 
 import { AddressZero } from "@ethersproject/constants"
@@ -40,6 +41,7 @@ import MINICHEF_CONTRACT_ABI from "../constants/abis/miniChef.json"
 import { MasterRegistry } from "../../types/ethers-contracts/MasterRegistry"
 import { MetaSwapDeposit } from "../../types/ethers-contracts/MetaSwapDeposit"
 import { MiniChef } from "../../types/ethers-contracts/MiniChef"
+import { MulticallContract } from "../types/ethcall"
 import PERMISSIONLESS_DEPLOYER_ABI from "../constants/abis/permissionlessDeployer.json"
 import POOL_REGISTRY_ABI from "../constants/abis/poolRegistry.json"
 import { PermissionlessDeployer } from "../../types/ethers-contracts/PermissionlessDeployer"
@@ -123,6 +125,37 @@ export function usePoolRegistry(): PoolRegistry | null {
       library,
       account,
     ) as PoolRegistry
+  }, [contractAddress, library, account])
+}
+
+export function usePoolRegistryMultiCall(): MulticallContract<PoolRegistry> | null {
+  const { account, library } = useActiveWeb3React()
+  const masterRegistryContract = useMasterRegistry()
+  const [contractAddress, setContractAddress] = useState<string | undefined>()
+  useEffect(() => {
+    if (masterRegistryContract) {
+      masterRegistryContract
+        ?.resolveNameToLatestAddress(POOL_REGISTRY_NAME)
+        .then((contractAddress) => {
+          if (contractAddress !== AddressZero) {
+            setContractAddress(contractAddress)
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+          setContractAddress(undefined)
+        })
+    } else {
+      setContractAddress(undefined)
+    }
+  }, [masterRegistryContract])
+
+  return useMemo(() => {
+    if (!library || !account || !contractAddress) return null
+    return createMultiCallContract<PoolRegistry>(
+      contractAddress,
+      POOL_REGISTRY_ABI,
+    )
   }, [contractAddress, library, account])
 }
 
