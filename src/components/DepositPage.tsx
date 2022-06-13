@@ -98,7 +98,6 @@ const DepositPage = (props: Props): ReactElement => {
   const gaugeAddr = gauges?.[poolData?.poolAddress ?? ""]?.address ?? ""
 
   useEffect(() => {
-    console.log({ gauges, library, account, chainId, poolData, gaugeAddr })
     if (!library || !account || !chainId || !poolData || !gaugeAddr) {
       setLiquidityGaugeContract(null)
       return

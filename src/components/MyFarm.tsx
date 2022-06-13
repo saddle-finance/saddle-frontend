@@ -63,7 +63,6 @@ export default function MyFarm({
   }, [account, chainId, liquidityGaugeContract, poolName])
 
   const onStakeClick = useCallback(async () => {
-    console.log({ liquidityGaugeContract, lpTokenContract, account, chainId })
     if (!liquidityGaugeContract || !lpTokenContract || !account || !chainId)
       return
     const txn = await liquidityGaugeContract["deposit(uint256,address,bool)"](

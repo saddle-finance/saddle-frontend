@@ -132,7 +132,6 @@ function usePoolsRewardBalances() {
     )
     const poolNameToMinichefSDLBalance = poolsWithRewards.reduce(
       (acc, { miniChefRewardsPid, poolName }) => {
-        console.log({ userState })
         return {
           ...acc,
           [poolName]:
