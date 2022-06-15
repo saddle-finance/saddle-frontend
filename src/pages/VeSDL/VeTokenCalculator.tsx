@@ -38,10 +38,10 @@ export default function VeTokenCalculator({
   const [totalLPAmountInput, setTotalLPAmountInput] = useState<string>("")
   const [poolNameValue, setPoolNameValue] = useState<string>("D4")
   const [userVeSdlInputAmount, setUserVeSdlInputAmount] = useState<string>(
-    formatBNToString(userBalanceVeSdl, 18),
+    userBalanceVeSdl.isZero() ? "" : formatBNToString(userBalanceVeSdl, 18),
   )
   const [totalVeSDLInput, setTotalVeSDLInput] = useState<string>(
-    formatBNToString(totalSupplyVeSdl, 18),
+    totalSupplyVeSdl.isZero() ? "" : formatBNToString(totalSupplyVeSdl, 18),
   )
 
   const pool = basicPools && basicPools[poolNameValue]
@@ -67,7 +67,7 @@ export default function VeTokenCalculator({
   const minVeSDL =
     !totalLPAmountBN.add(userLPAmountBN).isZero() &&
     parseEther(totalVeSDLInput || "0")
-      .mul(totalLPAmountBN)
+      .mul(userLPAmountBN)
       .div(totalLPAmountBN.add(userLPAmountBN))
 
   const maxBoostPossible =
