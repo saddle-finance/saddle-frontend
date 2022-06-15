@@ -127,6 +127,7 @@ function Swap(): ReactElement {
         from: [],
         to: [],
       }
+
     const allTokens = Object.values(TOKENS_MAP)
       .filter(({ isLPToken, addresses }) => !isLPToken && addresses[chainId])
       .filter(({ symbol }) => {

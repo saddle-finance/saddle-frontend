@@ -1,7 +1,7 @@
 import { JsonRpcProvider } from "@ethersproject/providers"
 import { getDefaultProvider } from "ethers"
 
-const STABLECOIN_POOL_V2_NAME = "Stablecoin V2"
+const STABLECOIN_POOL_V2_NAME = "USDv2"
 const SUSD_METAPOOL_V3_NAME = "sUSD-USDv2_v3"
 const pools = [STABLECOIN_POOL_V2_NAME, SUSD_METAPOOL_V3_NAME] // order is important basepool must have balance prior to metapool
 
@@ -29,7 +29,7 @@ context("Deposit Flow", () => {
       void increaseTime()
     }
     it(`successfully completes a deposit of all ${poolName} assets`, () => {
-      cy.contains(poolName)
+      cy.contains(new RegExp("^" + poolName + "$"))
         .parents("[data-testid=poolOverview]")
         .within(() => {
           cy.get("button").contains("Deposit").click()

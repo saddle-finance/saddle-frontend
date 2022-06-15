@@ -1,7 +1,11 @@
 import { AddressZero, Zero } from "@ethersproject/constants"
 import { ChainId, PoolTypes, TOKENS_MAP, Token } from "../constants"
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
-import { MulticallContract, MulticallProvider } from "../types/ethcall"
+import {
+  MulticallCall,
+  MulticallContract,
+  MulticallProvider,
+} from "../types/ethcall"
 import { formatUnits, parseEther, parseUnits } from "@ethersproject/units"
 
 import { BigNumber } from "@ethersproject/bignumber"
@@ -24,6 +28,7 @@ import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import { TokenPricesUSD } from "../state/application"
+import { chunk } from "lodash"
 import { getAddress } from "@ethersproject/address"
 import { minBigNumber } from "./minBigNumber"
 
@@ -464,6 +469,49 @@ export const calculateWorkingAmountAndBoost = (
     .div(newWorkingSupply.mul(noBoostLim))
 
   return boost
+}
+
+/**
+ * Lowercase a list of strings
+ *
+ * @param strings list of strings
+ * @returns lower cased list of strings
+ */
+export function mapToLowerCase(strings: string[]): string[] {
+  return strings.map((address) => address.toLowerCase())
+}
+
+/**
+ * Verify if an address is Address Zero
+ *
+ * @param address address string to be verified
+ * @returns  boolean check
+ */
+export function isAddressZero(address: unknown): boolean {
+  return address === AddressZero
+}
+
+/**
+ * Resolve multicall promises in chunks
+ *
+ * @param multiCallCalls
+ * @param ethCallProvider
+ * @param chunkSize
+ * @returns
+ */
+export async function chunkedTryAll<T>(
+  multiCallCalls: MulticallCall<unknown, T>[],
+  ethCallProvider: MulticallProvider,
+  chunkSize: number,
+): Promise<(T | null)[]> {
+  const multicallCallChunk = chunk(multiCallCalls, chunkSize).map((batch) =>
+    ethCallProvider.tryAll(batch),
+  )
+  return (await Promise.all(multicallCallChunk)).flat()
+}
+
+export type DeepNullable<T> = {
+  [K in keyof T]: DeepNullable<T[K]> | null
 }
 
 export const arrayToHashmap = <K extends string | number, V>(

@@ -25,6 +25,7 @@ export type Gauge = {
   gaugeTotalSupply: BigNumber
   gaugeWeight: BigNumber
   poolAddress: string
+  poolName: string
   gaugeRelativeWeight: BigNumber
   workingBalances: BigNumber
   workingSupply: BigNumber
