@@ -1,21 +1,16 @@
-import { BasicPool, BasicPoolsContext } from "./../providers/BasicPoolsProvider"
-import {
-  BasicToken,
-  BasicTokens,
-  TokensContext,
-} from "../providers/TokensProvider"
+import { BasicToken, TokensContext } from "../providers/TokensProvider"
 import {
   Partners,
   getThirdPartyDataForPool,
 } from "../utils/thirdPartyIntegrations"
-import { bnSum, getTokenSymbolForPoolType } from "../utils"
+import { bnSum, calculateFraction, getPriceDataForPool } from "../utils"
 import { useContext, useEffect, useState } from "react"
 
 import { AppState } from "../state"
+import { BasicPoolsContext } from "./../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { MinichefContext } from "../providers/MinichefProvider"
 import { PoolTypes } from "./../constants/index"
-import { TokenPricesUSD } from "./../state/application"
 import { UserStateContext } from "./../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
@@ -318,55 +313,4 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
   ])
 
   return poolData
-}
-
-function calculateFraction(
-  numerator: BigNumber,
-  divisor: BigNumber,
-): BigNumber {
-  return divisor.isZero()
-    ? Zero
-    : numerator.mul(BigNumber.from(10).pow(18)).div(divisor) // returns 1e18
-}
-
-export function getPriceDataForPool(
-  tokens: BasicTokens,
-  basicPool: BasicPool,
-  tokenPricesUSD?: TokenPricesUSD,
-): {
-  assetPrice: BigNumber
-  lpTokenPriceUSD: BigNumber
-  tokenBalancesUSD: BigNumber[]
-  tokenBalancesSumUSD: BigNumber
-  tokenBalances1e18: BigNumber[]
-  totalLocked: BigNumber
-} {
-  const poolAssetPrice = parseUnits(
-    String(
-      tokenPricesUSD?.[getTokenSymbolForPoolType(basicPool.typeOfAsset)] || 0,
-    ),
-    18,
-  )
-  const expandedTokens = basicPool.tokens.map((token) => (tokens || {})[token])
-  const tokenBalances1e18 = basicPool.tokenBalances.map((balance, i) =>
-    balance.mul(
-      BigNumber.from(10).pow(18 - (expandedTokens[i]?.decimals || 0)),
-    ),
-  )
-  const tokenBalancesSum1e18 = tokenBalances1e18.reduce(bnSum, Zero)
-  const tokenBalancesUSD = tokenBalances1e18.map((balance) =>
-    balance.mul(poolAssetPrice).div(BigNumber.from(10).pow(18)),
-  )
-  const tokenBalancesSumUSD = tokenBalancesUSD.reduce(bnSum, Zero)
-  const lpTokenPriceUSD = basicPool.lpTokenSupply.isZero()
-    ? Zero
-    : tokenBalancesSumUSD.mul(BigInt(1e18)).div(basicPool.lpTokenSupply)
-  return {
-    assetPrice: poolAssetPrice,
-    lpTokenPriceUSD,
-    tokenBalancesUSD,
-    tokenBalancesSumUSD,
-    tokenBalances1e18,
-    totalLocked: tokenBalancesSum1e18,
-  }
 }
