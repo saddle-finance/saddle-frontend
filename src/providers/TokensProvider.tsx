@@ -72,8 +72,8 @@ export default function TokensProvider({
       if (gauges.gauges) {
         // add gauge tokens
         Object.values(gauges.gauges).forEach((gauge) => {
-          gauge.rewards.forEach(({ token }) => {
-            targetTokenAddresses.add(token)
+          gauge.rewards.forEach(({ tokenAddress }) => {
+            targetTokenAddresses.add(tokenAddress)
           })
         })
       }

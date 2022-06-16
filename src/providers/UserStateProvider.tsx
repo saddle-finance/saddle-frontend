@@ -64,6 +64,9 @@ export default function UserStateProvider({
             library,
             chainId,
             Object.values(gauges.gauges).map(({ address }) => address),
+            Object.values(gauges.gauges).map(({ rewards }) =>
+              rewards.map(({ tokenAddress }) => tokenAddress),
+            ),
             account,
           )
         : Promise.resolve(null)

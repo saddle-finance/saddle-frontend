@@ -3,6 +3,7 @@ import {
   BTC_POOL_NAME,
   FEE_DISTRIBUTOR_ADDRESSES,
   GAUGE_CONTROLLER_ADDRESSES,
+  GAUGE_MINTER_ADDRESSES,
   GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES,
   MASTER_REGISTRY_CONTRACT_ADDRESSES,
   MINICHEF_CONTRACT_ADDRESSES,
@@ -15,7 +16,6 @@ import {
   Token,
   VOTING_ESCROW_CONTRACT_ADDRESS,
 } from "../constants"
-
 import { createMultiCallContract, getContract, getSwapContract } from "../utils"
 import { useContext, useEffect, useMemo, useState } from "react"
 
@@ -29,6 +29,7 @@ import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import FEE_DISTRIBUTOR_ABI from "../constants/abis/feeDistributor.json"
 import { FeeDistributor } from "../../types/ethers-contracts/FeeDistributor"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
+import GAUGE_MINTER_ABI from "../constants/abis/minter.json"
 import GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI from "../constants/abis/generalizedSwapMigrator.json"
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
 import { GeneralizedSwapMigrator } from "../../types/ethers-contracts/GeneralizedSwapMigrator"
@@ -395,4 +396,10 @@ export const useFeeDistributor = (): FeeDistributor | null => {
   const contractAddress =
     chainId && IS_VESDL_LIVE ? FEE_DISTRIBUTOR_ADDRESSES[chainId] : undefined
   return useContract(contractAddress, FEE_DISTRIBUTOR_ABI) as FeeDistributor
+}
+
+export const useGaugeMinterContract = (): Minter | null => {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress = chainId ? GAUGE_MINTER_ADDRESSES[chainId] : undefined
+  return useContract(contractAddress, GAUGE_MINTER_ABI) as Minter
 }
