@@ -550,7 +550,7 @@ export const SDL_TOKEN_ADDRESSES = buildAddresses({
 
 export const VOTING_ESCROW_CONTRACT_ADDRESS = buildAddresses({
   [ChainId.MAINNET]: "0xb6beB7b30E3e6e041Ee590776C5807B6cf0439CA",
-  [ChainId.HARDHAT]: "0x4b6aB5F819A515382B0dEB6935D793817bB4af28",
+  [ChainId.HARDHAT]: "0x457cCf29090fe5A24c19c1bc95F492168C0EaFdb",
 })
 
 export const FEE_DISTRIBUTOR_ADDRESSES = buildAddresses({
@@ -564,11 +564,11 @@ export const SPA_TOKEN_ADDRESSES = buildAddresses({
 })
 
 export const HELPER_CONTRACT_ADDRESSES = buildAddresses({
-  [ChainId.HARDHAT]: "0x73eccD6288e117cAcA738BDAD4FEC51312166C1A",
+  [ChainId.HARDHAT]: "0x381445710b5e73d34aF196c53A3D5cDa58EDBf7A",
 })
 
 export const GAUGE_CONTROLLER_ADDRESSES = buildAddresses({
-  [ChainId.HARDHAT]: "0xF8e31cb472bc70500f08Cd84917E5A1912Ec8397",
+  [ChainId.HARDHAT]: "0x5fc748f1FEb28d7b76fa1c6B07D8ba2d5535177c",
 })
 
 export const SPA = new Token(
@@ -1861,3 +1861,4 @@ export const readableDecimalNumberRegex = /^[0-9]*[.,]?[0-9]*$/
 export const BN_1E18 = BigNumber.from(10).pow(18)
 export const BN_DAY_IN_SECONDS = BigNumber.from(24 * 60 * 60)
 export const BN_YEAR_IN_SECONDS = BN_DAY_IN_SECONDS.mul(365)
+export const BN_MSIG_SDL_VEST_END_TIMESTAMP = BigNumber.from(1731651563)

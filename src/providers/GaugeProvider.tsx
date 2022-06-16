@@ -19,7 +19,8 @@ export default function GaugeProvider({
 
   useEffect(() => {
     async function fetchGauges() {
-      if (!gaugeControllerContract || !chainId || !library) return
+      if (!gaugeControllerContract || !chainId || !library || !minterContract)
+        return
       const gauges: Gauges =
         (await getGaugeData(
           library,
