@@ -3,7 +3,7 @@ import { PoolTypes, SWAP_TYPES } from "../../constants/index"
 
 import { BasicToken } from "./../../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
-import { getPriceDataForPool } from "../usePoolData"
+import { getPriceDataForPool } from "../../utils"
 
 const { getTradingPairsForToken } = __test__
 
@@ -15,6 +15,7 @@ const createTestToken = (name: string, isSynth?: boolean): BasicToken => {
     decimals: 18,
     isSynthetic: isSynth || false,
     isLPToken: false,
+    typeAsset: 1,
   }
 }
 
