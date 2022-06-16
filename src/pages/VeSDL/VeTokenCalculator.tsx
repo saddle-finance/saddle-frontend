@@ -14,6 +14,7 @@ import { BigNumber } from "@ethersproject/bignumber"
 import CalculateIcon from "@mui/icons-material/Calculate"
 import Dialog from "../../components/Dialog"
 import { GaugeContext } from "../../providers/GaugeProvider"
+import { Zero } from "@ethersproject/constants"
 import { parseEther } from "@ethersproject/units"
 import { readableDecimalNumberRegex } from "../../constants"
 import { useTranslation } from "react-i18next"
@@ -58,8 +59,8 @@ export default function VeTokenCalculator({
     calculateWorkingAmountAndBoost(
       userLPAmountBN,
       totalLPAmountBN,
-      gauge.workingBalances,
-      gauge.workingSupply,
+      gauge.workingBalances || Zero,
+      gauge.workingSupply || Zero,
       parseEther(userVeSdlInputAmount || "0"),
       parseEther(totalVeSDLInput || "0"),
     )
@@ -76,16 +77,22 @@ export default function VeTokenCalculator({
     calculateWorkingAmountAndBoost(
       userLPAmountBN,
       totalLPAmountBN,
-      gauge.workingBalances,
-      gauge.workingSupply,
+      gauge.workingBalances || Zero,
+      gauge.workingSupply || Zero,
       minVeSDL,
       parseEther(totalVeSDLInput || "0"),
     )
 
   useEffect(() => {
     if (gauge) {
-      setUserLPAmountInput(formatBNToString(gauge.gaugeBalance, 18))
-      setTotalLPAmountInput(formatBNToString(gauge.gaugeTotalSupply, 18))
+      setUserLPAmountInput(
+        gauge.gaugeBalance ? formatBNToString(gauge.gaugeBalance, 18) : "",
+      )
+      setTotalLPAmountInput(
+        gauge.gaugeTotalSupply
+          ? formatBNToString(gauge.gaugeTotalSupply, 18)
+          : "",
+      )
     }
   }, [gauge])
 

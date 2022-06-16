@@ -21,14 +21,14 @@ import { Zero } from "@ethersproject/constants"
 
 export type Gauge = {
   address: string
-  gaugeBalance: BigNumber
-  gaugeTotalSupply: BigNumber
+  gaugeBalance: BigNumber | null
+  gaugeTotalSupply: BigNumber | null
   gaugeWeight: BigNumber
   poolAddress: string
   poolName: string
   gaugeRelativeWeight: BigNumber
-  workingBalances: BigNumber
-  workingSupply: BigNumber
+  workingBalances: BigNumber | null
+  workingSupply: BigNumber | null
   rewards: GaugeReward[]
 }
 
@@ -126,24 +126,24 @@ export async function getGaugeData(
         LIQUIDITY_GAUGE_V5_ABI,
       ),
     )
-    const gaugeBalancePromise = ethCallProvider.all(
+    const gaugeBalancePromise = ethCallProvider.tryAll(
       gaugeMulticallContracts.map((gaugeContract) =>
         gaugeContract.balanceOf(account),
       ),
     )
-    const gaugeTotalSupplyPromise = ethCallProvider.all(
+    const gaugeTotalSupplyPromise = ethCallProvider.tryAll(
       gaugeMulticallContracts.map((gaugeContract) =>
         gaugeContract.totalSupply(),
       ),
     )
 
-    const gaugeWorkingSupplyPromise = ethCallProvider.all(
+    const gaugeWorkingSupplyPromise = ethCallProvider.tryAll(
       gaugeMulticallContracts.map((gaugeContract) =>
         gaugeContract.working_supply(),
       ),
     )
 
-    const gaugeWorkingBalancesPromise = ethCallProvider.all(
+    const gaugeWorkingBalancesPromise = ethCallProvider.tryAll(
       gaugeMulticallContracts.map((gaugeContract) =>
         gaugeContract.working_balances(account),
       ),
@@ -179,14 +179,15 @@ export async function getGaugeData(
             workingSupply: gaugeWorkingSupplies[index],
             workingBalances: gaugeWorkingBalances[index],
             gaugeBalance: gaugeBalances[index],
+            poolName: "",
             rewards: gaugeRewards[index].map((reward) => ({
-              periodFinish: reward.period_finish,
-              lastUpdate: reward.last_update,
+              period_finish: reward.period_finish,
+              last_update: reward.last_update,
               distributor: reward.distributor.toLowerCase(),
               rate: reward.rate,
               token: reward.token.toLowerCase(),
             })),
-          },
+          } as Gauge,
         }
       },
       {},
