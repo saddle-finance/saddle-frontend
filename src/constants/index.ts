@@ -18,8 +18,8 @@ export const NetworkContextName = "NETWORK"
 export const BTC_POOL_NAME = "BTC"
 export const BTC_POOL_V2_NAME = "BTC V2"
 export const EVMOS_BTC_POOL_NAME = "Evmos BTC"
-export const STABLECOIN_POOL_NAME = "Stablecoin"
-export const STABLECOIN_POOL_V2_NAME = "Stablecoin V2"
+export const STABLECOIN_POOL_NAME = "USD"
+export const STABLECOIN_POOL_V2_NAME = "USDv2"
 export const VETH2_POOL_NAME = "vETH2"
 export const ALETH_POOL_NAME = "alETH"
 export const D4_POOL_NAME = "D4"
@@ -45,6 +45,7 @@ export const FRAX_3_POOL_NAME = "Frax 3Pool"
 export const TBTC_METAPOOL_V2_BTCV2_V3_NAME = "tBTCv2-BTCv2_v3"
 export const WCUSD_METAPOOL_V2_USDV2_V3_NAME = "wcUSD-USDv2_v3"
 export const SUSD_METAPOOL_V2_USDV2_V3_NAME = "sUSD-USDv2_v3"
+
 export type PoolName =
   | typeof BTC_POOL_NAME
   | typeof BTC_POOL_V2_NAME
@@ -149,7 +150,7 @@ export const BLOCK_TIME = 13000 // ms
 // TODO: Update with mainnet and ropsten addresses
 export const PERMISSIONLESS_DEPLOYER_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0xD5ac451B0c50B9476107823Af206eD814a2e2580",
-  [ChainId.MAINNET]: "",
+  [ChainId.MAINNET]: "0x8f43fBDDc10b822AFA26812fB9058CA1fC22078F",
   [ChainId.ROPSTEN]: "",
 })
 
@@ -176,6 +177,11 @@ export const MINICHEF_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.ARBITRUM]: "0x2069043d7556B1207a505eb459D18d908DF29b55",
   [ChainId.MAINNET]: "0x691ef79e40d909C715BE5e9e93738B3fF7D58534",
   [ChainId.EVMOS]: "0x0232e0b6df048c8CC4037c52Bc90cf943c9C8cC6",
+})
+
+export const MINTER_ADDRESSES = buildAddresses({
+  [ChainId.HARDHAT]: "0xc0F115A19107322cFBf1cDBC7ea011C19EbDB4F8",
+  [ChainId.MAINNET]: "0x818d3c0a6414392bA253Df358E50fd5703ae2643",
 })
 
 export const RETROACTIVE_VESTING_CONTRACT_ADDRESSES = buildAddresses({
@@ -543,24 +549,26 @@ export const SDL_TOKEN_ADDRESSES = buildAddresses({
 })
 
 export const VOTING_ESCROW_CONTRACT_ADDRESS = buildAddresses({
-  [ChainId.MAINNET]: "",
-  [ChainId.HARDHAT]: "0x4b6aB5F819A515382B0dEB6935D793817bB4af28",
+  [ChainId.MAINNET]: "0xb6beB7b30E3e6e041Ee590776C5807B6cf0439CA",
+  [ChainId.HARDHAT]: "0x457cCf29090fe5A24c19c1bc95F492168C0EaFdb",
 })
 
 export const FEE_DISTRIBUTOR_ADDRESSES = buildAddresses({
-  [ChainId.HARDHAT]: "0x22753E4264FDDc6181dc7cce468904A80a363E44",
+  [ChainId.HARDHAT]: "0x8A93d247134d91e0de6f96547cB0204e5BE8e5D8",
 })
-
+export const GAUGE_MINTER_ADDRESSES = buildAddresses({
+  [ChainId.HARDHAT]: "0xB82008565FdC7e44609fA118A4a681E92581e680",
+})
 export const SPA_TOKEN_ADDRESSES = buildAddresses({
   [ChainId.ARBITRUM]: "0x5575552988A3A80504bBaeB1311674fCFd40aD4B",
 })
 
 export const HELPER_CONTRACT_ADDRESSES = buildAddresses({
-  [ChainId.HARDHAT]: "0x73eccD6288e117cAcA738BDAD4FEC51312166C1A",
+  [ChainId.HARDHAT]: "0x381445710b5e73d34aF196c53A3D5cDa58EDBf7A",
 })
 
 export const GAUGE_CONTROLLER_ADDRESSES = buildAddresses({
-  [ChainId.HARDHAT]: "0xF8e31cb472bc70500f08Cd84917E5A1912Ec8397",
+  [ChainId.HARDHAT]: "0x5fc748f1FEb28d7b76fa1c6B07D8ba2d5535177c",
 })
 
 export const SPA = new Token(
@@ -1843,6 +1851,7 @@ export const IS_VIRTUAL_SWAP_ACTIVE = true
 export const IS_L2_SUPPORTED = true
 export const IS_SDL_LIVE = true
 export const IS_VESDL_LIVE = false
+export const IS_POOL_REGISTRY_MIGRATION_LIVE = false
 // FLAGS END
 
 // Regex for readable decimal number
@@ -1852,3 +1861,4 @@ export const readableDecimalNumberRegex = /^[0-9]*[.,]?[0-9]*$/
 export const BN_1E18 = BigNumber.from(10).pow(18)
 export const BN_DAY_IN_SECONDS = BigNumber.from(24 * 60 * 60)
 export const BN_YEAR_IN_SECONDS = BN_DAY_IN_SECONDS.mul(365)
+export const BN_MSIG_SDL_VEST_END_TIMESTAMP = BigNumber.from(1731651563)

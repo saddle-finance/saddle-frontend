@@ -3,9 +3,11 @@ import {
   BTC_POOL_NAME,
   FEE_DISTRIBUTOR_ADDRESSES,
   GAUGE_CONTROLLER_ADDRESSES,
+  GAUGE_MINTER_ADDRESSES,
   GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES,
   MASTER_REGISTRY_CONTRACT_ADDRESSES,
   MINICHEF_CONTRACT_ADDRESSES,
+  MINTER_ADDRESSES,
   RETROACTIVE_VESTING_CONTRACT_ADDRESSES,
   SDL_TOKEN_ADDRESSES,
   SYNTHETIX_CONTRACT_ADDRESSES,
@@ -14,7 +16,7 @@ import {
   Token,
   VOTING_ESCROW_CONTRACT_ADDRESS,
 } from "../constants"
-import { getContract, getSwapContract } from "../utils"
+import { createMultiCallContract, getContract, getSwapContract } from "../utils"
 import { useContext, useEffect, useMemo, useState } from "react"
 
 import { AddressZero } from "@ethersproject/constants"
@@ -27,6 +29,7 @@ import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import FEE_DISTRIBUTOR_ABI from "../constants/abis/feeDistributor.json"
 import { FeeDistributor } from "../../types/ethers-contracts/FeeDistributor"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
+import GAUGE_MINTER_ABI from "../constants/abis/minter.json"
 import GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI from "../constants/abis/generalizedSwapMigrator.json"
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
 import { GeneralizedSwapMigrator } from "../../types/ethers-contracts/GeneralizedSwapMigrator"
@@ -37,9 +40,12 @@ import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import MASTER_REGISTRY_ABI from "../constants/abis/masterRegistry.json"
 import MINICHEF_CONTRACT_ABI from "../constants/abis/miniChef.json"
+import MINTER_ABI from "../constants/abis/minter.json"
 import { MasterRegistry } from "../../types/ethers-contracts/MasterRegistry"
 import { MetaSwapDeposit } from "../../types/ethers-contracts/MetaSwapDeposit"
 import { MiniChef } from "../../types/ethers-contracts/MiniChef"
+import { Minter } from "../../types/ethers-contracts/Minter"
+import { MulticallContract } from "../types/ethcall"
 import PERMISSIONLESS_DEPLOYER_ABI from "../constants/abis/permissionlessDeployer.json"
 import POOL_REGISTRY_ABI from "../constants/abis/poolRegistry.json"
 import { PermissionlessDeployer } from "../../types/ethers-contracts/PermissionlessDeployer"
@@ -123,6 +129,37 @@ export function usePoolRegistry(): PoolRegistry | null {
       library,
       account,
     ) as PoolRegistry
+  }, [contractAddress, library, account])
+}
+
+export function usePoolRegistryMultiCall(): MulticallContract<PoolRegistry> | null {
+  const { account, library } = useActiveWeb3React()
+  const masterRegistryContract = useMasterRegistry()
+  const [contractAddress, setContractAddress] = useState<string | undefined>()
+  useEffect(() => {
+    if (masterRegistryContract) {
+      masterRegistryContract
+        ?.resolveNameToLatestAddress(POOL_REGISTRY_NAME)
+        .then((contractAddress) => {
+          if (contractAddress !== AddressZero) {
+            setContractAddress(contractAddress)
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+          setContractAddress(undefined)
+        })
+    } else {
+      setContractAddress(undefined)
+    }
+  }, [masterRegistryContract])
+
+  return useMemo(() => {
+    if (!library || !account || !contractAddress) return null
+    return createMultiCallContract<PoolRegistry>(
+      contractAddress,
+      POOL_REGISTRY_ABI,
+    )
   }, [contractAddress, library, account])
 }
 
@@ -220,6 +257,12 @@ export function useSynthetixExchangeRatesContract(): SynthetixExchangeRate | nul
     contractAddress,
     SYNTHETIX_EXCHANGE_RATE_CONTRACT_ABI,
   ) as SynthetixExchangeRate
+}
+
+export function useMinterContract(): Minter | null {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress = chainId && MINTER_ADDRESSES[chainId]
+  return useContract(contractAddress, MINTER_ABI) as Minter
 }
 
 export function useTokenContract(
@@ -353,4 +396,10 @@ export const useFeeDistributor = (): FeeDistributor | null => {
   const contractAddress =
     chainId && IS_VESDL_LIVE ? FEE_DISTRIBUTOR_ADDRESSES[chainId] : undefined
   return useContract(contractAddress, FEE_DISTRIBUTOR_ABI) as FeeDistributor
+}
+
+export const useGaugeMinterContract = (): Minter | null => {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress = chainId ? GAUGE_MINTER_ADDRESSES[chainId] : undefined
+  return useContract(contractAddress, GAUGE_MINTER_ABI) as Minter
 }

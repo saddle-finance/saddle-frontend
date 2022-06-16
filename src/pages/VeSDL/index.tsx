@@ -12,15 +12,16 @@ import {
 } from "@mui/material"
 import { ChainId, TRANSACTION_TYPES } from "../../constants"
 import React, { useCallback, useContext, useEffect, useState } from "react"
-import { commify, formatUnits, parseEther } from "@ethersproject/units"
-import { enUS, zhCN } from "date-fns/locale"
-import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 import {
+  addWeeks,
   format,
   formatDuration,
   getUnixTime,
   intervalToDuration,
 } from "date-fns"
+import { commify, formatUnits, parseEther } from "@ethersproject/units"
+import { enUS, zhCN } from "date-fns/locale"
+import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 import { useDispatch, useSelector } from "react-redux"
 import {
   useFeeDistributor,
@@ -31,6 +32,7 @@ import {
 import { AppState } from "../../state"
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
 import { BigNumber } from "ethers"
+import ConfirmModal from "../../components/ConfirmModal"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import GaugeVote from "./GaugeVote"
 import LockedInfo from "./LockedInfo"
@@ -62,6 +64,7 @@ export default function VeSDL(): JSX.Element {
   })
   const [veSdlTokenVal, setVeSdlTokenVal] = useState<BigNumber>(Zero)
   const [lockedSDLVal, setLockedSDLVal] = useState<BigNumber>(Zero)
+  const [unlockConfirmOpen, setUnlockConfirmOpen] = useState<boolean>(false)
   const sdlTokenValue = parseEther(sdlToken.sdlTokenInputVal.trim() || "0.0")
 
   const [lockEnd, setLockEnd] = useState<Date | null>(null)
@@ -111,7 +114,6 @@ export default function VeSDL(): JSX.Element {
     }))
     setProposedUnlockDate(null)
   }
-
   const feeDistributorRewards = userState?.feeDistributorRewards
   const currentTimestamp = getUnixTime(new Date())
   const unlockDateOrLockEnd = proposedUnlockDate || lockEnd
@@ -142,6 +144,10 @@ export default function VeSDL(): JSX.Element {
           .mul(BigNumber.from(leftTimeForUnlock))
           .div(BigNumber.from(MAXTIME)),
       )
+    : Zero
+
+  const penaltyPercent = !lockedSDLVal.isZero()
+    ? penaltyAmount.mul(parseEther("100")).div(lockedSDLVal)
     : Zero
 
   const claimFeeDistributorRewards = useCallback(() => {
@@ -226,7 +232,7 @@ export default function VeSDL(): JSX.Element {
     }
   }
 
-  const handleUnlock = async () => {
+  const unlock = async () => {
     if (votingEscrowContract && chainId) {
       const txn = await votingEscrowContract?.force_withdraw()
       void enqueuePromiseToast(chainId, txn.wait(), "unlock")
@@ -236,6 +242,14 @@ export default function VeSDL(): JSX.Element {
         }),
       )
       void fetchData()
+    }
+  }
+
+  const handleUnlock = () => {
+    if (penaltyAmount.isZero()) {
+      void unlock()
+    } else {
+      setUnlockConfirmOpen(true)
     }
   }
 
@@ -335,7 +349,7 @@ export default function VeSDL(): JSX.Element {
               <DatePicker
                 value={proposedUnlockDate}
                 onChange={(date) => setProposedUnlockDate(date)}
-                minDate={lockEnd || new Date()}
+                minDate={addWeeks(lockEnd || new Date(), 1)}
                 maxDate={new Date((currentTimestamp + MAXTIME) * 1000)}
                 shouldDisableDate={(date) => date.getDay() !== THURSDAY}
                 renderInput={(props) => (
@@ -398,7 +412,7 @@ export default function VeSDL(): JSX.Element {
             <Typography>
               {t("totalVeSdlHolding")}: {formatUnits(veSdlTokenVal)}
             </Typography>
-            {!penaltyAmount.isZero && (
+            {!penaltyAmount.isZero() && (
               <Alert
                 severity="error"
                 icon={false}
@@ -461,6 +475,14 @@ export default function VeSDL(): JSX.Element {
         onClose={() => setOpenCalculator(false)}
       />
       <VeSDLWrongNetworkModal />
+      <ConfirmModal
+        open={unlockConfirmOpen}
+        modalText={t("confirmUnlock", {
+          penaltyPercent: formatBNToString(penaltyPercent, 18, 3),
+        })}
+        onOK={unlock}
+        onClose={() => setUnlockConfirmOpen(false)}
+      />
     </Container>
   )
 }
