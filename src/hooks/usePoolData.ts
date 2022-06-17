@@ -331,6 +331,7 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
     tokens,
     userState?.minichef,
     userState?.tokenBalances,
+    userState?.gaugeRewards,
     gaugeAprs,
   ])
 
