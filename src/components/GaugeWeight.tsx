@@ -27,7 +27,7 @@ export default function GaugeWeight({
   const chartComponentRef = useRef<HighchartsReact.RefObject>(null)
   const basicPools = useContext(BasicPoolsContext)
   const theme = useTheme()
-  if (basicPools == undefined)
+  if (!basicPools)
     return (
       <Box
         display="flex"
