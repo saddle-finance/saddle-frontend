@@ -61,11 +61,11 @@ export default function VeSDL(): JSX.Element {
     maxBalance: "",
     sdlTokenInputVal: "",
   })
-  const [veSdlTokenVal, setVeSdlTokenVal] = useState<BigNumber>(Zero)
+  const [veSDLTokenVal, setVeSDLTokenVal] = useState<BigNumber>(Zero)
   const [lockedSDLVal, setLockedSDLVal] = useState<BigNumber>(Zero)
   const [unlockConfirmOpen, setUnlockConfirmOpen] = useState<boolean>(false)
   const sdlTokenValue = parseEther(sdlToken.sdlTokenInputVal.trim() || "0.0")
-  const [veSdlTotalSupply, setVeSdlTotalSupply] = useState<BigNumber>(Zero)
+  const [veSDLTotalSupply, setVeSDLTotalSupply] = useState<BigNumber>(Zero)
 
   const [lockEnd, setLockEnd] = useState<Date | null>(null)
   const [proposedUnlockDate, setProposedUnlockDate] = useState<Date | null>(
@@ -90,12 +90,12 @@ export default function VeSDL(): JSX.Element {
         ...prev,
         maxBalance: formatUnits(sdlTokenBal || Zero),
       }))
-      const vesdlBal = await votingEscrowContract?.["balanceOf(address)"](
+      const veSDLBal = await votingEscrowContract?.["balanceOf(address)"](
         account,
       )
       const totalSupply = await votingEscrowContract?.["totalSupply()"]()
-      setVeSdlTotalSupply(totalSupply || Zero)
-      setVeSdlTokenVal(vesdlBal || Zero)
+      setVeSDLTotalSupply(totalSupply || Zero)
+      setVeSDLTokenVal(veSDLBal || Zero)
 
       const prevLockEnd =
         (await votingEscrowContract?.locked__end(account)) || Zero
@@ -411,7 +411,7 @@ export default function VeSDL(): JSX.Element {
               {` ${lockEnd ? format(lockEnd, "MM/dd/yyyy") : "..."}`}
             </Typography>
             <Typography>
-              {t("totalVeSdlHolding")}: {formatUnits(veSdlTokenVal)}
+              {t("totalVeSdlHolding")}: {formatUnits(veSDLTokenVal)}
             </Typography>
             {!penaltyAmount.isZero() && (
               <Alert
@@ -471,8 +471,8 @@ export default function VeSDL(): JSX.Element {
         </Stack>
       </Box>
       <VeTokenCalculator
-        userBalanceVeSdl={veSdlTokenVal}
-        totalSupplyVeSdl={veSdlTotalSupply}
+        userBalanceVeSDL={veSDLTokenVal}
+        totalSupplyVeSDL={veSDLTotalSupply}
         open={openCalculator}
         onClose={() => setOpenCalculator(false)}
       />

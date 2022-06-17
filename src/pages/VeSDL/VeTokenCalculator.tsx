@@ -22,15 +22,15 @@ import { useTranslation } from "react-i18next"
 type Props = {
   open: boolean
   onClose: () => void
-  userBalanceVeSdl: BigNumber
-  totalSupplyVeSdl: BigNumber
+  userBalanceVeSDL: BigNumber
+  totalSupplyVeSDL: BigNumber
 }
 
 export default function VeTokenCalculator({
   open,
   onClose,
-  totalSupplyVeSdl,
-  userBalanceVeSdl,
+  totalSupplyVeSDL,
+  userBalanceVeSDL,
 }: Props): JSX.Element {
   const { t } = useTranslation()
   const basicPools = useContext(BasicPoolsContext)
@@ -38,11 +38,11 @@ export default function VeTokenCalculator({
   const [userLPAmountInput, setUserLPAmountInput] = useState<string>("")
   const [totalLPAmountInput, setTotalLPAmountInput] = useState<string>("")
   const [poolNameValue, setPoolNameValue] = useState<string>("D4")
-  const [userVeSdlInputAmount, setUserVeSdlInputAmount] = useState<string>(
-    userBalanceVeSdl.isZero() ? "" : formatBNToString(userBalanceVeSdl, 18),
+  const [userVeSDLInputAmount, setUserVeSdlInputAmount] = useState<string>(
+    userBalanceVeSDL.isZero() ? "" : formatBNToString(userBalanceVeSDL, 18),
   )
   const [totalVeSDLInput, setTotalVeSDLInput] = useState<string>(
-    totalSupplyVeSdl.isZero() ? "" : formatBNToString(totalSupplyVeSdl, 18),
+    totalSupplyVeSDL.isZero() ? "" : formatBNToString(totalSupplyVeSDL, 18),
   )
 
   const pool = basicPools && basicPools[poolNameValue]
@@ -61,7 +61,7 @@ export default function VeTokenCalculator({
       totalLPAmountBN,
       gauge.workingBalances || Zero,
       gauge.workingSupply || Zero,
-      parseEther(userVeSdlInputAmount || "0"),
+      parseEther(userVeSDLInputAmount || "0"),
       parseEther(totalVeSDLInput || "0"),
     )
 
@@ -178,7 +178,7 @@ export default function VeTokenCalculator({
           <Typography variant="subtitle1">{t("myBoostCalculator")}</Typography>
           <TextField
             label="My veSDL Amount"
-            value={userVeSdlInputAmount}
+            value={userVeSDLInputAmount}
             onChange={(e) =>
               readableDecimalNumberRegex.test(e.target.value) &&
               setUserVeSdlInputAmount(e.target.value)
