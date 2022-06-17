@@ -15,7 +15,7 @@ context("veSDL test", () => {
 
     cy.getBySelId("veSdlUnlockData")
       .find("input")
-      .type("12/02/2022", { force: true })
-      .should("have.value", "12/02/2022")
+      .type("07/28/2022", { force: true })
+      .should("have.value", "07/28/2022")
   })
 })

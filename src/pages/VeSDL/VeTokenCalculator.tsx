@@ -14,7 +14,6 @@ import { BigNumber } from "@ethersproject/bignumber"
 import CalculateIcon from "@mui/icons-material/Calculate"
 import Dialog from "../../components/Dialog"
 import { GaugeContext } from "../../providers/GaugeProvider"
-import { Zero } from "@ethersproject/constants"
 import { parseEther } from "@ethersproject/units"
 import { readableDecimalNumberRegex } from "../../constants"
 import { useTranslation } from "react-i18next"
@@ -54,35 +53,6 @@ export default function VeTokenCalculator({
   const userLPAmountBN = parseEther(userLPAmountInput || "0")
   const totalLPAmountBN = parseEther(totalLPAmountInput || "0")
 
-  const boost =
-    gauge &&
-    calculateWorkingAmountAndBoost(
-      userLPAmountBN,
-      totalLPAmountBN,
-      gauge.workingBalances || Zero,
-      gauge.workingSupply || Zero,
-      parseEther(userVeSDLInputAmount || "0"),
-      parseEther(totalVeSDLInput || "0"),
-    )
-
-  const minVeSDL =
-    !totalLPAmountBN.add(userLPAmountBN).isZero() &&
-    parseEther(totalVeSDLInput || "0")
-      .mul(userLPAmountBN)
-      .div(totalLPAmountBN.add(userLPAmountBN))
-
-  const maxBoostPossible =
-    gauge &&
-    minVeSDL &&
-    calculateWorkingAmountAndBoost(
-      userLPAmountBN,
-      totalLPAmountBN,
-      gauge.workingBalances || Zero,
-      gauge.workingSupply || Zero,
-      minVeSDL,
-      parseEther(totalVeSDLInput || "0"),
-    )
-
   useEffect(() => {
     if (gauge) {
       setUserLPAmountInput(
@@ -95,6 +65,35 @@ export default function VeTokenCalculator({
       )
     }
   }, [gauge])
+
+  if (!gauge || !gauge.workingBalances || !gauge.workingSupply)
+    return <div>Loading...</div>
+
+  const minVeSDL =
+    !totalLPAmountBN.add(userLPAmountBN).isZero() &&
+    parseEther(totalVeSDLInput || "0")
+      .mul(userLPAmountBN)
+      .div(totalLPAmountBN.add(userLPAmountBN))
+
+  const boost = calculateWorkingAmountAndBoost(
+    userLPAmountBN,
+    totalLPAmountBN,
+    gauge.workingBalances,
+    gauge.workingSupply,
+    parseEther(userVeSDLInputAmount || "0"),
+    parseEther(totalVeSDLInput || "0"),
+  )
+
+  const maxBoostPossible =
+    minVeSDL &&
+    calculateWorkingAmountAndBoost(
+      userLPAmountBN,
+      totalLPAmountBN,
+      gauge.workingBalances,
+      gauge.workingSupply,
+      minVeSDL,
+      parseEther(totalVeSDLInput || "0"),
+    )
 
   return (
     <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose}>
@@ -159,7 +158,9 @@ export default function VeTokenCalculator({
             }}
           />
           <Typography>
-            {t("maxBoost")}:{" "}
+            <Typography component="span" mr={1}>
+              {t("maxBoost")}:
+            </Typography>
             {maxBoostPossible && formatBNToString(maxBoostPossible, 18)}
           </Typography>
           <Typography>

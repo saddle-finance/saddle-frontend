@@ -10,6 +10,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material"
+import { ChainId, TRANSACTION_TYPES } from "../../constants"
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import {
   addWeeks,
@@ -35,9 +36,9 @@ import ConfirmModal from "../../components/ConfirmModal"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import GaugeVote from "./GaugeVote"
 import LockedInfo from "./LockedInfo"
-import { TRANSACTION_TYPES } from "../../constants"
 import TokenInput from "../../components/TokenInput"
 import { UserStateContext } from "../../providers/UserStateProvider"
+import VeSDLWrongNetworkModal from "./VeSDLWrongNetworkModal"
 import VeTokenCalculator from "./VeTokenCalculator"
 import { Zero } from "@ethersproject/constants"
 import checkAndApproveTokenForTrade from "../../utils/checkAndApproveTokenForTrade"
@@ -82,6 +83,8 @@ export default function VeSDL(): JSX.Element {
 
   const [openCalculator, setOpenCalculator] = useState<boolean>(false)
   const { t, i18n } = useTranslation()
+  const isValidNetwork =
+    chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT
 
   const fetchData = useCallback(async () => {
     if (account) {
@@ -172,7 +175,7 @@ export default function VeSDL(): JSX.Element {
     const hasLockedSDL = !lockedSDLVal.isZero()
     const shouldCreateLock =
       !hasLockedSDL && sdlTokenValue.gt(Zero) && unlockTimeStamp
-    const shouldIncreaseAmoutAndLockEnd =
+    const shouldIncreaseAmountAndLockEnd =
       hasLockedSDL && sdlTokenValue.gt(Zero) && unlockTimeStamp
     const shouldIncreaseAmount =
       hasLockedSDL && sdlTokenValue.gt(Zero) && !unlockTimeStamp
@@ -197,7 +200,7 @@ export default function VeSDL(): JSX.Element {
           unlockTimeStamp,
         )
         void enqueuePromiseToast(chainId, txn.wait(), "createLock")
-      } else if (shouldIncreaseAmoutAndLockEnd) {
+      } else if (shouldIncreaseAmountAndLockEnd) {
         const txnIncreaseAmount = await votingEscrowContract.increase_amount(
           sdlTokenValue,
         )
@@ -390,7 +393,7 @@ export default function VeSDL(): JSX.Element {
               fullWidth
               size="large"
               onClick={handleLock}
-              disabled={enableLock}
+              disabled={enableLock || !isValidNetwork}
             >
               {lockedSDLVal.isZero() ? t("createLock") : t("adjustLock")}
             </Button>
@@ -432,7 +435,7 @@ export default function VeSDL(): JSX.Element {
               onClick={handleUnlock}
               size="large"
               fullWidth
-              disabled={lockedSDLVal.isZero()}
+              disabled={lockedSDLVal.isZero() || !isValidNetwork}
             >
               {t("unlock")}
             </Button>
@@ -456,7 +459,7 @@ export default function VeSDL(): JSX.Element {
               <Button
                 variant="contained"
                 size="large"
-                disabled={!feeDistributorRewards?.gt(Zero)}
+                disabled={!feeDistributorRewards?.gt(Zero) || !isValidNetwork}
                 onClick={claimFeeDistributorRewards}
               >
                 {t("claim")}
@@ -470,12 +473,14 @@ export default function VeSDL(): JSX.Element {
           <GaugeVote />
         </Stack>
       </Box>
+
       <VeTokenCalculator
         userBalanceVeSDL={veSDLTokenVal}
         totalSupplyVeSDL={veSDLTotalSupply}
         open={openCalculator}
         onClose={() => setOpenCalculator(false)}
       />
+      <VeSDLWrongNetworkModal />
       <ConfirmModal
         open={unlockConfirmOpen}
         modalText={t("confirmUnlock", {
