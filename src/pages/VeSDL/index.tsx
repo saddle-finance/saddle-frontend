@@ -11,15 +11,16 @@ import {
   Typography,
 } from "@mui/material"
 import React, { useCallback, useContext, useEffect, useState } from "react"
-import { commify, formatUnits, parseEther } from "@ethersproject/units"
-import { enUS, zhCN } from "date-fns/locale"
-import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 import {
+  addWeeks,
   format,
   formatDuration,
   getUnixTime,
   intervalToDuration,
 } from "date-fns"
+import { commify, formatUnits, parseEther } from "@ethersproject/units"
+import { enUS, zhCN } from "date-fns/locale"
+import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 import { useDispatch, useSelector } from "react-redux"
 import {
   useFeeDistributor,
@@ -349,7 +350,7 @@ export default function VeSDL(): JSX.Element {
               <DatePicker
                 value={proposedUnlockDate}
                 onChange={(date) => setProposedUnlockDate(date)}
-                minDate={lockEnd || new Date()}
+                minDate={addWeeks(lockEnd || new Date(), 1)}
                 maxDate={new Date((currentTimestamp + MAXTIME) * 1000)}
                 shouldDisableDate={(date) => date.getDay() !== THURSDAY}
                 renderInput={(props) => (

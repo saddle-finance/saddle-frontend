@@ -1,4 +1,6 @@
 import {
+  BN_1E18,
+  BN_MSIG_SDL_VEST_END_TIMESTAMP,
   ChainId,
   GAUGE_CONTROLLER_ADDRESSES,
   HELPER_CONTRACT_ADDRESSES,
@@ -16,6 +18,8 @@ import HELPER_CONTRACT_ABI from "../constants/abis/helperContract.json"
 import { HelperContract } from "../../types/ethers-contracts/HelperContract"
 import LIQUIDITY_GAUGE_V5_ABI from "../constants/abis/liquidityGaugeV5.json"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
+import { Minter } from "../../types/ethers-contracts/Minter"
+import { SDL_TOKEN_ADDRESSES } from "./../constants/index"
 import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
 
@@ -33,11 +37,9 @@ export type Gauge = {
 }
 
 export type GaugeReward = {
-  period_finish: BigNumber
-  last_update: BigNumber
-  distributor: string
+  periodFinish: BigNumber
   rate: BigNumber
-  token: string
+  tokenAddress: string
 }
 
 export type PoolAddressToGauge = Partial<{
@@ -67,7 +69,9 @@ export async function getGaugeData(
   chainId: ChainId,
   gaugeController: GaugeController,
   account: string,
+  minterContract: Minter,
 ): Promise<Gauges | null> {
+  // TODO switch to IS_VESDL_LIVE
   if (chainId !== ChainId.HARDHAT) return initialGaugesState
   try {
     const gaugeCount = (await gaugeController.n_gauges()).toNumber()
@@ -111,7 +115,6 @@ export async function getGaugeData(
         gaugeControllerMultiCall.get_gauge_weight(gaugeAddress),
       ),
     )
-
     const gaugeRelativeWeightsPromise: Promise<BigNumber[]> =
       ethCallProvider.all(
         gaugeAddresses.map((gaugeAddress) =>
@@ -137,7 +140,7 @@ export async function getGaugeData(
       ),
     )
 
-    const gaugeWorkingSupplyPromise = ethCallProvider.tryAll(
+    const gaugeWorkingSuppliesPromise = ethCallProvider.tryAll(
       gaugeMulticallContracts.map((gaugeContract) =>
         gaugeContract.working_supply(),
       ),
@@ -156,18 +159,27 @@ export async function getGaugeData(
       gaugeWorkingSupplies,
       gaugeWorkingBalances,
       gaugeTotalSupplies,
+      minterSDLRate,
     ] = await Promise.all([
       gaugeWeightsPromise,
       gaugeRelativeWeightsPromise,
       gaugeRewardsPromise,
       gaugeBalancePromise,
-      gaugeWorkingSupplyPromise,
       gaugeWorkingBalancesPromise,
       gaugeTotalSupplyPromise,
+      gaugeWorkingSuppliesPromise,
+      minterContract ? minterContract.rate() : Promise.resolve(Zero),
     ])
 
     const gauges: PoolAddressToGauge = gaugePoolAddresses.reduce(
       (previousGaugeData, gaugePoolAddress, index) => {
+        const gaugeRelativeWeight = gaugeRelativeWeights[index]
+        const sdlRate = minterSDLRate.mul(gaugeRelativeWeight).div(BN_1E18)
+        const sdlReward = {
+          periodFinish: BN_MSIG_SDL_VEST_END_TIMESTAMP,
+          rate: sdlRate,
+          tokenAddress: SDL_TOKEN_ADDRESSES[chainId].toLowerCase(),
+        }
         return {
           ...previousGaugeData,
           [gaugePoolAddress]: {
@@ -180,13 +192,13 @@ export async function getGaugeData(
             workingBalances: gaugeWorkingBalances[index],
             gaugeBalance: gaugeBalances[index],
             poolName: "",
-            rewards: gaugeRewards[index].map((reward) => ({
-              period_finish: reward.period_finish,
-              last_update: reward.last_update,
-              distributor: reward.distributor.toLowerCase(),
-              rate: reward.rate,
-              token: reward.token.toLowerCase(),
-            })),
+            rewards: gaugeRewards[index]
+              .map((reward) => ({
+                periodFinish: reward.period_finish,
+                rate: reward.rate,
+                tokenAddress: reward.token.toLowerCase(),
+              }))
+              .concat([sdlReward]),
           } as Gauge,
         }
       },
@@ -211,6 +223,7 @@ export async function getGaugeRewardsUserData(
   library: Web3Provider,
   chainId: ChainId,
   gaugeAddresses: string[],
+  rewardsAddresses: string[][],
   account?: string,
 ): Promise<GaugeRewardUserData | null> {
   const ethCallProvider = await getMulticallProvider(library, chainId)
@@ -262,14 +275,21 @@ export async function getGaugeRewardsUserData(
 
     return gaugeAddresses.reduce((acc, gaugeAddress, i) => {
       const amountStaked = gaugeUserDepositBalances[i]
-      const claimableExternalRewards = gaugeUserClaimableExternalRewards[i]
+      // @dev: reward amounts are returned in the same order as gauge.rewards
+      // however SDL rewards are appended to the end of that by the frontend
+      const claimableExternalRewards = gaugeUserClaimableExternalRewards[i].map(
+        (amount, j) => ({
+          amount,
+          tokenAddress: rewardsAddresses[i][j],
+        }),
+      )
       const claimableSDL = gaugeUserClaimableSDL[i]
 
       const hasSDLRewards = claimableSDL.gt(Zero)
       const hasDeposit = amountStaked.gt(Zero)
       const hasExternalRewards =
         claimableExternalRewards.length > 0 &&
-        claimableExternalRewards.some((reward) => reward.gt(Zero))
+        claimableExternalRewards.some(({ amount }) => amount.gt(Zero))
 
       if (!hasExternalRewards && !hasSDLRewards && !hasDeposit) return acc // don't include 0 rewards
 

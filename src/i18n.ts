@@ -18,6 +18,7 @@ void i18next
       useSuspense: true,
     },
     fallbackLng: "en",
+    lng: "en",
     load: "languageOnly", // load zh.json for zh-CN
     preload: ["en"],
     keySeparator: false,
