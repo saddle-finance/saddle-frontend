@@ -7,7 +7,7 @@ import {
   Typography,
 } from "@mui/material"
 import React, { useContext, useEffect, useState } from "react"
-import { calculateWorkingAmountAndBoost, formatBNToString } from "../../utils"
+import { calculateBoost, formatBNToString, isNumberOrEmpty } from "../../utils"
 import ArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
 import { BasicPoolsContext } from "../../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -15,7 +15,6 @@ import CalculateIcon from "@mui/icons-material/Calculate"
 import Dialog from "../../components/Dialog"
 import { GaugeContext } from "../../providers/GaugeProvider"
 import { parseEther } from "@ethersproject/units"
-import { readableDecimalNumberRegex } from "../../constants"
 import { useTranslation } from "react-i18next"
 
 type Props = {
@@ -75,7 +74,7 @@ export default function VeTokenCalculator({
       .mul(userLPAmountBN)
       .div(totalLPAmountBN.add(userLPAmountBN))
 
-  const boost = calculateWorkingAmountAndBoost(
+  const boost = calculateBoost(
     userLPAmountBN,
     totalLPAmountBN,
     gauge.workingBalances,
@@ -86,7 +85,7 @@ export default function VeTokenCalculator({
 
   const maxBoostPossible =
     minVeSDL &&
-    calculateWorkingAmountAndBoost(
+    calculateBoost(
       userLPAmountBN,
       totalLPAmountBN,
       gauge.workingBalances,
@@ -106,7 +105,7 @@ export default function VeTokenCalculator({
             label={t("totalVeSdl")}
             value={totalVeSDLInput}
             onChange={(e) =>
-              readableDecimalNumberRegex.test(e.target.value) &&
+              isNumberOrEmpty(e.target.value) &&
               setTotalVeSDLInput(e.target.value)
             }
             fullWidth
@@ -137,24 +136,16 @@ export default function VeTokenCalculator({
             label={t("poolLiquidity")}
             value={userLPAmountInput}
             onChange={(e) => {
-              if (
-                readableDecimalNumberRegex.test(e.target.value) ||
-                e.target.value === ""
-              ) {
+              if (isNumberOrEmpty(e.target.value))
                 setUserLPAmountInput(e.target.value)
-              }
             }}
           />
           <TextField
             label={t("depositAmount")}
             value={totalLPAmountInput}
             onChange={(e) => {
-              if (
-                readableDecimalNumberRegex.test(e.target.value) ||
-                e.target.value === ""
-              ) {
+              if (isNumberOrEmpty(e.target.value))
                 setTotalLPAmountInput(e.target.value)
-              }
             }}
           />
           <Typography>
@@ -181,7 +172,7 @@ export default function VeTokenCalculator({
             label="My veSDL Amount"
             value={userVeSDLInputAmount}
             onChange={(e) =>
-              readableDecimalNumberRegex.test(e.target.value) &&
+              isNumberOrEmpty(e.target.value) &&
               setUserVeSdlInputAmount(e.target.value)
             }
             fullWidth

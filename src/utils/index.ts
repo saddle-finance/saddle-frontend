@@ -1,5 +1,11 @@
 import { AddressZero, Zero } from "@ethersproject/constants"
-import { ChainId, PoolTypes, TOKENS_MAP, Token } from "../constants"
+import {
+  ChainId,
+  PoolTypes,
+  TOKENS_MAP,
+  Token,
+  readableDecimalNumberRegex,
+} from "../constants"
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
 import {
   MulticallCall,
@@ -433,7 +439,7 @@ export function generateSnapshotVoteLink(id?: string): string {
  * @returns return the working amount in BigNumber
  *
  */
-export const calculateWorkingAmountAndBoost = (
+export const calculateBoost = (
   userLPAmount: BigNumber,
   totalLPDeposit: BigNumber,
   workingBalances: BigNumber,
@@ -534,6 +540,14 @@ export const arrayToHashmap = <K extends string | number, V>(
   Object.assign({}, ...array.map(([key, val]) => ({ [key]: val }))) as {
     [key: string]: V
   }
+/**
+ *
+ * @param str string
+ * @returns boolean check
+ */
+export const isNumberOrEmpty = (str: string) => {
+  return readableDecimalNumberRegex.test(str) || str === ""
+}
 
 /**
  * Return the strict structure required by the `wallet_addEthereumChain` call
