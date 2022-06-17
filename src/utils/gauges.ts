@@ -4,6 +4,7 @@ import {
   ChainId,
   GAUGE_CONTROLLER_ADDRESSES,
   HELPER_CONTRACT_ADDRESSES,
+  IS_VESDL_LIVE,
 } from "../constants"
 import {
   createMultiCallContract,
@@ -277,4 +278,11 @@ export async function getGaugeRewardsUserData(
     console.error(error)
     return null
   }
+}
+
+export function areGaugesActive(chainId?: ChainId): boolean {
+  return (
+    (chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT) &&
+    IS_VESDL_LIVE
+  )
 }

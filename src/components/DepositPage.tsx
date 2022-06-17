@@ -1,6 +1,5 @@
 import {
   ALETH_POOL_NAME,
-  IS_VESDL_LIVE,
   TBTC_METAPOOL_V2_NAME,
   VETH2_POOL_NAME,
   isMetaPool,
@@ -43,6 +42,7 @@ import PoolInfoCard from "./PoolInfoCard"
 import ReviewDeposit from "./ReviewDeposit"
 import TokenInput from "./TokenInput"
 import { Zero } from "@ethersproject/constants"
+import { areGaugesActive } from "../utils/gauges"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { logEvent } from "../utils/googleAnalytics"
 import { useActiveWeb3React } from "../hooks"
@@ -96,6 +96,7 @@ const DepositPage = (props: Props): ReactElement => {
   const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
   const { gauges } = useContext(GaugeContext)
   const gaugeAddr = gauges?.[poolData?.poolAddress ?? ""]?.address ?? ""
+  const gaugesAreActive = areGaugesActive(chainId)
 
   useEffect(() => {
     if (!library || !account || !chainId || !poolData || !gaugeAddr) {
@@ -175,7 +176,7 @@ const DepositPage = (props: Props): ReactElement => {
           </Typography>
         </Alert>
       )}
-      {IS_VESDL_LIVE && amountStakedMinichef.gt(Zero) && (
+      {gaugesAreActive && amountStakedMinichef.gt(Zero) && (
         <Alert severity="error" sx={{ mb: 2 }}>
           <Box display="flex" alignItems="center" justifyContent="space-around">
             <Typography>
@@ -296,23 +297,6 @@ const DepositPage = (props: Props): ReactElement => {
                       <Typography component="span" variant="body1">
                         {formatBNToPercentString(
                           poolData.aprs.threshold.apr,
-                          18,
-                        )}
-                      </Typography>
-                    </div>
-                  )}
-                  {poolData?.aprs?.sharedStake?.apr.gt(Zero) && (
-                    <div>
-                      <a
-                        href="https://docs.saddle.finance/faq#what-are-saddles-liquidity-provider-rewards"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <span>{`SGT APR:`}</span>
-                      </a>{" "}
-                      <Typography component="span" variant="body1">
-                        {formatBNToPercentString(
-                          poolData.aprs.sharedStake.apr,
                           18,
                         )}
                       </Typography>

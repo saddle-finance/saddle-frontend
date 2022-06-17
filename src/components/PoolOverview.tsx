@@ -13,15 +13,20 @@ import {
   useTheme,
 } from "@mui/material"
 import React, { ReactElement, useMemo } from "react"
-import { formatBNToPercentString, formatBNToShortString } from "../utils"
+import {
+  commify,
+  formatBNToPercentString,
+  formatBNToShortString,
+  formatBNToString,
+} from "../utils"
+import usePoolData, { PoolDataType } from "../hooks/usePoolData"
 
-import { IS_SDL_LIVE } from "../constants"
-import { Partners } from "../utils/thirdPartyIntegrations"
 import TokenIcon from "./TokenIcon"
 import { Zero } from "@ethersproject/constants"
+import { areGaugesActive } from "../utils/gauges"
 import logo from "../assets/icons/logo.svg"
+import { useActiveWeb3React } from "../hooks"
 import { useHistory } from "react-router-dom"
-import usePoolData from "../hooks/usePoolData"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -37,22 +42,15 @@ export default function PoolOverview({
 }: Props): ReactElement | null {
   const { t } = useTranslation()
   const theme = useTheme()
+  const { chainId } = useActiveWeb3React()
   const [poolData, userShareData] = usePoolData(poolName)
   const shouldMigrate = !!onClickMigrate
+  const gaugesAreActive = areGaugesActive(chainId)
   const formattedData = {
     name: poolData.name,
     reserve: poolData.reserve
       ? formatBNToShortString(poolData.reserve, 18)
       : "-",
-    aprs: Object.keys(poolData.aprs).reduce((acc, key) => {
-      const apr = poolData.aprs[key]?.apr
-      return apr
-        ? {
-            ...acc,
-            [key]: formatBNToPercentString(apr, 18),
-          }
-        : acc
-    }, {} as Partial<Record<Partners, string>>),
     apy: poolData.apy ? `${formatBNToPercentString(poolData.apy, 18, 2)}` : "-",
     volume: poolData.volume
       ? `$${formatBNToShortString(poolData.volume, 18)}`
@@ -62,7 +60,6 @@ export default function PoolOverview({
       18,
     ),
     sdlPerDay: formatBNToShortString(poolData?.sdlPerDay || Zero, 18),
-    tokens: poolData.tokens,
   }
   const hasShare = !!userShareData?.usdBalance.gt(Zero)
   const history = useHistory()
@@ -141,8 +138,8 @@ export default function PoolOverview({
         </Grid>
         <Grid item xs={12} lg={2.5}>
           <Stack spacing={1} direction={{ xs: "row", lg: "column" }}>
-            {formattedData.tokens.length > 0 ? (
-              formattedData.tokens.map(({ symbol }) => (
+            {poolData.tokens.length > 0 ? (
+              poolData.tokens.map(({ symbol }) => (
                 <Box display="flex" alignItems="center" key={symbol}>
                   <TokenIcon alt="icon" symbol={symbol} width="24px" />
                   <Typography marginLeft={1} sx={{ wordBreak: "break-all" }}>
@@ -173,7 +170,7 @@ export default function PoolOverview({
           )}
         </StyledGrid>
         <StyledGrid item xs={6} lg={2.5} disabled={disableText}>
-          {poolData.sdlPerDay?.gt(Zero) && IS_SDL_LIVE && (
+          {poolData.sdlPerDay?.gt(Zero) && !gaugesAreActive && (
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Typography variant="subtitle1" mr={1}>
                 <Link
@@ -196,28 +193,11 @@ export default function PoolOverview({
               <Typography component="span">{formattedData.apy}</Typography>
             </div>
           )}
-          {Object.keys(poolData.aprs).map((key) => {
-            const symbol = poolData.aprs[key]?.symbol as string
-            return poolData.aprs[key]?.apr.gt(Zero) ? (
-              <div key={symbol}>
-                {symbol.includes("/") ? (
-                  <Tooltip title={symbol.replaceAll("/", "\n")}>
-                    <Typography
-                      component="span"
-                      sx={{ borderBottom: "1px dotted" }}
-                    >
-                      Reward APR:
-                    </Typography>
-                  </Tooltip>
-                ) : (
-                  <Typography component="span">{symbol} APR:</Typography>
-                )}
-                <Typography component="span" marginLeft={1}>
-                  {formattedData.aprs[key] as string}
-                </Typography>
-              </div>
-            ) : null
-          })}
+          {gaugesAreActive ? (
+            <GaugeRewards poolData={poolData} />
+          ) : (
+            <MinichefRewards poolData={poolData} />
+          )}
         </StyledGrid>
         <Grid item xs={12} lg={2}>
           <Stack spacing={2}>
@@ -270,3 +250,81 @@ const StyledGrid = styled(Grid)<{ disabled?: boolean }>(
     color: disabled ? theme.palette.text.disabled : undefined,
   }),
 )
+
+const MinichefRewards = ({ poolData }: { poolData: PoolDataType }) => {
+  const formattedAprs = Object.keys(poolData.aprs).reduce((acc, key) => {
+    const apr = poolData.aprs[key]?.apr
+    return apr
+      ? {
+          ...acc,
+          [key]: formatBNToPercentString(apr, 18),
+        }
+      : acc
+  }, {} as Partial<Record<string, string>>)
+  return (
+    <>
+      {Object.keys(poolData.aprs).map((key) => {
+        const symbol = poolData.aprs[key]?.symbol as string
+        return poolData.aprs[key]?.apr.gt(Zero) ? (
+          <div key={symbol}>
+            {symbol.includes("/") ? (
+              <Tooltip title={symbol.replaceAll("/", "\n")}>
+                <Typography
+                  component="span"
+                  sx={{ borderBottom: "1px dotted" }}
+                >
+                  Reward APR:
+                </Typography>
+              </Tooltip>
+            ) : (
+              <Typography component="span">{symbol} apr:</Typography>
+            )}
+            <Typography component="span" marginLeft={1}>
+              {formattedAprs[key] as string}
+            </Typography>
+          </div>
+        ) : null
+      })}
+    </>
+  )
+}
+
+const GaugeRewards = ({ poolData }: { poolData: PoolDataType }) => {
+  if (!poolData.gaugeAprs) return null
+  return (
+    <>
+      {poolData.gaugeAprs.map((aprData) => {
+        const { symbol, address } = aprData.rewardToken
+        if (aprData.amountPerDay) {
+          const { min, max } = aprData.amountPerDay
+          if (max.isZero()) return null
+          return (
+            <div key={address}>
+              <Typography component="span">{symbol}/24h:</Typography>
+              <Typography component="span" marginLeft={1}>
+                {`${commify(formatBNToString(min, 18, 0))}-${commify(
+                  formatBNToString(max, 18, 0),
+                )}`}
+              </Typography>
+            </div>
+          )
+        } else if (aprData.apr) {
+          const { min, max } = aprData.apr
+          if (max.isZero()) return null
+          return (
+            <div key={address}>
+              <Typography component="span">{symbol} apr:</Typography>
+              <Typography component="span" marginLeft={1}>
+                {`${formatBNToPercentString(
+                  min,
+                  18,
+                  2,
+                )}-${formatBNToPercentString(max, 18, 2)}`}
+              </Typography>
+            </div>
+          )
+        }
+      })}
+    </>
+  )
+}

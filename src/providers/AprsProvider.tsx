@@ -1,4 +1,5 @@
 import { BN_DAY_IN_SECONDS, BN_YEAR_IN_SECONDS } from "./../constants/index"
+import { BasicToken, TokensContext } from "../providers/TokensProvider"
 import React, { ReactElement, useContext } from "react"
 import { getPriceDataForPool, shiftBNDecimals } from "../utils"
 
@@ -6,7 +7,6 @@ import { AppState } from "../state"
 import { BasicPoolsContext } from "./../providers/BasicPoolsProvider"
 import { BigNumber } from "ethers"
 import { GaugeContext } from "../providers/GaugeProvider"
-import { TokensContext } from "../providers/TokensProvider"
 import { parseUnits } from "@ethersproject/units"
 import { useSelector } from "react-redux"
 
@@ -15,13 +15,18 @@ type MinAndMax = {
   max: BigNumber
 }
 type AmountReward = {
-  amount: MinAndMax
+  rewardToken: BasicToken
+  amountPerDay: MinAndMax
+  apr?: undefined
 }
 type AprReward = {
+  rewardToken: BasicToken
   apr: MinAndMax
+  amountPerDay?: undefined
 }
+export type GaugeApr = AmountReward | AprReward
 type Aprs = Partial<{
-  [poolAddress: string]: AmountReward | AprReward
+  [poolAddress: string]: GaugeApr[]
 }>
 export const AprsContext = React.createContext<Aprs | null>(null)
 
@@ -90,5 +95,5 @@ function useGaugeAprs() {
       ...acc,
       [basicPool.poolAddress]: rewardAprs,
     }
-  }, {})
+  }, {}) as Aprs
 }
