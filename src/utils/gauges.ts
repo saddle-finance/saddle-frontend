@@ -52,7 +52,7 @@ export type Gauges = {
 export type GaugeRewardUserData = Partial<{
   [gaugeAddress: string]: {
     amountStaked: BigNumber
-    claimableExternalRewards: BigNumber[]
+    claimableExternalRewards: { amount: BigNumber; tokenAddress: string }[]
     claimableSDL: BigNumber
   }
 }>
@@ -217,7 +217,7 @@ export async function getGaugeRewardsUserData(
         LIQUIDITY_GAUGE_V5_ABI,
       ),
     )
-    // Gauges divide rewards into SDL (#claimable_tokens) and non-SDL (#claimable_reward)
+    // LiquidityV5 gauges divide rewards into SDL (#claimable_tokens) and non-SDL (#claimable_reward)
     const gaugeUserClaimableSDLPromise = ethCallProvider.all(
       gaugeMulticallContracts.map((gaugeContract) =>
         gaugeContract.claimable_tokens(account),
@@ -245,13 +245,13 @@ export async function getGaugeRewardsUserData(
 
     return gaugeAddresses.reduce((acc, gaugeAddress, i) => {
       const amountStaked = gaugeUserDepositBalances[i]
-      // @dev: reward amounts are returned in the same order as gauge.rewards
+      // @dev: reward amounts ([1,2,3]) are returned in the same order as gauge.rewards ([0xa,0xb,0xc])
       // however SDL rewards are appended to the end of that by the frontend
       const claimableExternalRewards = gaugeUserClaimableExternalRewards[i].map(
-        (amount, j) => ({
-          amount,
-          tokenAddress: rewardsAddresses[i][j],
-        }),
+        (amount, j) => {
+          const tokenAddress = rewardsAddresses[i][j]
+          return { amount, tokenAddress }
+        },
       )
       const claimableSDL = gaugeUserClaimableSDL[i]
 

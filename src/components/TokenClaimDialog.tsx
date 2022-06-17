@@ -36,6 +36,7 @@ import { GaugeContext } from "../providers/GaugeProvider"
 import LIQUIDITY_GAUGE_V5_ABI from "../constants/abis/liquidityGaugeV5.json"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
+import { TokensContext } from "../providers/TokensProvider"
 import { UserStateContext } from "../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
@@ -64,6 +65,7 @@ export default function TokenClaimDialog({
   const basicPools = useContext(BasicPoolsContext)
   const userState = useContext(UserStateContext)
   const gaugeData = useContext(GaugeContext)
+  const tokens = useContext(TokensContext)
   const gaugesWithPoolName = useMemo<GaugesWithPoolName[]>(() => {
     if (!basicPools || !userState?.gaugeRewards) return []
     return (
@@ -201,8 +203,9 @@ export default function TokenClaimDialog({
           {rewardBalances.retroactive && isClaimableNetwork && (
             <>
               <ClaimListItem
-                title={t("retroactiveDrop")}
-                amount={rewardBalances.retroactive || Zero}
+                items={[
+                  [t("retroactiveDrop"), rewardBalances.retroactive || Zero],
+                ]}
                 claimCallback={() => claimRetroReward()}
                 status={claimsStatuses["retroactive"]}
               />
@@ -239,8 +242,9 @@ export default function TokenClaimDialog({
             ? allPoolsWithRewards.map((pool, i, arr) => (
                 <React.Fragment key={pool.poolName}>
                   <ClaimListItem
-                    title={pool.poolName}
-                    amount={rewardBalances[pool.poolName] || Zero}
+                    items={[
+                      [pool.poolName, rewardBalances[pool.poolName] || Zero],
+                    ]}
                     claimCallback={() => claimPoolReward(pool)}
                     status={
                       claimsStatuses["allPools"] ||
@@ -251,15 +255,32 @@ export default function TokenClaimDialog({
                 </React.Fragment>
               ))
             : gaugesWithPoolName?.map((gauge, i, arr) => {
-                const userClaimableSdl =
-                  userState?.gaugeRewards?.[gauge?.address || ""]?.claimableSDL
+                const poolGaugeRewards =
+                  userState?.gaugeRewards?.[gauge?.address || ""]
+                const userClaimableSdl = poolGaugeRewards?.claimableSDL
+                const userClaimableOtherRewards: [string, BigNumber][] = (
+                  poolGaugeRewards?.claimableExternalRewards || []
+                ).map(({ amount, tokenAddress }) => {
+                  const token = tokens?.[tokenAddress]
+                  if (!token) {
+                    console.error(`Could not find token ${tokenAddress}`)
+                  }
+                  return [token?.symbol || "", amount]
+                })
+                const shouldShow = Boolean(
+                  userClaimableSdl?.gt(Zero) ||
+                    userClaimableOtherRewards.length,
+                )
 
                 return (
-                  userClaimableSdl?.gt(Zero) && (
+                  shouldShow && (
                     <React.Fragment key={gauge?.poolName}>
                       <ClaimListItem
-                        title={gauge?.poolName ?? ""}
-                        amount={userClaimableSdl ?? Zero}
+                        title={gauge?.poolName}
+                        items={[
+                          ["SDL", userClaimableSdl ?? Zero],
+                          ...userClaimableOtherRewards,
+                        ]}
                         claimCallback={() => claimGaugeReward(gauge)}
                         status={
                           claimsStatuses["allGauges"] ||
@@ -307,29 +328,45 @@ export default function TokenClaimDialog({
 }
 
 function ClaimListItem({
-  title,
-  amount,
   claimCallback,
   status,
+  items,
+  title,
 }: {
-  title: string
-  amount: BigNumber
+  title?: string
   claimCallback: () => void
+  items: [string, BigNumber][]
   status?: STATUSES
 }): ReactElement {
   const { t } = useTranslation()
-  const formattedAmount = commify(formatBNToString(amount, 18, 2))
-  const disabled =
-    status === STATUSES.PENDING ||
-    status === STATUSES.SUCCESS ||
-    amount.lt(BigNumber.from(10).pow(16)) // don't let anyone try to claim less than 0.01 token
+  const disabled = status === STATUSES.PENDING || status === STATUSES.SUCCESS
+  // @dev - our formatting assumes all tokens are 1e18
   return (
     <ListItem>
       <Typography variant="subtitle1" sx={{ flex: 1 }}>
-        {title}
+        {title && (
+          <>
+            {title}
+            <br />
+          </>
+        )}
+        {items.map(([name]) => (
+          <>
+            {name}
+            <br />
+          </>
+        ))}
       </Typography>
       <Typography sx={{ flex: 1 }}>
-        {status === STATUSES.SUCCESS ? 0 : formattedAmount}
+        {title && <br />}
+        {items.map(([, amount]) => (
+          <>
+            {status === STATUSES.SUCCESS
+              ? 0
+              : commify(formatBNToString(amount, 18, 2))}
+            <br />
+          </>
+        ))}
       </Typography>
       <Button
         variant="contained"
