@@ -1,4 +1,4 @@
-import { CircularProgress, useTheme } from "@mui/material"
+import { Box, CircularProgress, useTheme } from "@mui/material"
 import React, { useContext, useRef } from "react"
 
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
@@ -27,7 +27,17 @@ export default function GaugeWeight({
   const chartComponentRef = useRef<HighchartsReact.RefObject>(null)
   const basicPools = useContext(BasicPoolsContext)
   const theme = useTheme()
-  if (basicPools == undefined) return <CircularProgress color="secondary" />
+  if (basicPools == undefined)
+    return (
+      <Box
+        display="flex"
+        height="100%"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <CircularProgress color="secondary" />
+      </Box>
+    )
 
   const gaugesInfo = Object.values(basicPools)
     .map((pool) => {
