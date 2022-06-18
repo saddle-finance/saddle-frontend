@@ -6,6 +6,7 @@ import {
   Divider,
   Link,
   Paper,
+  Skeleton,
   Stack,
   TextField,
   Typography,
@@ -67,6 +68,7 @@ export default function VeSDL(): JSX.Element {
   const [unlockConfirmOpen, setUnlockConfirmOpen] = useState<boolean>(false)
   const sdlTokenValue = parseEther(sdlToken.sdlTokenInputVal.trim() || "0.0")
   const [veSDLTotalSupply, setVeSDLTotalSupply] = useState<BigNumber>(Zero)
+  const [loading, setLoading] = useState<boolean>(true)
 
   const [lockEnd, setLockEnd] = useState<Date | null>(null)
   const [proposedUnlockDate, setProposedUnlockDate] = useState<Date | null>(
@@ -87,29 +89,35 @@ export default function VeSDL(): JSX.Element {
     chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT
 
   const fetchData = useCallback(async () => {
-    if (account) {
-      const sdlTokenBal = await sdlContract?.balanceOf(account)
+    if (account && sdlContract && votingEscrowContract) {
+      const sdlTokenBal = await sdlContract.balanceOf(account)
       setSDLToken((prev) => ({
         ...prev,
         maxBalance: formatUnits(sdlTokenBal || Zero),
       }))
-      const veSDLBal = await votingEscrowContract?.["balanceOf(address)"](
-        account,
-      )
-      const totalSupply = await votingEscrowContract?.["totalSupply()"]()
-      setVeSDLTotalSupply(totalSupply || Zero)
-      setVeSDLTokenVal(veSDLBal || Zero)
+      const veSDLBal = await votingEscrowContract["balanceOf(address)"](account)
+      const totalSupply = await votingEscrowContract["totalSupply()"]()
+      setVeSDLTotalSupply(totalSupply)
+      setVeSDLTokenVal(veSDLBal)
 
-      const prevLockEnd =
-        (await votingEscrowContract?.locked__end(account)) || Zero
+      const prevLockEnd = await votingEscrowContract.locked__end(account)
       setLockEnd(
         !prevLockEnd.isZero() ? new Date(prevLockEnd.toNumber() * 1000) : null,
       )
 
-      const veSdlToken = await votingEscrowContract?.locked(account)
-      setLockedSDLVal(veSdlToken?.amount || Zero)
+      const veSdlToken = await votingEscrowContract.locked(account)
+      setLockedSDLVal(veSdlToken.amount)
+    } else {
+      setLoading(true)
     }
   }, [account, sdlContract, votingEscrowContract])
+
+  useEffect(() => {
+    const init = async () => {
+      await fetchData()
+    }
+    void init()
+  }, [fetchData])
 
   const resetFormState = () => {
     setSDLToken((prev) => ({
@@ -238,7 +246,7 @@ export default function VeSDL(): JSX.Element {
 
   const unlock = async () => {
     if (votingEscrowContract && chainId) {
-      const txn = await votingEscrowContract?.force_withdraw()
+      const txn = await votingEscrowContract.force_withdraw()
       void enqueuePromiseToast(chainId, txn.wait(), "unlock")
       dispatch(
         updateLastTransactionTimes({
@@ -307,170 +315,180 @@ export default function VeSDL(): JSX.Element {
     ? !sdlToken.sdlTokenInputVal || !proposedUnlockDate
     : !sdlToken.sdlTokenInputVal && !proposedUnlockDate
 
-  useEffect(() => {
-    const init = async () => {
-      await fetchData()
-    }
-    void init()
-  }, [fetchData])
-
   return (
     <Container sx={{ py: 3 }}>
       <Box display={{ sm: "flex" }} gap={2}>
         <Stack flex={1} spacing={2} mb={2}>
-          <Paper
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-              p: 4,
-            }}
-          >
-            <Typography variant="h2" textAlign="center">
-              {t("sdlLock")}
-            </Typography>
-
-            <TokenInput
-              data-testid="sdlTokenInput"
-              token={{
-                decimals: 18,
-                symbol: "SDL",
-                name: "SDL",
-                priceUSD: 0,
-              }}
-              max={sdlToken.maxBalance}
-              onChange={(value) =>
-                setSDLToken((prev) => ({ ...prev, sdlTokenInputVal: value }))
-              }
-              inputValue={sdlToken.sdlTokenInputVal}
-            />
-            <Box display="flex" alignItems="center">
-              <div>
-                <Typography mr={1} noWrap>
-                  {t("unlockDate")}:
-                </Typography>
-              </div>
-              <DatePicker
-                value={proposedUnlockDate}
-                onChange={(date) => setProposedUnlockDate(date)}
-                minDate={addWeeks(lockEnd || new Date(), 1)}
-                maxDate={new Date((currentTimestamp + MAXTIME) * 1000)}
-                shouldDisableDate={(date) => date.getDay() !== THURSDAY}
-                renderInput={(props) => (
-                  <TextField
-                    data-testid="veSdlUnlockData"
-                    {...props}
-                    size="small"
-                    fullWidth
-                  />
-                )}
-              />
-            </Box>
-            <Box textAlign="center">
-              <ArrowDownwardIcon />
-            </Box>
-            <TokenInput
-              token={{
-                decimals: 18,
-                symbol: "veSDL",
-                name: t("voteEscrowSDL"),
-                priceUSD: 0,
-              }}
-              readonly
-              inputValue={formatUnits(estLockAmt)}
-              showUSDprice={false}
-            />
-            <Typography
-              textAlign="center"
-              color="primary"
-              whiteSpace="pre-line"
-            >
-              {lockHelperText()}
-            </Typography>
-            <Button
-              variant="contained"
-              data-testid="lockVeSdlBtn"
-              fullWidth
-              size="large"
-              onClick={handleLock}
-              disabled={enableLock || !isValidNetwork}
-            >
-              {lockedSDLVal.isZero() ? t("createLock") : t("adjustLock")}
-            </Button>
-            <Typography textAlign="end">
-              <Link onClick={() => setOpenCalculator(true)}>
-                {t("veTokenCalculator")}
-              </Link>
-            </Typography>
-            <Divider />
-            <Typography variant="h2" textAlign="center" mb={2}>
-              {t("veSdlUnlock")}
-            </Typography>
-            <Typography>
-              {t("totalSdlLock")}: {formatUnits(lockedSDLVal)}
-            </Typography>
-            <Typography>
-              {t("lockupExpiry")}:
-              {` ${lockEnd ? format(lockEnd, "MM/dd/yyyy") : "..."}`}
-            </Typography>
-            <Typography>
-              {t("totalVeSdlHolding")}: {formatUnits(veSDLTokenVal)}
-            </Typography>
-            {!penaltyAmount.isZero() && (
-              <Alert
-                severity="error"
-                icon={false}
+          {loading ? (
+            <Skeleton height="200px" />
+          ) : (
+            <React.Fragment>
+              <Paper
                 sx={{
-                  textAlign: "center",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 2,
+                  p: 4,
                 }}
               >
-                {t("withdrawAlertMsg", {
-                  sdlValue: formatUnits(penaltyAmount),
-                })}
-              </Alert>
-            )}
-            <Button
-              variant="contained"
-              data-testid="unlockVeSdlBtn"
-              onClick={handleUnlock}
-              size="large"
-              fullWidth
-              disabled={lockedSDLVal.isZero() || !isValidNetwork}
-            >
-              {t("unlock")}
-            </Button>
-          </Paper>
-          <Paper sx={{ p: 4 }}>
-            <Typography variant="h2" textAlign="center" mb={2}>
-              {t("veSdlHolderFeeClaim")}
-            </Typography>
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-              gap={2}
-            >
-              <Typography>
-                {t("yourSdlFee")}:{" "}
-                {commify(
-                  formatBNToString(feeDistributorRewards || Zero, 18, 2),
+                <Typography variant="h2" textAlign="center">
+                  {t("sdlLock")}
+                </Typography>
+
+                <TokenInput
+                  data-testid="sdlTokenInput"
+                  token={{
+                    decimals: 18,
+                    symbol: "SDL",
+                    name: "SDL",
+                    priceUSD: 0,
+                  }}
+                  max={sdlToken.maxBalance}
+                  onChange={(value) =>
+                    setSDLToken((prev) => ({
+                      ...prev,
+                      sdlTokenInputVal: value,
+                    }))
+                  }
+                  inputValue={sdlToken.sdlTokenInputVal}
+                />
+                <Box display="flex" alignItems="center">
+                  <div>
+                    <Typography mr={1} noWrap>
+                      {t("unlockDate")}:
+                    </Typography>
+                  </div>
+                  <DatePicker
+                    value={proposedUnlockDate}
+                    onChange={(date) => setProposedUnlockDate(date)}
+                    minDate={addWeeks(lockEnd || new Date(), 1)}
+                    maxDate={new Date((currentTimestamp + MAXTIME) * 1000)}
+                    shouldDisableDate={(date) => date.getDay() !== THURSDAY}
+                    renderInput={(props) => (
+                      <TextField
+                        data-testid="veSdlUnlockData"
+                        {...props}
+                        size="small"
+                        fullWidth
+                      />
+                    )}
+                  />
+                </Box>
+                <Box textAlign="center">
+                  <ArrowDownwardIcon />
+                </Box>
+                <TokenInput
+                  token={{
+                    decimals: 18,
+                    symbol: "veSDL",
+                    name: t("voteEscrowSDL"),
+                    priceUSD: 0,
+                  }}
+                  readonly
+                  inputValue={formatUnits(estLockAmt)}
+                  showUSDprice={false}
+                />
+                <Typography
+                  textAlign="center"
+                  color="primary"
+                  whiteSpace="pre-line"
+                >
+                  {lockHelperText()}
+                </Typography>
+                <Button
+                  variant="contained"
+                  data-testid="lockVeSdlBtn"
+                  fullWidth
+                  size="large"
+                  onClick={handleLock}
+                  disabled={enableLock || !isValidNetwork}
+                >
+                  {lockedSDLVal.isZero() ? t("createLock") : t("adjustLock")}
+                </Button>
+                <Typography textAlign="end">
+                  <Link onClick={() => setOpenCalculator(true)}>
+                    {t("veTokenCalculator")}
+                  </Link>
+                </Typography>
+                <Divider />
+                <Typography variant="h2" textAlign="center" mb={2}>
+                  {t("veSdlUnlock")}
+                </Typography>
+                <Typography>
+                  {t("totalSdlLock")}: {formatUnits(lockedSDLVal)}
+                </Typography>
+                <Typography>
+                  {t("lockupExpiry")}:
+                  {` ${lockEnd ? format(lockEnd, "MM/dd/yyyy") : "..."}`}
+                </Typography>
+                <Typography>
+                  {t("totalVeSdlHolding")}: {formatUnits(veSDLTokenVal)}
+                </Typography>
+                {!penaltyAmount.isZero() && (
+                  <Alert
+                    severity="error"
+                    icon={false}
+                    sx={{
+                      textAlign: "center",
+                    }}
+                  >
+                    {t("withdrawAlertMsg", {
+                      sdlValue: formatUnits(penaltyAmount),
+                    })}
+                  </Alert>
                 )}
-              </Typography>
-              <Button
-                variant="contained"
-                size="large"
-                disabled={!feeDistributorRewards?.gt(Zero) || !isValidNetwork}
-                onClick={claimFeeDistributorRewards}
-              >
-                {t("claim")}
-              </Button>
-            </Box>
-          </Paper>
+                <Button
+                  variant="contained"
+                  data-testid="unlockVeSdlBtn"
+                  onClick={handleUnlock}
+                  size="large"
+                  fullWidth
+                  disabled={lockedSDLVal.isZero() || !isValidNetwork}
+                >
+                  {t("unlock")}
+                </Button>
+              </Paper>
+              <Paper sx={{ p: 4 }}>
+                <Typography variant="h2" textAlign="center" mb={2}>
+                  {t("veSdlHolderFeeClaim")}
+                </Typography>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  gap={2}
+                >
+                  <Typography>
+                    {t("yourSdlFee")}:{" "}
+                    {commify(
+                      formatBNToString(feeDistributorRewards || Zero, 18, 2),
+                    )}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    disabled={
+                      !feeDistributorRewards?.gt(Zero) || !isValidNetwork
+                    }
+                    onClick={claimFeeDistributorRewards}
+                  >
+                    {t("claim")}
+                  </Button>
+                </Box>
+              </Paper>
+            </React.Fragment>
+          )}
         </Stack>
 
         <Stack flex={1} spacing={2}>
-          <LockedInfo />
-          <GaugeVote />
+          {loading ? (
+            <Skeleton height="200px" />
+          ) : (
+            <React.Fragment>
+              <LockedInfo />
+              <GaugeVote />
+            </React.Fragment>
+          )}
         </Stack>
       </Box>
 
