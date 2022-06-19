@@ -66,7 +66,7 @@ export default function VeTokenCalculator({
   }, [gauge])
 
   if (!gauge || !gauge.workingBalances || !gauge.workingSupply)
-    return <div>Loading...</div>
+    return <div></div>
 
   const minVeSDL =
     !totalLPAmountBN.add(userLPAmountBN).isZero() &&

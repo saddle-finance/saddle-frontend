@@ -545,7 +545,7 @@ export const arrayToHashmap = <K extends string | number, V>(
  * @param str string
  * @returns boolean check
  */
-export const isNumberOrEmpty = (str: string) => {
+export const isNumberOrEmpty = (str: string): boolean => {
   return readableDecimalNumberRegex.test(str) || str === ""
 }
 
