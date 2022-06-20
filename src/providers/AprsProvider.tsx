@@ -69,18 +69,15 @@ function useGaugeAprs() {
             },
           }
         }
-        /**
-         * Min Reward APR formula:
-         * 0.4 * (Reward.rate * gauge.relative_weight) * year_secs * rewardPriceUSD / gauge.working_supply * lpTokenPriceUSD
-         */
-        const amountStakedUSD = workingSupply.mul(assetPrice) // 1e18 + 1e18=1e36
+        // @dev see "Math" section of readme
+        const amountStakedUSD = workingSupply.mul(assetPrice) // 1e18 * 1e18 = 1e36
         const rewardPerYear = rewardPerSecond.mul(BN_YEAR_IN_SECONDS) // 1e18
         const rewardPerYearUSD = rewardPerYear.mul(
           parseUnits(rewardPrice.toFixed(3), 3),
-        ) // 1e18 + 3 = 1e21
+        ) // 1e18 * 1e3 = 1e21
         const rewardApr = shiftBNDecimals(rewardPerYearUSD, 33).div(
           amountStakedUSD,
-        ) // (1e21 + 1e33 = 1e54) / 1e36 = 1e18
+        ) // (1e21 * 1e33 = 1e54) / 1e36 = 1e18
 
         return {
           rewardToken,

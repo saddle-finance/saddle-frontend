@@ -266,7 +266,7 @@ const MinichefRewards = ({ poolData }: { poolData: PoolDataType }) => {
       {Object.keys(poolData.aprs).map((key) => {
         const symbol = poolData.aprs[key]?.symbol as string
         return poolData.aprs[key]?.apr.gt(Zero) ? (
-          <div key={symbol}>
+          <Box key={symbol}>
             {symbol.includes("/") ? (
               <Tooltip title={symbol.replaceAll("/", "\n")}>
                 <Typography
@@ -282,7 +282,7 @@ const MinichefRewards = ({ poolData }: { poolData: PoolDataType }) => {
             <Typography component="span" marginLeft={1}>
               {formattedAprs[key] as string}
             </Typography>
-          </div>
+          </Box>
         ) : null
       })}
     </>
@@ -299,20 +299,20 @@ const GaugeRewards = ({ poolData }: { poolData: PoolDataType }) => {
           const { min, max } = aprData.amountPerDay
           if (max.isZero()) return null
           return (
-            <div key={address}>
+            <Box key={address}>
               <Typography component="span">{symbol}/24h:</Typography>
               <Typography component="span" marginLeft={1}>
                 {`${commify(formatBNToString(min, 18, 0))}-${commify(
                   formatBNToString(max, 18, 0),
                 )}`}
               </Typography>
-            </div>
+            </Box>
           )
         } else if (aprData.apr) {
           const { min, max } = aprData.apr
           if (max.isZero()) return null
           return (
-            <div key={address}>
+            <Box key={address}>
               <Typography component="span">{symbol} apr:</Typography>
               <Typography component="span" marginLeft={1}>
                 {`${formatBNToPercentString(
@@ -321,7 +321,7 @@ const GaugeRewards = ({ poolData }: { poolData: PoolDataType }) => {
                   2,
                 )}-${formatBNToPercentString(max, 18, 2)}`}
               </Typography>
-            </div>
+            </Box>
           )
         }
       })}

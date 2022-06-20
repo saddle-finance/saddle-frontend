@@ -148,7 +148,7 @@ export async function getGaugeData(
     const gauges: PoolAddressToGauge = gaugePoolAddresses.reduce(
       (previousGaugeData, gaugePoolAddress, index) => {
         const gaugeRelativeWeight = gaugeRelativeWeights[index]
-        const sdlRate = minterSDLRate.mul(gaugeRelativeWeight).div(BN_1E18)
+        const sdlRate = minterSDLRate.mul(gaugeRelativeWeight).div(BN_1E18) // @dev see "Math" section of readme
         const sdlReward = {
           periodFinish: BN_MSIG_SDL_VEST_END_TIMESTAMP,
           rate: sdlRate,

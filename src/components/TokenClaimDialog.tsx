@@ -238,7 +238,7 @@ export default function TokenClaimDialog({
               </Trans>
             </Typography>
           )}
-          {!gaugesAreActive && chainId === ChainId.MAINNET
+          {!gaugesAreActive
             ? allPoolsWithRewards.map((pool, i, arr) => (
                 <React.Fragment key={pool.poolName}>
                   <ClaimListItem
