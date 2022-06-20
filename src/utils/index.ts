@@ -1,5 +1,6 @@
 import { AddressZero, Zero } from "@ethersproject/constants"
 import {
+  BN_1E18,
   ChainId,
   PoolTypes,
   TOKENS_MAP,
@@ -14,6 +15,8 @@ import {
 } from "../types/ethcall"
 import { formatUnits, parseEther, parseUnits } from "@ethersproject/units"
 
+import { BasicPool } from "../providers/BasicPoolsProvider"
+import { BasicTokens } from "../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "@ethersproject/contracts"
 import { ContractInterface } from "ethers"
@@ -568,5 +571,54 @@ export function extractAddEthereumChainArgs(
       symbol,
       decimals,
     },
+  }
+}
+
+export function calculateFraction(
+  numerator: BigNumber,
+  divisor: BigNumber,
+): BigNumber {
+  return divisor.isZero() ? Zero : numerator.mul(BN_1E18).div(divisor) // returns 1e18
+}
+
+export function getPriceDataForPool(
+  tokens: BasicTokens,
+  basicPool: BasicPool,
+  tokenPricesUSD?: TokenPricesUSD,
+): {
+  assetPrice: BigNumber
+  lpTokenPriceUSD: BigNumber
+  tokenBalancesUSD: BigNumber[]
+  tokenBalancesSumUSD: BigNumber
+  tokenBalances1e18: BigNumber[]
+  totalLocked: BigNumber
+} {
+  const poolAssetPrice = parseUnits(
+    String(
+      tokenPricesUSD?.[getTokenSymbolForPoolType(basicPool.typeOfAsset)] || 0,
+    ),
+    18,
+  )
+  const expandedTokens = basicPool.tokens.map((token) => (tokens || {})[token])
+  const tokenBalances1e18 = basicPool.tokenBalances.map((balance, i) =>
+    balance.mul(
+      BigNumber.from(10).pow(18 - (expandedTokens[i]?.decimals || 0)),
+    ),
+  )
+  const tokenBalancesSum1e18 = tokenBalances1e18.reduce(bnSum, Zero)
+  const tokenBalancesUSD = tokenBalances1e18.map((balance) =>
+    balance.mul(poolAssetPrice).div(BN_1E18),
+  )
+  const tokenBalancesSumUSD = tokenBalancesUSD.reduce(bnSum, Zero)
+  const lpTokenPriceUSD = basicPool.lpTokenSupply.isZero()
+    ? Zero
+    : tokenBalancesSumUSD.mul(BN_1E18).div(basicPool.lpTokenSupply)
+  return {
+    assetPrice: poolAssetPrice,
+    lpTokenPriceUSD,
+    tokenBalancesUSD,
+    tokenBalancesSumUSD,
+    tokenBalances1e18,
+    totalLocked: tokenBalancesSum1e18,
   }
 }

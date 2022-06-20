@@ -9,7 +9,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react"
 
 import { AppState } from "../state"
 import { IS_DEVELOPMENT } from "./../utils/environment"
-import { getPriceDataForPool } from "./usePoolData"
+import { getPriceDataForPool } from "../utils"
 import { intersection } from "../utils/index"
 import { useActiveWeb3React } from "."
 import { useSelector } from "react-redux"

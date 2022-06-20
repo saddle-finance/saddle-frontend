@@ -60,10 +60,10 @@ export default function LockedInfo(): JSX.Element {
           {aggSDLInfo ? formatBNToShortString(aggSDLInfo.totalVeSDL, 18) : "-"}
         </Typography>
       </Box>
-      <Box flex={1}>
+      {/* <Box flex={1}>
         <Typography>{t("avgLockTime")}</Typography>
         <Typography variant="subtitle1">{"-"}</Typography>
-      </Box>
+      </Box> */}
     </Paper>
   )
 }
