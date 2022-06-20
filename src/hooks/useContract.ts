@@ -99,6 +99,7 @@ export function useMasterRegistry(): MasterRegistry | null {
 }
 
 export const POOL_REGISTRY_NAME = formatBytes32String("PoolRegistry")
+
 export function usePoolRegistry(): PoolRegistry | null {
   const { account, library } = useActiveWeb3React()
   const masterRegistryContract = useMasterRegistry()
