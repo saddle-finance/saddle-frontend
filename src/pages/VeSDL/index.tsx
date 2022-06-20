@@ -20,6 +20,7 @@ import {
   formatDuration,
   getUnixTime,
   intervalToDuration,
+  secondsToHours,
 } from "date-fns"
 import { commify, formatUnits, parseEther } from "@ethersproject/units"
 import { enUS, zhCN } from "date-fns/locale"
@@ -467,7 +468,7 @@ export default function VeSDL(): JSX.Element {
                 )}
               </Typography>
             </Typography>
-            {!penaltyAmount.isZero() && (
+            {!penaltyAmount.isZero() && leftTimeForUnlock && (
               <Alert
                 severity="error"
                 icon={false}
@@ -476,7 +477,10 @@ export default function VeSDL(): JSX.Element {
                 }}
               >
                 {t("withdrawAlertMsg", {
-                  sdlValue: formatUnits(penaltyAmount),
+                  sdlValue: commify(formatUnits(penaltyAmount)),
+                  weeksLeftForUnlock: Math.ceil(
+                    secondsToHours(leftTimeForUnlock) / 24 / 7,
+                  ),
                 })}
               </Alert>
             )}
