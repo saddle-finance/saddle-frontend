@@ -14,6 +14,7 @@ import {
 } from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
+import { formatBNToPercentString, isNumberOrEmpty } from "../utils"
 
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state"
@@ -27,9 +28,7 @@ import ReviewWithdraw from "./ReviewWithdraw"
 import TokenInput from "./TokenInput"
 import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import { Zero } from "@ethersproject/constants"
-import { formatBNToPercentString } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
-import { readableDecimalNumberRegex } from "../constants"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
@@ -127,10 +126,7 @@ const WithdrawPage = (props: Props): ReactElement | null => {
                   size="small"
                   data-testid="withdrawPercentageInput"
                   onChange={(e): void => {
-                    if (
-                      e.target.value.trim() === "" ||
-                      readableDecimalNumberRegex.test(e.target.value)
-                    )
+                    if (isNumberOrEmpty(e.target.value))
                       onFormChange({
                         fieldName: "percentage",
                         value: e.currentTarget.value.trim(),
