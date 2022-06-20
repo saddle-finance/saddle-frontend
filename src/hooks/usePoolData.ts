@@ -71,7 +71,11 @@ export interface UserShareType {
   amountsStaked: Partial<Record<Partners, BigNumber>>
 }
 
-export type PoolDataHookReturnType = [PoolDataType, UserShareType | null]
+export type PoolDataHookReturnType = [
+  PoolDataType,
+  UserShareType | null,
+  React.Dispatch<React.SetStateAction<string | undefined>>,
+]
 
 const emptyPoolData = {
   adminFee: Zero,
@@ -107,7 +111,8 @@ const emptyPoolData = {
  * include claimable rewards for gauges and minichef.
  */
 
-export default function usePoolData(poolName?: string): PoolDataHookReturnType {
+export default function usePoolData(name?: string): PoolDataHookReturnType {
+  const [poolName, setPoolName] = useState<string | undefined>(name)
   const { account, library, chainId } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
@@ -117,13 +122,11 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
   const { tokenPricesUSD, swapStats } = useSelector(
     (state: AppState) => state.application,
   )
-  const [poolData, setPoolData] = useState<PoolDataHookReturnType>([
-    {
-      ...emptyPoolData,
-      name: poolName || "",
-    },
-    null,
-  ])
+  const [poolData, setPoolData] = useState<PoolDataType>({
+    ...emptyPoolData,
+    name: poolName || "",
+  })
+  const [userShare, setUserShare] = useState<UserShareType | null>(null)
 
   useEffect(() => {
     async function getSwapData(): Promise<void> {
@@ -136,13 +139,11 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
         chainId == null ||
         basicPool == null
       ) {
-        setPoolData([
-          {
-            ...emptyPoolData,
-            name: poolName || "",
-          },
-          null,
-        ])
+        setPoolData({
+          ...emptyPoolData,
+          name: poolName || "",
+        })
+        setUserShare(null)
         return
       }
       try {
@@ -313,7 +314,8 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
               }, {}), // this is # of underlying tokens (eg btc), not lpTokens
             }
           : null
-        setPoolData([poolData, userShareData])
+        setPoolData(poolData)
+        setUserShare(userShareData)
       } catch (err) {
         console.log("Error on getSwapData,", err)
       }
@@ -335,5 +337,5 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
     gaugeAprs,
   ])
 
-  return poolData
+  return [poolData, userShare, setPoolName]
 }
