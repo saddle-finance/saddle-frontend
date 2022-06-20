@@ -1,21 +1,17 @@
-import { BasicPool, BasicPoolsContext } from "./../providers/BasicPoolsProvider"
-import {
-  BasicToken,
-  BasicTokens,
-  TokensContext,
-} from "../providers/TokensProvider"
+import { AprsContext, GaugeApr } from "./../providers/AprsProvider"
+import { BasicToken, TokensContext } from "../providers/TokensProvider"
 import {
   Partners,
   getThirdPartyDataForPool,
 } from "../utils/thirdPartyIntegrations"
-import { bnSum, getTokenSymbolForPoolType } from "../utils"
+import { bnSum, calculateFraction, getPriceDataForPool } from "../utils"
 import { useContext, useEffect, useState } from "react"
 
 import { AppState } from "../state"
+import { BasicPoolsContext } from "./../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { MinichefContext } from "../providers/MinichefProvider"
 import { PoolTypes } from "./../constants/index"
-import { TokenPricesUSD } from "./../state/application"
 import { UserStateContext } from "./../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
@@ -47,6 +43,7 @@ export interface PoolDataType {
   sdlPerDay: BigNumber | null
   isPaused: boolean
   poolAddress: string
+  gaugeAprs: GaugeApr[] | null
   aprs: Partial<
     Record<
       Partners,
@@ -91,6 +88,7 @@ const emptyPoolData = {
   utilization: null,
   virtualPrice: Zero,
   volume: null,
+  gaugeAprs: null,
   aprs: {},
   lpTokenPriceUSD: Zero,
   lpToken: "",
@@ -102,12 +100,20 @@ const emptyPoolData = {
   poolType: PoolTypes.OTHER,
 } as PoolDataType
 
+/**
+ *
+ * Notes
+ * include staked amounts for gauges and minichef.
+ * include claimable rewards for gauges and minichef.
+ */
+
 export default function usePoolData(poolName?: string): PoolDataHookReturnType {
   const { account, library, chainId } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
   const userState = useContext(UserStateContext)
   const minichefData = useContext(MinichefContext)
+  const gaugeAprs = useContext(AprsContext)
   const { tokenPricesUSD, swapStats } = useSelector(
     (state: AppState) => state.application,
   )
@@ -141,6 +147,7 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
       }
       try {
         const poolMinichefData = minichefData?.pools?.[basicPool.poolAddress]
+        // const poolGaugeData = gauges?.[basicPool.poolAddress]
         const expandedPoolTokens = basicPool.tokens.map(
           (tokenAddr) => tokens[tokenAddr],
         ) as BasicToken[]
@@ -180,6 +187,7 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
             tokenPricesUSD,
             priceDataForPool.lpTokenPriceUSD,
           )
+        const poolGaugeAprs = gaugeAprs?.[basicPool.poolAddress]
 
         // User share data
         const userWalletLpTokenBalance =
@@ -202,6 +210,13 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
             calculateFraction(
               (poolMinichefData?.pid &&
                 userState?.minichef?.[poolMinichefData?.pid]?.amountStaked) ||
+                Zero,
+              basicPool.lpTokenSupply,
+            ),
+          )
+          .add(
+            calculateFraction(
+              userState?.gaugeRewards?.[basicPool.poolAddress]?.amountStaked ||
                 Zero,
               basicPool.lpTokenSupply,
             ),
@@ -271,6 +286,7 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
           utilization: utilization ? parseUnits(utilization, 18) : null, // rm - api
           apy: apy ? parseUnits(apy, 18) : null, // rm - api
 
+          gaugeAprs: poolGaugeAprs ?? null,
           aprs, // rm - move to minichef provider + thirdparty provider
           sdlPerDay:
             minichefData?.pools[basicPool.poolAddress]?.sdlPerDay || Zero,
@@ -315,58 +331,9 @@ export default function usePoolData(poolName?: string): PoolDataHookReturnType {
     tokens,
     userState?.minichef,
     userState?.tokenBalances,
+    userState?.gaugeRewards,
+    gaugeAprs,
   ])
 
   return poolData
-}
-
-function calculateFraction(
-  numerator: BigNumber,
-  divisor: BigNumber,
-): BigNumber {
-  return divisor.isZero()
-    ? Zero
-    : numerator.mul(BigNumber.from(10).pow(18)).div(divisor) // returns 1e18
-}
-
-export function getPriceDataForPool(
-  tokens: BasicTokens,
-  basicPool: BasicPool,
-  tokenPricesUSD?: TokenPricesUSD,
-): {
-  assetPrice: BigNumber
-  lpTokenPriceUSD: BigNumber
-  tokenBalancesUSD: BigNumber[]
-  tokenBalancesSumUSD: BigNumber
-  tokenBalances1e18: BigNumber[]
-  totalLocked: BigNumber
-} {
-  const poolAssetPrice = parseUnits(
-    String(
-      tokenPricesUSD?.[getTokenSymbolForPoolType(basicPool.typeOfAsset)] || 0,
-    ),
-    18,
-  )
-  const expandedTokens = basicPool.tokens.map((token) => (tokens || {})[token])
-  const tokenBalances1e18 = basicPool.tokenBalances.map((balance, i) =>
-    balance.mul(
-      BigNumber.from(10).pow(18 - (expandedTokens[i]?.decimals || 0)),
-    ),
-  )
-  const tokenBalancesSum1e18 = tokenBalances1e18.reduce(bnSum, Zero)
-  const tokenBalancesUSD = tokenBalances1e18.map((balance) =>
-    balance.mul(poolAssetPrice).div(BigNumber.from(10).pow(18)),
-  )
-  const tokenBalancesSumUSD = tokenBalancesUSD.reduce(bnSum, Zero)
-  const lpTokenPriceUSD = basicPool.lpTokenSupply.isZero()
-    ? Zero
-    : tokenBalancesSumUSD.mul(BigInt(1e18)).div(basicPool.lpTokenSupply)
-  return {
-    assetPrice: poolAssetPrice,
-    lpTokenPriceUSD,
-    tokenBalancesUSD,
-    tokenBalancesSumUSD,
-    tokenBalances1e18,
-    totalLocked: tokenBalancesSum1e18,
-  }
 }

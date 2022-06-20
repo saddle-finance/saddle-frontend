@@ -1,5 +1,5 @@
 import { Box, Button, Paper, Stack, Typography } from "@mui/material"
-import { ChainId, IS_SDL_LIVE, IS_VESDL_LIVE } from "../constants"
+import { ChainId, IS_SDL_LIVE } from "../constants"
 import React, { ReactElement, useCallback, useContext } from "react"
 import { commify, formatBNToString } from "../utils"
 
@@ -7,6 +7,7 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { UserStateContext } from "../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
+import { areGaugesActive } from "../utils/gauges"
 import { enqueuePromiseToast } from "./Toastify"
 import { useActiveWeb3React } from "../hooks"
 import { useLPTokenContract } from "../hooks/useContract"
@@ -52,6 +53,8 @@ export default function MyFarm({
     formatBNToString(amountOfSpaClaimable, 18, 4),
   )
 
+  const gaugesAreActive = areGaugesActive(chainId)
+
   const onUnstakeClick = useCallback(async () => {
     if (!liquidityGaugeContract || !account || !chainId) return
     const txn = await liquidityGaugeContract["withdraw(uint256)"](
@@ -79,7 +82,7 @@ export default function MyFarm({
     <Paper sx={{ flex: 1 }}>
       <Stack spacing={2} p={4}>
         <Typography variant="h1">
-          {IS_VESDL_LIVE ? t("myGaugeFarm") : t("myFarm")}
+          {gaugesAreActive ? t("myGaugeFarm") : t("myFarm")}
         </Typography>
         <Box display="flex" alignItems="center">
           <Box flex={1}>
@@ -95,7 +98,7 @@ export default function MyFarm({
               fullWidth
               disabled={lpWalletBalance.isZero()}
               onClick={
-                IS_VESDL_LIVE
+                gaugesAreActive
                   ? onStakeClick
                   : () => approveAndStake(lpWalletBalance)
               }
@@ -108,7 +111,7 @@ export default function MyFarm({
           <Box flex={1}>
             <Typography>{t("lpStaked")}</Typography>
             <Typography variant="subtitle1">
-              {IS_VESDL_LIVE
+              {gaugesAreActive
                 ? formattedLiquidityGaugeLpStakedBalance
                 : formattedLpStakedBalance}
             </Typography>
@@ -119,12 +122,12 @@ export default function MyFarm({
               size="large"
               fullWidth
               disabled={
-                IS_VESDL_LIVE
+                gaugesAreActive
                   ? gaugeBalance.isZero()
                   : amountStakedMinichef.isZero()
               }
               onClick={
-                IS_VESDL_LIVE
+                gaugesAreActive
                   ? onUnstakeClick
                   : () => unstakeMinichef(amountStakedMinichef)
               }

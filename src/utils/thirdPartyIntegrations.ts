@@ -5,7 +5,6 @@ import {
   MINICHEF_CONTRACT_ADDRESSES,
   TBTC_METAPOOL_V2_NAME,
   USDS_ARB_USD_METAPOOL_NAME,
-  VETH2_POOL_NAME,
 } from "../constants"
 import { AddressZero, Zero } from "@ethersproject/constants"
 import { getContract, getMulticallProvider, shiftBNDecimals } from "../utils"
@@ -19,18 +18,11 @@ import { IRewarder } from "../../types/ethers-contracts/IRewarder"
 import LP_TOKEN_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import { MulticallContract } from "../types/ethcall"
-import SGT_REWARDS_ABI from "../constants/abis/sharedStakeStakingRewards.json"
-import { SharedStakeStakingRewards } from "../../types/ethers-contracts/SharedStakeStakingRewards"
 import { TokenPricesUSD } from "../state/application"
 import { Web3Provider } from "@ethersproject/providers"
 import { parseUnits } from "@ethersproject/units"
 
-export type Partners =
-  | "threshold"
-  | "sharedStake"
-  | "alchemix"
-  | "frax"
-  | "sperax"
+export type Partners = "threshold" | "alchemix" | "frax" | "sperax"
 
 type ThirdPartyData = {
   aprs: Partial<
@@ -73,17 +65,6 @@ export async function getThirdPartyDataForPool(
       )
       result.aprs.alchemix = { apr, symbol: rewardSymbol }
       result.amountsStaked.alchemix = userStakedAmount
-    } else if (poolName === VETH2_POOL_NAME) {
-      const rewardSymbol = "SGT"
-      const [apr, userStakedAmount] = await getSharedStakeData(
-        library,
-        chainId,
-        lpTokenPriceUSD,
-        tokenPricesUSD?.[rewardSymbol],
-        accountId,
-      )
-      result.aprs.sharedStake = { apr, symbol: rewardSymbol }
-      result.amountsStaked.sharedStake = userStakedAmount
     } else if (poolName === TBTC_METAPOOL_V2_NAME) {
       const rewardSymbol = "T"
       const [apr, userStakedAmount, thresholdClaimableAmount] =
@@ -145,74 +126,6 @@ async function getFraxData(
   const resApy = fraxData?.["liq_staking"]["Saddle alUSD/FEI/FRAX/LUSD"]["apy"]
   const apy = resApy ? parseUnits(resApy.toFixed(4), 16) : Zero // comes back as 1e-2 so we do 18-2
   return [apy, Zero]
-}
-
-async function getSharedStakeData(
-  library: Web3Provider,
-  chainId: ChainId,
-  lpTokenPrice: BigNumber,
-  sgtPrice = 0,
-  accountId?: string | null,
-): Promise<[BigNumber, BigNumber]> {
-  // https://github.com/SharedStake/SharedStake-ui/blob/main/src/components/Earn/geyser.vue#L336
-  if (
-    library == null ||
-    lpTokenPrice.eq("0") ||
-    sgtPrice === 0 ||
-    chainId !== ChainId.MAINNET
-  )
-    return [Zero, Zero]
-  const ethcallProvider = await getMulticallProvider(library, chainId)
-  const rewardsContract = new Contract(
-    "0xcf91812631e37c01c443a4fa02dfb59ee2ddba7c", // prod address
-    SGT_REWARDS_ABI,
-  ) as MulticallContract<SharedStakeStakingRewards>
-  const multicalls = [
-    rewardsContract.periodFinish(), // 1e0 timestamp in seconds
-    rewardsContract.rewardsDuration(), // 1e0 seconds
-    rewardsContract.getRewardForDuration(), // 1e18
-    rewardsContract.totalSupply(), // 1e18
-    rewardsContract.balanceOf(accountId || AddressZero),
-  ]
-  const [
-    until,
-    rewardsDuration,
-    sgtRewardsPerPeriod,
-    totalStaked,
-    userStakedAmount,
-  ] = await ethcallProvider.tryEach(
-    multicalls,
-    multicalls.map(() => false) as false[],
-  )
-  const nowSeconds = BigNumber.from(Math.floor(Date.now() / 1000))
-  const remainingDays = until.sub(nowSeconds).div(60 * 60 * 24) // 1e0
-  const rewardsDurationDays = rewardsDuration.div(60 * 60 * 24) // 1e0
-  if (
-    remainingDays.lte(Zero) ||
-    rewardsDurationDays.eq(Zero) ||
-    sgtRewardsPerPeriod.eq(Zero) ||
-    totalStaked.eq(Zero)
-  ) {
-    return [Zero, userStakedAmount]
-  }
-  const remainingRewards = remainingDays.mul(
-    sgtRewardsPerPeriod.div(rewardsDurationDays),
-  ) // 1e18
-
-  const remainingRewardsValueUSD = parseUnits(sgtPrice.toFixed(2), 4).mul(
-    remainingRewards,
-  ) // 1e22
-  const annualCoefficient = BigNumber.from(365)
-    .mul(BigNumber.from(10).pow(18))
-    .div(remainingDays) // 1e18
-
-  const totalStakedUSD = totalStaked.mul(lpTokenPrice) // 1e36
-  const pctYieldForPool = remainingRewardsValueUSD
-    .mul(BigNumber.from(10).pow(14))
-    .div(totalStakedUSD) // 1e18
-  const apr = pctYieldForPool.mul(annualCoefficient) // 1e18
-
-  return [apr, userStakedAmount]
 }
 
 async function getAlEthData(

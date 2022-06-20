@@ -10,7 +10,8 @@ import {
   Typography,
 } from "@mui/material"
 import { BasicPool, BasicPoolsContext } from "../providers/BasicPoolsProvider"
-import { ChainId, IS_VESDL_LIVE, SDL_TOKEN } from "../constants"
+import { ChainId, SDL_TOKEN } from "../constants"
+import { GaugeReward, areGaugesActive } from "../utils/gauges"
 import React, {
   ReactElement,
   useCallback,
@@ -32,10 +33,10 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { ContractTransaction } from "@ethersproject/contracts"
 import Dialog from "./Dialog"
 import { GaugeContext } from "../providers/GaugeProvider"
-import { GaugeReward } from "../utils/gauges"
 import LIQUIDITY_GAUGE_V5_ABI from "../constants/abis/liquidityGaugeV5.json"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
+import { TokensContext } from "../providers/TokensProvider"
 import { UserStateContext } from "../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
@@ -44,6 +45,12 @@ import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
 import { useRetroMerkleData } from "../hooks/useRetroMerkleData"
 
 // TODO: update token launch link
+
+type GaugesWithPoolName = {
+  poolName: string
+  address: string
+  rewards: GaugeReward[]
+}
 
 interface TokenClaimDialogProps {
   open: boolean
@@ -58,31 +65,28 @@ export default function TokenClaimDialog({
   const basicPools = useContext(BasicPoolsContext)
   const userState = useContext(UserStateContext)
   const gaugeData = useContext(GaugeContext)
-  const gaugesWithPoolName = useMemo<
-    ({
-      poolName: string
-      address: string
-      rewards: GaugeReward[]
-    } | null)[]
-  >(() => {
-    return Object.values(basicPools || {})
-      .map((pool) => {
-        const gauge = gaugeData.gauges[pool.poolAddress]
-        if (!gauge) return null
-        return {
-          poolName: pool.poolName,
-          address: gauge.address,
-          rewards: gauge.rewards,
-        }
-      })
-      .filter(Boolean)
-      .sort((a, b) => {
-        const [rewardBalA, rewardBalB] = [
-          userState?.gaugeRewards?.[a?.address ?? ""]?.claimableSDL,
-          userState?.gaugeRewards?.[b?.address ?? ""]?.claimableSDL,
-        ]
-        return (rewardBalA || Zero).gte(rewardBalB || Zero) ? -1 : 1
-      })
+  const tokens = useContext(TokensContext)
+  const gaugesWithPoolName = useMemo<GaugesWithPoolName[]>(() => {
+    if (!basicPools || !userState?.gaugeRewards) return []
+    return (
+      Object.values(basicPools)
+        .map((pool) => {
+          const gauge = gaugeData.gauges[pool.poolAddress]
+          if (!gauge) return null
+          return {
+            poolName: pool.poolName,
+            address: gauge.address,
+            rewards: gauge.rewards,
+          }
+        })
+        .filter(Boolean) as GaugesWithPoolName[]
+    ).sort((a, b) => {
+      const [rewardBalA, rewardBalB] = [
+        userState.gaugeRewards?.[a.address]?.claimableSDL,
+        userState.gaugeRewards?.[b.address]?.claimableSDL,
+      ]
+      return (rewardBalA || Zero).gte(rewardBalB || Zero) ? -1 : 1
+    })
   }, [basicPools, gaugeData.gauges, userState?.gaugeRewards])
 
   const isClaimableNetwork =
@@ -131,6 +135,8 @@ export default function TokenClaimDialog({
     })
     return [allPoolsWithRewards, poolsWithUserRewards]
   }, [basicPools, rewardBalances])
+
+  const gaugesAreActive = areGaugesActive(chainId)
 
   return (
     <Dialog
@@ -197,8 +203,9 @@ export default function TokenClaimDialog({
           {rewardBalances.retroactive && isClaimableNetwork && (
             <>
               <ClaimListItem
-                title={t("retroactiveDrop")}
-                amount={rewardBalances.retroactive || Zero}
+                items={[
+                  [t("retroactiveDrop"), rewardBalances.retroactive || Zero],
+                ]}
                 claimCallback={() => claimRetroReward()}
                 status={claimsStatuses["retroactive"]}
               />
@@ -208,7 +215,9 @@ export default function TokenClaimDialog({
               </Typography>
 
               {Boolean(
-                IS_VESDL_LIVE ? gaugesWithPoolName.length : allPoolsWithRewards,
+                gaugesAreActive
+                  ? gaugesWithPoolName.length
+                  : allPoolsWithRewards,
               ) && <div style={{ height: "32px" }} />}
             </>
           )}
@@ -229,12 +238,13 @@ export default function TokenClaimDialog({
               </Trans>
             </Typography>
           )}
-          {!IS_VESDL_LIVE && chainId === ChainId.MAINNET
+          {!gaugesAreActive
             ? allPoolsWithRewards.map((pool, i, arr) => (
                 <React.Fragment key={pool.poolName}>
                   <ClaimListItem
-                    title={pool.poolName}
-                    amount={rewardBalances[pool.poolName] || Zero}
+                    items={[
+                      [pool.poolName, rewardBalances[pool.poolName] || Zero],
+                    ]}
                     claimCallback={() => claimPoolReward(pool)}
                     status={
                       claimsStatuses["allPools"] ||
@@ -245,15 +255,32 @@ export default function TokenClaimDialog({
                 </React.Fragment>
               ))
             : gaugesWithPoolName?.map((gauge, i, arr) => {
-                const userClaimableSdl =
-                  userState?.gaugeRewards?.[gauge?.address || ""]?.claimableSDL
+                const poolGaugeRewards =
+                  userState?.gaugeRewards?.[gauge?.address || ""]
+                const userClaimableSdl = poolGaugeRewards?.claimableSDL
+                const userClaimableOtherRewards: [string, BigNumber][] = (
+                  poolGaugeRewards?.claimableExternalRewards || []
+                ).map(({ amount, tokenAddress }) => {
+                  const token = tokens?.[tokenAddress]
+                  if (!token) {
+                    console.error(`Could not find token ${tokenAddress}`)
+                  }
+                  return [token?.symbol || "", amount]
+                })
+                const shouldShow = Boolean(
+                  userClaimableSdl?.gt(Zero) ||
+                    userClaimableOtherRewards.length,
+                )
 
                 return (
-                  userClaimableSdl?.gt(Zero) && (
+                  shouldShow && (
                     <React.Fragment key={gauge?.poolName}>
                       <ClaimListItem
-                        title={gauge?.poolName ?? ""}
-                        amount={userClaimableSdl ?? Zero}
+                        title={gauge?.poolName}
+                        items={[
+                          ["SDL", userClaimableSdl ?? Zero],
+                          ...userClaimableOtherRewards,
+                        ]}
                         claimCallback={() => claimGaugeReward(gauge)}
                         status={
                           claimsStatuses["allGauges"] ||
@@ -283,7 +310,7 @@ export default function TokenClaimDialog({
         </Typography>
 
         {/* TODO: Follow up potentially P1 for gauges */}
-        {!IS_VESDL_LIVE && (
+        {!gaugesAreActive && (
           <Button
             variant="contained"
             color="primary"
@@ -301,29 +328,45 @@ export default function TokenClaimDialog({
 }
 
 function ClaimListItem({
-  title,
-  amount,
   claimCallback,
   status,
+  items,
+  title,
 }: {
-  title: string
-  amount: BigNumber
+  title?: string
   claimCallback: () => void
+  items: [string, BigNumber][]
   status?: STATUSES
 }): ReactElement {
   const { t } = useTranslation()
-  const formattedAmount = commify(formatBNToString(amount, 18, 2))
-  const disabled =
-    status === STATUSES.PENDING ||
-    status === STATUSES.SUCCESS ||
-    amount.lt(BigNumber.from(10).pow(16)) // don't let anyone try to claim less than 0.01 token
+  const disabled = status === STATUSES.PENDING || status === STATUSES.SUCCESS
+  // @dev - our formatting assumes all tokens are 1e18
   return (
     <ListItem>
       <Typography variant="subtitle1" sx={{ flex: 1 }}>
-        {title}
+        {title && (
+          <>
+            {title}
+            <br />
+          </>
+        )}
+        {items.map(([name]) => (
+          <>
+            {name}
+            <br />
+          </>
+        ))}
       </Typography>
       <Typography sx={{ flex: 1 }}>
-        {status === STATUSES.SUCCESS ? 0 : formattedAmount}
+        {title && <br />}
+        {items.map(([, amount]) => (
+          <>
+            {status === STATUSES.SUCCESS
+              ? 0
+              : commify(formatBNToString(amount, 18, 2))}
+            <br />
+          </>
+        ))}
       </Typography>
       <Button
         variant="contained"
