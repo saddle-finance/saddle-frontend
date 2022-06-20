@@ -340,6 +340,7 @@ export default function VeSDL(): JSX.Element {
 
             <TokenInput
               data-testid="sdlTokenInput"
+              inputType="numeric"
               token={{
                 decimals: 18,
                 symbol: "SDL",
@@ -350,12 +351,13 @@ export default function VeSDL(): JSX.Element {
                 !veSdlTokenBalance.isZero() && Boolean(proposedUnlockDate)
               }
               max={sdlToken.maxBalance}
-              onChange={(value) =>
+              onChange={(value) => {
+                if (value === ".") return
                 setSDLToken((prev) => ({
                   ...prev,
                   sdlTokenInputVal: value,
                 }))
-              }
+              }}
               inputValue={sdlToken.sdlTokenInputVal}
             />
             <Box display="flex" alignItems="center">
