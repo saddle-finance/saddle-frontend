@@ -20,8 +20,12 @@ import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
 import SiteSettingsMenu from "./SiteSettingsMenu"
 import TokenClaimDialog from "./TokenClaimDialog"
+import { UserStateContext } from "../providers/UserStateProvider"
 import Web3Status from "./Web3Status"
+import { Zero } from "@ethersproject/constants"
+import { areGaugesActive } from "../utils/gauges"
 import { formatBNToShortString } from "../utils"
+import { useActiveWeb3React } from "../hooks"
 import { useTranslation } from "react-i18next"
 
 type ActiveTabType = "" | "pools" | "risk" | "vesdl"
@@ -154,8 +158,20 @@ function RewardsButton({
 }: {
   setCurrentModal: React.Dispatch<React.SetStateAction<string | null>>
 }): ReactElement | null {
+  const { chainId } = useActiveWeb3React()
+  const gaugesAreActive = areGaugesActive(chainId)
   const rewardBalances = useContext(RewardsBalancesContext)
-  const formattedTotal = formatBNToShortString(rewardBalances.total, 18)
+  const userState = useContext(UserStateContext)
+  const totalSdlFromGauges = Object.values(
+    userState?.gaugeRewards ?? {},
+  ).reduce((sum, { claimableSDL }) => sum.add(claimableSDL), Zero)
+  const formattedTotal = formatBNToShortString(
+    gaugesAreActive
+      ? rewardBalances.total.add(totalSdlFromGauges) // adding against retroactive amount
+      : rewardBalances.total,
+    18,
+  )
+
   return IS_SDL_LIVE ? (
     <Button
       variant="contained"
