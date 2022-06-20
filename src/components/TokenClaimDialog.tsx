@@ -88,6 +88,9 @@ export default function TokenClaimDialog({
       return (rewardBalA || Zero).gte(rewardBalB || Zero) ? -1 : 1
     })
   }, [basicPools, gaugeData.gauges, userState?.gaugeRewards])
+  const totalSdlFromGauges = Object.values(
+    userState?.gaugeRewards ?? {},
+  ).reduce((sum, { claimableSDL }) => sum.add(claimableSDL), Zero)
 
   const isClaimableNetwork =
     chainId === ChainId.MAINNET ||
@@ -108,8 +111,16 @@ export default function TokenClaimDialog({
     ...SDL_TOKEN,
   })
 
+  const gaugesAreActive = areGaugesActive(chainId)
+
   const formattedUnclaimedTokenbalance = commify(
-    formatBNToString(rewardBalances.total, 18, 0),
+    formatBNToString(
+      gaugesAreActive
+        ? rewardBalances.total.add(totalSdlFromGauges) // adding against retroactive amount
+        : rewardBalances.total,
+      18,
+      0,
+    ),
   )
   const formattedTotalRetroDrop = commify(
     formatBNToString(rewardBalances.retroactiveTotal, 18, 2),
@@ -135,8 +146,6 @@ export default function TokenClaimDialog({
     })
     return [allPoolsWithRewards, poolsWithUserRewards]
   }, [basicPools, rewardBalances])
-
-  const gaugesAreActive = areGaugesActive(chainId)
 
   return (
     <Dialog
