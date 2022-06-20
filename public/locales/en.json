@@ -140,6 +140,7 @@
   "maxBoost": "Max boost",
   "maxBoostCalculator": "Max boost calculator",
   "myBoostCalculator": "My boost calculator",
+  "minVeSDLForMaxBoost": "Please enter a deposit amount",
   "maxSlippage": "Max Slippage",
   "metapool": "Metapools contain one token to trade with another underlying Base pool. Adding the single asset to the metapool does not dilute the liquidity of the underlying base pool.",
   "migrate": "Migrate",
