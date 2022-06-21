@@ -3,7 +3,7 @@ import {
   BN_MSIG_SDL_VEST_END_TIMESTAMP,
   ChainId,
   GAUGE_CONTROLLER_ADDRESSES,
-  HELPER_CONTRACT_ADDRESSES,
+  GAUGE_HELPER_CONTRACT_ADDRESSES,
   IS_VESDL_LIVE,
 } from "../constants"
 import {
@@ -14,9 +14,9 @@ import {
 
 import { BigNumber } from "@ethersproject/bignumber"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
+import GAUGE_HELPER_CONTRACT_ABI from "../constants/abis/gaugeHelperContract.json"
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
-import HELPER_CONTRACT_ABI from "../constants/abis/helperContract.json"
-import { HelperContract } from "../../types/ethers-contracts/HelperContract"
+import { GaugeHelperContract } from "../../types/ethers-contracts/GaugeHelperContract"
 import LIQUIDITY_GAUGE_V5_ABI from "../constants/abis/liquidityGaugeV5.json"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { Minter } from "../../types/ethers-contracts/Minter"
@@ -77,13 +77,14 @@ export async function getGaugeData(
   try {
     const gaugeCount = (await gaugeController.n_gauges()).toNumber()
     const ethCallProvider = await getMulticallProvider(library, chainId)
-    const helperContractAddress = HELPER_CONTRACT_ADDRESSES[chainId]
+    const gaugeHelperContractAddress = GAUGE_HELPER_CONTRACT_ADDRESSES[chainId]
     const gaugeControllerContractAddress = GAUGE_CONTROLLER_ADDRESSES[chainId]
 
-    const helperContractMultiCall = createMultiCallContract<HelperContract>(
-      helperContractAddress,
-      HELPER_CONTRACT_ABI,
-    )
+    const gaugeHelperContractMultiCall =
+      createMultiCallContract<GaugeHelperContract>(
+        gaugeHelperContractAddress,
+        GAUGE_HELPER_CONTRACT_ABI,
+      )
 
     const gaugeControllerMultiCall = createMultiCallContract<GaugeController>(
       gaugeControllerContractAddress,
@@ -101,14 +102,14 @@ export async function getGaugeData(
     const gaugePoolAddresses: string[] = (
       await ethCallProvider.all(
         gaugeAddresses.map((address) =>
-          helperContractMultiCall.gaugeToPoolAddress(address),
+          gaugeHelperContractMultiCall.gaugeToPoolAddress(address),
         ),
       )
     ).map((poolAddress) => poolAddress.toLowerCase())
 
     const gaugeRewardsPromise = ethCallProvider.all(
       gaugeAddresses.map((address) =>
-        helperContractMultiCall.getGaugeRewards(address),
+        gaugeHelperContractMultiCall.getGaugeRewards(address),
       ),
     )
     const gaugeWeightsPromise: Promise<BigNumber[]> = ethCallProvider.all(
@@ -228,15 +229,16 @@ export async function getGaugeRewardsUserData(
   account?: string,
 ): Promise<GaugeRewardUserData | null> {
   const ethCallProvider = await getMulticallProvider(library, chainId)
-  const helperContractAddress = HELPER_CONTRACT_ADDRESSES[chainId]
+  const gaugeHelperContractAddress = GAUGE_HELPER_CONTRACT_ADDRESSES[chainId]
 
-  const helperContractMultiCall = createMultiCallContract<HelperContract>(
-    helperContractAddress,
-    HELPER_CONTRACT_ABI,
-  )
+  const gaugeHelperContractMultiCall =
+    createMultiCallContract<GaugeHelperContract>(
+      gaugeHelperContractAddress,
+      GAUGE_HELPER_CONTRACT_ABI,
+    )
   if (
     !gaugeAddresses.length ||
-    !helperContractAddress ||
+    !gaugeHelperContractAddress ||
     !ethCallProvider ||
     !account
   )
@@ -256,7 +258,7 @@ export async function getGaugeRewardsUserData(
     )
     const gaugeUserClaimableExternalRewardsPromise = ethCallProvider.all(
       gaugeAddresses.map((gaugeAddress) =>
-        helperContractMultiCall.getClaimableRewards(gaugeAddress, account),
+        gaugeHelperContractMultiCall.getClaimableRewards(gaugeAddress, account),
       ),
     )
     const gaugeUserDepositBalancesPromise = ethCallProvider.all(
