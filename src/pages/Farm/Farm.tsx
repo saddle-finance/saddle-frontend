@@ -20,7 +20,7 @@ export default function Farm(): JSX.Element {
         onClickStake={() => setOpenStackDlg(true)}
       />
       <StakeDialog
-        farmName="alETH Farm"
+        farmName="SDL/ETH"
         open={openStackDlg}
         onClose={() => setOpenStackDlg(false)}
       />
