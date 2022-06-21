@@ -1,4 +1,9 @@
-import { ChainId, PoolTypes } from "../constants"
+import {
+  ChainId,
+  PoolTypes,
+  SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES,
+  VOTING_ESCROW_CONTRACT_ADDRESS,
+} from "../constants"
 import {
   MulticallCall,
   MulticallContract,
@@ -13,6 +18,7 @@ import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
 import { GaugeContext } from "./GaugeProvider"
 import { MinichefContext } from "./MinichefProvider"
+import { areGaugesActive } from "../utils/gauges"
 import { useActiveWeb3React } from "../hooks"
 
 export type BasicToken = {
@@ -41,6 +47,7 @@ export default function TokensProvider({
         setTokens(null)
         return
       }
+      const gaugesAreActive = areGaugesActive(chainId)
       const ethCallProvider = await getMulticallProvider(library, chainId)
       const lpTokens = new Set()
       const tokenType: Partial<{ [tokenAddress: string]: PoolTypes }> = {}
@@ -76,6 +83,14 @@ export default function TokensProvider({
             targetTokenAddresses.add(tokenAddress)
           })
         })
+      }
+      if (SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chainId]) {
+        // add sushi token
+        targetTokenAddresses.add(SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chainId])
+      }
+      if (VOTING_ESCROW_CONTRACT_ADDRESS[chainId] && gaugesAreActive) {
+        // add voting escrow token
+        targetTokenAddresses.add(VOTING_ESCROW_CONTRACT_ADDRESS[chainId])
       }
       const tokenInfos = await getTokenInfos(
         ethCallProvider,
@@ -125,12 +140,11 @@ async function getTokenInfos(
       symbolCalls.push(tokenContract.symbol())
       decimalsCalls.push(tokenContract.decimals())
     })
-    const multicallArgs = Array(lowercaseTokenAddresses.length).fill(true)
 
     const [nameResults, symbolResults, decimalsResults] = await Promise.all([
-      ethCallProvider.tryEach(nameCalls, multicallArgs),
-      ethCallProvider.tryEach(symbolCalls, multicallArgs),
-      ethCallProvider.tryEach(decimalsCalls, multicallArgs),
+      ethCallProvider.tryAll(nameCalls),
+      ethCallProvider.tryAll(symbolCalls),
+      ethCallProvider.tryAll(decimalsCalls),
     ])
     const results = lowercaseTokenAddresses.reduce((acc, address, index) => {
       const name = nameResults[index]

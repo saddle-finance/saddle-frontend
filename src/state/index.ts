@@ -21,9 +21,8 @@ const store = configureStore({
     ...getDefaultMiddleware({
       thunk: false,
       serializableCheck: {
-        ignoredPaths: Object.keys(reducer).filter(
-          (k) => !PERSISTED_KEYS.includes(k),
-        ),
+        ignoredActions: ["application/updateSdlWethSushiPool"],
+        ignoredPaths: ["application.sdlWethSushiPool"],
       },
     }),
     save({ states: PERSISTED_KEYS }),
