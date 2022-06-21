@@ -147,12 +147,13 @@ export default function MyFarm({
             <Box flex={1}>
               <Button
                 variant="outlined"
+                color="secondary"
                 size="large"
                 fullWidth
                 disabled={amountStakedMinichef.isZero()}
                 onClick={() => unstakeMinichef(amountStakedMinichef)}
               >
-                {t("unstakeAll")}
+                {t("unstakeOld")}
               </Button>
             </Box>
           </Box>
