@@ -21,6 +21,7 @@ const TokenGroup = styled("div")(() => ({
 }))
 
 export default function FarmOverview({
+  farmName,
   apr,
   tvl,
   myStake,
@@ -40,7 +41,7 @@ export default function FarmOverview({
       }}
     >
       <Grid item xs={2.5}>
-        <Typography variant="h2">SDL/ETH</Typography>
+        <Typography variant="h2">{farmName}</Typography>
         <TokenGroup>
           <TokenIcon symbol="SDL" alt="sdl" />
           <TokenIcon symbol="WETH" alt="weth" />

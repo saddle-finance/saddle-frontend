@@ -7,20 +7,21 @@ import { useTranslation } from "react-i18next"
 
 export default function Farm(): JSX.Element {
   const [openStackDlg, setOpenStackDlg] = useState<boolean>(false)
+  const sdlWethPoolName = "SDL/WETH"
 
   return (
     <Container sx={{ pt: 5 }}>
       <FarmListHeader />
 
       <FarmOverview
-        farmName="SDL/ETH"
+        farmName={sdlWethPoolName}
         apr={parseEther("20.12")}
         tvl={parseEther("70300000")}
         myStake={parseEther("200330")}
         onClickStake={() => setOpenStackDlg(true)}
       />
       <StakeDialog
-        farmName="SDL/ETH"
+        farmName={sdlWethPoolName}
         open={openStackDlg}
         onClose={() => setOpenStackDlg(false)}
       />

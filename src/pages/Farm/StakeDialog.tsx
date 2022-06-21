@@ -60,7 +60,7 @@ export default function StakeDialog({
           </Tabs>
           <TokenInput
             inputValue="0.0"
-            token={{ decimals: 18, name: "SDL", symbol: "SDL" }}
+            token={{ decimals: 18, name: "SDL/WETH SLP", symbol: "SLP" }}
           />
           <Button fullWidth variant="contained" size="large">
             {stakeStatus === "stake" ? "Stake" : "Unstake"}
