@@ -4,7 +4,7 @@ import React from "react"
 import { parseEther } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
-export default function Farm() {
+export default function Farm(): JSX.Element {
   return (
     <Container sx={{ pt: 5 }}>
       <FarmListHeader />
@@ -25,7 +25,7 @@ export default function Farm() {
   )
 }
 
-function FarmListHeader() {
+function FarmListHeader(): JSX.Element {
   const { t } = useTranslation()
   return (
     <Grid

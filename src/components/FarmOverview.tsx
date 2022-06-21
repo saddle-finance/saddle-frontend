@@ -19,7 +19,11 @@ const TokenGroup = styled("div")(() => ({
   },
 }))
 
-export default function FarmOverview({ apr, tvl, myStake }: FarmOverviewProps) {
+export default function FarmOverview({
+  apr,
+  tvl,
+  myStake,
+}: FarmOverviewProps): JSX.Element {
   const { t } = useTranslation()
   return (
     <Grid
