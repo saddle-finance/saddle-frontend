@@ -329,5 +329,5 @@
   "wrongNetworkContent": "Oops, looks like you're trying to use Saddle while your wallet is connected to an unsupported network.\n\nPlease switch to Ethereum mainnet or another supported network.",
   "yes": "Yes",
   "yourRecentTransactions": "Your recent transactions will be here.",
-  "yourSdlFee": "Your SDL/FRAX LP fee"
+  "yourSdlFee": "Claimable SDL/WETH LP"
 }
