@@ -7,8 +7,7 @@ import {
   Typography,
 } from "@mui/material"
 import React, { useEffect } from "react"
-import { SWAP_TYPES, readableDecimalNumberRegex } from "../constants"
-import { commify, formatBNToString } from "../utils"
+import { commify, formatBNToString, isNumberOrEmpty } from "../utils"
 import { styled, useTheme } from "@mui/material/styles"
 import { useRef, useState } from "react"
 
@@ -18,6 +17,7 @@ import { BigNumber } from "ethers"
 import Box from "@mui/material/Box"
 import ClickAwayListener from "@mui/material/ClickAwayListener"
 import Popper from "@mui/material/Popper"
+import { SWAP_TYPES } from "../constants"
 import Search from "@mui/icons-material/Search"
 import TokenIcon from "./TokenIcon"
 import { TokenOption } from "../pages/Swap"
@@ -78,12 +78,7 @@ export default function SwapTokenInput({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     // if value is not blank, then test the regex
-    if (
-      e.target.value.trim() === "" ||
-      readableDecimalNumberRegex.test(e.target.value)
-    ) {
-      onChangeAmount?.(e.target.value)
-    }
+    if (isNumberOrEmpty(e.target.value)) onChangeAmount?.(e.target.value)
   }
 
   const handleFocus = (

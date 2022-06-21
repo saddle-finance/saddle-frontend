@@ -47,7 +47,7 @@ function useGaugeAprs() {
 
   return Object.values(basicPools).reduce((acc, basicPool) => {
     const gauge = gauges[basicPool.poolAddress]
-    if (!gauge) return acc
+    if (!(gauge && gauge?.workingSupply)) return acc
     const { rewards, workingSupply } = gauge
     const { assetPrice } = getPriceDataForPool(
       tokens,

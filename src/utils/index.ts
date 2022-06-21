@@ -1,12 +1,19 @@
 import { AddressZero, Zero } from "@ethersproject/constants"
-import { BN_1E18, ChainId, PoolTypes, TOKENS_MAP, Token } from "../constants"
+import {
+  BN_1E18,
+  ChainId,
+  PoolTypes,
+  TOKENS_MAP,
+  Token,
+  readableDecimalNumberRegex,
+} from "../constants"
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
 import {
   MulticallCall,
   MulticallContract,
   MulticallProvider,
 } from "../types/ethcall"
-import { formatUnits, parseUnits } from "@ethersproject/units"
+import { formatUnits, parseEther, parseUnits } from "@ethersproject/units"
 
 import { BasicPool } from "../providers/BasicPoolsProvider"
 import { BasicTokens } from "../providers/TokensProvider"
@@ -32,6 +39,7 @@ import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import { TokenPricesUSD } from "../state/application"
 import { chunk } from "lodash"
 import { getAddress } from "@ethersproject/address"
+import { minBigNumber } from "./minBigNumber"
 
 export function isSynthAsset(chainId: ChainId, tokenAddress: string): boolean {
   return SYNTHETIX_TOKENS[chainId]?.includes(tokenAddress) || false
@@ -423,6 +431,70 @@ export function generateSnapshotVoteLink(id?: string): string {
 }
 
 /**
+ * calculate effective working LP amount that gets applied when user deposits into a gauge with given total LP deposit amount
+ * You can compare userLPAmount and the returned value to calculate boost ratio
+ * reference https://www.notion.so/saddle-finance/Gauge-Data-1919b6d6317245baa5f58cc25b17ed98#d2025bd485a641fca2730ac617dad82b
+ *
+ * @param userLPAmount user's lp amount
+ * @param totalLPDeposit total lp deposit in the gauge contract
+ * @param userBalanceVeSDL user veSDL balance
+ * @param totalSupplyVeSDL veSDL total supply
+ * @returns return the working amount in BigNumber
+ *
+ */
+export const calculateBoost = (
+  userLPAmount: BigNumber,
+  totalLPDeposit: BigNumber,
+  workingBalances: BigNumber,
+  totalWorkingSupply: BigNumber,
+  userBalanceVeSDL: BigNumber,
+  totalSupplyVeSDL: BigNumber,
+): BigNumber | undefined => {
+  if (totalSupplyVeSDL.isZero()) return parseEther("1")
+
+  let lim = userLPAmount
+    .mul(BigNumber.from(100))
+    .mul(BigNumber.from(40))
+    .div(BigNumber.from(100))
+
+  const newTotalLPDeposit = totalLPDeposit.add(userLPAmount)
+
+  lim = lim.add(
+    newTotalLPDeposit
+      .mul(userBalanceVeSDL)
+      .div(totalSupplyVeSDL)
+      .mul(BigNumber.from(100))
+      .mul(BigNumber.from(60))
+      .div(BigNumber.from(100)),
+  )
+
+  lim = minBigNumber(userLPAmount.mul(BigNumber.from(100)), lim)
+
+  const noBoostLim = userLPAmount
+    .mul(BigNumber.from(40))
+    .div(BigNumber.from(100))
+
+  const noBoostSupply = totalWorkingSupply
+    .add(noBoostLim)
+    .sub(workingBalances)
+    .mul(BigNumber.from(100))
+
+  const newWorkingSupply = totalWorkingSupply
+    .add(lim)
+    .sub(workingBalances)
+    .mul(BigNumber.from(100))
+
+  if (newWorkingSupply.mul(noBoostLim).isZero()) return parseEther("1")
+
+  const boost = lim
+    .mul(noBoostSupply)
+    .mul(parseEther("1"))
+    .div(newWorkingSupply.mul(noBoostLim))
+
+  return boost
+}
+
+/**
  * Lowercase a list of strings
  *
  * @param strings list of strings
@@ -471,6 +543,14 @@ export const arrayToHashmap = <K extends string | number, V>(
   Object.assign({}, ...array.map(([key, val]) => ({ [key]: val }))) as {
     [key: string]: V
   }
+/**
+ *
+ * @param str string
+ * @returns boolean check
+ */
+export const isNumberOrEmpty = (str: string): boolean => {
+  return readableDecimalNumberRegex.test(str) || str === ""
+}
 
 /**
  * Return the strict structure required by the `wallet_addEthereumChain` call
