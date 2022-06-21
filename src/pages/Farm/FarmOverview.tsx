@@ -10,6 +10,7 @@ interface FarmOverviewProps {
   apr?: BigNumber
   tvl?: BigNumber
   myStake?: BigNumber
+  onClickStake: () => void
 }
 
 const TokenGroup = styled("div")(() => ({
@@ -20,9 +21,11 @@ const TokenGroup = styled("div")(() => ({
 }))
 
 export default function FarmOverview({
+  farmName,
   apr,
   tvl,
   myStake,
+  onClickStake,
 }: FarmOverviewProps): JSX.Element {
   const { t } = useTranslation()
   return (
@@ -38,7 +41,7 @@ export default function FarmOverview({
       }}
     >
       <Grid item xs={2.5}>
-        <Typography variant="h2">SDL/ETH</Typography>
+        <Typography variant="h2">{farmName}</Typography>
         <TokenGroup>
           <TokenIcon symbol="SDL" alt="sdl" />
           <TokenIcon symbol="WETH" alt="weth" />
@@ -63,7 +66,12 @@ export default function FarmOverview({
         <Button variant="outlined" size="large">
           {t("claimRewards")}
         </Button>
-        <Button variant="contained" size="large" sx={{ ml: 2 }}>
+        <Button
+          variant="contained"
+          size="large"
+          sx={{ ml: 2 }}
+          onClick={onClickStake}
+        >
           {t("stakeOrUnstake")}
         </Button>
       </Box>
