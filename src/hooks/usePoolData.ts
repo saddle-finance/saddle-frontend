@@ -10,6 +10,7 @@ import { useContext, useEffect, useState } from "react"
 import { AppState } from "../state"
 import { BasicPoolsContext } from "./../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
+import { GaugeContext } from "./../providers/GaugeProvider"
 import { MinichefContext } from "../providers/MinichefProvider"
 import { PoolTypes } from "./../constants/index"
 import { UserStateContext } from "./../providers/UserStateProvider"
@@ -118,6 +119,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
   const tokens = useContext(TokensContext)
   const userState = useContext(UserStateContext)
   const minichefData = useContext(MinichefContext)
+  const { gauges } = useContext(GaugeContext)
   const gaugeAprs = useContext(AprsContext)
   const { tokenPricesUSD, swapStats } = useSelector(
     (state: AppState) => state.application,
@@ -148,7 +150,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
       }
       try {
         const poolMinichefData = minichefData?.pools?.[basicPool.poolAddress]
-        // const poolGaugeData = gauges?.[basicPool.poolAddress]
+        const poolGaugeData = gauges?.[basicPool.lpToken]
         const expandedPoolTokens = basicPool.tokens.map(
           (tokenAddr) => tokens[tokenAddr],
         ) as BasicToken[]
@@ -188,7 +190,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
             tokenPricesUSD,
             priceDataForPool.lpTokenPriceUSD,
           )
-        const poolGaugeAprs = gaugeAprs?.[basicPool.poolAddress]
+        const poolGaugeAprs = gaugeAprs?.[poolGaugeData?.address ?? ""]
 
         // User share data
         const userWalletLpTokenBalance =
@@ -335,6 +337,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
     userState?.tokenBalances,
     userState?.gaugeRewards,
     gaugeAprs,
+    gauges,
   ])
 
   return [poolData, userShare, setPoolName]

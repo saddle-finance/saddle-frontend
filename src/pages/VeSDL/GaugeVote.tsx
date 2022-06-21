@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  CircularProgress,
   Link,
   Paper,
   Table,
@@ -12,20 +11,19 @@ import {
   TableRow,
   Typography,
 } from "@mui/material"
-import React, { useContext } from "react"
 import {
   SNAPSHOT_STATE,
   VoteEscrowSnapshots,
 } from "../../state/voteEscrowSnapshots"
+
 import { AppState } from "../../state"
-import { GaugeContext } from "../../providers/GaugeProvider"
 import GaugeWeight from "../../components/GaugeWeight"
+import React from "react"
 import { generateSnapshotVoteLink } from "../../utils"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
 export default function GaugeVote(): JSX.Element {
-  const gaugeData = useContext(GaugeContext)
   const { snapshots }: VoteEscrowSnapshots = useSelector(
     (state: AppState) => state.voteEscrowSnapshots,
   )
@@ -37,18 +35,7 @@ export default function GaugeVote(): JSX.Element {
         {t("gaugeVote")}
       </Typography>
       <Box height="428px">
-        {!gaugeData ? (
-          <Box
-            display="flex"
-            height="100%"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <CircularProgress color="secondary" />
-          </Box>
-        ) : (
-          <GaugeWeight gauges={gaugeData.gauges} />
-        )}
+        <GaugeWeight />
       </Box>
       <TableContainer>
         <Table size="small">

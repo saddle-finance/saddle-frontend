@@ -23,18 +23,20 @@ import { Minter } from "../../types/ethers-contracts/Minter"
 import { SDL_TOKEN_ADDRESSES } from "./../constants/index"
 import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
+import { isAddressZero } from "."
 
 export type Gauge = {
   address: string
   gaugeBalance: BigNumber | null
   gaugeTotalSupply: BigNumber | null
   gaugeWeight: BigNumber
-  poolAddress: string
+  poolAddress: string | null
   poolName: string
   gaugeRelativeWeight: BigNumber
   workingBalances: BigNumber | null
   workingSupply: BigNumber | null
   rewards: GaugeReward[]
+  gaugeName: string | null
 }
 
 export type GaugeReward = {
@@ -43,13 +45,13 @@ export type GaugeReward = {
   tokenAddress: string
 }
 
-export type PoolAddressToGauge = Partial<{
-  [poolAddress: string]: Gauge
+export type LPTokenAddressToGauge = Partial<{
+  [lpTokenAddress: string]: Gauge
 }>
 
 export type Gauges = {
   gaugeCount: number
-  gauges: PoolAddressToGauge
+  gauges: LPTokenAddressToGauge
 }
 
 export type GaugeRewardUserData = Partial<{
@@ -98,13 +100,13 @@ export async function getGaugeData(
       )
     ).map((address) => address.toLowerCase())
 
-    const gaugePoolAddresses: string[] = (
-      await ethCallProvider.all(
+    const gaugePoolAddresses = (
+      await ethCallProvider.tryAll(
         gaugeAddresses.map((address) =>
           helperContractMultiCall.gaugeToPoolAddress(address),
         ),
       )
-    ).map((poolAddress) => poolAddress.toLowerCase())
+    ).map((poolAddress) => poolAddress?.toLowerCase())
 
     const gaugeRewardsPromise = ethCallProvider.all(
       gaugeAddresses.map((address) =>
@@ -140,17 +142,21 @@ export async function getGaugeData(
         gaugeContract.totalSupply(),
       ),
     )
-
     const gaugeWorkingSuppliesPromise = ethCallProvider.tryAll(
       gaugeMulticallContracts.map((gaugeContract) =>
         gaugeContract.working_supply(),
       ),
     )
-
     const gaugeWorkingBalancesPromise = ethCallProvider.tryAll(
       gaugeMulticallContracts.map((gaugeContract) =>
         gaugeContract.working_balances(account),
       ),
+    )
+    const gaugeLpTokenAddressesPromise = ethCallProvider.tryAll(
+      gaugeMulticallContracts.map((gaugeContract) => gaugeContract.lp_token()),
+    )
+    const gaugeNamesPromise = ethCallProvider.tryAll(
+      gaugeMulticallContracts.map((gaugeContract) => gaugeContract.name()),
     )
     const [
       gaugeWeights,
@@ -160,6 +166,8 @@ export async function getGaugeData(
       gaugeWorkingSupplies,
       gaugeWorkingBalances,
       gaugeTotalSupplies,
+      gaugeLpTokenAddresses,
+      gaugeNames,
       minterSDLRate,
     ] = await Promise.all([
       gaugeWeightsPromise,
@@ -169,11 +177,15 @@ export async function getGaugeData(
       gaugeWorkingBalancesPromise,
       gaugeTotalSupplyPromise,
       gaugeWorkingSuppliesPromise,
+      gaugeLpTokenAddressesPromise,
+      gaugeNamesPromise,
       minterContract ? minterContract.rate() : Promise.resolve(Zero),
     ])
 
-    const gauges: PoolAddressToGauge = gaugePoolAddresses.reduce(
-      (previousGaugeData, gaugePoolAddress, index) => {
+    const gauges: LPTokenAddressToGauge = gaugeAddresses.reduce(
+      (previousGaugeData, gaugeAddress, index) => {
+        const lpTokenAddress = gaugeLpTokenAddresses[index]?.toLowerCase()
+        const poolAddress = gaugePoolAddresses[index]
         const gaugeRelativeWeight = gaugeRelativeWeights[index]
         const sdlRate = minterSDLRate.mul(gaugeRelativeWeight).div(BN_1E18) // @dev see "Math" section of readme
         const sdlReward = {
@@ -181,17 +193,20 @@ export async function getGaugeData(
           rate: sdlRate,
           tokenAddress: SDL_TOKEN_ADDRESSES[chainId].toLowerCase(),
         }
+        if (!lpTokenAddress) return previousGaugeData
         return {
           ...previousGaugeData,
-          [gaugePoolAddress]: {
-            address: gaugeAddresses[index],
-            poolAddress: gaugePoolAddress,
+          [lpTokenAddress]: {
+            address: gaugeAddress,
             gaugeWeight: gaugeWeights[index],
             gaugeRelativeWeight: gaugeRelativeWeights[index],
             gaugeTotalSupply: gaugeTotalSupplies[index],
             workingSupply: gaugeWorkingSupplies[index],
             workingBalances: gaugeWorkingBalances[index],
             gaugeBalance: gaugeBalances[index],
+            gaugeName: gaugeNames[index],
+            poolAddress:
+              !poolAddress || isAddressZero(poolAddress) ? null : poolAddress,
             poolName: "",
             rewards: gaugeRewards[index]
               .map((reward) => ({
