@@ -1,5 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
+import { BigNumber } from "@ethersproject/bignumber"
 import { SwapStatsReponse } from "../utils/getSwapStats"
 
 interface GasPrices {
@@ -22,9 +23,15 @@ interface LastTransactionTimes {
   [transactionType: string]: number
 }
 
+export type SdlWethSushiPool = {
+  totalSupply: BigNumber
+  wethReserve: BigNumber
+  sdlReserve: BigNumber
+} | null
+
 type ApplicationState = GasPrices & { tokenPricesUSD?: TokenPricesUSD } & {
   lastTransactionTimes: LastTransactionTimes
-} & { swapStats?: SwapStats }
+} & { swapStats?: SwapStats } & { sdlWethSushiPool?: SdlWethSushiPool }
 
 const initialState: ApplicationState = {
   lastTransactionTimes: {},
@@ -77,6 +84,12 @@ const applicationSlice = createSlice({
       )
       state.swapStats = formattedPayload
     },
+    updateSdlWethSushiPool(
+      state,
+      action: PayloadAction<SdlWethSushiPool>,
+    ): void {
+      state.sdlWethSushiPool = action.payload
+    },
   },
 })
 
@@ -85,6 +98,7 @@ export const {
   updateTokensPricesUSD,
   updateLastTransactionTimes,
   updateSwapStats,
+  updateSdlWethSushiPool,
 } = applicationSlice.actions
 
 export default applicationSlice.reducer
