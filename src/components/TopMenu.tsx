@@ -162,6 +162,7 @@ function RewardsButton({
 }): ReactElement | null {
   const rewardBalances = useContext(RewardsBalancesContext)
   const formattedTotal = formatBNToShortString(rewardBalances.total, 18)
+
   return IS_SDL_LIVE ? (
     <Button
       variant="contained"

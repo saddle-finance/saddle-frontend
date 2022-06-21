@@ -108,6 +108,8 @@ export default function TokenClaimDialog({
     ...SDL_TOKEN,
   })
 
+  const gaugesAreActive = areGaugesActive(chainId)
+
   const formattedUnclaimedTokenbalance = commify(
     formatBNToString(rewardBalances.total, 18, 0),
   )
@@ -135,8 +137,6 @@ export default function TokenClaimDialog({
     })
     return [allPoolsWithRewards, poolsWithUserRewards]
   }, [basicPools, rewardBalances])
-
-  const gaugesAreActive = areGaugesActive(chainId)
 
   return (
     <Dialog
