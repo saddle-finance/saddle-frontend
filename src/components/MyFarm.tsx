@@ -7,7 +7,7 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { UserStateContext } from "../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
-// import { areGaugesActive } from "../utils/gauges"
+import { areGaugesActive } from "../utils/gauges"
 import { enqueuePromiseToast } from "./Toastify"
 import { useActiveWeb3React } from "../hooks"
 import { useLPTokenContract } from "../hooks/useContract"
@@ -53,8 +53,7 @@ export default function MyFarm({
     formatBNToString(amountOfSpaClaimable, 18, 4),
   )
 
-  // const gaugesAreActive = areGaugesActive(chainId)
-  const gaugesAreActive = true
+  const gaugesAreActive = areGaugesActive(chainId)
 
   const onUnstakeClick = useCallback(async () => {
     if (!liquidityGaugeContract || !account || !chainId) return
