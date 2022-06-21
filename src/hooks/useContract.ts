@@ -10,6 +10,7 @@ import {
   MINTER_ADDRESSES,
   RETROACTIVE_VESTING_CONTRACT_ADDRESSES,
   SDL_TOKEN_ADDRESSES,
+  SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES,
   SYNTHETIX_CONTRACT_ADDRESSES,
   SYNTHETIX_EXCHANGE_RATES_CONTRACT_ADDRESSES,
   TOKENS_MAP,
@@ -53,9 +54,11 @@ import { PoolRegistry } from "../../types/ethers-contracts/PoolRegistry"
 import RETROACTIVE_VESTING_CONTRACT_ABI from "../constants/abis/retroactiveVesting.json"
 import { RetroactiveVesting } from "../../types/ethers-contracts/RetroactiveVesting"
 import SDL_TOKEN_ABI from "../constants/abis/sdl.json"
+import SUSHI_POOL_ABI from "../constants/abis/sushiPool.json"
 import SYNTHETIX_EXCHANGE_RATE_CONTRACT_ABI from "../constants/abis/synthetixExchangeRate.json"
 import SYNTHETIX_NETWORK_TOKEN_CONTRACT_ABI from "../constants/abis/synthetixNetworkToken.json"
 import { Sdl } from "../../types/ethers-contracts/Sdl"
+import { SushiPool } from "./../../types/ethers-contracts/SushiPool.d"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
@@ -403,4 +406,12 @@ export const useGaugeMinterContract = (): Minter | null => {
   const { chainId } = useActiveWeb3React()
   const contractAddress = chainId ? GAUGE_MINTER_ADDRESSES[chainId] : undefined
   return useContract(contractAddress, GAUGE_MINTER_ABI) as Minter
+}
+
+export const useSdlWethSushiPairContract = (): SushiPool | null => {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress = chainId
+    ? SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chainId]
+    : undefined
+  return useContract(contractAddress, SUSHI_POOL_ABI) as SushiPool
 }
