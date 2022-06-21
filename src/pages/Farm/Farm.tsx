@@ -1,10 +1,13 @@
 import { Container, Grid, Typography } from "@mui/material"
+import React, { useState } from "react"
 import FarmOverview from "./FarmOverview"
-import React from "react"
+import StakeDialog from "./StakeDialog"
 import { parseEther } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
 export default function Farm(): JSX.Element {
+  const [openStackDlg, setOpenStackDlg] = useState<boolean>(false)
+
   return (
     <Container sx={{ pt: 5 }}>
       <FarmListHeader />
@@ -14,12 +17,19 @@ export default function Farm(): JSX.Element {
         apr={parseEther("20.12")}
         tvl={parseEther("70300000")}
         myStake={parseEther("200330")}
+        onClickStake={() => setOpenStackDlg(true)}
       />
       <FarmOverview
         farmName="SDL/ETH"
         apr={parseEther("20.12")}
         tvl={parseEther("70300000")}
         myStake={parseEther("200330")}
+        onClickStake={() => setOpenStackDlg(true)}
+      />
+      <StakeDialog
+        farmName="alETH Farm"
+        open={openStackDlg}
+        onClose={() => setOpenStackDlg(false)}
       />
     </Container>
   )

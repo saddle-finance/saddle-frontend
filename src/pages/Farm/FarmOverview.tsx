@@ -10,6 +10,7 @@ interface FarmOverviewProps {
   apr?: BigNumber
   tvl?: BigNumber
   myStake?: BigNumber
+  onClickStake: () => void
 }
 
 const TokenGroup = styled("div")(() => ({
@@ -23,6 +24,7 @@ export default function FarmOverview({
   apr,
   tvl,
   myStake,
+  onClickStake,
 }: FarmOverviewProps): JSX.Element {
   const { t } = useTranslation()
   return (
@@ -63,7 +65,12 @@ export default function FarmOverview({
         <Button variant="outlined" size="large">
           {t("claimRewards")}
         </Button>
-        <Button variant="contained" size="large" sx={{ ml: 2 }}>
+        <Button
+          variant="contained"
+          size="large"
+          sx={{ ml: 2 }}
+          onClick={onClickStake}
+        >
           {t("stakeOrUnstake")}
         </Button>
       </Box>
