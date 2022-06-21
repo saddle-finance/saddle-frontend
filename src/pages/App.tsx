@@ -1,6 +1,6 @@
 import "react-toastify/dist/ReactToastify.css"
 
-import { BLOCK_TIME, POOLS_MAP } from "../constants"
+import { BLOCK_TIME, IS_VESDL_LIVE, POOLS_MAP } from "../constants"
 import React, {
   ReactElement,
   Suspense,
@@ -18,6 +18,7 @@ import AprsProvider from "../providers/AprsProvider"
 import BasicPoolsProvider from "../providers/BasicPoolsProvider"
 import CreatePool from "./CreatePool"
 import Deposit from "./Deposit"
+import Farm from "./Farm"
 import GaugeProvider from "../providers/GaugeProvider"
 import { LocalizationProvider } from "@mui/x-date-pickers"
 import MinichefProvider from "../providers/MinichefProvider"
@@ -152,7 +153,14 @@ export default function App(): ReactElement {
                                   path="/vesting-claim"
                                   component={VestingClaim}
                                 />
-                                <Route exact path="/vesdl" component={VeSDL} />
+                                <Route exact path="/farm" component={Farm} />
+                                {IS_VESDL_LIVE && (
+                                  <Route
+                                    exact
+                                    path="/vesdl"
+                                    component={VeSDL}
+                                  />
+                                )}
                               </Switch>
                               <WrongNetworkModal />
                               <Version />
