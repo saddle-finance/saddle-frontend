@@ -139,7 +139,7 @@ export default function MyFarm({
         {gaugesAreActive && amountStakedMinichef.gt(Zero) && (
           <Box display="flex" alignItems="center">
             <Box flex={1}>
-              <Typography>{t("oldLpStaked")}</Typography>
+              <Typography>{t("outdatedLpStaked")}</Typography>
               <Typography variant="subtitle1">
                 {formattedLpStakedBalance}
               </Typography>
@@ -153,7 +153,7 @@ export default function MyFarm({
                 disabled={amountStakedMinichef.isZero()}
                 onClick={() => unstakeMinichef(amountStakedMinichef)}
               >
-                {t("unstakeOld")}
+                {t("unstake")}
               </Button>
             </Box>
           </Box>
