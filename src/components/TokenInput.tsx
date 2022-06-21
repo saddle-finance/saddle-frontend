@@ -7,11 +7,10 @@ import {
   useTheme,
 } from "@mui/material"
 import React, { ReactElement } from "react"
-import { calculatePrice, commify } from "../utils"
+import { calculatePrice, commify, isNumberOrEmpty } from "../utils"
 
 import TokenIcon from "./TokenIcon"
 import { formatBNToString } from "../utils"
-import { readableDecimalNumberRegex } from "../constants"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -29,6 +28,7 @@ interface Props {
     priceUSD?: number
     decimals: number
   }
+  inputType?: "numeric"
 }
 
 function TokenInput({
@@ -46,6 +46,7 @@ function TokenInput({
     priceUSD: tokenPriceUSD = 0,
     decimals: tokenDecimals,
   },
+  inputType,
   ...rest
 }: Props): ReactElement {
   const { t } = useTranslation()
@@ -62,12 +63,8 @@ function TokenInput({
       // don't allow input longer than the token allows
 
       // if value is not blank, then test the regex
-      if (
-        e.target.value === "" ||
-        readableDecimalNumberRegex.test(e.target.value)
-      ) {
-        if (onChange) onChange(e.target.value)
-      }
+      if (isNumberOrEmpty(e.target.value))
+        !!onChange && onChange(e.target.value)
     }
   }
 
@@ -137,6 +134,10 @@ function TokenInput({
                 fontFamily: theme.typography.body1.fontFamily,
                 fontSize: theme.typography.body1.fontSize,
               },
+              ...(inputType === "numeric" && {
+                inputMode: "numeric",
+                pattern: "^[1-9]d*(.d+)?$",
+              }),
             }}
             onChange={onChangeInput}
             onFocus={(e) => e.target.select()}
