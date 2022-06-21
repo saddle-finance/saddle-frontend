@@ -37,7 +37,7 @@ export default function RewardsBalancesProvider({
   })
   const { chainId } = useActiveWeb3React()
   const poolsRewardsBalances = usePoolsRewardBalances()
-  const gaugeRewardBalanceTotal = useGaugeRewardTotal()
+  const gaugeRewardBalance = useGaugeRewardTotal()
   const gaugesAreActive = areGaugesActive(chainId)
   const { vested: retroBalanceVested, total: retroBalanceTotal } =
     useRetroactiveRewardBalance()
@@ -46,7 +46,7 @@ export default function RewardsBalancesProvider({
     const total = Object.values({
       ...poolsRewardsBalances,
       retroBalanceVested,
-      ...(gaugesAreActive && { gaugeRewardBalanceTotal }),
+      ...(gaugesAreActive && { gaugeRewardBalance }),
     }).reduce((acc, bal) => {
       return acc.add(bal || Zero)
     }, Zero)
@@ -60,7 +60,7 @@ export default function RewardsBalancesProvider({
     poolsRewardsBalances,
     retroBalanceVested,
     retroBalanceTotal,
-    gaugeRewardBalanceTotal,
+    gaugeRewardBalance,
     gaugesAreActive,
   ])
 
@@ -158,11 +158,10 @@ function usePoolsRewardBalances() {
 
 function useGaugeRewardTotal() {
   const userState = useContext(UserStateContext)
-  const basicPools = useContext(BasicPoolsContext)
 
   return useMemo(() => {
-    if (!userState || !basicPools) {
-      return
+    if (!userState) {
+      return Zero
     }
 
     const totalSdlFromGauges = Object.values(
@@ -170,5 +169,5 @@ function useGaugeRewardTotal() {
     ).reduce((sum, { claimableSDL }) => sum.add(claimableSDL), Zero)
 
     return totalSdlFromGauges
-  }, [userState, basicPools])
+  }, [userState])
 }
