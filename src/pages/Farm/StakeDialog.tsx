@@ -21,7 +21,7 @@ export default function StakeDialog({
   open,
   farmName,
   onClose,
-}: StakeDialogProps) {
+}: StakeDialogProps): JSX.Element {
   const [stakeStatus, setStakeStatus] = useState<"stake" | "unStake">("stake")
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
