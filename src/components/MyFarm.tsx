@@ -7,7 +7,7 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { UserStateContext } from "../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
-import { areGaugesActive } from "../utils/gauges"
+// import { areGaugesActive } from "../utils/gauges"
 import { enqueuePromiseToast } from "./Toastify"
 import { useActiveWeb3React } from "../hooks"
 import { useLPTokenContract } from "../hooks/useContract"
@@ -53,7 +53,8 @@ export default function MyFarm({
     formatBNToString(amountOfSpaClaimable, 18, 4),
   )
 
-  const gaugesAreActive = areGaugesActive(chainId)
+  // const gaugesAreActive = areGaugesActive(chainId)
+  const gaugesAreActive = true
 
   const onUnstakeClick = useCallback(async () => {
     if (!liquidityGaugeContract || !account || !chainId) return
@@ -136,6 +137,27 @@ export default function MyFarm({
             </Button>
           </Box>
         </Box>
+        {gaugesAreActive && amountStakedMinichef.gt(Zero) && (
+          <Box display="flex" alignItems="center">
+            <Box flex={1}>
+              <Typography>{t("oldLpStaked")}</Typography>
+              <Typography variant="subtitle1">
+                {formattedLpStakedBalance}
+              </Typography>
+            </Box>
+            <Box flex={1}>
+              <Button
+                variant="outlined"
+                size="large"
+                fullWidth
+                disabled={amountStakedMinichef.isZero()}
+                onClick={() => unstakeMinichef(amountStakedMinichef)}
+              >
+                {t("unstakeAll")}
+              </Button>
+            </Box>
+          </Box>
+        )}
         {chainId === ChainId.ARBITRUM && amountOfSpaClaimable.gt(Zero) && (
           <Box display="flex" alignItems="center">
             <Box flex={1}>
