@@ -22,7 +22,7 @@ export default function StakeDialog({
   farmName,
   onClose,
 }: StakeDialogProps): JSX.Element {
-  const [stakeStatus, setStakeStatus] = useState<"stake" | "unStake">("stake")
+  const [stakeStatus, setStakeStatus] = useState<"stake" | "unstake">("stake")
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
       <DialogContent sx={{ mt: 3 }}>
@@ -56,7 +56,7 @@ export default function StakeDialog({
             onChange={(_, newValue) => setStakeStatus(newValue)}
           >
             <Tab value="stake" label="Stake" />
-            <Tab value="unStake" label="Unstake" />
+            <Tab value="unstake" label="Unstake" />
           </Tabs>
           <TokenInput
             inputValue="0.0"
