@@ -36,6 +36,7 @@ import Web3ReactManager from "../components/Web3ReactManager"
 import Withdraw from "./Withdraw"
 import WrongNetworkModal from "../components/WrongNetworkModal"
 import fetchGasPrices from "../utils/updateGasPrices"
+import fetchSdlWethSushiPoolInfo from "../utils/updateSdlWethSushiInfo"
 import fetchSwapStats from "../utils/getSwapStats"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import getSnapshotVoteData from "../utils/getSnapshotVoteData"
@@ -43,6 +44,7 @@ import { useActiveWeb3React } from "../hooks"
 import { useDispatch } from "react-redux"
 import { useIntercom } from "react-use-intercom"
 import usePoller from "../hooks/usePoller"
+import { useSdlWethSushiPairContract } from "../hooks/useContract"
 
 const VestingClaim = lazy(() => import("./VestingClaim"))
 const Risk = lazy(() => import("./Risk"))
@@ -186,6 +188,7 @@ function PricesAndVoteData({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
   const dispatch = useDispatch<AppDispatch>()
+  const sdlWethSushiPoolContract = useSdlWethSushiPairContract()
   const { chainId, library } = useActiveWeb3React()
 
   const fetchAndUpdateGasPrice = useCallback(() => {
@@ -197,6 +200,9 @@ function PricesAndVoteData({
   const fetchAndUpdateSwapStats = useCallback(() => {
     void fetchSwapStats(dispatch)
   }, [dispatch])
+  const fetchAndUpdateSdlWethSushiPoolInfo = useCallback(() => {
+    void fetchSdlWethSushiPoolInfo(dispatch, sdlWethSushiPoolContract, chainId)
+  }, [dispatch, chainId, sdlWethSushiPoolContract])
 
   useEffect(() => {
     void getSnapshotVoteData(dispatch)
@@ -204,6 +210,7 @@ function PricesAndVoteData({
 
   usePoller(fetchAndUpdateGasPrice, 5 * 1000)
   usePoller(fetchAndUpdateTokensPrice, BLOCK_TIME * 3)
+  usePoller(fetchAndUpdateSdlWethSushiPoolInfo, BLOCK_TIME * 3)
   usePoller(fetchAndUpdateSwapStats, BLOCK_TIME * 280) // ~ 1hr
   return <>{children}</>
 }
