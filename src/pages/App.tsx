@@ -18,6 +18,7 @@ import AprsProvider from "../providers/AprsProvider"
 import BasicPoolsProvider from "../providers/BasicPoolsProvider"
 import CreatePool from "./CreatePool"
 import Deposit from "./Deposit"
+import Farm from "./Farm/Farm"
 import GaugeProvider from "../providers/GaugeProvider"
 import { LocalizationProvider } from "@mui/x-date-pickers"
 import MinichefProvider from "../providers/MinichefProvider"
@@ -154,6 +155,7 @@ export default function App(): ReactElement {
                                   path="/vesting-claim"
                                   component={VestingClaim}
                                 />
+                                <Route exact path="/farm" component={Farm} />
                                 <Route exact path="/vesdl" component={VeSDL} />
                               </Switch>
                               <WrongNetworkModal />
