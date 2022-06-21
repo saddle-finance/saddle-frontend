@@ -136,6 +136,28 @@ export default function MyFarm({
             </Button>
           </Box>
         </Box>
+        {gaugesAreActive && amountStakedMinichef.gt(Zero) && (
+          <Box display="flex" alignItems="center">
+            <Box flex={1}>
+              <Typography>{t("outdatedLpStaked")}</Typography>
+              <Typography variant="subtitle1">
+                {formattedLpStakedBalance}
+              </Typography>
+            </Box>
+            <Box flex={1}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                size="large"
+                fullWidth
+                disabled={amountStakedMinichef.isZero()}
+                onClick={() => unstakeMinichef(amountStakedMinichef)}
+              >
+                {t("unstake")}
+              </Button>
+            </Box>
+          </Box>
+        )}
         {chainId === ChainId.ARBITRUM && amountOfSpaClaimable.gt(Zero) && (
           <Box display="flex" alignItems="center">
             <Box flex={1}>
