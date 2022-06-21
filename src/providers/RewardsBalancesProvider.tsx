@@ -12,6 +12,7 @@ import { BasicPoolsContext } from "./BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { UserStateContext } from "./UserStateProvider"
 import { Zero } from "@ethersproject/constants"
+import { areGaugesActive } from "../utils/gauges"
 import { useActiveWeb3React } from "../hooks"
 import usePoller from "../hooks/usePoller"
 import { useRetroMerkleData } from "../hooks/useRetroMerkleData"
@@ -34,7 +35,10 @@ export default function RewardsBalancesProvider({
     retroactive: Zero,
     retroactiveTotal: Zero,
   })
+  const { chainId } = useActiveWeb3React()
   const poolsRewardsBalances = usePoolsRewardBalances()
+  const gaugeRewardBalanceTotal = useGaugeRewardTotal()
+  const gaugesAreActive = areGaugesActive(chainId)
   const { vested: retroBalanceVested, total: retroBalanceTotal } =
     useRetroactiveRewardBalance()
 
@@ -42,6 +46,7 @@ export default function RewardsBalancesProvider({
     const total = Object.values({
       ...poolsRewardsBalances,
       retroBalanceVested,
+      ...(gaugesAreActive && { gaugeRewardBalanceTotal }),
     }).reduce((acc, bal) => {
       return acc.add(bal || Zero)
     }, Zero)
@@ -51,7 +56,13 @@ export default function RewardsBalancesProvider({
       retroactiveTotal: retroBalanceTotal,
       total,
     })
-  }, [poolsRewardsBalances, retroBalanceVested, retroBalanceTotal])
+  }, [
+    poolsRewardsBalances,
+    retroBalanceVested,
+    retroBalanceTotal,
+    gaugeRewardBalanceTotal,
+    gaugesAreActive,
+  ])
 
   return (
     <RewardsBalancesContext.Provider value={aggbalances}>
@@ -142,5 +153,22 @@ function usePoolsRewardBalances() {
       {} as { [poolName: string]: BigNumber },
     )
     return poolNameToMinichefSDLBalance
+  }, [userState, basicPools])
+}
+
+function useGaugeRewardTotal() {
+  const userState = useContext(UserStateContext)
+  const basicPools = useContext(BasicPoolsContext)
+
+  return useMemo(() => {
+    if (!userState || !basicPools) {
+      return
+    }
+
+    const totalSdlFromGauges = Object.values(
+      userState?.gaugeRewards ?? {},
+    ).reduce((sum, { claimableSDL }) => sum.add(claimableSDL), Zero)
+
+    return totalSdlFromGauges
   }, [userState, basicPools])
 }
