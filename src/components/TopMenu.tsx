@@ -185,25 +185,23 @@ interface SDLPriceProps {
 }
 
 function SDLPrice({ sdlPrice }: SDLPriceProps): ReactElement | null {
-  if (sdlPrice !== undefined) {
-    const SUSHI_WETH_SDL_POOL_URL =
-      "https://app.sushi.com/analytics/pools/0x0c6f06b32e6ae0c110861b8607e67da594781961?chainId=1"
-    return (
-      <Button
-        variant="contained"
-        color="info"
-        data-testid="sdlPriceButton"
-        href={SUSHI_WETH_SDL_POOL_URL}
-        target="_blank"
-        startIcon={<SaddleLogo width={20} height={20} />}
-        style={{ minWidth: 250 }}
-      >
-        {`SDL Price: ${sdlPrice}`}
-      </Button>
-    )
-  }
+  if (sdlPrice === undefined) return null
 
-  return null
+  const SUSHI_WETH_SDL_POOL_URL =
+    "https://app.sushi.com/analytics/pools/0x0c6f06b32e6ae0c110861b8607e67da594781961?chainId=1"
+  return (
+    <Button
+      variant="contained"
+      color="info"
+      data-testid="sdlPriceButton"
+      href={SUSHI_WETH_SDL_POOL_URL}
+      target="_blank"
+      startIcon={<SaddleLogo width={20} height={20} />}
+      style={{ minWidth: 250 }}
+    >
+      {`SDL Price: ${sdlPrice}`}
+    </Button>
+  )
 }
 
 export default TopMenu
