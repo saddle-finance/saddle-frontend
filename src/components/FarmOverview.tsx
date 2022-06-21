@@ -41,13 +41,19 @@ export default function FarmOverview({ apr, tvl, myStake }: FarmOverviewProps) {
         </TokenGroup>
       </Grid>
       <Grid item xs={1.5}>
-        {apr ? formatBNToPercentString(apr, 18) : "_"}
+        <Typography variant="subtitle1">
+          {apr ? formatBNToPercentString(apr, 18) : "_"}
+        </Typography>
       </Grid>
       <Grid item xs={1.5}>
-        {tvl ? formatBNToShortString(tvl, 18) : "_"}
+        <Typography variant="subtitle1">
+          {tvl ? formatBNToShortString(tvl, 18) : "_"}
+        </Typography>
       </Grid>
       <Grid item xs={1.5}>
-        {myStake ? formatBNToShortString(myStake, 18) : "_"}
+        <Typography variant="subtitle1">
+          {myStake ? formatBNToShortString(myStake, 18) : "_"}
+        </Typography>
       </Grid>
       <Box mr={0} ml="auto">
         <Button variant="outlined" size="large">

@@ -1,6 +1,6 @@
 import "react-toastify/dist/ReactToastify.css"
 
-import { BLOCK_TIME, IS_VESDL_LIVE, POOLS_MAP } from "../constants"
+import { BLOCK_TIME, POOLS_MAP } from "../constants"
 import React, {
   ReactElement,
   Suspense,
@@ -154,13 +154,7 @@ export default function App(): ReactElement {
                                   component={VestingClaim}
                                 />
                                 <Route exact path="/farm" component={Farm} />
-                                {IS_VESDL_LIVE && (
-                                  <Route
-                                    exact
-                                    path="/vesdl"
-                                    component={VeSDL}
-                                  />
-                                )}
+                                <Route exact path="/vesdl" component={VeSDL} />
                               </Switch>
                               <WrongNetworkModal />
                               <Version />

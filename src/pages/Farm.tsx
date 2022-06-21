@@ -2,6 +2,7 @@ import { Container, Grid, Typography } from "@mui/material"
 import FarmOverview from "../components/FarmOverview"
 import React from "react"
 import { parseEther } from "@ethersproject/units"
+import { useTranslation } from "react-i18next"
 
 export default function Farm() {
   return (
@@ -25,6 +26,7 @@ export default function Farm() {
 }
 
 function FarmListHeader() {
+  const { t } = useTranslation()
   return (
     <Grid
       container
@@ -35,7 +37,7 @@ function FarmListHeader() {
       }}
     >
       <Grid item xs={2.5}>
-        <Typography>Farms</Typography>
+        <Typography>{t("farms")}</Typography>
       </Grid>
       <Grid item xs={1.5}>
         <Typography>APR</Typography>
@@ -44,7 +46,7 @@ function FarmListHeader() {
         <Typography>TVL</Typography>
       </Grid>
       <Grid item xs={1.5}>
-        <Typography>My Staked</Typography>
+        <Typography>{t("myStaked")}</Typography>
       </Grid>
     </Grid>
   )

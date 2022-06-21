@@ -9,11 +9,11 @@ import {
   styled,
   useTheme,
 } from "@mui/material"
+import { IS_SDL_LIVE, IS_VESDL_LIVE } from "../constants"
 import { NavLink, NavLinkProps, useLocation } from "react-router-dom"
 import React, { ReactElement, useContext, useState } from "react"
 
 import { IS_DEVELOPMENT } from "../utils/environment"
-import { IS_SDL_LIVE } from "../constants"
 import { MoreVert } from "@mui/icons-material"
 import NetworkDisplay from "./NetworkDisplay"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
@@ -96,9 +96,11 @@ function TopMenu(): ReactElement {
               {t("pools")}
             </NavMenu>
 
-            <NavMenu to="/farm" selected={activeTab === "farm"}>
-              {t("farm")}
-            </NavMenu>
+            {IS_VESDL_LIVE && (
+              <NavMenu to="/farm" selected={activeTab === "farm"}>
+                {t("farm")}
+              </NavMenu>
+            )}
 
             {IS_DEVELOPMENT && (
               <NavMenu to="/vesdl" selected={activeTab === "vesdl"}>
