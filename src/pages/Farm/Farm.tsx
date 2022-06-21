@@ -1,5 +1,5 @@
 import { Container, Grid, Typography } from "@mui/material"
-import FarmOverview from "../components/FarmOverview"
+import FarmOverview from "./FarmOverview"
 import React from "react"
 import { parseEther } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"

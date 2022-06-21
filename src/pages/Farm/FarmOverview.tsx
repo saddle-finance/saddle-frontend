@@ -1,8 +1,8 @@
 import { Box, Button, Grid, Typography, styled } from "@mui/material"
-import { formatBNToPercentString, formatBNToShortString } from "../utils"
+import { formatBNToPercentString, formatBNToShortString } from "../../utils"
 import { BigNumber } from "@ethersproject/bignumber"
 import React from "react"
-import TokenIcon from "./TokenIcon"
+import TokenIcon from "../../components/TokenIcon"
 import { useTranslation } from "react-i18next"
 
 interface FarmOverviewProps {
