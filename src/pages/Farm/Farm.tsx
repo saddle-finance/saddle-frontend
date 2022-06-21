@@ -19,13 +19,6 @@ export default function Farm(): JSX.Element {
         myStake={parseEther("200330")}
         onClickStake={() => setOpenStackDlg(true)}
       />
-      <FarmOverview
-        farmName="SDL/ETH"
-        apr={parseEther("20.12")}
-        tvl={parseEther("70300000")}
-        myStake={parseEther("200330")}
-        onClickStake={() => setOpenStackDlg(true)}
-      />
       <StakeDialog
         farmName="alETH Farm"
         open={openStackDlg}
