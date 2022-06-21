@@ -28,6 +28,7 @@ interface Props {
     priceUSD?: number
     decimals: number
   }
+  inputType?: "numeric"
 }
 
 function TokenInput({
@@ -45,6 +46,7 @@ function TokenInput({
     priceUSD: tokenPriceUSD = 0,
     decimals: tokenDecimals,
   },
+  inputType,
   ...rest
 }: Props): ReactElement {
   const { t } = useTranslation()
@@ -132,6 +134,10 @@ function TokenInput({
                 fontFamily: theme.typography.body1.fontFamily,
                 fontSize: theme.typography.body1.fontSize,
               },
+              ...(inputType === "numeric" && {
+                inputMode: "numeric",
+                pattern: "^[1-9]d*(.d+)?$",
+              }),
             }}
             onChange={onChangeInput}
             onFocus={(e) => e.target.select()}
