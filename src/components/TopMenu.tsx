@@ -1,3 +1,5 @@
+//@ts-nocheck
+// @eslint-ignore
 import {
   AppBar,
   Box,
@@ -13,6 +15,7 @@ import { IS_SDL_LIVE, IS_VESDL_LIVE } from "../constants"
 import { NavLink, NavLinkProps, useLocation } from "react-router-dom"
 import React, { ReactElement, useContext, useState } from "react"
 
+import { AppState } from "../state"
 import { IS_DEVELOPMENT } from "../utils/environment"
 import { MoreVert } from "@mui/icons-material"
 import NetworkDisplay from "./NetworkDisplay"
@@ -20,8 +23,10 @@ import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
 import SiteSettingsMenu from "./SiteSettingsMenu"
 import TokenClaimDialog from "./TokenClaimDialog"
+import { TokenPricesUSD } from "../state/application"
 import Web3Status from "./Web3Status"
 import { formatBNToShortString } from "../utils"
+import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
 type ActiveTabType = "" | "pools" | "risk" | "vesdl" | "farm"
@@ -44,7 +49,7 @@ function TopMenu(): ReactElement {
   const theme = useTheme()
   const { pathname } = useLocation()
   const activeTab = pathname.split("/")[1] as ActiveTabType
-
+  const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const handleSettingMenu = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
@@ -119,6 +124,7 @@ function TopMenu(): ReactElement {
             justifyContent={{ xs: "center", lg: "flex-end" }}
             alignItems="center"
           >
+            <SDLPrice tokenPricesUSD={tokenPricesUSD} />
             <RewardsButton setCurrentModal={setCurrentModal} />
             <Web3Status />
             <NetworkDisplay onClick={handleSettingMenu} />
@@ -174,6 +180,30 @@ function RewardsButton({
       {formattedTotal}
     </Button>
   ) : null
+}
+
+function SDLPrice({ tokenPricesUSD }: TokenPricesUSD): ReactElement | null {
+  const isSDLPriceAvailable =
+    tokenPricesUSD !== undefined && tokenPricesUSD["SDL"] !== undefined
+  if (isSDLPriceAvailable) {
+    const sdlPrice = tokenPricesUSD["SDL"] as number
+    const SUSHI_WETH_SDL_POOL_URL =
+      "https://app.sushi.com/analytics/pools/0x0c6f06b32e6ae0c110861b8607e67da594781961?chainId=1"
+    return (
+      <Button
+        variant="contained"
+        color="info"
+        data-testid="sdlPriceButton"
+        href={SUSHI_WETH_SDL_POOL_URL}
+        target="_blank"
+        startIcon={<SaddleLogo width={20} height={20} />}
+        style={{ minWidth: 250 }}
+      >
+        {`SDL Price: ${sdlPrice}`}
+      </Button>
+    )
+  }
+  return null
 }
 
 export default TopMenu

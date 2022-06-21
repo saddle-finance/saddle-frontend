@@ -594,7 +594,7 @@ export const SDL_TOKEN = new Token(
   SDL_TOKEN_ADDRESSES,
   18,
   "SDL",
-  "saddle-dao", // TBD
+  "saddle-finance", // Updated per CoinGecko
   "Saddle DAO",
   false,
   false,
