@@ -199,8 +199,8 @@ function PricesAndVoteData({
     void fetchSwapStats(dispatch)
   }, [dispatch])
   const fetchAndUpdateSdlWethSushiPoolInfo = useCallback(() => {
-    void fetchSdlWethSushiPoolInfo(dispatch, sdlWethSushiPoolContract)
-  }, [dispatch, sdlWethSushiPoolContract])
+    void fetchSdlWethSushiPoolInfo(dispatch, sdlWethSushiPoolContract, chainId)
+  }, [dispatch, chainId, sdlWethSushiPoolContract])
 
   useEffect(() => {
     void getSnapshotVoteData(dispatch)

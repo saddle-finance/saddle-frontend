@@ -10,7 +10,7 @@ import {
   MulticallProvider,
 } from "../types/ethcall"
 import React, { ReactElement, useContext, useEffect, useState } from "react"
-import { getMulticallProvider, isSynthAsset } from "../utils"
+import { chunkedTryAll, getMulticallProvider, isSynthAsset } from "../utils"
 
 import { BasicPoolsContext } from "./BasicPoolsProvider"
 import { Contract } from "ethcall"
@@ -84,7 +84,7 @@ export default function TokensProvider({
           })
         })
       }
-      if (SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chainId]) {
+      if (SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chainId] && gaugesAreActive) {
         // add sushi token
         targetTokenAddresses.add(SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chainId])
       }
@@ -142,9 +142,9 @@ async function getTokenInfos(
     })
 
     const [nameResults, symbolResults, decimalsResults] = await Promise.all([
-      ethCallProvider.tryAll(nameCalls),
-      ethCallProvider.tryAll(symbolCalls),
-      ethCallProvider.tryAll(decimalsCalls),
+      chunkedTryAll(nameCalls, ethCallProvider, 30),
+      chunkedTryAll(symbolCalls, ethCallProvider, 30),
+      chunkedTryAll(decimalsCalls, ethCallProvider, 30),
     ])
     const results = lowercaseTokenAddresses.reduce((acc, address, index) => {
       const name = nameResults[index]
