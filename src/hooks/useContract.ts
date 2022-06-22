@@ -34,8 +34,10 @@ import GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI from "../constants/abis/generalize
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
 import { GeneralizedSwapMigrator } from "../../types/ethers-contracts/GeneralizedSwapMigrator"
 import { IS_VESDL_LIVE } from "./../constants/index"
+import LIQUIDITY_V5_GAUGE_ABI from "../constants/abis/liquidityGaugeV5.json"
 import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
+import { LiquidityGaugeV5 } from "./../../types/ethers-contracts/LiquidityGaugeV5"
 import { LpTokenGuarded } from "../../types/ethers-contracts/LpTokenGuarded"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import MASTER_REGISTRY_ABI from "../constants/abis/masterRegistry.json"
@@ -406,4 +408,10 @@ export const useSdlWethSushiPairContract = (): SushiPool | null => {
     ? SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chainId]
     : undefined
   return useContract(contractAddress, SUSHI_POOL_ABI) as SushiPool
+}
+
+export function useLiquidityGaugeContract(
+  gaugeAddress?: string,
+): LiquidityGaugeV5 | null {
+  return useContract(gaugeAddress, LIQUIDITY_V5_GAUGE_ABI) as LiquidityGaugeV5
 }
