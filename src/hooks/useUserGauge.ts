@@ -1,5 +1,8 @@
 import { BasicToken, TokensContext } from "../providers/TokensProvider"
-import { useLiquidityGaugeContract, useMinterContract } from "./useContract"
+import {
+  useGaugeMinterContract,
+  useLiquidityGaugeContract,
+} from "./useContract"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { ContractTransaction } from "ethers"
@@ -24,7 +27,7 @@ type UserGauge = {
 export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
   const { account } = useActiveWeb3React()
   const gaugeContract = useLiquidityGaugeContract(gaugeAddress)
-  const minterContract = useMinterContract()
+  const gaugeMinterContract = useGaugeMinterContract()
   const { gauges } = useContext(GaugeContext)
   const tokens = useContext(TokensContext)
   const userState = useContext(UserStateContext)
@@ -40,7 +43,7 @@ export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
     !lpToken ||
     !account ||
     !userState ||
-    !minterContract
+    !gaugeMinterContract
   )
     return null
 
@@ -54,7 +57,7 @@ export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
     stake: gaugeContract["deposit(uint256)"],
     unstake: gaugeContract["withdraw(uint256)"],
     claim: () => {
-      const promises = [minterContract.mint(gaugeAddress)]
+      const promises = [gaugeMinterContract.mint(gaugeAddress)]
       if (hasExternalRewards) {
         promises.push(gaugeContract["claim_rewards(address)"](account))
       }
