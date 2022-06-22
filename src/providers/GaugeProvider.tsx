@@ -14,7 +14,7 @@ export default function GaugeProvider({
 }: React.PropsWithChildren<unknown>): ReactElement {
   const { chainId, library, account } = useActiveWeb3React()
   const gaugeControllerContract = useGaugeControllerContract()
-  const minterContract = useGaugeMinterContract() // only exists on mainnet
+  const gaugeMinterContract = useGaugeMinterContract() // only exists on mainnet
   const [gauges, setGauges] = useState<Gauges>(initialGaugesState)
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function GaugeProvider({
         !gaugeControllerContract ||
         !chainId ||
         !library ||
-        !minterContract ||
+        !gaugeMinterContract ||
         !account
       )
         return
@@ -33,13 +33,13 @@ export default function GaugeProvider({
           chainId,
           gaugeControllerContract,
           account,
-          minterContract,
+          gaugeMinterContract,
         )) || initialGaugesState
       setGauges(gauges)
     }
 
     void fetchGauges()
-  }, [chainId, library, gaugeControllerContract, minterContract, account])
+  }, [chainId, library, gaugeControllerContract, gaugeMinterContract, account])
 
   return (
     <GaugeContext.Provider value={gauges}>{children}</GaugeContext.Provider>

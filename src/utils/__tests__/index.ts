@@ -22,8 +22,8 @@ import {
 import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "ethcall"
 import { Deadlines } from "../../state/user"
-import HELPER_CONTRACT_ABI from "../../../src/constants/abis/helperContract.json"
-import { HelperContract } from "../../../types/ethers-contracts/HelperContract"
+import GAUGE_HELPER_CONTRACT_ABI from "../../../src/constants/abis/gaugeHelperContract.json"
+import { GaugeHelperContract } from "../../../types/ethers-contracts/GaugeHelperContract"
 import { parseUnits } from "@ethersproject/units"
 
 describe("bnSum", () => {
@@ -221,14 +221,15 @@ describe("getTokenIconPath", () => {
 describe("createMultiCallContrat", () => {
   it("correctly returns method call as an Object and not a Promise", () => {
     const emptyAddress = "0x0000000000000000000000000000000000000000"
-    const helperContractMultiCall = createMultiCallContract<HelperContract>(
-      emptyAddress,
-      HELPER_CONTRACT_ABI,
-    )
+    const gaugeHelperContractMultiCall =
+      createMultiCallContract<GaugeHelperContract>(
+        emptyAddress,
+        GAUGE_HELPER_CONTRACT_ABI,
+      )
 
-    expect(helperContractMultiCall).toBeInstanceOf(Contract)
+    expect(gaugeHelperContractMultiCall).toBeInstanceOf(Contract)
     expect(
-      helperContractMultiCall.gaugeToPoolAddress(emptyAddress),
+      gaugeHelperContractMultiCall.gaugeToPoolAddress(emptyAddress),
     ).toBeInstanceOf(Object)
   })
 })
