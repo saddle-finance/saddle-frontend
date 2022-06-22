@@ -1,5 +1,6 @@
 import { Box, Button, Grid, Typography, styled } from "@mui/material"
 import { formatBNToPercentString, formatBNToShortString } from "../../utils"
+
 import { BigNumber } from "@ethersproject/bignumber"
 import React from "react"
 import TokenIcon from "../../components/TokenIcon"
@@ -63,9 +64,9 @@ export default function FarmOverview({
         </Typography>
       </Grid>
       <Box mr={0} ml="auto">
-        <Button variant="outlined" size="large">
+        {/* <Button variant="outlined" size="large">
           {t("claimRewards")}
-        </Button>
+        </Button> */}
         <Button
           variant="contained"
           size="large"

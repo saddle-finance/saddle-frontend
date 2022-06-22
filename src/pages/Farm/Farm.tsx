@@ -1,29 +1,44 @@
 import { Container, Grid, Typography } from "@mui/material"
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
+
 import FarmOverview from "./FarmOverview"
+import { GaugeContext } from "../../providers/GaugeProvider"
 import StakeDialog from "./StakeDialog"
 import { parseEther } from "@ethersproject/units"
 import { useTranslation } from "react-i18next"
 
 export default function Farm(): JSX.Element {
-  const [openStackDlg, setOpenStackDlg] = useState<boolean>(false)
+  const [activeGaugeAddress, setActiveGaugeAddress] = useState<
+    string | undefined
+  >()
   const sdlWethPoolName = "SDL/WETH"
+  const { gauges } = useContext(GaugeContext)
 
   return (
     <Container sx={{ pt: 5 }}>
       <FarmListHeader />
 
-      <FarmOverview
-        farmName={sdlWethPoolName}
-        apr={parseEther("20.12")}
-        tvl={parseEther("70300000")}
-        myStake={parseEther("200330")}
-        onClickStake={() => setOpenStackDlg(true)}
-      />
+      {Object.values(gauges)
+        .filter(({ gaugeName }) => gaugeName?.includes("SLP"))
+        .map((gauge) => {
+          console.log({ addr: gauge.address, name: gauge.gaugeName })
+          return (
+            <FarmOverview
+              key={gauge.address}
+              farmName={gauge.poolName || gauge.gaugeName || ""}
+              apr={parseEther("20.12")}
+              tvl={parseEther("70300000")}
+              myStake={parseEther("200330")}
+              onClickStake={() => setActiveGaugeAddress(gauge.address)}
+            />
+          )
+        })}
+
       <StakeDialog
         farmName={sdlWethPoolName}
-        open={openStackDlg}
-        onClose={() => setOpenStackDlg(false)}
+        open={!!activeGaugeAddress}
+        gaugeAddress={activeGaugeAddress}
+        onClose={() => setActiveGaugeAddress(undefined)}
       />
     </Container>
   )

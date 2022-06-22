@@ -12,6 +12,7 @@ import {
   getMulticallProvider,
 } from "../utils"
 
+import { BasicPools } from "./../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
@@ -30,8 +31,9 @@ export type Gauge = {
   gaugeBalance: BigNumber | null
   gaugeTotalSupply: BigNumber | null
   gaugeWeight: BigNumber
+  lpTokenAddress: string
   poolAddress: string | null
-  poolName: string
+  poolName: string | null
   gaugeRelativeWeight: BigNumber
   workingBalances: BigNumber | null
   workingSupply: BigNumber | null
@@ -71,6 +73,7 @@ export async function getGaugeData(
   library: Web3Provider,
   chainId: ChainId,
   gaugeController: GaugeController,
+  basicPools: BasicPools,
   account: string,
   minterContract: Minter,
 ): Promise<Gauges | null> {
@@ -152,19 +155,20 @@ export async function getGaugeData(
         gaugeContract.working_balances(account),
       ),
     )
-    const gaugeLpTokenAddressesPromise = ethCallProvider.tryAll(
+    const gaugeLpTokenAddressesPromise = ethCallProvider.all(
       gaugeMulticallContracts.map((gaugeContract) => gaugeContract.lp_token()),
     )
     const gaugeNamesPromise = ethCallProvider.tryAll(
-      gaugeMulticallContracts.map((gaugeContract) => gaugeContract.name()),
+      gaugeMulticallContracts.map((gaugeContract) => gaugeContract.symbol()),
     )
+
     const [
       gaugeWeights,
       gaugeRelativeWeights,
       gaugeRewards,
       gaugeBalances,
-      gaugeWorkingSupplies,
       gaugeWorkingBalances,
+      gaugeWorkingSupplies,
       gaugeTotalSupplies,
       gaugeLpTokenAddresses,
       gaugeNames,
@@ -175,8 +179,8 @@ export async function getGaugeData(
       gaugeRewardsPromise,
       gaugeBalancePromise,
       gaugeWorkingBalancesPromise,
-      gaugeTotalSupplyPromise,
       gaugeWorkingSuppliesPromise,
+      gaugeTotalSupplyPromise,
       gaugeLpTokenAddressesPromise,
       gaugeNamesPromise,
       minterContract ? minterContract.rate() : Promise.resolve(Zero),
@@ -186,6 +190,12 @@ export async function getGaugeData(
       (previousGaugeData, gaugeAddress, index) => {
         const lpTokenAddress = gaugeLpTokenAddresses[index]?.toLowerCase()
         const poolAddress = gaugePoolAddresses[index]
+        const isValidPoolAddress = Boolean(
+          poolAddress && !isAddressZero(poolAddress),
+        )
+        const gaugePool = Object.values(basicPools || {}).find(
+          (pool) => pool.poolAddress === poolAddress,
+        )
         const gaugeRelativeWeight = gaugeRelativeWeights[index]
         const sdlRate = minterSDLRate.mul(gaugeRelativeWeight).div(BN_1E18) // @dev see "Math" section of readme
         const sdlReward = {
@@ -205,9 +215,9 @@ export async function getGaugeData(
             workingBalances: gaugeWorkingBalances[index],
             gaugeBalance: gaugeBalances[index],
             gaugeName: gaugeNames[index],
-            poolAddress:
-              !poolAddress || isAddressZero(poolAddress) ? null : poolAddress,
-            poolName: "",
+            lpTokenAddress,
+            poolAddress: isValidPoolAddress ? poolAddress : null,
+            poolName: gaugePool?.poolName || null,
             rewards: gaugeRewards[index]
               .map((reward) => ({
                 periodFinish: reward.period_finish,
