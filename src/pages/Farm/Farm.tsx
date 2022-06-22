@@ -105,15 +105,19 @@ function useGaugeTVL(): (gaugeAddress?: string) => BigNumber {
         (gauge) => gauge.address === gaugeAddress,
       )
       const basicPool = basicPools?.[gauge?.poolName || ""]
-      console.log({ gauge, basicPool, gaugeAddress })
-      if (gauge?.gaugeName === sushiGaugeName) {
+
+      if (gauge && gauge.gaugeName === sushiGaugeName) {
         // special case for the sdl/weth pair
-        return sdlWethSushiPool?.wethReserve
+        const poolTVL = sdlWethSushiPool?.wethReserve
           ? sdlWethSushiPool.wethReserve // 1e18
               .mul(parseUnits(String(tokenPricesUSD?.["ETH"] || "0.0"), 3)) // 1e18 * 1e3 = 1e21
               .mul(2)
               .div(1e3) // 1e21 / 1e3 = 1e18
           : Zero
+        const lpTokenPriceUSD = sdlWethSushiPool?.totalSupply.gt(0)
+          ? poolTVL.mul(BN_1E18).div(sdlWethSushiPool.totalSupply)
+          : Zero
+        return lpTokenPriceUSD.mul(gauge.gaugeTotalSupply || Zero).div(BN_1E18)
       }
       if (basicPool && gauge) {
         const { lpTokenPriceUSD } = getPriceDataForPool(
@@ -125,7 +129,7 @@ function useGaugeTVL(): (gaugeAddress?: string) => BigNumber {
       }
       return Zero
     },
-    [sdlWethSushiPool?.wethReserve, tokenPricesUSD, tokens, basicPools, gauges],
+    [gauges, basicPools, sdlWethSushiPool, tokenPricesUSD, tokens],
   )
 }
 

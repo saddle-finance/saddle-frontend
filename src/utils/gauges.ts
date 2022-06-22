@@ -77,8 +77,7 @@ export async function getGaugeData(
   account: string,
   gaugeMinterContract: Minter,
 ): Promise<Gauges | null> {
-  // TODO switch to IS_VESDL_LIVE
-  if (chainId !== ChainId.HARDHAT) return initialGaugesState
+  if (!areGaugesActive(chainId)) return initialGaugesState
   try {
     const gaugeCount = (await gaugeController.n_gauges()).toNumber()
     const ethCallProvider = await getMulticallProvider(library, chainId)
