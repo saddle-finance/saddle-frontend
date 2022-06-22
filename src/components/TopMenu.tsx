@@ -9,7 +9,7 @@ import {
   styled,
   useTheme,
 } from "@mui/material"
-import { IS_SDL_LIVE, IS_VESDL_LIVE, SDL_TOKEN } from "../constants"
+import { IS_SDL_LIVE, SDL_TOKEN } from "../constants"
 import { NavLink, NavLinkProps, useLocation } from "react-router-dom"
 import React, { ReactElement, useContext, useState } from "react"
 
@@ -22,7 +22,9 @@ import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
 import SiteSettingsMenu from "./SiteSettingsMenu"
 import TokenClaimDialog from "./TokenClaimDialog"
 import Web3Status from "./Web3Status"
+import { areGaugesActive } from "../utils/gauges"
 import { formatBNToShortString } from "../utils"
+import { useActiveWeb3React } from "../hooks"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
@@ -41,6 +43,7 @@ const NavMenu = styled(NavLink)<NavLinkProps & { selected: boolean }>(
 
 function TopMenu(): ReactElement {
   const { t } = useTranslation()
+  const { chainId } = useActiveWeb3React()
   const [anchorEl, setAnchorEl] = React.useState<Element | null>(null)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const theme = useTheme()
@@ -53,6 +56,7 @@ function TopMenu(): ReactElement {
   ) => {
     setAnchorEl(event.currentTarget)
   }
+  const gaugesAreActive = areGaugesActive(chainId)
   return (
     <AppBar position="static" elevation={0}>
       <Toolbar
@@ -99,7 +103,7 @@ function TopMenu(): ReactElement {
               {t("pools")}
             </NavMenu>
 
-            {IS_VESDL_LIVE && (
+            {gaugesAreActive && (
               <NavMenu to="/farm" selected={activeTab === "farm"}>
                 {t("farm")}
               </NavMenu>

@@ -56,13 +56,20 @@ export default function FarmOverview({
       <Grid item xs={3.5}>
         <Typography variant="h2">{farmName}</Typography>
         <TokenGroup>
-          {farmTokens.map((token) => (
-            <TokenIcon
-              key={token.symbol}
-              symbol={token.symbol}
-              alt={token.symbol}
-            />
-          ))}
+          {farmName === "SDL/WETH SLP" ? (
+            <>
+              <TokenIcon symbol="SDL" alt="sdl" />
+              <TokenIcon symbol="WETH" alt="weth" />
+            </>
+          ) : (
+            farmTokens.map((token) => (
+              <TokenIcon
+                key={token.symbol}
+                symbol={token.symbol}
+                alt={token.symbol}
+              />
+            ))
+          )}
         </TokenGroup>
       </Grid>
       <Grid item xs={3}>

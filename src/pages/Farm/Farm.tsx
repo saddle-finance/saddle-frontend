@@ -38,12 +38,12 @@ export default function Farm(): JSX.Element {
       {Object.values(gauges)
         .filter(({ gaugeName }) => gaugeName?.includes("SLP"))
         .map((gauge) => {
+          const poolName = gauge.poolName
           const farmName =
             gauge.gaugeName === sushiGaugeName
               ? "SDL/WETH SLP"
-              : gauge.poolName || gauge.gaugeName || ""
+              : poolName || gauge.gaugeName || ""
           const gaugeAddress = gauge.address
-          const poolName = gauge.poolName
           const aprs = gaugeAprs?.[gaugeAddress]
           const myStake = userState?.gaugeRewards?.[gaugeAddress]?.amountStaked
           const tvl = getGaugeTVL(gaugeAddress)
@@ -111,14 +111,19 @@ function useGaugeTVL(): (gaugeAddress?: string) => BigNumber {
         (gauge) => gauge.address === gaugeAddress,
       )
       const basicPool = basicPools?.[gauge?.poolName || ""]
-      if (gauge?.gaugeName === sushiGaugeName) {
+
+      if (gauge && gauge.gaugeName === sushiGaugeName) {
         // special case for the sdl/weth pair
-        return sdlWethSushiPool?.wethReserve
+        const poolTVL = sdlWethSushiPool?.wethReserve
           ? sdlWethSushiPool.wethReserve // 1e18
               .mul(parseUnits(String(tokenPricesUSD?.["ETH"] || "0.0"), 3)) // 1e18 * 1e3 = 1e21
               .mul(2)
               .div(1e3) // 1e21 / 1e3 = 1e18
           : Zero
+        const lpTokenPriceUSD = sdlWethSushiPool?.totalSupply.gt(0)
+          ? poolTVL.mul(BN_1E18).div(sdlWethSushiPool.totalSupply)
+          : Zero
+        return lpTokenPriceUSD.mul(gauge.gaugeTotalSupply || Zero).div(BN_1E18)
       }
       if (basicPool && gauge) {
         const { lpTokenPriceUSD } = getPriceDataForPool(
@@ -130,7 +135,7 @@ function useGaugeTVL(): (gaugeAddress?: string) => BigNumber {
       }
       return Zero
     },
-    [sdlWethSushiPool?.wethReserve, tokenPricesUSD, tokens, basicPools, gauges],
+    [gauges, basicPools, sdlWethSushiPool, tokenPricesUSD, tokens],
   )
 }
 
