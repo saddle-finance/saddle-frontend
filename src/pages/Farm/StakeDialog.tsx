@@ -8,9 +8,11 @@ import {
   Typography,
 } from "@mui/material"
 import React, { useCallback, useState } from "react"
+import { TRANSACTION_TYPES, readableDecimalNumberRegex } from "../../constants"
 import { commify, formatBNToString, getContract } from "../../utils"
 import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 import { formatUnits, parseUnits } from "ethers/lib/utils"
+import { useDispatch, useSelector } from "react-redux"
 
 import { AppState } from "../../state"
 import { BigNumber } from "ethers"
@@ -19,9 +21,8 @@ import ERC20_ABI from "../../constants/abis/erc20.json"
 import { Erc20 } from "../../../types/ethers-contracts/Erc20"
 import TokenInput from "../../components/TokenInput"
 import checkAndApproveTokenForTrade from "../../utils/checkAndApproveTokenForTrade"
-import { readableDecimalNumberRegex } from "../../constants"
+import { updateLastTransactionTimes } from "../../state/application"
 import { useActiveWeb3React } from "../../hooks"
-import { useSelector } from "react-redux"
 import useUserGauge from "../../hooks/useUserGauge"
 
 interface StakeDialogProps {
@@ -40,12 +41,12 @@ export default function StakeDialog({
 }: StakeDialogProps): JSX.Element | null {
   const { chainId, account, library } = useActiveWeb3React()
   const userGauge = useUserGauge(gaugeAddress)
+  const dispatch = useDispatch()
   const [stakeStatus, setStakeStatus] = useState<"stake" | "unstake">("stake")
   const [amountInput, setAmountInput] = useState<string>(defaultInput)
   const { infiniteApproval } = useSelector((state: AppState) => state.user)
 
   const onClickStake = useCallback(async () => {
-    // TODO dispatch updateLastTransactionTimes action
     try {
       if (!userGauge || !chainId || !gaugeAddress || !account || !library)
         return
@@ -74,6 +75,11 @@ export default function StakeDialog({
       await enqueuePromiseToast(chainId, txn.wait(), "stake", {
         poolName: farmName,
       })
+      dispatch(
+        updateLastTransactionTimes({
+          [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
+        }),
+      )
       setAmountInput(defaultInput)
     } catch (e) {
       console.error(e)
@@ -88,6 +94,7 @@ export default function StakeDialog({
     amountInput,
     infiniteApproval,
     farmName,
+    dispatch,
   ])
 
   const onClickUnstake = useCallback(async () => {
@@ -98,12 +105,17 @@ export default function StakeDialog({
       await enqueuePromiseToast(chainId, txn.wait(), "unstake", {
         poolName: farmName,
       })
+      dispatch(
+        updateLastTransactionTimes({
+          [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
+        }),
+      )
       setAmountInput(defaultInput)
     } catch (e) {
       console.error(e)
       enqueueToast("error", "Unable to unstake")
     }
-  }, [userGauge, amountInput, chainId, farmName])
+  }, [userGauge, amountInput, chainId, farmName, dispatch])
 
   const onClickClaim = useCallback(async () => {
     if (!chainId) return
@@ -116,11 +128,16 @@ export default function StakeDialog({
         "claim",
         { poolName: farmName },
       )
+      dispatch(
+        updateLastTransactionTimes({
+          [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
+        }),
+      )
     } catch (e) {
       console.error(e)
       enqueueToast("error", "Unable to claim reward")
     }
-  }, [chainId, farmName, userGauge])
+  }, [chainId, farmName, userGauge, dispatch])
 
   const isInputValid =
     readableDecimalNumberRegex.test(amountInput) && parseFloat(amountInput) > 0
@@ -128,7 +145,15 @@ export default function StakeDialog({
   if (!userGauge) return null
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
+    <Dialog
+      open={open}
+      onClose={() => {
+        onClose()
+        setStakeStatus("stake")
+      }}
+      fullWidth
+      maxWidth="xs"
+    >
       <DialogContent sx={{ mt: 3 }}>
         <Stack spacing={3}>
           <Typography variant="h1" textAlign="center">
