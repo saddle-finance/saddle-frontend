@@ -6,6 +6,7 @@ import {
 import {
   ChainId,
   PoolTypes,
+  SDL_TOKEN,
   SPA,
   TOKENS_MAP,
   VETH2_SWAP_ADDRESSES,
@@ -41,6 +42,7 @@ const otherTokens = {
   SGT: "sharedstake-governance-token",
   ALCX: "alchemix",
   T: "threshold-network-token",
+  [SDL_TOKEN.symbol]: SDL_TOKEN.geckoId,
   [SPA.symbol]: SPA.geckoId,
 }
 
