@@ -54,7 +54,7 @@ export default function FarmOverview({
           <TokenIcon symbol="WETH" alt="weth" />
         </TokenGroup>
       </Grid>
-      <Grid item xs={1.5}>
+      <Grid item xs={3}>
         {aprs?.map((aprData) => {
           const { symbol, address } = aprData.rewardToken
           if (aprData.amountPerDay) {
@@ -63,6 +63,7 @@ export default function FarmOverview({
             return (
               <Box key={address}>
                 <Typography component="span">{symbol}/24h:</Typography>
+
                 <Typography component="span" marginLeft={1}>
                   {`${commify(formatBNToString(min, 18, 0))}-${commify(
                     formatBNToString(max, 18, 0),

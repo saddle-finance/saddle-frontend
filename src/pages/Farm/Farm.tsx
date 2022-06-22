@@ -85,7 +85,7 @@ function FarmListHeader(): JSX.Element {
       <Grid item xs={2.5}>
         <Typography>{t("farms")}</Typography>
       </Grid>
-      <Grid item xs={1.5}>
+      <Grid item xs={3}>
         <Typography>APR</Typography>
       </Grid>
       <Grid item xs={1.5}>
