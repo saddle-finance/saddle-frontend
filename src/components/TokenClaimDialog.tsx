@@ -23,8 +23,8 @@ import { Trans, useTranslation } from "react-i18next"
 import { commify, formatBNToString, getContract } from "../utils"
 import { enqueuePromiseToast, enqueueToast } from "./Toastify"
 import {
+  useGaugeMinterContract,
   useMiniChefContract,
-  useMinterContract,
   useRetroactiveVestingContract,
 } from "../hooks/useContract"
 
@@ -386,7 +386,7 @@ type PendingClaims = Record<PendingClaimsKeys, STATUSES>
 function useRewardClaims() {
   const { chainId, account, library } = useActiveWeb3React()
   const rewardsContract = useMiniChefContract()
-  const minterContract = useMinterContract()
+  const gaugeMinterContract = useGaugeMinterContract()
   const retroRewardsContract = useRetroactiveVestingContract()
   const userMerkleData = useRetroMerkleData() // @dev todo hoist this to avoid refetches
   const [pendingClaims, setPendingClaims] = useState<PendingClaims>(
@@ -436,7 +436,8 @@ function useRewardClaims() {
         rewards: GaugeReward[]
       } | null,
     ) => {
-      if (!chainId || !account || !minterContract || !library || !gauge) return
+      if (!chainId || !account || !gaugeMinterContract || !library || !gauge)
+        return
       try {
         updateClaimStatus(gauge.gaugeName, STATUSES.PENDING)
         const claimPromises = []
@@ -451,7 +452,7 @@ function useRewardClaims() {
             liquidityGaugeContract["claim_rewards(address)"](account),
           )
         }
-        claimPromises.push(minterContract.mint(gauge.address))
+        claimPromises.push(gaugeMinterContract.mint(gauge.address))
         const txns = await Promise.all(claimPromises)
         await enqueuePromiseToast(
           chainId,
@@ -466,7 +467,7 @@ function useRewardClaims() {
         enqueueToast("error", "Unable to claim reward")
       }
     },
-    [chainId, account, updateClaimStatus, minterContract, library],
+    [chainId, account, updateClaimStatus, gaugeMinterContract, library],
   )
 
   const claimRetroReward = useCallback(async () => {
