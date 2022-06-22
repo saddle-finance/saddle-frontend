@@ -72,7 +72,7 @@ export async function getGaugeData(
   chainId: ChainId,
   gaugeController: GaugeController,
   account: string,
-  minterContract: Minter,
+  gaugeMinterContract: Minter,
 ): Promise<Gauges | null> {
   // TODO switch to IS_VESDL_LIVE
   if (chainId !== ChainId.HARDHAT) return initialGaugesState
@@ -180,7 +180,7 @@ export async function getGaugeData(
       gaugeWorkingSuppliesPromise,
       gaugeLpTokenAddressesPromise,
       gaugeNamesPromise,
-      minterContract ? minterContract.rate() : Promise.resolve(Zero),
+      gaugeMinterContract ? gaugeMinterContract.rate() : Promise.resolve(Zero),
     ])
 
     const gauges: LPTokenAddressToGauge = gaugeAddresses.reduce(
