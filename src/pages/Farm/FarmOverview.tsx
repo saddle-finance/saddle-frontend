@@ -35,7 +35,6 @@ export default function FarmOverview({
   onClickStake,
 }: FarmOverviewProps): JSX.Element {
   const { t } = useTranslation()
-  // TODO: fetch aprs from provider
   return (
     <Grid
       container
