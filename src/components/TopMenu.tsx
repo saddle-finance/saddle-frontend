@@ -47,7 +47,7 @@ function TopMenu(): ReactElement {
   const { pathname } = useLocation()
   const activeTab = pathname.split("/")[1] as ActiveTabType
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
-  const sdlPrice = tokenPricesUSD?.[SDL_TOKEN.geckoId]
+  const sdlPrice = tokenPricesUSD?.[SDL_TOKEN.symbol]
   const handleSettingMenu = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
@@ -197,9 +197,9 @@ function SDLPrice({ sdlPrice }: SDLPriceProps): ReactElement | null {
       href={SUSHI_WETH_SDL_POOL_URL}
       target="_blank"
       startIcon={<SaddleLogo width={20} height={20} />}
-      style={{ minWidth: 250 }}
+      style={{ minWidth: 100 }}
     >
-      {`SDL Price: ${sdlPrice}`}
+      {`$${sdlPrice.toFixed(2)}`}
     </Button>
   )
 }
