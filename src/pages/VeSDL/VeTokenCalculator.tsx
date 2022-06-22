@@ -26,7 +26,7 @@ type Props = {
 }
 
 export default function VeTokenCalculator({
-  open = true,
+  open,
   onClose,
   totalSupplyVeSDL,
   userBalanceVeSDL,
@@ -66,7 +66,6 @@ export default function VeTokenCalculator({
     }
   }, [gauge])
 
-  console.log("first", gauge?.workingSupply, gauge?.workingBalances)
   if (!gauge || !gauge.workingBalances || !gauge.workingSupply)
     return <div></div>
 
