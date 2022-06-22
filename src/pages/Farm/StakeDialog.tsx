@@ -27,7 +27,7 @@ import useUserGauge from "../../hooks/useUserGauge"
 interface StakeDialogProps {
   open: boolean
   onClose: () => void
-  farmName: string
+  farmName?: string
   gaugeAddress?: string
 }
 
