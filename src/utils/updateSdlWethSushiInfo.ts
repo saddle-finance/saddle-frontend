@@ -1,4 +1,6 @@
 import { AppDispatch } from "../state"
+import { BN_1E18 } from "./../constants/index"
+import { BigNumber } from "ethers"
 import { ChainId } from "../constants"
 import { SushiPool } from "./../../types/ethers-contracts/SushiPool.d"
 import { areGaugesActive } from "./gauges"
@@ -26,7 +28,18 @@ export default function fetchSdlWethSushiPoolInfo(
       )
     })
     .catch((e) => {
-      console.error(e)
-      dispatch(updateSdlWethSushiPool(null))
+      if (chainId === ChainId.HARDHAT) {
+        dispatch(
+          updateSdlWethSushiPool({
+            totalSupply: BigNumber.from(10).mul(BN_1E18),
+            wethReserve: BigNumber.from(10).mul(BN_1E18),
+            sdlReserve: BigNumber.from(55000).mul(BN_1E18),
+          }),
+        )
+        return
+      } else {
+        console.error(e)
+        dispatch(updateSdlWethSushiPool(null))
+      }
     })
 }

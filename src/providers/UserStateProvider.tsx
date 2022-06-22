@@ -38,7 +38,7 @@ export default function UserStateProvider({
   const basicPools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
 
-  const gauges = useContext(GaugeContext)
+  const { gauges } = useContext(GaugeContext)
   const feeDistributorContract = useFeeDistributor()
   const [userState, setUserState] = useState<UserState>(null)
   const fetchState = useCallback(() => {
@@ -59,12 +59,12 @@ export default function UserStateProvider({
         Object.values(basicPools).map(({ poolAddress }) => poolAddress),
         account,
       )
-      const gaugeRewardsPromise = gauges.gauges
+      const gaugeRewardsPromise = gauges
         ? getGaugeRewardsUserData(
             library,
             chainId,
-            Object.values(gauges.gauges).map(({ address }) => address),
-            Object.values(gauges.gauges).map(({ rewards }) =>
+            Object.values(gauges).map(({ address }) => address),
+            Object.values(gauges).map(({ rewards }) =>
               rewards.map(({ tokenAddress }) => tokenAddress),
             ),
             account,
@@ -101,7 +101,7 @@ export default function UserStateProvider({
     account,
     basicPools,
     tokens,
-    gauges.gauges,
+    gauges,
     feeDistributorContract,
   ])
   usePoller(fetchState, BLOCK_TIME * 2, [fetchState])

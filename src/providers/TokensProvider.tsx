@@ -39,7 +39,7 @@ export default function TokensProvider({
   const { chainId, library } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
   const minichefData = useContext(MinichefContext)
-  const gauges = useContext(GaugeContext)
+  const { gauges } = useContext(GaugeContext)
   const [tokens, setTokens] = useState<BasicTokens>(null)
   useEffect(() => {
     async function fetchTokens() {
@@ -76,9 +76,9 @@ export default function TokensProvider({
           targetTokenAddresses.add(address)
         })
       }
-      if (gauges.gauges) {
+      if (gauges) {
         // add gauge tokens
-        Object.values(gauges.gauges).forEach((gauge) => {
+        Object.values(gauges).forEach((gauge) => {
           gauge.rewards.forEach(({ tokenAddress }) => {
             targetTokenAddresses.add(tokenAddress)
           })
@@ -86,11 +86,15 @@ export default function TokensProvider({
       }
       if (SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chainId] && gaugesAreActive) {
         // add sushi token
-        targetTokenAddresses.add(SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chainId])
+        targetTokenAddresses.add(
+          SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chainId].toLowerCase(),
+        )
       }
       if (VOTING_ESCROW_CONTRACT_ADDRESS[chainId] && gaugesAreActive) {
         // add voting escrow token
-        targetTokenAddresses.add(VOTING_ESCROW_CONTRACT_ADDRESS[chainId])
+        targetTokenAddresses.add(
+          VOTING_ESCROW_CONTRACT_ADDRESS[chainId].toLowerCase(),
+        )
       }
       const tokenInfos = await getTokenInfos(
         ethCallProvider,
@@ -106,7 +110,7 @@ export default function TokensProvider({
       setTokens(tokenInfos)
     }
     void fetchTokens()
-  }, [chainId, library, basicPools, minichefData, gauges.gauges])
+  }, [chainId, library, basicPools, minichefData, gauges])
   return (
     <TokensContext.Provider value={tokens}>{children}</TokensContext.Provider>
   )
