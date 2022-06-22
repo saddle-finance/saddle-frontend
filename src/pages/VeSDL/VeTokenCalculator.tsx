@@ -66,6 +66,7 @@ export default function VeTokenCalculator({
     }
   }, [gauge])
 
+  console.log("first", gauge?.workingSupply, gauge?.workingBalances)
   if (!gauge || !gauge.workingBalances || !gauge.workingSupply)
     return <div></div>
 
