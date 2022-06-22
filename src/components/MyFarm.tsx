@@ -8,6 +8,7 @@ import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { UserStateContext } from "../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
 import { areGaugesActive } from "../utils/gauges"
+import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { enqueuePromiseToast } from "./Toastify"
 import { useActiveWeb3React } from "../hooks"
 import { useLPTokenContract } from "../hooks/useContract"
@@ -68,6 +69,20 @@ export default function MyFarm({
   const onStakeClick = useCallback(async () => {
     if (!liquidityGaugeContract || !lpTokenContract || !account || !chainId)
       return
+    await checkAndApproveTokenForTrade(
+      lpTokenContract,
+      liquidityGaugeContract.address,
+      account,
+      await lpTokenContract.balanceOf(account),
+      true,
+      Zero, // @dev: gas not being used
+      {
+        onTransactionError: () => {
+          throw new Error("Your transaction could not be completed")
+        },
+      },
+      chainId,
+    )
     const txn = await liquidityGaugeContract["deposit(uint256,address,bool)"](
       await lpTokenContract.balanceOf(account),
       account,
