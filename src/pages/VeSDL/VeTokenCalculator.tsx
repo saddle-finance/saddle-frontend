@@ -122,9 +122,6 @@ export default function VeTokenCalculator({
             select
             SelectProps={{ IconComponent: ArrowDownIcon }}
           >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
             {basicPools &&
               Object.keys(basicPools)?.map((poolName) => {
                 const pool = basicPools[poolName]
