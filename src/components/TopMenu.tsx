@@ -9,10 +9,11 @@ import {
   styled,
   useTheme,
 } from "@mui/material"
-import { IS_SDL_LIVE, IS_VESDL_LIVE } from "../constants"
+import { IS_SDL_LIVE, IS_VESDL_LIVE, SDL_TOKEN } from "../constants"
 import { NavLink, NavLinkProps, useLocation } from "react-router-dom"
 import React, { ReactElement, useContext, useState } from "react"
 
+import { AppState } from "../state"
 import { IS_DEVELOPMENT } from "../utils/environment"
 import { MoreVert } from "@mui/icons-material"
 import NetworkDisplay from "./NetworkDisplay"
@@ -22,6 +23,7 @@ import SiteSettingsMenu from "./SiteSettingsMenu"
 import TokenClaimDialog from "./TokenClaimDialog"
 import Web3Status from "./Web3Status"
 import { formatBNToShortString } from "../utils"
+import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
 type ActiveTabType = "" | "pools" | "risk" | "vesdl" | "farm"
@@ -44,7 +46,8 @@ function TopMenu(): ReactElement {
   const theme = useTheme()
   const { pathname } = useLocation()
   const activeTab = pathname.split("/")[1] as ActiveTabType
-
+  const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
+  const sdlPrice = tokenPricesUSD?.[SDL_TOKEN.symbol]
   const handleSettingMenu = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
@@ -119,6 +122,7 @@ function TopMenu(): ReactElement {
             justifyContent={{ xs: "center", lg: "flex-end" }}
             alignItems="center"
           >
+            <SDLPrice sdlPrice={sdlPrice} />
             <RewardsButton setCurrentModal={setCurrentModal} />
             <Web3Status />
             <NetworkDisplay onClick={handleSettingMenu} />
@@ -174,6 +178,30 @@ function RewardsButton({
       {formattedTotal}
     </Button>
   ) : null
+}
+
+interface SDLPriceProps {
+  sdlPrice: number | undefined
+}
+
+function SDLPrice({ sdlPrice }: SDLPriceProps): ReactElement | null {
+  if (sdlPrice === undefined) return null
+
+  const SUSHI_WETH_SDL_POOL_URL =
+    "https://app.sushi.com/analytics/pools/0x0c6f06b32e6ae0c110861b8607e67da594781961?chainId=1"
+  return (
+    <Button
+      variant="contained"
+      color="info"
+      data-testid="sdlPriceButton"
+      href={SUSHI_WETH_SDL_POOL_URL}
+      target="_blank"
+      startIcon={<SaddleLogo width={20} height={20} />}
+      style={{ minWidth: 100 }}
+    >
+      {`$${sdlPrice.toFixed(2)}`}
+    </Button>
+  )
 }
 
 export default TopMenu
