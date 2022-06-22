@@ -90,7 +90,7 @@ export default function FarmOverview({
       </Grid>
       <Grid item xs={1.5}>
         <Typography variant="subtitle1">
-          {tvl ? formatBNToShortString(tvl, 18) : "_"}
+          {tvl ? `$${formatBNToShortString(tvl, 18)}` : "_"}
         </Typography>
       </Grid>
       <Grid item xs={1.5}>
