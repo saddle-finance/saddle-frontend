@@ -3,59 +3,52 @@ import React, { useContext, useRef } from "react"
 
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
+import { GaugeContext } from "../providers/GaugeProvider"
 import Highcharts from "highcharts"
 import HighchartsExporting from "highcharts/modules/exporting"
 import HighchartsReact from "highcharts-react-official"
 import PieChart from "highcharts-react-official"
-import { PoolAddressToGauge } from "../utils/gauges"
-
-interface Props {
-  gauges: PoolAddressToGauge
-}
 
 export type GaugeWeightData = {
-  poolAddress: string
-  poolName: string
+  displayName: string
   gaugeRelativeWeight: BigNumber
 }
 
 export default function GaugeWeight({
-  gauges,
   ...props
-}: Props & HighchartsReact.Props): JSX.Element {
+}: HighchartsReact.Props): JSX.Element {
   HighchartsExporting(Highcharts)
   const chartComponentRef = useRef<HighchartsReact.RefObject>(null)
   const basicPools = useContext(BasicPoolsContext)
+  const { gauges } = useContext(GaugeContext)
   const theme = useTheme()
   if (!basicPools)
     return (
       <Box
         display="flex"
         height="100%"
-        justifyContent="center"
+        width="100%"
         alignItems="center"
+        justifyContent="center"
       >
         <CircularProgress color="secondary" />
       </Box>
     )
-
-  const gaugesInfo = Object.values(basicPools)
-    .map((pool) => {
-      const gaugePoolAddress = pool.poolAddress
-      const gauge = gauges[gaugePoolAddress]
-      return gauge
-        ? {
-            poolAddress: gaugePoolAddress,
-            poolName: pool.poolName,
-            gaugeRelativeWeight: gauge.gaugeRelativeWeight,
-          }
-        : null
+  const gaugesInfo = Object.values(gauges)
+    .map(({ gaugeName, gaugeRelativeWeight, poolAddress }) => {
+      const pool = Object.values(basicPools || {}).find(
+        (pool) => pool.poolAddress === poolAddress,
+      )
+      return {
+        displayName: pool?.poolName || gaugeName,
+        gaugeRelativeWeight,
+      }
     })
     .filter(Boolean) as GaugeWeightData[]
 
   const data = gaugesInfo.map((g) => {
     return {
-      name: g.poolName,
+      name: g.displayName,
       y: g.gaugeRelativeWeight.div(BigNumber.from(10).pow(16)).toNumber(),
     }
   })
