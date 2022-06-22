@@ -95,7 +95,7 @@ const DepositPage = (props: Props): ReactElement => {
   const theme = useTheme()
   const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
   const { gauges } = useContext(GaugeContext)
-  const gaugeAddr = gauges?.[poolData?.poolAddress ?? ""]?.address ?? ""
+  const gaugeAddr = gauges?.[poolData?.lpToken ?? ""]?.address ?? ""
   const gaugesAreActive = areGaugesActive(chainId)
 
   useEffect(() => {

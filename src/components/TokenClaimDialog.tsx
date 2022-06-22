@@ -46,8 +46,8 @@ import { useRetroMerkleData } from "../hooks/useRetroMerkleData"
 
 // TODO: update token launch link
 
-type GaugesWithPoolName = {
-  poolName: string
+type GaugesWithName = {
+  gaugeName: string
   address: string
   rewards: GaugeReward[]
 }
@@ -64,22 +64,20 @@ export default function TokenClaimDialog({
   const { chainId } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
   const userState = useContext(UserStateContext)
-  const gaugeData = useContext(GaugeContext)
+  const { gauges } = useContext(GaugeContext)
   const tokens = useContext(TokensContext)
-  const gaugesWithPoolName = useMemo<GaugesWithPoolName[]>(() => {
+  const gaugesWithName = useMemo<GaugesWithName[]>(() => {
     if (!basicPools || !userState?.gaugeRewards) return []
     return (
-      Object.values(basicPools)
-        .map((pool) => {
-          const gauge = gaugeData.gauges[pool.poolAddress]
-          if (!gauge) return null
+      Object.values(gauges)
+        .map(({ gaugeName, rewards, address }) => {
           return {
-            poolName: pool.poolName,
-            address: gauge.address,
-            rewards: gauge.rewards,
+            gaugeName,
+            address,
+            rewards,
           }
         })
-        .filter(Boolean) as GaugesWithPoolName[]
+        .filter(Boolean) as GaugesWithName[]
     ).sort((a, b) => {
       const [rewardBalA, rewardBalB] = [
         userState.gaugeRewards?.[a.address]?.claimableSDL,
@@ -87,7 +85,7 @@ export default function TokenClaimDialog({
       ]
       return (rewardBalA || Zero).gte(rewardBalB || Zero) ? -1 : 1
     })
-  }, [basicPools, gaugeData.gauges, userState?.gaugeRewards])
+  }, [basicPools, gauges, userState?.gaugeRewards])
 
   const isClaimableNetwork =
     chainId === ChainId.MAINNET ||
@@ -215,9 +213,7 @@ export default function TokenClaimDialog({
               </Typography>
 
               {Boolean(
-                gaugesAreActive
-                  ? gaugesWithPoolName.length
-                  : allPoolsWithRewards,
+                gaugesAreActive ? gaugesWithName.length : allPoolsWithRewards,
               ) && <div style={{ height: "32px" }} />}
             </>
           )}
@@ -254,7 +250,7 @@ export default function TokenClaimDialog({
                   {i < arr.length - 1 && <Divider key={i} />}
                 </React.Fragment>
               ))
-            : gaugesWithPoolName?.map((gauge, i, arr) => {
+            : gaugesWithName?.map((gauge, i, arr) => {
                 const poolGaugeRewards =
                   userState?.gaugeRewards?.[gauge?.address || ""]
                 const userClaimableSdl = poolGaugeRewards?.claimableSDL
@@ -274,9 +270,9 @@ export default function TokenClaimDialog({
 
                 return (
                   shouldShow && (
-                    <React.Fragment key={gauge?.poolName}>
+                    <React.Fragment key={gauge?.gaugeName}>
                       <ClaimListItem
-                        title={gauge?.poolName}
+                        title={gauge?.gaugeName}
                         items={[
                           ["SDL", userClaimableSdl ?? Zero],
                           ...userClaimableOtherRewards,
@@ -284,7 +280,7 @@ export default function TokenClaimDialog({
                         claimCallback={() => claimGaugeReward(gauge)}
                         status={
                           claimsStatuses["allGauges"] ||
-                          claimsStatuses[gauge?.poolName ?? ""]
+                          claimsStatuses[gauge?.gaugeName ?? ""]
                         }
                       />
                       {i < arr.length - 1 && <Divider key={i} />}
@@ -435,14 +431,14 @@ function useRewardClaims() {
   const claimGaugeReward = useCallback(
     async (
       gauge: {
-        poolName: string
+        gaugeName: string
         address: string
         rewards: GaugeReward[]
       } | null,
     ) => {
       if (!chainId || !account || !minterContract || !library || !gauge) return
       try {
-        updateClaimStatus(gauge.poolName, STATUSES.PENDING)
+        updateClaimStatus(gauge.gaugeName, STATUSES.PENDING)
         const claimPromises = []
         if (gauge.rewards.length > 0 && gauge.address) {
           const liquidityGaugeContract = getContract(
@@ -461,12 +457,12 @@ function useRewardClaims() {
           chainId,
           Promise.all(txns.map((txn) => txn.wait())),
           "claim",
-          { poolName: gauge.poolName },
+          { poolName: gauge.gaugeName },
         )
-        updateClaimStatus(gauge.poolName, STATUSES.SUCCESS)
+        updateClaimStatus(gauge.gaugeName, STATUSES.SUCCESS)
       } catch (e) {
         console.error(e)
-        updateClaimStatus(gauge.poolName, STATUSES.ERROR)
+        updateClaimStatus(gauge.gaugeName, STATUSES.ERROR)
         enqueueToast("error", "Unable to claim reward")
       }
     },
