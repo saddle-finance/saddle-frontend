@@ -19,8 +19,8 @@ import React, {
 } from "react"
 
 import LinkIcon from "@mui/icons-material/Launch"
-import { getEtherscanLink } from "../utils/getEtherscanLink"
 import { getFormattedShortTime } from "../utils/dateTime"
+import { getMultichainScanLink } from "../utils/getEtherscanLink"
 import { useActiveWeb3React } from "../hooks"
 import { useTranslation } from "react-i18next"
 
@@ -211,12 +211,12 @@ export default function Transactions(): ReactElement {
         </Button>
       </Box>
       <List>
-        {transactionList.length !== 0 ? (
+        {chainId && transactionList.length !== 0 ? (
           transactionList.map((txn, index) => (
             <ListItem key={index} disableGutters>
               <Typography marginRight={1}>{txn.object}</Typography>
               <Link
-                href={getEtherscanLink(txn.transaction, "tx")}
+                href={getMultichainScanLink(chainId, txn.transaction, "tx")}
                 target="_blank"
                 rel="noreferrer"
                 sx={{ lineHeight: 0 }}

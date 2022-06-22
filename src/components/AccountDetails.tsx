@@ -19,7 +19,7 @@ import Transactions from "./Transactions"
 import { UserStateContext } from "../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
 import { find } from "lodash"
-import { getEtherscanLink } from "../utils/getEtherscanLink"
+import { getMultichainScanLink } from "../utils/getEtherscanLink"
 import { shortenAddress } from "../utils/shortenAddress"
 import { useActiveWeb3React } from "../hooks"
 import { useTheme } from "@mui/material/styles"
@@ -75,9 +75,9 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
             <Typography variant="subtitle1">
               {udName || (account && shortenAddress(account))}
             </Typography>
-            {account && (
+            {chainId && account && (
               <Link
-                href={getEtherscanLink(account, "address")}
+                href={getMultichainScanLink(chainId, account, "address")}
                 target="_blank"
                 rel="noreferrer"
               >
