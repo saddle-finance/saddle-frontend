@@ -1,14 +1,20 @@
 import { Box, Button, Grid, Typography, styled } from "@mui/material"
-import { formatBNToPercentString, formatBNToShortString } from "../../utils"
+import {
+  commify,
+  formatBNToPercentString,
+  formatBNToShortString,
+  formatBNToString,
+} from "../../utils"
 
 import { BigNumber } from "@ethersproject/bignumber"
+import { GaugeApr } from "../../providers/AprsProvider"
 import React from "react"
 import TokenIcon from "../../components/TokenIcon"
 import { useTranslation } from "react-i18next"
 
 interface FarmOverviewProps {
   farmName: string
-  apr?: BigNumber
+  aprs?: GaugeApr[]
   tvl?: BigNumber
   myStake?: BigNumber
   onClickStake: () => void
@@ -23,7 +29,7 @@ const TokenGroup = styled("div")(() => ({
 
 export default function FarmOverview({
   farmName,
-  apr,
+  aprs,
   tvl,
   myStake,
   onClickStake,
@@ -48,14 +54,44 @@ export default function FarmOverview({
           <TokenIcon symbol="WETH" alt="weth" />
         </TokenGroup>
       </Grid>
-      <Grid item xs={1.5}>
-        <Typography variant="subtitle1">
-          {apr ? formatBNToPercentString(apr, 18) : "_"}
-        </Typography>
+      <Grid item xs={3}>
+        {aprs?.map((aprData) => {
+          const { symbol, address } = aprData.rewardToken
+          if (aprData.amountPerDay) {
+            const { min, max } = aprData.amountPerDay
+            if (max.isZero()) return null
+            return (
+              <Box key={address}>
+                <Typography component="span">{symbol}/24h:</Typography>
+
+                <Typography component="span" marginLeft={1}>
+                  {`${commify(formatBNToString(min, 18, 0))}-${commify(
+                    formatBNToString(max, 18, 0),
+                  )}`}
+                </Typography>
+              </Box>
+            )
+          } else if (aprData.apr) {
+            const { min, max } = aprData.apr
+            if (max.isZero()) return null
+            return (
+              <Box key={address}>
+                <Typography component="span">{symbol} apr:</Typography>
+                <Typography component="span" marginLeft={1}>
+                  {`${formatBNToPercentString(
+                    min,
+                    18,
+                    2,
+                  )}-${formatBNToPercentString(max, 18, 2)}`}
+                </Typography>
+              </Box>
+            )
+          }
+        })}
       </Grid>
       <Grid item xs={1.5}>
         <Typography variant="subtitle1">
-          {tvl ? formatBNToShortString(tvl, 18) : "_"}
+          {tvl ? `$${formatBNToShortString(tvl, 18)}` : "_"}
         </Typography>
       </Grid>
       <Grid item xs={1.5}>
