@@ -7,10 +7,7 @@ type Props = {
   onClose: () => void
 }
 
-export default function ClaimRewardsDlg({
-  open = true,
-  onClose,
-}: Props): JSX.Element {
+export default function ClaimRewardsDlg({ open, onClose }: Props): JSX.Element {
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogContent sx={{ mt: 3 }}>

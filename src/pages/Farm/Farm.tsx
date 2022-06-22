@@ -25,7 +25,7 @@ type ActiveGauge = {
 const sushiGaugeName = "SLP-gauge"
 export default function Farm(): JSX.Element {
   const [activeGauge, setActiveGauge] = useState<ActiveGauge | undefined>()
-  const [openClaim, setOpenClaim] = useState<boolean>(true)
+  const [openClaim, setOpenClaim] = useState<boolean>(false)
   const { gauges } = useContext(GaugeContext)
   const gaugeAprs = useContext(AprsContext)
   const userState = useContext(UserStateContext)
