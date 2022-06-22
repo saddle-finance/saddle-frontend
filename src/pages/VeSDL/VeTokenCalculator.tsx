@@ -8,6 +8,7 @@ import {
 } from "@mui/material"
 import React, { useContext, useEffect, useState } from "react"
 import { calculateBoost, formatBNToString, isNumberOrEmpty } from "../../utils"
+
 import ArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
 import { BasicPoolsContext } from "../../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -45,8 +46,8 @@ export default function VeTokenCalculator({
 
   const pool = basicPools && basicPools[poolNameValue]
   const gauge =
-    !!pool?.poolAddress && gaugeData.gauges
-      ? gaugeData.gauges[pool.poolAddress]
+    !!pool?.lpToken && gaugeData.gauges
+      ? gaugeData.gauges[pool.lpToken]
       : undefined
 
   const userLPAmountBN = parseEther(userLPAmountInput || "0")
