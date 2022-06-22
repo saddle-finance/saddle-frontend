@@ -26,7 +26,7 @@ type Props = {
 }
 
 export default function VeTokenCalculator({
-  open,
+  open = true,
   onClose,
   totalSupplyVeSDL,
   userBalanceVeSDL,
@@ -126,11 +126,17 @@ export default function VeTokenCalculator({
               <em>None</em>
             </MenuItem>
             {basicPools &&
-              Object.keys(basicPools)?.map((poolName) => (
-                <MenuItem key={poolName} value={poolName}>
-                  {poolName}
-                </MenuItem>
-              ))}
+              Object.keys(basicPools)?.map((poolName) => {
+                const pool = basicPools[poolName]
+                const outdated =
+                  pool?.isGuarded || pool?.isMigrated || pool?.isPaused
+                if (outdated) return null
+                return (
+                  <MenuItem key={poolName} value={poolName}>
+                    {poolName}
+                  </MenuItem>
+                )
+              })}
           </TextField>
 
           <TextField

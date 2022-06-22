@@ -528,13 +528,16 @@ export default function VeSDL(): JSX.Element {
           <GaugeVote />
         </Stack>
       </Box>
-
-      <VeTokenCalculator
-        userBalanceVeSDL={veSdlTokenBalance}
-        totalSupplyVeSDL={veSDLTotalSupply}
-        open={openCalculator}
-        onClose={() => setOpenCalculator(false)}
-      />
+      {!loading ? (
+        <VeTokenCalculator
+          userBalanceVeSDL={veSdlTokenBalance}
+          totalSupplyVeSDL={veSDLTotalSupply}
+          open={openCalculator}
+          onClose={() => setOpenCalculator(false)}
+        />
+      ) : (
+        <Skeleton width="100px" sx={{ display: "inline-block" }} />
+      )}
       <VeSDLWrongNetworkModal />
       <ConfirmModal
         open={unlockConfirmOpen}
