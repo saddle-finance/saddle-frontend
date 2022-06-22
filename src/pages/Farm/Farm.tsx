@@ -42,14 +42,15 @@ export default function Farm(): JSX.Element {
               : gauge.poolName || gauge.gaugeName || ""
           const gaugeAddress = gauge.address
           const gaugeApr = gaugeAprs?.[gaugeAddress]
-          const myStack = userState?.gaugeRewards?.[gaugeAddress]?.amountStaked
+          const myStackAmount =
+            userState?.gaugeRewards?.[gaugeAddress]?.amountStaked
           return (
             <FarmOverview
               key={gauge.address}
               farmName={farmName}
               aprs={gaugeApr}
               tvl={sdlWethPoolTvl}
-              myStake={myStack}
+              myStake={myStackAmount}
               onClickStake={() =>
                 setActiveGauge({
                   address: gauge.address,
