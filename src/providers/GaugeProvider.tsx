@@ -16,7 +16,7 @@ export default function GaugeProvider({
   const { chainId, library, account } = useActiveWeb3React()
   const gaugeControllerContract = useGaugeControllerContract()
   const basicPools = useContext(BasicPoolsContext)
-  const minterContract = useGaugeMinterContract() // only exists on mainnet
+  const gaugeMinterContract = useGaugeMinterContract() // only exists on mainnet
   const [gauges, setGauges] = useState<Gauges>(initialGaugesState)
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function GaugeProvider({
         !gaugeControllerContract ||
         !chainId ||
         !library ||
-        !minterContract ||
+        !gaugeMinterContract ||
         !account
       )
         return
@@ -36,7 +36,7 @@ export default function GaugeProvider({
           gaugeControllerContract,
           basicPools,
           account,
-          minterContract,
+          gaugeMinterContract,
         )) || initialGaugesState
       setGauges(gauges)
     }
@@ -46,7 +46,7 @@ export default function GaugeProvider({
     chainId,
     library,
     gaugeControllerContract,
-    minterContract,
+    gaugeMinterContract,
     account,
     basicPools,
   ])
