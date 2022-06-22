@@ -9,6 +9,7 @@ import {
 } from "@mui/material"
 import React, { useCallback, useState } from "react"
 import { commify, formatBNToString, getContract } from "../../utils"
+import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 import { formatUnits, parseUnits } from "ethers/lib/utils"
 
 import { AppState } from "../../state"
@@ -18,7 +19,6 @@ import ERC20_ABI from "../../constants/abis/erc20.json"
 import { Erc20 } from "../../../types/ethers-contracts/Erc20"
 import TokenInput from "../../components/TokenInput"
 import checkAndApproveTokenForTrade from "../../utils/checkAndApproveTokenForTrade"
-import { enqueuePromiseToast } from "../../components/Toastify"
 import { readableDecimalNumberRegex } from "../../constants"
 import { useActiveWeb3React } from "../../hooks"
 import { useSelector } from "react-redux"
@@ -45,35 +45,40 @@ export default function StakeDialog({
   const { infiniteApproval } = useSelector((state: AppState) => state.user)
 
   const onClickStake = useCallback(async () => {
-    // TODO clean up approval function
     // TODO dispatch updateLastTransactionTimes action
-    if (!userGauge || !chainId || !gaugeAddress || !account || !library) return
-    const inputBN = parseUnits(amountInput)
-    const lpTokenContract = getContract(
-      userGauge.lpToken.address,
-      ERC20_ABI,
-      library,
-      account,
-    ) as Erc20
-    await checkAndApproveTokenForTrade(
-      lpTokenContract,
-      gaugeAddress,
-      account,
-      inputBN,
-      infiniteApproval,
-      BigNumber.from(1),
-      {
-        onTransactionError: () => {
-          throw new Error("Your transaction could not be completed")
+    try {
+      if (!userGauge || !chainId || !gaugeAddress || !account || !library)
+        return
+      const inputBN = parseUnits(amountInput)
+      const lpTokenContract = getContract(
+        userGauge.lpToken.address,
+        ERC20_ABI,
+        library,
+        account,
+      ) as Erc20
+      await checkAndApproveTokenForTrade(
+        lpTokenContract,
+        gaugeAddress,
+        account,
+        inputBN,
+        infiniteApproval,
+        BigNumber.from(1),
+        {
+          onTransactionError: () => {
+            throw new Error("Your transaction could not be completed")
+          },
         },
-      },
-      chainId,
-    )
-    const txn = await userGauge?.stake(inputBN)
-    await enqueuePromiseToast(chainId, txn.wait(), "stake", {
-      poolName: farmName,
-    })
-    setAmountInput(defaultInput)
+        chainId,
+      )
+      const txn = await userGauge?.stake(inputBN)
+      await enqueuePromiseToast(chainId, txn.wait(), "stake", {
+        poolName: farmName,
+      })
+      setAmountInput(defaultInput)
+    } catch (e) {
+      console.error(e)
+      enqueueToast("error", "Unable to stake")
+    }
   }, [
     userGauge,
     chainId,
@@ -86,14 +91,36 @@ export default function StakeDialog({
   ])
 
   const onClickUnstake = useCallback(async () => {
-    if (!userGauge || !chainId) return
-    const inputBN = parseUnits(amountInput)
-    const txn = await userGauge?.stake(inputBN)
-    await enqueuePromiseToast(chainId, txn.wait(), "unstake", {
-      poolName: farmName,
-    })
-    setAmountInput(defaultInput)
+    try {
+      if (!userGauge || !chainId) return
+      const inputBN = parseUnits(amountInput)
+      const txn = await userGauge?.unstake(inputBN)
+      await enqueuePromiseToast(chainId, txn.wait(), "unstake", {
+        poolName: farmName,
+      })
+      setAmountInput(defaultInput)
+    } catch (e) {
+      console.error(e)
+      enqueueToast("error", "Unable to unstake")
+    }
   }, [userGauge, amountInput, chainId, farmName])
+
+  const onClickClaim = useCallback(async () => {
+    if (!chainId) return
+    try {
+      const txns = await userGauge?.claim()
+
+      await enqueuePromiseToast(
+        chainId,
+        Promise.all((txns || []).map((txn) => txn.wait())),
+        "claim",
+        { poolName: farmName },
+      )
+    } catch (e) {
+      console.error(e)
+      enqueueToast("error", "Unable to claim reward")
+    }
+  }, [chainId, farmName, userGauge])
 
   const isInputValid =
     readableDecimalNumberRegex.test(amountInput) && parseFloat(amountInput) > 0
@@ -128,10 +155,15 @@ export default function StakeDialog({
             {/* <Box>
               <Typography>Rewards</Typography>
               12334578.12
-            </Box>
-            <Button variant="outlined" size="large">
-              Claim
-            </Button> */}
+            </Box> */}
+            <Button
+              variant="outlined"
+              size="large"
+              onClick={onClickClaim}
+              disabled={!userGauge.hasClaimableRewards}
+            >
+              Claim Rewards
+            </Button>
           </Stack>
           <Tabs
             value={stakeStatus}
