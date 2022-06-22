@@ -1,27 +1,30 @@
 import { BasicToken, TokensContext } from "../providers/TokensProvider"
+import { useLiquidityGaugeContract, useMinterContract } from "./useContract"
 
 import { BigNumber } from "@ethersproject/bignumber"
+import { ContractTransaction } from "ethers"
 import { GaugeContext } from "../providers/GaugeProvider"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { UserStateContext } from "../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
 import { useActiveWeb3React } from "."
 import { useContext } from "react"
-import { useLiquidityGaugeContract } from "./useContract"
 
 type UserGauge = {
   stake: LiquidityGaugeV5["deposit(uint256)"]
   unstake: LiquidityGaugeV5["withdraw(uint256)"]
-  claim: () => ReturnType<LiquidityGaugeV5["claim_rewards(address)"]>
+  claim: () => Promise<ContractTransaction[]>
   lpToken: BasicToken
   userWalletLpTokenBalance: BigNumber
   userStakedLpTokenBalance: BigNumber
+  hasClaimableRewards: boolean
 }
 
 // TODO add rewards
 export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
   const { account } = useActiveWeb3React()
   const gaugeContract = useLiquidityGaugeContract(gaugeAddress)
+  const minterContract = useMinterContract()
   const { gauges } = useContext(GaugeContext)
   const tokens = useContext(TokensContext)
   const userState = useContext(UserStateContext)
@@ -36,18 +39,31 @@ export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
     !gauge ||
     !lpToken ||
     !account ||
-    !userState
+    !userState ||
+    !minterContract
   )
     return null
-  console.log(gaugeAddress, gauge.gaugeName)
+
+  const userGaugeRewards = userState.gaugeRewards?.[gaugeAddress]
+  const hasSDLRewards = Boolean(userGaugeRewards?.claimableSDL.gt(Zero))
+  const hasExternalRewards = Boolean(
+    userGaugeRewards?.claimableExternalRewards.length,
+  )
+
   return {
     stake: gaugeContract["deposit(uint256)"],
     unstake: gaugeContract["withdraw(uint256)"],
-    claim: () => gaugeContract["claim_rewards(address)"](account),
+    claim: () => {
+      const promises = [minterContract.mint(gaugeAddress)]
+      if (hasExternalRewards) {
+        promises.push(gaugeContract["claim_rewards(address)"](account))
+      }
+      return Promise.all(promises)
+    },
+    hasClaimableRewards: hasSDLRewards || hasExternalRewards,
     lpToken,
     userWalletLpTokenBalance:
       userState.tokenBalances?.[lpToken.address] || Zero,
-    userStakedLpTokenBalance:
-      userState.gaugeRewards?.[gaugeAddress]?.amountStaked || Zero,
+    userStakedLpTokenBalance: userGaugeRewards?.amountStaked || Zero,
   }
 }

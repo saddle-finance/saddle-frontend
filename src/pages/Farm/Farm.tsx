@@ -10,21 +10,19 @@ import { UserStateContext } from "../../providers/UserStateProvider"
 import { parseEther } from "@ethersproject/units"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
-import useUserGauge from "../../hooks/useUserGauge"
 
+type ActiveGauge = {
+  address: string
+  displayName: string
+}
 export default function Farm(): JSX.Element {
-  const [activeGaugeAddress, setActiveGaugeAddress] = useState<
-    string | undefined
-  >()
-  const sdlWethPoolName = "SDL/WETH"
+  const [activeGauge, setActiveGauge] = useState<ActiveGauge | undefined>()
   const { gauges } = useContext(GaugeContext)
   const gaugeAprs = useContext(AprsContext)
   const { sdlWethSushiPool, tokenPricesUSD } = useSelector(
     (state: AppState) => state.application,
   )
   const userState = useContext(UserStateContext)
-  const userGauge = useUserGauge()
-  userGauge?.userStakedLpTokenBalance
   const sdlWethPoolTvl = sdlWethSushiPool?.wethReserve
     ? sdlWethSushiPool.wethReserve
         .mul(parseEther(String(tokenPricesUSD?.["ETH"] || "0.0")))
@@ -38,26 +36,35 @@ export default function Farm(): JSX.Element {
       {Object.values(gauges)
         .filter(({ gaugeName }) => gaugeName?.includes("SLP"))
         .map((gauge) => {
+          const farmName =
+            gauge.gaugeName === "SLP-gauge"
+              ? "SDL/WETH SLP"
+              : gauge.poolName || gauge.gaugeName || ""
           const gaugeAddress = gauge.address
           const gaugeApr = gaugeAprs?.[gaugeAddress]
           const myStack = userState?.gaugeRewards?.[gaugeAddress]?.amountStaked
           return (
             <FarmOverview
               key={gauge.address}
-              farmName={gauge.poolName || gauge.gaugeName || ""}
+              farmName={farmName}
               aprs={gaugeApr}
               tvl={sdlWethPoolTvl}
               myStake={myStack}
-              onClickStake={() => setActiveGaugeAddress(gauge.address)}
+              onClickStake={() =>
+                setActiveGauge({
+                  address: gauge.address,
+                  displayName: farmName,
+                })
+              }
             />
           )
         })}
 
       <StakeDialog
-        farmName={sdlWethPoolName}
-        open={!!activeGaugeAddress}
-        gaugeAddress={activeGaugeAddress}
-        onClose={() => setActiveGaugeAddress(undefined)}
+        farmName={activeGauge?.displayName}
+        open={!!activeGauge}
+        gaugeAddress={activeGauge?.address}
+        onClose={() => setActiveGauge(undefined)}
       />
     </Container>
   )
