@@ -6,6 +6,7 @@ import { AprsContext } from "../../providers/AprsProvider"
 import { BN_1E18 } from "../../constants"
 import { BasicPoolsContext } from "../../providers/BasicPoolsProvider"
 import { BigNumber } from "ethers"
+import ClaimRewardsDlg from "./ClaimRewardsDlg"
 import FarmOverview from "./FarmOverview"
 import { GaugeContext } from "../../providers/GaugeProvider"
 import StakeDialog from "./StakeDialog"
@@ -24,6 +25,7 @@ type ActiveGauge = {
 const sushiGaugeName = "SLP-gauge"
 export default function Farm(): JSX.Element {
   const [activeGauge, setActiveGauge] = useState<ActiveGauge | undefined>()
+  const [openClaim, setOpenClaim] = useState<boolean>(true)
   const { gauges } = useContext(GaugeContext)
   const gaugeAprs = useContext(AprsContext)
   const userState = useContext(UserStateContext)
@@ -41,6 +43,7 @@ export default function Farm(): JSX.Element {
               ? "SDL/WETH SLP"
               : gauge.poolName || gauge.gaugeName || ""
           const gaugeAddress = gauge.address
+          const poolName = gauge.poolName
           const aprs = gaugeAprs?.[gaugeAddress]
           const myStake = userState?.gaugeRewards?.[gaugeAddress]?.amountStaked
           const tvl = getGaugeTVL(gaugeAddress)
@@ -48,6 +51,7 @@ export default function Farm(): JSX.Element {
             gauge,
             gaugeAddress,
             farmName,
+            poolName,
             aprs,
             tvl,
             myStake,
@@ -62,10 +66,11 @@ export default function Farm(): JSX.Element {
           }
           return a.tvl.gt(b.tvl) ? -1 : 1
         })
-        .map(({ gaugeAddress, farmName, aprs, tvl, myStake }) => {
+        .map(({ gaugeAddress, farmName, aprs, tvl, myStake, poolName }) => {
           return (
             <FarmOverview
               farmName={farmName}
+              poolName={poolName}
               aprs={aprs}
               tvl={tvl}
               myStake={myStake}
@@ -86,6 +91,7 @@ export default function Farm(): JSX.Element {
         gaugeAddress={activeGauge?.address}
         onClose={() => setActiveGauge(undefined)}
       />
+      <ClaimRewardsDlg open={openClaim} onClose={() => setOpenClaim(false)} />
     </Container>
   )
 }
@@ -105,7 +111,6 @@ function useGaugeTVL(): (gaugeAddress?: string) => BigNumber {
         (gauge) => gauge.address === gaugeAddress,
       )
       const basicPool = basicPools?.[gauge?.poolName || ""]
-      console.log({ gauge, basicPool, gaugeAddress })
       if (gauge?.gaugeName === sushiGaugeName) {
         // special case for the sdl/weth pair
         return sdlWethSushiPool?.wethReserve
@@ -140,7 +145,7 @@ function FarmListHeader(): JSX.Element {
         px: 3,
       }}
     >
-      <Grid item xs={2.5}>
+      <Grid item xs={3.5}>
         <Typography>{t("farms")}</Typography>
       </Grid>
       <Grid item xs={3}>

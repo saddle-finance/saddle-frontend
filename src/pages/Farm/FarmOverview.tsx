@@ -10,10 +10,12 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { GaugeApr } from "../../providers/AprsProvider"
 import React from "react"
 import TokenIcon from "../../components/TokenIcon"
+import usePoolData from "../../hooks/usePoolData"
 import { useTranslation } from "react-i18next"
 
 interface FarmOverviewProps {
   farmName: string
+  poolName: string | null
   aprs?: GaugeApr[]
   tvl?: BigNumber
   myStake?: BigNumber
@@ -29,12 +31,16 @@ const TokenGroup = styled("div")(() => ({
 
 export default function FarmOverview({
   farmName,
+  poolName,
   aprs,
   tvl,
   myStake,
   onClickStake,
 }: FarmOverviewProps): JSX.Element {
   const { t } = useTranslation()
+  const [farmData] = usePoolData(poolName || "")
+  const farmTokens = farmData.tokens
+
   return (
     <Grid
       container
@@ -47,11 +53,16 @@ export default function FarmOverview({
         px: 3,
       }}
     >
-      <Grid item xs={2.5}>
+      <Grid item xs={3.5}>
         <Typography variant="h2">{farmName}</Typography>
         <TokenGroup>
-          <TokenIcon symbol="SDL" alt="sdl" />
-          <TokenIcon symbol="WETH" alt="weth" />
+          {farmTokens.map((token) => (
+            <TokenIcon
+              key={token.symbol}
+              symbol={token.symbol}
+              alt={token.symbol}
+            />
+          ))}
         </TokenGroup>
       </Grid>
       <Grid item xs={3}>
