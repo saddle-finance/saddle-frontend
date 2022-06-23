@@ -38,7 +38,7 @@ import { BigNumber } from "ethers"
 import ConfirmModal from "../../components/ConfirmModal"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import GaugeVote from "./GaugeVote"
-import LaunchIcon from "@mui/icons-material/Launch"
+// import LaunchIcon from "@mui/icons-material/Launch"
 import LockedInfo from "./LockedInfo"
 import TokenInput from "../../components/TokenInput"
 import { UserStateContext } from "../../providers/UserStateProvider"
@@ -419,22 +419,23 @@ export default function VeSDL(): JSX.Element {
             </Button>
             <Box display="flex" justifyContent="space-between">
               <Tooltip title={<>{t("lockingExplaination")}</>}>
+                {/* TODO: Add when veSDL docs published
                 <Link
                   href="https://docs.saddle.finance/" // TODO: link to locking article
                   target="_blank"
                   rel="noopener"
+                  > */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
                 >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Typography pr={1}>{t("infoAboutLocking")}</Typography>
-                    <LaunchIcon fontSize="inherit" />
-                  </Box>
-                </Link>
+                  <Typography pr={1}>{t("infoAboutLocking")}</Typography>
+                  {/* <LaunchIcon fontSize="inherit" /> */}
+                </Box>
+                {/* </Link> */}
               </Tooltip>
               <Link onClick={() => setOpenCalculator(true)}>
                 <Typography>{t("veTokenCalculator")}</Typography>
