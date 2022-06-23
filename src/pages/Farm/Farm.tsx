@@ -6,11 +6,13 @@ import { AprsContext } from "../../providers/AprsProvider"
 import { BN_1E18 } from "../../constants"
 import { BasicPoolsContext } from "../../providers/BasicPoolsProvider"
 import { BigNumber } from "ethers"
+import ClaimRewardsDlg from "./ClaimRewardsDlg"
 import FarmOverview from "./FarmOverview"
 import { GaugeContext } from "../../providers/GaugeProvider"
 import StakeDialog from "./StakeDialog"
 import { TokensContext } from "../../providers/TokensProvider"
 import { UserStateContext } from "../../providers/UserStateProvider"
+import VeSDLWrongNetworkModal from "../VeSDL/VeSDLWrongNetworkModal"
 import { Zero } from "@ethersproject/constants"
 import { getPriceDataForPool } from "../../utils"
 import { parseUnits } from "@ethersproject/units"
@@ -24,6 +26,9 @@ type ActiveGauge = {
 const sushiGaugeName = "SLP-gauge"
 export default function Farm(): JSX.Element {
   const [activeGauge, setActiveGauge] = useState<ActiveGauge | undefined>()
+  const [activeDialog, setActiveDialog] = useState<
+    "stake" | "claim" | undefined
+  >()
   const { gauges } = useContext(GaugeContext)
   const gaugeAprs = useContext(AprsContext)
   const userState = useContext(UserStateContext)
@@ -34,20 +39,23 @@ export default function Farm(): JSX.Element {
       <FarmListHeader />
 
       {Object.values(gauges)
-        .filter(({ gaugeName }) => gaugeName?.includes("SLP"))
+        // .filter(({ gaugeName }) => gaugeName?.includes("SLP")) // uncomment to only show SLP gauge
         .map((gauge) => {
+          const poolName = gauge.poolName
           const farmName =
             gauge.gaugeName === sushiGaugeName
               ? "SDL/WETH SLP"
-              : gauge.poolName || gauge.gaugeName || ""
+              : poolName || gauge.gaugeName || ""
           const gaugeAddress = gauge.address
           const aprs = gaugeAprs?.[gaugeAddress]
-          const myStake = userState?.gaugeRewards?.[gaugeAddress]?.amountStaked
+          const myStake =
+            userState?.gaugeRewards?.[gaugeAddress]?.amountStaked || Zero
           const tvl = getGaugeTVL(gaugeAddress)
           return {
             gauge,
             gaugeAddress,
             farmName,
+            poolName,
             aprs,
             tvl,
             myStake,
@@ -60,32 +68,57 @@ export default function Farm(): JSX.Element {
           if (b.gauge.gaugeName === sushiGaugeName) {
             return 1
           }
-          return a.tvl.gt(b.tvl) ? -1 : 1
+          return a.myStake.gt(b.myStake) ? -1 : a.tvl.gt(b.tvl) ? -1 : 1
         })
-        .map(({ gaugeAddress, farmName, aprs, tvl, myStake }) => {
+        .map(({ gaugeAddress, farmName, aprs, tvl, myStake, poolName }) => {
           return (
             <FarmOverview
               farmName={farmName}
+              poolName={poolName}
               aprs={aprs}
               tvl={tvl}
               myStake={myStake}
               key={gaugeAddress}
-              onClickStake={() =>
+              onClickStake={() => {
+                setActiveDialog("stake")
                 setActiveGauge({
                   address: gaugeAddress,
                   displayName: farmName,
                 })
-              }
+              }}
+              onClickClaim={() => {
+                setActiveDialog("claim")
+                setActiveGauge({
+                  address: gaugeAddress,
+                  displayName: farmName,
+                })
+              }}
             />
           )
         })}
 
       <StakeDialog
         farmName={activeGauge?.displayName}
-        open={!!activeGauge}
+        open={activeDialog === "stake"}
         gaugeAddress={activeGauge?.address}
-        onClose={() => setActiveGauge(undefined)}
+        onClose={() => {
+          setActiveDialog(undefined)
+          setActiveGauge(undefined)
+        }}
+        onClickClaim={() => {
+          setActiveDialog("claim")
+        }}
       />
+      <ClaimRewardsDlg
+        open={activeDialog === "claim"}
+        gaugeAddress={activeGauge?.address}
+        displayName={activeGauge?.displayName}
+        onClose={() => {
+          setActiveDialog(undefined)
+          setActiveGauge(undefined)
+        }}
+      />
+      <VeSDLWrongNetworkModal />
     </Container>
   )
 }
@@ -144,14 +177,14 @@ function FarmListHeader(): JSX.Element {
         px: 3,
       }}
     >
-      <Grid item xs={2.5}>
+      <Grid item xs={3.5}>
         <Typography>{t("farms")}</Typography>
       </Grid>
       <Grid item xs={3}>
         <Typography>APR</Typography>
       </Grid>
       <Grid item xs={1.5}>
-        <Typography>TVL</Typography>
+        <Typography>Gauge TVL</Typography>
       </Grid>
       <Grid item xs={1.5}>
         <Typography>{t("myStaked")} LP</Typography>

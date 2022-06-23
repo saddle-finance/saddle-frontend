@@ -7,6 +7,7 @@ import {
 import { BigNumber } from "@ethersproject/bignumber"
 import { ContractTransaction } from "ethers"
 import { GaugeContext } from "../providers/GaugeProvider"
+import { GaugeUserReward } from "../utils/gauges"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { UserStateContext } from "../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
@@ -21,9 +22,9 @@ type UserGauge = {
   userWalletLpTokenBalance: BigNumber
   userStakedLpTokenBalance: BigNumber
   hasClaimableRewards: boolean
+  userGaugeRewards: GaugeUserReward | null
 }
 
-// TODO add rewards
 export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
   const { account } = useActiveWeb3React()
   const gaugeContract = useLiquidityGaugeContract(gaugeAddress)
@@ -68,5 +69,6 @@ export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
     userWalletLpTokenBalance:
       userState.tokenBalances?.[lpToken.address] || Zero,
     userStakedLpTokenBalance: userGaugeRewards?.amountStaked || Zero,
+    userGaugeRewards: userGaugeRewards || null,
   }
 }

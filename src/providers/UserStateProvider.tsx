@@ -65,7 +65,13 @@ export default function UserStateProvider({
             chainId,
             Object.values(gauges).map(({ address }) => address),
             Object.values(gauges).map(({ rewards }) =>
-              rewards.map(({ tokenAddress }) => tokenAddress),
+              rewards.map(({ tokenAddress }) => {
+                const token = tokens[tokenAddress]
+                if (!token) {
+                  console.error(`Couldn't load token ${tokenAddress}`)
+                }
+                return token
+              }),
             ),
             account,
           )

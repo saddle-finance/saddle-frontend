@@ -13,14 +13,10 @@ import {
   useTheme,
 } from "@mui/material"
 import React, { ReactElement, useMemo } from "react"
-import {
-  commify,
-  formatBNToPercentString,
-  formatBNToShortString,
-  formatBNToString,
-} from "../utils"
+import { formatBNToPercentString, formatBNToShortString } from "../utils"
 import usePoolData, { PoolDataType } from "../hooks/usePoolData"
 
+import GaugeRewardsDisplay from "./GaugeRewardsDisplay"
 import TokenIcon from "./TokenIcon"
 import { Zero } from "@ethersproject/constants"
 import { areGaugesActive } from "../utils/gauges"
@@ -194,7 +190,7 @@ export default function PoolOverview({
             </div>
           )}
           {gaugesAreActive ? (
-            <GaugeRewards poolData={poolData} />
+            <GaugeRewardsDisplay aprs={poolData.gaugeAprs} />
           ) : (
             <MinichefRewards poolData={poolData} />
           )}
@@ -284,46 +280,6 @@ const MinichefRewards = ({ poolData }: { poolData: PoolDataType }) => {
             </Typography>
           </Box>
         ) : null
-      })}
-    </>
-  )
-}
-
-const GaugeRewards = ({ poolData }: { poolData: PoolDataType }) => {
-  if (!poolData.gaugeAprs) return null
-  return (
-    <>
-      {poolData.gaugeAprs.map((aprData) => {
-        const { symbol, address } = aprData.rewardToken
-        if (aprData.amountPerDay) {
-          const { min, max } = aprData.amountPerDay
-          if (max.isZero()) return null
-          return (
-            <Box key={address}>
-              <Typography component="span">{symbol}/24h:</Typography>
-              <Typography component="span" marginLeft={1}>
-                {`${commify(formatBNToString(min, 18, 0))}-${commify(
-                  formatBNToString(max, 18, 0),
-                )}`}
-              </Typography>
-            </Box>
-          )
-        } else if (aprData.apr) {
-          const { min, max } = aprData.apr
-          if (max.isZero()) return null
-          return (
-            <Box key={address}>
-              <Typography component="span">{symbol} apr:</Typography>
-              <Typography component="span" marginLeft={1}>
-                {`${formatBNToPercentString(
-                  min,
-                  18,
-                  2,
-                )}-${formatBNToPercentString(max, 18, 2)}`}
-              </Typography>
-            </Box>
-          )
-        }
       })}
     </>
   )
