@@ -1,5 +1,6 @@
 import { Button, DialogContent, Typography } from "@mui/material"
 import React, { useEffect, useState } from "react"
+
 import { ChainId } from "../../constants"
 import Dialog from "../../components/Dialog"
 import { SUPPORTED_NETWORKS } from "../../constants/networks"
@@ -28,7 +29,13 @@ export default function VeSDLWrongNetworkModal(): JSX.Element {
   }, [chainId])
 
   return (
-    <Dialog open={openDialog} fullWidth onClose={() => setOpenDialog(false)}>
+    <Dialog
+      open={openDialog}
+      fullWidth
+      onClose={() => setOpenDialog(false)}
+      hideClose={true}
+      disableEscapeKeyDown={false}
+    >
       <DialogContent>
         <Typography textAlign="center" mt={3} whiteSpace="pre-line">
           {t("veSdlNetworkText", { chainName })}

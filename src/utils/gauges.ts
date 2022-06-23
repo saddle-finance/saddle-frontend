@@ -13,6 +13,7 @@ import {
 } from "../utils"
 
 import { BasicPools } from "./../providers/BasicPoolsProvider"
+import { BasicToken } from "./../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
 import GAUGE_HELPER_CONTRACT_ABI from "../constants/abis/gaugeHelperContract.json"
@@ -56,12 +57,14 @@ export type Gauges = {
   gauges: LPTokenAddressToGauge
 }
 
+export type GaugeUserReward = {
+  amountStaked: BigNumber
+  claimableExternalRewards: { amount: BigNumber; token: BasicToken }[]
+  claimableSDL: BigNumber
+}
+
 export type GaugeRewardUserData = Partial<{
-  [gaugeAddress: string]: {
-    amountStaked: BigNumber
-    claimableExternalRewards: { amount: BigNumber; tokenAddress: string }[]
-    claimableSDL: BigNumber
-  }
+  [gaugeAddress: string]: GaugeUserReward
 }>
 
 export const initialGaugesState: Gauges = {
@@ -249,7 +252,7 @@ export async function getGaugeRewardsUserData(
   library: Web3Provider,
   chainId: ChainId,
   gaugeAddresses: string[],
-  rewardsAddresses: string[][],
+  rewardsTokens: (BasicToken | undefined)[][],
   account?: string,
 ): Promise<GaugeRewardUserData | null> {
   const ethCallProvider = await getMulticallProvider(library, chainId)
@@ -304,12 +307,12 @@ export async function getGaugeRewardsUserData(
       const amountStaked = gaugeUserDepositBalances[i]
       // @dev: reward amounts ([1,2,3]) are returned in the same order as gauge.rewards ([0xa,0xb,0xc])
       // however SDL rewards are appended to the end of that by the frontend
-      const claimableExternalRewards = gaugeUserClaimableExternalRewards[i].map(
-        (amount, j) => {
-          const tokenAddress = rewardsAddresses[i][j]
-          return { amount, tokenAddress }
-        },
-      )
+      const claimableExternalRewards = gaugeUserClaimableExternalRewards[i]
+        .map((amount, j) => {
+          const token = rewardsTokens[i][j]
+          return { amount, token }
+        })
+        .filter(({ token }) => !!token)
       const claimableSDL = gaugeUserClaimableSDL[i]
 
       const hasSDLRewards = claimableSDL.gt(Zero)

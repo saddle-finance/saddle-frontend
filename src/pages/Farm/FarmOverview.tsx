@@ -1,15 +1,12 @@
 import { Box, Button, Grid, Typography, styled } from "@mui/material"
-import {
-  commify,
-  formatBNToPercentString,
-  formatBNToShortString,
-  formatBNToString,
-} from "../../utils"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { GaugeApr } from "../../providers/AprsProvider"
+import GaugeRewardsDisplay from "../../components/GaugeRewardsDisplay"
 import React from "react"
 import TokenIcon from "../../components/TokenIcon"
+import { Zero } from "@ethersproject/constants"
+import { formatBNToShortString } from "../../utils"
 import usePoolData from "../../hooks/usePoolData"
 import { useTranslation } from "react-i18next"
 
@@ -18,8 +15,9 @@ interface FarmOverviewProps {
   poolName: string | null
   aprs?: GaugeApr[]
   tvl?: BigNumber
-  myStake?: BigNumber
+  myStake: BigNumber
   onClickStake: () => void
+  onClickClaim: () => void
 }
 
 const TokenGroup = styled("div")(() => ({
@@ -36,7 +34,8 @@ export default function FarmOverview({
   tvl,
   myStake,
   onClickStake,
-}: FarmOverviewProps): JSX.Element {
+}: // onClickClaim,
+FarmOverviewProps): JSX.Element {
   const { t } = useTranslation()
   const [farmData] = usePoolData(poolName || "")
   const farmTokens = farmData.tokens
@@ -73,39 +72,7 @@ export default function FarmOverview({
         </TokenGroup>
       </Grid>
       <Grid item xs={3}>
-        {aprs?.map((aprData) => {
-          const { symbol, address } = aprData.rewardToken
-          if (aprData.amountPerDay) {
-            const { min, max } = aprData.amountPerDay
-            if (max.isZero()) return null
-            return (
-              <Box key={address}>
-                <Typography component="span">{symbol}/24h:</Typography>
-
-                <Typography component="span" marginLeft={1}>
-                  {`${commify(formatBNToString(min, 18, 0))}-${commify(
-                    formatBNToString(max, 18, 0),
-                  )}`}
-                </Typography>
-              </Box>
-            )
-          } else if (aprData.apr) {
-            const { min, max } = aprData.apr
-            if (max.isZero()) return null
-            return (
-              <Box key={address}>
-                <Typography component="span">{symbol} apr:</Typography>
-                <Typography component="span" marginLeft={1}>
-                  {`${formatBNToPercentString(
-                    min,
-                    18,
-                    2,
-                  )}-${formatBNToPercentString(max, 18, 2)}`}
-                </Typography>
-              </Box>
-            )
-          }
-        })}
+        <GaugeRewardsDisplay aprs={aprs} />
       </Grid>
       <Grid item xs={1.5}>
         <Typography variant="subtitle1">
@@ -114,7 +81,7 @@ export default function FarmOverview({
       </Grid>
       <Grid item xs={1.5}>
         <Typography variant="subtitle1">
-          {myStake ? formatBNToShortString(myStake, 18) : "_"}
+          {myStake?.gt(Zero) ? formatBNToShortString(myStake, 18) : "_"}
         </Typography>
       </Grid>
       <Box mr={0} ml="auto">
