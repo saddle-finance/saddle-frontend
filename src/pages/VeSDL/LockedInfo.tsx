@@ -7,6 +7,7 @@ import {
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { ChainId } from "../../constants"
+import { Zero } from "@ethersproject/constants"
 import { formatBNToShortString } from "../../utils"
 import { useActiveWeb3React } from "../../hooks"
 import { useTranslation } from "react-i18next"
@@ -37,7 +38,10 @@ export default function LockedInfo(): JSX.Element {
       const [totalVeSDL, sdlLocked] = await Promise.all([
         votingEscrowContract["totalSupply()"](),
         sdlContract.balanceOf(votingEscrowContract.address),
-      ])
+      ]).catch((e) => {
+        console.error(e)
+        return [Zero, Zero]
+      })
       setAggSDLInfo({
         sdlLocked,
         totalVeSDL,

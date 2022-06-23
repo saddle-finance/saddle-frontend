@@ -36,7 +36,6 @@ import { GaugeContext } from "../providers/GaugeProvider"
 import LIQUIDITY_GAUGE_V5_ABI from "../constants/abis/liquidityGaugeV5.json"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
-import { TokensContext } from "../providers/TokensProvider"
 import { UserStateContext } from "../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
@@ -65,7 +64,6 @@ export default function TokenClaimDialog({
   const basicPools = useContext(BasicPoolsContext)
   const userState = useContext(UserStateContext)
   const { gauges } = useContext(GaugeContext)
-  const tokens = useContext(TokensContext)
   const gaugesWithName = useMemo<GaugesWithName[]>(() => {
     if (!basicPools || !userState?.gaugeRewards) return []
     return (
@@ -256,11 +254,7 @@ export default function TokenClaimDialog({
                 const userClaimableSdl = poolGaugeRewards?.claimableSDL
                 const userClaimableOtherRewards: [string, BigNumber][] = (
                   poolGaugeRewards?.claimableExternalRewards || []
-                ).map(({ amount, tokenAddress }) => {
-                  const token = tokens?.[tokenAddress]
-                  if (!token) {
-                    console.error(`Could not find token ${tokenAddress}`)
-                  }
+                ).map(({ amount, token }) => {
                   return [token?.symbol || "", amount]
                 })
                 const shouldShow = Boolean(

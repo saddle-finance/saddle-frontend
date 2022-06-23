@@ -28,6 +28,7 @@ import useUserGauge from "../../hooks/useUserGauge"
 interface StakeDialogProps {
   open: boolean
   onClose: () => void
+  onClickClaim: () => void
   farmName?: string
   gaugeAddress?: string
 }
@@ -38,6 +39,7 @@ export default function StakeDialog({
   farmName,
   gaugeAddress,
   onClose,
+  onClickClaim,
 }: StakeDialogProps): JSX.Element | null {
   const { chainId, account, library } = useActiveWeb3React()
   const userGauge = useUserGauge(gaugeAddress)
@@ -117,28 +119,6 @@ export default function StakeDialog({
     }
   }, [userGauge, amountInput, chainId, farmName, dispatch])
 
-  const onClickClaim = useCallback(async () => {
-    if (!chainId) return
-    try {
-      const txns = await userGauge?.claim()
-
-      await enqueuePromiseToast(
-        chainId,
-        Promise.all((txns || []).map((txn) => txn.wait())),
-        "claim",
-        { poolName: farmName },
-      )
-      dispatch(
-        updateLastTransactionTimes({
-          [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
-        }),
-      )
-    } catch (e) {
-      console.error(e)
-      enqueueToast("error", "Unable to claim reward")
-    }
-  }, [chainId, farmName, userGauge, dispatch])
-
   const isInputValid =
     readableDecimalNumberRegex.test(amountInput) && parseFloat(amountInput) > 0
 
@@ -177,10 +157,6 @@ export default function StakeDialog({
                 ),
               )}
             </Box>
-            {/* <Box>
-              <Typography>Rewards</Typography>
-              12334578.12
-            </Box> */}
             <Button
               variant="outlined"
               size="large"
