@@ -283,7 +283,7 @@ export default function TokenClaimDialog({
                 )
               })}
           {/* Case when user has rewards left to claim on minichef */}
-          {gaugesAreActive && (
+          {gaugesAreActive && poolsWithUserRewards.length > 0 && (
             <>
               <Typography sx={{ mt: 2 }} variant="h2">
                 Outdated Rewards
@@ -325,7 +325,7 @@ export default function TokenClaimDialog({
         </Typography>
 
         {/* TODO: Follow up potentially P1 for gauges */}
-        {!gaugesAreActive && (
+        {gaugesAreActive && poolsWithUserRewards.length > 0 && (
           <Button
             variant="contained"
             color="primary"
@@ -334,7 +334,7 @@ export default function TokenClaimDialog({
             disabled={poolsWithUserRewards.length < 2}
             onClick={() => claimAllPoolsRewards(poolsWithUserRewards)}
           >
-            {t("claimForAllPools")}
+            {t("claimForAllOutdatedPools")}
           </Button>
         )}
       </Box>
