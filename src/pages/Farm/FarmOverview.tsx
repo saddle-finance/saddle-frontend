@@ -40,6 +40,8 @@ FarmOverviewProps): JSX.Element {
   const [farmData] = usePoolData(poolName || "")
   const farmTokens = farmData.tokens
 
+  console.log("farm tokens ==>", farmTokens)
+
   return (
     <Grid
       container
