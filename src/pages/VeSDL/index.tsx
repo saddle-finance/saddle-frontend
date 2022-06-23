@@ -420,7 +420,7 @@ export default function VeSDL(): JSX.Element {
             <Box display="flex" justifyContent="space-between">
               <Tooltip title={<>{t("lockingExplaination")}</>}>
                 <Link
-                  href="https://docs.saddle.finance/vesdl" // TODO: link to locking article
+                  href="https://docs.saddle.finance/vesdl-vote-escrowed-sdl"
                   target="_blank"
                   rel="noopener"
                 >
