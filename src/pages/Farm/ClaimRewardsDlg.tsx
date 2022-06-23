@@ -67,7 +67,6 @@ export default function ClaimRewardsDlg({
           </Typography>
           <Typography>Stake your LP token and collect incentives.</Typography>
           <Box>
-            <Typography>LP Staked:</Typography>
             <Typography mt={2}>Rewards:</Typography>
             <UserRewards userGaugeRewards={userGauge?.userGaugeRewards} />
           </Box>
