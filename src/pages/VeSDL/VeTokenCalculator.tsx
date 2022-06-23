@@ -33,7 +33,7 @@ export default function VeTokenCalculator({
 }: Props): JSX.Element {
   const { t } = useTranslation()
   const basicPools = useContext(BasicPoolsContext)
-  const gaugeData = useContext(GaugeContext)
+  const { gauges } = useContext(GaugeContext)
   const [userLPAmountInput, setUserLPAmountInput] = useState<string>("")
   const [totalLPAmountInput, setTotalLPAmountInput] = useState<string>("")
   const [poolNameValue, setPoolNameValue] = useState<string>("D4")
@@ -45,10 +45,7 @@ export default function VeTokenCalculator({
   )
 
   const pool = basicPools && basicPools[poolNameValue]
-  const gauge =
-    !!pool?.lpToken && gaugeData.gauges
-      ? gaugeData.gauges[pool.lpToken]
-      : undefined
+  const gauge = !!pool?.lpToken && gauges ? gauges[pool.lpToken] : undefined
 
   const userLPAmountBN = parseEther(userLPAmountInput || "0")
   const totalLPAmountBN = parseEther(totalLPAmountInput || "0")
@@ -122,22 +119,20 @@ export default function VeTokenCalculator({
             select
             SelectProps={{ IconComponent: ArrowDownIcon }}
           >
-            {basicPools &&
-              Object.keys(basicPools)
-                ?.filter((poolName) => {
-                  const pool = basicPools[poolName]
-                  const outdated =
-                    pool?.isGuarded || pool?.isMigrated || pool?.isPaused
-                  return !outdated
-                })
-                .map((poolName) => {
-                  const poolAddress = basicPools[poolName]?.poolAddress
-                  return (
-                    <MenuItem key={poolAddress} value={poolName}>
-                      {poolName}
-                    </MenuItem>
-                  )
-                })}
+            {Object.values(basicPools || {})
+              .filter((pool) => {
+                const gauge = gauges[pool.lpToken]
+                const outdated =
+                  pool?.isGuarded || pool?.isMigrated || pool?.isPaused
+                return !outdated && gauge
+              })
+              .map(({ poolAddress, poolName }) => {
+                return (
+                  <MenuItem key={poolAddress} value={poolName}>
+                    {poolName}
+                  </MenuItem>
+                )
+              })}
           </TextField>
 
           <TextField
