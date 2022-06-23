@@ -38,6 +38,7 @@ export default function FarmOverview({
 FarmOverviewProps): JSX.Element {
   const { t } = useTranslation()
   const { chainId } = useActiveWeb3React()
+  if (!chainId) return <div></div>
   return (
     <Grid
       container
@@ -60,14 +61,13 @@ FarmOverviewProps): JSX.Element {
             </>
           ) : (
             poolTokens?.map((tokenAddress) => {
-              if (!chainId) return <div></div>
               const token = getTokenByAddress(tokenAddress, chainId)
               if (!token) return <div></div>
               return (
                 <TokenIcon
-                  key={token?.name}
+                  key={token.name}
                   symbol={token.symbol}
-                  alt={token?.symbol}
+                  alt={token.symbol}
                 />
               )
             })
