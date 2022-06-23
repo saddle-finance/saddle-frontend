@@ -58,10 +58,7 @@ export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
   )
 
   const boost =
-    gauge.gaugeBalance != null &&
-    !gauge.gaugeBalance.isZero() &&
-    gauge.workingBalances != null &&
-    !gauge.workingBalances.isZero()
+    gauge.gaugeBalance?.gt(Zero) && gauge.workingBalances?.gt(Zero)
       ? `${formatUnits(
           gauge.workingBalances
             .mul(BN_1E18)
