@@ -622,3 +622,9 @@ export function getPriceDataForPool(
     totalLocked: tokenBalancesSum1e18,
   }
 }
+
+export function missingKeys(itemsMap: { [key: string]: unknown }): string[] {
+  return Object.keys(itemsMap)
+    .map((key) => itemsMap[key] == null && key)
+    .filter(Boolean) as string[]
+}
