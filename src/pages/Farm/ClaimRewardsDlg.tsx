@@ -37,7 +37,10 @@ export default function ClaimRewardsDlg({
   const dispatch = useDispatch()
 
   const onClickClaim = useCallback(async () => {
-    if (!chainId) return
+    if (!chainId) {
+      enqueueToast("error", "Unable to claim reward")
+      return
+    }
     try {
       const txns = await userGauge?.claim()
 

@@ -54,10 +54,11 @@ export default function StakeDialog({
   const { infiniteApproval } = useSelector((state: AppState) => state.user)
 
   const onClickStake = useCallback(async () => {
+    const errorMsg = "Unable to stake"
     try {
       if (!userGauge || !chainId || !gaugeAddress || !account || !library) {
         console.error(
-          `Could not stake: ${missingKeys({
+          `${errorMsg}: ${missingKeys({
             userGauge,
             chainId,
             gaugeAddress,
@@ -65,6 +66,7 @@ export default function StakeDialog({
             library,
           }).join(", ")} missing`,
         )
+        enqueueToast("error", errorMsg)
         return
       }
       const inputBN = parseUnits(amountInput)
@@ -100,7 +102,7 @@ export default function StakeDialog({
       setAmountInput(defaultInput)
     } catch (e) {
       console.error(e)
-      enqueueToast("error", "Unable to stake")
+      enqueueToast("error", errorMsg)
     }
   }, [
     userGauge,
@@ -115,14 +117,16 @@ export default function StakeDialog({
   ])
 
   const onClickUnstake = useCallback(async () => {
+    const errorMsg = "Unable to unstake"
     try {
       if (!userGauge || !chainId) {
         console.error(
-          `Could not unstake: ${missingKeys({
+          `${errorMsg}: ${missingKeys({
             userGauge,
             chainId,
           }).join(", ")} missing`,
         )
+        enqueueToast("error", errorMsg)
         return
       }
       const inputBN = parseUnits(amountInput)
@@ -138,7 +142,7 @@ export default function StakeDialog({
       setAmountInput(defaultInput)
     } catch (e) {
       console.error(e)
-      enqueueToast("error", "Unable to unstake")
+      enqueueToast("error", errorMsg)
     }
   }, [userGauge, amountInput, chainId, farmName, dispatch])
 
