@@ -123,17 +123,21 @@ export default function VeTokenCalculator({
             SelectProps={{ IconComponent: ArrowDownIcon }}
           >
             {basicPools &&
-              Object.keys(basicPools)?.map((poolName) => {
-                const pool = basicPools[poolName]
-                const outdated =
-                  pool?.isGuarded || pool?.isMigrated || pool?.isPaused
-                if (outdated) return null
-                return (
-                  <MenuItem key={poolName} value={poolName}>
-                    {poolName}
-                  </MenuItem>
-                )
-              })}
+              Object.keys(basicPools)
+                ?.filter((poolName) => {
+                  const pool = basicPools[poolName]
+                  const outdated =
+                    pool?.isGuarded || pool?.isMigrated || pool?.isPaused
+                  return !outdated
+                })
+                .map((poolName) => {
+                  const poolAddress = basicPools[poolName]?.poolAddress
+                  return (
+                    <MenuItem key={poolAddress} value={poolName}>
+                      {poolName}
+                    </MenuItem>
+                  )
+                })}
           </TextField>
 
           <TextField
