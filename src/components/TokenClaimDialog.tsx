@@ -282,6 +282,31 @@ export default function TokenClaimDialog({
                   )
                 )
               })}
+          {/* Case when user has rewards left to claim on minichef */}
+          {gaugesAreActive && (
+            <>
+              <Typography sx={{ mt: 2 }} variant="h2">
+                Outdated Rewards
+              </Typography>
+              {allPoolsWithRewards
+                .filter((pool) => rewardBalances[pool.poolName].gt(Zero))
+                .map((pool, i, arr) => (
+                  <React.Fragment key={`${pool.poolName}-outdated`}>
+                    <ClaimListItem
+                      items={[
+                        [pool.poolName, rewardBalances[pool.poolName] || Zero],
+                      ]}
+                      claimCallback={() => claimPoolReward(pool)}
+                      status={
+                        claimsStatuses["allPools"] ||
+                        claimsStatuses[pool.poolName]
+                      }
+                    />
+                    {i < arr.length - 1 && <Divider key={i} />}
+                  </React.Fragment>
+                ))}
+            </>
+          )}
         </List>
 
         <Typography my={3}>
