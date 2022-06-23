@@ -14,6 +14,7 @@ import { NavLink, NavLinkProps, useLocation } from "react-router-dom"
 import React, { ReactElement, useContext, useState } from "react"
 
 import { AppState } from "../state"
+import { IS_DEVELOPMENT } from "../utils/environment"
 import { MoreVert } from "@mui/icons-material"
 import NetworkDisplay from "./NetworkDisplay"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
@@ -108,7 +109,7 @@ function TopMenu(): ReactElement {
               </NavMenu>
             )}
 
-            {gaugesAreActive && (
+            {IS_DEVELOPMENT && (
               <NavMenu to="/vesdl" selected={activeTab === "vesdl"}>
                 {t("veSdl")}
               </NavMenu>
