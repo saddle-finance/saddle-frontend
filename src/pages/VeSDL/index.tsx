@@ -157,14 +157,15 @@ export default function VeSDL(): JSX.Element {
   // Calculate penalty Ratio and penalty amount
   const leftTimeForUnlock = lockEnd && getUnixTime(lockEnd) - currentTimestamp
   const isExpired = leftTimeForUnlock && leftTimeForUnlock <= 0
-  const penaltyAmount = !isExpired
-    ? minBigNumber(
-        lockedSDLVal.mul(BigNumber.from(3)).div(BigNumber.from(4)),
-        lockedSDLVal
-          .mul(BigNumber.from(leftTimeForUnlock))
-          .div(BigNumber.from(MAXTIME)),
-      )
-    : Zero
+  const penaltyAmount =
+    !isExpired && leftTimeForUnlock
+      ? minBigNumber(
+          lockedSDLVal.mul(BigNumber.from(3)).div(BigNumber.from(4)),
+          lockedSDLVal
+            .mul(BigNumber.from(leftTimeForUnlock))
+            .div(BigNumber.from(MAXTIME)),
+        )
+      : Zero
 
   const penaltyPercent = !lockedSDLVal.isZero()
     ? penaltyAmount.mul(parseEther("100")).div(lockedSDLVal)
