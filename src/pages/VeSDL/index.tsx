@@ -468,22 +468,24 @@ export default function VeSDL(): JSX.Element {
                 )}
               </Typography>
             </Typography>
-            {!penaltyAmount.isZero() && leftTimeForUnlock && (
-              <Alert
-                severity="error"
-                icon={false}
-                sx={{
-                  textAlign: "center",
-                }}
-              >
-                {t("withdrawAlertMsg", {
-                  sdlValue: commify(formatUnits(penaltyAmount)),
-                  weeksLeftForUnlock: Math.ceil(
-                    secondsToHours(leftTimeForUnlock) / 24 / 7,
-                  ),
-                })}
-              </Alert>
-            )}
+            {!penaltyAmount.isZero() &&
+              leftTimeForUnlock &&
+              secondsToHours(leftTimeForUnlock) / 24 / WEEK > 0 && (
+                <Alert
+                  severity="error"
+                  icon={false}
+                  sx={{
+                    textAlign: "center",
+                  }}
+                >
+                  {t("withdrawAlertMsg", {
+                    sdlValue: commify(formatUnits(penaltyAmount)),
+                    weeksLeftForUnlock: Math.ceil(
+                      secondsToHours(leftTimeForUnlock) / 24 / 7,
+                    ),
+                  })}
+                </Alert>
+              )}
             <Button
               variant="contained"
               data-testid="unlockVeSdlBtn"
