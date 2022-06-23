@@ -9,7 +9,12 @@ import {
 } from "@mui/material"
 import React, { useCallback, useState } from "react"
 import { TRANSACTION_TYPES, readableDecimalNumberRegex } from "../../constants"
-import { commify, formatBNToString, getContract } from "../../utils"
+import {
+  commify,
+  formatBNToString,
+  getContract,
+  missingKeys,
+} from "../../utils"
 import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 import { formatUnits, parseUnits } from "ethers/lib/utils"
 import { useDispatch, useSelector } from "react-redux"
@@ -49,9 +54,21 @@ export default function StakeDialog({
   const { infiniteApproval } = useSelector((state: AppState) => state.user)
 
   const onClickStake = useCallback(async () => {
+    const errorMsg = "Unable to stake"
     try {
-      if (!userGauge || !chainId || !gaugeAddress || !account || !library)
+      if (!userGauge || !chainId || !gaugeAddress || !account || !library) {
+        console.error(
+          `${errorMsg}: ${missingKeys({
+            userGauge,
+            chainId,
+            gaugeAddress,
+            account,
+            library,
+          }).join(", ")} missing`,
+        )
+        enqueueToast("error", errorMsg)
         return
+      }
       const inputBN = parseUnits(amountInput)
       const lpTokenContract = getContract(
         userGauge.lpToken.address,
@@ -85,7 +102,7 @@ export default function StakeDialog({
       setAmountInput(defaultInput)
     } catch (e) {
       console.error(e)
-      enqueueToast("error", "Unable to stake")
+      enqueueToast("error", errorMsg)
     }
   }, [
     userGauge,
@@ -100,8 +117,18 @@ export default function StakeDialog({
   ])
 
   const onClickUnstake = useCallback(async () => {
+    const errorMsg = "Unable to unstake"
     try {
-      if (!userGauge || !chainId) return
+      if (!userGauge || !chainId) {
+        console.error(
+          `${errorMsg}: ${missingKeys({
+            userGauge,
+            chainId,
+          }).join(", ")} missing`,
+        )
+        enqueueToast("error", errorMsg)
+        return
+      }
       const inputBN = parseUnits(amountInput)
       const txn = await userGauge?.unstake(inputBN)
       await enqueuePromiseToast(chainId, txn.wait(), "unstake", {
@@ -115,7 +142,7 @@ export default function StakeDialog({
       setAmountInput(defaultInput)
     } catch (e) {
       console.error(e)
-      enqueueToast("error", "Unable to unstake")
+      enqueueToast("error", errorMsg)
     }
   }, [userGauge, amountInput, chainId, farmName, dispatch])
 
@@ -130,6 +157,7 @@ export default function StakeDialog({
       onClose={() => {
         onClose()
         setStakeStatus("stake")
+        setAmountInput(defaultInput)
       }}
       fullWidth
       maxWidth="xs"
