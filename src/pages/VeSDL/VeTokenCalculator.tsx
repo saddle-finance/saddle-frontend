@@ -155,7 +155,7 @@ export default function VeTokenCalculator({
             <Typography component="span" mr={1}>
               {t("maxBoost")}:
             </Typography>
-            {maxBoostPossible && formatBNToString(maxBoostPossible, 18)}
+            {maxBoostPossible && formatBNToString(maxBoostPossible, 18, 3)}
           </Typography>
           <Typography>
             <CalculateIcon
@@ -166,7 +166,7 @@ export default function VeTokenCalculator({
               {t("veSdlMaxBoost")}:
             </Typography>
             {minVeSDL
-              ? formatBNToString(minVeSDL, 18)
+              ? formatBNToString(minVeSDL, 18, 3)
               : t("minVeSDLForMaxBoost")}
           </Typography>
           <Divider />
@@ -187,7 +187,7 @@ export default function VeTokenCalculator({
             />
             {t("boost")}:
             <Typography component="span" color="primary" ml={1}>
-              {boost && formatBNToString(boost, 18)}
+              {boost && formatBNToString(boost, 18, 3)}
             </Typography>
           </Typography>
         </Stack>
