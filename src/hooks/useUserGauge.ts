@@ -4,6 +4,7 @@ import {
   useLiquidityGaugeContract,
 } from "./useContract"
 
+import { BN_1E18 } from "../constants"
 import { BigNumber } from "@ethersproject/bignumber"
 import { ContractTransaction } from "ethers"
 import { GaugeContext } from "../providers/GaugeProvider"
@@ -11,6 +12,7 @@ import { GaugeUserReward } from "../utils/gauges"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { UserStateContext } from "../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
+import { formatUnits } from "ethers/lib/utils"
 import { useActiveWeb3React } from "."
 import { useContext } from "react"
 
@@ -23,6 +25,7 @@ type UserGauge = {
   userStakedLpTokenBalance: BigNumber
   hasClaimableRewards: boolean
   userGaugeRewards: GaugeUserReward | null
+  boost: string | null
 }
 
 export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
@@ -54,6 +57,18 @@ export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
     userGaugeRewards?.claimableExternalRewards.length,
   )
 
+  const boost =
+    gauge.gaugeBalance?.gt(Zero) && gauge.workingBalances?.gt(Zero)
+      ? `${formatUnits(
+          gauge.workingBalances
+            .mul(BN_1E18)
+            .div(gauge.gaugeBalance)
+            .mul(BigNumber.from(25))
+            .div(BigNumber.from(10)),
+          18,
+        )}x`
+      : "-"
+
   return {
     stake: gaugeContract["deposit(uint256)"],
     unstake: gaugeContract["withdraw(uint256)"],
@@ -62,6 +77,7 @@ export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
       if (hasExternalRewards) {
         promises.push(gaugeContract["claim_rewards(address)"](account))
       }
+
       return Promise.all(promises)
     },
     hasClaimableRewards: hasSDLRewards || hasExternalRewards,
@@ -70,5 +86,6 @@ export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
       userState.tokenBalances?.[lpToken.address] || Zero,
     userStakedLpTokenBalance: userGaugeRewards?.amountStaked || Zero,
     userGaugeRewards: userGaugeRewards || null,
+    boost,
   }
 }
