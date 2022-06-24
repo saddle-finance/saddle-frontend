@@ -137,18 +137,18 @@ export default function VeTokenCalculator({
 
           <TextField
             label={t("poolLiquidity")}
-            value={userLPAmountInput}
-            onChange={(e) => {
-              if (isNumberOrEmpty(e.target.value))
-                setUserLPAmountInput(e.target.value)
-            }}
-          />
-          <TextField
-            label={t("depositAmount")}
             value={totalLPAmountInput}
             onChange={(e) => {
               if (isNumberOrEmpty(e.target.value))
                 setTotalLPAmountInput(e.target.value)
+            }}
+          />
+          <TextField
+            label={t("depositAmount")}
+            value={userLPAmountInput}
+            onChange={(e) => {
+              if (isNumberOrEmpty(e.target.value))
+                setUserLPAmountInput(e.target.value)
             }}
           />
           <Typography>
