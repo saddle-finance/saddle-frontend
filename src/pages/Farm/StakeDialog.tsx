@@ -185,6 +185,10 @@ export default function StakeDialog({
                 ),
               )}
             </Box>
+            <Box>
+              <Typography>My Boost</Typography>
+              {userGauge.boost}
+            </Box>
             <Button
               variant="outlined"
               size="large"
