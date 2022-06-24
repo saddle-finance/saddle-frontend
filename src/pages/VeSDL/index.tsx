@@ -59,6 +59,7 @@ type TokenType = {
 
 const MAXTIME = 86400 * 365 * 4
 const WEEK = 7
+const WEEK_HOUR = 24 * 7
 const THURSDAY = 4
 
 export default function VeSDL(): JSX.Element {
@@ -155,14 +156,16 @@ export default function VeSDL(): JSX.Element {
 
   // Calculate penalty Ratio and penalty amount
   const leftTimeForUnlock = lockEnd && getUnixTime(lockEnd) - currentTimestamp
-  const penaltyAmount = leftTimeForUnlock
-    ? minBigNumber(
-        lockedSDLVal.mul(BigNumber.from(3)).div(BigNumber.from(4)),
-        lockedSDLVal
-          .mul(BigNumber.from(leftTimeForUnlock))
-          .div(BigNumber.from(MAXTIME)),
-      )
-    : Zero
+  const isExpired = leftTimeForUnlock && leftTimeForUnlock <= 0
+  const penaltyAmount =
+    !isExpired && leftTimeForUnlock
+      ? minBigNumber(
+          lockedSDLVal.mul(BigNumber.from(3)).div(BigNumber.from(4)),
+          lockedSDLVal
+            .mul(BigNumber.from(leftTimeForUnlock))
+            .div(BigNumber.from(MAXTIME)),
+        )
+      : Zero
 
   const penaltyPercent = !lockedSDLVal.isZero()
     ? penaltyAmount.mul(parseEther("100")).div(lockedSDLVal)
@@ -266,7 +269,7 @@ export default function VeSDL(): JSX.Element {
   }
 
   const handleUnlock = () => {
-    if (penaltyAmount.isZero()) {
+    if (penaltyAmount.isZero() || isExpired) {
       void unlock()
     } else {
       setUnlockConfirmOpen(true)
@@ -469,7 +472,7 @@ export default function VeSDL(): JSX.Element {
                 )}
               </Typography>
             </Typography>
-            {!penaltyAmount.isZero() && leftTimeForUnlock && (
+            {!penaltyAmount.isZero() && leftTimeForUnlock && !isExpired && (
               <Alert
                 severity="error"
                 icon={false}
@@ -480,7 +483,7 @@ export default function VeSDL(): JSX.Element {
                 {t("withdrawAlertMsg", {
                   sdlValue: commify(formatUnits(penaltyAmount)),
                   weeksLeftForUnlock: Math.ceil(
-                    secondsToHours(leftTimeForUnlock) / 24 / 7,
+                    secondsToHours(leftTimeForUnlock) / WEEK_HOUR,
                   ),
                 })}
               </Alert>
