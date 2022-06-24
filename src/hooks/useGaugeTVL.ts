@@ -29,7 +29,7 @@ export default function useGaugeTVL(): (gaugeAddress?: string) => BigNumber {
       )
       const basicPool = basicPools?.[gauge?.poolName || ""]
 
-      if (gauge && gauge.gaugeName === sushiGaugeName) {
+      if (gauge?.gaugeName === sushiGaugeName) {
         // special case for the sdl/weth pair
         const poolTVL = sdlWethSushiPool?.wethReserve
           ? sdlWethSushiPool.wethReserve // 1e18

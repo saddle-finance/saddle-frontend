@@ -2,6 +2,7 @@ import { Container, Grid, Typography } from "@mui/material"
 import React, { useContext, useState } from "react"
 
 import { AprsContext } from "../../providers/AprsProvider"
+import { BasicPoolsContext } from "../../providers/BasicPoolsProvider"
 import ClaimRewardsDlg from "./ClaimRewardsDlg"
 import FarmOverview from "./FarmOverview"
 import { GaugeContext } from "../../providers/GaugeProvider"

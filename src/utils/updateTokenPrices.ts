@@ -85,7 +85,6 @@ export default function fetchTokenPricesUSD(
           if (!result.SDL && sdlPerEth) {
             result.SDL =
               (result?.ETH || 0) / parseFloat(formatUnits(sdlPerEth, 18))
-            console.log({ sdlPerEth, sdl: result.SDL })
           }
           dispatch(updateTokensPricesUSD(result))
         }),
