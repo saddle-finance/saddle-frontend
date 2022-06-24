@@ -35,10 +35,12 @@ export default function FarmOverview({
   myStake,
   onClickStake,
 }: // onClickClaim,
-FarmOverviewProps): JSX.Element {
+FarmOverviewProps): JSX.Element | null {
   const { t } = useTranslation()
   const { chainId } = useActiveWeb3React()
-  if (!chainId) return <div></div>
+
+  if (!chainId) return null
+
   return (
     <Grid
       container
