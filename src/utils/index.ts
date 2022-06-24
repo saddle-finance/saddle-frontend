@@ -453,7 +453,6 @@ export const calculateBoost = (
   if (totalSupplyVeSDL.isZero()) return parseEther("1")
 
   let lim = userLPAmount.mul(BigNumber.from(40)).div(BigNumber.from(100))
-  console.log("lim ==>", lim, formatUnits(lim, 18))
 
   const newTotalLPDeposit = totalLPDeposit.add(userLPAmount)
 
@@ -612,4 +611,10 @@ export function getPriceDataForPool(
     tokenBalances1e18,
     totalLocked: tokenBalancesSum1e18,
   }
+}
+
+export function missingKeys(itemsMap: { [key: string]: unknown }): string[] {
+  return Object.keys(itemsMap)
+    .map((key) => itemsMap[key] == null && key)
+    .filter(Boolean) as string[]
 }

@@ -37,7 +37,10 @@ export default function ClaimRewardsDlg({
   const dispatch = useDispatch()
 
   const onClickClaim = useCallback(async () => {
-    if (!chainId) return
+    if (!chainId) {
+      enqueueToast("error", "Unable to claim reward")
+      return
+    }
     try {
       const txns = await userGauge?.claim()
 
@@ -67,7 +70,6 @@ export default function ClaimRewardsDlg({
           </Typography>
           <Typography>Stake your LP token and collect incentives.</Typography>
           <Box>
-            <Typography>LP Staked:</Typography>
             <Typography mt={2}>Rewards:</Typography>
             <UserRewards userGaugeRewards={userGauge?.userGaugeRewards} />
           </Box>
