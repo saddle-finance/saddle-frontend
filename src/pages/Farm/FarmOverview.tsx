@@ -1,4 +1,5 @@
 import { Box, Button, Grid, Typography, styled } from "@mui/material"
+import { formatBNToShortString, getTokenByAddress } from "../../utils"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { GaugeApr } from "../../providers/AprsProvider"
@@ -6,14 +7,13 @@ import GaugeRewardsDisplay from "../../components/GaugeRewardsDisplay"
 import React from "react"
 import TokenIcon from "../../components/TokenIcon"
 import { Zero } from "@ethersproject/constants"
-import { formatBNToShortString } from "../../utils"
-import usePoolData from "../../hooks/usePoolData"
+import { useActiveWeb3React } from "../../hooks"
 import { useTranslation } from "react-i18next"
 
 interface FarmOverviewProps {
   farmName: string
-  poolName: string | null
   aprs?: GaugeApr[]
+  poolTokens?: string[]
   tvl?: BigNumber
   myStake: BigNumber
   onClickStake: () => void
@@ -29,16 +29,17 @@ const TokenGroup = styled("div")(() => ({
 
 export default function FarmOverview({
   farmName,
-  poolName,
+  poolTokens,
   aprs,
   tvl,
   myStake,
   onClickStake,
 }: // onClickClaim,
-FarmOverviewProps): JSX.Element {
+FarmOverviewProps): JSX.Element | null {
   const { t } = useTranslation()
-  const [farmData] = usePoolData(poolName || "")
-  const farmTokens = farmData.tokens
+  const { chainId } = useActiveWeb3React()
+
+  if (!chainId) return null
 
   return (
     <Grid
@@ -61,13 +62,17 @@ FarmOverviewProps): JSX.Element {
               <TokenIcon symbol="WETH" alt="weth" />
             </>
           ) : (
-            farmTokens.map((token) => (
-              <TokenIcon
-                key={token.symbol}
-                symbol={token.symbol}
-                alt={token.symbol}
-              />
-            ))
+            poolTokens?.map((tokenAddress) => {
+              const token = getTokenByAddress(tokenAddress, chainId)
+              if (!token) return <div></div>
+              return (
+                <TokenIcon
+                  key={token.name}
+                  symbol={token.symbol}
+                  alt={token.symbol}
+                />
+              )
+            })
           )}
         </TokenGroup>
       </Grid>
