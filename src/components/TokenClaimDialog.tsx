@@ -428,12 +428,10 @@ function useRewardClaims() {
         const pid = pool.miniChefRewardsPid
         if (pid === null) return
         updateClaimStatus(pool.poolName, STATUSES.PENDING)
-        let txn: ContractTransaction
-        if (chainId === ChainId.MAINNET) {
-          txn = await rewardsContract.harvest(pid, account)
-        } else {
-          txn = await rewardsContract.deposit(pid, Zero, account)
-        }
+        const txn: ContractTransaction = await rewardsContract.harvest(
+          pid,
+          account,
+        )
         await enqueuePromiseToast(chainId, txn.wait(), "claim", {
           poolName: pool.poolName,
         })
@@ -530,15 +528,7 @@ function useRewardClaims() {
         const calls = await Promise.all(
           pools.map((pool) => {
             const pid = pool.miniChefRewardsPid as number
-            if (chainId === ChainId.MAINNET) {
-              return rewardsContract.populateTransaction.harvest(pid, account)
-            } else {
-              return rewardsContract.populateTransaction.deposit(
-                pid,
-                Zero,
-                account,
-              )
-            }
+            return rewardsContract.populateTransaction.harvest(pid, account)
           }),
         )
         updateClaimStatus("all", STATUSES.PENDING)
