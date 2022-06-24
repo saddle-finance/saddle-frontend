@@ -22,6 +22,7 @@ export default function Farm(): JSX.Element {
   const [activeDialog, setActiveDialog] = useState<
     "stake" | "claim" | undefined
   >()
+  const basicPools = useContext(BasicPoolsContext)
   const { gauges } = useContext(GaugeContext)
   const gaugeAprs = useContext(AprsContext)
   const userState = useContext(UserStateContext)
@@ -44,11 +45,17 @@ export default function Farm(): JSX.Element {
           const myStake =
             userState?.gaugeRewards?.[gaugeAddress]?.amountStaked || Zero
           const tvl = getGaugeTVL(gaugeAddress)
+          const gaugePoolAddress = gauge.poolAddress
+
+          const gaugePool = Object.values(basicPools || {}).find(
+            (pool) => pool.poolAddress === gaugePoolAddress,
+          )
+          const poolTokens = gaugePool?.tokens
           return {
             gauge,
             gaugeAddress,
             farmName,
-            poolName,
+            poolTokens,
             aprs,
             tvl,
             myStake,
@@ -63,11 +70,11 @@ export default function Farm(): JSX.Element {
           }
           return a.myStake.gt(b.myStake) ? -1 : a.tvl.gt(b.tvl) ? -1 : 1
         })
-        .map(({ gaugeAddress, farmName, aprs, tvl, myStake, poolName }) => {
+        .map(({ gaugeAddress, farmName, aprs, poolTokens, tvl, myStake }) => {
           return (
             <FarmOverview
               farmName={farmName}
-              poolName={poolName}
+              poolTokens={poolTokens}
               aprs={aprs}
               tvl={tvl}
               myStake={myStake}
