@@ -2,6 +2,7 @@ import {
   AppBar,
   Box,
   Button,
+  Divider,
   Drawer,
   IconButton,
   Stack,
@@ -21,7 +22,7 @@ import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
 import SiteSettingsMenu from "./SiteSettingsMenu"
 import TokenClaimDialog from "./TokenClaimDialog"
-// import Web3Status from "./Web3Status"
+import Web3Status from "./Web3Status"
 import { areGaugesActive } from "../utils/gauges"
 import { formatBNToShortString } from "../utils"
 import { useActiveWeb3React } from "../hooks"
@@ -37,6 +38,8 @@ const NavMenu = styled(NavLink)<NavLinkProps & { selected: boolean }>(
       textDecoration: "none",
       fontSize: theme.typography.h3.fontSize,
       color: theme.palette.text.primary,
+      paddingTop: theme.spacing(2),
+      paddingBottom: theme.spacing(2),
     }
   },
 )
@@ -46,7 +49,7 @@ function TopMenu(): ReactElement {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
+  const isUnderLaptopSize = useMediaQuery(theme.breakpoints.down("xl"))
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const sdlPrice = tokenPricesUSD?.[SDL_TOKEN.symbol]
   const handleSettingMenu = (
@@ -57,7 +60,7 @@ function TopMenu(): ReactElement {
   const handleMoreMenu = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
-    if (isMobile) {
+    if (isUnderLaptopSize) {
       setDrawerOpen(true)
     } else {
       handleSettingMenu(event)
@@ -67,17 +70,17 @@ function TopMenu(): ReactElement {
     <AppBar position="static" elevation={0}>
       <Toolbar
         data-testid="topMenuContainer"
-        sx={{ mx: { md: 7 }, mt: { md: 3 } }}
+        sx={{ mx: isUnderLaptopSize ? 0 : 7 }}
       >
         <Box display="flex" width="100%" alignItems="center">
           <Box flex={{ xl: 1 }}>
             <NavLink to="/">
-              <SaddleLogo />
+              <SaddleLogo height={isUnderLaptopSize ? "40px" : "100"} />
             </NavLink>
           </Box>
 
           <Stack
-            display={{ xs: "none", lg: "flex" }}
+            display={isUnderLaptopSize ? "none" : "block"}
             bottom={{ xs: theme.spacing(4) }}
             right="50%"
             flex={1}
@@ -97,7 +100,9 @@ function TopMenu(): ReactElement {
           >
             <SDLPrice sdlPrice={sdlPrice} />
             <RewardsButton setCurrentModal={setCurrentModal} />
-            {/* <Web3Status /> */}
+            <Box display={isUnderLaptopSize ? "none" : "block"}>
+              <Web3Status />
+            </Box>
             <NetworkDisplay onClick={handleSettingMenu} />
             <IconButton
               onClick={handleMoreMenu}
@@ -111,9 +116,11 @@ function TopMenu(): ReactElement {
             >
               <MoreVert
                 htmlColor={theme.palette.text.primary}
-                sx={{ display: { xs: "none", md: "block" } }}
+                sx={{ display: isUnderLaptopSize ? "none" : "block" }}
               />
-              <MenuIcon sx={{ display: { xs: "block", md: "none", p: 1 } }} />
+              <MenuIcon
+                sx={{ display: !isUnderLaptopSize ? "none" : "block" }}
+              />
             </IconButton>
           </Stack>
         </Box>
@@ -134,8 +141,15 @@ function TopMenu(): ReactElement {
           anchor="right"
           PaperProps={{ sx: { borderWidth: 0, borderRadius: 0 } }}
         >
-          <Stack gap={3} p={(theme) => theme.spacing(5, 5, 0, 8)}>
+          <Stack
+            m={(theme) => theme.spacing(5, 5, 0, 8)}
+            onClick={() => setDrawerOpen(false)}
+          >
             <MenuList />
+            <Divider />
+            <Box py={2}>
+              <Web3Status />
+            </Box>
           </Stack>
         </Drawer>
       </Toolbar>
