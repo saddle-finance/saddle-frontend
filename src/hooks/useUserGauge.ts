@@ -1,10 +1,11 @@
 import { BasicToken, TokensContext } from "../providers/TokensProvider"
+import { useContext, useEffect, useState } from "react"
 import {
   useGaugeMinterContract,
   useLiquidityGaugeContract,
+  useVotingEscrowContract,
 } from "./useContract"
 
-import { BN_1E18 } from "../constants"
 import { BigNumber } from "@ethersproject/bignumber"
 import { ContractTransaction } from "ethers"
 import { GaugeContext } from "../providers/GaugeProvider"
@@ -12,9 +13,8 @@ import { GaugeUserReward } from "../utils/gauges"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { UserStateContext } from "../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
-import { formatUnits } from "ethers/lib/utils"
+import { calculateBoost } from "../utils"
 import { useActiveWeb3React } from "."
-import { useContext } from "react"
 
 type UserGauge = {
   stake: LiquidityGaugeV5["deposit(uint256)"]
@@ -25,20 +25,38 @@ type UserGauge = {
   userStakedLpTokenBalance: BigNumber
   hasClaimableRewards: boolean
   userGaugeRewards: GaugeUserReward | null
-  boost: string | null
+  boost: BigNumber | null
 }
 
 export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
   const { account } = useActiveWeb3React()
+  const [veSdlBalance, setVeSdlBalance] = useState(Zero)
+  const [totalVeSdl, setTotalVeSdl] = useState(Zero)
   const gaugeContract = useLiquidityGaugeContract(gaugeAddress)
   const gaugeMinterContract = useGaugeMinterContract()
   const { gauges } = useContext(GaugeContext)
+  const votingEscrowContract = useVotingEscrowContract()
   const tokens = useContext(TokensContext)
   const userState = useContext(UserStateContext)
   const gauge = Object.values(gauges).find(
     ({ address }) => address === gaugeAddress,
   )
   const lpToken = tokens?.[gauge?.lpTokenAddress ?? ""]
+
+  useEffect(() => {
+    const fetchVeSdlBalance = async () => {
+      if (votingEscrowContract && account) {
+        const veSDLBal = await votingEscrowContract["balanceOf(address)"](
+          account,
+        )
+        setVeSdlBalance(veSDLBal)
+        const totalSupply = await votingEscrowContract["totalSupply()"]()
+        setTotalVeSdl(totalSupply)
+      }
+    }
+
+    void fetchVeSdlBalance()
+  }, [votingEscrowContract])
 
   if (
     !gaugeAddress ||
@@ -57,17 +75,21 @@ export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
     userGaugeRewards?.claimableExternalRewards.length,
   )
 
-  const boost =
-    gauge.gaugeBalance?.gt(Zero) && gauge.workingBalances?.gt(Zero)
-      ? `${formatUnits(
-          gauge.workingBalances
-            .mul(BN_1E18)
-            .div(gauge.gaugeBalance)
-            .mul(BigNumber.from(25))
-            .div(BigNumber.from(10)),
-          18,
-        )}x`
-      : "-"
+  const userLPAmount = gauge.gaugeBalance
+  const totalLpAmout = gauge.gaugeTotalSupply
+  const workingBalance = gauge.workingBalances
+  const workingSupply = gauge.workingSupply
+
+  const boost = userLPAmount
+    ? calculateBoost(
+        userLPAmount,
+        totalLpAmout || Zero,
+        workingBalance || Zero,
+        workingSupply || Zero,
+        veSdlBalance,
+        totalVeSdl,
+      )
+    : null
 
   return {
     stake: gaugeContract["deposit(uint256)"],

@@ -449,15 +449,13 @@ export const calculateBoost = (
   totalWorkingSupply: BigNumber,
   userBalanceVeSDL: BigNumber,
   totalSupplyVeSDL: BigNumber,
-): BigNumber | undefined => {
+): BigNumber | null => {
   if (totalSupplyVeSDL.isZero()) return parseEther("1")
 
   let lim = userLPAmount.mul(BigNumber.from(40)).div(BigNumber.from(100))
 
-  const newTotalLPDeposit = totalLPDeposit.add(userLPAmount)
-
   lim = lim.add(
-    newTotalLPDeposit
+    totalLPDeposit
       .mul(userBalanceVeSDL)
       .div(totalSupplyVeSDL)
       .mul(BigNumber.from(60))
