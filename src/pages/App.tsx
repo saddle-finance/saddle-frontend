@@ -1,5 +1,6 @@
 import "react-toastify/dist/ReactToastify.css"
 
+import { AppDispatch, AppState } from "../state"
 import { BLOCK_TIME, POOLS_MAP } from "../constants"
 import React, {
   ReactElement,
@@ -11,9 +12,9 @@ import React, {
 } from "react"
 import { Redirect, Route, Switch } from "react-router-dom"
 import { styled, useTheme } from "@mui/material"
+import { useDispatch, useSelector } from "react-redux"
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
-import { AppDispatch } from "../state"
 import AprsProvider from "../providers/AprsProvider"
 import BasicPoolsProvider from "../providers/BasicPoolsProvider"
 import CreatePool from "./CreatePool"
@@ -41,7 +42,6 @@ import fetchSwapStats from "../utils/getSwapStats"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import getSnapshotVoteData from "../utils/getSnapshotVoteData"
 import { useActiveWeb3React } from "../hooks"
-import { useDispatch } from "react-redux"
 import { useIntercom } from "react-use-intercom"
 import usePoller from "../hooks/usePoller"
 import { useSdlWethSushiPairContract } from "../hooks/useContract"
@@ -189,14 +189,17 @@ function PricesAndVoteData({
 }: React.PropsWithChildren<unknown>): ReactElement {
   const dispatch = useDispatch<AppDispatch>()
   const sdlWethSushiPoolContract = useSdlWethSushiPairContract()
-  const { chainId, library } = useActiveWeb3React()
+  const { chainId } = useActiveWeb3React()
+  const { sdlWethSushiPool } = useSelector(
+    (state: AppState) => state.application,
+  )
 
   const fetchAndUpdateGasPrice = useCallback(() => {
     void fetchGasPrices(dispatch)
   }, [dispatch])
   const fetchAndUpdateTokensPrice = useCallback(() => {
-    fetchTokenPricesUSD(dispatch, chainId, library)
-  }, [dispatch, chainId, library])
+    fetchTokenPricesUSD(dispatch, sdlWethSushiPool, chainId)
+  }, [dispatch, chainId, sdlWethSushiPool])
   const fetchAndUpdateSwapStats = useCallback(() => {
     void fetchSwapStats(dispatch)
   }, [dispatch])
