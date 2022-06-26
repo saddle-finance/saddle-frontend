@@ -56,7 +56,7 @@ export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
     }
 
     void fetchVeSdlBalance()
-  }, [votingEscrowContract])
+  }, [votingEscrowContract, account])
 
   if (
     !gaugeAddress ||
