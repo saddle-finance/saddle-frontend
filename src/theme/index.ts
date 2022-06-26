@@ -14,7 +14,7 @@ const theme: ThemeOptions = {
       sm: 544,
       md: 768,
       lg: 1024,
-      xl: 1536,
+      xl: 1440,
     },
   },
 }
