@@ -1,4 +1,11 @@
-import { Container, Grid, Typography } from "@mui/material"
+import {
+  Box,
+  Container,
+  Grid,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material"
 import React, { useContext, useState } from "react"
 
 import { AprsContext } from "../../providers/AprsProvider"
@@ -31,7 +38,15 @@ export default function Farm(): JSX.Element {
 
   return (
     <Container sx={{ pt: 5 }}>
-      <FarmListHeader />
+      <Box
+        position="sticky"
+        top={0}
+        bgcolor={(theme) => theme.palette.background.paper}
+        zIndex={(theme) => theme.zIndex.tooltip - 1}
+        py={2}
+      >
+        <FarmListHeader />
+      </Box>
 
       {Object.values(gauges)
         // .filter(({ gaugeName }) => gaugeName?.includes("SLP")) // uncomment to only show SLP gauge
@@ -126,6 +141,8 @@ export default function Farm(): JSX.Element {
 
 function FarmListHeader(): JSX.Element {
   const { t } = useTranslation()
+  const theme = useTheme()
+  const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
   return (
     <Grid
       container
@@ -135,18 +152,22 @@ function FarmListHeader(): JSX.Element {
         px: 3,
       }}
     >
-      <Grid item xs={3.5}>
+      <Grid item xs={7} lg={3.5}>
         <Typography>{t("farms")}</Typography>
       </Grid>
       <Grid item xs={3}>
         <Typography>APR</Typography>
       </Grid>
-      <Grid item xs={1.5}>
-        <Typography>Gauge TVL</Typography>
-      </Grid>
-      <Grid item xs={1.5}>
-        <Typography>{t("myStaked")} LP</Typography>
-      </Grid>
+      {!isLgDown && (
+        <Grid item xs={1.5}>
+          <Typography>Gauge TVL</Typography>
+        </Grid>
+      )}
+      {!isLgDown && (
+        <Grid item xs={1.5}>
+          <Typography>{t("myStaked")} LP</Typography>
+        </Grid>
+      )}
     </Grid>
   )
 }
