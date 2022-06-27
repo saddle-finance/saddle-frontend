@@ -62,6 +62,16 @@ function Pools(): ReactElement | null {
     })
   }, [account, chainId])
 
+  if (!account) {
+    return (
+      <Container>
+        <Paper sx={{ display: "flex", justifyContent: "center", padding: 4 }}>
+          <Typography>Please connect your wallet to see pools.</Typography>
+        </Paper>
+      </Container>
+    )
+  }
+
   return (
     <Container sx={{ pb: 5 }}>
       <Stack direction="row" alignItems="center" justifyContent="center">
@@ -110,86 +120,78 @@ function Pools(): ReactElement | null {
       </Stack>
 
       <Stack spacing={3}>
-        {!account ? (
-          <Paper sx={{ display: "flex", justifyContent: "center", padding: 4 }}>
-            <Typography>Please connect your wallet to see pools.</Typography>
-          </Paper>
-        ) : (
-          Object.values(basicPools || {})
-            .filter(
-              (basicPool) =>
-                filter === "all" ||
-                basicPool.typeOfAsset === filter ||
-                (filter === "outdated" &&
-                  (basicPool.isMigrated ||
-                    basicPool.isGuarded ||
-                    basicPool.isPaused)),
+        {Object.values(basicPools || {})
+          .filter(
+            (basicPool) =>
+              filter === "all" ||
+              basicPool.typeOfAsset === filter ||
+              (filter === "outdated" &&
+                (basicPool.isMigrated ||
+                  basicPool.isGuarded ||
+                  basicPool.isPaused)),
+          )
+          .sort((a, b) => {
+            // 1. user pools
+            // 2. active pools
+            // 3. higher TVL pools
+            const userLpTokenBalanceA =
+              userState?.tokenBalances?.[a.lpToken] || Zero
+            const userLpTokenBalanceB =
+              userState?.tokenBalances?.[b.lpToken] || Zero
+            const poolAssetA = parseUnits(
+              String(
+                tokenPricesUSD?.[getTokenSymbolForPoolType(a.typeOfAsset)] || 0,
+              ),
+              18,
             )
-            .sort((a, b) => {
-              // 1. user pools
-              // 2. active pools
-              // 3. higher TVL pools
-              const userLpTokenBalanceA =
-                userState?.tokenBalances?.[a.lpToken] || Zero
-              const userLpTokenBalanceB =
-                userState?.tokenBalances?.[b.lpToken] || Zero
-              const poolAssetA = parseUnits(
-                String(
-                  tokenPricesUSD?.[getTokenSymbolForPoolType(a.typeOfAsset)] ||
-                    0,
-                ),
-                18,
-              )
-              const poolAssetB = parseUnits(
-                String(
-                  tokenPricesUSD?.[getTokenSymbolForPoolType(b.typeOfAsset)] ||
-                    0,
-                ),
-                18,
-              )
-              const userBalanceUSDA = userLpTokenBalanceA
-                .mul(poolAssetA)
-                .div(BigNumber.from(BigInt(1e18)))
-              const userBalanceUSDB = userLpTokenBalanceB
-                .mul(poolAssetB)
-                .div(BigNumber.from(BigInt(1e18)))
-              const poolTVLUSDA = a.lpTokenSupply
-                .mul(poolAssetA)
-                .div(BigNumber.from(BigInt(1e18)))
-              const poolTVLUSDB = b.lpTokenSupply
-                .mul(poolAssetB)
-                .div(BigNumber.from(BigInt(1e18)))
-              const isOutdatedA = a.isMigrated || a.isGuarded || a.isPaused
-              const isOutdatedB = b.isMigrated || b.isGuarded || b.isPaused
-              if (userBalanceUSDA.gt(Zero) || userBalanceUSDB.gt(Zero)) {
-                return userBalanceUSDA.gt(userBalanceUSDB) ? -1 : 1
-              } else if (
-                !(isOutdatedA && isOutdatedB) &&
-                (isOutdatedA || isOutdatedB)
-              ) {
-                return isOutdatedA ? 1 : -1
-              } else {
-                return poolTVLUSDA.gt(poolTVLUSDB) ? -1 : 1
+            const poolAssetB = parseUnits(
+              String(
+                tokenPricesUSD?.[getTokenSymbolForPoolType(b.typeOfAsset)] || 0,
+              ),
+              18,
+            )
+            const userBalanceUSDA = userLpTokenBalanceA
+              .mul(poolAssetA)
+              .div(BigNumber.from(BigInt(1e18)))
+            const userBalanceUSDB = userLpTokenBalanceB
+              .mul(poolAssetB)
+              .div(BigNumber.from(BigInt(1e18)))
+            const poolTVLUSDA = a.lpTokenSupply
+              .mul(poolAssetA)
+              .div(BigNumber.from(BigInt(1e18)))
+            const poolTVLUSDB = b.lpTokenSupply
+              .mul(poolAssetB)
+              .div(BigNumber.from(BigInt(1e18)))
+            const isOutdatedA = a.isMigrated || a.isGuarded || a.isPaused
+            const isOutdatedB = b.isMigrated || b.isGuarded || b.isPaused
+            if (userBalanceUSDA.gt(Zero) || userBalanceUSDB.gt(Zero)) {
+              return userBalanceUSDA.gt(userBalanceUSDB) ? -1 : 1
+            } else if (
+              !(isOutdatedA && isOutdatedB) &&
+              (isOutdatedA || isOutdatedB)
+            ) {
+              return isOutdatedA ? 1 : -1
+            } else {
+              return poolTVLUSDA.gt(poolTVLUSDB) ? -1 : 1
+            }
+          })
+          .map((basicPool) => (
+            <PoolOverview
+              key={basicPool.poolName}
+              poolName={basicPool.poolName}
+              poolRoute={`/pools/${basicPool.poolName}`} // TODO address names may contain arbitrary chars
+              onClickMigrate={
+                basicPool.isMigrated
+                  ? () =>
+                      handleClickMigrate(
+                        basicPool.poolName,
+                        userState?.tokenBalances?.[basicPool.lpToken] || Zero,
+                        basicPool.lpToken,
+                      )
+                  : undefined
               }
-            })
-            .map((basicPool) => (
-              <PoolOverview
-                key={basicPool.poolName}
-                poolName={basicPool.poolName}
-                poolRoute={`/pools/${basicPool.poolName}`} // TODO address names may contain arbitrary chars
-                onClickMigrate={
-                  basicPool.isMigrated
-                    ? () =>
-                        handleClickMigrate(
-                          basicPool.poolName,
-                          userState?.tokenBalances?.[basicPool.lpToken] || Zero,
-                          basicPool.lpToken,
-                        )
-                    : undefined
-                }
-              />
-            ))
-        )}
+            />
+          ))}
       </Stack>
       <Dialog
         open={!!currentModal}
