@@ -72,9 +72,11 @@ export default function VeTokenCalculator({
       .mul(userLPAmountBN)
       .div(totalLPAmountBN.add(userLPAmountBN))
 
+  const newTotalLPDeposit = totalLPAmountBN.add(userLPAmountBN)
+
   const boost = calculateBoost(
     userLPAmountBN,
-    totalLPAmountBN,
+    newTotalLPDeposit,
     gauge.workingBalances,
     gauge.workingSupply,
     parseEther(userVeSDLInputAmount || "0"),
@@ -85,7 +87,7 @@ export default function VeTokenCalculator({
     minVeSDL &&
     calculateBoost(
       userLPAmountBN,
-      totalLPAmountBN,
+      newTotalLPDeposit,
       gauge.workingBalances,
       gauge.workingSupply,
       minVeSDL,
