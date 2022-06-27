@@ -75,10 +75,12 @@ export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
     userGaugeRewards?.claimableExternalRewards.length,
   )
 
-  const userLPAmount = gauge.gaugeBalance
-  const totalLpAmout = gauge.gaugeTotalSupply
-  const workingBalance = gauge.workingBalances
-  const workingSupply = gauge.workingSupply
+  const {
+    gaugeBalance: userLPAmount,
+    gaugeTotalSupply: totalLpAmout,
+    workingBalances: workingBalance,
+    workingSupply,
+  } = gauge
 
   const boost = userLPAmount
     ? calculateBoost(
