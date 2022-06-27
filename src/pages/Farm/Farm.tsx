@@ -42,7 +42,7 @@ export default function Farm(): JSX.Element {
         position="sticky"
         top={0}
         bgcolor={(theme) => theme.palette.background.paper}
-        zIndex={(theme) => theme.zIndex.tooltip - 1}
+        zIndex={(theme) => theme.zIndex.mobileStepper - 1}
         py={2}
       >
         <FarmListHeader />
