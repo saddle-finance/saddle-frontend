@@ -22,6 +22,7 @@ export default function LockedInfo(): JSX.Element {
   const [aggSDLInfo, setAggSDLInfo] = useState<{
     sdlLocked: BigNumber
     totalVeSDL: BigNumber
+    avgLockDurationWks: BigNumber
   } | null>(null)
 
   useEffect(() => {
@@ -42,9 +43,14 @@ export default function LockedInfo(): JSX.Element {
         console.error(e)
         return [Zero, Zero]
       })
+      // ratio of total veSDL to locked SDL, times max lock time (4 yrs = 208 wks)
+      const avgLockDurationWks = sdlLocked.gt(Zero)
+        ? totalVeSDL.mul(208).div(sdlLocked)
+        : Zero
       setAggSDLInfo({
         sdlLocked,
         totalVeSDL,
+        avgLockDurationWks,
       })
     }
     void fetchSDLInfo()
@@ -64,10 +70,16 @@ export default function LockedInfo(): JSX.Element {
           {aggSDLInfo ? formatBNToShortString(aggSDLInfo.totalVeSDL, 18) : "-"}
         </Typography>
       </Box>
-      {/* <Box flex={1}>
+      <Box flex={1}>
         <Typography>{t("avgLockTime")}</Typography>
-        <Typography variant="subtitle1">{"-"}</Typography>
-      </Box> */}
+        <Typography variant="subtitle1">
+          {aggSDLInfo
+            ? `${(aggSDLInfo.avgLockDurationWks.toNumber() / 52).toFixed(
+                1,
+              )} yrs`
+            : "-"}
+        </Typography>
+      </Box>
     </Paper>
   )
 }
