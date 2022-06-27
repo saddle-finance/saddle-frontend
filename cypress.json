@@ -11,5 +11,7 @@
   "defaultCommandTimeout": 40000,
   "requestTimeout": 40000,
   "video": false,
-  "baseUrl": "http://localhost:3000/"
+  "baseUrl": "http://localhost:3000/",
+  "viewportWidth": 1440,
+  "viewportHeight": 900
 }
