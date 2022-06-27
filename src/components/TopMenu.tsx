@@ -141,11 +141,10 @@ function TopMenu(): ReactElement {
           anchor="right"
           PaperProps={{ sx: { borderWidth: 0, borderRadius: 0 } }}
         >
-          <Stack
-            m={(theme) => theme.spacing(5, 5, 0, 8)}
-            onClick={() => setDrawerOpen(false)}
-          >
-            <MenuList />
+          <Stack m={(theme) => theme.spacing(5, 5, 0, 8)}>
+            <Stack onClick={() => setDrawerOpen(false)}>
+              <MenuList />
+            </Stack>
             <Divider />
             <Box py={2}>
               <Web3Status />
