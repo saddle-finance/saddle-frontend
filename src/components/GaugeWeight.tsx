@@ -1,4 +1,4 @@
-import { Box, CircularProgress, useTheme } from "@mui/material"
+import { Box, CircularProgress, Typography, useTheme } from "@mui/material"
 import React, { useContext, useRef } from "react"
 
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
@@ -8,6 +8,7 @@ import Highcharts from "highcharts"
 import HighchartsExporting from "highcharts/modules/exporting"
 import HighchartsReact from "highcharts-react-official"
 import PieChart from "highcharts-react-official"
+import { useActiveWeb3React } from "../hooks"
 
 export type GaugeWeightData = {
   displayName: string
@@ -21,19 +22,9 @@ export default function GaugeWeight({
   const chartComponentRef = useRef<HighchartsReact.RefObject>(null)
   const basicPools = useContext(BasicPoolsContext)
   const { gauges } = useContext(GaugeContext)
+  const { account } = useActiveWeb3React()
   const theme = useTheme()
-  if (!basicPools)
-    return (
-      <Box
-        display="flex"
-        height="100%"
-        width="100%"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <CircularProgress color="secondary" />
-      </Box>
-    )
+
   const gaugesInfo = Object.values(gauges)
     .map(({ gaugeName, gaugeRelativeWeight, poolAddress }) => {
       const pool = Object.values(basicPools || {}).find(
@@ -93,6 +84,34 @@ export default function GaugeWeight({
         data,
       },
     ],
+  }
+
+  if (!account) {
+    return (
+      <Box
+        display="flex"
+        height="100%"
+        width="100%"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Typography>Please connect wallet to see chart.</Typography>
+      </Box>
+    )
+  }
+
+  if (!basicPools) {
+    return (
+      <Box
+        display="flex"
+        height="100%"
+        width="100%"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <CircularProgress color="secondary" />
+      </Box>
+    )
   }
 
   return (
