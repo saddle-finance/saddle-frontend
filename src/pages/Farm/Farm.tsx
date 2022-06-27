@@ -2,6 +2,7 @@ import {
   Box,
   Container,
   Grid,
+  Paper,
   Typography,
   useMediaQuery,
   useTheme,
@@ -17,6 +18,7 @@ import StakeDialog from "./StakeDialog"
 import { UserStateContext } from "../../providers/UserStateProvider"
 import VeSDLWrongNetworkModal from "../VeSDL/VeSDLWrongNetworkModal"
 import { Zero } from "@ethersproject/constants"
+import { useActiveWeb3React } from "../../hooks"
 import useGaugeTVL from "../../hooks/useGaugeTVL"
 import { useTranslation } from "react-i18next"
 
@@ -30,11 +32,22 @@ export default function Farm(): JSX.Element {
   const [activeDialog, setActiveDialog] = useState<
     "stake" | "claim" | undefined
   >()
+  const { account } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
   const { gauges } = useContext(GaugeContext)
   const gaugeAprs = useContext(AprsContext)
   const userState = useContext(UserStateContext)
   const getGaugeTVL = useGaugeTVL()
+
+  if (!account) {
+    return (
+      <Container>
+        <Paper sx={{ display: "flex", justifyContent: "center", padding: 4 }}>
+          <Typography>Please connect your wallet to see farms.</Typography>
+        </Paper>
+      </Container>
+    )
+  }
 
   return (
     <Container sx={{ pt: 5 }}>
