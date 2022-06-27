@@ -110,7 +110,7 @@ function Pools(): ReactElement | null {
       </Stack>
 
       <Stack spacing={3}>
-        {!basicPools ? (
+        {!account ? (
           <Paper sx={{ display: "flex", justifyContent: "center", padding: 4 }}>
             <Typography>Please connect your wallet to see pools.</Typography>
           </Paper>
