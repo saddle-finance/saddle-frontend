@@ -78,11 +78,9 @@ function useContract(
 ): Contract | null {
   const { library, account } = useActiveWeb3React()
 
-  const alterNativeNetwork = process.env.REACT_APP_ALTERNATIVE_NETWORK_URL
-
   return useMemo(() => {
+    const alterNativeNetwork = process.env.REACT_APP_ALTERNATIVE_NETWORK_URL
     const defaultProvider = getDefaultProvider(alterNativeNetwork)
-    Web3Provider
     const provider = account ? library : defaultProvider
     if (!address || !ABI || !provider) return null
     try {
