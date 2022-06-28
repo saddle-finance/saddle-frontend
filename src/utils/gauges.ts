@@ -77,8 +77,8 @@ export async function getGaugeData(
   chainId: ChainId,
   gaugeController: GaugeController,
   basicPools: BasicPools,
-  account: string,
   gaugeMinterContract: Minter,
+  account?: string,
 ): Promise<Gauges | null> {
   if (!areGaugesActive(chainId)) return initialGaugesState
   try {
@@ -138,11 +138,13 @@ export async function getGaugeData(
         LIQUIDITY_GAUGE_V5_ABI,
       ),
     )
-    const gaugeBalancePromise = ethCallProvider.tryAll(
-      gaugeMulticallContracts.map((gaugeContract) =>
-        gaugeContract.balanceOf(account),
-      ),
-    )
+    const gaugeBalancePromise = account
+      ? ethCallProvider.tryAll(
+          gaugeMulticallContracts.map((gaugeContract) =>
+            gaugeContract.balanceOf(account),
+          ),
+        )
+      : null
     const gaugeTotalSupplyPromise = ethCallProvider.tryAll(
       gaugeMulticallContracts.map((gaugeContract) =>
         gaugeContract.totalSupply(),
@@ -153,11 +155,13 @@ export async function getGaugeData(
         gaugeContract.working_supply(),
       ),
     )
-    const gaugeWorkingBalancesPromise = ethCallProvider.tryAll(
-      gaugeMulticallContracts.map((gaugeContract) =>
-        gaugeContract.working_balances(account),
-      ),
-    )
+    const gaugeWorkingBalancesPromise = account
+      ? ethCallProvider.tryAll(
+          gaugeMulticallContracts.map((gaugeContract) =>
+            gaugeContract.working_balances(account),
+          ),
+        )
+      : null
     const gaugeLpTokenAddressesPromise = ethCallProvider.all(
       gaugeMulticallContracts.map((gaugeContract) => gaugeContract.lp_token()),
     )
@@ -215,8 +219,8 @@ export async function getGaugeData(
             gaugeRelativeWeight: gaugeRelativeWeights[index],
             gaugeTotalSupply: gaugeTotalSupplies[index],
             workingSupply: gaugeWorkingSupplies[index],
-            workingBalances: gaugeWorkingBalances[index],
-            gaugeBalance: gaugeBalances[index],
+            workingBalances: gaugeWorkingBalances?.[index],
+            gaugeBalance: gaugeBalances?.[index],
             gaugeName: gaugeNames[index],
             lpTokenAddress,
             poolAddress: isValidPoolAddress ? poolAddress : null,

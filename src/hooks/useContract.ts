@@ -16,6 +16,7 @@ import {
   Token,
   VOTING_ESCROW_CONTRACT_ADDRESS,
 } from "../constants"
+import { Web3Provider, getDefaultProvider } from "@ethersproject/providers"
 import { createMultiCallContract, getContract, getSwapContract } from "../utils"
 import { useContext, useEffect, useMemo, useState } from "react"
 
@@ -78,12 +79,17 @@ function useContract(
   const { library, account } = useActiveWeb3React()
 
   return useMemo(() => {
-    if (!address || !ABI || !library) return null
+    const defaultProvider = getDefaultProvider(
+      "https://mainnet.infura.io/v3/9d24a8bbff9946a1b239b07b6383cc9d",
+    )
+    Web3Provider
+    const provider = account ? library : defaultProvider
+    if (!address || !ABI || !provider) return null
     try {
       return getContract(
         address,
         ABI,
-        library,
+        provider as Web3Provider,
         withSignerIfPossible && account ? account : undefined,
       )
     } catch (error) {
@@ -126,18 +132,19 @@ export function usePoolRegistry(): PoolRegistry | null {
   }, [masterRegistryContract])
 
   return useMemo(() => {
-    if (!library || !account || !contractAddress) return null
-    return getContract(
+    if (!library || !contractAddress) return null
+    const contract = getContract(
       contractAddress,
       POOL_REGISTRY_ABI,
       library,
-      account,
+      account ?? undefined,
     ) as PoolRegistry
+    return contract
   }, [contractAddress, library, account])
 }
 
 export function usePoolRegistryMultiCall(): MulticallContract<PoolRegistry> | null {
-  const { account, library } = useActiveWeb3React()
+  const { library } = useActiveWeb3React()
   const masterRegistryContract = useMasterRegistry()
   const [contractAddress, setContractAddress] = useState<string | undefined>()
   useEffect(() => {
@@ -159,12 +166,12 @@ export function usePoolRegistryMultiCall(): MulticallContract<PoolRegistry> | nu
   }, [masterRegistryContract])
 
   return useMemo(() => {
-    if (!library || !account || !contractAddress) return null
+    if (!library || !contractAddress) return null
     return createMultiCallContract<PoolRegistry>(
       contractAddress,
       POOL_REGISTRY_ABI,
     )
-  }, [contractAddress, library, account])
+  }, [contractAddress, library])
 }
 
 export const PERMISSIONLESS_DEPLOYER_NAME = formatBytes32String(

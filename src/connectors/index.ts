@@ -23,7 +23,9 @@ export const network = new NetworkConnector({
 
 let networkLibrary: BaseProvider | undefined
 export function getNetworkLibrary(): BaseProvider {
-  const provider = getDefaultProvider(NETWORK_URL)
+  const provider = getDefaultProvider(
+    "https://mainnet.infura.io/v3/9d24a8bbff9946a1b239b07b6383cc9d",
+  )
   return (networkLibrary = networkLibrary ?? provider)
 }
 

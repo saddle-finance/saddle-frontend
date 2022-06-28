@@ -7,7 +7,11 @@ import {
   Token,
   readableDecimalNumberRegex,
 } from "../constants"
-import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
+import {
+  JsonRpcSigner,
+  Web3Provider,
+  getDefaultProvider,
+} from "@ethersproject/providers"
 import {
   MulticallCall,
   MulticallContract,
@@ -346,7 +350,12 @@ export async function getMulticallProvider(
   chainId: ChainId,
 ): Promise<MulticallProvider> {
   const ethcallProvider = new Provider() as unknown as MulticallProvider
-  await ethcallProvider.init(library)
+  const defaultProvider = getDefaultProvider(
+    "https://mainnet.infura.io/v3/9d24a8bbff9946a1b239b07b6383cc9d",
+  )
+  console.log("default provider ==>", defaultProvider)
+  console.log("library ==>", library)
+  await ethcallProvider.init(defaultProvider)
   if (chainId === ChainId.HARDHAT) {
     ethcallProvider.multicall3 = {
       address: "0xcA11bde05977b3631167028862bE2a173976CA11",
