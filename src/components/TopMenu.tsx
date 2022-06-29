@@ -49,7 +49,7 @@ function TopMenu(): ReactElement {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const theme = useTheme()
-  const isUnderLaptopSize = useMediaQuery(theme.breakpoints.down("xl"))
+  const isUnderLaptopSize = useMediaQuery(theme.breakpoints.down("lg"))
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const sdlPrice = tokenPricesUSD?.[SDL_TOKEN.symbol]
   const handleSettingMenu = (
@@ -68,10 +68,7 @@ function TopMenu(): ReactElement {
   }
   return (
     <AppBar position="static" elevation={0}>
-      <Toolbar
-        data-testid="topMenuContainer"
-        sx={{ mx: isUnderLaptopSize ? 0 : 7 }}
-      >
+      <Toolbar data-testid="topMenuContainer" sx={{ xs: 0, lg: 7 }}>
         <Box display="flex" width="100%" alignItems="center">
           <Box flex={{ xl: 1 }}>
             <NavLink to="/">
@@ -85,7 +82,7 @@ function TopMenu(): ReactElement {
             right="50%"
             flex={1}
             direction="row"
-            spacing={5}
+            spacing={4}
             justifyContent="center"
             padding={theme.spacing(1, 3)}
           >

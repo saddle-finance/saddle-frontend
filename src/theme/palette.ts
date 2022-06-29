@@ -6,7 +6,7 @@ interface OtherColorTypes {
   divider: string
   border: string
 }
-declare module "@mui/material/styles/createPalette" {
+declare module "@mui/material/styles" {
   interface SimplePaletteColorOptions {
     states?: {
       outlinedRestingBorder?: string
