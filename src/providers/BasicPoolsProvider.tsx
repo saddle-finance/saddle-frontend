@@ -152,6 +152,7 @@ export default function BasicPoolsProvider({
     lastTransactionTimes,
     poolRegistry,
     poolRegistryMultiCall,
+    account,
   ])
 
   return (
