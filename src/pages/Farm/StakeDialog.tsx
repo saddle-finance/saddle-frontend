@@ -212,13 +212,11 @@ export default function StakeDialog({
           <TokenInput
             inputValue={amountInput}
             token={userGauge.lpToken}
-            max={commify(
-              formatUnits(
-                stakeStatus === "stake"
-                  ? userGauge.userWalletLpTokenBalance
-                  : userGauge.userStakedLpTokenBalance,
-                userGauge.lpToken.decimals,
-              ),
+            max={formatUnits(
+              stakeStatus === "stake"
+                ? userGauge.userWalletLpTokenBalance
+                : userGauge.userStakedLpTokenBalance,
+              userGauge.lpToken.decimals,
             )}
             showUSDprice={false}
             onChange={setAmountInput}
