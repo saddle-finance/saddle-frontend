@@ -32,7 +32,7 @@ interface Props {
 }
 
 function TokenInput({
-  max,
+  max, // @dev this is an UNFORMATTED string
   inputValue,
   onChange,
   disabled,
@@ -80,7 +80,7 @@ function TokenInput({
             disabled={readonly || disabled}
             onClick={() => onChange && onChange(String(max))}
           >
-            <Typography variant="subtitle2">{max}</Typography>
+            <Typography variant="subtitle2">{commify(max)}</Typography>
           </Button>
         </Box>
       )}
