@@ -146,7 +146,7 @@ function usePoolsRewardBalances() {
         return {
           ...acc,
           [poolName]:
-            userState.minichef?.[miniChefRewardsPid as number].pendingSDL ??
+            userState.minichef?.[miniChefRewardsPid as number]?.pendingSDL ??
             Zero,
         }
       },
