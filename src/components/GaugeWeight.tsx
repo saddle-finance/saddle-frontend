@@ -27,10 +27,10 @@ export default function GaugeWeight({
 
   const gaugesInfo = Object.values(gauges)
     .map(({ gaugeName, gaugeRelativeWeight, poolAddress, isKilled }) => {
+      if (isKilled) return
       const pool = Object.values(basicPools || {}).find(
         (pool) => pool.poolAddress === poolAddress,
       )
-      if (isKilled) return
       return {
         displayName: pool?.poolName || gaugeName,
         gaugeRelativeWeight,
