@@ -180,7 +180,6 @@ export async function getGaugeData(
       gaugeLpTokenAddresses,
       gaugeNames,
       gaugeKillStatuses,
-      minterSDLRate,
     ] = await Promise.all([
       gaugeWeightsPromise,
       gaugeRelativeWeightsPromise,
@@ -192,8 +191,10 @@ export async function getGaugeData(
       gaugeLpTokenAddressesPromise,
       gaugeNamesPromise,
       gaugeKillStatusesPromise,
-      gaugeMinterContract ? gaugeMinterContract.rate() : Promise.resolve(Zero),
     ])
+    const minterSDLRate = await (gaugeMinterContract
+      ? gaugeMinterContract.rate()
+      : Promise.resolve(Zero))
 
     const gauges: LPTokenAddressToGauge = gaugeAddresses.reduce(
       (previousGaugeData, gaugeAddress, index) => {
