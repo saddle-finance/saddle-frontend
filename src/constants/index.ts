@@ -1955,6 +1955,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPool: FRAX_USDC_POOL_NAME,
     route: "fraxalusdmetaold",
     rewardPids: buildPids({}),
+    isOutdated: true,
   },
   [ARB_FRAX_USDS_METAPOOL_NAME]: {
     name: ARB_FRAX_USDS_METAPOOL_NAME,
@@ -2008,6 +2009,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPool: FTM_USD_POOL_NAME,
     route: "fraxalusdmetaold",
     rewardPids: buildPids({}),
+    isOutdated: true,
   },
 }
 
