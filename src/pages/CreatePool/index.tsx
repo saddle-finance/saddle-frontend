@@ -316,7 +316,7 @@ export default function CreatePool(): React.ReactElement {
                   color="secondary"
                   size="large"
                   exclusive
-                  onChange={(event, value) => {
+                  onChange={(event, value: PoolType) => {
                     setPoolType(value)
                     setTokenInputs([tokenInputs[0]])
                   }}
@@ -354,7 +354,7 @@ export default function CreatePool(): React.ReactElement {
                   color="secondary"
                   fullWidth
                   exclusive
-                  onChange={(event, value) => setAssetType(value)}
+                  onChange={(event, value: AssetType) => setAssetType(value)}
                   size="large"
                   disabled={poolType !== PoolType.Base}
                 >

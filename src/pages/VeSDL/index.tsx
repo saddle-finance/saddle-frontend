@@ -416,7 +416,7 @@ export default function VeSDL(): JSX.Element {
               data-testid="lockVeSdlBtn"
               fullWidth
               size="large"
-              onClick={handleLock}
+              onClick={() => void handleLock()}
               disabled={disableLock || !isValidNetwork}
             >
               {lockedSDLVal.isZero() ? t("createLock") : t("adjustLock")}
@@ -548,7 +548,7 @@ export default function VeSDL(): JSX.Element {
         modalText={t("confirmUnlock", {
           penaltyPercent: formatBNToString(penaltyPercent, 18, 3),
         })}
-        onOK={unlock}
+        onOK={() => void unlock()}
         onClose={() => setUnlockConfirmOpen(false)}
       />
     </Container>

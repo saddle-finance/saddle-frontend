@@ -76,7 +76,7 @@ export default function ClaimRewardsDlg({
           <Button
             variant="contained"
             size="large"
-            onClick={onClickClaim}
+            onClick={() => void onClickClaim()}
             disabled={!userGauge?.hasClaimableRewards}
           >
             Claim Rewards

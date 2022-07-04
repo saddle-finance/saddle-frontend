@@ -24,6 +24,7 @@ import BRIDGE_CONTRACT_ABI from "../constants/abis/bridge.json"
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { Bridge } from "../../types/ethers-contracts/Bridge"
 import { Contract } from "@ethersproject/contracts"
+import { ContractInterface } from "ethers"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import FEE_DISTRIBUTOR_ABI from "../constants/abis/feeDistributor.json"
@@ -72,7 +73,7 @@ import { useActiveWeb3React } from "./index"
 // returns null on errors
 function useContract(
   address: string | undefined,
-  ABI: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  ABI: ContractInterface,
   withSignerIfPossible = true,
 ): Contract | null {
   const { library, account } = useActiveWeb3React()
@@ -98,13 +99,17 @@ export function useMasterRegistry(): MasterRegistry | null {
   const contractAddress = chainId
     ? MASTER_REGISTRY_CONTRACT_ADDRESSES[chainId]
     : undefined
-  return useContract(contractAddress, MASTER_REGISTRY_ABI) as MasterRegistry
+  return useContract(
+    contractAddress,
+    MASTER_REGISTRY_ABI,
+    false,
+  ) as MasterRegistry
 }
 
 export const POOL_REGISTRY_NAME = formatBytes32String("PoolRegistry")
 
 export function usePoolRegistry(): PoolRegistry | null {
-  const { account, library } = useActiveWeb3React()
+  const { library } = useActiveWeb3React()
   const masterRegistryContract = useMasterRegistry()
   const [contractAddress, setContractAddress] = useState<string | undefined>()
   useEffect(() => {
@@ -126,18 +131,17 @@ export function usePoolRegistry(): PoolRegistry | null {
   }, [masterRegistryContract])
 
   return useMemo(() => {
-    if (!library || !account || !contractAddress) return null
+    if (!library || !contractAddress) return null
     return getContract(
       contractAddress,
       POOL_REGISTRY_ABI,
       library,
-      account,
     ) as PoolRegistry
-  }, [contractAddress, library, account])
+  }, [contractAddress, library])
 }
 
 export function usePoolRegistryMultiCall(): MulticallContract<PoolRegistry> | null {
-  const { account, library } = useActiveWeb3React()
+  const { library } = useActiveWeb3React()
   const masterRegistryContract = useMasterRegistry()
   const [contractAddress, setContractAddress] = useState<string | undefined>()
   useEffect(() => {
@@ -159,12 +163,12 @@ export function usePoolRegistryMultiCall(): MulticallContract<PoolRegistry> | nu
   }, [masterRegistryContract])
 
   return useMemo(() => {
-    if (!library || !account || !contractAddress) return null
+    if (!library || !contractAddress) return null
     return createMultiCallContract<PoolRegistry>(
       contractAddress,
       POOL_REGISTRY_ABI,
     )
-  }, [contractAddress, library, account])
+  }, [contractAddress, library])
 }
 
 export const PERMISSIONLESS_DEPLOYER_NAME = formatBytes32String(
