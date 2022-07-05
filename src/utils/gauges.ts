@@ -159,7 +159,7 @@ export async function getGaugeData(
         gaugeContract.working_balances(account),
       ),
     )
-    const gaugeLpTokenAddressesPromise = ethCallProvider.all(
+    const gaugeLpTokenAddressesPromise = ethCallProvider.tryAll(
       gaugeMulticallContracts.map((gaugeContract) => gaugeContract.lp_token()),
     )
     const gaugeNamesPromise = ethCallProvider.tryAll(
@@ -199,6 +199,8 @@ export async function getGaugeData(
     const gauges: LPTokenAddressToGauge = gaugeAddresses.reduce(
       (previousGaugeData, gaugeAddress, index) => {
         const lpTokenAddress = gaugeLpTokenAddresses[index]?.toLowerCase()
+        if (!lpTokenAddress) return previousGaugeData
+
         const poolAddress = gaugePoolAddresses[index]
         const isValidPoolAddress = Boolean(
           poolAddress && !isAddressZero(poolAddress),
@@ -213,7 +215,6 @@ export async function getGaugeData(
           rate: sdlRate,
           tokenAddress: SDL_TOKEN_ADDRESSES[chainId].toLowerCase(),
         }
-        if (!lpTokenAddress) return previousGaugeData
         return {
           ...previousGaugeData,
           [lpTokenAddress]: {
