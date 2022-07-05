@@ -217,7 +217,7 @@ function SDLPrice({ sdlPrice }: SDLPriceProps): ReactElement | null {
   if (sdlPrice === undefined) return null
 
   const SUSHI_WETH_SDL_POOL_URL =
-    "https://app.sushi.com/analytics/pools/0x0c6f06b32e6ae0c110861b8607e67da594781961?chainId=1"
+    "https://ethereum.sushi.com/swap?inputCurrency=ETH&outputCurrency=0xf1Dc500FdE233A4055e25e5BbF516372BC4F6871"
   return (
     <Button
       variant="contained"
