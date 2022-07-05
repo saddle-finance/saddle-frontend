@@ -13,9 +13,11 @@ import {
   useLPTokenContract,
   useSwapContract,
 } from "./useContract"
+import { useContext, useMemo } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 import { AppState } from "../state"
+import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { GasPrices } from "../state/user"
@@ -31,7 +33,6 @@ import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
-import { useMemo } from "react"
 
 interface ApproveAndDepositStateArgument {
   [tokenSymbol: string]: NumberInputState
@@ -61,17 +62,19 @@ export function useApproveAndDeposit(
     infiniteApproval,
   } = useSelector((state: AppState) => state.user)
   const POOL = POOLS_MAP[poolName]
+  const basicPools = useContext(BasicPoolsContext)
+  const pool = basicPools?.[poolName]
   const metaSwapContract = useMemo(() => {
-    if (POOL.metaSwapAddresses && chainId && library) {
+    if (pool?.metaSwapDepositAddress && chainId && library) {
       return getContract(
-        POOL.metaSwapAddresses?.[chainId],
+        pool.metaSwapDepositAddress[chainId],
         META_SWAP_ABI,
         library,
         account ?? undefined,
       ) as MetaSwap
     }
     return null
-  }, [chainId, library, POOL.metaSwapAddresses, account])
+  }, [chainId, library, account, pool?.metaSwapDepositAddress])
 
   return async function approveAndDeposit(
     state: ApproveAndDepositStateArgument,
