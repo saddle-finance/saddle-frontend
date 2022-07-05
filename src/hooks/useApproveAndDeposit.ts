@@ -1,11 +1,10 @@
 import {
   BTC_POOL_NAME,
-  POOLS_MAP,
   PoolName,
   TRANSACTION_TYPES,
-  Token,
   isLegacySwapABIPool,
 } from "../constants"
+import { BasicToken, TokensContext } from "../providers/TokensProvider"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { formatDeadlineToNumber, getContract } from "../utils"
 import {
@@ -61,8 +60,8 @@ export function useApproveAndDeposit(
     transactionDeadlineSelected,
     infiniteApproval,
   } = useSelector((state: AppState) => state.user)
-  const POOL = POOLS_MAP[poolName]
   const basicPools = useContext(BasicPoolsContext)
+  const tokens = useContext(TokensContext)
   const pool = basicPools?.[poolName]
   const metaSwapContract = useMemo(() => {
     if (pool?.metaSwapDepositAddress && chainId && library) {
@@ -89,9 +88,11 @@ export function useApproveAndDeposit(
       )
         throw new Error("Swap contract is not loaded")
 
-      const poolTokens = shouldDepositWrapped
-        ? (POOL.underlyingPoolTokens as Token[])
-        : POOL.poolTokens
+      const poolTokenAddresses = pool?.isMetaSwap
+        ? pool?.underlyingTokens
+        : pool?.tokens
+      const poolTokens =
+        poolTokenAddresses?.map((token) => tokens?.[token]) ?? []
       const effectiveSwapContract = shouldDepositWrapped
         ? (metaSwapContract as MetaSwap)
         : swapContract
@@ -110,10 +111,14 @@ export function useApproveAndDeposit(
         gasPriceUnsafe ? String(gasPriceUnsafe) : "45",
         9,
       )
-      const approveSingleToken = async (token: Token): Promise<void> => {
-        const spendingValue = BigNumber.from(state[token.symbol].valueSafe)
+      const approveSingleToken = async (
+        token: BasicToken | undefined,
+      ): Promise<void> => {
+        const spendingValue = BigNumber.from(
+          state[token?.symbol ?? 0].valueSafe,
+        )
         if (spendingValue.isZero()) return
-        const tokenContract = tokenContracts?.[token.symbol] as Erc20
+        const tokenContract = tokenContracts?.[token?.symbol ?? 0] as Erc20
         if (tokenContract == null) return
         await checkAndApproveTokenForTrade(
           tokenContract,
@@ -137,7 +142,7 @@ export function useApproveAndDeposit(
           await approveSingleToken(token)
         }
       } else {
-        await Promise.all(poolTokens.map((token) => approveSingleToken(token)))
+        await Promise.all(poolTokens?.map((token) => approveSingleToken(token)))
       }
 
       const isFirstTransaction = (await lpTokenContract.totalSupply()).isZero()
@@ -150,14 +155,14 @@ export function useApproveAndDeposit(
             effectiveSwapContract as SwapFlashLoan
           ).calculateTokenAmount(
             account,
-            poolTokens.map(({ symbol }) => state[symbol].valueSafe),
+            poolTokens?.map((token) => state[token?.symbol ?? 0].valueSafe),
             true, // deposit boolean
           )
         } else {
           minToMint = await (
             effectiveSwapContract as SwapFlashLoanNoWithdrawFee
           ).calculateTokenAmount(
-            poolTokens.map(({ symbol }) => state[symbol].valueSafe),
+            poolTokens?.map((token) => state[token?.symbol ?? 0].valueSafe),
             true, // deposit boolean
           )
         }
@@ -170,7 +175,9 @@ export function useApproveAndDeposit(
       )
 
       let spendTransaction
-      const txnAmounts = poolTokens.map(({ symbol }) => state[symbol].valueSafe)
+      const txnAmounts = poolTokens?.map(
+        (token) => state[token?.symbol ?? 0].valueSafe,
+      )
       const txnDeadline = Math.round(
         new Date().getTime() / 1000 + 60 * deadline,
       )
