@@ -70,14 +70,14 @@ function TopMenu(): ReactElement {
     <AppBar position="static" elevation={0}>
       <Toolbar data-testid="topMenuContainer" sx={{ xs: 0, lg: 7 }}>
         <Box display="flex" width="100%" alignItems="center">
-          <Box flex={{ xl: 1 }}>
+          <Box flex={1}>
             <NavLink to="/">
               <SaddleLogo height={isUnderLaptopSize ? "40px" : "100"} />
             </NavLink>
           </Box>
 
           <Stack
-            display={isUnderLaptopSize ? "none" : "block"}
+            display={isUnderLaptopSize ? "none" : "flex"}
             bottom={{ xs: theme.spacing(4) }}
             right="50%"
             flex={1}
