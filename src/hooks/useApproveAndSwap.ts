@@ -117,8 +117,11 @@ export function useApproveAndSwap(): (
         const destinationPool = basicPools?.[state.to.poolName]
         const args = [
           [
-            originPool?.metaSwapDepositAddress?.[chainId],
-            destinationPool?.metaSwapDepositAddress?.[chainId],
+            (originPool?.metaSwapDepositAddress || originPool?.poolAddress) ??
+              "",
+            (destinationPool?.metaSwapDepositAddress ||
+              destinationPool?.poolAddress) ??
+              "",
           ] as [string, string],
           state.from.tokenIndex,
           state.to.tokenIndex,
@@ -136,7 +139,9 @@ export function useApproveAndSwap(): (
       } else if (state.swapType === SWAP_TYPES.SYNTH_TO_TOKEN) {
         const destinationPool = basicPools?.[state.to.poolName]
         const args = [
-          destinationPool?.metaSwapDepositAddress?.[chainId] ?? "",
+          (destinationPool?.metaSwapDepositAddress ||
+            destinationPool?.poolAddress) ??
+            "",
           utils.formatBytes32String(state.from.symbol),
           state.to.tokenIndex,
           state.from.amount,
@@ -153,7 +158,7 @@ export function useApproveAndSwap(): (
       } else if (state.swapType === SWAP_TYPES.TOKEN_TO_SYNTH) {
         const originPool = basicPools?.[state.from.poolName]
         const args = [
-          originPool?.metaSwapDepositAddress?.[chainId] ?? "",
+          (originPool?.metaSwapDepositAddress || originPool?.poolAddress) ?? "",
           state.from.tokenIndex,
           utils.formatBytes32String(state.to.symbol),
           state.from.amount,
