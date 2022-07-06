@@ -89,8 +89,8 @@ export function useApproveAndDeposit(
         throw new Error("Swap contract is not loaded")
 
       const poolTokenAddresses = shouldDepositWrapped
-        ? pool?.underlyingTokens
-        : pool?.tokens
+        ? pool?.tokens
+        : pool?.underlyingTokens
       const poolTokens =
         poolTokenAddresses?.map((token) => tokens?.[token]) ?? []
       const effectiveSwapContract = shouldDepositWrapped
