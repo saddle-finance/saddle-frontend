@@ -115,10 +115,10 @@ export function useApproveAndDeposit(
         token: BasicToken | undefined,
       ): Promise<void> => {
         const spendingValue = BigNumber.from(
-          state[token?.symbol ?? 0].valueSafe,
+          state[token?.symbol ?? ""].valueSafe,
         )
         if (spendingValue.isZero()) return
-        const tokenContract = tokenContracts?.[token?.symbol ?? 0] as Erc20
+        const tokenContract = tokenContracts?.[token?.symbol ?? ""] as Erc20
         if (tokenContract == null) return
         await checkAndApproveTokenForTrade(
           tokenContract,
@@ -155,14 +155,14 @@ export function useApproveAndDeposit(
             effectiveSwapContract as SwapFlashLoan
           ).calculateTokenAmount(
             account,
-            poolTokens?.map((token) => state[token?.symbol ?? 0].valueSafe),
+            poolTokens?.map((token) => state[token?.symbol ?? ""].valueSafe),
             true, // deposit boolean
           )
         } else {
           minToMint = await (
             effectiveSwapContract as SwapFlashLoanNoWithdrawFee
           ).calculateTokenAmount(
-            poolTokens?.map((token) => state[token?.symbol ?? 0].valueSafe),
+            poolTokens?.map((token) => state[token?.symbol ?? ""].valueSafe),
             true, // deposit boolean
           )
         }
@@ -176,7 +176,7 @@ export function useApproveAndDeposit(
 
       let spendTransaction
       const txnAmounts = poolTokens?.map(
-        (token) => state[token?.symbol ?? 0].valueSafe,
+        (token) => state[token?.symbol ?? ""].valueSafe,
       )
       const txnDeadline = Math.round(
         new Date().getTime() / 1000 + 60 * deadline,
