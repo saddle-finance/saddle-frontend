@@ -52,32 +52,36 @@ function Deposit({ poolName }: Props): ReactElement | null {
   const [poolData, userShareData] = usePoolData(poolName)
   const swapContract = useSwapContract(poolName)
   const allTokens = useMemo(() => {
-    return Array.from(new Set(pool?.tokens.concat(pool.underlyingTokens || [])))
+    return Array.from(
+      new Set(pool?.tokens.concat(pool?.underlyingTokens ?? [])),
+    )
   }, [pool?.tokens, pool?.underlyingTokens])
-  // const poolTokenAddresses = pool?.isMetaSwap
-  //   ? pool?.underlyingTokens
-  //   : pool?.tokens
-  const poolTokens = allTokens.map((token) => basicTokens?.[token])
-  const [tokenFormState, updateTokenFormState] = useTokenFormState(poolTokens)
+  const poolTokenAddresses = pool?.isMetaSwap
+    ? pool?.tokens ?? []
+    : pool?.underlyingTokens ?? []
+  const poolTokens = poolTokenAddresses?.map((token) => basicTokens?.[token])
+  const allPoolTokens = allTokens.map((token) => basicTokens?.[token])
+  const [tokenFormState, updateTokenFormState] =
+    useTokenFormState(allPoolTokens)
   const [shouldDepositWrapped, setShouldDepositWrapped] = useState(false)
   useEffect(() => {
     // empty out previous token state when switchng between wrapped and unwrapped
     if (shouldDepositWrapped) {
       updateTokenFormState(
-        POOL.poolTokens.reduce(
-          (acc, { symbol }) => ({
+        poolTokens?.reduce(
+          (acc, token) => ({
             ...acc,
-            [symbol]: "",
+            [token?.symbol ?? ""]: "",
           }),
           {},
         ),
       )
     } else {
       updateTokenFormState(
-        (POOL.underlyingPoolTokens || []).reduce(
-          (acc, { symbol }) => ({
+        (poolTokens || []).reduce(
+          (acc, token) => ({
             ...acc,
-            [symbol]: "",
+            [token?.symbol ?? ""]: "",
           }),
           {},
         ),
@@ -88,8 +92,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
     updateTokenFormState,
     pool?.tokens,
     pool?.underlyingTokens,
-    POOL.poolTokens,
-    POOL.underlyingPoolTokens,
+    poolTokens,
   ])
   const tokenBalances = usePoolTokenBalances()
   const { tokenPricesUSD, gasStandard, gasFast, gasInstant } = useSelector(
@@ -149,7 +152,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
         return
       }
       const tokenInputSum = parseUnits(
-        poolTokens
+        allPoolTokens
           .reduce(
             (sum, token) =>
               sum + (+tokenFormState[token?.symbol ?? ""]?.valueRaw ?? 0),
@@ -165,16 +168,16 @@ function Deposit({ poolName }: Props): ReactElement | null {
             swapContract as SwapFlashLoan
           ).calculateTokenAmount(
             account,
-            POOL.poolTokens.map(
-              ({ symbol }) => tokenFormState[symbol].valueSafe,
-            ),
+            poolTokens?.map(
+              (token) => tokenFormState[token?.symbol ?? ""].valueSafe,
+            ) ?? [],
             true, // deposit boolean
           )
         } else if (shouldDepositWrapped) {
           depositLPTokenAmount = metaSwapContract
             ? await metaSwapContract.calculateTokenAmount(
-                (POOL.underlyingPoolTokens || []).map(
-                  ({ symbol }) => tokenFormState[symbol].valueSafe,
+                poolTokens.map(
+                  (token) => tokenFormState[token?.symbol ?? ""].valueSafe,
                 ),
                 true, // deposit boolean
               )
@@ -183,8 +186,8 @@ function Deposit({ poolName }: Props): ReactElement | null {
           depositLPTokenAmount = await (
             swapContract as SwapFlashLoanNoWithdrawFee
           ).calculateTokenAmount(
-            POOL.poolTokens.map(
-              ({ symbol }) => tokenFormState[symbol].valueSafe,
+            poolTokens.map(
+              (token) => tokenFormState[token?.symbol ?? ""].valueSafe,
             ),
             true, // deposit boolean
           )
@@ -210,36 +213,33 @@ function Deposit({ poolName }: Props): ReactElement | null {
     swapContract,
     userShareData,
     account,
-    pool?.tokens,
-    pool?.underlyingTokens,
     metaSwapContract,
     shouldDepositWrapped,
-    allTokens,
-    POOL.poolTokens,
-    POOL.underlyingPoolTokens,
+    allPoolTokens,
     poolTokens,
   ])
 
   // A represention of tokens used for UI
-  const tmpDepositTokens = shouldDepositWrapped
-    ? POOL.underlyingPoolTokens || []
-    : POOL.poolTokens
-  const tokens = tmpDepositTokens.map(({ symbol, name, decimals }, i) => {
+  const tmpDepositTokens = poolTokens
+  const tokens = tmpDepositTokens?.map((token, i) => {
     const priceUSD =
       (shouldDepositWrapped && i === tmpDepositTokens.length - 1
         ? parseFloat(formatUnits(poolData.lpTokenPriceUSD, 18))
-        : tokenPricesUSD?.[symbol]) || 0
+        : tokenPricesUSD?.[token?.symbol ?? ""]) ?? 0
     return {
-      symbol,
-      name,
-      decimals,
+      symbol: token?.symbol ?? "",
+      name: token?.name ?? "",
+      decimals: token?.decimals ?? 0,
       priceUSD,
-      max: formatBNToString(tokenBalances?.[symbol] || Zero, decimals),
-      inputValue: tokenFormState[symbol]?.valueRaw ?? "",
+      max: formatBNToString(
+        tokenBalances?.[token?.symbol ?? ""] || Zero,
+        token?.decimals ?? 18,
+      ),
+      inputValue: tokenFormState[token?.symbol ?? ""]?.valueRaw ?? "",
     }
   })
 
-  const exceedsWallet = poolTokens.some((token) => {
+  const exceedsWallet = allPoolTokens.some((token) => {
     console.log({
       t: BigNumber.from(tokenFormState[token?.symbol ?? ""]?.valueSafe ?? "0"),
     })
@@ -253,7 +253,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
     await approveAndDeposit(tokenFormState, shouldDepositWrapped)
     // Clear input after deposit
     updateTokenFormState(
-      poolTokens.reduce(
+      allPoolTokens.reduce(
         (acc, t) => ({
           ...acc,
           [t?.symbol ?? ""]: "",
