@@ -40,6 +40,7 @@ export type Gauge = {
   workingSupply: BigNumber | null
   rewards: GaugeReward[]
   gaugeName: string | null
+  isKilled: boolean
 }
 
 export type GaugeReward = {
@@ -168,6 +169,9 @@ export async function getGaugeData(
     const gaugeNamesPromise = ethCallProvider.tryAll(
       gaugeMulticallContracts.map((gaugeContract) => gaugeContract.symbol()),
     )
+    const gaugeKillStatusesPromise = ethCallProvider.tryAll(
+      gaugeMulticallContracts.map((gaugeContract) => gaugeContract.is_killed()),
+    )
 
     const [
       gaugeWeights,
@@ -179,7 +183,7 @@ export async function getGaugeData(
       gaugeTotalSupplies,
       gaugeLpTokenAddresses,
       gaugeNames,
-      minterSDLRate,
+      gaugeKillStatuses,
     ] = await Promise.all([
       gaugeWeightsPromise,
       gaugeRelativeWeightsPromise,
@@ -190,8 +194,11 @@ export async function getGaugeData(
       gaugeTotalSupplyPromise,
       gaugeLpTokenAddressesPromise,
       gaugeNamesPromise,
-      gaugeMinterContract ? gaugeMinterContract.rate() : Promise.resolve(Zero),
+      gaugeKillStatusesPromise,
     ])
+    const minterSDLRate = await (gaugeMinterContract
+      ? gaugeMinterContract.rate()
+      : Promise.resolve(Zero))
 
     const gauges: LPTokenAddressToGauge = gaugeAddresses.reduce(
       (previousGaugeData, gaugeAddress, index) => {
@@ -216,13 +223,14 @@ export async function getGaugeData(
           [lpTokenAddress]: {
             address: gaugeAddress,
             gaugeWeight: gaugeWeights[index],
-            gaugeRelativeWeight: gaugeRelativeWeights[index],
+            gaugeRelativeWeight: gaugeRelativeWeight,
             gaugeTotalSupply: gaugeTotalSupplies[index],
             workingSupply: gaugeWorkingSupplies[index],
             workingBalances: gaugeWorkingBalances?.[index],
             gaugeBalance: gaugeBalances?.[index],
             gaugeName: gaugeNames[index],
             lpTokenAddress,
+            isKilled: gaugeKillStatuses[index] ?? false,
             poolAddress: isValidPoolAddress ? poolAddress : null,
             poolName: gaugePool?.poolName || null,
             rewards: gaugeRewards[index]

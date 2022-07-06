@@ -50,7 +50,7 @@ export default function Farm(): JSX.Element {
       </Box>
 
       {Object.values(gauges)
-        // .filter(({ gaugeName }) => gaugeName?.includes("SLP")) // uncomment to only show SLP gauge
+        .filter(({ isKilled }) => !isKilled)
         .map((gauge) => {
           const poolName = gauge.poolName
           const farmName =
