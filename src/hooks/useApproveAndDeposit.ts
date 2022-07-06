@@ -119,6 +119,7 @@ export function useApproveAndDeposit(
           token.address,
           ERC20_ABI,
           library,
+          account ?? undefined,
         ) as Erc20
         if (tokenContract == null) return
         await checkAndApproveTokenForTrade(
