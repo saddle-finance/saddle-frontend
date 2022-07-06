@@ -64,16 +64,16 @@ export function useApproveAndDeposit(
   const tokens = useContext(TokensContext)
   const pool = basicPools?.[poolName]
   const metaSwapContract = useMemo(() => {
-    if (pool?.metaSwapDepositAddress && chainId && library) {
+    if (pool?.poolAddress && chainId && library) {
       return getContract(
-        pool.metaSwapDepositAddress[chainId],
+        pool.poolAddress[chainId],
         META_SWAP_ABI,
         library,
         account ?? undefined,
       ) as MetaSwap
     }
     return null
-  }, [chainId, library, account, pool?.metaSwapDepositAddress])
+  }, [chainId, library, account, pool?.poolAddress])
 
   return async function approveAndDeposit(
     state: ApproveAndDepositStateArgument,
