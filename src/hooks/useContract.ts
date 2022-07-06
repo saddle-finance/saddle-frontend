@@ -102,13 +102,17 @@ export function useMasterRegistry(): MasterRegistry | null {
   const contractAddress = chainId
     ? MASTER_REGISTRY_CONTRACT_ADDRESSES[chainId]
     : undefined
-  return useContract(contractAddress, MASTER_REGISTRY_ABI) as MasterRegistry
+  return useContract(
+    contractAddress,
+    MASTER_REGISTRY_ABI,
+    false,
+  ) as MasterRegistry
 }
 
 export const POOL_REGISTRY_NAME = formatBytes32String("PoolRegistry")
 
 export function usePoolRegistry(): PoolRegistry | null {
-  const { account, library } = useActiveWeb3React()
+  const { library, account } = useActiveWeb3React()
   const masterRegistryContract = useMasterRegistry()
   const [contractAddress, setContractAddress] = useState<string | undefined>()
   useEffect(() => {
@@ -265,6 +269,7 @@ export function useSynthetixExchangeRatesContract(): SynthetixExchangeRate | nul
   return useContract(
     contractAddress,
     SYNTHETIX_EXCHANGE_RATE_CONTRACT_ABI,
+    false,
   ) as SynthetixExchangeRate
 }
 
@@ -373,7 +378,11 @@ export function useGaugeControllerContract(): GaugeController | null {
   const contractAddress = chainId
     ? GAUGE_CONTROLLER_ADDRESSES[chainId]
     : undefined
-  return useContract(contractAddress, GAUGE_CONTROLLER_ABI) as GaugeController
+  return useContract(
+    contractAddress,
+    GAUGE_CONTROLLER_ABI,
+    false,
+  ) as GaugeController
 }
 
 export const useSdlContract = (): Sdl => {
@@ -412,7 +421,7 @@ export const useSdlWethSushiPairContract = (): SushiPool | null => {
   const contractAddress = chainId
     ? SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chainId]
     : undefined
-  return useContract(contractAddress, SUSHI_POOL_ABI) as SushiPool
+  return useContract(contractAddress, SUSHI_POOL_ABI, false) as SushiPool
 }
 
 export function useLiquidityGaugeContract(
