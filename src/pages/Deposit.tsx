@@ -6,13 +6,20 @@ import {
   isLegacySwapABIPool,
   isMetaPool,
 } from "../constants"
-import React, { ReactElement, useEffect, useMemo, useState } from "react"
+import React, {
+  ReactElement,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
 import { TokensStateType, useTokenFormState } from "../hooks/useTokenFormState"
 import { formatBNToString, getContract, shiftBNDecimals } from "../utils"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 import usePoolData, { PoolDataType } from "../hooks/usePoolData"
 
 import { AppState } from "../state"
+import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
@@ -20,6 +27,7 @@ import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { TokenPricesUSD } from "../state/application"
+import { TokensContext } from "../providers/TokensProvider"
 import { Zero } from "@ethersproject/constants"
 import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
@@ -35,17 +43,22 @@ interface Props {
 }
 
 function Deposit({ poolName }: Props): ReactElement | null {
+  const basicPools = useContext(BasicPoolsContext)
+  const basicTokens = useContext(TokensContext)
+  const pool = basicPools?.[poolName]
   const POOL = POOLS_MAP[poolName]
   const { account, library, chainId } = useActiveWeb3React()
   const approveAndDeposit = useApproveAndDeposit(poolName)
   const [poolData, userShareData] = usePoolData(poolName)
   const swapContract = useSwapContract(poolName)
   const allTokens = useMemo(() => {
-    return Array.from(
-      new Set(POOL.poolTokens.concat(POOL.underlyingPoolTokens || [])),
-    )
-  }, [POOL.poolTokens, POOL.underlyingPoolTokens])
-  const [tokenFormState, updateTokenFormState] = useTokenFormState(allTokens)
+    return Array.from(new Set(pool?.tokens.concat(pool.underlyingTokens || [])))
+  }, [pool?.tokens, pool?.underlyingTokens])
+  // const poolTokenAddresses = pool?.isMetaSwap
+  //   ? pool?.underlyingTokens
+  //   : pool?.tokens
+  const poolTokens = allTokens.map((token) => basicTokens?.[token])
+  const [tokenFormState, updateTokenFormState] = useTokenFormState(poolTokens)
   const [shouldDepositWrapped, setShouldDepositWrapped] = useState(false)
   useEffect(() => {
     // empty out previous token state when switchng between wrapped and unwrapped
@@ -73,6 +86,8 @@ function Deposit({ poolName }: Props): ReactElement | null {
   }, [
     shouldDepositWrapped,
     updateTokenFormState,
+    pool?.tokens,
+    pool?.underlyingTokens,
     POOL.poolTokens,
     POOL.underlyingPoolTokens,
   ])
@@ -134,9 +149,10 @@ function Deposit({ poolName }: Props): ReactElement | null {
         return
       }
       const tokenInputSum = parseUnits(
-        allTokens
+        poolTokens
           .reduce(
-            (sum, { symbol }) => sum + (+tokenFormState[symbol].valueRaw || 0),
+            (sum, token) =>
+              sum + (+tokenFormState[token?.symbol ?? ""]?.valueRaw ?? 0),
             0,
           )
           .toFixed(18),
@@ -194,11 +210,14 @@ function Deposit({ poolName }: Props): ReactElement | null {
     swapContract,
     userShareData,
     account,
-    POOL.poolTokens,
-    POOL.underlyingPoolTokens,
+    pool?.tokens,
+    pool?.underlyingTokens,
     metaSwapContract,
     shouldDepositWrapped,
     allTokens,
+    POOL.poolTokens,
+    POOL.underlyingPoolTokens,
+    poolTokens,
   ])
 
   // A represention of tokens used for UI
@@ -216,13 +235,16 @@ function Deposit({ poolName }: Props): ReactElement | null {
       decimals,
       priceUSD,
       max: formatBNToString(tokenBalances?.[symbol] || Zero, decimals),
-      inputValue: tokenFormState[symbol].valueRaw,
+      inputValue: tokenFormState[symbol]?.valueRaw ?? "",
     }
   })
 
-  const exceedsWallet = allTokens.some(({ symbol }) => {
-    const exceedsBoolean = (tokenBalances?.[symbol] || Zero).lt(
-      BigNumber.from(tokenFormState[symbol].valueSafe),
+  const exceedsWallet = poolTokens.some((token) => {
+    console.log({
+      t: BigNumber.from(tokenFormState[token?.symbol ?? ""]?.valueSafe ?? "0"),
+    })
+    const exceedsBoolean = (tokenBalances?.[token?.symbol ?? ""] || Zero).lt(
+      BigNumber.from(tokenFormState[token?.symbol ?? ""]?.valueSafe ?? "0"),
     )
     return exceedsBoolean
   })
@@ -231,10 +253,10 @@ function Deposit({ poolName }: Props): ReactElement | null {
     await approveAndDeposit(tokenFormState, shouldDepositWrapped)
     // Clear input after deposit
     updateTokenFormState(
-      allTokens.reduce(
+      poolTokens.reduce(
         (acc, t) => ({
           ...acc,
-          [t.symbol]: "",
+          [t?.symbol ?? ""]: "",
         }),
         {},
       ),
@@ -290,7 +312,7 @@ function buildTransactionData(
   const TOTAL_AMOUNT_DECIMALS = 18
   poolTokens.forEach((token) => {
     const { symbol, decimals } = token
-    const amount = BigNumber.from(tokenFormState[symbol].valueSafe)
+    const amount = BigNumber.from(tokenFormState[symbol]?.valueSafe ?? "0")
     const usdPriceBN = parseUnits(
       (tokenPricesUSD?.[symbol] || 0).toFixed(2),
       18,
