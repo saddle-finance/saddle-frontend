@@ -66,7 +66,7 @@ export function useApproveAndDeposit(
   const metaSwapContract = useMemo(() => {
     if (pool?.poolAddress && chainId && library) {
       return getContract(
-        pool.poolAddress[chainId],
+        pool.poolAddress,
         META_SWAP_ABI,
         library,
         account ?? undefined,
