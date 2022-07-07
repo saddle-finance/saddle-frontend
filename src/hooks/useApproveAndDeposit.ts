@@ -118,6 +118,7 @@ export function useApproveAndDeposit(
             "There was a problem loading the token or library",
           )
           console.error("Token or library is not loaded")
+          return
         }
         const spendingValue = BigNumber.from(state[token.symbol].valueSafe)
         if (spendingValue.isZero()) return
