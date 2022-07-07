@@ -59,6 +59,7 @@ type TokenType = {
 
 const MAXTIME = 86400 * 365 * 4
 const WEEK = 7
+const WEEK_HOUR = 24 * 7
 const THURSDAY = 4
 
 export default function VeSDL(): JSX.Element {
@@ -156,7 +157,7 @@ export default function VeSDL(): JSX.Element {
   // Calculate penalty Ratio and penalty amount
   const leftTimeForUnlock = lockEnd && getUnixTime(lockEnd) - currentTimestamp
   const isExpired = leftTimeForUnlock && leftTimeForUnlock <= 0
-  const penaltyAmount = leftTimeForUnlock
+  const penaltyAmount = !isExpired
     ? minBigNumber(
         lockedSDLVal.mul(BigNumber.from(3)).div(BigNumber.from(4)),
         lockedSDLVal
@@ -480,7 +481,7 @@ export default function VeSDL(): JSX.Element {
                 {t("withdrawAlertMsg", {
                   sdlValue: commify(formatUnits(penaltyAmount)),
                   weeksLeftForUnlock: Math.ceil(
-                    secondsToHours(leftTimeForUnlock) / 24 / 7,
+                    secondsToHours(leftTimeForUnlock) / WEEK_HOUR,
                   ),
                 })}
               </Alert>
