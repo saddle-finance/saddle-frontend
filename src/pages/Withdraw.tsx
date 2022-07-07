@@ -29,6 +29,7 @@ interface Props {
   poolName: string
 }
 function Withdraw({ poolName }: Props): ReactElement {
+  const [shouldWithdrawWrapped, setShouldWithdrawWrapped] = useState(false)
   const [poolData, userShareData] = usePoolData(poolName)
   const [withdrawFormState, updateWithdrawFormState] =
     useWithdrawFormState(poolName)
@@ -196,6 +197,8 @@ function Withdraw({ poolName }: Props): ReactElement {
       poolData={poolData}
       myShareData={userShareData}
       formStateData={withdrawFormState}
+      shouldWithdrawWrapped={shouldWithdrawWrapped}
+      onToggleWithdrawWrapped={() => setShouldWithdrawWrapped((prev) => !prev)}
       onConfirmTransaction={onConfirmTransaction}
       onFormChange={updateWithdrawFormState}
     />

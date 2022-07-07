@@ -331,6 +331,7 @@
   "withdrawInitiated": "Withdraw initiated",
   "withdrawal": "Withdrawal",
   "withdrawFrom": "Withdraw from",
+  "withdrawWrapped": "Withdraw wrapped",
   "withdrawPercentage": "Withdraw percentage",
   "withdrawSynth": "Withdraw as",
   "withdrewNToken": "Withdrew {{amount}} {{name}}",

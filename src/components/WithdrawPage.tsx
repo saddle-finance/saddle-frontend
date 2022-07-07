@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Checkbox,
   Container,
   FormControlLabel,
   Paper,
@@ -69,8 +70,10 @@ interface Props {
   poolData: PoolDataType | null
   myShareData: UserShareType | null
   formStateData: WithdrawFormState
+  shouldWithdrawWrapped: boolean
   onFormChange: (action: any) => void
   onConfirmTransaction: () => Promise<void>
+  onToggleWithdrawWrapped: () => void
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -84,6 +87,8 @@ const WithdrawPage = (props: Props): ReactElement | null => {
     formStateData,
     reviewData,
     onConfirmTransaction,
+    shouldWithdrawWrapped,
+    onToggleWithdrawWrapped,
   } = props
 
   const { gasPriceSelected } = useSelector((state: AppState) => state.user)
@@ -193,6 +198,16 @@ const WithdrawPage = (props: Props): ReactElement | null => {
                   ),
                 )}
               </Stack>
+              <Box>
+                <Checkbox
+                  onChange={onToggleWithdrawWrapped}
+                  checked={shouldWithdrawWrapped}
+                  data-testid="withdraw-wrapped-checkbox"
+                />
+                <Typography component="span" variant="body1">
+                  {t("withdrawWrapped")}
+                </Typography>
+              </Box>
               <Box mt={3}>
                 {reviewData.priceImpact.gte(0) ? (
                   <Typography component="span" color="primary" marginRight={1}>
