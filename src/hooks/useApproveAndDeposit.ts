@@ -112,7 +112,10 @@ export function useApproveAndDeposit(
       const approveSingleToken = async (
         token: BasicToken | undefined,
       ): Promise<void> => {
-        if (!token || !library) return
+        if (!token || !library) {
+          enqueueToast("error", "Token or library is not loaded")
+          throw new Error("Token or library is not loaded")
+        }
         const spendingValue = BigNumber.from(state[token.symbol].valueSafe)
         if (spendingValue.isZero()) return
         const tokenContract = getContract(
