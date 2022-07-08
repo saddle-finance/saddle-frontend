@@ -6,13 +6,20 @@ import {
   isLegacySwapABIPool,
   isMetaPool,
 } from "../constants"
-import React, { ReactElement, useEffect, useMemo, useState } from "react"
+import React, {
+  ReactElement,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
 import { TokensStateType, useTokenFormState } from "../hooks/useTokenFormState"
 import { formatBNToString, getContract, shiftBNDecimals } from "../utils"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 import usePoolData, { PoolDataType } from "../hooks/usePoolData"
 
 import { AppState } from "../state"
+import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import DepositPage from "../components/DepositPage"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
@@ -20,6 +27,7 @@ import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { TokenPricesUSD } from "../state/application"
+import { TokensContext } from "../providers/TokensProvider"
 import { Zero } from "@ethersproject/constants"
 import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
@@ -36,6 +44,10 @@ interface Props {
 
 function Deposit({ poolName }: Props): ReactElement | null {
   const POOL = POOLS_MAP[poolName]
+  const basicPools = useContext(BasicPoolsContext)
+  const basicTokens = useContext(TokensContext)
+  const pool = basicPools?.[poolName]
+  console.log({ basicTokens, pool })
   const { account, library, chainId } = useActiveWeb3React()
   const approveAndDeposit = useApproveAndDeposit(poolName)
   const [poolData, userShareData] = usePoolData(poolName)
