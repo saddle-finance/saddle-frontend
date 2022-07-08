@@ -13,8 +13,9 @@ import {
   formatBNToString,
   formatDeadlineToNumber,
 } from "../utils"
+
 import { AppState } from "../state/index"
-import { DepositTransaction } from "../interfaces/transactions"
+import { DepositBasicTransaction } from "../interfaces/transactions"
 import DialogTitle from "./DialogTitle"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import TokenIcon from "./TokenIcon"
@@ -27,7 +28,7 @@ import { useTranslation } from "react-i18next"
 interface Props {
   onClose: () => void
   onConfirm: () => void
-  transactionData: DepositTransaction
+  transactionData: DepositBasicTransaction
 }
 
 const DepositInfoItem = styled(Box)(({ theme }) => ({
@@ -79,18 +80,18 @@ function ReviewDeposit({
           </Typography>
           <Box>
             {transactionData.from.items.map(({ token, amount }) => (
-              <DepositInfoItem key={token.name}>
+              <DepositInfoItem key={token?.name}>
                 <div>
                   <TokenIcon
-                    symbol={token.symbol}
+                    symbol={token?.symbol ?? ""}
                     width={24}
                     height={24}
                     alt="icon"
                   />
-                  <Typography ml={1}>{token.symbol}</Typography>
+                  <Typography ml={1}>{token?.symbol}</Typography>
                 </div>
                 <Typography>
-                  {commify(formatBNToString(amount, token.decimals))}
+                  {commify(formatBNToString(amount, token?.decimals ?? 0))}
                 </Typography>
               </DepositInfoItem>
             ))}
@@ -110,20 +111,20 @@ function ReviewDeposit({
           <DepositInfoItem>
             <div>
               <TokenIcon
-                symbol={transactionData.to.item.token.symbol}
+                symbol={transactionData?.to?.item?.token?.symbol ?? ""}
                 width={24}
                 height={24}
                 alt="icon"
               />
               <Typography ml={1}>
-                {transactionData.to.item.token.symbol}
+                {transactionData?.to?.item?.token?.symbol ?? ""}
               </Typography>
             </div>
             <Typography>
               {commify(
                 formatBNToString(
                   transactionData.to.item.amount,
-                  transactionData.to.item.token.decimals,
+                  transactionData?.to?.item?.token?.decimals ?? 0,
                 ),
               )}
             </Typography>
@@ -177,16 +178,16 @@ function ReviewDeposit({
             <Box ml="auto" mr={0} width="fit-content">
               {transactionData.from.items.map(
                 ({ token, singleTokenPriceUSD }) => (
-                  <Typography key={token.symbol}>
-                    1 {token.symbol} = $
+                  <Typography key={token?.symbol}>
+                    1 {token?.symbol} = $
                     {commify(formatBNToString(singleTokenPriceUSD, 18, 2))}
                   </Typography>
                 ),
               )}
               {[transactionData.to.item].map(
                 ({ token, singleTokenPriceUSD }) => (
-                  <Typography key={token.symbol}>
-                    1 {token.symbol} = $
+                  <Typography key={token?.symbol}>
+                    1 {token?.symbol} = $
                     {commify(formatBNToString(singleTokenPriceUSD, 18, 2))}
                   </Typography>
                 ),

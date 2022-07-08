@@ -1,9 +1,18 @@
+import { BasicToken } from "../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Token } from "../constants"
 
 /** TRANSACTIONS */
+// TODO: Delete after POOL_MAP removal
 export interface TransactionItem {
   token: Token
+  amount: BigNumber
+  singleTokenPriceUSD: BigNumber
+  valueUSD: BigNumber // amount * singleTokenPriceUSD / token.decimals
+}
+
+export interface TransactionBasicItem {
+  token: BasicToken | undefined
   amount: BigNumber
   singleTokenPriceUSD: BigNumber
   valueUSD: BigNumber // amount * singleTokenPriceUSD / token.decimals
@@ -15,8 +24,10 @@ type AggregateValues = {
 }
 
 type SingleItem = { item: TransactionItem } & AggregateValues
+type SingleBasicItem = { item: TransactionBasicItem } & AggregateValues
 
 type MultipleItems = { items: TransactionItem[] } & AggregateValues
+type MultipleBasicItems = { items: TransactionBasicItem[] } & AggregateValues
 
 interface _BaseTransaction {
   from: SingleItem | MultipleItems
@@ -28,9 +39,25 @@ interface _BaseTransaction {
   }
 }
 
+interface _BaseBasicTransaction {
+  from: SingleBasicItem | MultipleBasicItems
+  to: SingleBasicItem | MultipleBasicItems
+  priceImpact: BigNumber
+  txnGasCost?: {
+    amount: BigNumber
+    valueUSD: BigNumber | null // amount * ethPriceUSD
+  }
+}
+
 export interface DepositTransaction extends _BaseTransaction {
   from: MultipleItems
   to: SingleItem
+  shareOfPool: BigNumber
+}
+
+export interface DepositBasicTransaction extends _BaseBasicTransaction {
+  from: MultipleBasicItems
+  to: SingleBasicItem
   shareOfPool: BigNumber
 }
 

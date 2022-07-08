@@ -1,8 +1,11 @@
-import { DepositTransaction, TransactionItem } from "../interfaces/transactions"
+import { BasicToken, TokensContext } from "../providers/TokensProvider"
+import {
+  DepositBasicTransaction,
+  TransactionBasicItem,
+} from "../interfaces/transactions"
 import {
   POOLS_MAP,
   PoolName,
-  Token,
   isLegacySwapABIPool,
   isMetaPool,
 } from "../constants"
@@ -27,7 +30,6 @@ import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { TokenPricesUSD } from "../state/application"
-import { TokensContext } from "../providers/TokensProvider"
 import { Zero } from "@ethersproject/constants"
 import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
@@ -54,29 +56,43 @@ function Deposit({ poolName }: Props): ReactElement | null {
   const swapContract = useSwapContract(poolName)
   const allTokens = useMemo(() => {
     return Array.from(
-      new Set(POOL.poolTokens.concat(POOL.underlyingPoolTokens || [])),
+      new Set(pool?.tokens.concat(pool?.underlyingTokens ?? [])),
     )
-  }, [POOL.poolTokens, POOL.underlyingPoolTokens])
-  const [tokenFormState, updateTokenFormState] = useTokenFormState(allTokens)
+  }, [pool?.tokens, pool?.underlyingTokens])
+  const lpToken = basicTokens?.[pool?.lpToken ?? ""]
+  const allPoolTokens = useMemo(
+    () => allTokens.map((token) => basicTokens?.[token]),
+    [allTokens, basicTokens],
+  )
+  const poolUnderlyingTokens = useMemo(
+    () => (pool?.underlyingTokens ?? []).map((token) => basicTokens?.[token]),
+    [pool?.underlyingTokens, basicTokens],
+  )
+  const poolTokens = useMemo(
+    () => pool?.tokens.map((token) => basicTokens?.[token]) ?? [],
+    [basicTokens, pool?.tokens],
+  )
+  const [tokenFormState, updateTokenFormState] =
+    useTokenFormState(allPoolTokens)
   const [shouldDepositWrapped, setShouldDepositWrapped] = useState(false)
   useEffect(() => {
     // empty out previous token state when switchng between wrapped and unwrapped
     if (shouldDepositWrapped) {
       updateTokenFormState(
-        POOL.poolTokens.reduce(
-          (acc, { symbol }) => ({
+        poolUnderlyingTokens.reduce(
+          (acc, token) => ({
             ...acc,
-            [symbol]: "",
+            [token?.symbol ?? ""]: "",
           }),
           {},
         ),
       )
     } else {
       updateTokenFormState(
-        (POOL.underlyingPoolTokens || []).reduce(
-          (acc, { symbol }) => ({
+        poolTokens.reduce(
+          (acc, token) => ({
             ...acc,
-            [symbol]: "",
+            [token?.symbol ?? ""]: "",
           }),
           {},
         ),
@@ -85,8 +101,8 @@ function Deposit({ poolName }: Props): ReactElement | null {
   }, [
     shouldDepositWrapped,
     updateTokenFormState,
-    POOL.poolTokens,
-    POOL.underlyingPoolTokens,
+    poolTokens,
+    poolUnderlyingTokens,
   ])
   const tokenBalances = usePoolTokenBalances()
   const { tokenPricesUSD, gasStandard, gasFast, gasInstant } = useSelector(
@@ -146,9 +162,10 @@ function Deposit({ poolName }: Props): ReactElement | null {
         return
       }
       const tokenInputSum = parseUnits(
-        allTokens
+        allPoolTokens
           .reduce(
-            (sum, { symbol }) => sum + (+tokenFormState[symbol].valueRaw || 0),
+            (sum, token) =>
+              sum + (+tokenFormState[token?.symbol ?? ""]?.valueRaw || 0),
             0,
           )
           .toFixed(18),
@@ -162,7 +179,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
           ).calculateTokenAmount(
             account,
             POOL.poolTokens.map(
-              ({ symbol }) => tokenFormState[symbol].valueSafe,
+              ({ symbol }) => tokenFormState[symbol]?.valueSafe,
             ),
             true, // deposit boolean
           )
@@ -170,7 +187,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
           depositLPTokenAmount = metaSwapContract
             ? await metaSwapContract.calculateTokenAmount(
                 (POOL.underlyingPoolTokens || []).map(
-                  ({ symbol }) => tokenFormState[symbol].valueSafe,
+                  ({ symbol }) => tokenFormState[symbol]?.valueSafe,
                 ),
                 true, // deposit boolean
               )
@@ -180,7 +197,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
             swapContract as SwapFlashLoanNoWithdrawFee
           ).calculateTokenAmount(
             POOL.poolTokens.map(
-              ({ symbol }) => tokenFormState[symbol].valueSafe,
+              ({ symbol }) => tokenFormState[symbol]?.valueSafe,
             ),
             true, // deposit boolean
           )
@@ -211,6 +228,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
     metaSwapContract,
     shouldDepositWrapped,
     allTokens,
+    allPoolTokens,
   ])
 
   // A represention of tokens used for UI
@@ -228,13 +246,13 @@ function Deposit({ poolName }: Props): ReactElement | null {
       decimals,
       priceUSD,
       max: formatBNToString(tokenBalances?.[symbol] || Zero, decimals),
-      inputValue: tokenFormState[symbol].valueRaw,
+      inputValue: tokenFormState[symbol]?.valueRaw,
     }
   })
 
-  const exceedsWallet = allTokens.some(({ symbol }) => {
-    const exceedsBoolean = (tokenBalances?.[symbol] || Zero).lt(
-      BigNumber.from(tokenFormState[symbol].valueSafe),
+  const exceedsWallet = allPoolTokens.some((token) => {
+    const exceedsBoolean = (tokenBalances?.[token?.symbol ?? ""] ?? Zero).lt(
+      BigNumber.from(tokenFormState[token?.symbol ?? ""]?.valueSafe ?? "0"),
     )
     return exceedsBoolean
   })
@@ -243,10 +261,10 @@ function Deposit({ poolName }: Props): ReactElement | null {
     await approveAndDeposit(tokenFormState, shouldDepositWrapped)
     // Clear input after deposit
     updateTokenFormState(
-      allTokens.reduce(
+      allPoolTokens.reduce(
         (acc, t) => ({
           ...acc,
-          [t.symbol]: "",
+          [t?.symbol ?? ""]: "",
         }),
         {},
       ),
@@ -258,8 +276,8 @@ function Deposit({ poolName }: Props): ReactElement | null {
   const depositTransaction = buildTransactionData(
     tokenFormState,
     poolData,
-    shouldDepositWrapped ? POOL.underlyingPoolTokens || [] : POOL.poolTokens,
-    POOL.lpToken,
+    shouldDepositWrapped ? poolTokens || [] : poolUnderlyingTokens,
+    lpToken,
     priceImpact,
     estDepositLPTokenAmount,
     gasPrice,
@@ -287,24 +305,25 @@ function Deposit({ poolName }: Props): ReactElement | null {
 function buildTransactionData(
   tokenFormState: TokensStateType,
   poolData: PoolDataType | null,
-  poolTokens: Token[],
-  poolLpToken: Token,
+  poolTokens: (BasicToken | undefined)[],
+  poolLpToken: BasicToken | undefined,
   priceImpact: BigNumber,
   estDepositLPTokenAmount: BigNumber,
   gasPrice: BigNumber,
   tokenPricesUSD?: TokenPricesUSD,
-): DepositTransaction {
+): DepositBasicTransaction {
   const from = {
-    items: [] as TransactionItem[],
+    items: [] as TransactionBasicItem[],
     totalAmount: Zero,
     totalValueUSD: Zero,
   }
   const TOTAL_AMOUNT_DECIMALS = 18
   poolTokens.forEach((token) => {
-    const { symbol, decimals } = token
-    const amount = BigNumber.from(tokenFormState[symbol].valueSafe)
+    const amount = BigNumber.from(
+      tokenFormState[token?.symbol ?? ""]?.valueSafe ?? "0",
+    )
     const usdPriceBN = parseUnits(
-      (tokenPricesUSD?.[symbol] || 0).toFixed(2),
+      (tokenPricesUSD?.[token?.symbol ?? ""] || 0).toFixed(2),
       18,
     )
     if (amount.lte("0")) return
@@ -312,11 +331,13 @@ function buildTransactionData(
       token,
       amount,
       singleTokenPriceUSD: usdPriceBN,
-      valueUSD: amount.mul(usdPriceBN).div(BigNumber.from(10).pow(decimals)),
+      valueUSD: amount
+        .mul(usdPriceBN)
+        .div(BigNumber.from(10).pow(token?.decimals ?? 0)),
     }
     from.items.push(item)
     from.totalAmount = from.totalAmount.add(
-      shiftBNDecimals(amount, TOTAL_AMOUNT_DECIMALS - decimals),
+      shiftBNDecimals(amount, TOTAL_AMOUNT_DECIMALS - (token?.decimals ?? 0)),
     )
     from.totalValueUSD = from.totalValueUSD.add(usdPriceBN)
   })
@@ -324,7 +345,7 @@ function buildTransactionData(
   const lpTokenPriceUSD = poolData?.lpTokenPriceUSD || Zero
   const toTotalValueUSD = estDepositLPTokenAmount
     .mul(lpTokenPriceUSD)
-    ?.div(BigNumber.from(10).pow(poolLpToken.decimals))
+    ?.div(BigNumber.from(10).pow(poolLpToken?.decimals ?? 0))
   const to = {
     item: {
       token: poolLpToken,

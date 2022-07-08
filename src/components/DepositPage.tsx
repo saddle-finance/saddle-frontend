@@ -30,7 +30,7 @@ import { enqueuePromiseToast, enqueueToast } from "./Toastify"
 
 import AdvancedOptions from "./AdvancedOptions"
 import ConfirmTransaction from "./ConfirmTransaction"
-import { DepositTransaction } from "../interfaces/transactions"
+import { DepositBasicTransaction } from "../interfaces/transactions"
 import Dialog from "./Dialog"
 import { GaugeContext } from "../providers/GaugeProvider"
 import LIQUIDITY_GAUGE_V5_ABI from "../constants/abis/liquidityGaugeV5.json"
@@ -66,7 +66,7 @@ interface Props {
   exceedsWallet: boolean
   poolData: PoolDataType | null
   myShareData: UserShareType | null
-  transactionData: DepositTransaction
+  transactionData: DepositBasicTransaction
 }
 
 const DepositPage = (props: Props): ReactElement => {
