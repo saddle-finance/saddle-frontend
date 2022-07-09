@@ -454,7 +454,7 @@ export default function VeSDL(): JSX.Element {
                 {loading ? (
                   <Skeleton width="100px" sx={{ display: "inline-block" }} />
                 ) : (
-                  formatUnits(lockedSDLVal)
+                  commify(formatBNToString(lockedSDLVal, 18, 2))
                 )}
               </Typography>
             </Typography>
@@ -468,7 +468,7 @@ export default function VeSDL(): JSX.Element {
                 {loading ? (
                   <Skeleton width="100px" sx={{ display: "inline-block" }} />
                 ) : (
-                  formatUnits(veSdlTokenBalance)
+                  commify(formatBNToString(veSdlTokenBalance, 18, 2))
                 )}
               </Typography>
             </Typography>
@@ -481,7 +481,7 @@ export default function VeSDL(): JSX.Element {
                 }}
               >
                 {t("withdrawAlertMsg", {
-                  sdlValue: commify(formatUnits(penaltyAmount)),
+                  sdlValue: commify(formatBNToString(penaltyAmount, 18, 2)),
                   weeksLeftForUnlock: Math.ceil(
                     secondsToHours(leftTimeForUnlock) / WEEK_HOUR,
                   ),
