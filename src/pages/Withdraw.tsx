@@ -31,8 +31,6 @@ interface Props {
 function Withdraw({ poolName }: Props): ReactElement {
   const [shouldWithdrawWrapped, setShouldWithdrawWrapped] = useState(false)
   const [poolData, userShareData] = usePoolData(poolName)
-  const [withdrawFormState, updateWithdrawFormState] =
-    useWithdrawFormState(poolName)
   const { slippageCustom, slippageSelected, gasPriceSelected, gasCustom } =
     useSelector((state: AppState) => state.user)
   const { tokenPricesUSD, gasStandard, gasFast, gasInstant } = useSelector(
@@ -43,9 +41,15 @@ function Withdraw({ poolName }: Props): ReactElement {
   const { account } = useActiveWeb3React()
   const [withdrawLPTokenAmount, setWithdrawLPTokenAmount] =
     useState<BigNumber>(Zero)
-  const withdrawTokens = poolData.isMetaSwap
-    ? poolData.underlyingTokens
-    : poolData.tokens
+
+  const withdrawTokens = useMemo(
+    () => (shouldWithdrawWrapped ? poolData.tokens : poolData.underlyingTokens),
+    [poolData.tokens, poolData.underlyingTokens, shouldWithdrawWrapped],
+  )
+  const [withdrawFormState, updateWithdrawFormState] = useWithdrawFormState(
+    withdrawTokens,
+    poolName,
+  )
   const tokenInputSum = useMemo(() => {
     return withdrawTokens.reduce(
       (sum, { address }) =>
@@ -114,13 +118,14 @@ function Withdraw({ poolName }: Props): ReactElement {
 
   const tokensData = React.useMemo(
     () =>
-      withdrawTokens.map(({ name, symbol, address, decimals }) => ({
+      withdrawTokens.map(({ name, symbol, address, decimals, value }) => ({
         name,
         symbol,
         address,
         decimals,
         priceUSD: tokenPricesUSD?.[symbol] || 0, // @dev TODO handle lpToken Price when wrapped withdraw implemented
         inputValue: withdrawFormState.tokenInputs[address]?.valueRaw || "",
+        max: value,
       })),
     [withdrawFormState, withdrawTokens, tokenPricesUSD],
   )

@@ -19,7 +19,7 @@ import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import { useSelector } from "react-redux"
 
-interface TokenShareType {
+export interface TokenShareType {
   symbol: string
   value: BigNumber
   decimals: number

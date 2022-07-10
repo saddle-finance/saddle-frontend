@@ -3,6 +3,7 @@ import {
   numberInputStateCreator,
 } from "../utils/numberInputState"
 import { useCallback, useMemo, useState } from "react"
+import usePoolData, { TokenShareType } from "../hooks/usePoolData"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
@@ -12,7 +13,6 @@ import { debounce } from "lodash"
 import { isLegacySwapABIPool } from "../constants"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
-import usePoolData from "../hooks/usePoolData"
 import { useSwapContract } from "../hooks/useContract"
 
 interface ErrorState {
@@ -37,17 +37,17 @@ export type WithdrawFormAction = {
   fieldName: FormFields | "reset"
   address?: string
   value: string
+  max?: BigNumber
 }
 
 export default function useWithdrawFormState(
+  withdrawTokens: TokenShareType[],
   poolName: string,
 ): [WithdrawFormState, (action: WithdrawFormAction) => void] {
+  console.log("withdraw tokens", withdrawTokens)
   const swapContract = useSwapContract(poolName)
   const [poolData, userShareData] = usePoolData(poolName)
   const { account } = useActiveWeb3React()
-  const withdrawTokens = poolData.isMetaSwap
-    ? poolData.underlyingTokens
-    : poolData.tokens
   const tokenInputStateCreators: {
     [address: string]: ReturnType<typeof numberInputStateCreator>
   } = useMemo(

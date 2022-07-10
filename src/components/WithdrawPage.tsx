@@ -15,7 +15,11 @@ import {
 } from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
-import { formatBNToPercentString, isNumberOrEmpty } from "../utils"
+import {
+  formatBNToPercentString,
+  formatBNToString,
+  isNumberOrEmpty,
+} from "../utils"
 
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state"
@@ -64,6 +68,7 @@ interface Props {
     decimals: number
     priceUSD: number
     inputValue: string
+    max: BigNumber
   }>
   reviewData: ReviewWithdrawData
   selected?: { [key: string]: any }
@@ -91,6 +96,7 @@ const WithdrawPage = (props: Props): ReactElement | null => {
     onToggleWithdrawWrapped,
   } = props
 
+  console.log("tokens data ==>", tokensData)
   const { gasPriceSelected } = useSelector((state: AppState) => state.user)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const theme = useTheme()
@@ -175,7 +181,15 @@ const WithdrawPage = (props: Props): ReactElement | null => {
               <Stack spacing={3}>
                 {tokensData.map(
                   (
-                    { decimals, symbol, name, priceUSD, inputValue, address },
+                    {
+                      decimals,
+                      symbol,
+                      name,
+                      priceUSD,
+                      inputValue,
+                      address,
+                      max,
+                    },
                     index,
                   ) => (
                     <TokenInput
@@ -186,6 +200,7 @@ const WithdrawPage = (props: Props): ReactElement | null => {
                         name,
                         priceUSD,
                       }}
+                      max={formatBNToString(max, 18)}
                       inputValue={inputValue}
                       onChange={(value): void =>
                         onFormChange({
