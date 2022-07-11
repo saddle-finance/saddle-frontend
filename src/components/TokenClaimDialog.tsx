@@ -453,12 +453,24 @@ function useRewardClaims() {
         rewards: GaugeReward[]
       } | null,
     ) => {
-      if (!chainId || !account || !gaugeMinterContract || !library || !gauge)
+      if (!chainId || !account || !gaugeMinterContract || !library || !gauge) {
+        enqueueToast("error", "Unable to claim reward")
         return
+      }
+
+      if (gauge.rewards.length === 0) {
+        enqueueToast("error", "No rewards to claim")
+        return
+      }
       try {
         updateClaimStatus(gauge.gaugeName, STATUSES.PENDING)
         const claimPromises = []
-        if (gauge.rewards.length > 0 && gauge.address) {
+        const minterRewards = gauge.rewards.filter(({ isSDL }) => isSDL)
+        const gaugeRewards = gauge.rewards.filter(({ isSDL }) => !isSDL)
+        if (minterRewards.length > 0) {
+          claimPromises.push(gaugeMinterContract.mint(gauge.address))
+        }
+        if (gaugeRewards.length > 0) {
           const liquidityGaugeContract = getContract(
             gauge.address,
             LIQUIDITY_GAUGE_V5_ABI,
@@ -469,7 +481,6 @@ function useRewardClaims() {
             liquidityGaugeContract["claim_rewards(address)"](account),
           )
         }
-        claimPromises.push(gaugeMinterContract.mint(gauge.address))
         const txns = await Promise.all(claimPromises)
         await enqueuePromiseToast(
           chainId,
