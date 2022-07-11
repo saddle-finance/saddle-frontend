@@ -354,7 +354,10 @@ function ClaimListItem({
   status?: STATUSES
 }): ReactElement {
   const { t } = useTranslation()
-  const disabled = status === STATUSES.PENDING || status === STATUSES.SUCCESS
+  const disabled =
+    status === STATUSES.PENDING ||
+    status === STATUSES.SUCCESS ||
+    items.every(([, amount]) => amount.isZero())
   // @dev - our formatting assumes all tokens are 1e18
   return (
     <ListItem>
