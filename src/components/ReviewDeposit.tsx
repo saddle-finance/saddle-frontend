@@ -111,20 +111,20 @@ function ReviewDeposit({
           <DepositInfoItem>
             <div>
               <TokenIcon
-                symbol={transactionData?.to?.item?.token?.symbol ?? ""}
+                symbol={transactionData.to.item.token?.symbol ?? ""}
                 width={24}
                 height={24}
                 alt="icon"
               />
               <Typography ml={1}>
-                {transactionData?.to?.item?.token?.symbol ?? ""}
+                {transactionData.to.item.token?.symbol ?? ""}
               </Typography>
             </div>
             <Typography>
               {commify(
                 formatBNToString(
                   transactionData.to.item.amount,
-                  transactionData?.to?.item?.token?.decimals ?? 0,
+                  transactionData.to.item.token?.decimals ?? 0,
                 ),
               )}
             </Typography>

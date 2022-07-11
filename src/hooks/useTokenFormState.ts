@@ -6,6 +6,7 @@ import React, { useCallback, useMemo } from "react"
 
 import { BasicToken } from "../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
+import { Zero } from "@ethersproject/constants"
 
 export interface TokensStateType {
   [token: string]: NumberInputState
@@ -28,7 +29,7 @@ export function useTokenFormState(
           ...acc,
           [token?.symbol ?? ""]: numberInputStateCreator(
             token?.decimals ?? 0,
-            BigNumber.from("0"),
+            Zero,
           ),
         }),
         {},

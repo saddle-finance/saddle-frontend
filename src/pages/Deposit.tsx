@@ -43,7 +43,6 @@ function Deposit({ poolName }: Props): ReactElement | null {
   const basicPools = useContext(BasicPoolsContext)
   const basicTokens = useContext(TokensContext)
   const pool = basicPools?.[poolName]
-  console.log({ basicPools, pool })
   const { account, library, chainId } = useActiveWeb3React()
   const approveAndDeposit = useApproveAndDeposit(poolName)
   const [poolData, userShareData] = usePoolData(poolName)
@@ -62,7 +61,6 @@ function Deposit({ poolName }: Props): ReactElement | null {
     () => (pool?.underlyingTokens ?? []).map((token) => basicTokens?.[token]),
     [pool?.underlyingTokens, basicTokens],
   )
-  console.log({ poolUnderlyingTokens })
   const poolTokens = useMemo(
     () => pool?.tokens.map((token) => basicTokens?.[token]) ?? [],
     [basicTokens, pool?.tokens],
@@ -177,7 +175,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
           ).calculateTokenAmount(
             account,
             poolUnderlyingTokens.map(
-              (token) => tokenFormState[token?.symbol ?? ""]?.valueSafe,
+              (token) => tokenFormState[token?.symbol ?? ""]?.valueSafe ?? "0",
             ),
             true, // deposit boolean
           )
@@ -185,7 +183,8 @@ function Deposit({ poolName }: Props): ReactElement | null {
           depositLPTokenAmount = metaSwapContract
             ? await metaSwapContract.calculateTokenAmount(
                 poolTokens.map(
-                  (token) => tokenFormState[token?.symbol ?? ""]?.valueSafe,
+                  (token) =>
+                    tokenFormState[token?.symbol ?? ""]?.valueSafe ?? "0",
                 ),
                 true, // deposit boolean
               )
@@ -195,7 +194,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
             swapContract as SwapFlashLoanNoWithdrawFee
           ).calculateTokenAmount(
             poolUnderlyingTokens.map(
-              (token) => tokenFormState[token?.symbol ?? ""]?.valueSafe,
+              (token) => tokenFormState[token?.symbol ?? ""]?.valueSafe ?? "0",
             ),
             true, // deposit boolean
           )
@@ -223,7 +222,6 @@ function Deposit({ poolName }: Props): ReactElement | null {
     account,
     metaSwapContract,
     shouldDepositWrapped,
-    allTokens,
     allPoolTokens,
     poolTokens,
     poolUnderlyingTokens,
@@ -252,7 +250,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
   })
 
   const exceedsWallet = allPoolTokens.some((token) => {
-    const exceedsBoolean = (tokenBalances?.[token?.symbol ?? ""] ?? Zero).lt(
+    const exceedsBoolean = (tokenBalances?.[token?.symbol ?? ""] || Zero).lt(
       BigNumber.from(tokenFormState[token?.symbol ?? ""]?.valueSafe ?? "0"),
     )
     return exceedsBoolean
