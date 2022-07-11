@@ -3,12 +3,7 @@ import {
   DepositBasicTransaction,
   TransactionBasicItem,
 } from "../interfaces/transactions"
-import {
-  POOLS_MAP,
-  PoolName,
-  isLegacySwapABIPool,
-  isMetaPool,
-} from "../constants"
+import { PoolName, isLegacySwapABIPool } from "../constants"
 import React, {
   ReactElement,
   useContext,
@@ -45,11 +40,10 @@ interface Props {
 }
 
 function Deposit({ poolName }: Props): ReactElement | null {
-  const POOL = POOLS_MAP[poolName]
   const basicPools = useContext(BasicPoolsContext)
   const basicTokens = useContext(TokensContext)
   const pool = basicPools?.[poolName]
-  console.log({ basicTokens, pool })
+  console.log({ basicPools, pool })
   const { account, library, chainId } = useActiveWeb3React()
   const approveAndDeposit = useApproveAndDeposit(poolName)
   const [poolData, userShareData] = usePoolData(poolName)
@@ -68,6 +62,7 @@ function Deposit({ poolName }: Props): ReactElement | null {
     () => (pool?.underlyingTokens ?? []).map((token) => basicTokens?.[token]),
     [pool?.underlyingTokens, basicTokens],
   )
+  console.log({ poolUnderlyingTokens })
   const poolTokens = useMemo(
     () => pool?.tokens.map((token) => basicTokens?.[token]) ?? [],
     [basicTokens, pool?.tokens],
@@ -110,7 +105,11 @@ function Deposit({ poolName }: Props): ReactElement | null {
   )
 
   // Merge underlying token usd prices and tokenPricesUSD array
-  const [underlyingPoolData] = usePoolData(POOL.underlyingPool)
+  const underlyingPoolName = Object.values(basicPools || {}).find(
+    (basicPool) => basicPool.poolAddress === pool?.basePoolAddress,
+  )?.poolName
+
+  const [underlyingPoolData] = usePoolData(underlyingPoolName)
   let newTokenPricesUSD = tokenPricesUSD
   if (underlyingPoolData.lpTokenPriceUSD != Zero) {
     const underlyingTokenUSDValue = parseFloat(
@@ -136,18 +135,17 @@ function Deposit({ poolName }: Props): ReactElement | null {
   )
   const [estDepositLPTokenAmount, setEstDepositLPTokenAmount] = useState(Zero)
   const [priceImpact, setPriceImpact] = useState(Zero)
-  const isMetaSwap = isMetaPool(POOL.name)
   const metaSwapContract = useMemo(() => {
-    if (isMetaSwap && chainId && library) {
+    if (pool?.isMetaSwap && chainId && library) {
       return getContract(
-        POOL.metaSwapAddresses?.[chainId] as string,
+        pool?.poolAddress,
         META_SWAP_ABI,
         library,
         account ?? undefined,
       ) as MetaSwap
     }
     return null
-  }, [isMetaSwap, chainId, library, POOL.metaSwapAddresses, account])
+  }, [pool?.isMetaSwap, chainId, library, pool?.poolAddress, account])
 
   useEffect(() => {
     // evaluate if a new deposit will exceed the pool's per-user limit
@@ -178,16 +176,16 @@ function Deposit({ poolName }: Props): ReactElement | null {
             swapContract as SwapFlashLoan
           ).calculateTokenAmount(
             account,
-            POOL.poolTokens.map(
-              ({ symbol }) => tokenFormState[symbol]?.valueSafe,
+            poolUnderlyingTokens.map(
+              (token) => tokenFormState[token?.symbol ?? ""]?.valueSafe,
             ),
             true, // deposit boolean
           )
         } else if (shouldDepositWrapped) {
           depositLPTokenAmount = metaSwapContract
             ? await metaSwapContract.calculateTokenAmount(
-                (POOL.underlyingPoolTokens || []).map(
-                  ({ symbol }) => tokenFormState[symbol]?.valueSafe,
+                poolTokens.map(
+                  (token) => tokenFormState[token?.symbol ?? ""]?.valueSafe,
                 ),
                 true, // deposit boolean
               )
@@ -196,8 +194,8 @@ function Deposit({ poolName }: Props): ReactElement | null {
           depositLPTokenAmount = await (
             swapContract as SwapFlashLoanNoWithdrawFee
           ).calculateTokenAmount(
-            POOL.poolTokens.map(
-              ({ symbol }) => tokenFormState[symbol]?.valueSafe,
+            poolUnderlyingTokens.map(
+              (token) => tokenFormState[token?.symbol ?? ""]?.valueSafe,
             ),
             true, // deposit boolean
           )
@@ -223,30 +221,33 @@ function Deposit({ poolName }: Props): ReactElement | null {
     swapContract,
     userShareData,
     account,
-    POOL.poolTokens,
-    POOL.underlyingPoolTokens,
     metaSwapContract,
     shouldDepositWrapped,
     allTokens,
     allPoolTokens,
+    poolTokens,
+    poolUnderlyingTokens,
   ])
 
   // A represention of tokens used for UI
   const tmpDepositTokens = shouldDepositWrapped
-    ? POOL.underlyingPoolTokens || []
-    : POOL.poolTokens
-  const tokens = tmpDepositTokens.map(({ symbol, name, decimals }, i) => {
+    ? poolTokens
+    : poolUnderlyingTokens
+  const tokens = tmpDepositTokens.map((token, i) => {
     const priceUSD =
       (shouldDepositWrapped && i === tmpDepositTokens.length - 1
         ? parseFloat(formatUnits(poolData.lpTokenPriceUSD, 18))
-        : tokenPricesUSD?.[symbol]) || 0
+        : tokenPricesUSD?.[token?.symbol ?? ""]) || 0
     return {
-      symbol,
-      name,
-      decimals,
+      symbol: token?.symbol ?? "",
+      name: token?.name ?? "",
+      decimals: token?.decimals ?? 18,
       priceUSD,
-      max: formatBNToString(tokenBalances?.[symbol] || Zero, decimals),
-      inputValue: tokenFormState[symbol]?.valueRaw,
+      max: formatBNToString(
+        tokenBalances?.[token?.symbol ?? ""] || Zero,
+        token?.decimals ?? 18,
+      ),
+      inputValue: tokenFormState[token?.symbol ?? ""]?.valueRaw,
     }
   })
 
