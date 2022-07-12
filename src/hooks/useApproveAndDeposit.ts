@@ -1,20 +1,22 @@
 import {
   BTC_POOL_NAME,
+  POOLS_MAP,
   PoolName,
   TRANSACTION_TYPES,
+  Token,
   isLegacySwapABIPool,
 } from "../constants"
-import { BasicToken, TokensContext } from "../providers/TokensProvider"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { formatDeadlineToNumber, getContract } from "../utils"
-import { useContext, useMemo } from "react"
+import {
+  useAllContracts,
+  useLPTokenContract,
+  useSwapContract,
+} from "./useContract"
 import { useDispatch, useSelector } from "react-redux"
-import { useLPTokenContract, useSwapContract } from "./useContract"
 
 import { AppState } from "../state"
-import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
-import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { GasPrices } from "../state/user"
 import { IS_PRODUCTION } from "../utils/environment"
@@ -24,12 +26,12 @@ import { NumberInputState } from "../utils/numberInputState"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
-import { Zero } from "@ethersproject/constants"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
+import { useMemo } from "react"
 
 interface ApproveAndDepositStateArgument {
   [tokenSymbol: string]: NumberInputState
@@ -44,6 +46,7 @@ export function useApproveAndDeposit(
   const dispatch = useDispatch()
   const swapContract = useSwapContract(poolName)
   const lpTokenContract = useLPTokenContract(poolName)
+  const tokenContracts = useAllContracts()
   const { account, chainId, library } = useActiveWeb3React()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
@@ -57,20 +60,18 @@ export function useApproveAndDeposit(
     transactionDeadlineSelected,
     infiniteApproval,
   } = useSelector((state: AppState) => state.user)
-  const basicPools = useContext(BasicPoolsContext)
-  const tokens = useContext(TokensContext)
-  const pool = basicPools?.[poolName]
+  const POOL = POOLS_MAP[poolName]
   const metaSwapContract = useMemo(() => {
-    if (pool?.poolAddress && chainId && library) {
+    if (POOL.metaSwapAddresses && chainId && library) {
       return getContract(
-        pool.poolAddress,
+        POOL.metaSwapAddresses?.[chainId],
         META_SWAP_ABI,
         library,
         account ?? undefined,
       ) as MetaSwap
     }
     return null
-  }, [chainId, library, account, pool?.poolAddress])
+  }, [chainId, library, POOL.metaSwapAddresses, account])
 
   return async function approveAndDeposit(
     state: ApproveAndDepositStateArgument,
@@ -81,16 +82,13 @@ export function useApproveAndDeposit(
       if (
         !swapContract ||
         !lpTokenContract ||
-        !pool ||
-        !tokens ||
         (shouldDepositWrapped && !metaSwapContract)
       )
         throw new Error("Swap contract is not loaded")
 
-      const poolTokenAddresses = shouldDepositWrapped
-        ? pool.tokens
-        : pool.underlyingTokens
-      const poolTokens = poolTokenAddresses?.map((token) => tokens[token]) ?? []
+      const poolTokens = shouldDepositWrapped
+        ? (POOL.underlyingPoolTokens as Token[])
+        : POOL.poolTokens
       const effectiveSwapContract = shouldDepositWrapped
         ? (metaSwapContract as MetaSwap)
         : swapContract
@@ -109,25 +107,10 @@ export function useApproveAndDeposit(
         gasPriceUnsafe ? String(gasPriceUnsafe) : "45",
         9,
       )
-      const approveSingleToken = async (
-        token: BasicToken | undefined,
-      ): Promise<void> => {
-        if (!token || !library) {
-          enqueueToast(
-            "error",
-            "There was a problem loading the token or library",
-          )
-          console.error("Token or library is not loaded")
-          return
-        }
+      const approveSingleToken = async (token: Token): Promise<void> => {
         const spendingValue = BigNumber.from(state[token.symbol].valueSafe)
         if (spendingValue.isZero()) return
-        const tokenContract = getContract(
-          token.address,
-          ERC20_ABI,
-          library,
-          account ?? undefined,
-        ) as Erc20
+        const tokenContract = tokenContracts?.[token.symbol] as Erc20
         if (tokenContract == null) return
         await checkAndApproveTokenForTrade(
           tokenContract,
@@ -157,21 +140,21 @@ export function useApproveAndDeposit(
       const isFirstTransaction = (await lpTokenContract.totalSupply()).isZero()
       let minToMint: BigNumber
       if (isFirstTransaction) {
-        minToMint = Zero
+        minToMint = BigNumber.from("0")
       } else {
         if (isLegacySwapABIPool(poolName)) {
           minToMint = await (
             effectiveSwapContract as SwapFlashLoan
           ).calculateTokenAmount(
             account,
-            poolTokens.map((token) => state[token?.symbol ?? ""].valueSafe),
+            poolTokens.map(({ symbol }) => state[symbol].valueSafe),
             true, // deposit boolean
           )
         } else {
           minToMint = await (
             effectiveSwapContract as SwapFlashLoanNoWithdrawFee
           ).calculateTokenAmount(
-            poolTokens.map((token) => state[token?.symbol ?? ""].valueSafe),
+            poolTokens.map(({ symbol }) => state[symbol].valueSafe),
             true, // deposit boolean
           )
         }
@@ -184,9 +167,7 @@ export function useApproveAndDeposit(
       )
 
       let spendTransaction
-      const txnAmounts = poolTokens.map(
-        (token) => state[token?.symbol ?? ""].valueSafe,
-      )
+      const txnAmounts = poolTokens.map(({ symbol }) => state[symbol].valueSafe)
       const txnDeadline = Math.round(
         new Date().getTime() / 1000 + 60 * deadline,
       )
