@@ -68,7 +68,7 @@ interface Props {
     decimals: number
     priceUSD: number
     inputValue: string
-    max: BigNumber
+    max?: BigNumber
   }>
   reviewData: ReviewWithdrawData
   selected?: { [key: string]: any }
@@ -96,7 +96,6 @@ const WithdrawPage = (props: Props): ReactElement | null => {
     onToggleWithdrawWrapped,
   } = props
 
-  console.log("tokens data ==>", tokensData)
   const { gasPriceSelected } = useSelector((state: AppState) => state.user)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const theme = useTheme()
@@ -200,7 +199,7 @@ const WithdrawPage = (props: Props): ReactElement | null => {
                         name,
                         priceUSD,
                       }}
-                      max={formatBNToString(max, 18)}
+                      max={max && formatBNToString(max, 18)}
                       inputValue={inputValue}
                       onChange={(value): void =>
                         onFormChange({
@@ -213,7 +212,7 @@ const WithdrawPage = (props: Props): ReactElement | null => {
                   ),
                 )}
               </Stack>
-              <Box>
+              <Box mt={2}>
                 <Checkbox
                   onChange={onToggleWithdrawWrapped}
                   checked={shouldWithdrawWrapped}

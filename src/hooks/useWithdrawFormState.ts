@@ -37,14 +37,13 @@ export type WithdrawFormAction = {
   fieldName: FormFields | "reset"
   address?: string
   value: string
-  max?: BigNumber
+  max?: BigNumber //TODO: get underlying token balance from registry pool
 }
 
 export default function useWithdrawFormState(
   withdrawTokens: TokenShareType[],
   poolName: string,
 ): [WithdrawFormState, (action: WithdrawFormAction) => void] {
-  console.log("withdraw tokens", withdrawTokens)
   const swapContract = useSwapContract(poolName)
   const [poolData, userShareData] = usePoolData(poolName)
   const { account } = useActiveWeb3React()

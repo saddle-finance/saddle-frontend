@@ -43,8 +43,16 @@ function Withdraw({ poolName }: Props): ReactElement {
     useState<BigNumber>(Zero)
 
   const withdrawTokens = useMemo(
-    () => (shouldWithdrawWrapped ? poolData.tokens : poolData.underlyingTokens),
-    [poolData.tokens, poolData.underlyingTokens, shouldWithdrawWrapped],
+    () =>
+      shouldWithdrawWrapped
+        ? userShareData?.tokens || poolData.tokens
+        : poolData.underlyingTokens,
+    [
+      poolData.tokens,
+      poolData.underlyingTokens,
+      shouldWithdrawWrapped,
+      userShareData,
+    ],
   )
   const [withdrawFormState, updateWithdrawFormState] = useWithdrawFormState(
     withdrawTokens,
@@ -118,14 +126,13 @@ function Withdraw({ poolName }: Props): ReactElement {
 
   const tokensData = React.useMemo(
     () =>
-      withdrawTokens.map(({ name, symbol, address, decimals, value }) => ({
+      withdrawTokens.map(({ name, symbol, address, decimals }) => ({
         name,
         symbol,
         address,
         decimals,
         priceUSD: tokenPricesUSD?.[symbol] || 0, // @dev TODO handle lpToken Price when wrapped withdraw implemented
         inputValue: withdrawFormState.tokenInputs[address]?.valueRaw || "",
-        max: value,
       })),
     [withdrawFormState, withdrawTokens, tokenPricesUSD],
   )
