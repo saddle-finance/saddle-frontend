@@ -56,13 +56,13 @@ export function useTokenFormState(
   // }
   const updateTokenFormState = useCallback(
     (newState: { [symbol: string]: string | BigNumber }) => {
-      const convertedNewState = Object.keys(newState).reduce((acc, symbol) => {
-        console.log({ symbol, newState, tokenInputStateCreators })
-        return {
+      const convertedNewState = Object.keys(newState).reduce(
+        (acc, symbol) => ({
           ...acc,
           [symbol]: tokenInputStateCreators[symbol](newState[symbol]),
-        }
-      }, {})
+        }),
+        {},
+      )
       setTokenFormState((prevState) => ({
         ...prevState,
         ...convertedNewState,
