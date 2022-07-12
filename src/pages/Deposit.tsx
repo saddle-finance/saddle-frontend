@@ -61,7 +61,6 @@ function Deposit({ poolName }: Props): ReactElement | null {
     () => (pool?.underlyingTokens ?? []).map((token) => basicTokens?.[token]),
     [pool?.underlyingTokens, basicTokens],
   )
-  console.log({ poolUnderlyingTokens, pool })
   const poolTokens = useMemo(
     () => pool?.tokens.map((token) => basicTokens?.[token]) ?? [],
     [basicTokens, pool?.tokens],
