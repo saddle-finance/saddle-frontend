@@ -53,13 +53,9 @@ function Deposit({ poolName }: Props): ReactElement | null {
     )
   }, [pool?.tokens, pool?.underlyingTokens])
   const lpToken = basicTokens?.[pool?.lpToken ?? ""]
-  const allPoolTokens = useMemo(
-    () => allTokens.map((token) => basicTokens?.[token]),
-    [allTokens, basicTokens],
-  )
-  const poolUnderlyingTokens = useMemo(
-    () => (pool?.underlyingTokens ?? []).map((token) => basicTokens?.[token]),
-    [pool?.underlyingTokens, basicTokens],
+  const allPoolTokens = allTokens.map((token) => basicTokens?.[token])
+  const poolUnderlyingTokens = (pool?.underlyingTokens ?? []).map(
+    (token) => basicTokens?.[token],
   )
   const poolTokens = useMemo(
     () => pool?.tokens.map((token) => basicTokens?.[token]) ?? [],
