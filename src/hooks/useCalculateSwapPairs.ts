@@ -4,7 +4,7 @@ import {
   BasicTokens,
   TokensContext,
 } from "../providers/TokensProvider"
-import { ChainId, SWAP_TYPES, Token } from "../constants/index"
+import { ChainId, SWAP_TYPES } from "../constants/index"
 import { useCallback, useContext, useEffect, useMemo, useState } from "react"
 
 import { AppState } from "../state"
@@ -35,7 +35,7 @@ export type ExpandedBasicPool = BasicPool & {
 }
 
 type TokenToSwapDataMap = { [symbol: string]: SwapData[] }
-export function useCalculateSwapPairs(): (token?: Token) => SwapData[] {
+export function useCalculateSwapPairs(): (token?: BasicToken) => SwapData[] {
   const [pairCache, setPairCache] = useState<TokenToSwapDataMap>({})
   const basicPools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
@@ -99,11 +99,11 @@ export function useCalculateSwapPairs(): (token?: Token) => SwapData[] {
   }, [chainId])
 
   return useCallback(
-    function calculateSwapPairs(token?: Token): SwapData[] {
+    function calculateSwapPairs(token?: BasicToken): SwapData[] {
       if (token == null || chainId == null || tokens === null) return []
       const cacheHit = pairCache[token.symbol]
       if (cacheHit) return cacheHit
-      const originTokenAddress = (token.addresses[chainId] || "").toLowerCase()
+      const originTokenAddress = (token?.address || "").toLowerCase()
       const originToken = tokens[originTokenAddress]
       if (!originToken) return []
       const swapPairs = getTradingPairsForToken(

@@ -7,6 +7,7 @@ import {
 } from "../connectors"
 
 import { AbstractConnector } from "@web3-react/abstract-connector"
+import { BasicToken } from "../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
 import metamaskIcon from "../assets/icons/metamask.svg"
@@ -2098,6 +2099,10 @@ export function isMetaPool(poolName = ""): boolean {
 // maps a symbol string to a token object
 export type TokensMap = {
   [symbol: string]: Token
+}
+
+export type BasicTokensMap = {
+  [symbol: string]: BasicToken | undefined
 }
 
 export const TOKENS_MAP = Object.keys(POOLS_MAP).reduce((acc, poolName) => {
