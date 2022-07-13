@@ -12,7 +12,6 @@ import {
   SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES,
   SYNTHETIX_CONTRACT_ADDRESSES,
   SYNTHETIX_EXCHANGE_RATES_CONTRACT_ADDRESSES,
-  TOKENS_MAP,
   Token,
   VOTING_ESCROW_CONTRACT_ADDRESS,
 } from "../constants"
@@ -68,6 +67,7 @@ import VOTING_ESCROW_CONTRACT_ABI from "../constants/abis/votingEscrow.json"
 import { VotingEscrow } from "../../types/ethers-contracts/VotingEscrow"
 import { formatBytes32String } from "@ethersproject/strings"
 import { useActiveWeb3React } from "./index"
+import { useTokenMaps } from "./useTokenMaps"
 
 // returns null on errors
 function useContract(
@@ -342,13 +342,14 @@ interface AllContractsObject {
 }
 export function useAllContracts(): AllContractsObject | null {
   const { chainId, library, account } = useActiveWeb3React()
+  const { tokensMap } = useTokenMaps()
   return useMemo(() => {
     if (!library || !chainId) return {}
-    const allTokensForChain = Object.values(TOKENS_MAP).filter(
-      ({ addresses }) => addresses[chainId],
+    const allTokensForChain = Object.values(tokensMap).filter(
+      (token) => token?.address ?? "",
     )
     return allTokensForChain.reduce((acc, token) => {
-      const tokenAddress = token.addresses[chainId]
+      const tokenAddress = token?.address ?? ""
       if (tokenAddress) {
         let contract = null
         try {
@@ -365,7 +366,7 @@ export function useAllContracts(): AllContractsObject | null {
       }
       return acc
     }, {} as AllContractsObject)
-  }, [chainId, library, account])
+  }, [chainId, library, account, tokensMap])
 }
 
 export function useGaugeControllerContract(): GaugeController | null {
