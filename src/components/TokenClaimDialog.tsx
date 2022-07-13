@@ -468,8 +468,8 @@ function useRewardClaims() {
       try {
         updateClaimStatus(gauge.gaugeName, STATUSES.PENDING)
         const claimPromises = []
-        const minterRewards = gauge.rewards.filter(({ isSDL }) => isSDL)
-        const gaugeRewards = gauge.rewards.filter(({ isSDL }) => !isSDL)
+        const minterRewards = gauge.rewards.filter(({ isMinter }) => isMinter)
+        const gaugeRewards = gauge.rewards.filter(({ isMinter }) => !isMinter)
         if (minterRewards.length > 0) {
           claimPromises.push(gaugeMinterContract.mint(gauge.address))
         }
