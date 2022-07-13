@@ -1,4 +1,4 @@
-import { IS_VIRTUAL_SWAP_ACTIVE, POOLS_MAP, SWAP_TYPES } from "../constants"
+import { IS_VIRTUAL_SWAP_ACTIVE, SWAP_TYPES } from "../constants"
 import React, {
   ReactElement,
   useCallback,
@@ -157,7 +157,6 @@ function Swap(): ReactElement {
         }
       })
       .sort(sortTokenOptions)
-    console.log({ allTokens })
     const toTokens =
       formState.currentSwapPairs.length > 0
         ? (
@@ -189,7 +188,6 @@ function Swap(): ReactElement {
           ).sort(sortTokenOptions)
         : allTokens
     // from: all tokens always available. to: limited by selected "from" token.
-    console.log({ toTokens })
     return {
       from: allTokens,
       to: toTokens,
@@ -252,11 +250,14 @@ function Swap(): ReactElement {
         formStateArg.swapType === SWAP_TYPES.TOKEN_TO_TOKEN &&
         bridgeContract != null
       ) {
-        const originPool = POOLS_MAP[formStateArg.from.poolName]
-        const destinationPool = POOLS_MAP[formStateArg.to.poolName]
+        const originPool = basicPools?.[formStateArg.from.poolName]
+        const destinationPool = basicPools?.[formStateArg.to.poolName]
         const [amountOutSynth, amountOutToken] =
           await bridgeContract.calcTokenToToken(
-            [originPool.addresses[chainId], destinationPool.addresses[chainId]],
+            [
+              originPool?.metaSwapDepositAddress ?? "",
+              destinationPool?.metaSwapDepositAddress ?? "",
+            ],
             formStateArg.from.tokenIndex,
             formStateArg.to.tokenIndex,
             amountToGive,
@@ -267,10 +268,10 @@ function Swap(): ReactElement {
         formStateArg.swapType === SWAP_TYPES.SYNTH_TO_TOKEN &&
         bridgeContract != null
       ) {
-        const destinationPool = POOLS_MAP[formStateArg.to.poolName]
+        const destinationPool = basicPools?.[formStateArg.to.poolName]
         const [amountOutSynth, amountOutToken] =
           await bridgeContract.calcSynthToToken(
-            destinationPool.addresses[chainId],
+            destinationPool?.metaSwapDepositAddress ?? "",
             utils.formatBytes32String(formStateArg.from.symbol),
             formStateArg.to.tokenIndex,
             amountToGive,
@@ -281,9 +282,9 @@ function Swap(): ReactElement {
         formStateArg.swapType === SWAP_TYPES.TOKEN_TO_SYNTH &&
         bridgeContract != null
       ) {
-        const originPool = POOLS_MAP[formStateArg.from.poolName]
+        const originPool = basicPools?.[formStateArg.from.poolName]
         amountToReceive = await bridgeContract.calcTokenToSynth(
-          originPool.addresses[chainId],
+          originPool?.metaSwapDepositAddress ?? "",
           formStateArg.from.tokenIndex,
           utils.formatBytes32String(formStateArg.to.symbol),
           amountToGive,
