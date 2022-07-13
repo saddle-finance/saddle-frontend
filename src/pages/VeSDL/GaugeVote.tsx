@@ -64,6 +64,7 @@ export default function GaugeVote(): JSX.Element {
                       size="medium"
                       href={generateSnapshotVoteLink(snapshot.id)}
                       target="_blank"
+                      sx={{ minWidth: 100 }}
                     >
                       <Typography>{voteOrView}</Typography>
                     </Button>
