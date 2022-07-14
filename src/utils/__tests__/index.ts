@@ -24,7 +24,6 @@ import GAUGE_HELPER_CONTRACT_ABI from "../../../src/constants/abis/gaugeHelperCo
 import { GaugeHelperContract } from "../../../types/ethers-contracts/GaugeHelperContract"
 import { PoolTypes } from "../../constants/index"
 import { parseUnits } from "@ethersproject/units"
-import { useTokenMaps } from "../../hooks/useTokenMaps"
 
 describe("bnSum", () => {
   const testCases = [
@@ -183,10 +182,8 @@ describe("calculatePrice", () => {
 })
 
 describe("getTokenIconPath", () => {
-  const { tokensMap } = useTokenMaps()
-
   it("correctly retrieves icon path for non-saddle tokens", () => {
-    Object.keys(tokensMap).forEach((tokenSymbol) => {
+    Object.keys({ BTC: { symbol: "btc" } }).forEach((tokenSymbol) => {
       const castedSymbol = <string>tokenSymbol
       if (!castedSymbol.toLowerCase().includes("saddle")) {
         expect(getTokenIconPath(castedSymbol)).toEqual(
@@ -196,7 +193,7 @@ describe("getTokenIconPath", () => {
     })
   })
   it("correctly retrieves icon path for saddle tokens", () => {
-    Object.keys(tokensMap).forEach((tokenSymbol) => {
+    Object.keys({ SDL: { symbol: "saddle-lp" } }).forEach((tokenSymbol) => {
       const castedSymbol = <string>tokenSymbol
       if (castedSymbol.toLowerCase().includes("saddle")) {
         expect(getTokenIconPath(castedSymbol)).toEqual(

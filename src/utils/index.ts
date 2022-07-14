@@ -3,8 +3,6 @@ import {
   BN_1E18,
   ChainId,
   PoolTypes,
-  TOKENS_MAP,
-  Token,
   readableDecimalNumberRegex,
 } from "../constants"
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
@@ -296,19 +294,6 @@ export function commify(str: string): string {
 
 export function intersection<T>(set1: Set<T>, set2: Set<T>): Set<T> {
   return new Set([...set1].filter((item) => set2.has(item)))
-}
-
-export function getTokenByAddress(
-  address: string,
-  chainId: ChainId,
-): Token | null {
-  return (
-    Object.values(TOKENS_MAP).find(
-      ({ addresses }) =>
-        addresses[chainId] &&
-        address.toLowerCase() === addresses[chainId].toLowerCase(),
-    ) || null
-  )
 }
 
 export function calculatePrice(
