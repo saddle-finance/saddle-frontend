@@ -10,7 +10,6 @@ import {
   formatBNToShortString,
   formatDeadlineToNumber,
   generateSnapshotVoteLink,
-  getTokenByAddress,
   getTokenIconPath,
   getTokenSymbolForPoolType,
   intersection,
@@ -95,19 +94,6 @@ describe("formatBNToShortString", () => {
     it(`correctly formats ${type}`, () => {
       expect(formatBNToShortString(input, decimals)).toEqual(expected)
     })
-  })
-})
-
-describe("getTokenByAddress", () => {
-  const { tokensMap } = useTokenMaps()
-
-  it("correctly fetches a token", () => {
-    const chainId = 1
-    const target = tokensMap["SBTC"]
-    expect(getTokenByAddress(target?.address ?? "", chainId)).toEqual(target)
-  })
-  it("correctly does not find a token", () => {
-    expect(getTokenByAddress("", 1)).toEqual(null)
   })
 })
 
