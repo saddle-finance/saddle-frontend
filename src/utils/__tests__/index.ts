@@ -183,7 +183,7 @@ describe("calculatePrice", () => {
 
 describe("getTokenIconPath", () => {
   it("correctly retrieves icon path for non-saddle tokens", () => {
-    Object.keys({ BTC: { symbol: "btc" } }).forEach((tokenSymbol) => {
+    Object.keys({ BTC: { address: "0x" } }).forEach((tokenSymbol) => {
       const castedSymbol = <string>tokenSymbol
       if (!castedSymbol.toLowerCase().includes("saddle")) {
         expect(getTokenIconPath(castedSymbol)).toEqual(
@@ -193,8 +193,10 @@ describe("getTokenIconPath", () => {
     })
   })
   it("correctly retrieves icon path for saddle tokens", () => {
-    Object.keys({ SDL: { symbol: "saddle-lp" } }).forEach((tokenSymbol) => {
+    Object.keys({ "saddle-lp": { address: "0x" } }).forEach((tokenSymbol) => {
+      console.log({ tokenSymbol })
       const castedSymbol = <string>tokenSymbol
+      console.log({ castedSymbol })
       if (castedSymbol.toLowerCase().includes("saddle")) {
         expect(getTokenIconPath(castedSymbol)).toEqual(
           `/static/icons/svg/saddle_lp_token.svg`,
