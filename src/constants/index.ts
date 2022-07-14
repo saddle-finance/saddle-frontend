@@ -2016,17 +2016,6 @@ export function getMinichefPid(
   return minichefPids?.[chainId]?.[poolAddress] || null
 }
 
-export function getIsLegacySwapABIPoolByAddress(
-  chainId: ChainId,
-  poolAddress: string,
-): boolean {
-  const legacyAddresses = [
-    BTC_POOL_NAME,
-    STABLECOIN_POOL_NAME,
-    VETH2_POOL_NAME,
-  ].map((name) => POOLS_MAP[name].addresses[chainId])
-  return legacyAddresses.includes(poolAddress)
-}
 export function isLegacySwapABIPool(poolName: string): boolean {
   return new Set([BTC_POOL_NAME, STABLECOIN_POOL_NAME, VETH2_POOL_NAME]).has(
     poolName,

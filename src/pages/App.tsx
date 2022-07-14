@@ -1,14 +1,16 @@
 import "react-toastify/dist/ReactToastify.css"
 
 import { AppDispatch, AppState } from "../state"
-import { BLOCK_TIME, POOLS_MAP } from "../constants"
+import BasicPoolsProvider, {
+  BasicPoolsContext,
+} from "../providers/BasicPoolsProvider"
 import React, {
   ReactElement,
   Suspense,
   lazy,
   useCallback,
+  useContext,
   useEffect,
-  useMemo,
 } from "react"
 import { Redirect, Route, Switch } from "react-router-dom"
 import { styled, useTheme } from "@mui/material"
@@ -16,7 +18,7 @@ import { useDispatch, useSelector } from "react-redux"
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 import AprsProvider from "../providers/AprsProvider"
-import BasicPoolsProvider from "../providers/BasicPoolsProvider"
+import { BLOCK_TIME } from "../constants"
 import CreatePool from "./CreatePool"
 import Deposit from "./Deposit"
 import Farm from "./Farm/Farm"
@@ -68,15 +70,10 @@ const AppContainer = styled("div")(({ theme }) => {
 })
 
 export default function App(): ReactElement {
-  const { chainId } = useActiveWeb3React()
   const theme = useTheme()
+  const basicPools = useContext(BasicPoolsContext)
+  const pools = Object.values(basicPools ?? {})
   const { boot } = useIntercom()
-
-  const pools = useMemo(() => {
-    return Object.values(POOLS_MAP).filter(
-      ({ addresses }) => chainId && addresses[chainId],
-    )
-  }, [chainId])
 
   useEffect(() => {
     boot()
@@ -100,44 +97,30 @@ export default function App(): ReactElement {
                               <Switch>
                                 <Route exact path="/" component={Swap} />
                                 <Route exact path="/pools" component={Pools} />
-                                {pools.map(({ name }) => (
+                                {pools?.map((pool) => (
                                   <Route
                                     exact
-                                    path={`/pools/${name}/deposit`}
+                                    path={`/pools/${pool.poolName}/deposit`}
                                     render={(props) => (
-                                      <Deposit {...props} poolName={name} />
+                                      <Deposit
+                                        {...props}
+                                        poolName={pool.poolName}
+                                      />
                                     )}
-                                    key={`${name}-name-deposit`}
+                                    key={`${pool.poolName}-name-deposit`}
                                   />
                                 ))}
-                                {pools.map(({ name, route }) => (
+                                {pools.map((pool) => (
                                   <Route
                                     exact
-                                    path={`/pools/${route}/deposit`}
+                                    path={`/pools/${pool.poolName}/withdraw`}
                                     render={(props) => (
-                                      <Deposit {...props} poolName={name} />
+                                      <Withdraw
+                                        {...props}
+                                        poolName={pool.poolName}
+                                      />
                                     )}
-                                    key={`${route}-route-deposit`}
-                                  />
-                                ))}
-                                {pools.map(({ name }) => (
-                                  <Route
-                                    exact
-                                    path={`/pools/${name}/withdraw`}
-                                    render={(props) => (
-                                      <Withdraw {...props} poolName={name} />
-                                    )}
-                                    key={`${name}-name-withdraw`}
-                                  />
-                                ))}
-                                {pools.map(({ route, name }) => (
-                                  <Route
-                                    exact
-                                    path={`/pools/${route}/withdraw`}
-                                    render={(props) => (
-                                      <Withdraw {...props} poolName={name} />
-                                    )}
-                                    key={`${route}-route-withdraw`}
+                                    key={`${pool.poolName}-name-withdraw`}
                                   />
                                 ))}
                                 <Redirect

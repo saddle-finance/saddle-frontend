@@ -1,11 +1,5 @@
 import { DepositTransaction, TransactionItem } from "../interfaces/transactions"
-import {
-  POOLS_MAP,
-  PoolName,
-  Token,
-  isLegacySwapABIPool,
-  isMetaPool,
-} from "../constants"
+import { POOLS_MAP, Token, isLegacySwapABIPool, isMetaPool } from "../constants"
 import React, { ReactElement, useEffect, useMemo, useState } from "react"
 import { TokensStateType, useTokenFormState } from "../hooks/useTokenFormState"
 import { formatBNToString, getContract, shiftBNDecimals } from "../utils"
@@ -31,7 +25,7 @@ import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
 
 interface Props {
-  poolName: PoolName
+  poolName: string
 }
 
 function Deposit({ poolName }: Props): ReactElement | null {
