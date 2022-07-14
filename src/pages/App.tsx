@@ -97,7 +97,7 @@ export default function App(): ReactElement {
                               <Switch>
                                 <Route exact path="/" component={Swap} />
                                 <Route exact path="/pools" component={Pools} />
-                                {pools?.map((pool) => (
+                                {pools.map((pool) => (
                                   <Route
                                     exact
                                     path={`/pools/${pool.poolName}/deposit`}

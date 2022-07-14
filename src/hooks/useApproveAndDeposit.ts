@@ -193,7 +193,8 @@ export function useApproveAndDeposit(
         new Date().getTime() / 1000 + 60 * deadline,
       )
       if (poolName === BTC_POOL_NAME) {
-        const swapGuardedContract: SwapGuarded = effectiveSwapContract
+        const swapGuardedContract =
+          effectiveSwapContract as unknown as SwapGuarded
         spendTransaction = await swapGuardedContract?.addLiquidity(
           txnAmounts,
           minToMint,
