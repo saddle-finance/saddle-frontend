@@ -117,6 +117,7 @@ export default function BasicPoolsProvider({
             ethCallProvider,
           )
         : await getPoolsBaseData(library, chainId)
+      console.log({ pools })
       const poolsAddresses = pools.map(({ poolAddress }) => poolAddress)
       const migrationData = await getMigrationData(
         library,
@@ -138,6 +139,7 @@ export default function BasicPoolsProvider({
           }
         }
       }, {} as BasicPools)
+      console.log({ result })
       setBasicPools(result)
     }
     void fetchBasicPools()
