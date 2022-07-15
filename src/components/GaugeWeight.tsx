@@ -41,7 +41,7 @@ export default function GaugeWeight({
   const data = gaugesInfo.map((g) => {
     return {
       name: g.displayName,
-      y: g.gaugeRelativeWeight.div(BigNumber.from(10).pow(16)).toNumber(),
+      y: g.gaugeRelativeWeight.div(BigNumber.from(10).pow(14)).toNumber(),
     }
   })
 
