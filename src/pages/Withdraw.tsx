@@ -120,6 +120,7 @@ function Withdraw({ poolName }: Props): ReactElement {
       tokenFormState: tokenInputs,
       withdrawType,
       lpTokenAmountToSpend,
+      shouldWithdrawWrapped,
     })
     updateWithdrawFormState({ fieldName: "reset", value: "reset" })
   }

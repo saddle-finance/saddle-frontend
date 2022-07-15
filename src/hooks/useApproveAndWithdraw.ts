@@ -1,6 +1,9 @@
+import { POOLS_MAP, TRANSACTION_TYPES } from "../constants"
 import { addSlippage, subtractSlippage } from "../utils/slippage"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
+import { formatDeadlineToNumber, getContract } from "../utils"
 import { formatUnits, parseUnits } from "@ethersproject/units"
+import { useContext, useMemo } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useLPTokenContract, useSwapContract } from "./useContract"
 
@@ -8,18 +11,18 @@ import { AppState } from "../state"
 import { BasicPoolsContext } from "./../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { GasPrices } from "../state/user"
+import META_SWAP_ABI from "../constants/abis/metaSwap.json"
+import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { NumberInputState } from "../utils/numberInputState"
-import { TRANSACTION_TYPES } from "../constants"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
-import { formatDeadlineToNumber } from "../utils"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
-import { useContext } from "react"
 
 interface ApproveAndWithdrawStateArgument {
   tokenFormState?: { [address: string]: NumberInputState | undefined }
   withdrawType: string
   lpTokenAmountToSpend: BigNumber
+  shouldWithdrawWrapped: boolean
 }
 
 export function useApproveAndWithdraw(
@@ -33,6 +36,19 @@ export function useApproveAndWithdraw(
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
+
+  const POOL = POOLS_MAP[poolName]
+  const metaSwapContract = useMemo(() => {
+    if (POOL.metaSwapAddresses && chainId && library) {
+      return getContract(
+        POOL.metaSwapAddresses?.[chainId],
+        META_SWAP_ABI,
+        library,
+        account ?? undefined,
+      )
+    }
+  }, [chainId, library, POOL.metaSwapAddresses, account])
+
   const {
     slippageCustom,
     slippageSelected,
@@ -54,9 +70,17 @@ export function useApproveAndWithdraw(
       if (!swapContract || !basicPool || !lpTokenContract)
         throw new Error("Swap contract is not loaded")
       if (state.lpTokenAmountToSpend.isZero()) return
-      const withdrawTokens = basicPool.isMetaSwap
+
+      if (state.shouldWithdrawWrapped && !metaSwapContract) return
+
+      const effectiveSwapContract = state.shouldWithdrawWrapped
+        ? (metaSwapContract as MetaSwap)
+        : swapContract
+
+      const withdrawTokens = state.shouldWithdrawWrapped
         ? basicPool.underlyingTokens
         : basicPool.tokens
+      if (!withdrawTokens) return
 
       let gasPrice
       if (gasPriceSelected === GasPrices.Custom && gasCustom?.valueSafe) {
@@ -79,7 +103,7 @@ export function useApproveAndWithdraw(
           : state.lpTokenAmountToSpend
       await checkAndApproveTokenForTrade(
         lpTokenContract,
-        swapContract.address,
+        effectiveSwapContract.address,
         account,
         allowanceAmount,
         infiniteApproval,
