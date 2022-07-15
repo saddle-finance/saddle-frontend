@@ -1,4 +1,3 @@
-import { POOLS_MAP, TRANSACTION_TYPES } from "../constants"
 import { addSlippage, subtractSlippage } from "../utils/slippage"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { formatDeadlineToNumber, getContract } from "../utils"
@@ -14,6 +13,7 @@ import { GasPrices } from "../state/user"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { NumberInputState } from "../utils/numberInputState"
+import { TRANSACTION_TYPES } from "../constants"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
@@ -37,17 +37,18 @@ export function useApproveAndWithdraw(
     (state: AppState) => state.application,
   )
 
-  const POOL = POOLS_MAP[poolName]
+  const pool = basicPools?.[poolName]
   const metaSwapContract = useMemo(() => {
-    if (POOL.metaSwapAddresses && chainId && library) {
+    if (pool?.poolAddress && chainId && library) {
       return getContract(
-        POOL.metaSwapAddresses?.[chainId],
+        pool.poolAddress,
         META_SWAP_ABI,
         library,
         account ?? undefined,
-      )
+      ) as MetaSwap
     }
-  }, [chainId, library, POOL.metaSwapAddresses, account])
+    return null
+  }, [chainId, library, account, pool?.poolAddress])
 
   const {
     slippageCustom,
