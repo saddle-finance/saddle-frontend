@@ -19,7 +19,11 @@ export default function HighPriceImpactConfirmation({
         <Typography component="span" mr={1}>
           {t("iConfirm")}
         </Typography>
-        <Checkbox checked={checked} onChange={onCheck} />
+        <Checkbox
+          data-testid="high-price-impact-confirmation"
+          checked={checked}
+          onChange={onCheck}
+        />
       </Box>
     </Box>
   )

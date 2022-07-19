@@ -6,6 +6,15 @@ context("Swap Flow", () => {
         cy.visit(`/#/`)
         cy.waitForReact()
         cy.wait(2000)
+        cy.get("[data-testid=advOptionContainer]")
+          .click()
+          .then(() => {
+            cy.get("[data-testid=txnDeadlineInputGroup]").within(() => {
+              cy.get("input").then(($input) => {
+                cy.wrap($input).type("1000")
+              })
+            })
+          })
       })
       it("starts in a neutral state", () => {
         cy.get('[data-testid="swapTokenInputFrom"]')
@@ -101,11 +110,19 @@ context("Swap Flow", () => {
         cy.get('[data-testid="swapPriceImpactValue"]').should(($el) => {
           expect($el.text()).to.match(/-?\d+\.\d+%/)
         })
+        // cy.get("[data-testid=high-price-impact-confirmation]").click()
       })
       it("allows user to review a swap", () => {
         cy.get("button").contains("Swap").should("be.enabled").click()
       })
       it("completes a swap", () => {
+        cy.get("[data-testid=high-price-impact-confirmation]")
+          .its("length")
+          .then((length) => {
+            if (length > 0) {
+              cy.get("[data-testid=high-price-impact-confirmation]").click()
+            }
+          })
         cy.get("button").contains("Confirm Swap").should("be.enabled").click()
       })
     })

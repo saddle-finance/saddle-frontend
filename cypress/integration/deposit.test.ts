@@ -42,6 +42,16 @@ context("Deposit Flow", () => {
           cy.wrap($input).type("100")
         })
       })
+      cy.get("[data-testid=advOptionContainer]")
+        .click()
+        .then(() => {
+          cy.get("[data-testid=txnDeadlineInputGroup]").within(() => {
+            cy.get("input").then(($input) => {
+              cy.wrap($input).type("1000")
+            })
+          })
+        })
+
       cy.get("[data-testid=tokenValue]")
         .first()
         .then(($value) => {
