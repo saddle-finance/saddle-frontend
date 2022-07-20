@@ -36,7 +36,7 @@ export const COINGECKO_PLATFORM_ID: Record<ChainId, string | null> = {
   [ChainId.EVMOS]: "evmos",
   [ChainId.EVMOS_TESTNET]: null,
   [ChainId.KAVA_TESTNET]: null,
-  [ChainId.KAVA]: null,
+  [ChainId.KAVA]: "kava",
   [ChainId.HARDHAT]: null,
 }
 
@@ -138,14 +138,14 @@ export const DEV_SUPPORTED_NETWORKS: SupportedNetworks = {
     blockExplorerUrls: ["https://evm.evmos.dev"],
   },
   [ChainId.KAVA_TESTNET]: {
-    chainId: hexlify(2221),
+    chainId: "0x8AD",
     chainName: "Kava Testnet",
     nativeCurrency: {
       name: "Kava",
       symbol: "KAVA",
       decimals: 18,
     },
-    rpcUrls: ["https://evm.evm-alpha.kava.io"],
+    rpcUrls: ["https://evm.testnet.kava.io"],
     blockExplorerUrls: ["https://explorer.evm-alpha.kava.io"],
   },
 }

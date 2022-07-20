@@ -27,6 +27,9 @@ export function getMultichainScanLink(
       break
     case ChainId.KAVA:
       chainScanDomain = "explorer.kava.io"
+      if (type === "token") {
+        type = "address" // Kava uses the address keyword instead of token
+      }
       break
     default:
       chainScanDomain = "etherscan.io"
