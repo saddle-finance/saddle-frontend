@@ -25,6 +25,9 @@ export function getMultichainScanLink(
     case ChainId.KAVA_TESTNET:
       chainScanDomain = "explorer.evm-alpha.kava.io"
       break
+    case ChainId.KAVA:
+      chainScanDomain = "explorer.kava.io"
+      break
     default:
       chainScanDomain = "etherscan.io"
   }
