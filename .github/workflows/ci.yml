@@ -104,6 +104,7 @@ jobs:
       #   run: unzip -qq build-artifact.zip -d .
       # fix for forcing git to use https when pulling deps
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
+      - run: npm ci
       - run: npm run cy:coverage
         env:
           CHOKIDAR_USEPOLLING: 1
