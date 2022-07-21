@@ -5,7 +5,9 @@ context("Advanced option test", () => {
   const pools = ["BTC V2", "USDv2"]
 
   beforeEach(() => {
-    cy.visit(`/#/pools`).waitForReact(2000)
+    cy.visit(`/#/pools`)
+    cy.waitForReact()
+    cy.wait(2000)
   })
 
   function advancedOptionTest(poolName: PoolName) {

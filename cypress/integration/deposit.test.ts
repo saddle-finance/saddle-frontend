@@ -21,7 +21,9 @@ async function increaseTime() {
 
 context("Deposit Flow", () => {
   beforeEach(() => {
-    cy.visit(`/#/pools`).waitForReact(2000)
+    cy.visit(`/#/pools`)
+    cy.waitForReact()
+    cy.wait(2000)
   })
 
   pools.forEach(testPoolDeposit)

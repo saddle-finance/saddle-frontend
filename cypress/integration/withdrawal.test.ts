@@ -13,6 +13,7 @@ context("Withdrawal Flow", () => {
   beforeEach(() => {
     cy.visit(`/#/pools`)
     cy.waitForReact()
+    cy.wait(2000)
   })
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
