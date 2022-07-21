@@ -57,13 +57,13 @@ function testPoolDeposit(poolName: string) {
         })
       })
 
+    cy.wait(2000)
     cy.get("[data-testid=tokenValue]")
       .first()
       .then(($value) => {
         const prevVal = $value.text()
         cy.get("button").contains("Deposit").first().click()
         cy.get("button").contains("Confirm Deposit").click()
-        cy.wait(2000)
         cy.get(".Toastify").contains(`Deposit on ${poolName} complete`)
         cy.get("[data-testid=tokenValue]")
           .first()
