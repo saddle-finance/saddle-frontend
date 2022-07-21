@@ -12,6 +12,7 @@ const poolTokensSymbols: { [key: string]: string[] } = {
 context("Withdrawal Flow", () => {
   beforeEach(() => {
     cy.visit(`/#/pools`)
+    cy.waitForReact()
   })
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -50,10 +51,18 @@ context("Withdrawal Flow", () => {
       cy.get('[data-testid="withdrawTokenRadio"]')
         .contains(tokens[0], { matchCase: false })
         .click()
+        .wait(2000)
       // cy.get('[data-testid="myFarmLpBalance"]').should("not.have.text", "0.0")
-      cy.wait(2500)
-      cy.get("#tokenInput input").first().type("1")
-      cy.wait(2500)
+      cy.get("#tokenInput input").first().type("1").wait(2000)
+      cy.get("[data-testid=advOptionContainer]")
+        .click()
+        .then(() => {
+          cy.get("[data-testid=txnDeadlineInputGroup]").within(() => {
+            cy.get("input").then(($input) => {
+              cy.wrap($input).type("1000")
+            })
+          })
+        })
       cy.get('[data-testid="withdrawBtn"]').click()
       cy.get("[data-testid=tokenValue]")
         .first()
@@ -67,8 +76,7 @@ context("Withdrawal Flow", () => {
 
       // test combo withdraw through percentage option
       cy.get('[data-testid="withdrawPercentageCombo"]').click()
-      cy.get('[data-testid="withdrawPercentageInput"]').type("3")
-      cy.wait(2500)
+      cy.get('[data-testid="withdrawPercentageInput"]').type("3").wait(2000)
       cy.get("button").contains("Withdraw").click()
       cy.get("[data-testid=tokenValue]")
         .first()
@@ -91,14 +99,16 @@ context("Withdrawal Flow", () => {
             //   "not.have.text",
             //   "0.0",
             // )
-            cy.wrap($inputs).each(($input) => {
-              cy.wrap($input).type("2")
-            })
+            cy.wrap($inputs)
+              .each(($input) => {
+                cy.wrap($input).type("2")
+              })
+              .wait(2000)
             // cy.get('[data-testid="myFarmLpBalance"]').should(
             //   "not.have.text",
             //   "0.0",
             // )
-            cy.wait(2500)
+            // cy.wait(500)
             cy.get("button").contains("Withdraw").click()
             cy.get("button").contains("Confirm Withdraw").click()
             cy.get("[data-testid=tokenValue]")

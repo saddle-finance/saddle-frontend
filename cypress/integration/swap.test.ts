@@ -45,6 +45,7 @@ context("Swap Flow", () => {
         cy.get('[data-testid="searchTermInput"]')
           .should("be.visible")
           .type(poolTokenSymbols[0])
+          .wait(1000)
         cy.get('[data-testid="swapTokenItem"]').should("have.length", 1)
       })
       it("reflects token balance after selecting a token", () => {

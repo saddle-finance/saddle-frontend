@@ -18,53 +18,53 @@ async function increaseTime() {
       .then(resolve)
   })
 }
+
 context("Deposit Flow", () => {
   beforeEach(() => {
-    cy.visit(`/#/pools`)
-    cy.wait(2000)
+    cy.visit(`/#/pools`).waitForReact(2000)
   })
-
-  function testPoolDeposit(poolName: string) {
-    if (poolName === SUSD_METAPOOL_V3_NAME) {
-      void increaseTime()
-    }
-    it(`successfully completes a deposit of all ${poolName} assets`, () => {
-      cy.contains(new RegExp("^" + poolName + "$"))
-        .parents("[data-testid=poolOverview]")
-        .within(() => {
-          cy.get("button").contains("Deposit").click()
-        })
-      if (poolName === SUSD_METAPOOL_V3_NAME) {
-        cy.get("[data-testid=deposit-wrapped-checkbox]").click()
-      }
-      cy.get("#tokenInput input").then(($inputs) => {
-        cy.wrap($inputs).each(($input) => {
-          cy.wrap($input).type("100")
-        })
-      })
-      cy.get("[data-testid=advOptionContainer]")
-        .click()
-        .then(() => {
-          cy.get("[data-testid=txnDeadlineInputGroup]").within(() => {
-            cy.get("input").then(($input) => {
-              cy.wrap($input).type("1000")
-            })
-          })
-        })
-
-      cy.get("[data-testid=tokenValue]")
-        .first()
-        .then(($value) => {
-          const prevVal = $value.text()
-          cy.get("button").contains("Deposit").first().click()
-          cy.get("button").contains("Confirm Deposit").click()
-          cy.get(".Toastify").contains(`Deposit on ${poolName} complete`)
-          cy.get("[data-testid=tokenValue]")
-            .first()
-            .should("not.have.text", prevVal)
-        })
-    })
-  }
 
   pools.forEach(testPoolDeposit)
 })
+
+function testPoolDeposit(poolName: string) {
+  if (poolName === SUSD_METAPOOL_V3_NAME) {
+    void increaseTime()
+  }
+  it(`successfully completes a deposit of all ${poolName} assets`, () => {
+    cy.contains(new RegExp("^" + poolName + "$"))
+      .parents("[data-testid=poolOverview]")
+      .within(() => {
+        cy.get("button").contains("Deposit").click()
+      })
+    if (poolName === SUSD_METAPOOL_V3_NAME) {
+      cy.get("[data-testid=deposit-wrapped-checkbox]").click()
+    }
+    cy.get("#tokenInput input").then(($inputs) => {
+      cy.wrap($inputs).each(($input) => {
+        cy.wrap($input).type("100")
+      })
+    })
+    cy.get("[data-testid=advOptionContainer]")
+      .click()
+      .then(() => {
+        cy.get("[data-testid=txnDeadlineInputGroup]").within(() => {
+          cy.get("input").then(($input) => {
+            cy.wrap($input).type("1000")
+          })
+        })
+      })
+
+    cy.get("[data-testid=tokenValue]")
+      .first()
+      .then(($value) => {
+        const prevVal = $value.text()
+        cy.get("button").contains("Deposit").first().click()
+        cy.get("button").contains("Confirm Deposit").click()
+        cy.get(".Toastify").contains(`Deposit on ${poolName} complete`)
+        cy.get("[data-testid=tokenValue]")
+          .first()
+          .should("not.have.text", prevVal)
+      })
+  })
+}

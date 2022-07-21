@@ -1,7 +1,6 @@
 context("veSDL test", () => {
   beforeEach(() => {
-    cy.visit(`/#/vesdl`)
-    cy.wait(2000)
+    cy.visit(`/#/vesdl`).waitForReact(2000)
   })
   it("veSDL test", () => {
     cy.getBySelId("lockVeSdlBtn").should("be.disabled")

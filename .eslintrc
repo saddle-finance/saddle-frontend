@@ -33,5 +33,6 @@
     "no-invalid-this": 0,
     "no-unused-vars": "off",
     "sort-imports": "error"
-  }
+  },
+  "ignorePatterns": ["cypress.config.js"]
 }
