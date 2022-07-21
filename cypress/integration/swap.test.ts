@@ -15,10 +15,6 @@ context("Swap Flow", () => {
             })
           })
       })
-      beforeEach(() => {
-        cy.wait(2000)
-      })
-
       it("starts in a neutral state", () => {
         cy.get('[data-testid="swapTokenInputFrom"]')
           .eq(0)
@@ -34,7 +30,7 @@ context("Swap Flow", () => {
           .as("dropdownButton")
           .click() // show
         poolTokenSymbols.forEach((tokenSymbol) => {
-          cy.react("ListItem", { options: { timeout: 3000 } }).should("exist") // wait for listitem to appear
+          cy.react("ListItem", { options: { timeout: 6000 } }).should("exist") // wait for listitem to appear
           cy.get('[data-testid="dropdownContainer"]')
             .contains(tokenSymbol, { matchCase: false })
             .should("exist")

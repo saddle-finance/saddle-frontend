@@ -47,6 +47,7 @@ function testPoolDeposit(poolName: string) {
         cy.wrap($input).type("100")
       })
     })
+
     cy.get("[data-testid=advOptionContainer]")
       .click()
       .then(() => {
@@ -57,7 +58,8 @@ function testPoolDeposit(poolName: string) {
         })
       })
 
-    cy.wait(2000)
+    cy.wait(3000)
+
     cy.get("[data-testid=tokenValue]")
       .first()
       .then(($value) => {
