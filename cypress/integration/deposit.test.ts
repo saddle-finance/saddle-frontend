@@ -44,7 +44,7 @@ function testPoolDeposit(poolName: string) {
     }
     cy.get("#tokenInput input").then(($inputs) => {
       cy.wrap($inputs).each(($input) => {
-        cy.wrap($input).type("100").wait(2000)
+        cy.wrap($input).type("100")
       })
     })
     cy.get("[data-testid=advOptionContainer]")
@@ -52,7 +52,7 @@ function testPoolDeposit(poolName: string) {
       .then(() => {
         cy.get("[data-testid=txnDeadlineInputGroup]").within(() => {
           cy.get("input").then(($input) => {
-            cy.wrap($input).type("1000").wait(2000)
+            cy.wrap($input).type("1000")
           })
         })
       })
@@ -63,6 +63,7 @@ function testPoolDeposit(poolName: string) {
         const prevVal = $value.text()
         cy.get("button").contains("Deposit").first().click()
         cy.get("button").contains("Confirm Deposit").click()
+        cy.wait(2000)
         cy.get(".Toastify").contains(`Deposit on ${poolName} complete`)
         cy.get("[data-testid=tokenValue]")
           .first()
