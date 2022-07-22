@@ -136,16 +136,17 @@ function Deposit({ poolName }: Props): ReactElement | null {
   const [estDepositLPTokenAmount, setEstDepositLPTokenAmount] = useState(Zero)
   const [priceImpact, setPriceImpact] = useState(Zero)
   const metaSwapContract = useMemo(() => {
-    if (pool?.isMetaSwap && chainId && library) {
+    if (!pool || !chainId || !library) return null
+    if (pool.isMetaSwap) {
       return getContract(
-        pool?.poolAddress,
+        pool.poolAddress,
         META_SWAP_ABI,
         library,
         account ?? undefined,
       ) as MetaSwap
     }
     return null
-  }, [pool?.isMetaSwap, chainId, library, pool?.poolAddress, account])
+  }, [pool, chainId, library, account])
 
   useEffect(() => {
     // evaluate if a new deposit will exceed the pool's per-user limit
@@ -311,7 +312,7 @@ function buildTransactionData(
   estDepositLPTokenAmount: BigNumber,
   gasPrice: BigNumber,
   tokenPricesUSD?: TokenPricesUSD,
-): DepositBasicTransaction {
+): DepositBasicTransaction | null {
   const from = {
     items: [] as TransactionBasicItem[],
     totalAmount: Zero,
@@ -319,11 +320,12 @@ function buildTransactionData(
   }
   const TOTAL_AMOUNT_DECIMALS = 18
   poolTokens.forEach((token) => {
+    if (!token) return
     const amount = BigNumber.from(
-      tokenFormState[token?.symbol ?? ""]?.valueSafe ?? "0",
+      tokenFormState[token.symbol]?.valueSafe ?? "0",
     )
     const usdPriceBN = parseUnits(
-      (tokenPricesUSD?.[token?.symbol ?? ""] || 0).toFixed(2),
+      (tokenPricesUSD?.[token.symbol] || 0).toFixed(2),
       18,
     )
     if (amount.lte("0")) return
@@ -333,19 +335,21 @@ function buildTransactionData(
       singleTokenPriceUSD: usdPriceBN,
       valueUSD: amount
         .mul(usdPriceBN)
-        .div(BigNumber.from(10).pow(token?.decimals ?? 0)),
+        .div(BigNumber.from(10).pow(token.decimals)),
     }
     from.items.push(item)
     from.totalAmount = from.totalAmount.add(
-      shiftBNDecimals(amount, TOTAL_AMOUNT_DECIMALS - (token?.decimals ?? 0)),
+      shiftBNDecimals(amount, TOTAL_AMOUNT_DECIMALS - token.decimals),
     )
     from.totalValueUSD = from.totalValueUSD.add(usdPriceBN)
   })
 
-  const lpTokenPriceUSD = poolData?.lpTokenPriceUSD || Zero
+  if (!poolData) return null
+  const lpTokenPriceUSD = poolData.lpTokenPriceUSD
+  if (!poolLpToken) return null
   const toTotalValueUSD = estDepositLPTokenAmount
     .mul(lpTokenPriceUSD)
-    ?.div(BigNumber.from(10).pow(poolLpToken?.decimals ?? 0))
+    ?.div(BigNumber.from(10).pow(poolLpToken.decimals))
   const to = {
     item: {
       token: poolLpToken,
@@ -356,10 +360,10 @@ function buildTransactionData(
     totalAmount: estDepositLPTokenAmount,
     totalValueUSD: toTotalValueUSD,
   }
-  const shareOfPool = poolData?.totalLocked.gt(0)
+  const shareOfPool = poolData.totalLocked.gt(0)
     ? estDepositLPTokenAmount
         .mul(BigNumber.from(10).pow(18))
-        .div(estDepositLPTokenAmount.add(poolData?.totalLocked))
+        .div(estDepositLPTokenAmount.add(poolData.totalLocked))
     : BigNumber.from(10).pow(18)
   const gasAmount = calculateGasEstimate("addLiquidity").mul(gasPrice) // units of gas * GWEI/Unit of gas
 
