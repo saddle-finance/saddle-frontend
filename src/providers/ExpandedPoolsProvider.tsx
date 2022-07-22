@@ -44,18 +44,17 @@ export default function ExpandedPoolsProvider({
   }, [onStart])
 
   useEffect(() => {
-    const errorPools = new Set<string>()
-    let errorTokensAll = new Set<string>()
-
+    const errorPools: string[] = []
+    const errorTokensAll: string[] = []
     if (basicPools && tokens) {
       const result = Object.values(basicPools || {}).reduce(
         (acc, basicPool) => {
-          const errorTokens = new Set<string>()
+          const errorTokens: string[] = []
           // Tokens
           const expandedPoolTokens = basicPool.tokens.map((tokenAddr) => {
             const token = tokens[tokenAddr]
             if (!token) {
-              errorTokens.add(tokenAddr)
+              errorTokens.push(tokenAddr)
             }
             return token
           }) as BasicToken[]
@@ -64,7 +63,7 @@ export default function ExpandedPoolsProvider({
             ? (basicPool.underlyingTokens.map((tokenAddr) => {
                 const token = tokens[tokenAddr]
                 if (!token) {
-                  errorTokens.add(tokenAddr)
+                  errorTokens.push(tokenAddr)
                 }
                 return token
               }) as BasicToken[])
@@ -72,16 +71,13 @@ export default function ExpandedPoolsProvider({
           // LP Token
           const expandedLpToken = tokens[basicPool.lpToken]
           if (!expandedLpToken) {
-            errorTokens.add(basicPool.lpToken)
+            errorTokens.push(basicPool.lpToken)
           }
 
           // If any tokens aren't found, invalidate the whole pool
-          if (errorTokens.size > 0) {
-            errorTokensAll = new Set<string>([
-              ...errorTokensAll,
-              ...errorTokens,
-            ])
-            errorPools.add(basicPool.poolName)
+          if (errorTokens.length > 0) {
+            errorTokensAll.concat(errorTokens)
+            errorPools.push(basicPool.poolName)
             return acc
           }
           const expandedPool = {
@@ -104,9 +100,9 @@ export default function ExpandedPoolsProvider({
         { byName: {}, byAddress: {} },
       )
 
-      if (errorTokensAll.size > 0) {
-        const tokensString = [...errorTokensAll.values()].join(", ")
-        const poolsString = [...errorPools.values()].join(", ")
+      if (errorTokensAll.length > 0) {
+        const tokensString = [...new Set(errorTokensAll.values())].join(", ")
+        const poolsString = [...new Set(errorPools.values())].join(", ")
         console.error(
           `Error loading tokens [${tokensString}] in pools [${poolsString}]`,
         )
