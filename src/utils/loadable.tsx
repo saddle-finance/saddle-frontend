@@ -1,4 +1,4 @@
-import { Reducer, useReducer } from "react"
+import { Reducer, useCallback, useReducer } from "react"
 export interface LoadableType<T> {
   isLoading: boolean
   isLoaded: boolean
@@ -38,9 +38,6 @@ function reducer<S>(
       return {
         ...state,
         isLoading: true,
-        isLoaded: false,
-        isError: false,
-        isSuccess: false,
       }
     case LoadableActions.SUCCESS:
       return {
@@ -84,16 +81,37 @@ export function useLoadingState<T>(initialState?: T): ReturnType<T> {
       data: initialState || undefined,
     } as LoadableType<T>,
   )
-  const onStart = () => dispatch({ type: LoadableActions.START })
-  const onSuccess = (data: T) =>
-    dispatch({ type: LoadableActions.SUCCESS, data })
-  const onFailure = (error: Error | string) =>
-    dispatch({ type: LoadableActions.START, error })
+  const onStart = useCallback(
+    () => dispatch({ type: LoadableActions.START }),
+    [dispatch],
+  )
+  const onSuccess = useCallback(
+    (data: T) => dispatch({ type: LoadableActions.SUCCESS, data }),
+    [dispatch],
+  )
+  const onFailure = useCallback(
+    (error: Error | string) => dispatch({ type: LoadableActions.START, error }),
+    [dispatch],
+  )
 
   return {
     state,
     onStart,
     onSuccess,
     onFailure,
+  }
+}
+
+export function mergeLoadables<A, B>(
+  a: LoadableType<A>,
+  b: LoadableType<B>,
+): LoadableType<[A, B] | undefined> {
+  return {
+    isLoading: a.isLoading || b.isLoading,
+    isLoaded: a.isLoaded && b.isLoaded,
+    isError: a.isError || b.isError,
+    isSuccess: a.isSuccess && b.isSuccess,
+    error: a.error || b.error,
+    data: a.data && b.data ? [a.data, b.data] : undefined,
   }
 }
