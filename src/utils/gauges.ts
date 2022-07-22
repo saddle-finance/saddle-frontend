@@ -47,6 +47,7 @@ export type GaugeReward = {
   periodFinish: BigNumber
   rate: BigNumber
   tokenAddress: string
+  isMinter: boolean
 }
 
 export type LPTokenAddressToGauge = Partial<{
@@ -214,6 +215,7 @@ export async function getGaugeData(
           periodFinish: BN_MSIG_SDL_VEST_END_TIMESTAMP,
           rate: sdlRate,
           tokenAddress: SDL_TOKEN_ADDRESSES[chainId].toLowerCase(),
+          isMinter: true,
         }
         return {
           ...previousGaugeData,
@@ -235,8 +237,9 @@ export async function getGaugeData(
                 periodFinish: reward.period_finish,
                 rate: reward.rate,
                 tokenAddress: reward.token.toLowerCase(),
+                isMinter: false,
               }))
-              .concat([sdlReward]),
+              .concat(sdlRate.gt(Zero) ? [sdlReward] : []),
           } as Gauge,
         }
       },

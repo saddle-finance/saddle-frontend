@@ -87,9 +87,12 @@ export function useApproveAndDeposit(
       )
         throw new Error("Swap contract is not loaded")
 
+      const poolBaseTokens = pool?.isMetaSwap
+        ? pool.underlyingTokens
+        : pool.tokens
       const poolTokenAddresses = shouldDepositWrapped
         ? pool.tokens
-        : pool.underlyingTokens
+        : poolBaseTokens
       const poolTokens = poolTokenAddresses?.map((token) => tokens[token]) ?? []
       const effectiveSwapContract = shouldDepositWrapped
         ? (metaSwapContract as MetaSwap)
