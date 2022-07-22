@@ -7,10 +7,12 @@ import React, {
   Suspense,
   lazy,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
 } from "react"
 import { Redirect, Route, Switch } from "react-router-dom"
+import TokensProvider, { TokensContext } from "../providers/TokensProvider"
 import { styled, useTheme } from "@mui/material"
 import { useDispatch, useSelector } from "react-redux"
 
@@ -28,7 +30,6 @@ import Pools from "./Pools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import Swap from "./Swap"
 import { ToastContainer } from "react-toastify"
-import TokensProvider from "../providers/TokensProvider"
 import TopMenu from "../components/TopMenu"
 import UserStateProvider from "../providers/UserStateProvider"
 import VeSDL from "./VeSDL"
@@ -39,8 +40,8 @@ import WrongNetworkModal from "../components/WrongNetworkModal"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchSdlWethSushiPoolInfo from "../utils/updateSdlWethSushiInfo"
 import fetchSwapStats from "../utils/getSwapStats"
-import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import getSnapshotVoteData from "../utils/getSnapshotVoteData"
+import { getTokenPrice } from "../utils/updateTokenPrices"
 import { useActiveWeb3React } from "../hooks"
 import { useIntercom } from "react-use-intercom"
 import usePoller from "../hooks/usePoller"
@@ -190,6 +191,7 @@ function PricesAndVoteData({
   const dispatch = useDispatch<AppDispatch>()
   const sdlWethSushiPoolContract = useSdlWethSushiPairContract()
   const { chainId } = useActiveWeb3React()
+  const tokens = useContext(TokensContext)
   const { sdlWethSushiPool } = useSelector(
     (state: AppState) => state.application,
   )
@@ -198,8 +200,8 @@ function PricesAndVoteData({
     void fetchGasPrices(dispatch)
   }, [dispatch])
   const fetchAndUpdateTokensPrice = useCallback(() => {
-    fetchTokenPricesUSD(dispatch, sdlWethSushiPool, chainId)
-  }, [dispatch, chainId, sdlWethSushiPool])
+    void getTokenPrice(dispatch, tokens, chainId, sdlWethSushiPool)
+  }, [dispatch, chainId, sdlWethSushiPool, tokens])
   const fetchAndUpdateSwapStats = useCallback(() => {
     void fetchSwapStats(dispatch)
   }, [dispatch])

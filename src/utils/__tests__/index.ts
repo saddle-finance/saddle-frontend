@@ -1,5 +1,4 @@
 import { AddressZero, Zero } from "@ethersproject/constants"
-import { PoolTypes, TOKENS_MAP } from "../../constants/index"
 import {
   batchArray,
   bnSum,
@@ -11,19 +10,19 @@ import {
   formatBNToShortString,
   formatDeadlineToNumber,
   generateSnapshotVoteLink,
-  getTokenByAddress,
   getTokenIconPath,
   getTokenSymbolForPoolType,
   intersection,
   isAddressZero,
   mapToLowerCase,
 } from "../index"
-
 import { BigNumber } from "@ethersproject/bignumber"
+
 import { Contract } from "ethcall"
 import { Deadlines } from "../../state/user"
 import GAUGE_HELPER_CONTRACT_ABI from "../../../src/constants/abis/gaugeHelperContract.json"
 import { GaugeHelperContract } from "../../../types/ethers-contracts/GaugeHelperContract"
+import { PoolTypes } from "../../constants/index"
 import { parseUnits } from "@ethersproject/units"
 
 describe("bnSum", () => {
@@ -94,19 +93,6 @@ describe("formatBNToShortString", () => {
     it(`correctly formats ${type}`, () => {
       expect(formatBNToShortString(input, decimals)).toEqual(expected)
     })
-  })
-})
-
-describe("getTokenByAddress", () => {
-  it("correctly fetches a token", () => {
-    const chainId = 1
-    const target = TOKENS_MAP["SBTC"]
-    expect(getTokenByAddress(target.addresses[chainId], chainId)).toEqual(
-      target,
-    )
-  })
-  it("correctly does not find a token", () => {
-    expect(getTokenByAddress("", 1)).toEqual(null)
   })
 })
 
@@ -197,7 +183,7 @@ describe("calculatePrice", () => {
 
 describe("getTokenIconPath", () => {
   it("correctly retrieves icon path for non-saddle tokens", () => {
-    Object.keys(TOKENS_MAP).forEach((tokenSymbol) => {
+    Object.keys({ BTC: { address: "0x" } }).forEach((tokenSymbol) => {
       const castedSymbol = <string>tokenSymbol
       if (!castedSymbol.toLowerCase().includes("saddle")) {
         expect(getTokenIconPath(castedSymbol)).toEqual(
@@ -207,8 +193,10 @@ describe("getTokenIconPath", () => {
     })
   })
   it("correctly retrieves icon path for saddle tokens", () => {
-    Object.keys(TOKENS_MAP).forEach((tokenSymbol) => {
+    Object.keys({ "saddle-lp": { address: "0x" } }).forEach((tokenSymbol) => {
+      console.log({ tokenSymbol })
       const castedSymbol = <string>tokenSymbol
+      console.log({ castedSymbol })
       if (castedSymbol.toLowerCase().includes("saddle")) {
         expect(getTokenIconPath(castedSymbol)).toEqual(
           `/static/icons/svg/saddle_lp_token.svg`,

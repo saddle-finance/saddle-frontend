@@ -259,7 +259,7 @@ const SwapPage = (props: Props): ReactElement => {
           const formattedSynthBalance = commify(
             formatUnits(
               pendingSwap.synthBalance,
-              pendingSwap.synthTokenFrom.decimals,
+              pendingSwap.synthTokenFrom?.decimals ?? 0,
             ),
           )
           return (
@@ -280,8 +280,9 @@ const SwapPage = (props: Props): ReactElement => {
               }}
             >
               <Typography variant="subtitle1" color="text.primary">
-                {formattedSynthBalance} {pendingSwap.synthTokenFrom.symbol}{" "}
-                {"->"} {pendingSwap.tokenTo.symbol}
+                {formattedSynthBalance}{" "}
+                {pendingSwap.synthTokenFrom?.symbol ?? ""} {"->"}{" "}
+                {pendingSwap.tokenTo?.symbol ?? ""}
               </Typography>
 
               <Typography variant="body1" color="text.primary">
