@@ -261,7 +261,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
           value: userPoolTokenBalances[i],
           address: token.address,
         }))
-        const { oneDayVolume, apy, utilization } = swapStats?.[
+        const { oneDayVolume, apy, utilization } = swapStats?.[chainId]?.[
           basicPool.poolAddress
         ] || { oneDayVolume: null, apy: null, utilization: null }
 
