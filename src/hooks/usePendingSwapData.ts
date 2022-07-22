@@ -325,19 +325,23 @@ async function fetchAndPopulatePendingSwaps(
     return bridgeContract.filters[topic](account, null, null, null, null, null)
   })
   // Step 2: run queries and get matching events
-  let events
-  events = await Promise.all(
-    eventFilters.map((filter) =>
-      bridgeContract.queryFilter(filter, startBlock, "latest"),
-    ),
-  )
-  events = events.flat()
+
+  const events = (
+    await Promise.all(
+      eventFilters.map((filter) =>
+        bridgeContract.queryFilter(filter, startBlock, "latest"),
+      ),
+    )
+  ).flat()
 
   // Step 3: fetch aync data via bridge contract
-  let fetchedPendingSwaps = await Promise.all(
-    events.map((event) => fetchPendingSwapInfo(bridgeContract, event, chainId)),
-  )
-  fetchedPendingSwaps = fetchedPendingSwaps.filter(Boolean)
+  const fetchedPendingSwaps = (
+    await Promise.all(
+      events.map((event) =>
+        fetchPendingSwapInfo(bridgeContract, event, chainId),
+      ),
+    )
+  ).filter(Boolean)
   if (fetchedPendingSwaps.length === 0) return
 
   // Step 4: write to state

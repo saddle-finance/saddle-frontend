@@ -23,7 +23,6 @@ context("Deposit Flow", () => {
   beforeEach(() => {
     cy.visit(`/#/pools`)
     cy.waitForReact()
-    cy.wait(2000)
   })
 
   pools.forEach(testPoolDeposit)
@@ -57,8 +56,6 @@ function testPoolDeposit(poolName: string) {
           })
         })
       })
-
-    cy.wait(3000)
 
     cy.get("[data-testid=tokenValue]")
       .first()

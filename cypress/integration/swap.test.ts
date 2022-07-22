@@ -5,15 +5,7 @@ context("Swap Flow", () => {
       before(() => {
         cy.visit(`/#/`)
         cy.waitForReact()
-        cy.get("[data-testid=advOptionContainer]")
-          .click()
-          .then(() => {
-            cy.get("[data-testid=txnDeadlineInputGroup]").within(() => {
-              cy.get("input").then(($input) => {
-                cy.wrap($input).type("1000")
-              })
-            })
-          })
+        cy.wait(2000)
       })
       it("starts in a neutral state", () => {
         cy.get('[data-testid="swapTokenInputFrom"]')
@@ -30,7 +22,7 @@ context("Swap Flow", () => {
           .as("dropdownButton")
           .click() // show
         poolTokenSymbols.forEach((tokenSymbol) => {
-          cy.react("ListItem", { options: { timeout: 6000 } }).should("exist") // wait for listitem to appear
+          cy.react("ListItem", { options: { timeout: 3000 } }).should("exist") // wait for listitem to appear
           cy.get('[data-testid="dropdownContainer"]')
             .contains(tokenSymbol, { matchCase: false })
             .should("exist")
@@ -44,7 +36,6 @@ context("Swap Flow", () => {
         cy.get('[data-testid="searchTermInput"]')
           .should("be.visible")
           .type(poolTokenSymbols[0])
-          .wait(2000)
         cy.get('[data-testid="swapTokenItem"]').should("have.length", 1)
       })
       it("reflects token balance after selecting a token", () => {
@@ -65,12 +56,18 @@ context("Swap Flow", () => {
         })
       })
       it("accepts user input and updates calculated amount", () => {
-        cy.get('[data-testid="tokenValueInput"]').eq(0).type("1").wait(2000)
+        cy.get('[data-testid="tokenValueInput"]').eq(0).type("1")
         cy.get('[data-testid = "inputValueUSD"]')
           .eq(0)
           .should("not.have.text", "≈$0.0")
       })
       it("allows users to select only tokens in the same pool", () => {
+        cy.get('[data-testid="swapTokenInputFrom"]')
+          .contains(poolTokenSymbols[0], { matchCase: false })
+          .click()
+          .get('[data-testid="dropdownContainer"]')
+          .contains(poolTokenSymbols[0], { matchCase: false })
+          .click()
         cy.get('[data-testid="swapTokenInputTo"]')
           .contains("Choose")
           .as("dropdownButton")
@@ -110,19 +107,12 @@ context("Swap Flow", () => {
         cy.get('[data-testid="swapPriceImpactValue"]').should(($el) => {
           expect($el.text()).to.match(/-?\d+\.\d+%/)
         })
-        // cy.get("[data-testid=high-price-impact-confirmation]").click()
       })
       it("allows user to review a swap", () => {
         cy.get("button").contains("Swap").should("be.enabled").click()
       })
       it("completes a swap", () => {
-        cy.get("[data-testid=high-price-impact-confirmation]")
-          .its("length")
-          .then((length) => {
-            if (length > 0) {
-              cy.get("[data-testid=high-price-impact-confirmation]").click()
-            }
-          })
+        cy.get('[data-testid="high-price-impact-confirmation"]').click()
         cy.get("button").contains("Confirm Swap").should("be.enabled").click()
       })
     })

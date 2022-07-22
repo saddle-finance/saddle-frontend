@@ -70,6 +70,7 @@ context("Withdrawal Flow", () => {
         .then(($value) => {
           const prevVal = $value.text()
           cy.get("button").contains("Confirm Withdraw").click()
+          cy.wait(1000)
           cy.get("[data-testid=tokenValue]")
             .first()
             .should("not.have.text", prevVal)
