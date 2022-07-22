@@ -443,7 +443,7 @@ function Swap(): ReactElement {
             prevState.from.value,
             tokenPricesUSD?.[symbol],
           ),
-          poolName: activeSwapPair?.from.poolName,
+          // poolName: activeSwapPair?.from.poolName,
           tokenIndex: activeSwapPair?.from.tokenIndex,
         },
         to: {

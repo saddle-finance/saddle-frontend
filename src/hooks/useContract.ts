@@ -342,10 +342,10 @@ interface AllContractsObject {
 }
 export function useAllContracts(): AllContractsObject | null {
   const { chainId, library, account } = useActiveWeb3React()
-  const { tokensMap } = useTokenMaps()
+  const { tokenSymbolToTokenMap } = useTokenMaps()
   return useMemo(() => {
     if (!library || !chainId) return {}
-    const allTokensForChain = Object.values(tokensMap).filter(
+    const allTokensForChain = Object.values(tokenSymbolToTokenMap).filter(
       (token) => token?.address ?? "",
     )
     return allTokensForChain.reduce((acc, token) => {
@@ -366,7 +366,7 @@ export function useAllContracts(): AllContractsObject | null {
       }
       return acc
     }, {} as AllContractsObject)
-  }, [chainId, library, account, tokensMap])
+  }, [chainId, library, account, tokenSymbolToTokenMap])
 }
 
 export function useGaugeControllerContract(): GaugeController | null {
