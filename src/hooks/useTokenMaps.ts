@@ -1,43 +1,56 @@
-import { BasicTokensMap, PoolName, TokenToPoolsMap } from "../constants"
+import { BasicTokensMap, TokenToPoolsMap } from "../constants"
 
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { TokensContext } from "../providers/TokensProvider"
 import { useContext } from "react"
 
 export const useTokenMaps = (): {
-  tokensMap: BasicTokensMap
-  tokenToPoolsMap: TokenToPoolsMap
+  tokenSymbolToTokenMap: BasicTokensMap
+  tokenSymbolToPoolNameMap: TokenToPoolsMap
 } => {
   const basicPools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
 
-  const tokensMap = Object.keys(basicPools ?? {}).reduce((acc, poolName) => {
-    const pool = basicPools?.[poolName as PoolName]
-    const poolTokens = pool?.tokens.map((token) => tokens?.[token]) ?? []
-    const newAcc = { ...acc }
-    poolTokens.forEach((token) => {
-      newAcc[token?.symbol ?? ""] = token
-    })
-    const lpTokenSymbol = tokens?.[pool?.lpToken ?? ""]?.symbol ?? ""
-    const lpToken = tokens?.[pool?.lpToken ?? ""]
-    newAcc[lpTokenSymbol] = lpToken
-    return newAcc
-  }, {} as BasicTokensMap)
-
-  const tokenToPoolsMap = Object.keys(basicPools ?? {}).reduce(
+  const tokenSymbolToTokenMap = Object.keys(basicPools ?? {}).reduce(
     (acc, poolName) => {
       const pool = basicPools?.[poolName]
-      const poolTokens = pool?.tokens.map((token) => tokens?.[token]) ?? []
+      if (!pool || !tokens || !pool.underlyingTokens) return acc
+      const poolUnderlyingTokens = pool.underlyingTokens?.map(
+        (token) => tokens[token],
+      )
       const newAcc = { ...acc }
-      poolTokens.forEach((token) => {
-        newAcc[token?.symbol ?? ""] = (
-          newAcc[token?.symbol ?? ""] || []
-        ).concat(poolName as PoolName)
+      poolUnderlyingTokens.forEach((token) => {
+        if (!token) return
+        newAcc[token.symbol] = token
       })
+      const lpToken = tokens[pool.lpToken]
+      const lpTokenSymbol = lpToken?.symbol ?? ""
+      newAcc[lpTokenSymbol] = lpToken
+
+      return newAcc
+    },
+    {} as BasicTokensMap,
+  )
+
+  const tokenSymbolToPoolNameMap = Object.keys(basicPools ?? {}).reduce(
+    (acc, poolName) => {
+      const pool = basicPools?.[poolName]
+      if (!pool || !tokens || !pool.underlyingTokens) return acc
+      const poolUnderlyingTokens = pool.underlyingTokens.map(
+        (token) => tokens[token],
+      )
+      const newAcc = { ...acc }
+      poolUnderlyingTokens.forEach((token) => {
+        if (!token) return
+        newAcc[token.symbol] = (newAcc[token.symbol] || []).concat(
+          poolName as string,
+        )
+      })
+
       return newAcc
     },
     {} as TokenToPoolsMap,
   )
 
-  return { tokensMap, tokenToPoolsMap }
+  return { tokenSymbolToTokenMap, tokenSymbolToPoolNameMap }
 }

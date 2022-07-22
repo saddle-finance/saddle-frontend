@@ -1,3 +1,4 @@
+import { BasicToken, TokensContext } from "../providers/TokensProvider"
 import { IS_VIRTUAL_SWAP_ACTIVE, SWAP_TYPES } from "../constants"
 import React, {
   ReactElement,
@@ -29,7 +30,6 @@ import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { PendingSwapsContext } from "../providers/PendingSwapsProvider"
 import SwapPage from "../components/SwapPage"
-import { TokensContext } from "../providers/TokensProvider"
 import { Zero } from "@ethersproject/constants"
 import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
@@ -97,7 +97,7 @@ function Swap(): ReactElement {
   const tokenBalances = usePoolTokenBalances()
   const basicPools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
-  const { tokensMap, tokenToPoolsMap } = useTokenMaps()
+  const { tokenSymbolToTokenMap, tokenSymbolToPoolNameMap } = useTokenMaps()
   const bridgeContract = useBridgeContract()
   const snxEchangeRatesContract = useSynthetixExchangeRatesContract()
   const calculateSwapPairs = useCalculateSwapPairs()
@@ -131,7 +131,7 @@ function Swap(): ReactElement {
       .filter(({ isLPToken, address }) => !isLPToken && address)
       .filter(({ symbol }) => {
         // get list of pools containing the token
-        const tokenPools = tokenToPoolsMap[symbol] ?? []
+        const tokenPools = tokenSymbolToPoolNameMap[symbol] || []
         // ensure at least one pool is unpaused to include token in swappable list
         const hasAnyUnpaused = tokenPools.some((poolName) => {
           const basicPool = basicPools?.[poolName]
@@ -162,21 +162,22 @@ function Swap(): ReactElement {
         ? (
             formState.currentSwapPairs
               .map(({ to, type: swapType }) => {
-                if (!tokensMap?.[to.symbol]) {
+                if (!tokenSymbolToTokenMap[to.symbol]) {
                   console.log("unknown symbol", { to, swapType })
                   return null
                 }
-                const token = tokensMap?.[to.symbol]
-                const amount = tokenBalances?.[token?.symbol ?? ""] || Zero
+                const token = tokenSymbolToTokenMap[to.symbol] as BasicToken
+                const amount = tokenBalances?.[token.symbol] ?? Zero
+
                 return {
-                  name: token?.name ?? "",
-                  symbol: token?.symbol ?? "",
-                  decimals: token?.decimals ?? 0,
+                  name: token.name,
+                  symbol: token.symbol,
+                  decimals: token.decimals,
                   amount,
                   valueUSD: calculatePrice(
                     amount,
-                    tokenPricesUSD?.[token?.symbol ?? ""],
-                    token?.decimals ?? 0,
+                    tokenPricesUSD?.[token.symbol],
+                    token.decimals,
                   ),
                   swapType,
                   isAvailable: IS_VIRTUAL_SWAP_ACTIVE
@@ -193,9 +194,9 @@ function Swap(): ReactElement {
       to: toTokens,
     }
   }, [
-    tokenToPoolsMap,
+    tokenSymbolToPoolNameMap,
     tokens,
-    tokensMap,
+    tokenSymbolToTokenMap,
     tokenPricesUSD,
     tokenBalances,
     formState.currentSwapPairs,
@@ -234,10 +235,11 @@ function Swap(): ReactElement {
       }
       const amountToGive = parseUnits(
         cleanedFormFromValue,
-        tokensMap?.[formStateArg.from.symbol]?.decimals ?? 0,
+        tokenSymbolToTokenMap[formStateArg.from.symbol]?.decimals ?? 0,
       )
-      const tokenFrom = tokensMap[formStateArg.from.symbol]
-      const tokenTo = tokensMap[formStateArg.to.symbol]
+      const tokenFrom = tokenSymbolToTokenMap[formStateArg.from.symbol]
+      const tokenTo = tokenSymbolToTokenMap[formStateArg.to.symbol]
+      if (!tokenFrom || !tokenTo) return
       let error: string | null = null
       let amountToReceive = Zero
       let amountMediumSynth = Zero
@@ -252,11 +254,16 @@ function Swap(): ReactElement {
       ) {
         const originPool = basicPools?.[formStateArg.from.poolName]
         const destinationPool = basicPools?.[formStateArg.to.poolName]
+        if (
+          !destinationPool?.metaSwapDepositAddress ||
+          !originPool?.metaSwapDepositAddress
+        )
+          return
         const [amountOutSynth, amountOutToken] =
           await bridgeContract.calcTokenToToken(
             [
-              originPool?.metaSwapDepositAddress ?? "",
-              destinationPool?.metaSwapDepositAddress ?? "",
+              originPool.metaSwapDepositAddress,
+              destinationPool.metaSwapDepositAddress,
             ],
             formStateArg.from.tokenIndex,
             formStateArg.to.tokenIndex,
@@ -269,9 +276,10 @@ function Swap(): ReactElement {
         bridgeContract != null
       ) {
         const destinationPool = basicPools?.[formStateArg.to.poolName]
+        if (!destinationPool?.metaSwapDepositAddress) return
         const [amountOutSynth, amountOutToken] =
           await bridgeContract.calcSynthToToken(
-            destinationPool?.metaSwapDepositAddress ?? "",
+            destinationPool.metaSwapDepositAddress,
             utils.formatBytes32String(formStateArg.from.symbol),
             formStateArg.to.tokenIndex,
             amountToGive,
@@ -283,8 +291,9 @@ function Swap(): ReactElement {
         bridgeContract != null
       ) {
         const originPool = basicPools?.[formStateArg.from.poolName]
+        if (!originPool?.metaSwapDepositAddress) return
         amountToReceive = await bridgeContract.calcTokenToSynth(
-          originPool?.metaSwapDepositAddress ?? "",
+          originPool.metaSwapDepositAddress,
           formStateArg.from.tokenIndex,
           utils.formatBytes32String(formStateArg.to.symbol),
           amountToGive,
@@ -310,8 +319,8 @@ function Swap(): ReactElement {
       }
       const toValueUSD = calculatePrice(
         amountToReceive,
-        tokenPricesUSD?.[tokenTo?.symbol ?? ""],
-        tokenTo?.decimals ?? 0,
+        tokenPricesUSD?.[tokenTo.symbol],
+        tokenTo.decimals,
       )
       const priceImpact = calculatePriceImpact(
         formStateArg.from.valueUSD,
@@ -330,9 +339,9 @@ function Swap(): ReactElement {
           priceImpact,
           exchangeRate: calculateExchangeRate(
             amountToGive,
-            tokenFrom?.decimals ?? 0,
+            tokenFrom.decimals,
             amountToReceive,
-            tokenTo?.decimals ?? 0,
+            tokenTo.decimals,
           ),
         }
         setPrevFormState(newState)
@@ -378,7 +387,9 @@ function Swap(): ReactElement {
   }
   function handleReverseExchangeDirection(): void {
     setFormState((prevState) => {
-      const swapPairs = calculateSwapPairs(tokensMap[prevState.to.symbol])
+      const swapPairs = calculateSwapPairs(
+        tokenSymbolToTokenMap[prevState.to.symbol],
+      )
       const activeSwapPair = swapPairs.find(
         (pair) => pair.to.symbol === prevState.from.symbol,
       )
@@ -414,7 +425,7 @@ function Swap(): ReactElement {
   function handleUpdateTokenFrom(symbol: string): void {
     if (symbol === formState.to.symbol) return handleReverseExchangeDirection()
     setFormState((prevState) => {
-      const swapPairs = calculateSwapPairs(tokensMap[symbol])
+      const swapPairs = calculateSwapPairs(tokenSymbolToTokenMap[symbol])
       const activeSwapPair = swapPairs.find(
         (pair) => pair.to.symbol === prevState.to.symbol,
       )
@@ -487,13 +498,14 @@ function Swap(): ReactElement {
   }
 
   async function handleConfirmTransaction(): Promise<void> {
-    const fromToken = tokensMap[formState.from.symbol]
+    const fromToken = tokenSymbolToTokenMap[formState.from.symbol]
     if (
       formState.swapType === SWAP_TYPES.INVALID ||
       formState.from.tokenIndex === undefined ||
       formState.from.poolName === undefined ||
       formState.to.tokenIndex === undefined ||
-      formState.to.poolName === undefined
+      formState.to.poolName === undefined ||
+      !fromToken
     ) {
       console.debug("Invalid transaction", formState)
       setFormState((prevState) => ({
@@ -511,7 +523,7 @@ function Swap(): ReactElement {
       bridgeContract: bridgeContract,
       swapContract: swapContract,
       from: {
-        amount: parseUnits(formState.from.value, fromToken?.decimals ?? 18),
+        amount: parseUnits(formState.from.value, fromToken.decimals),
         symbol: formState.from.symbol,
         poolName: formState.from.poolName,
         tokenIndex: formState.from.tokenIndex,
@@ -583,7 +595,7 @@ function Swap(): ReactElement {
             ? "0"
             : formatUnits(
                 formState.to.value,
-                tokensMap[formState.to.symbol]?.decimals ?? 18,
+                tokenSymbolToTokenMap[formState.to.symbol]?.decimals ?? 18,
               ),
       }}
       swapType={formState.swapType}
