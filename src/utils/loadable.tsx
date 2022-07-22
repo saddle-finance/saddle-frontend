@@ -5,7 +5,7 @@ export interface LoadableType<T> {
   isError: boolean
   isSuccess: boolean
   error: Error | string | null
-  data?: T
+  data: T
 }
 
 export const EMPTY_LOADABLE = {
@@ -23,11 +23,22 @@ enum LoadableActions {
   "FAILURE",
 }
 
-type Action<T> = {
+type StartAction = {
   type: LoadableActions
-  data?: T
-  error?: Error | string
+  data: undefined
+  error: undefined
 }
+type SuccessAction<T> = {
+  type: LoadableActions.SUCCESS
+  data: T
+  error: undefined
+}
+type FailureAction = {
+  type: LoadableActions.FAILURE
+  data: undefined
+  error: Error | string
+}
+type Action<T> = StartAction | SuccessAction<T> | FailureAction
 
 function reducer<S>(
   state: LoadableType<S>,
@@ -47,7 +58,7 @@ function reducer<S>(
         isError: false,
         isSuccess: true,
         error: null,
-        data: action.data,
+        data: (action as SuccessAction<S>).data,
       }
     case LoadableActions.FAILURE:
       return {
@@ -59,7 +70,7 @@ function reducer<S>(
         error: action.error as Error | string,
       }
     default:
-      return EMPTY_LOADABLE
+      return state
   }
 }
 
@@ -82,15 +93,17 @@ export function useLoadingState<T>(initialState?: T): ReturnType<T> {
     } as LoadableType<T>,
   )
   const onStart = useCallback(
-    () => dispatch({ type: LoadableActions.START }),
+    () => dispatch({ type: LoadableActions.START } as StartAction),
     [dispatch],
   )
   const onSuccess = useCallback(
-    (data: T) => dispatch({ type: LoadableActions.SUCCESS, data }),
+    (data: T) =>
+      dispatch({ type: LoadableActions.SUCCESS, data } as SuccessAction<T>),
     [dispatch],
   )
   const onFailure = useCallback(
-    (error: Error | string) => dispatch({ type: LoadableActions.START, error }),
+    (error: Error | string) =>
+      dispatch({ type: LoadableActions.FAILURE, error } as FailureAction),
     [dispatch],
   )
 
