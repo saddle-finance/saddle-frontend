@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
 import { BigNumber } from "@ethersproject/bignumber"
+import { ChainId } from "../constants"
 import { SwapStatsReponse } from "../utils/getSwapStats"
 
 interface GasPrices {
@@ -8,14 +9,17 @@ interface GasPrices {
   gasFast?: number
   gasInstant?: number
 }
-type SwapStats = Partial<{
-  [swapAddress: string]: {
-    oneDayVolume: string
-    apy: string
-    tvl: string
-    utilization: string
-  }
-}>
+type PoolStats = {
+  oneDayVolume: string
+  apy: string
+  tvl: string
+  utilization: string
+}
+type SwapStats = {
+  [chainId in ChainId]?: Partial<{
+    [swapAddress: string]: PoolStats
+  }>
+}
 export type TokenPricesUSD = Partial<{
   [tokenSymbol: string]: number
 }>
@@ -61,23 +65,35 @@ const applicationSlice = createSlice({
     },
     updateSwapStats(state, action: PayloadAction<SwapStatsReponse>): void {
       const formattedPayload = Object.keys(action.payload).reduce(
-        (acc, key) => {
-          const { APY, TVL, oneDayVolume: ODV } = action.payload[key]
-          if (isNaN(APY) || isNaN(TVL) || isNaN(ODV)) {
-            return acc
-          }
-          const apy = APY.toFixed(18)
-          const tvl = TVL.toFixed(18)
-          const oneDayVolume = ODV.toFixed(18)
-          const utilization = (TVL > 0 ? ODV / TVL : 0).toFixed(18)
-          return {
-            ...acc,
-            [key]: {
-              apy,
-              tvl,
-              oneDayVolume,
-              utilization,
+        (chainsAcc, chainId) => {
+          const chainData = action.payload[chainId] as NonNullable<
+            SwapStatsReponse[ChainId]
+          >
+          const processedChainData = Object.keys(chainData).reduce(
+            (poolsAcc, poolAddress) => {
+              const { APY, TVL, oneDayVolume: ODV } = chainData[poolAddress]
+              if (isNaN(APY) || isNaN(TVL) || isNaN(ODV)) {
+                return poolsAcc
+              }
+              const apy = APY.toFixed(18)
+              const tvl = TVL.toFixed(18)
+              const oneDayVolume = ODV.toFixed(18)
+              const utilization = (TVL > 0 ? ODV / TVL : 0).toFixed(18)
+              return {
+                ...poolsAcc,
+                [(poolAddress as string).toLowerCase()]: {
+                  apy,
+                  tvl,
+                  oneDayVolume,
+                  utilization,
+                },
+              }
             },
+            {},
+          )
+          return {
+            ...chainsAcc,
+            [chainId]: processedChainData,
           }
         },
         {},
