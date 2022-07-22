@@ -43,7 +43,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
   const basicPool = basicPools[data.name]
   const poolAddress = basicPool?.poolAddress
   if (!poolAddress) return null
-  const { oneDayVolume, utilization } = swapStats?.[poolAddress] || {
+  const { oneDayVolume, utilization } = swapStats?.[chainId]?.[poolAddress] || {
     oneDayVolume: null,
     utilization: null,
   }
