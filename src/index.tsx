@@ -13,9 +13,9 @@ import { IntercomProvider } from "react-use-intercom"
 import { NetworkContextName } from "./constants"
 import { Provider } from "react-redux"
 import React from "react"
-import ReactDOM from "react-dom"
 import { HashRouter as Router } from "react-router-dom"
 import { ThemeSettingsProvider } from "./providers/ThemeSettingsProvider"
+import { createRoot } from "react-dom/client"
 import getLibrary from "./utils/getLibrary"
 import { getNetworkLibrary } from "./connectors"
 import reportWebVitals from "./reportWebVitals"
@@ -39,8 +39,12 @@ Sentry.init({
 })
 
 const intercomAppId = "tbghxgth"
+const container = document.getElementById("root")
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-non-null-assertion
+const root = createRoot(container!) // createRoot(container!) if you use TypeScript
 
-ReactDOM.render(
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+root.render(
   <>
     <React.StrictMode>
       <IntercomProvider appId={intercomAppId} shouldInitialize={IS_PRODUCTION}>
@@ -58,7 +62,6 @@ ReactDOM.render(
       </IntercomProvider>
     </React.StrictMode>
   </>,
-  document.getElementById("root"),
 )
 
 // If you want to start measuring performance in your app, pass a function

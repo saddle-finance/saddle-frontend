@@ -1,5 +1,5 @@
 import { AprsContext, GaugeApr } from "./../providers/AprsProvider"
-import { BasicToken, TokensContext } from "../providers/TokensProvider"
+import { BasicToken, useBasicTokens } from "../providers/TokensProvider"
 import {
   Partners,
   getThirdPartyDataForPool,
@@ -116,7 +116,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
   const [poolName, setPoolName] = useState<string | undefined>(name)
   const { account, library, chainId } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
-  const tokens = useContext(TokensContext)
+  const { data: tokens, isLoading } = useBasicTokens()
   const userState = useContext(UserStateContext)
   const minichefData = useContext(MinichefContext)
   const { gauges } = useContext(GaugeContext)
@@ -134,6 +134,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
     async function getSwapData(): Promise<void> {
       const basicPool = poolName ? basicPools?.[poolName] : null
       if (
+        isLoading ||
         poolName == null ||
         tokens == null ||
         tokenPricesUSD == null ||
@@ -324,6 +325,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
     }
     void getSwapData()
   }, [
+    isLoading,
     account,
     basicPools,
     chainId,

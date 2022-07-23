@@ -21,7 +21,7 @@ const Web3Status = (): ReactElement => {
   const [modalOpen, setModalOpen] = useState(false)
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT)
   const { t } = useTranslation()
-  const { ensName } = useENS(account)
+  const { data: ensName, isLoading } = useENS(account)
   const udName = useUDName()
 
   // always reset to account view
@@ -41,9 +41,13 @@ const Web3Status = (): ReactElement => {
         endIcon={account && <Identicon />}
       >
         <Typography variant="body1" whiteSpace="nowrap">
-          {account
-            ? udName || ensName || shortenAddress(account)
-            : t("connectWallet")}
+          {isLoading ? (
+            <Typography>Loading...</Typography>
+          ) : account ? (
+            udName || ensName || shortenAddress(account)
+          ) : (
+            t("connectWallet")
+          )}
         </Typography>
       </Button>
       <Dialog
