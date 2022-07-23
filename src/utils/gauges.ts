@@ -29,15 +29,15 @@ import { isAddressZero } from "."
 
 export type Gauge = {
   address: string
-  gaugeBalance: BigNumber | null
-  gaugeTotalSupply: BigNumber | null
+  gaugeBalance: BigNumber
+  gaugeTotalSupply: BigNumber
   gaugeWeight: BigNumber
   lpTokenAddress: string
   poolAddress: string | null
   poolName: string | null
   gaugeRelativeWeight: BigNumber
-  workingBalances: BigNumber | null
-  workingSupply: BigNumber | null
+  workingBalances: BigNumber
+  workingSupply: BigNumber
   rewards: GaugeReward[]
   gaugeName: string | null
   isKilled: boolean
@@ -218,29 +218,30 @@ export async function getGaugeData(
           tokenAddress: SDL_TOKEN_ADDRESSES[chainId].toLowerCase(),
         }
         if (!lpTokenAddress) return previousGaugeData
+        const gauge: Gauge = {
+          address: gaugeAddress,
+          gaugeWeight: gaugeWeights[index],
+          gaugeRelativeWeight: gaugeRelativeWeight,
+          gaugeTotalSupply: gaugeTotalSupplies[index] || Zero,
+          workingSupply: gaugeWorkingSupplies[index] || Zero,
+          workingBalances: gaugeWorkingBalances?.[index] || Zero,
+          gaugeBalance: gaugeBalances?.[index] || Zero,
+          gaugeName: gaugeNames[index],
+          lpTokenAddress,
+          isKilled: gaugeKillStatuses[index] ?? false,
+          poolAddress: isValidPoolAddress && poolAddress ? poolAddress : null,
+          poolName: gaugePool?.poolName || null,
+          rewards: gaugeRewards[index]
+            .map((reward) => ({
+              periodFinish: reward.period_finish,
+              rate: reward.rate,
+              tokenAddress: reward.token.toLowerCase(),
+            }))
+            .concat([sdlReward]),
+        }
         return {
           ...previousGaugeData,
-          [lpTokenAddress]: {
-            address: gaugeAddress,
-            gaugeWeight: gaugeWeights[index],
-            gaugeRelativeWeight: gaugeRelativeWeight,
-            gaugeTotalSupply: gaugeTotalSupplies[index],
-            workingSupply: gaugeWorkingSupplies[index],
-            workingBalances: gaugeWorkingBalances?.[index],
-            gaugeBalance: gaugeBalances?.[index],
-            gaugeName: gaugeNames[index],
-            lpTokenAddress,
-            isKilled: gaugeKillStatuses[index] ?? false,
-            poolAddress: isValidPoolAddress ? poolAddress : null,
-            poolName: gaugePool?.poolName || null,
-            rewards: gaugeRewards[index]
-              .map((reward) => ({
-                periodFinish: reward.period_finish,
-                rate: reward.rate,
-                tokenAddress: reward.token.toLowerCase(),
-              }))
-              .concat([sdlReward]),
-          } as Gauge,
+          [lpTokenAddress]: gauge,
         }
       },
       {},

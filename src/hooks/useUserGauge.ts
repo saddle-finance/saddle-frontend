@@ -82,16 +82,14 @@ export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
     workingSupply,
   } = gauge
 
-  const boost = userLPAmount
-    ? calculateBoost(
-        userLPAmount,
-        totalLpAmout || Zero,
-        workingBalance || Zero,
-        workingSupply || Zero,
-        veSdlBalance,
-        totalVeSdl,
-      )
-    : null
+  const boost = calculateBoost(
+    userLPAmount,
+    totalLpAmout,
+    workingBalance,
+    workingSupply,
+    veSdlBalance,
+    totalVeSdl,
+  )
 
   return {
     stake: gaugeContract["deposit(uint256)"],

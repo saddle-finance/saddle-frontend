@@ -32,7 +32,7 @@ export default function Farm(): JSX.Element {
     "stake" | "claim" | undefined
   >()
   const basicPools = useContext(BasicPoolsContext)
-  const { gauges, isGaugeLoading } = useContext(GaugeContext)
+  const { gauges, isLoading: isGaugeLoading } = useContext(GaugeContext)
   const gaugeAprs = useContext(AprsContext)
   const userState = useContext(UserStateContext)
   const getGaugeTVL = useGaugeTVL()

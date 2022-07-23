@@ -15,8 +15,8 @@ import { useActiveWeb3React } from "../hooks"
 export const GaugeContext = React.createContext<{
   gauges: LPTokenAddressToGauge
   gaugeCount: number
-  isGaugeLoading?: boolean
-}>({ gauges: {}, gaugeCount: 0, isGaugeLoading: true })
+  isLoading?: boolean
+}>({ gauges: {}, gaugeCount: 0, isLoading: true })
 
 export default function GaugeProvider({
   children,
@@ -27,7 +27,7 @@ export default function GaugeProvider({
   const gaugeMinterContract = useGaugeMinterContract() // only exists on mainnet
   const [gauges, setGauges] = useState<LPTokenAddressToGauge>({})
   const [gaugeCount, setGaugeCount] = useState(0)
-  const [isGaugeLoading, setIsGaugeLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     async function fetchGauges() {
@@ -52,7 +52,7 @@ export default function GaugeProvider({
     }
 
     void fetchGauges()
-    setIsGaugeLoading(false)
+    setIsLoading(false)
   }, [
     chainId,
     library,
@@ -63,7 +63,7 @@ export default function GaugeProvider({
   ])
 
   return (
-    <GaugeContext.Provider value={{ gauges, gaugeCount, isGaugeLoading }}>
+    <GaugeContext.Provider value={{ gauges, gaugeCount, isLoading }}>
       {children}
     </GaugeContext.Provider>
   )

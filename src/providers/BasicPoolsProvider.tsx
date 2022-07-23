@@ -94,7 +94,7 @@ export const BasicPoolsContext = React.createContext<BasicPools>(null)
 export default function BasicPoolsProvider({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
-  const { chainId, library, account } = useActiveWeb3React()
+  const { chainId, library } = useActiveWeb3React()
   const [basicPools, setBasicPools] = useState<BasicPools>(null)
 
   const { lastTransactionTimes } = useSelector(
@@ -109,11 +109,7 @@ export default function BasicPoolsProvider({
         setBasicPools(null)
         return
       }
-      const ethCallProvider = await getMulticallProvider(
-        library,
-        chainId,
-        account,
-      )
+      const ethCallProvider = await getMulticallProvider(library, chainId)
       const pools = IS_POOL_REGISTRY_MIGRATION_LIVE
         ? await getPoolsDataFromRegistry(
             chainId,
@@ -152,7 +148,6 @@ export default function BasicPoolsProvider({
     lastTransactionTimes,
     poolRegistry,
     poolRegistryMultiCall,
-    account,
   ])
 
   return (

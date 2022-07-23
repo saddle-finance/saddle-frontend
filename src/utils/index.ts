@@ -7,7 +7,6 @@ import {
   Token,
   readableDecimalNumberRegex,
 } from "../constants"
-import { ContractInterface, getDefaultProvider } from "ethers"
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
 import {
   MulticallCall,
@@ -20,6 +19,7 @@ import { BasicPool } from "../providers/BasicPoolsProvider"
 import { BasicTokens } from "../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "@ethersproject/contracts"
+import { ContractInterface } from "ethers"
 import { Deadlines } from "../state/user"
 import { Contract as EthcallContract } from "ethcall"
 import { JsonFragment } from "@ethersproject/abi"
@@ -344,13 +344,10 @@ export function getTokenSymbolForPoolType(poolType: PoolTypes): string {
 export async function getMulticallProvider(
   library: Web3Provider,
   chainId: ChainId,
-  account?: string | null,
 ): Promise<MulticallProvider> {
   const ethcallProvider = new Provider() as unknown as MulticallProvider
-  const alterNativeNetwork = process.env.REACT_APP_ALTERNATIVE_NETWORK_URL
-  const defaultProvider = getDefaultProvider(alterNativeNetwork)
 
-  await ethcallProvider.init(account ? library : defaultProvider)
+  await ethcallProvider.init(library)
   if (chainId === ChainId.HARDHAT) {
     ethcallProvider.multicall3 = {
       address: "0xcA11bde05977b3631167028862bE2a173976CA11",

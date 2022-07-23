@@ -16,7 +16,6 @@ import {
   Token,
   VOTING_ESCROW_CONTRACT_ADDRESS,
 } from "../constants"
-import { Web3Provider, getDefaultProvider } from "@ethersproject/providers"
 import { createMultiCallContract, getContract, getSwapContract } from "../utils"
 import { useContext, useEffect, useMemo, useState } from "react"
 
@@ -79,15 +78,12 @@ function useContract(
   const { library, account } = useActiveWeb3React()
 
   return useMemo(() => {
-    const alterNativeNetwork = process.env.REACT_APP_ALTERNATIVE_NETWORK_URL
-    const defaultProvider = getDefaultProvider(alterNativeNetwork)
-    const provider = account ? library : defaultProvider
-    if (!address || !ABI || !provider) return null
+    if (!address || !ABI || !library) return null
     try {
       return getContract(
         address,
         ABI,
-        provider as Web3Provider,
+        library,
         withSignerIfPossible && account ? account : undefined,
       )
     } catch (error) {
@@ -112,7 +108,7 @@ export function useMasterRegistry(): MasterRegistry | null {
 export const POOL_REGISTRY_NAME = formatBytes32String("PoolRegistry")
 
 export function usePoolRegistry(): PoolRegistry | null {
-  const { library, account } = useActiveWeb3React()
+  const { library } = useActiveWeb3React()
   const masterRegistryContract = useMasterRegistry()
   const [contractAddress, setContractAddress] = useState<string | undefined>()
   useEffect(() => {
@@ -139,10 +135,10 @@ export function usePoolRegistry(): PoolRegistry | null {
       contractAddress,
       POOL_REGISTRY_ABI,
       library,
-      account ?? undefined,
+      undefined,
     ) as PoolRegistry
     return contract
-  }, [contractAddress, library, account])
+  }, [contractAddress, library])
 }
 
 export function usePoolRegistryMultiCall(): MulticallContract<PoolRegistry> | null {
