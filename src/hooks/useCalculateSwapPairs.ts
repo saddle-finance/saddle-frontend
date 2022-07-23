@@ -8,6 +8,7 @@ import { ChainId, SWAP_TYPES, Token } from "../constants/index"
 import { useCallback, useContext, useEffect, useMemo, useState } from "react"
 
 import { AppState } from "../state"
+import { BigNumber } from "ethers"
 import { IS_DEVELOPMENT } from "./../utils/environment"
 import { getPriceDataForPool } from "../utils"
 import { intersection } from "../utils/index"
@@ -74,7 +75,7 @@ export function useCalculateSwapPairs(): (token?: Token) => SwapData[] {
         return shouldInclude
       }) as ExpandedBasicPool[] // make sure we have enough data about a pool
     const sortedPools = basicPoolsWithPriceData.sort((a, b) => {
-      const aTVL = a.priceData?.tokenBalancesSumUSD
+      const aTVL: BigNumber = a.priceData?.tokenBalancesSumUSD
       const bTVL = b.priceData?.tokenBalancesSumUSD
       if (aTVL && bTVL) {
         return aTVL.gt(bTVL) ? -1 : 1
