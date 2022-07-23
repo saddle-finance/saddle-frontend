@@ -72,7 +72,8 @@ import { useActiveWeb3React } from "./index"
 // returns null on errors
 function useContract(
   address: string | undefined,
-  ABI: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ABI: any,
   withSignerIfPossible = true,
 ): Contract | null {
   const { library, account } = useActiveWeb3React()

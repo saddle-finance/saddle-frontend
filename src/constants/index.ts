@@ -9,7 +9,7 @@ import {
 import { AbstractConnector } from "@web3-react/abstract-connector"
 import { BigNumber } from "@ethersproject/bignumber"
 import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
-import metamaskIcon from "../assets/icons/metamask.svg"
+import metamaskIcon from "!file-loader!../assets/icons/metamask.svg" // hack workaround for webpack
 import tallyIcon from "../assets/icons/tally.svg"
 import unstoppableDomainsLogo from "../assets/icons/unstoppableDomainsLogo.png"
 import walletconnectIcon from "../assets/icons/walletconnect.svg"
