@@ -187,7 +187,7 @@ const DepositPage = (props: Props): ReactElement => {
               variant="contained"
               color="secondary"
               size="large"
-              onClick={onMigrateToGaugeClick}
+              onClick={void onMigrateToGaugeClick}
             >
               {t("exitToMigrate")}
             </Button>
@@ -381,10 +381,10 @@ const DepositPage = (props: Props): ReactElement => {
         {currentModal === "review" ? (
           <ReviewDeposit
             transactionData={transactionData}
-            onConfirm={async (): Promise<void> => {
+            onConfirm={() => {
               setCurrentModal("confirm")
               logEvent("deposit", (poolData && { pool: poolData?.name }) || {})
-              await onConfirmTransaction?.()
+              void onConfirmTransaction?.()
               setCurrentModal(null)
             }}
             onClose={(): void => setCurrentModal(null)}
