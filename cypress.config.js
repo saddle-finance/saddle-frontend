@@ -16,7 +16,7 @@ module.exports = defineConfig({
     "supportFile": "cypress/support/commands.ts",
     "specPattern":	"cypress/integration/*.test.ts",
     "baseUrl": "http://localhost:3000/",
-    "defaultCommandTimeout": 60000,
+    "defaultCommandTimeout": 40000,
     "requestTimeout": 40000,
     "video": false,
     "viewportWidth": 1440,
