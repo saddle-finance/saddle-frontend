@@ -57,15 +57,16 @@ function testPoolDeposit(poolName: string) {
         })
       })
 
-    cy.get("[data-testid=tokenValue]").first()
-    // .then(($value) => {
-    // const prevVal = $value.text()
-    cy.get("button").contains("Deposit").first().click()
-    cy.get("button").contains("Confirm Deposit").click()
-    cy.get(".Toastify").contains(`Deposit on ${poolName} complete`)
-    // cy.get("[data-testid=tokenValue]")
-    //   .first()
-    //   .should("not.have.text", prevVal)
+    cy.get("[data-testid=tokenValue]")
+      .first()
+      .then(($value) => {
+        const prevVal = $value.text()
+        cy.get("button").contains("Deposit").first().click()
+        cy.get("button").contains("Confirm Deposit").click()
+        cy.get(".Toastify").contains(`Deposit on ${poolName} complete`)
+        cy.get("[data-testid=tokenValue]")
+          .first()
+          .should("not.have.text", prevVal)
+      })
   })
-  // })
 }
