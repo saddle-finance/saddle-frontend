@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -32,7 +32,7 @@ jobs:
       #     name: build-artifact
       #     path: ./build-artifact.zip
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -45,7 +45,7 @@ jobs:
       - run: npm run lint
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -60,7 +60,7 @@ jobs:
           CI: true
 
   coverage:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -79,7 +79,7 @@ jobs:
   coverage-cypress:
     env:
       REACT_APP_NOTIFY_DAPP_ID: ${{ secrets.REACT_APP_NOTIFY_DAPP_ID }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     services:
       saddle-contract:
         image: saddlefinance/contracts:latest
