@@ -201,6 +201,41 @@ export default function CreatePool(): React.ReactElement {
     tokenInfo,
   ])
 
+  const onBlur = async (
+    eventTarget: EventTarget & (HTMLInputElement | HTMLTextAreaElement),
+    index: number,
+  ): Promise<void> => {
+    const value = eventTarget.value
+    if (!value) {
+      tokenInfo[index] = {
+        name: "",
+        symbol: "",
+        decimals: 0,
+        checkResult: "primary" as ValidationStatus,
+      }
+      setTokenInfo([...tokenInfo])
+    }
+
+    inputLoading[index] = true
+    setInputLoading([...inputLoading])
+    let tokenData
+    try {
+      tokenData = await getUserTokenInputContract(tokenInputs[index])
+    } catch (err) {
+      console.error(err)
+      tokenData = {
+        name: "",
+        symbol: "",
+        decimals: 0,
+        checkResult: "error" as ValidationStatus,
+      }
+    }
+    inputLoading[index] = false
+    setInputLoading([...inputLoading])
+    tokenInfo[index] = tokenData
+    setTokenInfo([...tokenInfo])
+  }
+
   return (
     <Container sx={{ pb: 5 }}>
       <Link
@@ -316,7 +351,7 @@ export default function CreatePool(): React.ReactElement {
                   color="secondary"
                   size="large"
                   exclusive
-                  onChange={(event, value) => {
+                  onChange={(event, value: PoolType) => {
                     setPoolType(value)
                     setTokenInputs([tokenInputs[0]])
                   }}
@@ -354,7 +389,7 @@ export default function CreatePool(): React.ReactElement {
                   color="secondary"
                   fullWidth
                   exclusive
-                  onChange={(event, value) => setAssetType(value)}
+                  onChange={(event, value: AssetType) => setAssetType(value)}
                   size="large"
                   disabled={poolType !== PoolType.Base}
                 >
@@ -397,38 +432,7 @@ export default function CreatePool(): React.ReactElement {
                         tokenInputs[index] = e.target.value
                         setTokenInputs([...tokenInputs])
                       }}
-                      onBlur={async (e) => {
-                        if (!e.target.value) {
-                          tokenInfo[index] = {
-                            name: "",
-                            symbol: "",
-                            decimals: 0,
-                            checkResult: "primary" as ValidationStatus,
-                          }
-                          setTokenInfo([...tokenInfo])
-                        }
-
-                        inputLoading[index] = true
-                        setInputLoading([...inputLoading])
-                        let tokenData
-                        try {
-                          tokenData = await getUserTokenInputContract(
-                            tokenInputs[index],
-                          )
-                        } catch (err) {
-                          console.error(err)
-                          tokenData = {
-                            name: "",
-                            symbol: "",
-                            decimals: 0,
-                            checkResult: "error" as ValidationStatus,
-                          }
-                        }
-                        inputLoading[index] = false
-                        setInputLoading([...inputLoading])
-                        tokenInfo[index] = tokenData
-                        setTokenInfo([...tokenInfo])
-                      }}
+                      onBlur={(e) => onBlur(e.target, index)}
                       helperText={
                         tokenInfo[index]?.name
                           ? `${tokenInfo[index]?.name} (${
