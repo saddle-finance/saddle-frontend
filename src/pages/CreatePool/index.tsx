@@ -201,7 +201,7 @@ export default function CreatePool(): React.ReactElement {
     tokenInfo,
   ])
 
-  const onBlur = async (
+  const onTokenInputBlur = async (
     eventTarget: EventTarget & (HTMLInputElement | HTMLTextAreaElement),
     index: number,
   ): Promise<void> => {
@@ -432,7 +432,7 @@ export default function CreatePool(): React.ReactElement {
                         tokenInputs[index] = e.target.value
                         setTokenInputs([...tokenInputs])
                       }}
-                      onBlur={(e) => onBlur(e.target, index)}
+                      onBlur={(e) => void onTokenInputBlur(e.target, index)}
                       helperText={
                         tokenInfo[index]?.name
                           ? `${tokenInfo[index]?.name} (${

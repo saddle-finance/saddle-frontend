@@ -264,10 +264,10 @@ const WithdrawPage = (props: Props): ReactElement | null => {
           <ReviewWithdraw
             data={reviewData}
             gas={gasPriceSelected}
-            onConfirm={async (): Promise<void> => {
+            onConfirm={() => {
               setCurrentModal("confirm")
               logEvent("withdraw", (poolData && { pool: poolData?.name }) || {})
-              await onConfirmTransaction?.()
+              void onConfirmTransaction?.()
               setCurrentModal(null)
             }}
             onClose={(): void => setCurrentModal(null)}

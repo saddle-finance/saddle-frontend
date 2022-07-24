@@ -31,12 +31,6 @@
     "@typescript-eslint/ban-ts-comment": "off",
     "no-invalid-this": 0,
     "no-unused-vars": "off",
-    "sort-imports": "error",
-    "@typescript-eslint/no-misused-promises": [
-      "error",
-      {
-        "checksVoidReturn": false
-      }
-    ]
+    "sort-imports": "error"
   }
 }
