@@ -64,6 +64,7 @@ function testPoolDeposit(poolName: string) {
         cy.get("button").contains("Deposit").first().click()
         cy.get("button").contains("Confirm Deposit").click()
         cy.get(".Toastify").contains(`Deposit on ${poolName} complete`)
+        cy.wait(1000)
         cy.get("[data-testid=tokenValue]")
           .first()
           .should("not.have.text", prevVal)
