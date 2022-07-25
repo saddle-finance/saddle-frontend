@@ -119,7 +119,7 @@ jobs:
           wait-on-timeout: 120
           record: false
           parallel: false
-          config-file: cypress.config.js
+          config-file: ./cypress.config.js
       - run: npx nyc report --reporter=text
       - uses: codecov/codecov-action@v1
         with:
