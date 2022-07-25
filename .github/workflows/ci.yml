@@ -115,11 +115,11 @@ jobs:
         uses: cypress-io/github-action@v4
         with:
           start: npm start
-          wait-on: 'http://localhost:3000,http://localhost:8545'
+          wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
           record: false
           parallel: false
-          config: pageLoadTimeout=100000,baseUrl=http://localhost:3000,requestTimeout=100000,defaultCommandTimeout=100000,responseTimeout=100000
+          config-file: cypress.config.js
       - run: npx nyc report --reporter=text
       - uses: codecov/codecov-action@v1
         with:

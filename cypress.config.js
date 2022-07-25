@@ -15,11 +15,11 @@ module.exports = defineConfig({
     setupNodeEvents,
     "supportFile": "cypress/support/commands.ts",
     "specPattern":	"cypress/integration/*.test.ts",
-    "baseUrl": "http://localhost:3000/",
+    "baseUrl": "http://localhost:3000",
     "defaultCommandTimeout": 40000,
     "requestTimeout": 40000,
     "video": false,
     "viewportWidth": 1440,
-    "viewportHeight": 900
+    "viewportHeight": 1080
   }
 })
