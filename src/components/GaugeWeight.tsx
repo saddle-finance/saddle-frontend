@@ -1,5 +1,5 @@
 import { Box, CircularProgress, useTheme } from "@mui/material"
-import React, { memo, useContext, useRef } from "react"
+import React, { useContext, useRef } from "react"
 
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -18,7 +18,7 @@ function GaugeWeight({ ...props }: HighchartsReact.Props): JSX.Element {
   HighchartsExporting(Highcharts)
   const chartComponentRef = useRef<HighchartsReact.RefObject>(null)
   const basicPools = useContext(BasicPoolsContext)
-  const { gauges, isLoading } = useContext(GaugeContext)
+  const { gauges } = useContext(GaugeContext)
   const theme = useTheme()
 
   const gaugesInfo = Object.values(gauges)
@@ -83,7 +83,7 @@ function GaugeWeight({ ...props }: HighchartsReact.Props): JSX.Element {
     ],
   }
 
-  if (isLoading) {
+  if (!basicPools) {
     return (
       <Box
         display="flex"
@@ -107,4 +107,4 @@ function GaugeWeight({ ...props }: HighchartsReact.Props): JSX.Element {
     />
   )
 }
-export default memo(GaugeWeight)
+export default GaugeWeight
