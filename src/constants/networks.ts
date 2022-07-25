@@ -10,6 +10,7 @@ export const NETWORK_LABEL: Partial<Record<ChainId, string>> = {
   [ChainId.EVMOS]: "Evmos",
   [ChainId.EVMOS_TESTNET]: "Evmos Testnet",
   [ChainId.KAVA_TESTNET]: "Kava Testnet",
+  [ChainId.KAVA]: "Kava",
   [ChainId.HARDHAT]: "Hardhat 👷🏼‍♂️",
 }
 
@@ -23,6 +24,7 @@ export const NETWORK_NATIVE_TOKENS: Record<ChainId, string> = {
   [ChainId.EVMOS]: "EVMOS",
   [ChainId.EVMOS_TESTNET]: "tEVMOS",
   [ChainId.KAVA_TESTNET]: "KAVA",
+  [ChainId.KAVA]: "KAVA",
   [ChainId.HARDHAT]: "ETH",
 }
 export const COINGECKO_PLATFORM_ID: Record<ChainId, string | null> = {
@@ -34,6 +36,7 @@ export const COINGECKO_PLATFORM_ID: Record<ChainId, string | null> = {
   [ChainId.EVMOS]: "evmos",
   [ChainId.EVMOS_TESTNET]: null,
   [ChainId.KAVA_TESTNET]: null,
+  [ChainId.KAVA]: "kava",
   [ChainId.HARDHAT]: null,
 }
 
@@ -108,6 +111,17 @@ export const SUPPORTED_NETWORKS: SupportedNetworks = {
     rpcUrls: ["https://eth.bd.evmos.org:8545"],
     blockExplorerUrls: ["https://evm.evmos.org"],
   },
+  [ChainId.KAVA]: {
+    chainId: "0x8AE", // hexlify doesn't work as expected for this number.
+    chainName: "Kava",
+    nativeCurrency: {
+      name: "Kava",
+      symbol: "KAVA",
+      decimals: 18,
+    },
+    rpcUrls: ["https://evm.kava.io"],
+    blockExplorerUrls: ["https://explorer.kava.io"],
+  },
 }
 
 export const DEV_SUPPORTED_NETWORKS: SupportedNetworks = {
@@ -124,14 +138,14 @@ export const DEV_SUPPORTED_NETWORKS: SupportedNetworks = {
     blockExplorerUrls: ["https://evm.evmos.dev"],
   },
   [ChainId.KAVA_TESTNET]: {
-    chainId: hexlify(2221),
+    chainId: "0x8AD",
     chainName: "Kava Testnet",
     nativeCurrency: {
       name: "Kava",
       symbol: "KAVA",
       decimals: 18,
     },
-    rpcUrls: ["https://evm.evm-alpha.kava.io"],
+    rpcUrls: ["https://evm.testnet.kava.io"],
     blockExplorerUrls: ["https://explorer.evm-alpha.kava.io"],
   },
 }

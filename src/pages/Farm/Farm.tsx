@@ -79,13 +79,22 @@ export default function Farm(): JSX.Element {
           } as const
         })
         .sort((a, b) => {
+          // Put SLP gauge at top
           if (a.gauge.gaugeName === sushiGaugeName) {
             return -1
           }
           if (b.gauge.gaugeName === sushiGaugeName) {
             return 1
           }
-          return a.myStake.gt(b.myStake) ? -1 : a.tvl.gt(b.tvl) ? -1 : 1
+          // Sort by highest user balance
+          if (a.myStake.gt(b.myStake)) {
+            return -1
+          }
+          if (b.myStake.gt(a.myStake)) {
+            return 1
+          }
+          // Sort by gauge TVL
+          return a.tvl.gt(b.tvl) ? -1 : 1
         })
         .map(({ gaugeAddress, farmName, aprs, poolTokens, tvl, myStake }) => {
           return (

@@ -22,6 +22,7 @@ import { Contract } from "@ethersproject/contracts"
 import { ContractInterface } from "ethers"
 import { Deadlines } from "../state/user"
 import { Contract as EthcallContract } from "ethcall"
+import { ExpandedPool } from "../providers/ExpandedPoolsProvider"
 import { JsonFragment } from "@ethersproject/abi"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import META_SWAP_DEPOSIT_ABI from "../constants/abis/metaSwapDeposit.json"
@@ -383,6 +384,19 @@ export async function getMulticallProvider(
       address: "0xBC22B8E74E7fe2E217b295f4a3e1a9E8e182BECD",
       block: 0,
     }
+  } else if (chainId === ChainId.KAVA) {
+    ethcallProvider.multicall3 = {
+      address: "0x1275203FB58Fc25bC6963B13C2a1ED1541563aF0",
+      block: 0,
+    }
+    ethcallProvider.multicall2 = {
+      address: "0x29FD31d37AB8D27f11EAB68F96424bf64231fFce",
+      block: 0,
+    }
+    ethcallProvider.multicall = {
+      address: "0x149bBb210051851016F57a2824C0444f642833a6",
+      block: 0,
+    }
   }
 
   return ethcallProvider
@@ -578,18 +592,29 @@ export function getPriceDataForPool(
   assetPrice: BigNumber
   lpTokenPriceUSD: BigNumber
   tokenBalancesUSD: BigNumber[]
+  underlyingTokenBalancesUSD: BigNumber[]
   tokenBalancesSumUSD: BigNumber
   tokenBalances1e18: BigNumber[]
+  underlyingTokenBalances1e18: BigNumber[]
   totalLocked: BigNumber
 } {
+  const {
+    typeOfAsset,
+    tokens: poolTokens,
+    tokenBalances,
+    lpTokenSupply,
+    underlyingTokenBalances,
+    underlyingTokens,
+  } = basicPool
   const poolAssetPrice = parseUnits(
-    String(
-      tokenPricesUSD?.[getTokenSymbolForPoolType(basicPool.typeOfAsset)] || 0,
-    ),
+    String(tokenPricesUSD?.[getTokenSymbolForPoolType(typeOfAsset)] || 0),
     18,
   )
-  const expandedTokens = basicPool.tokens.map((token) => (tokens || {})[token])
-  const tokenBalances1e18 = basicPool.tokenBalances.map((balance, i) =>
+  const expandedTokens = poolTokens.map((token) => (tokens || {})[token])
+  const expandedUnderlyingTokens = underlyingTokens
+    ? underlyingTokens.map((token) => (tokens || {})[token])
+    : []
+  const tokenBalances1e18 = tokenBalances.map((balance, i) =>
     balance.mul(
       BigNumber.from(10).pow(18 - (expandedTokens[i]?.decimals || 0)),
     ),
@@ -599,9 +624,24 @@ export function getPriceDataForPool(
     balance.mul(poolAssetPrice).div(BN_1E18),
   )
   const tokenBalancesSumUSD = tokenBalancesUSD.reduce(bnSum, Zero)
-  const lpTokenPriceUSD = basicPool.lpTokenSupply.isZero()
+
+  const underlyingTokenBalances1e18 =
+    expandedUnderlyingTokens && underlyingTokenBalances
+      ? underlyingTokenBalances.map((balance, i) =>
+          balance.mul(
+            BigNumber.from(10).pow(
+              18 - (expandedUnderlyingTokens[i]?.decimals || 0),
+            ),
+          ),
+        )
+      : []
+  const underlyingTokenBalancesUSD = underlyingTokenBalances1e18.map(
+    (balance) => balance.mul(poolAssetPrice).div(BN_1E18),
+  )
+
+  const lpTokenPriceUSD = lpTokenSupply.isZero()
     ? Zero
-    : tokenBalancesSumUSD.mul(BN_1E18).div(basicPool.lpTokenSupply)
+    : tokenBalancesSumUSD.mul(BN_1E18).div(lpTokenSupply)
   return {
     assetPrice: poolAssetPrice,
     lpTokenPriceUSD,
@@ -609,6 +649,69 @@ export function getPriceDataForPool(
     tokenBalancesSumUSD,
     tokenBalances1e18,
     totalLocked: tokenBalancesSum1e18,
+    underlyingTokenBalances1e18,
+    underlyingTokenBalancesUSD,
+  }
+}
+
+export function getPriceDataForExpandedPool(
+  expandedPool: ExpandedPool,
+  tokenPricesUSD?: TokenPricesUSD,
+): {
+  assetPrice: BigNumber
+  lpTokenPriceUSD: BigNumber
+  tokenBalancesUSD: BigNumber[]
+  underlyingTokenBalancesUSD: BigNumber[]
+  tokenBalancesSumUSD: BigNumber
+  tokenBalances1e18: BigNumber[]
+  underlyingTokenBalances1e18: BigNumber[]
+  totalLocked: BigNumber
+} {
+  const {
+    typeOfAsset,
+    tokens,
+    tokenBalances,
+    lpTokenSupply,
+    underlyingTokenBalances,
+    underlyingTokens,
+  } = expandedPool
+  const poolAssetPrice = parseUnits(
+    String(tokenPricesUSD?.[getTokenSymbolForPoolType(typeOfAsset)] || 0),
+    18,
+  )
+  const tokenBalances1e18 = tokenBalances.map((balance, i) =>
+    balance.mul(BigNumber.from(10).pow(18 - (tokens[i].decimals || 0))),
+  )
+  const tokenBalancesSum1e18 = tokenBalances1e18.reduce(bnSum, Zero)
+  const tokenBalancesUSD = tokenBalances1e18.map((balance) =>
+    balance.mul(poolAssetPrice).div(BN_1E18),
+  )
+  const tokenBalancesSumUSD = tokenBalancesUSD.reduce(bnSum, Zero)
+
+  const underlyingTokenBalances1e18 =
+    underlyingTokens && underlyingTokenBalances
+      ? underlyingTokenBalances.map((balance, i) =>
+          balance.mul(
+            BigNumber.from(10).pow(18 - (underlyingTokens[i].decimals || 0)),
+          ),
+        )
+      : []
+  const underlyingTokenBalancesUSD = underlyingTokenBalances1e18.map(
+    (balance) => balance.mul(poolAssetPrice).div(BN_1E18),
+  )
+
+  const lpTokenPriceUSD = lpTokenSupply.isZero()
+    ? Zero
+    : tokenBalancesSumUSD.mul(BN_1E18).div(lpTokenSupply)
+  return {
+    assetPrice: poolAssetPrice,
+    lpTokenPriceUSD,
+    tokenBalancesUSD,
+    tokenBalancesSumUSD,
+    tokenBalances1e18,
+    totalLocked: tokenBalancesSum1e18,
+    underlyingTokenBalancesUSD,
+    underlyingTokenBalances1e18,
   }
 }
 
