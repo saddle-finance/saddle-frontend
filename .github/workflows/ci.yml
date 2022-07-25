@@ -105,7 +105,6 @@ jobs:
       # fix for forcing git to use https when pulling deps
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
       - name: Install dependencies
-        uses: cypress-io/github-action@v4
         with: 
           install: npm ci
       - name: Cypress run
