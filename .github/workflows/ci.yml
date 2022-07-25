@@ -112,8 +112,6 @@ jobs:
           wait-on: http://localhost:3000
           record: false
           parallel: false
-          env:
-            CHOKIDAR_USEPOLLING: 1
       - run: npx nyc report --reporter=text
       - uses: codecov/codecov-action@v1
         with:
