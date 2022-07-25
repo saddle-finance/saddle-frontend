@@ -114,7 +114,7 @@ jobs:
           wait-on-timeout: 120
           record: false
           parallel: false
-          config: pageLoadTimeout=100000,baseUrl=http://localhost:3000
+          config: pageLoadTimeout=100000,baseUrl=http://localhost:3000,requestTimeout=100000
       - run: npx nyc report --reporter=text
       - uses: codecov/codecov-action@v1
         with:
