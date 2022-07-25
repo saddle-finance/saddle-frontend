@@ -22,6 +22,7 @@ import { Contract } from "@ethersproject/contracts"
 import { ContractInterface } from "ethers"
 import { Deadlines } from "../state/user"
 import { Contract as EthcallContract } from "ethcall"
+import { ExpandedPool } from "../providers/ExpandedPoolsProvider"
 import { JsonFragment } from "@ethersproject/abi"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import META_SWAP_DEPOSIT_ABI from "../constants/abis/metaSwapDeposit.json"
@@ -590,18 +591,29 @@ export function getPriceDataForPool(
   assetPrice: BigNumber
   lpTokenPriceUSD: BigNumber
   tokenBalancesUSD: BigNumber[]
+  underlyingTokenBalancesUSD: BigNumber[]
   tokenBalancesSumUSD: BigNumber
   tokenBalances1e18: BigNumber[]
+  underlyingTokenBalances1e18: BigNumber[]
   totalLocked: BigNumber
 } {
+  const {
+    typeOfAsset,
+    tokens: poolTokens,
+    tokenBalances,
+    lpTokenSupply,
+    underlyingTokenBalances,
+    underlyingTokens,
+  } = basicPool
   const poolAssetPrice = parseUnits(
-    String(
-      tokenPricesUSD?.[getTokenSymbolForPoolType(basicPool.typeOfAsset)] || 0,
-    ),
+    String(tokenPricesUSD?.[getTokenSymbolForPoolType(typeOfAsset)] || 0),
     18,
   )
-  const expandedTokens = basicPool.tokens.map((token) => (tokens || {})[token])
-  const tokenBalances1e18 = basicPool.tokenBalances.map((balance, i) =>
+  const expandedTokens = poolTokens.map((token) => (tokens || {})[token])
+  const expandedUnderlyingTokens = underlyingTokens
+    ? underlyingTokens.map((token) => (tokens || {})[token])
+    : []
+  const tokenBalances1e18 = tokenBalances.map((balance, i) =>
     balance.mul(
       BigNumber.from(10).pow(18 - (expandedTokens[i]?.decimals || 0)),
     ),
@@ -611,9 +623,24 @@ export function getPriceDataForPool(
     balance.mul(poolAssetPrice).div(BN_1E18),
   )
   const tokenBalancesSumUSD = tokenBalancesUSD.reduce(bnSum, Zero)
-  const lpTokenPriceUSD = basicPool.lpTokenSupply.isZero()
+
+  const underlyingTokenBalances1e18 =
+    expandedUnderlyingTokens && underlyingTokenBalances
+      ? underlyingTokenBalances.map((balance, i) =>
+          balance.mul(
+            BigNumber.from(10).pow(
+              18 - (expandedUnderlyingTokens[i]?.decimals || 0),
+            ),
+          ),
+        )
+      : []
+  const underlyingTokenBalancesUSD = underlyingTokenBalances1e18.map(
+    (balance) => balance.mul(poolAssetPrice).div(BN_1E18),
+  )
+
+  const lpTokenPriceUSD = lpTokenSupply.isZero()
     ? Zero
-    : tokenBalancesSumUSD.mul(BN_1E18).div(basicPool.lpTokenSupply)
+    : tokenBalancesSumUSD.mul(BN_1E18).div(lpTokenSupply)
   return {
     assetPrice: poolAssetPrice,
     lpTokenPriceUSD,
@@ -621,6 +648,69 @@ export function getPriceDataForPool(
     tokenBalancesSumUSD,
     tokenBalances1e18,
     totalLocked: tokenBalancesSum1e18,
+    underlyingTokenBalances1e18,
+    underlyingTokenBalancesUSD,
+  }
+}
+
+export function getPriceDataForExpandedPool(
+  expandedPool: ExpandedPool,
+  tokenPricesUSD?: TokenPricesUSD,
+): {
+  assetPrice: BigNumber
+  lpTokenPriceUSD: BigNumber
+  tokenBalancesUSD: BigNumber[]
+  underlyingTokenBalancesUSD: BigNumber[]
+  tokenBalancesSumUSD: BigNumber
+  tokenBalances1e18: BigNumber[]
+  underlyingTokenBalances1e18: BigNumber[]
+  totalLocked: BigNumber
+} {
+  const {
+    typeOfAsset,
+    tokens,
+    tokenBalances,
+    lpTokenSupply,
+    underlyingTokenBalances,
+    underlyingTokens,
+  } = expandedPool
+  const poolAssetPrice = parseUnits(
+    String(tokenPricesUSD?.[getTokenSymbolForPoolType(typeOfAsset)] || 0),
+    18,
+  )
+  const tokenBalances1e18 = tokenBalances.map((balance, i) =>
+    balance.mul(BigNumber.from(10).pow(18 - (tokens[i].decimals || 0))),
+  )
+  const tokenBalancesSum1e18 = tokenBalances1e18.reduce(bnSum, Zero)
+  const tokenBalancesUSD = tokenBalances1e18.map((balance) =>
+    balance.mul(poolAssetPrice).div(BN_1E18),
+  )
+  const tokenBalancesSumUSD = tokenBalancesUSD.reduce(bnSum, Zero)
+
+  const underlyingTokenBalances1e18 =
+    underlyingTokens && underlyingTokenBalances
+      ? underlyingTokenBalances.map((balance, i) =>
+          balance.mul(
+            BigNumber.from(10).pow(18 - (underlyingTokens[i].decimals || 0)),
+          ),
+        )
+      : []
+  const underlyingTokenBalancesUSD = underlyingTokenBalances1e18.map(
+    (balance) => balance.mul(poolAssetPrice).div(BN_1E18),
+  )
+
+  const lpTokenPriceUSD = lpTokenSupply.isZero()
+    ? Zero
+    : tokenBalancesSumUSD.mul(BN_1E18).div(lpTokenSupply)
+  return {
+    assetPrice: poolAssetPrice,
+    lpTokenPriceUSD,
+    tokenBalancesUSD,
+    tokenBalancesSumUSD,
+    tokenBalances1e18,
+    totalLocked: tokenBalancesSum1e18,
+    underlyingTokenBalancesUSD,
+    underlyingTokenBalances1e18,
   }
 }
 
