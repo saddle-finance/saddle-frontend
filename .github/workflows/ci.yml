@@ -108,6 +108,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v4
         with:
+          start: npm start
           record: false
           parallel: false
       - run: npx nyc report --reporter=text
