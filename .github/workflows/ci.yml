@@ -109,7 +109,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v4
         with:
-          start-server: npm start &
+          start-app: npm start &
           record: false
           parallel: false
           config: pageLoadTimeout=100000,baseUrl=http://localhost:3000
