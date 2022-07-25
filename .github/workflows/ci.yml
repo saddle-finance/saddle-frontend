@@ -88,7 +88,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
-      - uses: cypress-io/github-action@v4
         with:
           node-version: "16.15.0"
           cache: "npm"
@@ -105,9 +104,14 @@ jobs:
       #   run: unzip -qq build-artifact.zip -d .
       # fix for forcing git to use https when pulling deps
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
-      - run: npm ci
+      - name: Install dependencies
+        uses: cypress-io/github-action@v4
+        with: 
+          install: npm ci
       - name: Start app
-        run: npm start &
+        uses: cypress-io/github-action@v4
+        with : 
+          start: npm start &
       - name: Cypress run
         uses: cypress-io/github-action@v4
         with:
