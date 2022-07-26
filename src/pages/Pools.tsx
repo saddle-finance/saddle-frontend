@@ -24,13 +24,14 @@ import { Zero } from "@ethersproject/constants"
 import { getTokenSymbolForPoolType } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
 import { parseUnits } from "@ethersproject/units"
-import { useActiveWeb3React } from "../hooks"
+// import { useActiveWeb3React } from "../hooks"
+import { useAccount } from "wagmi"
 import { useApproveAndMigrate } from "../hooks/useApproveAndMigrate"
 import { useHistory } from "react-router"
 import { useSelector } from "react-redux"
 
 function Pools(): ReactElement | null {
-  const { account, chainId } = useActiveWeb3React()
+  const { address } = useAccount()
   const basicPools = useContext(BasicPoolsContext)
   const userState = useContext(UserStateContext)
   const approveAndMigrate = useApproveAndMigrate()
@@ -61,9 +62,9 @@ function Pools(): ReactElement | null {
       lpTokenBalance: Zero,
       lpTokenAddress: "",
     })
-  }, [account, chainId])
+  }, [address])
 
-  if (!account) {
+  if (!address) {
     return (
       <Container>
         <Paper sx={{ display: "flex", justifyContent: "center", padding: 4 }}>

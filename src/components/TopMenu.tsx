@@ -17,7 +17,7 @@ import { NavLink, NavLinkProps, useLocation } from "react-router-dom"
 import React, { ReactElement, useContext, useState } from "react"
 
 import { AppState } from "../state"
-import NetworkDisplay from "./NetworkDisplay"
+// import NetworkDisplay from "./NetworkDisplay"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
 import SiteSettingsMenu from "./SiteSettingsMenu"
@@ -100,7 +100,7 @@ function TopMenu(): ReactElement {
             <Box display={isUnderLaptopSize ? "none" : "block"}>
               <Web3Status />
             </Box>
-            <NetworkDisplay onClick={handleSettingMenu} />
+            {/* <NetworkDisplay onClick={handleSettingMenu} /> */}
             <IconButton
               onClick={handleMoreMenu}
               data-testid="settingsMenuBtn"
