@@ -109,17 +109,8 @@ jobs:
       #   run: unzip -qq build-artifact.zip -d .
       # fix for forcing git to use https when pulling deps
       - run: 'git config --global --replace-all url."https://github.com/".insteadOf ssh://git@github.com/'
-      - name: Install dependencies
-        run: npm ci
-      - name: Cypress run
-        uses: cypress-io/github-action@v4
-        with:
-          start: npm start
-          wait-on: 'http://localhost:3000'
-          wait-on-timeout: 120
-          record: false
-          parallel: false
-          config-file: ./cypress.config.js
+      - run: npm ci
+      - run: npm run cy:coverage
       - run: npx nyc report --reporter=text
       - uses: codecov/codecov-action@v1
         with:
