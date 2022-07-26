@@ -85,9 +85,9 @@ jobs:
         image: saddlefinance/contracts:latest
         options: >-
           --health-cmd "node -e 'const fetch=require(\"node-fetch\");(function main(){const body={method:\"eth_blockNumber\",params:[],id:1,jsonrpc:\"2.0\"};fetch(\"http://localhost:8545\",{method:\"POST\",body:JSON.stringify(body),headers:{\"Content-Type\":\"application/json\"}}).then((res)=>res.json()).then((json)=>{const block=parseInt(json.result||\"0x0\",16);if(block>0){process.exit(0)}throw new Error()}).catch(()=>process.exit(1))})();'"
-          --health-interval 20s
-          --health-timeout 5s
-          --health-retries 5
+          --health-interval 30s
+          --health-timeout 10s
+          --health-retries 10
         ports:
           - 8545:8545
     steps:
