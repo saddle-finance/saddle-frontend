@@ -4,8 +4,9 @@ import {
 } from "../utils/numberInputState"
 import React, { useCallback, useMemo } from "react"
 
+import { BasicToken } from "../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
-import { Token } from "../constants"
+import { Zero } from "@ethersproject/constants"
 
 export interface TokensStateType {
   [token: string]: NumberInputState
@@ -16,7 +17,7 @@ type UpdateTokensStateType = (newState: {
 type UseTokenFormStateReturnType = [TokensStateType, UpdateTokensStateType]
 
 export function useTokenFormState(
-  tokens: Token[],
+  tokens: (BasicToken | undefined)[],
 ): UseTokenFormStateReturnType {
   // Token input state handlers
   const tokenInputStateCreators: {
@@ -26,9 +27,9 @@ export function useTokenFormState(
       tokens.reduce(
         (acc, token) => ({
           ...acc,
-          [token.symbol]: numberInputStateCreator(
-            token.decimals,
-            BigNumber.from("0"),
+          [token?.symbol ?? ""]: numberInputStateCreator(
+            token?.decimals ?? 0,
+            Zero,
           ),
         }),
         {},
@@ -41,7 +42,7 @@ export function useTokenFormState(
     tokens.reduce(
       (acc, token) => ({
         ...acc,
-        [token.symbol]: tokenInputStateCreators[token.symbol](""),
+        [token?.symbol ?? ""]: tokenInputStateCreators[token?.symbol ?? ""](""),
       }),
       {},
     ),
