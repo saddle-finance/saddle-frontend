@@ -44,6 +44,7 @@ function testPoolDeposit(poolName: string) {
     cy.get("#tokenInput input").then(($inputs) => {
       cy.wrap($inputs).each(($input) => {
         cy.wrap($input).type("100")
+        cy.wait(1000)
       })
     })
 
