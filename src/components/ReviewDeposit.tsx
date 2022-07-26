@@ -13,11 +13,13 @@ import {
   formatBNToString,
   formatDeadlineToNumber,
 } from "../utils"
+
 import { AppState } from "../state/index"
-import { DepositTransaction } from "../interfaces/transactions"
+import { DepositBasicTransaction } from "../interfaces/transactions"
 import DialogTitle from "./DialogTitle"
 import HighPriceImpactConfirmation from "./HighPriceImpactConfirmation"
 import TokenIcon from "./TokenIcon"
+import { Zero } from "@ethersproject/constants"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
 import { isHighPriceImpact } from "../utils/priceImpact"
@@ -27,7 +29,7 @@ import { useTranslation } from "react-i18next"
 interface Props {
   onClose: () => void
   onConfirm: () => void
-  transactionData: DepositTransaction
+  transactionData: DepositBasicTransaction | null
 }
 
 const DepositInfoItem = styled(Box)(({ theme }) => ({
@@ -62,7 +64,9 @@ function ReviewDeposit({
   )
   const [hasConfirmedHighPriceImpact, setHasConfirmedHighPriceImpact] =
     useState(false)
-  const isHighPriceImpactTxn = isHighPriceImpact(transactionData.priceImpact)
+  const isHighPriceImpactTxn = isHighPriceImpact(
+    transactionData?.priceImpact ?? Zero,
+  )
   const deadline = formatDeadlineToNumber(
     transactionDeadlineSelected,
     transactionDeadlineCustom,
@@ -78,19 +82,19 @@ function ReviewDeposit({
             {t("depositing")}
           </Typography>
           <Box>
-            {transactionData.from.items.map(({ token, amount }) => (
-              <DepositInfoItem key={token.name}>
+            {transactionData?.from.items.map(({ token, amount }) => (
+              <DepositInfoItem key={token?.name}>
                 <div>
                   <TokenIcon
-                    symbol={token.symbol}
+                    symbol={token?.symbol ?? ""}
                     width={24}
                     height={24}
                     alt="icon"
                   />
-                  <Typography ml={1}>{token.symbol}</Typography>
+                  <Typography ml={1}>{token?.symbol}</Typography>
                 </div>
                 <Typography>
-                  {commify(formatBNToString(amount, token.decimals))}
+                  {commify(formatBNToString(amount, token?.decimals ?? 0))}
                 </Typography>
               </DepositInfoItem>
             ))}
@@ -98,7 +102,10 @@ function ReviewDeposit({
               <Typography variant="subtitle1">{t("total")}</Typography>
               <Typography variant="subtitle1">
                 {commify(
-                  formatBNToString(transactionData.from.totalAmount, 18),
+                  formatBNToString(
+                    transactionData?.from.totalAmount ?? Zero,
+                    18,
+                  ),
                 )}
               </Typography>
             </DepositInfoItem>
@@ -110,20 +117,20 @@ function ReviewDeposit({
           <DepositInfoItem>
             <div>
               <TokenIcon
-                symbol={transactionData.to.item.token.symbol}
+                symbol={transactionData?.to.item.token?.symbol ?? ""}
                 width={24}
                 height={24}
                 alt="icon"
               />
               <Typography ml={1}>
-                {transactionData.to.item.token.symbol}
+                {transactionData?.to.item.token?.symbol ?? ""}
               </Typography>
             </div>
             <Typography>
               {commify(
                 formatBNToString(
-                  transactionData.to.item.amount,
-                  transactionData.to.item.token.decimals,
+                  transactionData?.to.item.amount ?? Zero,
+                  transactionData?.to.item.token?.decimals ?? 0,
                 ),
               )}
             </Typography>
@@ -132,7 +139,10 @@ function ReviewDeposit({
           <DepositInfoItem mt={2}>
             <Typography>{t("shareOfPool")}</Typography>
             <Typography>
-              {formatBNToPercentString(transactionData.shareOfPool, 18)}
+              {formatBNToPercentString(
+                transactionData?.shareOfPool ?? Zero,
+                18,
+              )}
             </Typography>
           </DepositInfoItem>
           {shouldDisplayGas && (
@@ -175,22 +185,22 @@ function ReviewDeposit({
             <Typography mr={2}>{t("rates")}</Typography>
 
             <Box ml="auto" mr={0} width="fit-content">
-              {transactionData.from.items.map(
+              {transactionData?.from.items.map(
                 ({ token, singleTokenPriceUSD }) => (
-                  <Typography key={token.symbol}>
-                    1 {token.symbol} = $
+                  <Typography key={token?.symbol}>
+                    1 {token?.symbol} = $
                     {commify(formatBNToString(singleTokenPriceUSD, 18, 2))}
                   </Typography>
                 ),
               )}
-              {[transactionData.to.item].map(
-                ({ token, singleTokenPriceUSD }) => (
-                  <Typography key={token.symbol}>
-                    1 {token.symbol} = $
-                    {commify(formatBNToString(singleTokenPriceUSD, 18, 2))}
-                  </Typography>
-                ),
-              )}
+              {[transactionData?.to.item].map((item) => (
+                <Typography key={item?.token?.symbol}>
+                  1 {item?.token?.symbol} = $
+                  {commify(
+                    formatBNToString(item?.singleTokenPriceUSD ?? Zero, 18, 2),
+                  )}
+                </Typography>
+              ))}
             </Box>
           </Box>
         </Box>
