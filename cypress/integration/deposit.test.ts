@@ -23,6 +23,9 @@ context("Deposit Flow", () => {
   beforeEach(() => {
     cy.visit(`/#/pools`)
     cy.waitForReact()
+  })
+
+  afterEach(() => {
     cy.wait(2000)
   })
 
@@ -42,6 +45,7 @@ function testPoolDeposit(poolName: string) {
     if (poolName === SUSD_METAPOOL_V3_NAME) {
       cy.get("[data-testid=deposit-wrapped-checkbox]").click()
     }
+
     cy.get("#tokenInput input").then(($inputs) => {
       cy.wrap($inputs).each(($input) => {
         cy.wrap($input).type("100")
@@ -62,8 +66,8 @@ function testPoolDeposit(poolName: string) {
       .first()
       .then(($value) => {
         const prevVal = $value.text()
-        cy.get("button").contains("Deposit").first().click().wait(1000)
-        cy.get("button").contains("Confirm Deposit").click().wait(1000)
+        cy.get("button").contains("Deposit").first().click()
+        cy.get("button").contains("Confirm Deposit").click()
         cy.get(".Toastify").contains(`Deposit on ${poolName} complete`)
         cy.get("[data-testid=tokenValue]")
           .first()
