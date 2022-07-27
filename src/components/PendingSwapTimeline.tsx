@@ -40,8 +40,9 @@ const PendingSwapTimeline = ({
     events,
   } = pendingSwap
   const minutesRemaining = Math.max(Math.ceil(secondsRemaining / 60), 0)
+  if (!tokenTo || !synthTokenFrom) return <></>
   const formattedBalance = commify(
-    formatBNToString(synthBalance, synthTokenFrom?.decimals ?? 0, 6),
+    formatBNToString(synthBalance, synthTokenFrom.decimals, 6),
   )
   const hasEvents = events.length > 0
 
@@ -79,7 +80,7 @@ const PendingSwapTimeline = ({
         >
           {getFormattedShortTime(timestamp)}{" "}
           {t("swappedForAmount", { amount: formattedBalance })}{" "}
-          {synthTokenFrom?.symbol ?? ""}
+          {synthTokenFrom.symbol}
         </TimelineStep>
       )}
       {!hasEvents ? (
@@ -90,7 +91,7 @@ const PendingSwapTimeline = ({
           withLine={false}
         >
           {t("stepAOfB", { a: 2, b: 2 })}{" "}
-          {t("settleToken", { name: tokenTo?.symbol ?? "" })}{" "}
+          {t("settleToken", { name: tokenTo.symbol })}{" "}
         </TimelineStep>
       ) : null}
       {events.map((event, i) => {
@@ -108,11 +109,11 @@ const PendingSwapTimeline = ({
                 amountFrom: commify(
                   formatBNToString(
                     event.fromAmount,
-                    event.fromToken?.decimals ?? 0,
+                    event.fromToken.decimals,
                     6,
                   ),
                 ),
-                nameFrom: event.fromToken?.symbol ?? "",
+                nameFrom: event.fromToken.symbol,
                 amountTo: commify(
                   formatBNToString(event.toAmount, event.toToken.decimals, 6),
                 ),
