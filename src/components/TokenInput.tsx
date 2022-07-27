@@ -29,6 +29,7 @@ interface Props {
     decimals: number
   }
   inputType?: "numeric"
+  key?: number
 }
 
 function TokenInput({
@@ -47,6 +48,7 @@ function TokenInput({
     decimals: tokenDecimals,
   },
   inputType,
+  key = 0,
   ...rest
 }: Props): ReactElement {
   const { t } = useTranslation()
@@ -145,6 +147,7 @@ function TokenInput({
           />
           {showUSDprice && (
             <Typography
+              data-testid={`token-price-${key}`}
               variant="body2"
               color={disabled ? "text.secondary" : "text.primary"}
               textAlign="end"

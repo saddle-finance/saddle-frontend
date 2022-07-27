@@ -36,7 +36,7 @@ function testPoolDeposit(poolName: string) {
       void increaseTime()
     }
 
-    cy.contains(new RegExp("^" + poolName + "$"))
+    cy.contains(poolName)
       .parents("[data-testid=poolOverview]")
       .within(() => {
         cy.wait(2000)
@@ -57,15 +57,16 @@ function testPoolDeposit(poolName: string) {
 
     cy.wait(2000)
 
-    cy.get("#tokenInput input").then(($inputs) => {
-      cy.waitForReact(2000)
-      cy.wrap($inputs).each((_, $index) => {
-        cy.get(`[data-testid=token-input-${$index}]`)
-          .click()
-          .clear()
-          .type("100")
+    cy.get("#tokenInput input")
+      .then(($inputs) => {
+        cy.wrap($inputs).each((_, $index) => {
+          cy.get(`[data-testid=token-input-${$index}]`)
+            .click()
+            .clear()
+            .type("100")
+        })
       })
-    })
+      .wait(2000)
     cy.scrollTo("top").wait(2000)
     cy.get("[data-testid=tokenValue]")
       .first()

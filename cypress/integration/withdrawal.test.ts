@@ -101,7 +101,7 @@ context("Withdrawal Flow", () => {
           .then(() => {
             cy.get("[data-testid=txnDeadlineInputGroup]").within(() => {
               cy.get("input").then(($input) => {
-                cy.wrap($input).type("1000")
+                cy.wrap($input).clear().type("1000")
               })
             })
           })
@@ -117,7 +117,7 @@ context("Withdrawal Flow", () => {
               // )
               cy.wrap($inputs)
                 .each(($input) => {
-                  cy.wrap($input).type("2")
+                  cy.wrap($input).clear().type("2")
                 })
                 .wait(2000)
               // cy.get('[data-testid="myFarmLpBalance"]').should(
