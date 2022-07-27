@@ -23,6 +23,7 @@ context("Deposit Flow", () => {
   beforeEach(() => {
     cy.visit(`/#/pools`)
     cy.waitForReact()
+    cy.wait(2000)
   })
 
   pools.forEach(testPoolDeposit)
@@ -44,7 +45,6 @@ function testPoolDeposit(poolName: string) {
     cy.get("#tokenInput input").then(($inputs) => {
       cy.wrap($inputs).each(($input) => {
         cy.wrap($input).type("100")
-        cy.wait(1000)
       })
     })
 
@@ -62,8 +62,8 @@ function testPoolDeposit(poolName: string) {
       .first()
       .then(($value) => {
         const prevVal = $value.text()
-        cy.get("button").contains("Deposit").first().click()
-        cy.get("button").contains("Confirm Deposit").click()
+        cy.get("button").contains("Deposit").first().click().wait(1000)
+        cy.get("button").contains("Confirm Deposit").click().wait(1000)
         cy.get(".Toastify").contains(`Deposit on ${poolName} complete`)
         cy.get("[data-testid=tokenValue]")
           .first()
