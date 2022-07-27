@@ -127,6 +127,7 @@ context("Withdrawal Flow", () => {
               // cy.wait(500)
               cy.get("button").contains("Withdraw").click()
               cy.get("button").contains("Confirm Withdraw").click()
+              cy.wait(2000)
               cy.get("[data-testid=tokenValue]")
                 .first()
                 .should("not.have.text", prevVal)

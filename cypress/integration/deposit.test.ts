@@ -7,6 +7,7 @@ const pools = [STABLECOIN_POOL_V2_NAME, SUSD_METAPOOL_V3_NAME] // order is impor
 
 context("Deposit Flow", () => {
   beforeEach(() => {
+    cy.reload()
     cy.visit(`/#/pools`)
     cy.waitForReact()
   })

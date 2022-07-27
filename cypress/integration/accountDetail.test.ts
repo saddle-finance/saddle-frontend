@@ -1,5 +1,6 @@
 context("Account detail test", () => {
   beforeEach(() => {
+    cy.reload()
     cy.visit(`/#/`).waitForReact(2000)
   })
 

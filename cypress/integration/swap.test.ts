@@ -3,6 +3,7 @@ context("Swap Flow", () => {
   function testAssetSwap(poolName: string, poolTokenSymbols: string[]) {
     describe(`Swapping within ${poolName}`, () => {
       before(() => {
+        cy.reload()
         cy.visit(`/#`).waitForReact()
         cy.wait(2000)
       })

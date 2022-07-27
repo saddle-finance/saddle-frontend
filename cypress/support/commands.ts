@@ -167,3 +167,35 @@ Cypress.Commands.overwrite("visit", (original, url, options) => {
     },
   )
 })
+
+const LOCAL_STORAGE_MEMORY = {};
+
+function localStorageRestore() {
+  Object.keys(LOCAL_STORAGE_MEMORY).forEach((key) => {
+    localStorage.setItem(key, LOCAL_STORAGE_MEMORY[key]);
+  });
+}
+
+Cypress.Commands.add('saveLocalStorage', () => {
+  Object.keys(localStorage).forEach((key) => {
+    LOCAL_STORAGE_MEMORY[key] = localStorage[key];
+  });
+});
+
+Cypress.Commands.add('restoreLocalStorage', () => {
+  Object.keys(LOCAL_STORAGE_MEMORY).forEach((key) => {
+    localStorage.setItem(key, LOCAL_STORAGE_MEMORY[key]);
+  });
+});
+
+Cypress.on('window:before:load', () => {
+    localStorageRestore();
+});
+
+Cypress.on('url:changed', () => {
+    localStorageRestore();
+});
+
+Cypress.on('before:url:changed', () => {
+    localStorageRestore();
+});

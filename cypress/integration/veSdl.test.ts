@@ -1,5 +1,6 @@
 context("veSDL test", () => {
   beforeEach(() => {
+    cy.reload()
     cy.visit(`/#/vesdl`).waitForReact(2000)
   })
   it("veSDL test", () => {
