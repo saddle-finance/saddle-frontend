@@ -239,6 +239,7 @@ const DepositPage = (props: Props): ReactElement => {
                     index,
                   ) => (
                     <TokenInput
+                      data-testid={`token-input-${index}`}
                       key={index}
                       max={max}
                       token={{

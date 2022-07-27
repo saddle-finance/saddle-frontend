@@ -47,8 +47,8 @@ function testPoolDeposit(poolName: string) {
     }
 
     cy.get("#tokenInput input").then(($inputs) => {
-      cy.wrap($inputs).each(($input) => {
-        cy.wrap($input).type("100")
+      cy.wrap($inputs).each((_, $index) => {
+        cy.get(`[data-testid=token-input-${$index}]`).type("100")
       })
     })
 
