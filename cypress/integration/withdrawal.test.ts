@@ -60,7 +60,7 @@ context("Withdrawal Flow", () => {
           .then(() => {
             cy.get("[data-testid=txnDeadlineInputGroup]").within(() => {
               cy.get("input").then(($input) => {
-                cy.wrap($input).type("1000")
+                cy.wrap($input).clear().type("1000")
               })
             })
           })

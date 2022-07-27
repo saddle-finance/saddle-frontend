@@ -186,7 +186,11 @@ function MenuList() {
         {t("swap")}
       </NavMenu>
 
-      <NavMenu to="/pools" selected={activeTab === "pools"}>
+      <NavMenu
+        data-testid="poolsNavLink"
+        to="/pools"
+        selected={activeTab === "pools"}
+      >
         {t("pools")}
       </NavMenu>
 

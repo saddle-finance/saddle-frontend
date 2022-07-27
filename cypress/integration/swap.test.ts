@@ -16,6 +16,7 @@ context("Swap Flow", () => {
           .should("include.text", "Choose")
       })
       it("shows all of the pool's tokens and balances in dropdown", () => {
+        cy.get("[data-testid=poolsNavLink]").click()
         cy.get("[data-testid=swapNavLink]").click()
         cy.get('[data-testid="swapTokenInputFrom"]')
           .eq(0)
