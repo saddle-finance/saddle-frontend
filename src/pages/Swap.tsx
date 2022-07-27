@@ -206,6 +206,9 @@ function Swap(): ReactElement {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const calculateSwapAmount = useCallback(
     debounce(async (formStateArg: FormState) => {
+      const tokenFrom = tokensMap[formStateArg.from.symbol]
+      const tokenTo = tokensMap[formStateArg.to.symbol]
+      if (!tokenFrom || !tokenTo) return
       if (formStateArg.swapType === SWAP_TYPES.INVALID) return
       if (tokenBalances === null || chainId == null)
         // || bridgeContract == null
@@ -237,8 +240,6 @@ function Swap(): ReactElement {
         cleanedFormFromValue,
         tokensMap?.[formStateArg.from.symbol]?.decimals ?? 0,
       )
-      const tokenFrom = tokensMap[formStateArg.from.symbol]
-      const tokenTo = tokensMap[formStateArg.to.symbol]
       let error: string | null = null
       let amountToReceive = Zero
       let amountMediumSynth = Zero
@@ -253,43 +254,64 @@ function Swap(): ReactElement {
       ) {
         const originPool = basicPools?.[formStateArg.from.poolName]
         const destinationPool = basicPools?.[formStateArg.to.poolName]
-        const [amountOutSynth, amountOutToken] =
-          await bridgeContract.calcTokenToToken(
-            [
-              originPool?.metaSwapDepositAddress ?? "",
-              destinationPool?.metaSwapDepositAddress ?? "",
-            ],
-            formStateArg.from.tokenIndex,
-            formStateArg.to.tokenIndex,
-            amountToGive,
-          )
-        amountToReceive = amountOutToken
-        amountMediumSynth = amountOutSynth
+        if (
+          !originPool?.metaSwapDepositAddress ||
+          !destinationPool?.metaSwapDepositAddress
+        ) {
+          error = "Unable to find metaSwap deposit address"
+          amountToReceive = Zero
+          amountMediumSynth = Zero
+        } else {
+          const [amountOutSynth, amountOutToken] =
+            await bridgeContract.calcTokenToToken(
+              [
+                originPool.metaSwapDepositAddress,
+                destinationPool.metaSwapDepositAddress,
+              ],
+              formStateArg.from.tokenIndex,
+              formStateArg.to.tokenIndex,
+              amountToGive,
+            )
+          amountToReceive = amountOutToken
+          amountMediumSynth = amountOutSynth
+        }
       } else if (
         formStateArg.swapType === SWAP_TYPES.SYNTH_TO_TOKEN &&
         bridgeContract != null
       ) {
         const destinationPool = basicPools?.[formStateArg.to.poolName]
-        const [amountOutSynth, amountOutToken] =
-          await bridgeContract.calcSynthToToken(
-            destinationPool?.metaSwapDepositAddress ?? "",
-            utils.formatBytes32String(formStateArg.from.symbol),
-            formStateArg.to.tokenIndex,
-            amountToGive,
-          )
-        amountToReceive = amountOutToken
-        amountMediumSynth = amountOutSynth
+        if (!destinationPool?.metaSwapDepositAddress) {
+          error = "Unable to find metaSwap deposit address"
+          amountToReceive = Zero
+          amountMediumSynth = Zero
+        } else {
+          const [amountOutSynth, amountOutToken] =
+            await bridgeContract.calcSynthToToken(
+              destinationPool.metaSwapDepositAddress,
+              utils.formatBytes32String(formStateArg.from.symbol),
+              formStateArg.to.tokenIndex,
+              amountToGive,
+            )
+          amountToReceive = amountOutToken
+          amountMediumSynth = amountOutSynth
+        }
       } else if (
         formStateArg.swapType === SWAP_TYPES.TOKEN_TO_SYNTH &&
         bridgeContract != null
       ) {
         const originPool = basicPools?.[formStateArg.from.poolName]
-        amountToReceive = await bridgeContract.calcTokenToSynth(
-          originPool?.metaSwapDepositAddress ?? "",
-          formStateArg.from.tokenIndex,
-          utils.formatBytes32String(formStateArg.to.symbol),
-          amountToGive,
-        )
+        if (!originPool?.metaSwapDepositAddress) {
+          error = "Unable to find metaSwap deposit address"
+          amountToReceive = Zero
+          amountMediumSynth = Zero
+        } else {
+          amountToReceive = await bridgeContract.calcTokenToSynth(
+            originPool.metaSwapDepositAddress,
+            formStateArg.from.tokenIndex,
+            utils.formatBytes32String(formStateArg.to.symbol),
+            amountToGive,
+          )
+        }
       } else if (
         formStateArg.swapType === SWAP_TYPES.DIRECT &&
         swapContract != null
@@ -311,8 +333,8 @@ function Swap(): ReactElement {
       }
       const toValueUSD = calculatePrice(
         amountToReceive,
-        tokenPricesUSD?.[tokenTo?.symbol ?? ""],
-        tokenTo?.decimals ?? 0,
+        tokenPricesUSD?.[tokenTo.symbol],
+        tokenTo.decimals,
       )
       const priceImpact = calculatePriceImpact(
         formStateArg.from.valueUSD,
@@ -331,9 +353,9 @@ function Swap(): ReactElement {
           priceImpact,
           exchangeRate: calculateExchangeRate(
             amountToGive,
-            tokenFrom?.decimals ?? 0,
+            tokenFrom.decimals,
             amountToReceive,
-            tokenTo?.decimals ?? 0,
+            tokenTo.decimals,
           ),
         }
         setPrevFormState(newState)
