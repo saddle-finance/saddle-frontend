@@ -62,8 +62,10 @@ function testPoolDeposit(poolName: string) {
 
     cy.get("#tokenInput input")
       .then(($inputs) => {
+        cy.waitForReact(2000)
         cy.wrap($inputs).each((_, $index) => {
-          cy.get(`[data-testid=token-input-${$index}]`).type("100").wait(1000)
+          cy.wait(2000)
+          cy.get(`[data-testid=token-input-${$index}]`).type("100")
         })
       })
       .wait(2000)
