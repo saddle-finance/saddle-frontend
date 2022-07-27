@@ -128,7 +128,7 @@ function Swap(): ReactElement {
       }
 
     const allTokens = Object.values(tokens || {})
-      .filter(({ isLPToken, address }) => !isLPToken && address)
+      .filter(({ isLPToken }) => !isLPToken)
       .filter(({ symbol }) => {
         // get list of pools containing the token
         const tokenPools = tokenToPoolsMap[symbol] ?? []
