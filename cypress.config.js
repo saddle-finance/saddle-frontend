@@ -18,8 +18,8 @@ module.exports = defineConfig({
     "baseUrl": "http://localhost:3000",
     "pageLoadTimeout": 100000,
     "responseTimeout": 100000,
-    "defaultCommandTimeout": 40000,
-    "requestTimeout": 40000,
+    "defaultCommandTimeout": 100000,
+    "requestTimeout": 100000,
     "video": true,
     "viewportWidth": 1440,
     "viewportHeight": 1080
