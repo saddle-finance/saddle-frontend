@@ -256,10 +256,12 @@ const SwapPage = (props: Props): ReactElement => {
       )}
       <div>
         {pendingSwaps.map((pendingSwap) => {
+          if (!pendingSwap.synthTokenFrom || !pendingSwap.tokenTo)
+            return <>Loading Tokens2</>
           const formattedSynthBalance = commify(
             formatUnits(
               pendingSwap.synthBalance,
-              pendingSwap.synthTokenFrom?.decimals ?? 0,
+              pendingSwap.synthTokenFrom.decimals,
             ),
           )
           return (
@@ -280,9 +282,8 @@ const SwapPage = (props: Props): ReactElement => {
               }}
             >
               <Typography variant="subtitle1" color="text.primary">
-                {formattedSynthBalance}{" "}
-                {pendingSwap.synthTokenFrom?.symbol ?? ""} {"->"}{" "}
-                {pendingSwap.tokenTo?.symbol ?? ""}
+                {formattedSynthBalance} {pendingSwap.synthTokenFrom.symbol}{" "}
+                {"->"} {pendingSwap.tokenTo.symbol}
               </Typography>
 
               <Typography variant="body1" color="text.primary">
