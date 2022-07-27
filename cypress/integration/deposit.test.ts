@@ -11,11 +11,9 @@ context("Deposit Flow", () => {
     cy.waitForReact()
   })
 
-  afterEach(() => {
-    cy.wait(2000)
-  })
-
-  pools.forEach(testPoolDeposit)
+  for (let i = 0; i < pools.length; i++) {
+    testPoolDeposit(pools[i])
+  }
 })
 
 function increaseTime() {

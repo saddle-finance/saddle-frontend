@@ -1,0 +1,8 @@
+import "./accountDetail.test.ts"
+import "./advancedOption.test.ts"
+import "./risk.test.ts"
+import "./topMenu.test.ts"
+import "./veSdl.test.ts"
+import "./deposit.test.ts"
+import "./swap.test.ts"
+import "./withdrawal.test.ts"
