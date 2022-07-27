@@ -18,7 +18,7 @@ context("Deposit Flow", () => {
   pools.forEach(testPoolDeposit)
 })
 
-async function increaseTime() {
+function increaseTime() {
   const provider = getDefaultProvider(
     Cypress.env("PROVIDER_HOST"),
   ) as JsonRpcProvider

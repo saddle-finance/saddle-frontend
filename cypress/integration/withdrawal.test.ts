@@ -41,83 +41,98 @@ context("Withdrawal Flow", () => {
     // it(`prepares the ${poolName} pool by adding assets to it`, () => {
     //   basicDeposit(poolName)
     // })
-    it(`successfully completes a withdrawal of all ${poolName} assets`, () => {
-      cy.contains(poolName)
-        .parents("[data-testid=poolOverview]")
-        .within(() => {
-          cy.get("button").contains("Withdraw").click()
-        })
-      // test single item
-      const tokens = poolTokensSymbols[poolName]
-      cy.get('[data-testid="withdrawTokenRadio"]')
-        .contains(tokens[0], { matchCase: false })
-        .click()
-        .wait(2000)
-      // cy.get('[data-testid="myFarmLpBalance"]').should("not.have.text", "0.0")
-      cy.get("#tokenInput input").first().type("1").wait(2000)
-      cy.get("[data-testid=advOptionContainer]")
-        .click()
-        .then(() => {
-          cy.get("[data-testid=txnDeadlineInputGroup]").within(() => {
-            cy.get("input").then(($input) => {
-              cy.wrap($input).type("1000")
+    describe(`Withdrawal tests for ${poolName} assets`, () => {
+      it(`withdraw ${poolName} assets by percentage`, () => {
+        cy.contains(poolName)
+          .parents("[data-testid=poolOverview]")
+          .within(() => {
+            cy.get("button").contains("Withdraw").click()
+          })
+        // test single item
+        const tokens = poolTokensSymbols[poolName]
+        cy.get('[data-testid="withdrawTokenRadio"]')
+          .contains(tokens[0], { matchCase: false })
+          .click()
+          .wait(2000)
+        // cy.get('[data-testid="myFarmLpBalance"]').should("not.have.text", "0.0")
+        cy.get("[data-testid=advOptionContainer]")
+          .click()
+          .then(() => {
+            cy.get("[data-testid=txnDeadlineInputGroup]").within(() => {
+              cy.get("input").then(($input) => {
+                cy.wrap($input).type("1000")
+              })
             })
           })
-        })
-      cy.get('[data-testid="withdrawBtn"]').click()
-      cy.get("[data-testid=tokenValue]")
-        .first()
-        .then(($value) => {
-          const prevVal = $value.text()
-          cy.get("button").contains("Confirm Withdraw").click()
-          cy.wait(1000)
-          cy.get("[data-testid=tokenValue]")
-            .first()
-            .should("not.have.text", prevVal)
-        })
 
-      // test combo withdraw through percentage option
-      cy.get('[data-testid="withdrawPercentageCombo"]').click()
-      cy.get('[data-testid="withdrawPercentageInput"]').type("3").wait(2000)
-      cy.get("button").contains("Withdraw").click()
-      cy.get("[data-testid=tokenValue]")
-        .first()
-        .then(($value) => {
-          const prevVal = $value.text()
-          cy.get("button").contains("Confirm Withdraw").click()
-          cy.get("[data-testid=tokenValue]")
-            .first()
-            .should("not.have.text", prevVal)
-        })
-
-      // test combo withdraw by inputting values
-      cy.get('[data-testid="withdrawPercentageCombo"]').click()
-      cy.get("[data-testid=tokenValue]")
-        .first()
-        .then(($value) => {
-          const prevVal = $value.text()
-          cy.get("#tokenInput input").then(($inputs) => {
-            // cy.get('[data-testid="myFarmLpBalance"]').should(
-            //   "not.have.text",
-            //   "0.0",
-            // )
-            cy.wrap($inputs)
-              .each(($input) => {
-                cy.wrap($input).type("2")
-              })
-              .wait(2000)
-            // cy.get('[data-testid="myFarmLpBalance"]').should(
-            //   "not.have.text",
-            //   "0.0",
-            // )
-            // cy.wait(500)
-            cy.get("button").contains("Withdraw").click()
+        // test combo withdraw through percentage option
+        cy.get('[data-testid="withdrawPercentageCombo"]').click()
+        cy.get('[data-testid="withdrawPercentageInput"]')
+          .clear()
+          .type("3")
+          .wait(2000)
+        cy.get("button").contains("Withdraw").click()
+        cy.get("[data-testid=tokenValue]")
+          .first()
+          .then(($value) => {
+            const prevVal = $value.text()
             cy.get("button").contains("Confirm Withdraw").click()
             cy.get("[data-testid=tokenValue]")
               .first()
               .should("not.have.text", prevVal)
           })
-        })
+      })
+
+      it(`withdraw ${poolName} assets by manual amount input`, () => {
+        cy.contains(poolName)
+          .parents("[data-testid=poolOverview]")
+          .within(() => {
+            cy.get("button").contains("Withdraw").click()
+          })
+        // test single item
+        const tokens = poolTokensSymbols[poolName]
+        cy.get('[data-testid="withdrawTokenRadio"]')
+          .contains(tokens[0], { matchCase: false })
+          .click()
+          .wait(2000)
+        // cy.get('[data-testid="myFarmLpBalance"]').should("not.have.text", "0.0")
+        cy.get("[data-testid=advOptionContainer]")
+          .click()
+          .then(() => {
+            cy.get("[data-testid=txnDeadlineInputGroup]").within(() => {
+              cy.get("input").then(($input) => {
+                cy.wrap($input).type("1000")
+              })
+            })
+          })
+        // test combo withdraw by inputting values
+        cy.get("[data-testid=tokenValue]")
+          .first()
+          .then(($value) => {
+            const prevVal = $value.text()
+            cy.get("#tokenInput input").then(($inputs) => {
+              // cy.get('[data-testid="myFarmLpBalance"]').should(
+              //   "not.have.text",
+              //   "0.0",
+              // )
+              cy.wrap($inputs)
+                .each(($input) => {
+                  cy.wrap($input).type("2")
+                })
+                .wait(2000)
+              // cy.get('[data-testid="myFarmLpBalance"]').should(
+              //   "not.have.text",
+              //   "0.0",
+              // )
+              // cy.wait(500)
+              cy.get("button").contains("Withdraw").click()
+              cy.get("button").contains("Confirm Withdraw").click()
+              cy.get("[data-testid=tokenValue]")
+                .first()
+                .should("not.have.text", prevVal)
+            })
+          })
+      })
     })
   }
 

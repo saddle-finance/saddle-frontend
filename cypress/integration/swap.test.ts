@@ -3,13 +3,10 @@ context("Swap Flow", () => {
   function testAssetSwap(poolName: string, poolTokenSymbols: string[]) {
     describe(`Swapping within ${poolName}`, () => {
       before(() => {
-        cy.visit(`/#`)
+        cy.visit(`/#`).waitForReact()
         cy.wait(2000)
       })
 
-      beforeEach(() => {
-        cy.waitForReact(2000)
-      })
       it("starts in a neutral state", () => {
         cy.get('[data-testid="swapTokenInputFrom"]')
           .eq(0)
@@ -19,6 +16,7 @@ context("Swap Flow", () => {
           .should("include.text", "Choose")
       })
       it("shows all of the pool's tokens and balances in dropdown", () => {
+        cy.get("[data-testid=swapNavLink]").click()
         cy.get('[data-testid="swapTokenInputFrom"]')
           .eq(0)
           .contains("Choose")
@@ -115,7 +113,6 @@ context("Swap Flow", () => {
         cy.get("button").contains("Swap").should("be.enabled").click()
       })
       it("completes a swap", () => {
-        cy.get('[data-testid="high-price-impact-confirmation"]').click()
         cy.get("button").contains("Confirm Swap").should("be.enabled").click()
       })
     })
