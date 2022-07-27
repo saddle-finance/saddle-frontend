@@ -3,9 +3,12 @@ context("Swap Flow", () => {
   function testAssetSwap(poolName: string, poolTokenSymbols: string[]) {
     describe(`Swapping within ${poolName}`, () => {
       before(() => {
-        cy.visit(`/#/`)
-        cy.waitForReact()
+        cy.visit(`/#`)
         cy.wait(2000)
+      })
+
+      beforeEach(() => {
+        cy.waitForReact(2000)
       })
       it("starts in a neutral state", () => {
         cy.get('[data-testid="swapTokenInputFrom"]')
