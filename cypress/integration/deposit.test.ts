@@ -46,11 +46,7 @@ function testPoolDeposit(poolName: string) {
       cy.get("[data-testid=deposit-wrapped-checkbox]").click()
     }
 
-    cy.get("#tokenInput input").then(($inputs) => {
-      cy.wrap($inputs).each((_, $index) => {
-        cy.get(`[data-testid=token-input-${$index}]`).type("100")
-      })
-    })
+    cy.wait(2000)
 
     cy.get("[data-testid=advOptionContainer]")
       .click()
@@ -62,7 +58,16 @@ function testPoolDeposit(poolName: string) {
         })
       })
 
-    cy.get("[data-testid=tokenValue]")
+    cy.wait(2000)
+
+    cy.get("#tokenInput input")
+      .then(($inputs) => {
+        cy.wrap($inputs).each((_, $index) => {
+          cy.get(`[data-testid=token-input-${$index}]`).type("100").wait(1000)
+        })
+      })
+      .wait(2000)
+      .get("[data-testid=tokenValue]")
       .first()
       .then(($value) => {
         const prevVal = $value.text()
