@@ -162,21 +162,22 @@ function Swap(): ReactElement {
         ? (
             formState.currentSwapPairs
               .map(({ to, type: swapType }) => {
-                if (!tokensMap?.[to.symbol]) {
+                if (!tokensMap[to.symbol]) {
                   console.log("unknown symbol", { to, swapType })
                   return null
                 }
-                const token = tokensMap?.[to.symbol]
+                const token = tokensMap[to.symbol]
+                if (!token) return null
                 const amount = tokenBalances?.[token?.symbol ?? ""] || Zero
                 return {
-                  name: token?.name ?? "",
-                  symbol: token?.symbol ?? "",
-                  decimals: token?.decimals ?? 0,
+                  name: token.name,
+                  symbol: token.symbol,
+                  decimals: token.decimals,
                   amount,
                   valueUSD: calculatePrice(
                     amount,
                     tokenPricesUSD?.[token?.symbol ?? ""],
-                    token?.decimals ?? 0,
+                    token.decimals,
                   ),
                   swapType,
                   isAvailable: IS_VIRTUAL_SWAP_ACTIVE
