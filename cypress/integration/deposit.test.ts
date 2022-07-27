@@ -52,7 +52,7 @@ function testPoolDeposit(poolName: string) {
       .then(() => {
         cy.get("[data-testid=txnDeadlineInputGroup]").within(() => {
           cy.get("input").then(($input) => {
-            cy.wrap($input).type("1000")
+            cy.wrap($input).clear().type("1000")
           })
         })
       })
@@ -62,7 +62,10 @@ function testPoolDeposit(poolName: string) {
     cy.get("#tokenInput input").then(($inputs) => {
       cy.waitForReact(2000)
       cy.wrap($inputs).each((_, $index) => {
-        cy.get(`[data-testid=token-input-${$index}]`).click().type("100")
+        cy.get(`[data-testid=token-input-${$index}]`)
+          .click()
+          .clear()
+          .type("100")
       })
     })
     cy.scrollTo("top").wait(2000)
