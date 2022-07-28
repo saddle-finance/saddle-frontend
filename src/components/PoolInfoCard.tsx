@@ -62,6 +62,8 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
     aParameter: data?.aParameter
       ? commify(formatBNToString(data.aParameter, 0, 0))
       : "-",
+    futureA: commify(formatBNToString(data.futureA, 0, 0)),
+    futureATime: new Date(data.futureATime.toNumber() * 1000),
     aprs: data.aprs,
     virtualPrice: data?.virtualPrice
       ? commify(formatBNToString(data.virtualPrice, 18, 5))
@@ -171,6 +173,11 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
             {formattedData.aParameter}
           </Typography>
         </InfoItem>
+
+        <Typography>{formattedData.futureA}</Typography>
+        <Typography>
+          {formattedData.futureATime.toLocaleDateString()}
+        </Typography>
 
         <InfoItem>
           <Typography>{`${t("utilization")}:`}</Typography>
