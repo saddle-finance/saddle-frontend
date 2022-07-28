@@ -103,7 +103,7 @@ export function useCalculateSwapPairs(): (token?: BasicToken) => SwapData[] {
       if (token == null || chainId == null || tokens === null) return []
       const cacheHit = pairCache[token.symbol]
       if (cacheHit) return cacheHit
-      const originTokenAddress = (token?.address || "").toLowerCase()
+      const originTokenAddress = token.address.toLowerCase()
       const originToken = tokens[originTokenAddress]
       if (!originToken) return []
       const swapPairs = getTradingPairsForToken(
