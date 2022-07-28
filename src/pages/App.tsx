@@ -27,7 +27,9 @@ import GaugeProvider from "../providers/GaugeProvider"
 import { LocalizationProvider } from "@mui/x-date-pickers"
 import MinichefProvider from "../providers/MinichefProvider"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
+import Pools from "./Pools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
+import Swap from "./Swap"
 import { ToastContainer } from "react-toastify"
 import TokensProvider from "../providers/TokensProvider"
 import TopMenu from "../components/TopMenu"
@@ -95,6 +97,12 @@ export default function App(): ReactElement {
                               <AppContainer>
                                 <TopMenu />
                                 <Switch>
+                                  <Route exact path="/" component={Swap} />
+                                  <Route
+                                    exact
+                                    path="/pools"
+                                    component={Pools}
+                                  />
                                   {pools.map((pool) => (
                                     <Route
                                       exact
