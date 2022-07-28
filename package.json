@@ -148,18 +148,6 @@
   "lint-staged": {
     "*.{ts,tsx}": "eslint --cache --fix"
   },
-  "eslintConfig": {
-    "overrides": [
-      {
-        "files": [
-          "**/*.stories.*"
-        ],
-        "rules": {
-          "import/no-anonymous-default-export": "off"
-        }
-      }
-    ]
-  },
   "nyc": {
     "reporter": [
       "html"
