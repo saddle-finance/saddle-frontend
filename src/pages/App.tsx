@@ -1,15 +1,14 @@
 import "react-toastify/dist/ReactToastify.css"
 
 import { AppDispatch, AppState } from "../state"
-import { BLOCK_TIME, POOLS_MAP } from "../constants"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import React, {
   ReactElement,
   Suspense,
   lazy,
   useCallback,
+  useContext,
   useEffect,
-  useMemo,
 } from "react"
 import { Redirect, Route, Switch } from "react-router-dom"
 import { styled, useTheme } from "@mui/material"
@@ -17,7 +16,8 @@ import { useDispatch, useSelector } from "react-redux"
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 import AprsProvider from "../providers/AprsProvider"
-import BasicPoolsProvider from "../providers/BasicPoolsProvider"
+import { BLOCK_TIME } from "../constants"
+import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import CreatePool from "./CreatePool"
 import Deposit from "./Deposit"
 import ExpandedPoolsProvider from "../providers/ExpandedPoolsProvider"
@@ -71,16 +71,11 @@ const AppContainer = styled("div")(({ theme }) => {
 })
 
 export default function App(): ReactElement {
-  const { chainId } = useActiveWeb3React()
   const theme = useTheme()
+  const basicPools = useContext(BasicPoolsContext)
+  const pools = Object.values(basicPools || {})
+
   const { boot } = useIntercom()
-
-  const pools = useMemo(() => {
-    return Object.values(POOLS_MAP).filter(
-      ({ addresses }) => chainId && addresses[chainId],
-    )
-  }, [chainId])
-
   useEffect(() => {
     boot()
   }, [boot])
@@ -98,126 +93,94 @@ export default function App(): ReactElement {
       <ReactQueryDevtools initialIsOpen />
       <Suspense fallback={null}>
         <Web3ReactManager>
-          <BasicPoolsProvider>
-            <MinichefProvider>
-              <GaugeProvider>
-                <TokensProvider>
-                  <ExpandedPoolsProvider>
-                    <UserStateProvider>
-                      <PricesAndVoteData>
-                        <PendingSwapsProvider>
-                          <AprsProvider>
-                            <RewardsBalancesProvider>
-                              <LocalizationProvider
-                                dateAdapter={AdapterDateFns}
-                              >
-                                <AppContainer>
-                                  <TopMenu />
-                                  <Switch>
-                                    <Route exact path="/" component={Swap} />
-                                    <Route
-                                      exact
-                                      path="/pools"
-                                      component={Pools}
-                                    />
-                                    {pools.map(({ name }) => (
-                                      <Route
-                                        exact
-                                        path={`/pools/${name}/deposit`}
-                                        render={(props) => (
-                                          <Deposit {...props} poolName={name} />
-                                        )}
-                                        key={`${name}-name-deposit`}
-                                      />
-                                    ))}
-                                    {pools.map(({ name, route }) => (
-                                      <Route
-                                        exact
-                                        path={`/pools/${route}/deposit`}
-                                        render={(props) => (
-                                          <Deposit {...props} poolName={name} />
-                                        )}
-                                        key={`${route}-route-deposit`}
-                                      />
-                                    ))}
-                                    {pools.map(({ name }) => (
-                                      <Route
-                                        exact
-                                        path={`/pools/${name}/withdraw`}
-                                        render={(props) => (
-                                          <Withdraw
-                                            {...props}
-                                            poolName={name}
-                                          />
-                                        )}
-                                        key={`${name}-name-withdraw`}
-                                      />
-                                    ))}
-                                    {pools.map(({ route, name }) => (
-                                      <Route
-                                        exact
-                                        path={`/pools/${route}/withdraw`}
-                                        render={(props) => (
-                                          <Withdraw
-                                            {...props}
-                                            poolName={name}
-                                          />
-                                        )}
-                                        key={`${route}-route-withdraw`}
-                                      />
-                                    ))}
-                                    <Redirect
-                                      from="/pools/:route/:action"
-                                      to="/pools"
-                                    />
-                                    <Route
-                                      exact
-                                      path="/pools/create"
-                                      component={CreatePool}
-                                    />
-                                    <Route
-                                      exact
-                                      path="/risk"
-                                      component={Risk}
-                                    />
-                                    <Route
-                                      exact
-                                      path="/vesting-claim"
-                                      component={VestingClaim}
-                                    />
-                                    <Route
-                                      exact
-                                      path="/farm"
-                                      component={Farm}
-                                    />
-                                    <Route
-                                      exact
-                                      path="/vesdl"
-                                      component={VeSDL}
-                                    />
-                                  </Switch>
-                                  <WrongNetworkModal />
-                                  <Version />
-                                  <ToastContainer
-                                    theme={
-                                      theme.palette.mode === "dark"
-                                        ? "dark"
-                                        : "light"
-                                    }
-                                    position="top-left"
+          <MinichefProvider>
+            <GaugeProvider>
+              <TokensProvider>
+                <ExpandedPoolsProvider>
+                  <UserStateProvider>
+                    <PricesAndVoteData>
+                      <PendingSwapsProvider>
+                        <AprsProvider>
+                          <RewardsBalancesProvider>
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                              <AppContainer>
+                                <TopMenu />
+                                <Switch>
+                                  <Route exact path="/" component={Swap} />
+                                  <Route
+                                    exact
+                                    path="/pools"
+                                    component={Pools}
                                   />
-                                </AppContainer>
-                              </LocalizationProvider>
-                            </RewardsBalancesProvider>
-                          </AprsProvider>
-                        </PendingSwapsProvider>
-                      </PricesAndVoteData>
-                    </UserStateProvider>
-                  </ExpandedPoolsProvider>
-                </TokensProvider>
-              </GaugeProvider>
-            </MinichefProvider>
-          </BasicPoolsProvider>
+                                  {pools.map((pool) => (
+                                    <Route
+                                      exact
+                                      path={`/pools/${pool.poolName}/deposit`}
+                                      render={(props) => (
+                                        <Deposit
+                                          {...props}
+                                          poolName={pool.poolName}
+                                        />
+                                      )}
+                                      key={`${pool.poolName}-deposit`}
+                                    />
+                                  ))}
+                                  {pools.map((pool) => (
+                                    <Route
+                                      exact
+                                      path={`/pools/${pool.poolName}/withdraw`}
+                                      render={(props) => (
+                                        <Withdraw
+                                          {...props}
+                                          poolName={pool.poolName}
+                                        />
+                                      )}
+                                      key={`${pool.poolName}-withdraw`}
+                                    />
+                                  ))}
+                                  <Redirect
+                                    from="/pools/:route/:action"
+                                    to="/pools"
+                                  />
+                                  <Route
+                                    exact
+                                    path="/pools/create"
+                                    component={CreatePool}
+                                  />
+                                  <Route exact path="/risk" component={Risk} />
+                                  <Route
+                                    exact
+                                    path="/vesting-claim"
+                                    component={VestingClaim}
+                                  />
+                                  <Route exact path="/farm" component={Farm} />
+                                  <Route
+                                    exact
+                                    path="/vesdl"
+                                    component={VeSDL}
+                                  />
+                                </Switch>
+                                <WrongNetworkModal />
+                                <Version />
+                                <ToastContainer
+                                  theme={
+                                    theme.palette.mode === "dark"
+                                      ? "dark"
+                                      : "light"
+                                  }
+                                  position="top-left"
+                                />
+                              </AppContainer>
+                            </LocalizationProvider>
+                          </RewardsBalancesProvider>
+                        </AprsProvider>
+                      </PendingSwapsProvider>
+                    </PricesAndVoteData>
+                  </UserStateProvider>
+                </ExpandedPoolsProvider>
+              </TokensProvider>
+            </GaugeProvider>
+          </MinichefProvider>
         </Web3ReactManager>
       </Suspense>
     </QueryClientProvider>
