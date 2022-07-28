@@ -3,7 +3,7 @@ import {
   COINGECKO_PLATFORM_ID,
   SUPPORTED_NETWORKS,
 } from "../constants/networks"
-import { ChainId, PoolTypes } from "../constants"
+import { ChainId, PoolTypes, SDL_TOKEN, SPA, TOKENS_MAP } from "../constants"
 import { TokenPricesUSD, updateTokensPricesUSD } from "../state/application"
 
 import { AppDispatch } from "../state"
@@ -25,13 +25,79 @@ interface CoinGeckoReponse {
     usd: number
   }
 }
-export const getTokenPrice = async (
+const otherTokens = {
+  ETH: "ethereum",
+  WETH: "ethereum",
+  VETH2: "ethereum", // TODO: pull vETH2 price once it's added to coingecko
+  BTC: "bitcoin",
+  KEEP: "keep-network",
+  SGT: "sharedstake-governance-token",
+  ALCX: "alchemix",
+  T: "threshold-network-token",
+  [SDL_TOKEN.symbol]: SDL_TOKEN.geckoId,
+  [SPA.symbol]: SPA.geckoId,
+}
+
+export default function fetchTokenPricesUSD(
   dispatch: AppDispatch,
-  tokens: BasicTokens,
-  chainId?: ChainId,
   sdlWethSushiPool?: SdlWethSushiPool,
+  chainId?: ChainId,
+): void {
+  const tokens = Object.values(TOKENS_MAP).filter(({ addresses }) =>
+    chainId ? addresses[chainId] : false,
+  )
+  const tokenIds = Array.from(
+    new Set(
+      tokens.map(({ geckoId }) => geckoId).concat(Object.values(otherTokens)),
+    ),
+  )
+  void retry(
+    () =>
+      fetch(`${coinGeckoAPI}?ids=${encodeURIComponent(
+        tokenIds.join(","),
+      )}&vs_currencies=usd
+    `)
+        .then((res) => res.json())
+        .then((body: CoinGeckoReponse) => {
+          const otherTokensResult = Object.keys(otherTokens).reduce(
+            (acc, key) => {
+              const price = body?.[otherTokens[key]]?.usd
+              return price
+                ? {
+                    ...acc,
+                    [key]: price,
+                  }
+                : acc
+            },
+            {} as { [symbol: string]: number },
+          )
+          const result = tokens.reduce((acc, token) => {
+            return { ...acc, [token.symbol]: body?.[token.geckoId]?.usd }
+          }, otherTokensResult)
+          result.alETH = result?.ETH || result?.alETH || 0 // TODO: remove once CG price is fixed
+          result.nUSD = 1
+          result.VETH2 = result?.ETH || 0
+          const sdlPerEth = sdlWethSushiPool?.wethReserve
+            ? sdlWethSushiPool?.sdlReserve
+                ?.mul(BN_1E18)
+                .div(sdlWethSushiPool.wethReserve)
+            : Zero
+          if (!result.SDL && sdlPerEth) {
+            result.SDL =
+              (result?.ETH || 0) / parseFloat(formatUnits(sdlPerEth, 18))
+          }
+          dispatch(updateTokensPricesUSD(result))
+        }),
+    { retries: 3 },
+  )
+}
+
+export const getTokenPrice = async (
+  tokens: BasicTokens,
+  dispatch: AppDispatch,
+  chainId: ChainId,
 ): Promise<void> => {
-  if (!tokens || !chainId) return
+  if (!tokens) return
   const tokenAddresses = Object.keys(tokens)
   const platform = COINGECKO_PLATFORM_ID[chainId]
   const addressesChunk = chunk(
@@ -71,15 +137,6 @@ export const getTokenPrice = async (
         {},
         ...pricesChunks,
       ) as TokenPricesUSD
-      const sdlPerEth = sdlWethSushiPool?.wethReserve
-        ? sdlWethSushiPool?.sdlReserve
-            ?.mul(BN_1E18)
-            .div(sdlWethSushiPool.wethReserve)
-        : Zero
-      if (!tokenPricesUSD.SDL && sdlPerEth) {
-        tokenPricesUSD.SDL =
-          (tokenPricesUSD?.ETH || 0) / parseFloat(formatUnits(sdlPerEth, 18))
-      }
       dispatch(updateTokensPricesUSD(tokenPricesUSD))
     } catch (error) {
       console.error("Error on fetching price from coingecko ==>", error)

@@ -2100,9 +2100,32 @@ export type BasicTokensMap = {
   [symbol: string]: BasicToken | undefined
 }
 
+export const TOKENS_MAP = Object.keys(POOLS_MAP).reduce((acc, poolName) => {
+  const pool = POOLS_MAP[poolName as PoolName]
+  const newAcc = { ...acc }
+  pool.poolTokens.forEach((token) => {
+    newAcc[token.symbol] = token
+  })
+  newAcc[pool.lpToken.symbol] = pool.lpToken
+  return newAcc
+}, {} as TokensMap)
 export type TokenToPoolsMap = {
   [tokenSymbol: string]: string[]
 }
+export const TOKEN_TO_POOLS_MAP = Object.keys(POOLS_MAP).reduce(
+  (acc, poolName) => {
+    const pool = POOLS_MAP[poolName as PoolName]
+    const newAcc = { ...acc }
+    pool.poolTokens.forEach((token) => {
+      newAcc[token.symbol] = (newAcc[token.symbol] || []).concat(
+        poolName as PoolName,
+      )
+    })
+    return newAcc
+  },
+  {} as TokenToPoolsMap,
+)
+
 export const TRANSACTION_TYPES = {
   DEPOSIT: "DEPOSIT",
   WITHDRAW: "WITHDRAW",
