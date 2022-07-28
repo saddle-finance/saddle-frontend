@@ -194,9 +194,7 @@ describe("getTokenIconPath", () => {
   })
   it("correctly retrieves icon path for saddle tokens", () => {
     Object.keys({ "saddle-lp": { address: "0x" } }).forEach((tokenSymbol) => {
-      console.log({ tokenSymbol })
       const castedSymbol = <string>tokenSymbol
-      console.log({ castedSymbol })
       if (castedSymbol.toLowerCase().includes("saddle")) {
         expect(getTokenIconPath(castedSymbol)).toEqual(
           `/static/icons/svg/saddle_lp_token.svg`,

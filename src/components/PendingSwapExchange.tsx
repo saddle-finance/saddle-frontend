@@ -1,5 +1,5 @@
 import { Box, Button, Typography } from "@mui/material"
-import React, { ReactElement, useCallback, useState } from "react"
+import React, { ReactElement, useState } from "react"
 import { calculatePrice, commify, formatBNToString } from "../utils"
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state"
@@ -37,21 +37,22 @@ const PendingSwapExchange = ({
   })
   const { t } = useTranslation()
   const { synthTokenFrom, tokenTo, synthBalance, swapType } = pendingSwap
+  if (!synthTokenFrom || !tokenTo || !tokenPricesUSD) return <></>
   const formattedSynthBalance = commify(
-    formatBNToString(synthBalance, synthTokenFrom?.decimals ?? 0, 6),
+    formatBNToString(synthBalance, synthTokenFrom.decimals, 6),
   )
-  const withdraw = useCallback(() => {
+  const withdraw = () => {
     const amount = inputState.value
-      ? parseUnits(inputState.value, synthTokenFrom?.decimals ?? 0)
+      ? parseUnits(inputState.value, synthTokenFrom.decimals)
       : Zero
     onPendingSwapSettlement("withdraw", amount)
-  }, [inputState.value, synthTokenFrom?.decimals, onPendingSwapSettlement])
-  const settle = useCallback(() => {
+  }
+  const settle = () => {
     const amount = inputState.value
-      ? parseUnits(inputState.value, synthTokenFrom?.decimals ?? 0)
+      ? parseUnits(inputState.value, synthTokenFrom.decimals)
       : Zero
     onPendingSwapSettlement("settle", amount)
-  }, [inputState.value, synthTokenFrom, onPendingSwapSettlement])
+  }
   return (
     <Box width="100%">
       <Typography variant="h2" color="primary" textAlign="center" my={4}>
@@ -67,8 +68,8 @@ const PendingSwapExchange = ({
               valueBN: synthBalance,
               valueUSD: calculatePrice(
                 synthBalance,
-                tokenPricesUSD?.[synthTokenFrom?.symbol ?? ""] ?? 0,
-                synthTokenFrom?.decimals ?? 0,
+                tokenPricesUSD[synthTokenFrom.symbol],
+                synthTokenFrom.decimals,
               ),
               value: formatBNToString(
                 synthBalance,
@@ -95,21 +96,21 @@ const PendingSwapExchange = ({
               return prevState
             }
             const valueBN = isInputNumber
-              ? parseUnits(cleanedValue, synthTokenFrom?.decimals ?? 0)
+              ? parseUnits(cleanedValue, synthTokenFrom.decimals)
               : Zero
             return {
               value: newValue,
               valueBN,
               valueUSD: calculatePrice(
                 valueBN,
-                tokenPricesUSD?.[synthTokenFrom?.symbol ?? ""] ?? 0,
-                synthTokenFrom?.decimals ?? 0,
+                tokenPricesUSD[synthTokenFrom.symbol],
+                synthTokenFrom.decimals,
               ),
               error: valueBN.gt(synthBalance) ? t("insufficientBalance") : null,
             }
           })
         }
-        selected={synthTokenFrom?.symbol ?? ""}
+        selected={synthTokenFrom.symbol}
         inputValue={inputState.value}
         inputValueUSD={inputState.valueUSD}
         isSwapFrom={true}
@@ -134,10 +135,10 @@ const PendingSwapExchange = ({
       >
         {t("settleAsToken")}
         <TokenIcon
-          symbol={tokenTo?.symbol ?? ""}
+          symbol={tokenTo.symbol}
           style={{ marginLeft: "8px", marginRight: "8px" }}
         />
-        {tokenTo?.symbol ?? ""}
+        {tokenTo.symbol}
       </Button>
       <Typography textAlign="center" my={1}>
         {t("OR")}
@@ -152,10 +153,10 @@ const PendingSwapExchange = ({
       >
         {t("withdrawSynth")}
         <TokenIcon
-          symbol={synthTokenFrom?.symbol ?? ""}
+          symbol={synthTokenFrom.symbol}
           style={{ marginLeft: "8px", marginRight: "8px" }}
         />
-        {synthTokenFrom?.symbol ?? ""}
+        {synthTokenFrom.symbol}
       </Button>
 
       <AdvancedOptions isOutlined />

@@ -14,19 +14,16 @@ export const useTokenMaps = (): {
   const tokenSymbolToTokenMap = Object.keys(basicPools ?? {}).reduce(
     (acc, poolName) => {
       const pool = basicPools?.[poolName]
-      if (!pool || !tokens || !pool.underlyingTokens) return acc
-      const poolUnderlyingTokens = pool.underlyingTokens?.map(
-        (token) => tokens[token],
-      )
+      if (!pool) return acc
+      const poolTokens = pool.tokens.map((token) => tokens?.[token]) ?? []
       const newAcc = { ...acc }
-      poolUnderlyingTokens.forEach((token) => {
+      poolTokens.forEach((token) => {
         if (!token) return
         newAcc[token.symbol] = token
       })
-      const lpToken = tokens[pool.lpToken]
-      const lpTokenSymbol = lpToken?.symbol ?? ""
+      const lpTokenSymbol = tokens?.[pool.lpToken]?.symbol ?? ""
+      const lpToken = tokens?.[pool.lpToken]
       newAcc[lpTokenSymbol] = lpToken
-
       return newAcc
     },
     {} as BasicTokensMap,

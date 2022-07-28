@@ -23,9 +23,9 @@ export interface PendingSwap {
   swapType: SWAP_TYPES
   settleableAtTimestamp: number
   secondsRemaining: number
-  synthTokenFrom: BasicToken | undefined
+  synthTokenFrom: BasicToken
   synthBalance: BigNumber
-  tokenTo: BasicToken | undefined
+  tokenTo: BasicToken
   itemId: string
   transactionHash: string
   timestamp: number
@@ -443,9 +443,9 @@ async function parseSettlementFromEvent(
 ): Promise<SettlementEvent | null> {
   // Settlements are final
   const settlement = event.args as unknown as BridgeEventSettle // TODO would love to set this from the typechain type
-  if (settlement == null) return null
-  const fromToken = tokens?.[settlement.settleFrom]
-  const toToken = tokens?.[settlement.settleTo]
+  if (settlement == null || !tokens) return null
+  const fromToken = tokens[settlement.settleFrom]
+  const toToken = tokens[settlement.settleTo]
   if (fromToken == null || toToken == null) return null
   return event
     .getBlock()
@@ -469,8 +469,8 @@ async function parseWithdrawFromEvent(
   tokens: BasicTokens,
 ): Promise<WithdrawEvent | null> {
   const withdraw = event.args as unknown as BridgeEventWithdraw
-  if (withdraw == null) return null
-  const synthToken = tokens?.[withdraw.synth]
+  if (withdraw == null || !tokens) return null
+  const synthToken = tokens[withdraw.synth]
   if (synthToken == null) return null
   return event
     .getBlock()
@@ -504,7 +504,7 @@ async function fetchPendingSwapInfo(
     // afik we don't have a better way of fetching current pendingSwaps
     // DEVELOPER: for this reason we don't use multicall
     const pendingSwap = event.args as unknown as BridgeEventGenericSwap
-    if (pendingSwap == null) return null
+    if (pendingSwap == null || !tokens) return null
     const itemId = pendingSwap.itemId.toString()
     const [pendingSwapInfo, eventBlock] = await Promise.all([
       bridgeContract.getPendingSwapInfo(itemId),
@@ -521,8 +521,9 @@ async function fetchPendingSwapInfo(
     } else {
       swapType = SWAP_TYPES.INVALID
     }
-    const synthTokenFrom = tokens?.[pendingSwapInfo.synth]
-    const tokenTo = tokens?.[pendingSwapInfo.tokenTo]
+    const synthTokenFrom = tokens[pendingSwapInfo.synth]
+    const tokenTo = tokens[pendingSwapInfo.tokenTo]
+    if (!synthTokenFrom || !tokenTo) return null
     const settleableAtTimestamp =
       (eventBlock.timestamp + parseInt(pendingSwapInfo.secsLeft.toString())) * // add event block timestamp + secsLeft
       1000 // convert to ms
@@ -536,8 +537,8 @@ async function fetchPendingSwapInfo(
       secondsRemaining,
       synthBalance: pendingSwapInfo.synthBalance,
       itemId,
-      synthTokenFrom: synthTokenFrom,
-      tokenTo: tokenTo,
+      synthTokenFrom,
+      tokenTo,
       transactionHash: event.transactionHash,
       timestamp: eventBlock.timestamp,
     }

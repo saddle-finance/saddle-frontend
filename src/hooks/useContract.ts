@@ -24,7 +24,6 @@ import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { Bridge } from "../../types/ethers-contracts/Bridge"
 import { Contract } from "@ethersproject/contracts"
 import ERC20_ABI from "../constants/abis/erc20.json"
-import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import FEE_DISTRIBUTOR_ABI from "../constants/abis/feeDistributor.json"
 import { FeeDistributor } from "../../types/ethers-contracts/FeeDistributor"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
@@ -67,7 +66,6 @@ import VOTING_ESCROW_CONTRACT_ABI from "../constants/abis/votingEscrow.json"
 import { VotingEscrow } from "../../types/ethers-contracts/VotingEscrow"
 import { formatBytes32String } from "@ethersproject/strings"
 import { useActiveWeb3React } from "./index"
-import { useTokenMaps } from "./useTokenMaps"
 
 // returns null on errors
 function useContract(
@@ -335,38 +333,6 @@ export function useLPTokenContract(
       return null
     }
   }, [library, pool, account])
-}
-
-interface AllContractsObject {
-  [x: string]: Erc20 | null
-}
-export function useAllContracts(): AllContractsObject | null {
-  const { chainId, library, account } = useActiveWeb3React()
-  const { tokenSymbolToTokenMap } = useTokenMaps()
-  return useMemo(() => {
-    if (!library || !chainId) return {}
-    const allTokensForChain = Object.values(tokenSymbolToTokenMap).filter(
-      (token) => token?.address ?? "",
-    )
-    return allTokensForChain.reduce((acc, token) => {
-      const tokenAddress = token?.address ?? ""
-      if (tokenAddress) {
-        let contract = null
-        try {
-          contract = getContract(
-            tokenAddress,
-            ERC20_ABI,
-            library,
-            account || undefined,
-          ) as Erc20
-        } catch (e) {
-          console.error(`Couldn't create contract for token ${tokenAddress}`)
-        }
-        acc[token.symbol] = contract
-      }
-      return acc
-    }, {} as AllContractsObject)
-  }, [chainId, library, account, tokenSymbolToTokenMap])
 }
 
 export function useGaugeControllerContract(): GaugeController | null {

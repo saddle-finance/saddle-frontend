@@ -193,8 +193,9 @@ const PendingSwapModal = ({
     swapType === SWAP_TYPES.TOKEN_TO_SYNTH
       ? synthBalance
       : settlementState.amount
+  if (!synthTokenFrom || !tokenTo || !tokenPricesUSD) return <></>
   const formattedSynthBalance = commify(
-    formatBNToString(synthBalance, synthTokenFrom?.decimals ?? 0, 6),
+    formatBNToString(synthBalance, synthTokenFrom.decimals, 6),
   )
 
   return (
@@ -203,8 +204,8 @@ const PendingSwapModal = ({
         <div>
           <div>
             <b>
-              {formattedSynthBalance} {synthTokenFrom?.symbol ?? ""} {"->"}{" "}
-              {tokenTo?.symbol ?? ""}
+              {formattedSynthBalance} {synthTokenFrom.symbol} {"->"}{" "}
+              {tokenTo.symbol}
             </b>
           </div>
           <div>
@@ -250,42 +251,40 @@ const PendingSwapModal = ({
           onConfirm={handleConfirmSettlement}
           data={{
             from: {
-              symbol: synthTokenFrom?.symbol ?? "",
-              value: formatUnits(fromAmount, synthTokenFrom?.decimals ?? 0),
+              symbol: synthTokenFrom.symbol,
+              value: formatUnits(fromAmount, synthTokenFrom.decimals),
             },
             swapType,
             ...(settlementState.action === "settle"
               ? {
                   to: {
-                    symbol: tokenTo?.symbol ?? "",
+                    symbol: tokenTo.symbol,
                     value: formatUnits(
                       calculatedTokenAmount || Zero,
-                      tokenTo?.decimals ?? 0,
+                      tokenTo.decimals,
                     ),
                   },
                   exchangeRateInfo: {
-                    pair: `${synthTokenFrom?.symbol ?? ""}/${
-                      tokenTo?.symbol ?? ""
-                    }`,
+                    pair: `${synthTokenFrom.symbol}/${tokenTo.symbol}`,
                     priceImpact: calculatedTokenAmount
                       ? calculatePriceImpact(
                           calculatePrice(
                             fromAmount,
-                            tokenPricesUSD?.[synthTokenFrom?.symbol ?? ""] ?? 0,
-                            synthTokenFrom?.decimals ?? 0,
+                            tokenPricesUSD[synthTokenFrom.symbol],
+                            synthTokenFrom.decimals,
                           ),
                           calculatePrice(
                             calculatedTokenAmount || Zero,
-                            tokenPricesUSD?.[tokenTo?.symbol ?? ""] ?? 0,
-                            tokenTo?.decimals ?? 0,
+                            tokenPricesUSD[tokenTo.symbol],
+                            tokenTo.decimals,
                           ),
                         )
                       : Zero,
                     exchangeRate: calculateExchangeRate(
                       settlementState.amount,
-                      synthTokenFrom?.decimals ?? 0,
+                      synthTokenFrom.decimals,
                       calculatedTokenAmount || Zero,
-                      tokenTo?.decimals ?? 0,
+                      tokenTo.decimals,
                     ),
                   },
                 }
