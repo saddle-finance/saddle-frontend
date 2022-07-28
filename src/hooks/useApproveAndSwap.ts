@@ -52,7 +52,7 @@ export function useApproveAndSwap(): (
 ) => Promise<void> {
   const dispatch = useDispatch()
   const basicPools = useContext(BasicPoolsContext)
-  const { tokensMap } = useTokenMaps()
+  const { tokenSymbolToTokenMap } = useTokenMaps()
   const { account, chainId, library } = useActiveWeb3React()
   const baseSynthetixContract = useSynthetixContract()
   const { gasStandard, gasFast, gasInstant } = useSelector(
@@ -79,7 +79,7 @@ export function useApproveAndSwap(): (
         throw new Error("Bridge contract is not loaded")
       if (chainId === undefined) throw new Error("Unknown chain")
       // For each token being deposited, check the allowance and approve it if necessary
-      const token = tokensMap[state.from.symbol]
+      const token = tokenSymbolToTokenMap[state.from.symbol]
       if (!token) throw new Error("Token not found")
       const tokenContract = getContract(
         token.address.toLowerCase(),
