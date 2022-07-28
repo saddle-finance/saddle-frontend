@@ -87,10 +87,6 @@ export function useApproveAndSwap(): (
         library,
         account,
       ) as Erc20
-      // const tokenContract = new Contract(
-      //   ERC20_ABI,
-      // ) as Erc20
-      // const tokenContract = tokenContracts?.[state.from.symbol] as Erc20
       let gasPrice
       if (gasPriceSelected === GasPrices.Custom) {
         gasPrice = gasCustom?.valueSafe
