@@ -143,7 +143,7 @@ function Swap(): ReactElement {
         // only show pools with balances
         const hasAnyBalance = tokenPools.some((poolName) => {
           if (!basicPools) return false
-          const basicPool = basicPools?.[poolName]
+          const basicPool = basicPools[poolName]
           if (!basicPool) return false
           return basicPool.lpTokenSupply.gt(Zero)
         })
@@ -535,7 +535,7 @@ function Swap(): ReactElement {
       }))
       return
     }
-    if (!fromToken?.decimals) return
+    if (!fromToken.decimals) return
     await approveAndSwap({
       bridgeContract: bridgeContract,
       swapContract: swapContract,
