@@ -1,6 +1,5 @@
 import {
   BTC_POOL_NAME,
-  PoolName,
   TRANSACTION_TYPES,
   isLegacySwapABIPool,
 } from "../constants"
@@ -36,7 +35,7 @@ interface ApproveAndDepositStateArgument {
 }
 
 export function useApproveAndDeposit(
-  poolName: PoolName,
+  poolName: string,
 ): (
   state: ApproveAndDepositStateArgument,
   shouldDepositWrapped?: boolean,
@@ -194,7 +193,8 @@ export function useApproveAndDeposit(
         new Date().getTime() / 1000 + 60 * deadline,
       )
       if (poolName === BTC_POOL_NAME) {
-        const swapGuardedContract = effectiveSwapContract as SwapGuarded
+        const swapGuardedContract =
+          effectiveSwapContract as unknown as SwapGuarded
         spendTransaction = await swapGuardedContract?.addLiquidity(
           txnAmounts,
           minToMint,
