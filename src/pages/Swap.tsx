@@ -236,10 +236,7 @@ function Swap(): ReactElement {
         }))
         return
       }
-      const amountToGive = parseUnits(
-        cleanedFormFromValue,
-        tokensMap?.[formStateArg.from.symbol]?.decimals ?? 0,
-      )
+      const amountToGive = parseUnits(cleanedFormFromValue, tokenFrom.decimals)
       let error: string | null = null
       let amountToReceive = Zero
       let amountMediumSynth = Zero
@@ -530,11 +527,12 @@ function Swap(): ReactElement {
       }))
       return
     }
+    if (!fromToken?.decimals) return
     await approveAndSwap({
       bridgeContract: bridgeContract,
       swapContract: swapContract,
       from: {
-        amount: parseUnits(formState.from.value, fromToken?.decimals ?? 18),
+        amount: parseUnits(formState.from.value, fromToken.decimals),
         symbol: formState.from.symbol,
         poolName: formState.from.poolName,
         tokenIndex: formState.from.tokenIndex,
@@ -606,7 +604,7 @@ function Swap(): ReactElement {
             ? "0"
             : formatUnits(
                 formState.to.value,
-                tokensMap[formState.to.symbol]?.decimals ?? 18,
+                tokensMap[formState.to.symbol]?.decimals,
               ),
       }}
       swapType={formState.swapType}
