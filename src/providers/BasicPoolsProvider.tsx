@@ -13,6 +13,7 @@ import {
   MulticallProvider,
 } from "../types/ethcall"
 import React, { ReactElement, useEffect, useState } from "react"
+import { UseQueryResult, useQuery } from "@tanstack/react-query"
 import {
   chunkedTryAll,
   createMultiCallContract,
@@ -90,6 +91,49 @@ export type BasicPool = SwapInfo & PoolMigrationData
 export type BasicPools = Partial<{ [poolName: string]: BasicPool }> | null // indexed by name, which is unique in the Registry
 
 export const BasicPoolsContext = React.createContext<BasicPools>(null)
+
+export const useBasicPools = (): UseQueryResult<BasicPools> => {
+  const { chainId, library } = useActiveWeb3React()
+  const poolRegistry = usePoolRegistry()
+  const poolRegistryMultiCall = usePoolRegistryMultiCall()
+
+  return useQuery(["basicPools"], async () => {
+    if (!chainId || !library || !poolRegistry || !poolRegistryMultiCall) {
+      return null
+    }
+    const ethCallProvider = await getMulticallProvider(library, chainId)
+    const pools = IS_POOL_REGISTRY_MIGRATION_LIVE
+      ? await getPoolsDataFromRegistry(
+          chainId,
+          poolRegistry,
+          poolRegistryMultiCall,
+          ethCallProvider,
+        )
+      : await getPoolsBaseData(library, chainId)
+    const poolsAddresses = pools.map(({ poolAddress }) => poolAddress)
+    const migrationData = await getMigrationData(
+      library,
+      chainId,
+      poolsAddresses,
+    )
+    const result = pools.reduce((acc, pool) => {
+      const poolData = { ...pool } as BasicPool
+      if (pool.poolAddress && pool.poolName) {
+        poolData.isMigrated = migrationData?.[pool.poolAddress] != null
+        poolData.newPoolAddress = migrationData?.[pool.poolAddress]
+        return {
+          ...acc,
+          [pool.poolName]: poolData,
+        }
+      } else {
+        return {
+          ...acc,
+        }
+      }
+    }, {} as BasicPools)
+    return result
+  })
+}
 
 export default function BasicPoolsProvider({
   children,

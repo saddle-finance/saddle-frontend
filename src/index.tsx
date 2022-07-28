@@ -3,6 +3,7 @@ import "./i18n"
 
 import * as Sentry from "@sentry/react"
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Web3ReactProvider, createWeb3ReactRoot } from "@web3-react/core"
 import { logError, sendWebVitalsToGA } from "./utils/googleAnalytics"
 
@@ -14,6 +15,7 @@ import { IntercomProvider } from "react-use-intercom"
 import { NetworkContextName } from "./constants"
 import { Provider } from "react-redux"
 import React from "react"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { HashRouter as Router } from "react-router-dom"
 import { ThemeSettingsProvider } from "./providers/ThemeSettingsProvider"
 import { createRoot } from "react-dom/client"
@@ -39,6 +41,14 @@ Sentry.init({
   tracesSampleRate: 0.1,
 })
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: true,
+    },
+  },
+})
+
 const intercomAppId = "tbghxgth"
 const container = document.getElementById("root")
 // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-non-null-assertion
@@ -48,21 +58,27 @@ const root = createRoot(container!) // createRoot(container!) if you use TypeScr
 root.render(
   <>
     <React.StrictMode>
-      <IntercomProvider appId={intercomAppId} shouldInitialize={IS_PRODUCTION}>
-        <Web3ReactProvider getLibrary={getLibrary}>
-          <Web3ProviderNetwork getLibrary={getNetworkLibrary}>
-            <Provider store={store}>
-              <ThemeSettingsProvider>
-                <BasicPoolsProvider>
-                  <Router>
-                    <App />
-                  </Router>
-                </BasicPoolsProvider>
-              </ThemeSettingsProvider>
-            </Provider>
-          </Web3ProviderNetwork>
-        </Web3ReactProvider>
-      </IntercomProvider>
+      <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools initialIsOpen />
+        <IntercomProvider
+          appId={intercomAppId}
+          shouldInitialize={IS_PRODUCTION}
+        >
+          <Web3ReactProvider getLibrary={getLibrary}>
+            <Web3ProviderNetwork getLibrary={getNetworkLibrary}>
+              <Provider store={store}>
+                <ThemeSettingsProvider>
+                  <BasicPoolsProvider>
+                    <Router>
+                      <App />
+                    </Router>
+                  </BasicPoolsProvider>
+                </ThemeSettingsProvider>
+              </Provider>
+            </Web3ProviderNetwork>
+          </Web3ReactProvider>
+        </IntercomProvider>
+      </QueryClientProvider>
     </React.StrictMode>
   </>,
 )
