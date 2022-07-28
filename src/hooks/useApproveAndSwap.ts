@@ -1,11 +1,12 @@
 import { SWAP_TYPES, SYNTH_TRACKING_ID, TRANSACTION_TYPES } from "../constants"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
-import { useAllContracts, useSynthetixContract } from "./useContract"
+import { formatDeadlineToNumber, getContract } from "../utils"
 
 import { AppState } from "../state"
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Bridge } from "../../types/ethers-contracts/Bridge"
+import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { GasPrices } from "../state/user"
 import { MetaSwapDeposit } from "../../types/ethers-contracts/MetaSwapDeposit"
@@ -13,7 +14,6 @@ import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
-import { formatDeadlineToNumber } from "../utils"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
@@ -21,6 +21,8 @@ import { useActiveWeb3React } from "."
 import { useContext } from "react"
 import { useDispatch } from "react-redux"
 import { useSelector } from "react-redux"
+import { useSynthetixContract } from "./useContract"
+import { useTokenMaps } from "./useTokenMaps"
 import { utils } from "ethers"
 
 type Contracts = {
@@ -50,8 +52,8 @@ export function useApproveAndSwap(): (
 ) => Promise<void> {
   const dispatch = useDispatch()
   const basicPools = useContext(BasicPoolsContext)
-  const tokenContracts = useAllContracts()
-  const { account, chainId } = useActiveWeb3React()
+  const { tokensMap } = useTokenMaps()
+  const { account, chainId, library } = useActiveWeb3React()
   const baseSynthetixContract = useSynthetixContract()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
@@ -65,18 +67,26 @@ export function useApproveAndSwap(): (
     transactionDeadlineSelected,
     infiniteApproval,
   } = useSelector((state: AppState) => state.user)
+
   return async function approveAndSwap(
     state: ApproveAndSwapStateArgument,
   ): Promise<void> {
     try {
-      if (!account) throw new Error("Wallet must be connected")
+      if (!account || !library) throw new Error("Wallet must be connected")
       if (state.swapType === SWAP_TYPES.DIRECT && !state.swapContract)
         throw new Error("Swap contract is not loaded")
       if (state.swapType !== SWAP_TYPES.DIRECT && !state.bridgeContract)
         throw new Error("Bridge contract is not loaded")
       if (chainId === undefined) throw new Error("Unknown chain")
       // For each token being deposited, check the allowance and approve it if necessary
-      const tokenContract = tokenContracts?.[state.from.symbol] as Erc20
+      const token = tokensMap[state.from.symbol]
+      if (!token) throw new Error("Token not found")
+      const tokenContract = getContract(
+        token.address.toLowerCase(),
+        ERC20_ABI,
+        library,
+        account,
+      ) as Erc20
       let gasPrice
       if (gasPriceSelected === GasPrices.Custom) {
         gasPrice = gasCustom?.valueSafe
