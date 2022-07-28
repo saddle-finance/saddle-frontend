@@ -10,7 +10,6 @@ context("veSDL test", () => {
     cy.getBySelId("sdlTokenInput")
       .find("input")
       .should("exist")
-      .clear()
       .type("100")
       .should("have.value", "100")
 
