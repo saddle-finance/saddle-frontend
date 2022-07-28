@@ -40,7 +40,6 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import GaugeVote from "./GaugeVote"
 import LaunchIcon from "@mui/icons-material/Launch"
 import LockedInfo from "./LockedInfo"
-import PayWithCoinbaseButton from "../../components/CoinbasePayBtn"
 import TokenInput from "../../components/TokenInput"
 import { UserStateContext } from "../../providers/UserStateProvider"
 import VeSDLWrongNetworkModal from "./VeSDLWrongNetworkModal"
@@ -331,7 +330,6 @@ export default function VeSDL(): JSX.Element {
     <Container sx={{ py: 3 }}>
       <Box display={{ sm: "flex" }} gap={2}>
         <Stack flex={1} spacing={2} mb={2}>
-          <PayWithCoinbaseButton />
           <Paper
             sx={{
               display: "flex",

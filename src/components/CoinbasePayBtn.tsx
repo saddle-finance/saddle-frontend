@@ -1,23 +1,39 @@
-import React, { useEffect, useRef } from "react"
-import { Button } from "@mui/material"
+import React, { useEffect, useRef, useState } from "react"
+import CnButtonImg from "../assets/button-cbPay-compact-addCrypto.png"
 import { initOnRamp } from "@coinbase/cbpay-js"
+import { styled } from "@mui/material"
 
-const PayWithCoinbaseButton: React.FC = () => {
-  const onrampInstance = useRef<ReturnType<typeof initOnRamp>>()
+const CnPayButton = styled("button")(() => ({
+  maxHeight: 40,
+  display: "block",
+  background: 0,
+  border: 0,
+  padding: 0,
+  margin: 0,
+  cursor: "pointer",
+  "&:disabled": {
+    filter: "saturate(0)",
+    cursor: "not-allowed",
+  },
+}))
+const CoinbasePayBtn: React.FC = () => {
+  const [isReady, setIsReady] = useState<boolean>(false)
+  const cbInstance = useRef<ReturnType<typeof initOnRamp>>()
 
   useEffect(() => {
-    onrampInstance.current = initOnRamp({
+    cbInstance.current = initOnRamp({
       appId: "5662715-5b2c-4c76-8934-4842f3d66746",
+      target: "#cbpay-button-container",
       widgetParameters: {
         destinationWallets: [
           {
             address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-            blockchains: ["ethereum", "avalanche-c-chain"],
           },
         ],
       },
       onReady: () => {
-        console.log("ready")
+        // Update loading/ready states.
+        setIsReady(true)
       },
       onSuccess: () => {
         console.log("success")
@@ -26,7 +42,8 @@ const PayWithCoinbaseButton: React.FC = () => {
         console.log("exit")
       },
       onEvent: (event) => {
-        console.log("event", event)
+        // event stream
+        console.log(event)
       },
       experienceLoggedIn: "embedded",
       experienceLoggedOut: "popup",
@@ -34,19 +51,24 @@ const PayWithCoinbaseButton: React.FC = () => {
       closeOnSuccess: true,
     })
     return () => {
-      onrampInstance.current?.destroy()
+      cbInstance.current?.destroy()
     }
   }, [])
 
   const handleClick = () => {
-    onrampInstance.current?.open()
+    if (cbInstance?.current) {
+      cbInstance?.current.open()
+    }
   }
-
   return (
-    <Button onClick={handleClick} id="cbpay-button-container">
-      Buy with Coinbase
-    </Button>
+    <CnPayButton
+      id="cbpay-button-container"
+      onClick={handleClick}
+      disabled={!isReady}
+    >
+      <img src={CnButtonImg} />
+    </CnPayButton>
   )
 }
 
-export default PayWithCoinbaseButton
+export default CoinbasePayBtn

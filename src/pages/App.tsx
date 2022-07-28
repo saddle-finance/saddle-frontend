@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 import AprsProvider from "../providers/AprsProvider"
 import BasicPoolsProvider from "../providers/BasicPoolsProvider"
+import CoinbsePayTest from "./CoinbsePayTest"
 import CreatePool from "./CreatePool"
 import Deposit from "./Deposit"
 import ExpandedPoolsProvider from "../providers/ExpandedPoolsProvider"
@@ -166,6 +167,11 @@ export default function App(): ReactElement {
                                     exact
                                     path="/vesdl"
                                     component={VeSDL}
+                                  />
+                                  <Route
+                                    exact
+                                    path="/coinbase-pay-test"
+                                    component={CoinbsePayTest}
                                   />
                                 </Switch>
                                 <WrongNetworkModal />
