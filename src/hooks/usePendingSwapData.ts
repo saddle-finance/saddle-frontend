@@ -23,9 +23,9 @@ export interface PendingSwap {
   swapType: SWAP_TYPES
   settleableAtTimestamp: number
   secondsRemaining: number
-  synthTokenFrom: BasicToken | undefined
+  synthTokenFrom: BasicToken
   synthBalance: BigNumber
-  tokenTo: BasicToken | undefined
+  tokenTo: BasicToken
   itemId: string
   transactionHash: string
   timestamp: number
@@ -523,6 +523,7 @@ async function fetchPendingSwapInfo(
     }
     const synthTokenFrom = tokens[pendingSwapInfo.synth]
     const tokenTo = tokens[pendingSwapInfo.tokenTo]
+    if (!synthTokenFrom || !tokenTo) return null
     const settleableAtTimestamp =
       (eventBlock.timestamp + parseInt(pendingSwapInfo.secsLeft.toString())) * // add event block timestamp + secsLeft
       1000 // convert to ms
@@ -536,8 +537,8 @@ async function fetchPendingSwapInfo(
       secondsRemaining,
       synthBalance: pendingSwapInfo.synthBalance,
       itemId,
-      synthTokenFrom: synthTokenFrom,
-      tokenTo: tokenTo,
+      synthTokenFrom,
+      tokenTo,
       transactionHash: event.transactionHash,
       timestamp: eventBlock.timestamp,
     }
