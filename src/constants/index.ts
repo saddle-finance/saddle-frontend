@@ -1331,7 +1331,7 @@ export const USX = new Token(
   USX_CONTRACT_ADDRESSES,
   18,
   "USX",
-  "dforce-usd",
+  "token-dforce-usd",
   "dForce USD",
 )
 
