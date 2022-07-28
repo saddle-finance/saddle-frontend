@@ -121,7 +121,7 @@ function Swap(): ReactElement {
 
   // build a representation of pool tokens for the UI
   const tokenOptions = useMemo(() => {
-    if (!chainId)
+    if (!chainId || !tokenBalances)
       return {
         from: [],
         to: [],
@@ -131,21 +131,26 @@ function Swap(): ReactElement {
       .filter(({ isLPToken }) => !isLPToken)
       .filter(({ symbol }) => {
         // get list of pools containing the token
-        const tokenPools = tokenSymbolToPoolNameMap[symbol] || []
+        if (!tokenSymbolToPoolNameMap[symbol]) return false
+        const tokenPools = tokenSymbolToPoolNameMap[symbol]
         // ensure at least one pool is unpaused to include token in swappable list
         const hasAnyUnpaused = tokenPools.some((poolName) => {
-          const basicPool = basicPools?.[poolName]
-          return basicPool ? !basicPool.isPaused : false
+          if (!basicPools) return false
+          const basicPool = basicPools[poolName]
+          if (!basicPool) return false
+          return !basicPool.isPaused
         })
         // only show pools with balances
         const hasAnyBalance = tokenPools.some((poolName) => {
+          if (!basicPools) return false
           const basicPool = basicPools?.[poolName]
-          return basicPool?.lpTokenSupply.gt(Zero) ?? false
+          if (!basicPool) return false
+          return basicPool.lpTokenSupply.gt(Zero)
         })
         return hasAnyUnpaused && hasAnyBalance
       })
       .map(({ symbol, name, decimals }) => {
-        const amount = tokenBalances?.[symbol] || Zero
+        const amount = tokenBalances[symbol]
         return {
           name,
           symbol,
@@ -168,7 +173,7 @@ function Swap(): ReactElement {
                 }
                 const token = tokenSymbolToTokenMap[to.symbol] as BasicToken
                 if (!token) return null
-                const amount = tokenBalances?.[token.symbol] ?? Zero
+                const amount = tokenBalances[token.symbol]
                 return {
                   name: token.name,
                   symbol: token.symbol,
