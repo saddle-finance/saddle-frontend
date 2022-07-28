@@ -1,14 +1,17 @@
 import { AppDispatch } from "../state"
+import { ChainId } from "./../constants/index"
 import retry from "async-retry"
 import { updateSwapStats } from "../state/application"
 
 const swapStatsURI = "https://ipfs.saddle.exchange/swap-stats.json"
 
-export interface SwapStatsReponse {
-  [swapAddress: string]: {
-    oneDayVolume: number
-    APY: number
-    TVL: number
+export type SwapStatsReponse = {
+  [chainId in ChainId]?: {
+    [swapAddress: string]: {
+      oneDayVolume: number
+      APY: number
+      TVL: number
+    }
   }
 }
 
