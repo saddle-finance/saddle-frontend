@@ -7,6 +7,7 @@ import {
 } from "../connectors"
 
 import { AbstractConnector } from "@web3-react/abstract-connector"
+import { BasicToken } from "../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
 import metamaskIcon from "../assets/icons/metamask.svg"
@@ -1330,7 +1331,7 @@ export const USX = new Token(
   USX_CONTRACT_ADDRESSES,
   18,
   "USX",
-  "dforce-usd",
+  "token-dforce-usd",
   "dForce USD",
 )
 
@@ -2038,6 +2039,10 @@ const minichefPids: Partial<Record<ChainId, { [pool: string]: number }>> = {
   [ChainId.ARBITRUM]: {
     [ARB_USD_SWAP_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 1,
     [USDS_ARB_USD_SWAP_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 2,
+    [FRAX_USDC_SWAP_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 3,
+    [FRAX_USDT_METAPOOL_SWAP_CONTRACT_ADDRESSES[
+      ChainId.ARBITRUM
+    ].toLowerCase()]: 4,
   },
   [ChainId.EVMOS]: {
     [EVMOS_FRAX_3_POOL_SWAP_ADDRESSES[ChainId.EVMOS].toLowerCase()]: 1,
@@ -2051,17 +2056,6 @@ export function getMinichefPid(
   return minichefPids?.[chainId]?.[poolAddress] || null
 }
 
-export function getIsLegacySwapABIPoolByAddress(
-  chainId: ChainId,
-  poolAddress: string,
-): boolean {
-  const legacyAddresses = [
-    BTC_POOL_NAME,
-    STABLECOIN_POOL_NAME,
-    VETH2_POOL_NAME,
-  ].map((name) => POOLS_MAP[name].addresses[chainId])
-  return legacyAddresses.includes(poolAddress)
-}
 export function isLegacySwapABIPool(poolName: string): boolean {
   return new Set([BTC_POOL_NAME, STABLECOIN_POOL_NAME, VETH2_POOL_NAME]).has(
     poolName,
@@ -2095,6 +2089,10 @@ export type TokensMap = {
   [symbol: string]: Token
 }
 
+export type BasicTokensMap = {
+  [symbol: string]: BasicToken | undefined
+}
+
 export const TOKENS_MAP = Object.keys(POOLS_MAP).reduce((acc, poolName) => {
   const pool = POOLS_MAP[poolName as PoolName]
   const newAcc = { ...acc }
@@ -2104,7 +2102,6 @@ export const TOKENS_MAP = Object.keys(POOLS_MAP).reduce((acc, poolName) => {
   newAcc[pool.lpToken.symbol] = pool.lpToken
   return newAcc
 }, {} as TokensMap)
-
 export type TokenToPoolsMap = {
   [tokenSymbol: string]: string[]
 }
@@ -2234,7 +2231,7 @@ export const IS_VIRTUAL_SWAP_ACTIVE = true
 export const IS_L2_SUPPORTED = true
 export const IS_SDL_LIVE = true
 export const IS_VESDL_LIVE = true
-export const IS_POOL_REGISTRY_MIGRATION_LIVE = false
+export const IS_POOL_REGISTRY_MIGRATION_LIVE = true
 // FLAGS END
 
 // Regex for readable decimal number
