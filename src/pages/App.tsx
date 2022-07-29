@@ -17,6 +17,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 import AprsProvider from "../providers/AprsProvider"
 import { BLOCK_TIME } from "../constants"
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
+import CoinbasePayTest from "./CoinbasePayTest"
 import CreatePool from "./CreatePool"
 import Deposit from "./Deposit"
 import ExpandedPoolsProvider from "../providers/ExpandedPoolsProvider"
@@ -141,6 +142,11 @@ export default function App(): ReactElement {
                                 />
                                 <Route exact path="/farm" component={Farm} />
                                 <Route exact path="/vesdl" component={VeSDL} />
+                                <Route
+                                  exact
+                                  path="/coinbase-pay-test"
+                                  component={CoinbasePayTest}
+                                />
                               </Switch>
                               <WrongNetworkModal />
                               <Version />
