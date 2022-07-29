@@ -16,7 +16,6 @@ import { UserStateContext } from "./../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
-// import { useBasicTokens } from "../providers/TokensProvider"
 import { useSelector } from "react-redux"
 
 interface TokenShareType {
@@ -115,7 +114,6 @@ const emptyPoolData = {
 export default function usePoolData(name?: string): PoolDataHookReturnType {
   const [poolName, setPoolName] = useState<string | undefined>(name)
   const { account, library, chainId } = useActiveWeb3React()
-  // const { data: tokens, isLoading } = useBasicTokens()
   const userState = useContext(UserStateContext)
   const minichefData = useContext(MinichefContext)
   const { data: expandedPools } = useContext(ExpandedPoolsContext)
