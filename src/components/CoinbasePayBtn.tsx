@@ -3,7 +3,7 @@ import CnButtonImg from "../assets/button-cbPay-compact-addCrypto.png"
 import { initOnRamp } from "@coinbase/cbpay-js"
 import { styled } from "@mui/material"
 
-const CnPayButton = styled("button")(() => ({
+const CoinbasePayButton = styled("button")(() => ({
   maxHeight: 40,
   display: "block",
   background: 0,
@@ -61,13 +61,13 @@ const CoinbasePayBtn: React.FC = () => {
     }
   }
   return (
-    <CnPayButton
+    <CoinbasePayButton
       id="cbpay-button-container"
       onClick={handleClick}
       disabled={!isReady}
     >
       <img src={CnButtonImg} />
-    </CnPayButton>
+    </CoinbasePayButton>
   )
 }
 
