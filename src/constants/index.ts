@@ -2052,17 +2052,6 @@ export function getMinichefPid(
   return minichefPids?.[chainId]?.[poolAddress] || null
 }
 
-export function getIsLegacySwapABIPoolByAddress(
-  chainId: ChainId,
-  poolAddress: string,
-): boolean {
-  const legacyAddresses = [
-    BTC_POOL_NAME,
-    STABLECOIN_POOL_NAME,
-    VETH2_POOL_NAME,
-  ].map((name) => POOLS_MAP[name].addresses[chainId])
-  return legacyAddresses.includes(poolAddress)
-}
 export function isLegacySwapABIPool(poolName: string): boolean {
   return new Set([BTC_POOL_NAME, STABLECOIN_POOL_NAME, VETH2_POOL_NAME]).has(
     poolName,
@@ -2238,7 +2227,7 @@ export const IS_VIRTUAL_SWAP_ACTIVE = true
 export const IS_L2_SUPPORTED = true
 export const IS_SDL_LIVE = true
 export const IS_VESDL_LIVE = true
-export const IS_POOL_REGISTRY_MIGRATION_LIVE = false
+export const IS_POOL_REGISTRY_MIGRATION_LIVE = true
 // FLAGS END
 
 // Regex for readable decimal number
