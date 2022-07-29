@@ -213,7 +213,7 @@ function Swap(): ReactElement {
     debounce(async (formStateArg: FormState) => {
       const tokenFrom = tokenSymbolToTokenMap[formStateArg.from.symbol]
       const tokenTo = tokenSymbolToTokenMap[formStateArg.to.symbol]
-      if (!tokenFrom || !tokenTo) return
+      if (!tokenFrom || !tokenTo || !basicPools) return
       if (formStateArg.swapType === SWAP_TYPES.INVALID) return
       if (tokenBalances === null || chainId == null)
         // || bridgeContract == null
@@ -254,13 +254,13 @@ function Swap(): ReactElement {
         formStateArg.swapType === SWAP_TYPES.TOKEN_TO_TOKEN &&
         bridgeContract != null
       ) {
-        const originPool = basicPools?.[formStateArg.from.poolName]
-        const destinationPool = basicPools?.[formStateArg.to.poolName]
+        const originPool = basicPools[formStateArg.from.poolName]
+        const destinationPool = basicPools[formStateArg.to.poolName]
         if (
           !originPool?.metaSwapDepositAddress ||
           !destinationPool?.metaSwapDepositAddress
         ) {
-          error = "Unable to find metaSwap deposit address"
+          error = "Unable to find metaSwap deposit address t2t"
           amountToReceive = Zero
           amountMediumSynth = Zero
         } else {
@@ -281,9 +281,9 @@ function Swap(): ReactElement {
         formStateArg.swapType === SWAP_TYPES.SYNTH_TO_TOKEN &&
         bridgeContract != null
       ) {
-        const destinationPool = basicPools?.[formStateArg.to.poolName]
+        const destinationPool = basicPools[formStateArg.to.poolName]
         if (!destinationPool?.metaSwapDepositAddress) {
-          error = "Unable to find metaSwap deposit address"
+          error = "Unable to find metaSwap deposit address s2t"
           amountToReceive = Zero
           amountMediumSynth = Zero
         } else {
@@ -301,9 +301,9 @@ function Swap(): ReactElement {
         formStateArg.swapType === SWAP_TYPES.TOKEN_TO_SYNTH &&
         bridgeContract != null
       ) {
-        const originPool = basicPools?.[formStateArg.from.poolName]
+        const originPool = basicPools[formStateArg.from.poolName]
         if (!originPool?.metaSwapDepositAddress) {
-          error = "Unable to find metaSwap deposit address"
+          error = "Unable to find metaSwap deposit address t2s"
           amountToReceive = Zero
           amountMediumSynth = Zero
         } else {
