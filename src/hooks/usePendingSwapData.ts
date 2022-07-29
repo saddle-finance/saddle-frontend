@@ -3,15 +3,18 @@ import {
   ChainId,
   IS_VIRTUAL_SWAP_ACTIVE,
   SWAP_TYPES,
-  Token,
 } from "../constants"
-import { useCallback, useEffect, useState } from "react"
+import {
+  BasicToken,
+  BasicTokens,
+  TokensContext,
+} from "../providers/TokensProvider"
+import { useCallback, useContext, useEffect, useState } from "react"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { Bridge } from "../../types/ethers-contracts/Bridge"
 import { Event } from "ethers"
 import { Zero } from "@ethersproject/constants"
-import { getTokenByAddress } from "../utils"
 import { omit } from "lodash"
 import { useActiveWeb3React } from "./"
 import { useBridgeContract } from "./useContract"
@@ -20,9 +23,9 @@ export interface PendingSwap {
   swapType: SWAP_TYPES
   settleableAtTimestamp: number
   secondsRemaining: number
-  synthTokenFrom: Token
+  synthTokenFrom: BasicToken
   synthBalance: BigNumber
-  tokenTo: Token
+  tokenTo: BasicToken
   itemId: string
   transactionHash: string
   timestamp: number
@@ -36,14 +39,14 @@ interface SwapEvent {
   type: "settlement" | "withdraw"
 }
 export interface SettlementEvent extends SwapEvent {
-  fromToken: Token
+  fromToken: BasicToken
   fromAmount: BigNumber
-  toToken: Token
+  toToken: BasicToken
   toAmount: BigNumber
   type: "settlement"
 }
 export interface WithdrawEvent extends SwapEvent {
-  synthToken: Token
+  synthToken: BasicToken
   amount: BigNumber
   type: "withdraw"
 }
@@ -89,6 +92,7 @@ const WITHDRAW = "Withdraw"
 const usePendingSwapData = (): PendingSwap[] => {
   const { account, chainId, library } = useActiveWeb3React()
   const bridgeContract = useBridgeContract()
+  const tokens = useContext(TokensContext)
   const [state, setState] = useState<State>({
     pendingSwaps: [],
     settlements: {},
@@ -132,7 +136,7 @@ const usePendingSwapData = (): PendingSwap[] => {
       const itemIdArg = event.args?.itemId as BigNumber | null
       if (itemIdArg == null || bridgeContract == null || chainId == null) return
       const itemId = itemIdArg.toString()
-      void fetchPendingSwapInfo(bridgeContract, event, chainId).then(
+      void fetchPendingSwapInfo(bridgeContract, event, tokens).then(
         (fetchedPendingSwap) => {
           if (fetchedPendingSwap == null) return
           setState((prevState) => {
@@ -149,13 +153,13 @@ const usePendingSwapData = (): PendingSwap[] => {
         },
       )
     },
-    [bridgeContract, chainId, setState],
+    [bridgeContract, chainId, setState, tokens],
   )
   const settleEventListener = useCallback(
     (...listenerArgs) => {
       const event = listenerArgs[listenerArgs.length - 1] as Event
       if (chainId == null) return
-      void parseSettlementFromEvent(event, chainId).then((settlement) => {
+      void parseSettlementFromEvent(event, tokens).then((settlement) => {
         if (settlement == null) return
         setState((prevState) => {
           const pendingSwap = prevState.pendingSwaps.find(
@@ -185,13 +189,13 @@ const usePendingSwapData = (): PendingSwap[] => {
         })
       })
     },
-    [chainId, setState],
+    [chainId, setState, tokens],
   )
   const withdrawEventListener = useCallback(
     (...listenerArgs) => {
       const event = listenerArgs[listenerArgs.length - 1] as Event
       if (chainId == null) return
-      void parseWithdrawFromEvent(event, chainId).then((withdraw) => {
+      void parseWithdrawFromEvent(event, tokens).then((withdraw) => {
         if (withdraw == null) return
         setState((prevState) => {
           const pendingSwap = prevState.pendingSwaps.find(
@@ -221,7 +225,7 @@ const usePendingSwapData = (): PendingSwap[] => {
         })
       })
     },
-    [chainId, setState],
+    [chainId, setState, tokens],
   )
   // attach listeners for events
   useEffect(() => {
@@ -279,27 +283,27 @@ const usePendingSwapData = (): PendingSwap[] => {
           bridgeContract,
           setState,
           account,
-          chainId,
+          tokens,
           queryStartBlock,
         ),
         fetchAndPopulateWithdraws(
           bridgeContract,
           setState,
           account,
-          chainId,
+          tokens,
           queryStartBlock,
         ),
         fetchAndPopulateSettlements(
           bridgeContract,
           setState,
           account,
-          chainId,
+          tokens,
           queryStartBlock,
         ),
       ])
     }
     void fetchExistingEvents()
-  }, [bridgeContract, setState, account, chainId, queryStartBlock])
+  }, [bridgeContract, setState, account, chainId, queryStartBlock, tokens])
 
   return state.pendingSwaps.map((swap) => {
     // merge swaps + settlements state
@@ -317,7 +321,7 @@ async function fetchAndPopulatePendingSwaps(
   bridgeContract: Bridge,
   setState: (callback: (state: State) => State) => void,
   account: string,
-  chainId: ChainId,
+  tokens: BasicTokens,
   startBlock: number,
 ): Promise<void> {
   // Step 1: create event filters
@@ -335,7 +339,7 @@ async function fetchAndPopulatePendingSwaps(
 
   // Step 3: fetch aync data via bridge contract
   let fetchedPendingSwaps = await Promise.all(
-    events.map((event) => fetchPendingSwapInfo(bridgeContract, event, chainId)),
+    events.map((event) => fetchPendingSwapInfo(bridgeContract, event, tokens)),
   )
   fetchedPendingSwaps = fetchedPendingSwaps.filter(Boolean)
   if (fetchedPendingSwaps.length === 0) return
@@ -352,7 +356,7 @@ async function fetchAndPopulateWithdraws(
   bridgeContract: Bridge,
   setState: (callback: (state: State) => State) => void,
   account: string,
-  chainId: ChainId,
+  tokens: BasicTokens,
   startBlock: number,
 ): Promise<void> {
   // Step 1: create event filter
@@ -372,7 +376,7 @@ async function fetchAndPopulateWithdraws(
   )
   // Step 3: get each event's block
   const withdraws = await Promise.all(
-    events.map((event) => parseWithdrawFromEvent(event, chainId)),
+    events.map((event) => parseWithdrawFromEvent(event, tokens)),
   )
 
   // Step 4: write to state
@@ -393,7 +397,7 @@ async function fetchAndPopulateSettlements(
   bridgeContract: Bridge,
   setState: (callback: (state: State) => State) => void,
   account: string,
-  chainId: ChainId,
+  tokens: BasicTokens,
   startBlock: number,
 ): Promise<void> {
   // Step 1: create event filter
@@ -415,7 +419,7 @@ async function fetchAndPopulateSettlements(
   )
   // Step 3: get each event's block
   const settlements = await Promise.all(
-    events.map((event) => parseSettlementFromEvent(event, chainId)),
+    events.map((event) => parseSettlementFromEvent(event, tokens)),
   )
 
   // Step 4: write to state
@@ -435,13 +439,13 @@ async function fetchAndPopulateSettlements(
 
 async function parseSettlementFromEvent(
   event: Event,
-  chainId: ChainId,
+  tokens: BasicTokens,
 ): Promise<SettlementEvent | null> {
   // Settlements are final
   const settlement = event.args as unknown as BridgeEventSettle // TODO would love to set this from the typechain type
-  if (settlement == null) return null
-  const fromToken = getTokenByAddress(settlement.settleFrom, chainId)
-  const toToken = getTokenByAddress(settlement.settleTo, chainId)
+  if (settlement == null || !tokens) return null
+  const fromToken = tokens[settlement.settleFrom]
+  const toToken = tokens[settlement.settleTo]
   if (fromToken == null || toToken == null) return null
   return event
     .getBlock()
@@ -462,11 +466,11 @@ async function parseSettlementFromEvent(
 
 async function parseWithdrawFromEvent(
   event: Event,
-  chainId: ChainId,
+  tokens: BasicTokens,
 ): Promise<WithdrawEvent | null> {
   const withdraw = event.args as unknown as BridgeEventWithdraw
-  if (withdraw == null) return null
-  const synthToken = getTokenByAddress(withdraw.synth, chainId)
+  if (withdraw == null || !tokens) return null
+  const synthToken = tokens[withdraw.synth]
   if (synthToken == null) return null
   return event
     .getBlock()
@@ -492,7 +496,7 @@ enum BridgePendingSwapTypes {
 async function fetchPendingSwapInfo(
   bridgeContract: Bridge,
   event: Event,
-  chainId: ChainId,
+  tokens: BasicTokens,
 ) {
   let result = null
   try {
@@ -500,7 +504,7 @@ async function fetchPendingSwapInfo(
     // afik we don't have a better way of fetching current pendingSwaps
     // DEVELOPER: for this reason we don't use multicall
     const pendingSwap = event.args as unknown as BridgeEventGenericSwap
-    if (pendingSwap == null) return null
+    if (pendingSwap == null || !tokens) return null
     const itemId = pendingSwap.itemId.toString()
     const [pendingSwapInfo, eventBlock] = await Promise.all([
       bridgeContract.getPendingSwapInfo(itemId),
@@ -517,11 +521,9 @@ async function fetchPendingSwapInfo(
     } else {
       swapType = SWAP_TYPES.INVALID
     }
-    const synthTokenFrom = getTokenByAddress(
-      pendingSwapInfo.synth,
-      chainId,
-    ) as Token
-    const tokenTo = getTokenByAddress(pendingSwapInfo.tokenTo, chainId) as Token
+    const synthTokenFrom = tokens[pendingSwapInfo.synth]
+    const tokenTo = tokens[pendingSwapInfo.tokenTo]
+    if (!synthTokenFrom || !tokenTo) return null
     const settleableAtTimestamp =
       (eventBlock.timestamp + parseInt(pendingSwapInfo.secsLeft.toString())) * // add event block timestamp + secsLeft
       1000 // convert to ms
@@ -535,8 +537,8 @@ async function fetchPendingSwapInfo(
       secondsRemaining,
       synthBalance: pendingSwapInfo.synthBalance,
       itemId,
-      synthTokenFrom: synthTokenFrom,
-      tokenTo: tokenTo,
+      synthTokenFrom,
+      tokenTo,
       transactionHash: event.transactionHash,
       timestamp: eventBlock.timestamp,
     }

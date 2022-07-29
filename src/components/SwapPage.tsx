@@ -256,6 +256,8 @@ const SwapPage = (props: Props): ReactElement => {
       )}
       <div>
         {pendingSwaps.map((pendingSwap) => {
+          if (!pendingSwap.synthTokenFrom || !pendingSwap.tokenTo)
+            return <>Loading Tokens2</>
           const formattedSynthBalance = commify(
             formatUnits(
               pendingSwap.synthBalance,

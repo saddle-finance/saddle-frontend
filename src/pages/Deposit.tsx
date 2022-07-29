@@ -3,7 +3,6 @@ import {
   DepositBasicTransaction,
   TransactionBasicItem,
 } from "../interfaces/transactions"
-import { PoolName, isLegacySwapABIPool } from "../constants"
 import React, {
   ReactElement,
   useContext,
@@ -29,6 +28,7 @@ import { Zero } from "@ethersproject/constants"
 import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { formatGasToString } from "../utils/gas"
+import { isLegacySwapABIPool } from "../constants"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
@@ -36,7 +36,7 @@ import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
 
 interface Props {
-  poolName: PoolName
+  poolName: string
 }
 
 function Deposit({ poolName }: Props): ReactElement | null {
