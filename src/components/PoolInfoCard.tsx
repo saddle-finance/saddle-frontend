@@ -174,10 +174,16 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
           </Typography>
         </InfoItem>
 
-        <Typography>{formattedData.futureA}</Typography>
-        <Typography>
-          {formattedData.futureATime.toLocaleDateString()}
-        </Typography>
+        <InfoItem>
+          <Typography>Ramping up A:</Typography>
+          <Typography>{formattedData.futureA}</Typography>
+        </InfoItem>
+        <InfoItem>
+          <Typography>Ramp up A ends on:</Typography>
+          <Typography>
+            {formattedData.futureATime.toLocaleDateString()}
+          </Typography>
+        </InfoItem>
 
         <InfoItem>
           <Typography>{`${t("utilization")}:`}</Typography>
