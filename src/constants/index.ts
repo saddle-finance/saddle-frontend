@@ -2039,7 +2039,7 @@ const minichefPids: Partial<Record<ChainId, { [pool: string]: number }>> = {
   [ChainId.ARBITRUM]: {
     [ARB_USD_SWAP_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 1,
     [USDS_ARB_USD_SWAP_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 2,
-    [FRAX_ARB_USD_SWAP_V2_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 3,
+    [FRAX_USDC_SWAP_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 3,
     [FRAX_USDT_METAPOOL_SWAP_CONTRACT_ADDRESSES[
       ChainId.ARBITRUM
     ].toLowerCase()]: 4,
