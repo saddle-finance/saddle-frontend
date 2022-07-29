@@ -206,6 +206,7 @@ export const MINICHEF_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.ARBITRUM]: "0x2069043d7556B1207a505eb459D18d908DF29b55",
   [ChainId.MAINNET]: "0x691ef79e40d909C715BE5e9e93738B3fF7D58534",
   [ChainId.EVMOS]: "0x0232e0b6df048c8CC4037c52Bc90cf943c9C8cC6",
+  [ChainId.OPTIMISM]: "0x220d6bEedeA6a6317DaE19d39cd62EB7bb0ae5e4",
 })
 
 export const RETROACTIVE_VESTING_CONTRACT_ADDRESSES = buildAddresses({
@@ -2040,9 +2041,32 @@ const minichefPids: Partial<Record<ChainId, { [pool: string]: number }>> = {
     [ARB_USD_SWAP_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 1,
     [USDS_ARB_USD_SWAP_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 2,
     [FRAX_USDC_SWAP_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 3,
+    [FRAX_USDT_METAPOOL_DEPOSIT_CONTRACT_ADDRESSES[
+      ChainId.ARBITRUM
+    ].toLowerCase()]: 4,
     [FRAX_USDT_METAPOOL_SWAP_CONTRACT_ADDRESSES[
       ChainId.ARBITRUM
     ].toLowerCase()]: 4,
+  },
+  [ChainId.OPTIMISM]: {
+    [FRAX_USDC_SWAP_ADDRESSES[ChainId.OPTIMISM].toLowerCase()]: 1,
+    [FRAX_OPT_USD_META_SWAP_DEPOSIT_ADDRESSES[
+      ChainId.OPTIMISM
+    ].toLowerCase()]: 2,
+    [FRAX_OPT_USD_SWAP_ADDRESSES[ChainId.OPTIMISM].toLowerCase()]: 2,
+    [FRAX_USDT_METAPOOL_DEPOSIT_CONTRACT_ADDRESSES[
+      ChainId.OPTIMISM
+    ].toLowerCase()]: 3,
+    [FRAX_USDT_METAPOOL_SWAP_CONTRACT_ADDRESSES[
+      ChainId.OPTIMISM
+    ].toLowerCase()]: 3,
+    [FRAX_SUSD_METAPOOL_DEPOSIT_CONTRACT_ADDRESSES[
+      ChainId.OPTIMISM
+    ].toLowerCase()]: 4,
+    [FRAX_SUSD_METAPOOL_SWAP_CONTRACT_ADDRESSES[
+      ChainId.OPTIMISM
+    ].toLowerCase()]: 4,
+    [OPT_USD_SWAP_ADDRESSES[ChainId.OPTIMISM].toLowerCase()]: 5,
   },
   [ChainId.EVMOS]: {
     [EVMOS_FRAX_3_POOL_SWAP_ADDRESSES[ChainId.EVMOS].toLowerCase()]: 1,
