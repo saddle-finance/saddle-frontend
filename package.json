@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@coinbase/cbpay-js": "^1.0.0",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
     "@metamask/jazzicon": "^2.0.0",
@@ -123,18 +124,11 @@
     "test": "react-scripts test"
   },
   "homepage": ".",
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thesis/saddle-frontend.git"
@@ -151,18 +145,6 @@
   "license": "MIT",
   "lint-staged": {
     "*.{ts,tsx}": "eslint --cache --fix"
-  },
-  "eslintConfig": {
-    "overrides": [
-      {
-        "files": [
-          "**/*.stories.*"
-        ],
-        "rules": {
-          "import/no-anonymous-default-export": "off"
-        }
-      }
-    ]
   },
   "nyc": {
     "reporter": [

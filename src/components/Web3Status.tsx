@@ -1,8 +1,9 @@
+// import { Box, Button } from "@mui/material"
 // import { Button, Typography } from "@mui/material"
 import React, { ReactElement, useEffect, useState } from "react"
 
 import AccountDetails from "./AccountDetails"
-import { Box } from "@mui/material"
+import { Button } from "@mui/material"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
 import ConnectWallet from "./ConnectWallet"
 import Dialog from "./Dialog"
@@ -23,7 +24,7 @@ const Web3Status = (): ReactElement => {
   const [modalOpen, setModalOpen] = useState(false)
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT)
   // const { t } = useTranslation()
-  // const { data: ensName, isLoading } = useENS(account)
+  // const { data: ensName } = useENS(account)
   // const udName = useUDName()
 
   // always reset to account view
@@ -43,18 +44,94 @@ const Web3Status = (): ReactElement => {
         endIcon={account && <Identicon />}
       >
         <Typography variant="body1" whiteSpace="nowrap">
-          {isLoading ? (
-            <Typography>Loading...</Typography>
-          ) : account ? (
-            udName || ensName || shortenAddress(account)
-          ) : (
-            t("connectWallet")
-          )}
+          {account
+            ? udName || ensName || shortenAddress(account)
+            : t("connectWallet")}
         </Typography>
       </Button> */}
-      <Box height={32} sx={{ maxHeight: 32 }}>
-        <ConnectButton />
-      </Box>
+      <ConnectButton.Custom>
+        {({
+          account,
+          chain,
+          openAccountModal,
+          openChainModal,
+          openConnectModal,
+          mounted,
+        }) => {
+          return (
+            <div
+              {...(!mounted && {
+                "aria-hidden": true,
+                style: {
+                  opacity: 0,
+                  pointerEvents: "none",
+                  userSelect: "none",
+                },
+              })}
+            >
+              {(() => {
+                if (!mounted || !account || !chain) {
+                  return (
+                    <button onClick={openConnectModal} type="button">
+                      Connect Wallet
+                    </button>
+                  )
+                }
+
+                if (chain.unsupported) {
+                  return (
+                    <button onClick={openChainModal} type="button">
+                      Wrong network
+                    </button>
+                  )
+                }
+
+                return (
+                  <div style={{ display: "flex", gap: 12 }}>
+                    <Button
+                      onClick={openChainModal}
+                      style={{ display: "flex", alignItems: "center" }}
+                      type="button"
+                      variant={account ? "contained" : "outlined"}
+                      color={account ? "mute" : "secondary"}
+                      data-testid="accountDetailButton"
+                    >
+                      {chain.hasIcon && (
+                        <div
+                          style={{
+                            background: chain.iconBackground,
+                            width: 12,
+                            height: 12,
+                            borderRadius: 999,
+                            overflow: "hidden",
+                            marginRight: 4,
+                          }}
+                        >
+                          {chain.iconUrl && (
+                            <img
+                              alt={chain.name ?? "Chain icon"}
+                              src={chain.iconUrl}
+                              style={{ width: 12, height: 12 }}
+                            />
+                          )}
+                        </div>
+                      )}
+                      {chain.name}
+                    </Button>
+
+                    <button onClick={openAccountModal} type="button">
+                      {account.displayName}
+                      {account.displayBalance
+                        ? ` (${account.displayBalance})`
+                        : ""}
+                    </button>
+                  </div>
+                )
+              })()}
+            </div>
+          )
+        }}
+      </ConnectButton.Custom>
       <Dialog
         open={modalOpen}
         onClose={(): void => setModalOpen(false)}

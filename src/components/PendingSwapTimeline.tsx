@@ -40,6 +40,7 @@ const PendingSwapTimeline = ({
     events,
   } = pendingSwap
   const minutesRemaining = Math.max(Math.ceil(secondsRemaining / 60), 0)
+  if (!tokenTo || !synthTokenFrom) return <></>
   const formattedBalance = commify(
     formatBNToString(synthBalance, synthTokenFrom.decimals, 6),
   )

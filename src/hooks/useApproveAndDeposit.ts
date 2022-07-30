@@ -1,10 +1,9 @@
 import {
   BTC_POOL_NAME,
-  PoolName,
   TRANSACTION_TYPES,
   isLegacySwapABIPool,
 } from "../constants"
-import { BasicToken, TokensContext } from "../providers/TokensProvider"
+import { BasicToken, useBasicTokens } from "./useBasicTokens"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { formatDeadlineToNumber, getContract } from "../utils"
 import { useContext, useMemo } from "react"
@@ -30,13 +29,14 @@ import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
+import { useAddRecentTransaction } from "@rainbow-me/rainbowkit"
 
 interface ApproveAndDepositStateArgument {
   [tokenSymbol: string]: NumberInputState
 }
 
 export function useApproveAndDeposit(
-  poolName: PoolName,
+  poolName: string,
 ): (
   state: ApproveAndDepositStateArgument,
   shouldDepositWrapped?: boolean,
@@ -58,7 +58,7 @@ export function useApproveAndDeposit(
     infiniteApproval,
   } = useSelector((state: AppState) => state.user)
   const basicPools = useContext(BasicPoolsContext)
-  const tokens = useContext(TokensContext)
+  const { data: tokens } = useBasicTokens()
   const pool = basicPools?.[poolName]
   const metaSwapContract = useMemo(() => {
     if (pool?.poolAddress && chainId && library) {
@@ -71,6 +71,7 @@ export function useApproveAndDeposit(
     }
     return null
   }, [chainId, library, account, pool?.poolAddress])
+  const addRecentTransaction = useAddRecentTransaction()
 
   return async function approveAndDeposit(
     state: ApproveAndDepositStateArgument,
@@ -194,7 +195,8 @@ export function useApproveAndDeposit(
         new Date().getTime() / 1000 + 60 * deadline,
       )
       if (poolName === BTC_POOL_NAME) {
-        const swapGuardedContract = effectiveSwapContract as SwapGuarded
+        const swapGuardedContract =
+          effectiveSwapContract as unknown as SwapGuarded
         spendTransaction = await swapGuardedContract?.addLiquidity(
           txnAmounts,
           minToMint,
@@ -209,8 +211,13 @@ export function useApproveAndDeposit(
           txnDeadline,
         )
       }
-      await enqueuePromiseToast(chainId, spendTransaction.wait(), "deposit", {
+      const txn = spendTransaction
+      await enqueuePromiseToast(chainId, txn.wait(), "deposit", {
         poolName,
+      })
+      addRecentTransaction({
+        hash: txn.hash,
+        description: "Deposit",
       })
 
       dispatch(
