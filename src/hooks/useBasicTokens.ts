@@ -40,14 +40,14 @@ export const useBasicTokens = (): UseQueryResult<BasicTokens> => {
   const minichefData = useContext(MinichefContext)
   const { gauges } = useContext(GaugeContext)
   const { data: ethCallProvider } = useMulticallProvider()
+  const gaugesAreActive = areGaugesActive(chainId)
+  const lpTokens = new Set()
+  const tokenType: Partial<{ [tokenAddress: string]: PoolTypes }> = {}
 
   return useQuery(["tokens"], async () => {
     if (!chainId || !basicPools || !ethCallProvider) {
       return null
     }
-    const gaugesAreActive = areGaugesActive(chainId)
-    const lpTokens = new Set()
-    const tokenType: Partial<{ [tokenAddress: string]: PoolTypes }> = {}
     const targetTokenAddresses = new Set(
       Object.values(basicPools)
         .map((pool) => {
