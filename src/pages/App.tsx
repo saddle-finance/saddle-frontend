@@ -89,7 +89,7 @@ const avalancheChain: Chain = {
   testnet: false,
 }
 
-const { chains, provider } = configureChains(
+const { chains, provider, webSocketProvider } = configureChains(
   [
     chain.mainnet,
     chain.optimism,
@@ -97,7 +97,10 @@ const { chains, provider } = configureChains(
     chain.hardhat,
     avalancheChain,
   ],
-  [alchemyProvider({ alchemyId: process.env.ALCHEMY_ID }), publicProvider()],
+  [
+    alchemyProvider({ alchemyId: process.env.ALCHEMY_API_KEY }),
+    publicProvider(),
+  ],
 )
 
 const { connectors } = getDefaultWallets({
@@ -129,6 +132,7 @@ const wagmiClient = createWagmiClient({
   autoConnect: true,
   connectors,
   provider,
+  webSocketProvider,
 })
 
 const queryClient = new QueryClient({
@@ -152,24 +156,24 @@ export default function App(): ReactElement {
   return (
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen />
-      <Suspense fallback={null}>
-        <WagmiConfig client={wagmiClient}>
-          <RainbowKitProvider
-            coolMode
-            showRecentTransactions
-            theme={merge(midnightTheme(), {
-              colors: {
-                accentColor: "#4B11F2",
-                accentColorForeground: "white",
-                connectButtonBackground: "#4B11F2",
-              },
-              fonts: {
-                body: "Source Code Pro, monospace, sans-serif",
-              },
-            } as Theme)}
-            chains={chains}
-          >
-            <Web3ReactManager>
+      <WagmiConfig client={wagmiClient}>
+        <RainbowKitProvider
+          coolMode
+          showRecentTransactions
+          theme={merge(midnightTheme(), {
+            colors: {
+              accentColor: "#4B11F2",
+              accentColorForeground: "white",
+              connectButtonBackground: "#4B11F2",
+            },
+            fonts: {
+              body: "Source Code Pro, monospace, sans-serif",
+            },
+          } as Theme)}
+          chains={chains}
+        >
+          <Web3ReactManager>
+            <Suspense fallback={null}>
               <MinichefProvider>
                 <GaugeProvider>
                   <TokensProvider>
@@ -275,10 +279,10 @@ export default function App(): ReactElement {
                   </TokensProvider>
                 </GaugeProvider>
               </MinichefProvider>
-            </Web3ReactManager>
-          </RainbowKitProvider>
-        </WagmiConfig>
-      </Suspense>
+            </Suspense>
+          </Web3ReactManager>
+        </RainbowKitProvider>
+      </WagmiConfig>
     </QueryClientProvider>
   )
 }
