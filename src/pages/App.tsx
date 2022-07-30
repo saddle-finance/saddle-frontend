@@ -12,7 +12,7 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import React, {
   ReactElement,
-  Suspense,
+  // Suspense,
   lazy,
   useCallback,
   useContext,
@@ -135,13 +135,14 @@ const wagmiClient = createWagmiClient({
   webSocketProvider,
 })
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-    },
-  },
-})
+const queryClient = new QueryClient()
+// const queryClient = new QueryClient({
+//   defaultOptions: {
+//     queries: {
+//       suspense: true,
+//     },
+//   },
+// })
 
 export default function App(): ReactElement {
   const theme = useTheme()
@@ -173,113 +174,103 @@ export default function App(): ReactElement {
           chains={chains}
         >
           {/* <Web3ReactManager> */}
-          <Suspense fallback={null}>
-            <MinichefProvider>
-              <GaugeProvider>
-                <TokensProvider>
-                  <ExpandedPoolsProvider>
-                    <UserStateProvider>
-                      <PricesAndVoteData>
-                        <PendingSwapsProvider>
-                          <AprsProvider>
-                            <RewardsBalancesProvider>
-                              <LocalizationProvider
-                                dateAdapter={AdapterDateFns}
-                              >
-                                <AppContainer>
-                                  <TopMenu />
-                                  <Switch>
-                                    <Route exact path="/" component={Swap} />
-                                    <Route
-                                      exact
-                                      path="/pools"
-                                      component={Pools}
-                                    />
-                                    {pools.map((pool) => (
-                                      <Route
-                                        exact
-                                        path={`/pools/${pool.poolName}/deposit`}
-                                        render={(props) => (
-                                          <Deposit
-                                            {...props}
-                                            poolName={pool.poolName}
-                                          />
-                                        )}
-                                        key={`${pool.poolName}-deposit`}
-                                      />
-                                    ))}
-                                    {pools.map((pool) => (
-                                      <Route
-                                        exact
-                                        path={`/pools/${pool.poolName}/withdraw`}
-                                        render={(props) => (
-                                          <Withdraw
-                                            {...props}
-                                            poolName={pool.poolName}
-                                          />
-                                        )}
-                                        key={`${pool.poolName}-withdraw`}
-                                      />
-                                    ))}
-                                    {basicPools && (
-                                      <Redirect
-                                        from="/pools/:route/:action"
-                                        to="/pools"
-                                      />
-                                    )}
-                                    <Route
-                                      exact
-                                      path="/pools/create"
-                                      component={CreatePool}
-                                    />
-                                    <Route
-                                      exact
-                                      path="/risk"
-                                      component={Risk}
-                                    />
-                                    <Route
-                                      exact
-                                      path="/vesting-claim"
-                                      component={VestingClaim}
-                                    />
-                                    <Route
-                                      exact
-                                      path="/farm"
-                                      component={Farm}
-                                    />
-                                    <Route
-                                      exact
-                                      path="/vesdl"
-                                      component={VeSDL}
-                                    />
-                                    <Route
-                                      exact
-                                      path="/coinbase-pay-test"
-                                      component={CoinbasePayTest}
-                                    />
-                                  </Switch>
-                                  <WrongNetworkModal />
-                                  <Version />
-                                  <ToastContainer
-                                    theme={
-                                      theme.palette.mode === "dark"
-                                        ? "dark"
-                                        : "light"
-                                    }
-                                    position="top-left"
+          {/* <Suspense fallback={null}> */}
+          <MinichefProvider>
+            <GaugeProvider>
+              <TokensProvider>
+                <ExpandedPoolsProvider>
+                  <UserStateProvider>
+                    <PricesAndVoteData>
+                      <PendingSwapsProvider>
+                        <AprsProvider>
+                          <RewardsBalancesProvider>
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                              <AppContainer>
+                                <TopMenu />
+                                <Switch>
+                                  <Route exact path="/" component={Swap} />
+                                  <Route
+                                    exact
+                                    path="/pools"
+                                    component={Pools}
                                   />
-                                </AppContainer>
-                              </LocalizationProvider>
-                            </RewardsBalancesProvider>
-                          </AprsProvider>
-                        </PendingSwapsProvider>
-                      </PricesAndVoteData>
-                    </UserStateProvider>
-                  </ExpandedPoolsProvider>
-                </TokensProvider>
-              </GaugeProvider>
-            </MinichefProvider>
-          </Suspense>
+                                  {pools.map((pool) => (
+                                    <Route
+                                      exact
+                                      path={`/pools/${pool.poolName}/deposit`}
+                                      render={(props) => (
+                                        <Deposit
+                                          {...props}
+                                          poolName={pool.poolName}
+                                        />
+                                      )}
+                                      key={`${pool.poolName}-deposit`}
+                                    />
+                                  ))}
+                                  {pools.map((pool) => (
+                                    <Route
+                                      exact
+                                      path={`/pools/${pool.poolName}/withdraw`}
+                                      render={(props) => (
+                                        <Withdraw
+                                          {...props}
+                                          poolName={pool.poolName}
+                                        />
+                                      )}
+                                      key={`${pool.poolName}-withdraw`}
+                                    />
+                                  ))}
+                                  {basicPools && (
+                                    <Redirect
+                                      from="/pools/:route/:action"
+                                      to="/pools"
+                                    />
+                                  )}
+                                  <Route
+                                    exact
+                                    path="/pools/create"
+                                    component={CreatePool}
+                                  />
+                                  <Route exact path="/risk" component={Risk} />
+                                  <Route
+                                    exact
+                                    path="/vesting-claim"
+                                    component={VestingClaim}
+                                  />
+                                  <Route exact path="/farm" component={Farm} />
+                                  <Route
+                                    exact
+                                    path="/vesdl"
+                                    component={VeSDL}
+                                  />
+                                  <Route
+                                    exact
+                                    path="/coinbase-pay-test"
+                                    component={CoinbasePayTest}
+                                  />
+                                </Switch>
+                                <WrongNetworkModal />
+                                <Version />
+                                <ToastContainer
+                                  theme={
+                                    theme.palette.mode === "dark"
+                                      ? "dark"
+                                      : "light"
+                                  }
+                                  position="top-left"
+                                />
+                              </AppContainer>
+                            </LocalizationProvider>
+                          </RewardsBalancesProvider>
+                        </AprsProvider>
+                      </PendingSwapsProvider>
+                    </PricesAndVoteData>
+                  </UserStateProvider>
+                </ExpandedPoolsProvider>
+              </TokensProvider>
+            </GaugeProvider>
+          </MinichefProvider>
+          {/* </Suspense> */}
           {/* </Web3ReactManager> */}
         </RainbowKitProvider>
       </WagmiConfig>
