@@ -121,10 +121,12 @@ export default function App(): ReactElement {
                                     key={`${pool.poolName}-withdraw`}
                                   />
                                 ))}
-                                <Redirect
-                                  from="/pools/:route/:action"
-                                  to="/pools"
-                                />
+                                {basicPools && (
+                                  <Redirect
+                                    from="/pools/:route/:action"
+                                    to="/pools"
+                                  />
+                                )}
                                 <Route
                                   exact
                                   path="/pools/create"

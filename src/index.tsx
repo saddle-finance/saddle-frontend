@@ -56,7 +56,8 @@ const root = createRoot(container!) // createRoot(container!) if you use TypeScr
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 root.render(
-  <>
+  <QueryClientProvider client={queryClient}>
+    <ReactQueryDevtools initialIsOpen />
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen />
@@ -80,7 +81,7 @@ root.render(
         </IntercomProvider>
       </QueryClientProvider>
     </React.StrictMode>
-  </>,
+  </QueryClientProvider>,
 )
 
 // If you want to start measuring performance in your app, pass a function

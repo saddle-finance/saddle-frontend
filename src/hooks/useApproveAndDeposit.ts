@@ -3,7 +3,7 @@ import {
   TRANSACTION_TYPES,
   isLegacySwapABIPool,
 } from "../constants"
-import { BasicToken, TokensContext } from "../providers/TokensProvider"
+import { BasicToken, useBasicTokens } from "./useBasicTokens"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { formatDeadlineToNumber, getContract } from "../utils"
 import { useContext, useMemo } from "react"
@@ -57,7 +57,7 @@ export function useApproveAndDeposit(
     infiniteApproval,
   } = useSelector((state: AppState) => state.user)
   const basicPools = useContext(BasicPoolsContext)
-  const tokens = useContext(TokensContext)
+  const { data: tokens } = useBasicTokens()
   const pool = basicPools?.[poolName]
   const metaSwapContract = useMemo(() => {
     if (pool?.poolAddress && chainId && library) {
