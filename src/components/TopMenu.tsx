@@ -97,9 +97,9 @@ function TopMenu(): ReactElement {
           >
             <SDLPrice sdlPrice={sdlPrice} />
             <RewardsButton setCurrentModal={setCurrentModal} />
-            <Box display={isUnderLaptopSize ? "none" : "block"}>
-              <Web3Status />
-            </Box>
+            {/* <Box display={isUnderLaptopSize ? "none" : "block"}> */}
+            <Web3Status />
+            {/* </Box> */}
             {/* <NetworkDisplay onClick={handleSettingMenu} /> */}
             <IconButton
               onClick={handleMoreMenu}

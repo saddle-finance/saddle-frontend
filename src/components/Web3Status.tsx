@@ -3,7 +3,7 @@
 import React, { ReactElement, useEffect, useState } from "react"
 
 import AccountDetails from "./AccountDetails"
-import { Button } from "@mui/material"
+// import { Button } from "@mui/material"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
 import ConnectWallet from "./ConnectWallet"
 import Dialog from "./Dialog"
@@ -49,7 +49,8 @@ const Web3Status = (): ReactElement => {
             : t("connectWallet")}
         </Typography>
       </Button> */}
-      <ConnectButton.Custom>
+      <ConnectButton />
+      {/* <ConnectButton.Custom>
         {({
           account,
           chain,
@@ -131,7 +132,7 @@ const Web3Status = (): ReactElement => {
             </div>
           )
         }}
-      </ConnectButton.Custom>
+      </ConnectButton.Custom> */}
       <Dialog
         open={modalOpen}
         onClose={(): void => setModalOpen(false)}
