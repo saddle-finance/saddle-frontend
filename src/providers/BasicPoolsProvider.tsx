@@ -102,6 +102,7 @@ export default function BasicPoolsProvider({
 
   const poolRegistry = usePoolRegistry()
   const poolRegistryMultiCall = usePoolRegistryMultiCall()
+
   useEffect(() => {
     async function fetchBasicPools() {
       if (!chainId || !library || !poolRegistry || !poolRegistryMultiCall) {
@@ -173,8 +174,8 @@ export async function getPoolsDataFromRegistry(
   ethCallProvider: MulticallProvider,
 ): Promise<SwapInfo[]> {
   // curried fn to avoid passing in redundant arguments
-  function chunkedTryAll20<T>(calls: MulticallCall<unknown, T>[]) {
-    return chunkedTryAll(calls, ethCallProvider, 20)
+  function chunkedTryAll10<T>(calls: MulticallCall<unknown, T>[]) {
+    return chunkedTryAll(calls, ethCallProvider, 10)
   }
   try {
     const poolCount = (await poolRegistry.getPoolsLength()).toNumber()
@@ -216,17 +217,17 @@ export async function getPoolsDataFromRegistry(
       underlyingTokensBalances,
       virtualPrices,
     ] = await Promise.all([
-      chunkedTryAll20(poolMulticalls.map((a) => a[0])), // lpTokenSupply
-      chunkedTryAll20(poolMulticalls.map((a) => a[1])), // getA
-      chunkedTryAll20(poolMulticalls.map((a) => a[2])), // getPaused
-      chunkedTryAll20(poolMulticalls.map((a) => a[3])), // getSwapStorage
-      chunkedTryAll20(poolMulticalls.map((a) => a[4])), // getTokenBalances
+      chunkedTryAll10(poolMulticalls.map((a) => a[0])), // lpTokenSupply
+      chunkedTryAll10(poolMulticalls.map((a) => a[1])), // getA
+      chunkedTryAll10(poolMulticalls.map((a) => a[2])), // getPaused
+      chunkedTryAll10(poolMulticalls.map((a) => a[3])), // getSwapStorage
+      chunkedTryAll10(poolMulticalls.map((a) => a[4])), // getTokenBalances
       chunkedTryAll(
         poolMulticalls.map((a) => a[5]),
         ethCallProvider,
         2,
       ), // getUnderlyingTokenBalances
-      chunkedTryAll20(poolMulticalls.map((a) => a[6])), // getVirtualPrice
+      chunkedTryAll10(poolMulticalls.map((a) => a[6])), // getVirtualPrice
     ])
 
     const swapInfos: SwapInfo[] = []
@@ -290,6 +291,7 @@ export async function getPoolsDataFromRegistry(
       }
       swapInfos.push(buildMetaInfo(sharedSwapData, isMetaSwap))
     })
+
     return swapInfos
   } catch (e) {
     const error = new Error(

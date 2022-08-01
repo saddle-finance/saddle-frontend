@@ -77,9 +77,8 @@ function TopMenu(): ReactElement {
           </Box>
 
           <Stack
-            display={isUnderLaptopSize ? "none" : "block"}
+            display={isUnderLaptopSize ? "none" : "flex"}
             bottom={{ xs: theme.spacing(4) }}
-            right="50%"
             flex={1}
             direction="row"
             spacing={4}
