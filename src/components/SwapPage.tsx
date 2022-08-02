@@ -29,7 +29,8 @@ import { commify } from "../utils"
 import { formatUnits } from "@ethersproject/units"
 import { isHighPriceImpact } from "../utils/priceImpact"
 import { logEvent } from "../utils/googleAnalytics"
-import { useActiveWeb3React } from "../hooks"
+import { useAccount } from "wagmi"
+// import { useActiveWeb3React } from "../hooks"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
@@ -62,7 +63,8 @@ interface Props {
 
 const SwapPage = (props: Props): ReactElement => {
   const { t } = useTranslation()
-  const { account } = useActiveWeb3React()
+  const { address } = useAccount()
+  // const { account } = useActiveWeb3React()
   const {
     tokenOptions,
     exchangeRateInfo,
@@ -107,7 +109,7 @@ const SwapPage = (props: Props): ReactElement => {
     (slippageSelected === Slippages.Custom &&
       parseFloat(slippageCustom?.valueRaw || "0") < 0.5)
 
-  if (!account) {
+  if (!address) {
     return (
       <Container>
         <Paper sx={{ display: "flex", justifyContent: "center", padding: 4 }}>
@@ -229,7 +231,7 @@ const SwapPage = (props: Props): ReactElement => {
           )}
         </Box>
       </Paper>
-      {account && isHighPriceImpact(exchangeRateInfo.priceImpact) ? (
+      {address && isHighPriceImpact(exchangeRateInfo.priceImpact) ? (
         <Alert variant="filled" severity="error" sx={{ mt: 2 }}>
           {t("highPriceImpact", {
             rate: formattedPriceImpact,

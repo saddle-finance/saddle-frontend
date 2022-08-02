@@ -17,6 +17,7 @@ import React, {
   useEffect,
 } from "react"
 import { Redirect, Route, Switch } from "react-router-dom"
+import { WagmiConfig, useNetwork } from "wagmi"
 import { chains, wagmiClient } from "../constants/networks"
 import { styled, useTheme } from "@mui/material"
 import { useDispatch, useSelector } from "react-redux"
@@ -44,8 +45,7 @@ import TopMenu from "../components/TopMenu"
 import UserStateProvider from "../providers/UserStateProvider"
 import VeSDL from "./VeSDL"
 import Version from "../components/Version"
-import { WagmiConfig } from "wagmi"
-import Web3ReactManager from "../components/Web3ReactManager"
+// import Web3ReactManager from "../components/Web3ReactManager"
 import Withdraw from "./Withdraw"
 import WrongNetworkModal from "../components/WrongNetworkModal"
 import fetchGasPrices from "../utils/updateGasPrices"
@@ -54,7 +54,7 @@ import fetchSwapStats from "../utils/getSwapStats"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import getSnapshotVoteData from "../utils/getSnapshotVoteData"
 import merge from "lodash.merge"
-import { useActiveWeb3React } from "../hooks"
+// import { useActiveWeb3React } from "../hooks"
 import { useIntercom } from "react-use-intercom"
 import usePoller from "../hooks/usePoller"
 import { useSdlWethSushiPairContract } from "../hooks/useContract"
@@ -95,6 +95,21 @@ export default function App(): ReactElement {
     boot()
   }, [boot])
 
+  const rainbowWalletTheme = merge(
+    theme.palette.mode === "dark" ? darkTheme() : lightTheme(),
+    {
+      colors: {
+        accentColor: "#4B11F2",
+        accentColorForeground: "white",
+        connectButtonBackground: "#4B11F2",
+        connectButtonText: "white",
+      },
+      fonts: {
+        body: "Source Code Pro, monospace, sans-serif",
+      },
+    } as Theme,
+  )
+
   return (
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen />
@@ -103,113 +118,96 @@ export default function App(): ReactElement {
           <RainbowKitProvider
             coolMode
             showRecentTransactions
-            theme={merge(
-              theme.palette.mode === "dark" ? darkTheme() : lightTheme(),
-              {
-                colors: {
-                  accentColor: "#4B11F2",
-                  accentColorForeground: "white",
-                  connectButtonBackground: "#4B11F2",
-                  connectButtonText: "white",
-                },
-                fonts: {
-                  body: "Source Code Pro, monospace, sans-serif",
-                },
-              } as Theme,
-            )}
+            theme={rainbowWalletTheme}
             chains={chains}
           >
-            <Web3ReactManager>
-              <BasicPoolsProvider>
-                <MinichefProvider>
-                  <GaugeProvider>
-                    <TokensProvider>
-                      <ExpandedPoolsProvider>
-                        <UserStateProvider>
-                          <PricesAndVoteData>
-                            <PendingSwapsProvider>
-                              <AprsProvider>
-                                <RewardsBalancesProvider>
-                                  <LocalizationProvider
-                                    dateAdapter={AdapterDateFns}
-                                  >
-                                    <AppContainer>
-                                      <TopMenu />
-                                      <Switch>
-                                        <Route
-                                          exact
-                                          path="/"
-                                          component={Swap}
-                                        />
-                                        <Route
-                                          exact
-                                          path="/pools"
-                                          component={Pools}
-                                        />
-                                        <Route
-                                          exact
-                                          path={`/pools/:poolName/deposit`}
-                                          component={Deposit}
-                                        />
-                                        <Route
-                                          exact
-                                          path={`/pools/:poolName/withdraw`}
-                                          component={Withdraw}
-                                        />
-                                        <Redirect
-                                          from="/pools/:route/:action"
-                                          to="/pools"
-                                        />
-                                        <Route
-                                          exact
-                                          path="/pools/create"
-                                          component={CreatePool}
-                                        />
-                                        <Route
-                                          exact
-                                          path="/risk"
-                                          component={Risk}
-                                        />
-                                        <Route
-                                          exact
-                                          path="/vesting-claim"
-                                          component={VestingClaim}
-                                        />
-                                        <Route
-                                          exact
-                                          path="/farm"
-                                          component={Farm}
-                                        />
-                                        <Route
-                                          exact
-                                          path="/vesdl"
-                                          component={VeSDL}
-                                        />
-                                        <Route
-                                          exact
-                                          path="/coinbase-pay-test"
-                                          component={CoinbasePayTest}
-                                        />
-                                      </Switch>
-                                      <WrongNetworkModal />
-                                      <Version />
-                                      <ToastContainer
-                                        theme={theme.palette.mode}
-                                        position="top-left"
+            {/* <Web3ReactManager> */}
+            <BasicPoolsProvider>
+              <MinichefProvider>
+                <GaugeProvider>
+                  <TokensProvider>
+                    <ExpandedPoolsProvider>
+                      <UserStateProvider>
+                        <PricesAndVoteData>
+                          <PendingSwapsProvider>
+                            <AprsProvider>
+                              <RewardsBalancesProvider>
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDateFns}
+                                >
+                                  <AppContainer>
+                                    <TopMenu />
+                                    <Switch>
+                                      <Route exact path="/" component={Swap} />
+                                      <Route
+                                        exact
+                                        path="/pools"
+                                        component={Pools}
                                       />
-                                    </AppContainer>
-                                  </LocalizationProvider>
-                                </RewardsBalancesProvider>
-                              </AprsProvider>
-                            </PendingSwapsProvider>
-                          </PricesAndVoteData>
-                        </UserStateProvider>
-                      </ExpandedPoolsProvider>
-                    </TokensProvider>
-                  </GaugeProvider>
-                </MinichefProvider>
-              </BasicPoolsProvider>
-            </Web3ReactManager>
+                                      <Route
+                                        exact
+                                        path={`/pools/:poolName/deposit`}
+                                        component={Deposit}
+                                      />
+                                      <Route
+                                        exact
+                                        path={`/pools/:poolName/withdraw`}
+                                        component={Withdraw}
+                                      />
+                                      <Redirect
+                                        from="/pools/:route/:action"
+                                        to="/pools"
+                                      />
+                                      <Route
+                                        exact
+                                        path="/pools/create"
+                                        component={CreatePool}
+                                      />
+                                      <Route
+                                        exact
+                                        path="/risk"
+                                        component={Risk}
+                                      />
+                                      <Route
+                                        exact
+                                        path="/vesting-claim"
+                                        component={VestingClaim}
+                                      />
+                                      <Route
+                                        exact
+                                        path="/farm"
+                                        component={Farm}
+                                      />
+                                      <Route
+                                        exact
+                                        path="/vesdl"
+                                        component={VeSDL}
+                                      />
+                                      <Route
+                                        exact
+                                        path="/coinbase-pay-test"
+                                        component={CoinbasePayTest}
+                                      />
+                                    </Switch>
+                                    <WrongNetworkModal />
+                                    <Version />
+                                    <ToastContainer
+                                      theme={theme.palette.mode}
+                                      position="top-left"
+                                    />
+                                  </AppContainer>
+                                </LocalizationProvider>
+                              </RewardsBalancesProvider>
+                            </AprsProvider>
+                          </PendingSwapsProvider>
+                        </PricesAndVoteData>
+                      </UserStateProvider>
+                    </ExpandedPoolsProvider>
+                  </TokensProvider>
+                </GaugeProvider>
+              </MinichefProvider>
+            </BasicPoolsProvider>
+            {/* </Web3ReactManager> */}
           </RainbowKitProvider>
         </WagmiConfig>
       </Suspense>
@@ -222,7 +220,8 @@ function PricesAndVoteData({
 }: React.PropsWithChildren<unknown>): ReactElement {
   const dispatch = useDispatch<AppDispatch>()
   const sdlWethSushiPoolContract = useSdlWethSushiPairContract()
-  const { chainId } = useActiveWeb3React()
+  // const { chainId } = useActiveWeb3React()
+  const { chain } = useNetwork()
   const { sdlWethSushiPool } = useSelector(
     (state: AppState) => state.application,
   )
@@ -231,14 +230,18 @@ function PricesAndVoteData({
     void fetchGasPrices(dispatch)
   }, [dispatch])
   const fetchAndUpdateTokensPrice = useCallback(() => {
-    fetchTokenPricesUSD(dispatch, sdlWethSushiPool, chainId)
-  }, [dispatch, chainId, sdlWethSushiPool])
+    fetchTokenPricesUSD(dispatch, sdlWethSushiPool, chain?.id)
+  }, [dispatch, chain, sdlWethSushiPool])
   const fetchAndUpdateSwapStats = useCallback(() => {
     void fetchSwapStats(dispatch)
   }, [dispatch])
   const fetchAndUpdateSdlWethSushiPoolInfo = useCallback(() => {
-    void fetchSdlWethSushiPoolInfo(dispatch, sdlWethSushiPoolContract, chainId)
-  }, [dispatch, chainId, sdlWethSushiPoolContract])
+    void fetchSdlWethSushiPoolInfo(
+      dispatch,
+      sdlWethSushiPoolContract,
+      chain?.id,
+    )
+  }, [dispatch, chain, sdlWethSushiPoolContract])
 
   useEffect(() => {
     void getSnapshotVoteData(dispatch)

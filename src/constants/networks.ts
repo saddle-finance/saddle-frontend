@@ -1,4 +1,10 @@
-import { Chain, getDefaultWallets } from "@rainbow-me/rainbowkit"
+import {
+  Chain,
+  // Wallet,
+  connectorsForWallets,
+  // getWalletConnectConnector,
+  wallet,
+} from "@rainbow-me/rainbowkit"
 import {
   chain,
   configureChains,
@@ -6,9 +12,12 @@ import {
 } from "wagmi"
 
 import { ChainId } from "./index"
+// import { InjectedConnector } from "@web3-react/injected-connector"
 import { alchemyProvider } from "wagmi/providers/alchemy"
 import { hexlify } from "@ethersproject/bytes"
+// import { injectedTallyProvider } from "../connectors"
 import { publicProvider } from "wagmi/providers/public"
+// import tallyIcon from "../assets/icons/tally.svg"
 
 export const NETWORK_LABEL: Partial<Record<ChainId, string>> = {
   [ChainId.MAINNET]: "Ethereum",
@@ -250,13 +259,134 @@ export const { chains, provider } = configureChains(rainbowChains, [
   publicProvider(),
 ])
 
-const { connectors } = getDefaultWallets({
-  appName: "Saddle Exchange",
-  chains,
-})
+// export const rainbow = ({ chains }: MyWalletOptions): Wallet => ({
+//   id: "my-wallet",
+//   name: "My Wallet",
+//   iconUrl: "https://my-image.xyz",
+//   iconBackground: "#0c2f78",
+//   downloadUrls: {
+//     android: "https://my-wallet/android",
+//     ios: "https://my-wallet/ios",
+//     qrCode: "https://my-wallet/qr",
+//   },
+//   createConnector: () => {
+//     const connector = getWalletConnectConnector({ chains })
+
+//     return {
+//       connector,
+//       mobile: {
+//         getUri: async () => {
+//           const { uri } = (await connector.getProvider()).connector
+//           return uri
+//         },
+//       },
+//       qrCode: {
+//         getUri: async () => (await connector.getProvider()).connector.uri,
+//         instructions: {
+//           learnMoreUrl: "https://my-wallet/learn-more",
+//           steps: [
+//             {
+//               description:
+//                 "We recommend putting My Wallet on your home screen for faster access to your wallet.",
+//               step: "install",
+//               title: "Open the My Wallet app",
+//             },
+//             {
+//               description:
+//                 "After you scan, a connection prompt will appear for you to connect your wallet.",
+//               step: "scan",
+//               title: "Tap the scan button",
+//             },
+//           ],
+//         },
+//       },
+//     }
+//   },
+// })
+
+// const tallyConnector = new InjectedConnector({
+// chains: [chain.mainnet],
+// })
+
+// export const tally = ({ chains }: MyWalletOptions): Wallet => ({
+//   id: "tally-wallet",
+//   name: "Tally Wallet",
+//   iconUrl: tallyIcon,
+//   iconBackground: "#0c2f78",
+//   downloadUrls: {
+//     browserExtension: "https://tally.cash/download",
+//     // android: "https://my-wallet/android",
+//     // ios: "https://my-wallet/ios",
+//     // qrCode: "https://my-wallet/qr",
+//   },
+//   createConnector: () => {
+//     // const connector = getWalletConnectConnector({ chains })
+
+//     // injectedTallyProvider,
+//     return {
+//       connector: tallyConnector,
+//       // mobile: {
+//       //   getUri: async () => {
+//       //     const { uri } = (await connector.getProvider()).connector
+//       //     return uri
+//       //   },
+//       // },
+//       // qrCode: {
+//       //   getUri: async () => (await connector.getProvider()).connector.uri,
+//       //   instructions: {
+//       //     learnMoreUrl: "https://my-wallet/learn-more",
+//       //     steps: [
+//       //       {
+//       //         description:
+//       //           "We recommend putting My Wallet on your home screen for faster access to your wallet.",
+//       //         step: "install",
+//       //         title: "Open the My Wallet app",
+//       //       },
+//       //       {
+//       //         description:
+//       //           "After you scan, a connection prompt will appear for you to connect your wallet.",
+//       //         step: "scan",
+//       //         title: "Tap the scan button",
+//       //       },
+//       //     ],
+//       //   },
+//       // },
+//     }
+//   },
+// })
+
+// const { connectors } = getDefaultWallets({
+//   appName: "Saddle Exchange",
+//   chains,
+// })
+
+const needsInjectedWalletFallback =
+  typeof window !== "undefined" && !window.ethereum?.isMetaMask
+console.log({ mm: window.ethereum?.isMetaMask, tal: window.ethereum?.isTally })
+
+const connectors = connectorsForWallets([
+  {
+    groupName: "Recommended",
+    wallets: [
+      wallet.metaMask({ chains }),
+      wallet.rainbow({ chains }),
+      wallet.walletConnect({ chains }),
+      wallet.brave({ chains }),
+      wallet.coinbase({ appName: "Saddle", chains }),
+      ...(needsInjectedWalletFallback
+        ? [wallet.injected({ chains: [chain.mainnet] })]
+        : []),
+      // tally({ chains }),
+    ],
+  },
+])
 
 export const wagmiClient = createWagmiClient({
   autoConnect: true,
   connectors,
   provider,
 })
+
+export interface MyWalletOptions {
+  chains: Chain[]
+}
