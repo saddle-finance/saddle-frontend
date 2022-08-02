@@ -7,7 +7,6 @@ import { Web3ReactProvider, createWeb3ReactRoot } from "@web3-react/core"
 import { logError, sendWebVitalsToGA } from "./utils/googleAnalytics"
 
 import App from "./pages/App"
-import BasicPoolsProvider from "./providers/BasicPoolsProvider"
 import { IS_PRODUCTION } from "./utils/environment"
 import { Integrations } from "@sentry/tracing"
 import { IntercomProvider } from "react-use-intercom"
@@ -52,11 +51,9 @@ root.render(
         <Web3ProviderNetwork getLibrary={getNetworkLibrary}>
           <Provider store={store}>
             <ThemeSettingsProvider>
-              <BasicPoolsProvider>
-                <Router>
-                  <App />
-                </Router>
-              </BasicPoolsProvider>
+              <Router>
+                <App />
+              </Router>
             </ThemeSettingsProvider>
           </Provider>
         </Web3ProviderNetwork>
