@@ -332,7 +332,6 @@ export async function getMulticallProvider(
   chainId: ChainId,
 ): Promise<MulticallProvider> {
   const ethcallProvider = new Provider() as unknown as MulticallProvider
-
   await ethcallProvider.init(library)
   if (chainId === ChainId.HARDHAT) {
     ethcallProvider.multicall3 = {
