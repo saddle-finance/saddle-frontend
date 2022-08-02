@@ -159,34 +159,90 @@ export const DEV_SUPPORTED_NETWORKS: SupportedNetworks = {
   },
 }
 
-export const avalancheChain: Chain = {
-  id: 43_114,
-  name: "Avalanche",
-  network: "avalanche",
+const evmosChain: Chain = {
+  id: ChainId.EVMOS,
   iconUrl:
-    "https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png?1604021818",
+    "https://assets.coingecko.com/coins/images/24023/small/evmos.png?1653958927",
   iconBackground: "#fff",
+  name: "Evmos",
   nativeCurrency: {
+    name: "Evmos",
+    symbol: "EVMOS",
     decimals: 18,
-    name: "Avalanche",
-    symbol: "AVAX",
   },
-  rpcUrls: {
-    default: "https://api.avax.network/ext/bc/C/rpc",
-  },
+  network: "evmos",
+  rpcUrls: { default: "https://eth.bd.evmos.org:8545" },
   blockExplorers: {
-    default: { name: "SnowTrace", url: "https://snowtrace.io" },
-    etherscan: { name: "SnowTrace", url: "https://snowtrace.io" },
+    default: { name: "Evmos", url: "https://evm.evmos.org" },
   },
   testnet: false,
 }
+const fantomChain: Chain = {
+  id: ChainId.FANTOM,
+  iconUrl:
+    "https://assets.coingecko.com/coins/images/4001/small/Fantom.png?1558015016",
+  iconBackground: "#fff",
+  name: "Fantom",
+  nativeCurrency: {
+    name: "Fantom",
+    symbol: "FTM",
+    decimals: 18,
+  },
+  network: "evmos",
+  rpcUrls: { default: "https://rpc.ftm.tools" },
+  blockExplorers: {
+    default: { name: "Fantom Scan", url: "https://ftmscan.com" },
+  },
+  testnet: false,
+}
+const kavaChain: Chain = {
+  id: ChainId.KAVA,
+  iconUrl:
+    "https://assets.coingecko.com/coins/images/9761/small/kava.jpg?1639703080",
+  iconBackground: "#fff",
+  name: "Kava",
+  nativeCurrency: {
+    name: "Kava",
+    symbol: "KAVA",
+    decimals: 18,
+  },
+  network: "kava",
+  rpcUrls: { default: "https://evm.kava.io" },
+  blockExplorers: {
+    default: { name: "Kava", url: "https://explorer.kava.io" },
+  },
+  testnet: false,
+}
+// const avalancheChain: Chain = {
+//   id: 43_114,
+//   name: "Avalanche",
+//   network: "avalanche",
+//   iconUrl:
+//     "https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png?1604021818",
+//   iconBackground: "#fff",
+//   nativeCurrency: {
+//     decimals: 18,
+//     name: "Avalanche",
+//     symbol: "AVAX",
+//   },
+//   rpcUrls: {
+//     default: "https://api.avax.network/ext/bc/C/rpc",
+//   },
+//   blockExplorers: {
+//     default: { name: "SnowTrace", url: "https://snowtrace.io" },
+//     etherscan: { name: "SnowTrace", url: "https://snowtrace.io" },
+//   },
+//   testnet: false,
+// }
 
 export const rainbowChains = [
   chain.mainnet,
   chain.optimism,
   chain.arbitrum,
   chain.hardhat,
-  avalancheChain,
+  evmosChain,
+  fantomChain,
+  kavaChain,
 ]
 
 export const { chains, provider } = configureChains(rainbowChains, [

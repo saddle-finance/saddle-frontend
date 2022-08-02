@@ -6,7 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import {
   RainbowKitProvider,
   Theme,
-  midnightTheme,
+  darkTheme,
+  lightTheme,
 } from "@rainbow-me/rainbowkit"
 import React, {
   ReactElement,
@@ -102,16 +103,20 @@ export default function App(): ReactElement {
           <RainbowKitProvider
             coolMode
             showRecentTransactions
-            theme={merge(midnightTheme(), {
-              colors: {
-                accentColor: "#4B11F2",
-                accentColorForeground: "white",
-                connectButtonBackground: "#4B11F2",
-              },
-              fonts: {
-                body: "Source Code Pro, monospace, sans-serif",
-              },
-            } as Theme)}
+            theme={merge(
+              theme.palette.mode === "dark" ? darkTheme() : lightTheme(),
+              {
+                colors: {
+                  accentColor: "#4B11F2",
+                  accentColorForeground: "white",
+                  connectButtonBackground: "#4B11F2",
+                  connectButtonText: "white",
+                },
+                fonts: {
+                  body: "Source Code Pro, monospace, sans-serif",
+                },
+              } as Theme,
+            )}
             chains={chains}
           >
             <Web3ReactManager>
@@ -189,11 +194,7 @@ export default function App(): ReactElement {
                                       <WrongNetworkModal />
                                       <Version />
                                       <ToastContainer
-                                        theme={
-                                          theme.palette.mode === "dark"
-                                            ? "dark"
-                                            : "light"
-                                        }
+                                        theme={theme.palette.mode}
                                         position="top-left"
                                       />
                                     </AppContainer>
