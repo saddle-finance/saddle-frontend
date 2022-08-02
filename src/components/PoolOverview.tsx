@@ -58,6 +58,7 @@ export default function PoolOverview({
     sdlPerDay: formatBNToShortString(poolData?.sdlPerDay || Zero, 18),
   }
   const hasShare = !!userShareData?.usdBalance.gt(Zero)
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const history = useHistory()
   const disableText = poolData.isGuarded || shouldMigrate || poolData.isPaused
   const chipLabel = useMemo(() => {
@@ -219,6 +220,7 @@ export default function PoolOverview({
                 fullWidth
                 size="large"
                 disabled={poolData?.isPaused || poolData.isGuarded}
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
                 onClick={() => history.push(`${poolRoute}/deposit`)}
               >
                 {t("deposit")}
@@ -230,6 +232,7 @@ export default function PoolOverview({
               }
               fullWidth
               size="large"
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
               onClick={() => history.push(`${poolRoute}/withdraw`)}
             >
               {t("withdraw")}

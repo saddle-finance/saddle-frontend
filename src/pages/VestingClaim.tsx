@@ -97,7 +97,7 @@ function VestingClaim(): ReactElement {
     void fetchBeneficiaries()
   }, [account, chainId, library, sdlContract])
 
-  const onClaimClick: () => void = async () => {
+  const onClaimClick: () => Promise<void> = async () => {
     if (!vestingContract || !chainId) return
     try {
       const txn = await vestingContract.release()
@@ -201,7 +201,7 @@ function VestingClaim(): ReactElement {
         <Button
           variant="contained"
           size="large"
-          onClick={onClaimClick}
+          onClick={() => void onClaimClick()}
           disabled={
             !isValidBeneficiary ||
             Number(formatAmount(claimableVestedAmount)) === 0

@@ -248,7 +248,7 @@ const PendingSwapModal = ({
       {currentStep === "review" && (
         <ReviewVirtualSwapSettlement
           onClose={onClose}
-          onConfirm={handleConfirmSettlement}
+          onConfirm={() => void handleConfirmSettlement}
           data={{
             from: {
               symbol: synthTokenFrom.symbol,

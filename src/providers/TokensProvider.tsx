@@ -41,6 +41,7 @@ export default function TokensProvider({
   const minichefData = useContext(MinichefContext)
   const { gauges } = useContext(GaugeContext)
   const [tokens, setTokens] = useState<BasicTokens>(null)
+
   useEffect(() => {
     async function fetchTokens() {
       if (!chainId || !library || !basicPools) {
