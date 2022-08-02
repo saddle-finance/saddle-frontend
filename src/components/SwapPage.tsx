@@ -246,6 +246,8 @@ const SwapPage = (props: Props): ReactElement => {
       )}
       <div>
         {pendingSwaps.map((pendingSwap) => {
+          if (!pendingSwap.synthTokenFrom || !pendingSwap.tokenTo)
+            return <>Loading Tokens2</>
           const formattedSynthBalance = commify(
             formatUnits(
               pendingSwap.synthBalance,
@@ -313,13 +315,13 @@ const SwapPage = (props: Props): ReactElement => {
         {currentModal === "review" ? (
           <ReviewSwap
             onClose={(): void => setCurrentModal(null)}
-            onConfirm={async (): Promise<void> => {
+            onConfirm={() => {
               setCurrentModal("confirm")
               logEvent("swap", {
                 from: fromState.symbol,
                 to: toState.symbol,
               })
-              await onConfirmTransaction?.()
+              void onConfirmTransaction?.()
               setCurrentModal(null)
             }}
             data={{

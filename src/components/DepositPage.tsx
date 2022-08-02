@@ -30,7 +30,7 @@ import { enqueuePromiseToast, enqueueToast } from "./Toastify"
 
 import AdvancedOptions from "./AdvancedOptions"
 import ConfirmTransaction from "./ConfirmTransaction"
-import { DepositTransaction } from "../interfaces/transactions"
+import { DepositBasicTransaction } from "../interfaces/transactions"
 import Dialog from "./Dialog"
 import { GaugeContext } from "../providers/GaugeProvider"
 import LIQUIDITY_GAUGE_V5_ABI from "../constants/abis/liquidityGaugeV5.json"
@@ -66,7 +66,7 @@ interface Props {
   exceedsWallet: boolean
   poolData: PoolDataType | null
   myShareData: UserShareType | null
-  transactionData: DepositTransaction
+  transactionData: DepositBasicTransaction | null
 }
 
 const DepositPage = (props: Props): ReactElement => {
@@ -90,7 +90,7 @@ const DepositPage = (props: Props): ReactElement => {
   const [liquidityGaugeContract, setLiquidityGaugeContract] =
     useState<LiquidityGaugeV5 | null>(null)
   const lpTokenContract = useLPTokenContract(poolData?.name ?? "")
-  const validDepositAmount = transactionData.to.totalAmount.gt(0)
+  const validDepositAmount = transactionData?.to.totalAmount.gt(0)
   const shouldDisplayWrappedOption = isMetaPool(poolData?.name)
   const theme = useTheme()
   const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
@@ -187,7 +187,7 @@ const DepositPage = (props: Props): ReactElement => {
               variant="contained"
               color="secondary"
               size="large"
-              onClick={onMigrateToGaugeClick}
+              onClick={void onMigrateToGaugeClick}
             >
               {t("exitToMigrate")}
             </Button>
@@ -303,7 +303,7 @@ const DepositPage = (props: Props): ReactElement => {
                     </div>
                   )}
                   <div>
-                    {transactionData.priceImpact.gte(0) ? (
+                    {transactionData?.priceImpact.gte(0) ? (
                       <Typography
                         component="span"
                         variant="body1"
@@ -321,12 +321,14 @@ const DepositPage = (props: Props): ReactElement => {
                     <Typography
                       component="span"
                       color={
-                        transactionData.priceImpact.gte(0) ? "primary" : "error"
+                        transactionData?.priceImpact.gte(0)
+                          ? "primary"
+                          : "error"
                       }
                     >
                       {" "}
                       {formatBNToPercentString(
-                        transactionData.priceImpact,
+                        transactionData?.priceImpact ?? Zero,
                         18,
                         4,
                       )}
@@ -381,10 +383,10 @@ const DepositPage = (props: Props): ReactElement => {
         {currentModal === "review" ? (
           <ReviewDeposit
             transactionData={transactionData}
-            onConfirm={async (): Promise<void> => {
+            onConfirm={() => {
               setCurrentModal("confirm")
               logEvent("deposit", (poolData && { pool: poolData?.name }) || {})
-              await onConfirmTransaction?.()
+              void onConfirmTransaction?.()
               setCurrentModal(null)
             }}
             onClose={(): void => setCurrentModal(null)}

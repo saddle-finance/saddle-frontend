@@ -12,10 +12,10 @@ import {
   SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES,
   SYNTHETIX_CONTRACT_ADDRESSES,
   SYNTHETIX_EXCHANGE_RATES_CONTRACT_ADDRESSES,
-  TOKENS_MAP,
   Token,
   VOTING_ESCROW_CONTRACT_ADDRESS,
 } from "../constants"
+import { Contract, ContractInterface } from "@ethersproject/contracts"
 import { createMultiCallContract, getContract, getSwapContract } from "../utils"
 import { useContext, useEffect, useMemo, useState } from "react"
 
@@ -23,9 +23,7 @@ import { AddressZero } from "@ethersproject/constants"
 import BRIDGE_CONTRACT_ABI from "../constants/abis/bridge.json"
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { Bridge } from "../../types/ethers-contracts/Bridge"
-import { Contract } from "@ethersproject/contracts"
 import ERC20_ABI from "../constants/abis/erc20.json"
-import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import FEE_DISTRIBUTOR_ABI from "../constants/abis/feeDistributor.json"
 import { FeeDistributor } from "../../types/ethers-contracts/FeeDistributor"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
@@ -72,7 +70,7 @@ import { useActiveWeb3React } from "./index"
 // returns null on errors
 function useContract(
   address: string | undefined,
-  ABI: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  ABI: ContractInterface,
   withSignerIfPossible = true,
 ): Contract | null {
   const { library, account } = useActiveWeb3React()
@@ -135,7 +133,6 @@ export function usePoolRegistry(): PoolRegistry | null {
       contractAddress,
       POOL_REGISTRY_ABI,
       library,
-      undefined,
     ) as PoolRegistry
     return contract
   }, [contractAddress, library])
@@ -336,37 +333,6 @@ export function useLPTokenContract(
       return null
     }
   }, [library, pool, account])
-}
-
-interface AllContractsObject {
-  [x: string]: Erc20 | null
-}
-export function useAllContracts(): AllContractsObject | null {
-  const { chainId, library, account } = useActiveWeb3React()
-  return useMemo(() => {
-    if (!library || !chainId) return {}
-    const allTokensForChain = Object.values(TOKENS_MAP).filter(
-      ({ addresses }) => addresses[chainId],
-    )
-    return allTokensForChain.reduce((acc, token) => {
-      const tokenAddress = token.addresses[chainId]
-      if (tokenAddress) {
-        let contract = null
-        try {
-          contract = getContract(
-            tokenAddress,
-            ERC20_ABI,
-            library,
-            account || undefined,
-          ) as Erc20
-        } catch (e) {
-          console.error(`Couldn't create contract for token ${tokenAddress}`)
-        }
-        acc[token.symbol] = contract
-      }
-      return acc
-    }, {} as AllContractsObject)
-  }, [chainId, library, account])
 }
 
 export function useGaugeControllerContract(): GaugeController | null {

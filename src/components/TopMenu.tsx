@@ -178,7 +178,9 @@ function MenuList() {
   const { t } = useTranslation()
   const { chainId } = useActiveWeb3React()
   const gaugesAreActive = areGaugesActive(chainId)
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { pathname } = useLocation()
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
   const activeTab = pathname.split("/")[1] as ActiveTabType
   return (
     <React.Fragment>

@@ -29,6 +29,8 @@ interface TokenShareType {
 export interface PoolDataType {
   adminFee: BigNumber
   aParameter: BigNumber
+  futureA: BigNumber
+  futureATime: BigNumber
   apy: BigNumber | null
   claimableAmount: Partial<Record<Partners, BigNumber>>
   name: string
@@ -80,6 +82,8 @@ export type PoolDataHookReturnType = [
 const emptyPoolData = {
   adminFee: Zero,
   aParameter: Zero,
+  futureA: Zero,
+  futureATime: Zero,
   apy: null,
   claimableAmount: Zero,
   name: "",
@@ -252,6 +256,8 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
           adminFee: expandedPool.adminFee,
           swapFee: expandedPool.swapFee,
           aParameter: expandedPool.aParameter,
+          futureA: expandedPool.futureA,
+          futureATime: expandedPool.futureATime,
           isPaused: expandedPool.isPaused,
           isMigrated: expandedPool.isMigrated,
           isMetaSwap: expandedPool.isMetaSwap,
@@ -302,6 +308,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
     }
     void getSwapData()
   }, [
+    // isLoading,
     account,
     chainId,
     library,

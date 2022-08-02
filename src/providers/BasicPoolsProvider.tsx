@@ -40,6 +40,8 @@ import { useSelector } from "react-redux"
 
 type SharedSwapData = {
   adminFee: BigNumber
+  futureA: BigNumber
+  futureATime: BigNumber
   aParameter: BigNumber
   isGuarded: boolean
   isPaused: boolean
@@ -265,6 +267,8 @@ export async function getPoolsDataFromRegistry(
 
       const sharedSwapData = {
         adminFee: swapStorage.adminFee,
+        futureA: swapStorage.futureA,
+        futureATime: swapStorage.futureATime,
         aParameter,
         basePoolAddress: poolData.basePoolAddress.toLowerCase(),
         isGuarded: poolData.isGuarded,
@@ -399,7 +403,7 @@ export async function getSwapInfo(
         swapContractMulticall.paused(),
         swapContractMulticall.getVirtualPrice(),
       ])
-    const { adminFee, swapFee } = swapStorage
+    const { adminFee, swapFee, futureA, futureATime } = swapStorage
     const [lpTokenSupply, ...tokenBalances] = await ethCallProvider.all([
       lpTokenContract.totalSupply(),
       ...tokens.map((_, i) => swapContractMulticall.getTokenBalance(i)),
@@ -429,6 +433,8 @@ export async function getSwapInfo(
         : virtualPrice,
       adminFee,
       swapFee,
+      futureA,
+      futureATime,
       aParameter,
       tokenBalances, // in native token precision
       underlyingTokenBalances,
