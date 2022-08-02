@@ -2,7 +2,6 @@ import {
   Box,
   Container,
   Grid,
-  LinearProgress,
   Typography,
   useMediaQuery,
   useTheme,
@@ -32,11 +31,10 @@ export default function Farm(): JSX.Element {
     "stake" | "claim" | undefined
   >()
   const basicPools = useContext(BasicPoolsContext)
-  const { gauges, isLoading: isGaugeLoading } = useContext(GaugeContext)
+  const { gauges } = useContext(GaugeContext)
   const gaugeAprs = useContext(AprsContext)
   const userState = useContext(UserStateContext)
   const getGaugeTVL = useGaugeTVL()
-  if (isGaugeLoading) return <LinearProgress />
   return (
     <Container sx={{ pt: 5 }}>
       <Box

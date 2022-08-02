@@ -129,12 +129,11 @@ export function usePoolRegistry(): PoolRegistry | null {
 
   return useMemo(() => {
     if (!library || !contractAddress) return null
-    const contract = getContract(
+    return getContract(
       contractAddress,
       POOL_REGISTRY_ABI,
       library,
     ) as PoolRegistry
-    return contract
   }, [contractAddress, library])
 }
 

@@ -98,7 +98,6 @@ export default function BasicPoolsProvider({
 }: React.PropsWithChildren<unknown>): ReactElement {
   const { chainId, library } = useActiveWeb3React()
   const [basicPools, setBasicPools] = useState<BasicPools>(null)
-
   const { lastTransactionTimes } = useSelector(
     (state: AppState) => state.application,
   )
