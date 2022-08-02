@@ -1,5 +1,14 @@
+import { Chain, getDefaultWallets } from "@rainbow-me/rainbowkit"
+import {
+  chain,
+  configureChains,
+  createClient as createWagmiClient,
+} from "wagmi"
+
 import { ChainId } from "./index"
+import { alchemyProvider } from "wagmi/providers/alchemy"
 import { hexlify } from "@ethersproject/bytes"
+import { publicProvider } from "wagmi/providers/public"
 
 export const NETWORK_LABEL: Partial<Record<ChainId, string>> = {
   [ChainId.MAINNET]: "Ethereum",
@@ -149,3 +158,49 @@ export const DEV_SUPPORTED_NETWORKS: SupportedNetworks = {
     blockExplorerUrls: ["https://explorer.evm-alpha.kava.io"],
   },
 }
+
+export const avalancheChain: Chain = {
+  id: 43_114,
+  name: "Avalanche",
+  network: "avalanche",
+  iconUrl:
+    "https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png?1604021818",
+  iconBackground: "#fff",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Avalanche",
+    symbol: "AVAX",
+  },
+  rpcUrls: {
+    default: "https://api.avax.network/ext/bc/C/rpc",
+  },
+  blockExplorers: {
+    default: { name: "SnowTrace", url: "https://snowtrace.io" },
+    etherscan: { name: "SnowTrace", url: "https://snowtrace.io" },
+  },
+  testnet: false,
+}
+
+export const rainbowChains = [
+  chain.mainnet,
+  chain.optimism,
+  chain.arbitrum,
+  chain.hardhat,
+  avalancheChain,
+]
+
+export const { chains, provider } = configureChains(rainbowChains, [
+  alchemyProvider({ alchemyId: process.env.ALCHEMY_API_KEY }),
+  publicProvider(),
+])
+
+const { connectors } = getDefaultWallets({
+  appName: "Saddle Exchange",
+  chains,
+})
+
+export const wagmiClient = createWagmiClient({
+  autoConnect: true,
+  connectors,
+  provider,
+})
