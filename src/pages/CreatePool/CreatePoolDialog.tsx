@@ -148,7 +148,11 @@ export default function ReviewCreatePool({
           {t("permissionlessPoolCreationOutputEstimatedMsg")}
         </Typography>
         <Stack spacing={1}>
-          <Button variant="contained" size="large" onClick={onCreatePoolClick}>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={void onCreatePoolClick}
+          >
             <Typography>{t("createPool")}</Typography>
           </Button>
           <Button onClick={onClose} size="large">

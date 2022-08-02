@@ -165,7 +165,7 @@ function LanguageSection(): ReactElement {
       <Collapse in={isLanguageVisible} data-testid="languageMenuContainer">
         {languageOptions.map(({ displayText, i18nKey }) => (
           <ListItemButton
-            onClick={() => i18n.changeLanguage(i18nKey)}
+            onClick={() => void i18n.changeLanguage(i18nKey)}
             key={displayText}
           >
             <ListItemIcon sx={{ ml: 2 }}>

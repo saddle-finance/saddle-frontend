@@ -128,6 +128,7 @@ export async function getGaugeData(
     )
     const gaugeRelativeWeightsPromise: Promise<BigNumber[]> =
       ethCallProvider.all(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         gaugeAddresses.map((gaugeAddress) =>
           // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
           gaugeControllerMultiCall.gauge_relative_weight(gaugeAddress),

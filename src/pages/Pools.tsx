@@ -34,6 +34,7 @@ function Pools(): ReactElement | null {
   const basicPools = useContext(BasicPoolsContext)
   const userState = useContext(UserStateContext)
   const approveAndMigrate = useApproveAndMigrate()
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const history = useHistory()
 
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
@@ -111,6 +112,7 @@ function Pools(): ReactElement | null {
               variant="contained"
               color="secondary"
               sx={{ float: "right" }}
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
               onClick={() => history.push("/pools/create")}
             >
               Create Pool

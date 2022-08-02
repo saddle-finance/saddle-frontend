@@ -202,7 +202,7 @@ export default function TokenClaimDialog({
                 items={[
                   [t("retroactiveDrop"), rewardBalances.retroactive || Zero],
                 ]}
-                claimCallback={() => claimRetroReward()}
+                claimCallback={() => void claimRetroReward()}
                 status={claimsStatuses["retroactive"]}
               />
 
@@ -239,7 +239,7 @@ export default function TokenClaimDialog({
                     items={[
                       [pool.poolName, rewardBalances[pool.poolName] || Zero],
                     ]}
-                    claimCallback={() => claimPoolReward(pool)}
+                    claimCallback={() => void claimPoolReward(pool)}
                     status={
                       claimsStatuses["allPools"] ||
                       claimsStatuses[pool.poolName]
@@ -271,7 +271,7 @@ export default function TokenClaimDialog({
                           ["SDL", userClaimableSdl ?? Zero],
                           ...userClaimableOtherRewards,
                         ]}
-                        claimCallback={() => claimGaugeReward(gauge)}
+                        claimCallback={() => void claimGaugeReward(gauge)}
                         status={
                           claimsStatuses["allGauges"] ||
                           claimsStatuses[gauge?.gaugeName ?? ""]
@@ -296,7 +296,7 @@ export default function TokenClaimDialog({
                       items={[
                         [pool.poolName, rewardBalances[pool.poolName] || Zero],
                       ]}
-                      claimCallback={() => claimPoolReward(pool)}
+                      claimCallback={() => void claimPoolReward(pool)}
                       status={
                         claimsStatuses["allPools"] ||
                         claimsStatuses[pool.poolName]
@@ -332,7 +332,7 @@ export default function TokenClaimDialog({
             size="large"
             fullWidth
             disabled={poolsWithUserRewards.length < 2}
-            onClick={() => claimAllPoolsRewards(poolsWithUserRewards)}
+            onClick={() => void claimAllPoolsRewards(poolsWithUserRewards)}
           >
             {t("claimForAllOutdatedPools")}
           </Button>

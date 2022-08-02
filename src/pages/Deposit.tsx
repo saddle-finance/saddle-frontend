@@ -3,7 +3,6 @@ import {
   DepositBasicTransaction,
   TransactionBasicItem,
 } from "../interfaces/transactions"
-import { PoolName, isLegacySwapABIPool } from "../constants"
 import React, {
   ReactElement,
   useContext,
@@ -29,17 +28,16 @@ import { Zero } from "@ethersproject/constants"
 import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { formatGasToString } from "../utils/gas"
+import { isLegacySwapABIPool } from "../constants"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
+import { useParams } from "react-router-dom"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
 import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
 
-interface Props {
-  poolName: PoolName
-}
-
-function Deposit({ poolName }: Props): ReactElement | null {
+function Deposit(): ReactElement | null {
+  const { poolName } = useParams<{ poolName: string }>()
   const basicPools = useContext(BasicPoolsContext)
   const basicTokens = useContext(TokensContext)
   const pool = basicPools?.[poolName]
