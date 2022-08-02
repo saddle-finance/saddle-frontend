@@ -29,15 +29,15 @@ import { isAddressZero } from "."
 
 export type Gauge = {
   address: string
-  gaugeBalance: BigNumber | null
-  gaugeTotalSupply: BigNumber | null
+  gaugeBalance: BigNumber
+  gaugeTotalSupply: BigNumber
   gaugeWeight: BigNumber
   lpTokenAddress: string
   poolAddress: string | null
   poolName: string | null
   gaugeRelativeWeight: BigNumber
-  workingBalances: BigNumber | null
-  workingSupply: BigNumber | null
+  workingBalances: BigNumber
+  workingSupply: BigNumber
   rewards: GaugeReward[]
   gaugeName: string | null
   isKilled: boolean
@@ -79,8 +79,8 @@ export async function getGaugeData(
   chainId: ChainId,
   gaugeController: GaugeController,
   basicPools: BasicPools,
-  account: string,
   gaugeMinterContract: Minter,
+  account?: string,
 ): Promise<Gauges | null> {
   if (!areGaugesActive(chainId)) return initialGaugesState
   try {
@@ -141,11 +141,13 @@ export async function getGaugeData(
         LIQUIDITY_GAUGE_V5_ABI,
       ),
     )
-    const gaugeBalancePromise = ethCallProvider.tryAll(
-      gaugeMulticallContracts.map((gaugeContract) =>
-        gaugeContract.balanceOf(account),
-      ),
-    )
+    const gaugeBalancePromise = account
+      ? ethCallProvider.tryAll(
+          gaugeMulticallContracts.map((gaugeContract) =>
+            gaugeContract.balanceOf(account),
+          ),
+        )
+      : null
     const gaugeTotalSupplyPromise = ethCallProvider.tryAll(
       gaugeMulticallContracts.map((gaugeContract) =>
         gaugeContract.totalSupply(),
@@ -156,11 +158,13 @@ export async function getGaugeData(
         gaugeContract.working_supply(),
       ),
     )
-    const gaugeWorkingBalancesPromise = ethCallProvider.tryAll(
-      gaugeMulticallContracts.map((gaugeContract) =>
-        gaugeContract.working_balances(account),
-      ),
-    )
+    const gaugeWorkingBalancesPromise = account
+      ? ethCallProvider.tryAll(
+          gaugeMulticallContracts.map((gaugeContract) =>
+            gaugeContract.working_balances(account),
+          ),
+        )
+      : null
     const gaugeLpTokenAddressesPromise = ethCallProvider.all(
       gaugeMulticallContracts.map((gaugeContract) => gaugeContract.lp_token()),
     )
@@ -217,30 +221,31 @@ export async function getGaugeData(
           isMinter: true,
         }
         if (!lpTokenAddress) return previousGaugeData
+        const gauge: Gauge = {
+          address: gaugeAddress,
+          gaugeWeight: gaugeWeights[index],
+          gaugeRelativeWeight: gaugeRelativeWeight,
+          gaugeTotalSupply: gaugeTotalSupplies[index] || Zero,
+          workingSupply: gaugeWorkingSupplies[index] || Zero,
+          workingBalances: gaugeWorkingBalances?.[index] || Zero,
+          gaugeBalance: gaugeBalances?.[index] || Zero,
+          gaugeName: gaugeNames[index],
+          lpTokenAddress,
+          isKilled: gaugeKillStatuses[index] ?? false,
+          poolAddress: isValidPoolAddress && poolAddress ? poolAddress : null,
+          poolName: gaugePool?.poolName || null,
+          rewards: gaugeRewards[index]
+            .map((reward) => ({
+              periodFinish: reward.period_finish,
+              rate: reward.rate,
+              tokenAddress: reward.token.toLowerCase(),
+              isMinter: false,
+            }))
+            .concat(sdlRate.gt(Zero) ? [sdlReward] : []),
+        }
         return {
           ...previousGaugeData,
-          [lpTokenAddress]: {
-            address: gaugeAddress,
-            gaugeWeight: gaugeWeights[index],
-            gaugeRelativeWeight: gaugeRelativeWeight,
-            gaugeTotalSupply: gaugeTotalSupplies[index],
-            workingSupply: gaugeWorkingSupplies[index],
-            workingBalances: gaugeWorkingBalances[index],
-            gaugeBalance: gaugeBalances[index],
-            gaugeName: gaugeNames[index],
-            lpTokenAddress,
-            isKilled: gaugeKillStatuses[index] ?? false,
-            poolAddress: isValidPoolAddress ? poolAddress : null,
-            poolName: gaugePool?.poolName || null,
-            rewards: gaugeRewards[index]
-              .map((reward) => ({
-                periodFinish: reward.period_finish,
-                rate: reward.rate,
-                tokenAddress: reward.token.toLowerCase(),
-                isMinter: false,
-              }))
-              .concat(sdlRate.gt(Zero) ? [sdlReward] : []),
-          } as Gauge,
+          [lpTokenAddress]: gauge,
         }
       },
       {},
