@@ -82,7 +82,6 @@ const queryClient = new QueryClient({
 export default function App(): ReactElement {
   const theme = useTheme()
   const basicPools = useContext(BasicPoolsContext)
-  const pools = Object.values(basicPools || {})
 
   const { boot } = useIntercom()
   useEffect(() => {
@@ -113,32 +112,16 @@ export default function App(): ReactElement {
                                     path="/pools"
                                     component={Pools}
                                   />
-                                  {pools.map((pool) => (
-                                    <Route
-                                      exact
-                                      path={`/pools/${pool.poolName}/deposit`}
-                                      render={(props) => (
-                                        <Deposit
-                                          {...props}
-                                          poolName={pool.poolName}
-                                        />
-                                      )}
-                                      key={`${pool.poolName}-deposit`}
-                                    />
-                                  ))}
-                                  {pools.map((pool) => (
-                                    <Route
-                                      exact
-                                      path={`/pools/${pool.poolName}/withdraw`}
-                                      render={(props) => (
-                                        <Withdraw
-                                          {...props}
-                                          poolName={pool.poolName}
-                                        />
-                                      )}
-                                      key={`${pool.poolName}-withdraw`}
-                                    />
-                                  ))}
+                                  <Route
+                                    exact
+                                    path={`/pools/:poolName/deposit`}
+                                    component={Deposit}
+                                  />
+                                  <Route
+                                    exact
+                                    path={`/pools/:poolName/deposit`}
+                                    component={Withdraw}
+                                  />
                                   {basicPools && (
                                     <Redirect
                                       from="/pools/:route/:action"

@@ -48,25 +48,25 @@ export const useBasicTokens = (): UseQueryResult<BasicTokens> => {
     if (!chainId || !basicPools || !ethCallProvider) {
       return null
     }
-    const targetTokenAddresses = new Set(
-      Object.values(basicPools)
-        .map((pool) => {
-          lpTokens.add(pool.lpToken)
-          const tokensInPool = [
-            ...pool.tokens,
-            ...(pool.underlyingTokens || []),
-            pool.lpToken,
-          ]
-          Object.assign(
-            tokenType,
-            ...tokensInPool.map((address) => ({
-              [address]: pool.typeOfAsset,
-            })),
-          ) as Record<string, PoolTypes>
-          return tokensInPool
-        })
-        .flat(),
-    )
+    const pools = Object.values(basicPools)
+    const targetTokens: string[][] = []
+    pools.forEach((pool) => {
+      lpTokens.add(pool.lpToken)
+      const tokensInPool = [
+        ...pool.tokens,
+        ...(pool.underlyingTokens || []),
+        pool.lpToken,
+      ]
+      Object.assign(
+        tokenType,
+        ...tokensInPool.map((address) => ({
+          [address]: pool.typeOfAsset,
+        })),
+      ) as Record<string, PoolTypes>
+      targetTokens.push(tokensInPool)
+    })
+    const targetTokensFlattened = [...targetTokens].flat()
+    const targetTokenAddresses = new Set(targetTokensFlattened)
     if (minichefData) {
       // add minichef reward tokens
       minichefData.allRewardTokens.forEach((address) => {

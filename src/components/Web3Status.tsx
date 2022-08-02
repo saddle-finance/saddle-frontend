@@ -21,7 +21,7 @@ const Web3Status = (): ReactElement => {
   const [modalOpen, setModalOpen] = useState(false)
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT)
   const { t } = useTranslation()
-  const ensName = useENS(account)
+  const { ensName } = useENS(account)
   const udName = useUDName()
 
   // always reset to account view
