@@ -31,15 +31,13 @@ import { formatGasToString } from "../utils/gas"
 import { isLegacySwapABIPool } from "../constants"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
+import { useParams } from "react-router-dom"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
 import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
 
-interface Props {
-  poolName: string
-}
-
-function Deposit({ poolName }: Props): ReactElement | null {
+function Deposit(): ReactElement | null {
+  const { poolName } = useParams<{ poolName: string }>()
   const basicPools = useContext(BasicPoolsContext)
   const basicTokens = useContext(TokensContext)
   const pool = basicPools?.[poolName]
