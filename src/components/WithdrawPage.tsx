@@ -14,6 +14,10 @@ import {
 } from "@mui/material"
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
+import {
+  WithdrawFormAction,
+  WithdrawFormState,
+} from "../hooks/useWithdrawFormState"
 import { formatBNToPercentString, isNumberOrEmpty } from "../utils"
 
 import AdvancedOptions from "./AdvancedOptions"
@@ -26,7 +30,6 @@ import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
 import ReviewWithdraw from "./ReviewWithdraw"
 import TokenInput from "./TokenInput"
-import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import { Zero } from "@ethersproject/constants"
 import { logEvent } from "../utils/googleAnalytics"
 import { useSelector } from "react-redux"
@@ -65,11 +68,10 @@ interface Props {
     inputValue: string
   }>
   reviewData: ReviewWithdrawData
-  selected?: { [key: string]: any }
   poolData: PoolDataType | null
   myShareData: UserShareType | null
   formStateData: WithdrawFormState
-  onFormChange: (action: any) => void
+  onFormChange: (action: WithdrawFormAction) => void
   onConfirmTransaction: () => Promise<void>
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */

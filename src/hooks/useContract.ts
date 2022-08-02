@@ -15,6 +15,7 @@ import {
   Token,
   VOTING_ESCROW_CONTRACT_ADDRESS,
 } from "../constants"
+import { Contract, ContractInterface } from "@ethersproject/contracts"
 import { createMultiCallContract, getContract, getSwapContract } from "../utils"
 import { useContext, useEffect, useMemo, useState } from "react"
 
@@ -22,7 +23,6 @@ import { AddressZero } from "@ethersproject/constants"
 import BRIDGE_CONTRACT_ABI from "../constants/abis/bridge.json"
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { Bridge } from "../../types/ethers-contracts/Bridge"
-import { Contract } from "@ethersproject/contracts"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import FEE_DISTRIBUTOR_ABI from "../constants/abis/feeDistributor.json"
 import { FeeDistributor } from "../../types/ethers-contracts/FeeDistributor"
@@ -70,7 +70,7 @@ import { useActiveWeb3React } from "./index"
 // returns null on errors
 function useContract(
   address: string | undefined,
-  ABI: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  ABI: ContractInterface,
   withSignerIfPossible = true,
 ): Contract | null {
   const { library, account } = useActiveWeb3React()

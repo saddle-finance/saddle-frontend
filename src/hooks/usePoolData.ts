@@ -302,6 +302,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
     }
     void getSwapData()
   }, [
+    // isLoading,
     account,
     chainId,
     library,
