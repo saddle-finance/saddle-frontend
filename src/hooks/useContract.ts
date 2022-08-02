@@ -133,7 +133,6 @@ export function usePoolRegistry(): PoolRegistry | null {
       contractAddress,
       POOL_REGISTRY_ABI,
       library,
-      undefined,
     ) as PoolRegistry
   }, [contractAddress, library])
 }

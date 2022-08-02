@@ -29,8 +29,16 @@
   "rules": {
     "@typescript-eslint/no-unused-vars": ["error"],
     "@typescript-eslint/ban-ts-comment": "off",
-    "no-invalid-this": 0,
     "no-unused-vars": "off",
     "sort-imports": "error"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.mts", "*.cts", "*.tsx", "**/*.stories.*"],
+      "rules": {
+        "no-undef": "off",
+        "import/no-anonymous-default-export": "off"
+      }
+    }
+  ]
 }

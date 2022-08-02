@@ -201,7 +201,7 @@ export default function StakeDialog({
           <Tabs
             value={stakeStatus}
             variant="fullWidth"
-            onChange={(_, newValue) => {
+            onChange={(_, newValue: "stake" | "unstake") => {
               setStakeStatus(newValue)
               setAmountInput(defaultInput)
             }}
@@ -226,7 +226,9 @@ export default function StakeDialog({
             variant="contained"
             size="large"
             disabled={!isInputValid}
-            onClick={stakeStatus === "stake" ? onClickStake : onClickUnstake}
+            onClick={() =>
+              void (stakeStatus === "stake" ? onClickStake : onClickUnstake)()
+            }
           >
             {stakeStatus === "stake" ? "Stake" : "Unstake"}
           </Button>

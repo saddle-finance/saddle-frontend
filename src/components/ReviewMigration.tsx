@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next"
 
 interface Props {
   onClose?: () => void
-  onConfirm?: () => void
+  onConfirm?: () => Promise<void>
   migrationAmount?: BigNumber // 1e18
   lpTokenAddress?: string
 }
