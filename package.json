@@ -105,7 +105,7 @@
     "build-storybook": "build-storybook -s public",
     "build": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-scripts build",
     "bundlemon": "bundlemon --subProject no-compression --defaultCompression none && bundlemon --subProject gzip-compression --defaultCompression gzip",
-    "cy:coverage": "start-test 3000 'npx cypress-repeat run -n 2 --until-passes --rerun-failed-only'",
+    "cy:coverage": "GENERATE_SOURCEMAP=false start-test 3000 'npx cypress-repeat run -n 2 --until-passes --rerun-failed-only'",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
     "cy:startopen": "start-test 3000 'cypress open'",
@@ -115,7 +115,7 @@
     "missing-translations": "node scripts/missing-translations.js",
     "postinstall": "typechain --target ethers-v5 \"src/constants/abis/*.json\"",
     "prepare": "husky install",
-    "start": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-scripts -r @cypress/instrument-cra start",
+    "start": "GENERATE_SOURCEMAP=false REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-scripts -r @cypress/instrument-cra start",
     "storybook": "start-storybook -p 6006 -s public",
     "test": "react-scripts test"
   },
