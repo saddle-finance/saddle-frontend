@@ -1,8 +1,4 @@
-import {
-  LPTokenAddressToGauge,
-  getGaugeData,
-  initialGaugesState,
-} from "../utils/gauges"
+import { Gauges, getGaugeData, initialGaugesState } from "../utils/gauges"
 import React, { ReactElement, useContext, useEffect, useState } from "react"
 import {
   useGaugeControllerContract,
@@ -12,10 +8,7 @@ import {
 import { BasicPoolsContext } from "./BasicPoolsProvider"
 import { useActiveWeb3React } from "../hooks"
 
-export const GaugeContext = React.createContext<{
-  gauges: LPTokenAddressToGauge
-  gaugeCount: number
-}>({ gauges: {}, gaugeCount: 0 })
+export const GaugeContext = React.createContext<Gauges>(initialGaugesState)
 
 export default function GaugeProvider({
   children,
@@ -24,8 +17,7 @@ export default function GaugeProvider({
   const gaugeControllerContract = useGaugeControllerContract()
   const basicPools = useContext(BasicPoolsContext)
   const gaugeMinterContract = useGaugeMinterContract() // only exists on mainnet
-  const [gauges, setGauges] = useState<LPTokenAddressToGauge>({})
-  const [gaugeCount, setGaugeCount] = useState(0)
+  const [gauges, setGauges] = useState<Gauges>(initialGaugesState)
 
   useEffect(() => {
     async function fetchGauges() {
@@ -36,7 +28,7 @@ export default function GaugeProvider({
         !gaugeMinterContract
       )
         return
-      const { gauges, gaugeCount } =
+      const gauges: Gauges =
         (await getGaugeData(
           library,
           chainId,
@@ -46,7 +38,6 @@ export default function GaugeProvider({
           account ?? undefined,
         )) || initialGaugesState
       setGauges(gauges)
-      setGaugeCount(gaugeCount)
     }
 
     void fetchGauges()
@@ -60,8 +51,6 @@ export default function GaugeProvider({
   ])
 
   return (
-    <GaugeContext.Provider value={{ gauges, gaugeCount }}>
-      {children}
-    </GaugeContext.Provider>
+    <GaugeContext.Provider value={gauges}>{children}</GaugeContext.Provider>
   )
 }
