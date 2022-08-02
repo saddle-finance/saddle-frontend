@@ -119,7 +119,7 @@ export default function App(): ReactElement {
                                   />
                                   <Route
                                     exact
-                                    path={`/pools/:poolName/deposit`}
+                                    path={`/pools/:poolName/withdraw`}
                                     component={Withdraw}
                                   />
                                   {basicPools && (
