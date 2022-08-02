@@ -7,7 +7,6 @@ import React, {
   Suspense,
   lazy,
   useCallback,
-  useContext,
   useEffect,
 } from "react"
 import { Redirect, Route, Switch } from "react-router-dom"
@@ -17,7 +16,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 import AprsProvider from "../providers/AprsProvider"
 import { BLOCK_TIME } from "../constants"
-import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
+import BasicPoolsProvider from "../providers/BasicPoolsProvider"
 import CoinbasePayTest from "./CoinbasePayTest"
 import CreatePool from "./CreatePool"
 import Deposit from "./Deposit"
@@ -81,8 +80,6 @@ const queryClient = new QueryClient({
 
 export default function App(): ReactElement {
   const theme = useTheme()
-  const basicPools = useContext(BasicPoolsContext)
-
   const { boot } = useIntercom()
   useEffect(() => {
     boot()
@@ -93,85 +90,95 @@ export default function App(): ReactElement {
       <ReactQueryDevtools initialIsOpen />
       <Suspense fallback={null}>
         <Web3ReactManager>
-          <MinichefProvider>
-            <GaugeProvider>
-              <TokensProvider>
-                <ExpandedPoolsProvider>
-                  <UserStateProvider>
-                    <PricesAndVoteData>
-                      <PendingSwapsProvider>
-                        <AprsProvider>
-                          <RewardsBalancesProvider>
-                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                              <AppContainer>
-                                <TopMenu />
-                                <Switch>
-                                  <Route exact path="/" component={Swap} />
-                                  <Route
-                                    exact
-                                    path="/pools"
-                                    component={Pools}
-                                  />
-                                  <Route
-                                    exact
-                                    path={`/pools/:poolName/deposit`}
-                                    component={Deposit}
-                                  />
-                                  <Route
-                                    exact
-                                    path={`/pools/:poolName/withdraw`}
-                                    component={Withdraw}
-                                  />
-                                  {basicPools && (
+          <BasicPoolsProvider>
+            <MinichefProvider>
+              <GaugeProvider>
+                <TokensProvider>
+                  <ExpandedPoolsProvider>
+                    <UserStateProvider>
+                      <PricesAndVoteData>
+                        <PendingSwapsProvider>
+                          <AprsProvider>
+                            <RewardsBalancesProvider>
+                              <LocalizationProvider
+                                dateAdapter={AdapterDateFns}
+                              >
+                                <AppContainer>
+                                  <TopMenu />
+                                  <Switch>
+                                    <Route exact path="/" component={Swap} />
+                                    <Route
+                                      exact
+                                      path="/pools"
+                                      component={Pools}
+                                    />
+                                    <Route
+                                      exact
+                                      path={`/pools/:poolName/deposit`}
+                                      component={Deposit}
+                                    />
+                                    <Route
+                                      exact
+                                      path={`/pools/:poolName/withdraw`}
+                                      component={Withdraw}
+                                    />
                                     <Redirect
                                       from="/pools/:route/:action"
                                       to="/pools"
                                     />
-                                  )}
-                                  <Route
-                                    exact
-                                    path="/pools/create"
-                                    component={CreatePool}
+                                    <Route
+                                      exact
+                                      path="/pools/create"
+                                      component={CreatePool}
+                                    />
+                                    <Route
+                                      exact
+                                      path="/risk"
+                                      component={Risk}
+                                    />
+                                    <Route
+                                      exact
+                                      path="/vesting-claim"
+                                      component={VestingClaim}
+                                    />
+                                    <Route
+                                      exact
+                                      path="/farm"
+                                      component={Farm}
+                                    />
+                                    <Route
+                                      exact
+                                      path="/vesdl"
+                                      component={VeSDL}
+                                    />
+                                    <Route
+                                      exact
+                                      path="/coinbase-pay-test"
+                                      component={CoinbasePayTest}
+                                    />
+                                  </Switch>
+                                  <WrongNetworkModal />
+                                  <Version />
+                                  <ToastContainer
+                                    theme={
+                                      theme.palette.mode === "dark"
+                                        ? "dark"
+                                        : "light"
+                                    }
+                                    position="top-left"
                                   />
-                                  <Route exact path="/risk" component={Risk} />
-                                  <Route
-                                    exact
-                                    path="/vesting-claim"
-                                    component={VestingClaim}
-                                  />
-                                  <Route exact path="/farm" component={Farm} />
-                                  <Route
-                                    exact
-                                    path="/vesdl"
-                                    component={VeSDL}
-                                  />
-                                  <Route
-                                    exact
-                                    path="/coinbase-pay-test"
-                                    component={CoinbasePayTest}
-                                  />
-                                </Switch>
-                                <WrongNetworkModal />
-                                <Version />
-                                <ToastContainer
-                                  theme={
-                                    theme.palette.mode === "dark"
-                                      ? "dark"
-                                      : "light"
-                                  }
-                                  position="top-left"
-                                />
-                              </AppContainer>
-                            </LocalizationProvider>
-                          </RewardsBalancesProvider>
-                        </AprsProvider>
-                      </PendingSwapsProvider>
-                    </PricesAndVoteData>
-                  </UserStateProvider>
-                </ExpandedPoolsProvider>
-              </TokensProvider>
-            </GaugeProvider>
-          </MinichefProvider>
+                                </AppContainer>
+                              </LocalizationProvider>
+                            </RewardsBalancesProvider>
+                          </AprsProvider>
+                        </PendingSwapsProvider>
+                      </PricesAndVoteData>
+                    </UserStateProvider>
+                  </ExpandedPoolsProvider>
+                </TokensProvider>
+              </GaugeProvider>
+            </MinichefProvider>
+          </BasicPoolsProvider>
         </Web3ReactManager>
       </Suspense>
     </QueryClientProvider>
