@@ -7,6 +7,7 @@ import { Web3ReactProvider, createWeb3ReactRoot } from "@web3-react/core"
 import { logError, sendWebVitalsToGA } from "./utils/googleAnalytics"
 
 import App from "./pages/App"
+import { Buffer } from "buffer"
 import { IS_PRODUCTION } from "./utils/environment"
 import { Integrations } from "@sentry/tracing"
 import { IntercomProvider } from "react-use-intercom"
@@ -26,6 +27,9 @@ const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName)
 if (window && window.ethereum) {
   window.ethereum.autoRefreshOnNetworkChange = false
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+window.Buffer = window.Buffer || Buffer // TODO: just a webpack 5 react-script5 patch fix. delete after rainbow wallet.
 
 window.addEventListener("error", logError)
 
