@@ -96,7 +96,8 @@ function NetworkSection(): ReactElement {
     ChainId.MAINNET,
     ChainId.FANTOM,
     ChainId.EVMOS,
-    ...(IS_DEVELOPMENT ? [ChainId.EVMOS_TESTNET] : []),
+    ChainId.KAVA,
+    ...(IS_DEVELOPMENT ? [ChainId.EVMOS_TESTNET, ChainId.KAVA_TESTNET] : []),
     ...(IS_L2_SUPPORTED ? [ChainId.ARBITRUM, ChainId.OPTIMISM] : []),
   ]
 
@@ -164,7 +165,7 @@ function LanguageSection(): ReactElement {
       <Collapse in={isLanguageVisible} data-testid="languageMenuContainer">
         {languageOptions.map(({ displayText, i18nKey }) => (
           <ListItemButton
-            onClick={() => i18n.changeLanguage(i18nKey)}
+            onClick={() => void i18n.changeLanguage(i18nKey)}
             key={displayText}
           >
             <ListItemIcon sx={{ ml: 2 }}>

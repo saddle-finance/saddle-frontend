@@ -7,15 +7,16 @@ import { Web3ReactProvider, createWeb3ReactRoot } from "@web3-react/core"
 import { logError, sendWebVitalsToGA } from "./utils/googleAnalytics"
 
 import App from "./pages/App"
+import { Buffer } from "buffer"
 import { IS_PRODUCTION } from "./utils/environment"
 import { Integrations } from "@sentry/tracing"
 import { IntercomProvider } from "react-use-intercom"
 import { NetworkContextName } from "./constants"
 import { Provider } from "react-redux"
 import React from "react"
-import ReactDOM from "react-dom"
 import { HashRouter as Router } from "react-router-dom"
 import { ThemeSettingsProvider } from "./providers/ThemeSettingsProvider"
+import { createRoot } from "react-dom/client"
 import getLibrary from "./utils/getLibrary"
 import { getNetworkLibrary } from "./connectors"
 import reportWebVitals from "./reportWebVitals"
@@ -26,6 +27,9 @@ const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName)
 if (window && window.ethereum) {
   window.ethereum.autoRefreshOnNetworkChange = false
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+window.Buffer = window.Buffer || Buffer // TODO: just a webpack 5 react-script5 patch fix. delete after rainbow wallet.
 
 window.addEventListener("error", logError)
 
@@ -39,26 +43,27 @@ Sentry.init({
 })
 
 const intercomAppId = "tbghxgth"
+const container = document.getElementById("root")
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-non-null-assertion
+const root = createRoot(container!) // createRoot(container!) if you use TypeScript
 
-ReactDOM.render(
-  <>
-    <React.StrictMode>
-      <IntercomProvider appId={intercomAppId} shouldInitialize={IS_PRODUCTION}>
-        <Web3ReactProvider getLibrary={getLibrary}>
-          <Web3ProviderNetwork getLibrary={getNetworkLibrary}>
-            <Provider store={store}>
-              <ThemeSettingsProvider>
-                <Router>
-                  <App />
-                </Router>
-              </ThemeSettingsProvider>
-            </Provider>
-          </Web3ProviderNetwork>
-        </Web3ReactProvider>
-      </IntercomProvider>
-    </React.StrictMode>
-  </>,
-  document.getElementById("root"),
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+root.render(
+  <React.StrictMode>
+    <IntercomProvider appId={intercomAppId} shouldInitialize={IS_PRODUCTION}>
+      <Web3ReactProvider getLibrary={getLibrary}>
+        <Web3ProviderNetwork getLibrary={getNetworkLibrary}>
+          <Provider store={store}>
+            <ThemeSettingsProvider>
+              <Router>
+                <App />
+              </Router>
+            </ThemeSettingsProvider>
+          </Provider>
+        </Web3ProviderNetwork>
+      </Web3ReactProvider>
+    </IntercomProvider>
+  </React.StrictMode>,
 )
 
 // If you want to start measuring performance in your app, pass a function

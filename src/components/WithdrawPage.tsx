@@ -16,6 +16,10 @@ import {
 import { PoolDataType, UserShareType } from "../hooks/usePoolData"
 import React, { ReactElement, useState } from "react"
 import {
+  WithdrawFormAction,
+  WithdrawFormState,
+} from "../hooks/useWithdrawFormState"
+import {
   formatBNToPercentString,
   formatBNToString,
   isNumberOrEmpty,
@@ -31,7 +35,6 @@ import MyShareCard from "./MyShareCard"
 import PoolInfoCard from "./PoolInfoCard"
 import ReviewWithdraw from "./ReviewWithdraw"
 import TokenInput from "./TokenInput"
-import { WithdrawFormState } from "../hooks/useWithdrawFormState"
 import { Zero } from "@ethersproject/constants"
 import { logEvent } from "../utils/googleAnalytics"
 import { useSelector } from "react-redux"
@@ -71,13 +74,12 @@ interface Props {
     max?: BigNumber
   }>
   reviewData: ReviewWithdrawData
-  selected?: { [key: string]: any }
   poolData: PoolDataType | null
   myShareData: UserShareType | null
   formStateData: WithdrawFormState
-  shouldWithdrawWrapped: boolean
-  onFormChange: (action: any) => void
+  onFormChange: (action: WithdrawFormAction) => void
   onConfirmTransaction: () => Promise<void>
+  shouldWithdrawWrapped: boolean
   onToggleWithdrawWrapped: () => void
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -291,10 +293,10 @@ const WithdrawPage = (props: Props): ReactElement | null => {
           <ReviewWithdraw
             data={reviewData}
             gas={gasPriceSelected}
-            onConfirm={async (): Promise<void> => {
+            onConfirm={() => {
               setCurrentModal("confirm")
               logEvent("withdraw", (poolData && { pool: poolData?.name }) || {})
-              await onConfirmTransaction?.()
+              void onConfirmTransaction?.()
               setCurrentModal(null)
             }}
             onClose={(): void => setCurrentModal(null)}

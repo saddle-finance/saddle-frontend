@@ -28,6 +28,7 @@ interface Window {
   }
   gtag?: (...args: any[]) => void
   web3?: unknown
+  Buffer?: unknown
 }
 
 declare module "@metamask/jazzicon" {

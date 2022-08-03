@@ -25,8 +25,7 @@ export default function GaugeProvider({
         !gaugeControllerContract ||
         !chainId ||
         !library ||
-        !gaugeMinterContract ||
-        !account
+        !gaugeMinterContract
       )
         return
       const gauges: Gauges =
@@ -35,8 +34,8 @@ export default function GaugeProvider({
           chainId,
           gaugeControllerContract,
           basicPools,
-          account,
           gaugeMinterContract,
+          account ?? undefined,
         )) || initialGaugesState
       setGauges(gauges)
     }

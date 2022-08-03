@@ -1,15 +1,14 @@
 import { AprsContext, GaugeApr } from "./../providers/AprsProvider"
-import { BasicToken, TokensContext } from "../providers/TokensProvider"
 import {
   Partners,
   getThirdPartyDataForPool,
 } from "../utils/thirdPartyIntegrations"
-import { bnSum, calculateFraction, getPriceDataForPool } from "../utils"
+import { bnSum, calculateFraction, getPriceDataForExpandedPool } from "../utils"
 import { useContext, useEffect, useState } from "react"
 
 import { AppState } from "../state"
-import { BasicPoolsContext } from "./../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
+import { ExpandedPoolsContext } from "./../providers/ExpandedPoolsProvider"
 import { GaugeContext } from "./../providers/GaugeProvider"
 import { MinichefContext } from "../providers/MinichefProvider"
 import { PoolTypes } from "./../constants/index"
@@ -30,6 +29,8 @@ export interface TokenShareType {
 export interface PoolDataType {
   adminFee: BigNumber
   aParameter: BigNumber
+  futureA: BigNumber
+  futureATime: BigNumber
   apy: BigNumber | null
   claimableAmount: Partial<Record<Partners, BigNumber>>
   name: string
@@ -81,6 +82,8 @@ export type PoolDataHookReturnType = [
 const emptyPoolData = {
   adminFee: Zero,
   aParameter: Zero,
+  futureA: Zero,
+  futureATime: Zero,
   apy: null,
   claimableAmount: Zero,
   name: "",
@@ -115,10 +118,9 @@ const emptyPoolData = {
 export default function usePoolData(name?: string): PoolDataHookReturnType {
   const [poolName, setPoolName] = useState<string | undefined>(name)
   const { account, library, chainId } = useActiveWeb3React()
-  const basicPools = useContext(BasicPoolsContext)
-  const tokens = useContext(TokensContext)
   const userState = useContext(UserStateContext)
   const minichefData = useContext(MinichefContext)
+  const { data: expandedPools } = useContext(ExpandedPoolsContext)
   const { gauges } = useContext(GaugeContext)
   const gaugeAprs = useContext(AprsContext)
   const { tokenPricesUSD, swapStats } = useSelector(
@@ -132,14 +134,13 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
 
   useEffect(() => {
     async function getSwapData(): Promise<void> {
-      const basicPool = poolName ? basicPools?.[poolName] : null
+      const expandedPool = poolName ? expandedPools.byName[poolName] : null
       if (
+        expandedPool == null ||
         poolName == null ||
-        tokens == null ||
         tokenPricesUSD == null ||
         library == null ||
-        chainId == null ||
-        basicPool == null
+        chainId == null
       ) {
         setPoolData({
           ...emptyPoolData,
@@ -149,30 +150,10 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
         return
       }
       try {
-        const poolMinichefData = minichefData?.pools?.[basicPool.poolAddress]
-        const poolGaugeData = gauges?.[basicPool.lpToken]
-        const expandedPoolTokens = basicPool.tokens.map(
-          (tokenAddr) => tokens[tokenAddr],
-        ) as BasicToken[]
-        const expandedUnderlyingPoolTokens = basicPool.isMetaSwap
-          ? (basicPool.underlyingTokens.map(
-              (tokenAddr) => tokens[tokenAddr],
-            ) as BasicToken[])
-          : null
-        if (
-          expandedPoolTokens.filter(Boolean).length !==
-            basicPool.tokens.length ||
-          (basicPool.isMetaSwap &&
-            expandedUnderlyingPoolTokens &&
-            expandedUnderlyingPoolTokens.filter(Boolean).length !==
-              basicPool.underlyingTokens.length)
-        ) {
-          console.error("Could not find all tokens for pool", poolName)
-          return
-        }
-        const priceDataForPool = getPriceDataForPool(
-          tokens,
-          basicPool,
+        const poolMinichefData = minichefData?.pools?.[expandedPool.poolAddress]
+        const poolGaugeData = gauges?.[expandedPool.lpToken.address]
+        const priceDataForPool = getPriceDataForExpandedPool(
+          expandedPool,
           tokenPricesUSD,
         )
 
@@ -184,8 +165,8 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
             account,
             {
               name: poolName,
-              address: basicPool.poolAddress,
-              lpTokenAddress: basicPool.lpToken,
+              address: expandedPool.poolAddress,
+              lpTokenAddress: expandedPool.lpToken.address,
             },
             tokenPricesUSD,
             priceDataForPool.lpTokenPriceUSD,
@@ -194,19 +175,19 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
 
         // User share data
         const userWalletLpTokenBalance =
-          userState?.tokenBalances?.[basicPool.lpToken] || Zero
+          userState?.tokenBalances?.[expandedPool.lpToken.address] || Zero
         const userLpTokenBalanceStakedElsewhere = Object.keys(
           amountsStaked,
         ).reduce((sum, key) => sum.add(amountsStaked[key] || Zero), Zero)
         // lpToken balance in wallet as a % of total lpTokens, plus lpTokens staked elsewhere
         const userShare = calculateFraction(
           userWalletLpTokenBalance,
-          basicPool.lpTokenSupply,
+          expandedPool.lpTokenSupply,
         )
           .add(
             calculateFraction(
               userLpTokenBalanceStakedElsewhere,
-              basicPool.lpTokenSupply,
+              expandedPool.lpTokenSupply,
             ),
           )
           .add(
@@ -214,14 +195,14 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
               (poolMinichefData?.pid &&
                 userState?.minichef?.[poolMinichefData?.pid]?.amountStaked) ||
                 Zero,
-              basicPool.lpTokenSupply,
+              expandedPool.lpTokenSupply,
             ),
           )
           .add(
             calculateFraction(
-              userState?.gaugeRewards?.[basicPool.poolAddress]?.amountStaked ||
-                Zero,
-              basicPool.lpTokenSupply,
+              userState?.gaugeRewards?.[expandedPool.poolAddress]
+                ?.amountStaked || Zero,
+              expandedPool.lpTokenSupply,
             ),
           )
         const userPoolTokenBalances = priceDataForPool.tokenBalances1e18.map(
@@ -239,7 +220,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
         const userPoolTokenBalancesUSDSum: BigNumber =
           userPoolTokenBalancesUSD.reduce(bnSum)
 
-        const poolTokens = expandedPoolTokens.map((token, i) => ({
+        const poolTokens = expandedPool.tokens.map((token, i) => ({
           symbol: token.symbol,
           name: token.name,
           decimals: token.decimals,
@@ -247,40 +228,43 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
           address: token.address,
         }))
         const underlyingPoolTokens =
-          expandedUnderlyingPoolTokens?.map((token) => ({
+          expandedPool.underlyingTokens?.map((token, i) => ({
             symbol: token.symbol,
             name: token.name,
             decimals: token.decimals,
-            value: Zero, // TODO
+            value: priceDataForPool.underlyingTokenBalances1e18[i] || Zero,
             address: token.address,
           })) || []
-        const userPoolTokens = expandedPoolTokens.map((token, i) => ({
+        const userPoolTokens = expandedPool.tokens.map((token, i) => ({
           symbol: token.symbol,
           name: token.name,
           decimals: token.decimals,
           value: userPoolTokenBalances[i],
           address: token.address,
         }))
-        const { oneDayVolume, apy, utilization } = swapStats?.[
-          basicPool.poolAddress
+
+        const { oneDayVolume, apy, utilization } = swapStats?.[chainId]?.[
+          expandedPool.poolAddress
         ] || { oneDayVolume: null, apy: null, utilization: null }
 
         const poolData = {
           name: poolName,
           tokens: poolTokens,
           underlyingTokens: underlyingPoolTokens,
-          totalLocked: basicPool.lpTokenSupply,
-          virtualPrice: basicPool.virtualPrice,
-          adminFee: basicPool.adminFee,
-          swapFee: basicPool.swapFee,
-          aParameter: basicPool.aParameter,
-          isPaused: basicPool.isPaused,
-          isMigrated: basicPool.isMigrated,
-          isMetaSwap: basicPool.isMetaSwap,
-          isGuarded: basicPool.isGuarded,
-          lpToken: basicPool.lpToken, // will be address, was symbol
-          poolType: basicPool.typeOfAsset,
-          poolAddress: basicPool.poolAddress,
+          totalLocked: expandedPool.lpTokenSupply,
+          virtualPrice: expandedPool.virtualPrice,
+          adminFee: expandedPool.adminFee,
+          swapFee: expandedPool.swapFee,
+          aParameter: expandedPool.aParameter,
+          futureA: expandedPool.futureA,
+          futureATime: expandedPool.futureATime,
+          isPaused: expandedPool.isPaused,
+          isMigrated: expandedPool.isMigrated,
+          isMetaSwap: expandedPool.isMetaSwap,
+          isGuarded: expandedPool.isGuarded,
+          lpToken: expandedPool.lpToken.address, // will be address, was symbol
+          poolType: expandedPool.typeOfAsset,
+          poolAddress: expandedPool.poolAddress,
 
           lpTokenPriceUSD: priceDataForPool.lpTokenPriceUSD, // USD
           reserve: priceDataForPool.tokenBalancesSumUSD, // USD
@@ -292,7 +276,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
           gaugeAprs: poolGaugeAprs ?? null,
           aprs, // rm - move to minichef provider + thirdparty provider
           sdlPerDay:
-            minichefData?.pools[basicPool.poolAddress]?.sdlPerDay || Zero,
+            minichefData?.pools[expandedPool.poolAddress]?.sdlPerDay || Zero,
           claimableAmount, // move to minichef provider
         }
         const userShareData = account
@@ -309,7 +293,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
                   ? {
                       ...acc,
                       [key]: amount
-                        ?.mul(basicPool.virtualPrice)
+                        ?.mul(expandedPool.virtualPrice)
                         .div(BigNumber.from(10).pow(18)),
                     }
                   : acc
@@ -324,20 +308,20 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
     }
     void getSwapData()
   }, [
+    // isLoading,
     account,
-    basicPools,
     chainId,
     library,
     minichefData?.pools,
     poolName,
     swapStats,
     tokenPricesUSD,
-    tokens,
     userState?.minichef,
     userState?.tokenBalances,
     userState?.gaugeRewards,
     gaugeAprs,
     gauges,
+    expandedPools.byName,
   ])
 
   return [poolData, userShare, setPoolName]

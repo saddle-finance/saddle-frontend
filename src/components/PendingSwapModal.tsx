@@ -193,6 +193,7 @@ const PendingSwapModal = ({
     swapType === SWAP_TYPES.TOKEN_TO_SYNTH
       ? synthBalance
       : settlementState.amount
+  if (!synthTokenFrom || !tokenTo || !tokenPricesUSD) return <></>
   const formattedSynthBalance = commify(
     formatBNToString(synthBalance, synthTokenFrom.decimals, 6),
   )
@@ -247,7 +248,7 @@ const PendingSwapModal = ({
       {currentStep === "review" && (
         <ReviewVirtualSwapSettlement
           onClose={onClose}
-          onConfirm={handleConfirmSettlement}
+          onConfirm={() => void handleConfirmSettlement}
           data={{
             from: {
               symbol: synthTokenFrom.symbol,
@@ -269,12 +270,12 @@ const PendingSwapModal = ({
                       ? calculatePriceImpact(
                           calculatePrice(
                             fromAmount,
-                            tokenPricesUSD?.[synthTokenFrom.symbol],
+                            tokenPricesUSD[synthTokenFrom.symbol],
                             synthTokenFrom.decimals,
                           ),
                           calculatePrice(
                             calculatedTokenAmount || Zero,
-                            tokenPricesUSD?.[tokenTo.symbol],
+                            tokenPricesUSD[tokenTo.symbol],
                             tokenTo.decimals,
                           ),
                         )

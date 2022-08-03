@@ -20,15 +20,14 @@ import { formatSlippageToString } from "../utils/slippage"
 import { isLegacySwapABIPool } from "../constants"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndWithdraw } from "../hooks/useApproveAndWithdraw"
+import { useParams } from "react-router-dom"
 import usePoolData from "../hooks/usePoolData"
 import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
 import useWithdrawFormState from "../hooks/useWithdrawFormState"
 
-interface Props {
-  poolName: string
-}
-function Withdraw({ poolName }: Props): ReactElement {
+function Withdraw(): ReactElement {
+  const { poolName } = useParams<{ poolName: string }>()
   const [shouldWithdrawWrapped, setShouldWithdrawWrapped] = useState(false)
   const [poolData, userShareData] = usePoolData(poolName)
   const { slippageCustom, slippageSelected, gasPriceSelected, gasCustom } =

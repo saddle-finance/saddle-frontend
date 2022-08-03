@@ -70,14 +70,14 @@ function TopMenu(): ReactElement {
     <AppBar position="static" elevation={0}>
       <Toolbar data-testid="topMenuContainer" sx={{ xs: 0, lg: 7 }}>
         <Box display="flex" width="100%" alignItems="center">
-          <Box flex={{ xl: 1 }}>
+          <Box flex={1}>
             <NavLink to="/">
               <SaddleLogo height={isUnderLaptopSize ? "40px" : "100"} />
             </NavLink>
           </Box>
 
           <Stack
-            display={isUnderLaptopSize ? "none" : "block"}
+            display={isUnderLaptopSize ? "none" : "flex"}
             bottom={{ xs: theme.spacing(4) }}
             right="50%"
             flex={1}
@@ -178,7 +178,9 @@ function MenuList() {
   const { t } = useTranslation()
   const { chainId } = useActiveWeb3React()
   const gaugesAreActive = areGaugesActive(chainId)
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { pathname } = useLocation()
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
   const activeTab = pathname.split("/")[1] as ActiveTabType
   return (
     <React.Fragment>

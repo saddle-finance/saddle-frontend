@@ -107,16 +107,6 @@ const SwapPage = (props: Props): ReactElement => {
     (slippageSelected === Slippages.Custom &&
       parseFloat(slippageCustom?.valueRaw || "0") < 0.5)
 
-  if (!account) {
-    return (
-      <Container>
-        <Paper sx={{ display: "flex", justifyContent: "center", padding: 4 }}>
-          <Typography>Please connect your wallet to swap.</Typography>
-        </Paper>
-      </Container>
-    )
-  }
-
   return (
     <Container maxWidth="sm" sx={{ pt: 5, pb: 20 }}>
       <Paper>
@@ -256,6 +246,8 @@ const SwapPage = (props: Props): ReactElement => {
       )}
       <div>
         {pendingSwaps.map((pendingSwap) => {
+          if (!pendingSwap.synthTokenFrom || !pendingSwap.tokenTo)
+            return <>Loading Tokens2</>
           const formattedSynthBalance = commify(
             formatUnits(
               pendingSwap.synthBalance,
@@ -323,13 +315,13 @@ const SwapPage = (props: Props): ReactElement => {
         {currentModal === "review" ? (
           <ReviewSwap
             onClose={(): void => setCurrentModal(null)}
-            onConfirm={async (): Promise<void> => {
+            onConfirm={() => {
               setCurrentModal("confirm")
               logEvent("swap", {
                 from: fromState.symbol,
                 to: toState.symbol,
               })
-              await onConfirmTransaction?.()
+              void onConfirmTransaction?.()
               setCurrentModal(null)
             }}
             data={{

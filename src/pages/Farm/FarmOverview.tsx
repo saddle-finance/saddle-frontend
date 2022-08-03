@@ -6,14 +6,15 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material"
-import { formatBNToShortString, getTokenByAddress } from "../../utils"
+import React, { useContext } from "react"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { GaugeApr } from "../../providers/AprsProvider"
 import GaugeRewardsDisplay from "../../components/GaugeRewardsDisplay"
-import React from "react"
 import TokenIcon from "../../components/TokenIcon"
+import { TokensContext } from "../../providers/TokensProvider"
 import { Zero } from "@ethersproject/constants"
+import { formatBNToShortString } from "../../utils"
 import { useActiveWeb3React } from "../../hooks"
 import { useTranslation } from "react-i18next"
 
@@ -45,6 +46,7 @@ export default function FarmOverview({
 FarmOverviewProps): JSX.Element | null {
   const { t } = useTranslation()
   const { chainId } = useActiveWeb3React()
+  const tokens = useContext(TokensContext)
   const theme = useTheme()
   const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
 
@@ -72,7 +74,7 @@ FarmOverviewProps): JSX.Element | null {
             </>
           ) : (
             poolTokens?.map((tokenAddress) => {
-              const token = getTokenByAddress(tokenAddress, chainId)
+              const token = tokens?.[tokenAddress]
               if (!token) return <div></div>
               return (
                 <TokenIcon

@@ -1,13 +1,4 @@
-import {
-  Box,
-  Button,
-  Chip,
-  Container,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material"
+import { Box, Button, Chip, Container, Stack, TextField } from "@mui/material"
 import React, { ReactElement, useContext, useEffect, useState } from "react"
 
 import { AppState } from "../state"
@@ -34,6 +25,7 @@ function Pools(): ReactElement | null {
   const basicPools = useContext(BasicPoolsContext)
   const userState = useContext(UserStateContext)
   const approveAndMigrate = useApproveAndMigrate()
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const history = useHistory()
 
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
@@ -61,16 +53,6 @@ function Pools(): ReactElement | null {
       lpTokenAddress: "",
     })
   }, [account, chainId])
-
-  if (!account) {
-    return (
-      <Container>
-        <Paper sx={{ display: "flex", justifyContent: "center", padding: 4 }}>
-          <Typography>Please connect your wallet to see pools.</Typography>
-        </Paper>
-      </Container>
-    )
-  }
 
   return (
     <Container sx={{ pb: 5 }}>
@@ -111,6 +93,7 @@ function Pools(): ReactElement | null {
               variant="contained"
               color="secondary"
               sx={{ float: "right" }}
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
               onClick={() => history.push("/pools/create")}
             >
               Create Pool
