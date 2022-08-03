@@ -19,12 +19,12 @@ import {
   format,
   formatDuration,
   getUnixTime,
-  intervalToDuration,
   secondsToHours,
 } from "date-fns"
 import { commify, formatUnits, parseEther } from "@ethersproject/units"
 import { enUS, zhCN } from "date-fns/locale"
 import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
+import { formatBNToString, getIntervalBetweenTwoDates } from "../../utils"
 import { useDispatch, useSelector } from "react-redux"
 import {
   useFeeDistributor,
@@ -46,7 +46,6 @@ import VeSDLWrongNetworkModal from "./VeSDLWrongNetworkModal"
 import VeTokenCalculator from "./VeTokenCalculator"
 import { Zero } from "@ethersproject/constants"
 import checkAndApproveTokenForTrade from "../../utils/checkAndApproveTokenForTrade"
-import { formatBNToString } from "../../utils"
 import { minBigNumber } from "../../utils/minBigNumber"
 import { updateLastTransactionTimes } from "../../state/application"
 import { useActiveWeb3React } from "../../hooks"
@@ -279,10 +278,7 @@ export default function VeSDL(): JSX.Element {
   const duration =
     proposedUnlockDate &&
     !isNaN(proposedUnlockDate.valueOf()) &&
-    intervalToDuration({
-      start: proposedUnlockDate,
-      end: lockEnd || new Date(),
-    })
+    getIntervalBetweenTwoDates(proposedUnlockDate, lockEnd)
   const additionalLockDuration =
     duration &&
     formatDuration(
