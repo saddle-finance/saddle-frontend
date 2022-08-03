@@ -28,6 +28,7 @@ if (window && window.ethereum) {
   window.ethereum.autoRefreshOnNetworkChange = false
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 window.Buffer = window.Buffer || Buffer // TODO: just a webpack 5 react-script5 patch fix. delete after rainbow wallet.
 
 window.addEventListener("error", logError)
