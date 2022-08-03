@@ -1,5 +1,6 @@
 import { Box, Button, Dialog, DialogContent, Typography } from "@mui/material"
 import React from "react"
+import { useTranslation } from "react-i18next"
 
 type ConfirmModalType = {
   open: boolean
@@ -16,6 +17,7 @@ export default function ConfirmModal({
   onCancel,
   onClose,
 }: ConfirmModalType): JSX.Element {
+  const { t } = useTranslation()
   const handleClickOK = () => {
     onOK && onOK()
     onClose()
@@ -30,7 +32,7 @@ export default function ConfirmModal({
         <Typography textAlign="center">{modalText}</Typography>
         <Box mt={3} display="flex" justifyContent="space-between">
           <Button variant="contained" onClick={handleClickOK}>
-            OK
+            {t("earlyWithdrawUnderstand")}
           </Button>
           <Button onClick={handleClickCancel}>Cancel</Button>
         </Box>
