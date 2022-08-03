@@ -713,7 +713,6 @@ export function getIntervalBetweenTwoDates(
   const firstDateInSeconds = firstDate
     ? firstDate.valueOf()
     : new Date().valueOf()
-
   const secondDateInSeconds = secondDate
     ? secondDate.valueOf()
     : new Date().valueOf()
