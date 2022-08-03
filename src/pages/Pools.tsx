@@ -1,13 +1,4 @@
-import {
-  Box,
-  Button,
-  Chip,
-  Container,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material"
+import { Box, Button, Chip, Container, Stack, TextField } from "@mui/material"
 import React, { ReactElement, useContext, useEffect, useState } from "react"
 
 import { AppState } from "../state"
@@ -63,16 +54,6 @@ function Pools(): ReactElement | null {
       lpTokenAddress: "",
     })
   }, [address])
-
-  if (!address) {
-    return (
-      <Container>
-        <Paper sx={{ display: "flex", justifyContent: "center", padding: 4 }}>
-          <Typography>Please connect your wallet to see pools.</Typography>
-        </Paper>
-      </Container>
-    )
-  }
 
   return (
     <Container sx={{ pb: 5 }}>
