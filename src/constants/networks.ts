@@ -362,7 +362,6 @@ export const { chains, provider } = configureChains(rainbowChains, [
 
 const needsInjectedWalletFallback =
   typeof window !== "undefined" && !window.ethereum?.isMetaMask
-console.log({ mm: window.ethereum?.isMetaMask, tal: window.ethereum?.isTally })
 
 const connectors = connectorsForWallets([
   {
