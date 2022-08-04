@@ -32,7 +32,7 @@ const CoinbasePayLinkButton = styled("a")(() => ({
 }))
 
 const onRampURL = generateOnRampURL({
-  appId: "5662715-5b2c-4c76-8934-4842f3d66746",
+  appId: "a5662715-5b2c-4c76-8934-4842f3d66746",
   destinationWallets: [
     {
       address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
@@ -46,7 +46,7 @@ const CoinbasePayBtn: React.FC = () => {
 
   useEffect(() => {
     cbInstance.current = initOnRamp({
-      appId: "5662715-5b2c-4c76-8934-4842f3d66746",
+      appId: "a5662715-5b2c-4c76-8934-4842f3d66746",
       target: "#cbpay-button-container",
       widgetParameters: {
         destinationWallets: [
