@@ -93,6 +93,7 @@ interface PoolAttributes {
   isMetaSwap?: boolean
   isMetaSwapDeposit?: boolean
   isLegacySwap?: boolean
+  isMigrated?: boolean
 }
 
 export function getSwapContract(
@@ -107,7 +108,7 @@ export function getSwapContract(
   | MetaSwap
   | MetaSwapDeposit
   | null {
-  const { isGuarded, isMetaSwap, isMetaSwapDeposit, isLegacySwap } =
+  const { isGuarded, isMetaSwap, isMetaSwapDeposit, isLegacySwap, isMigrated } =
     poolAttributes
 
   // address error cases
@@ -126,7 +127,7 @@ export function getSwapContract(
       library,
       account ?? undefined,
     ) as SwapGuarded
-  } else if (isLegacySwap) {
+  } else if (isLegacySwap || isMigrated) {
     return getContract(
       address,
       SWAP_FLASH_LOAN_ABI,
