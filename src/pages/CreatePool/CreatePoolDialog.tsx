@@ -151,7 +151,7 @@ export default function ReviewCreatePool({
           <Button
             variant="contained"
             size="large"
-            onClick={void onCreatePoolClick}
+            onClick={() => void onCreatePoolClick()}
           >
             <Typography>{t("createPool")}</Typography>
           </Button>

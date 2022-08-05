@@ -114,8 +114,8 @@ export default function MyFarm({
               disabled={lpWalletBalance.isZero()}
               onClick={
                 gaugesAreActive
-                  ? void onStakeClick
-                  : () => approveAndStake(lpWalletBalance)
+                  ? () => void onStakeClick()
+                  : () => void approveAndStake(lpWalletBalance)
               }
             >
               {t("stakeAll")}
@@ -143,8 +143,8 @@ export default function MyFarm({
               }
               onClick={
                 gaugesAreActive
-                  ? void onUnstakeClick
-                  : () => unstakeMinichef(amountStakedMinichef)
+                  ? () => void onUnstakeClick()
+                  : () => void unstakeMinichef(amountStakedMinichef)
               }
             >
               {t("unstakeAll")}
