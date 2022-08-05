@@ -187,7 +187,7 @@ const DepositPage = (props: Props): ReactElement => {
               variant="contained"
               color="secondary"
               size="large"
-              onClick={void onMigrateToGaugeClick}
+              onClick={() => void onMigrateToGaugeClick()}
             >
               {t("exitToMigrate")}
             </Button>

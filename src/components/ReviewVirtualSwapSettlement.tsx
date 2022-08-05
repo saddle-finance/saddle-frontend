@@ -173,7 +173,7 @@ function ReviewVirtualSwapSettlement({
         color={isWithdrawAction ? "secondary" : "primary"}
         fullWidth
         size="large"
-        onClick={void onConfirm}
+        onClick={() => void onConfirm()}
         disabled={isHighPriceImpactTxn && !hasConfirmedHighPriceImpact}
       >
         {isWithdrawAction ? t("confirmWithdraw") : t("confirmSwap")}
