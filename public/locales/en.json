@@ -315,7 +315,6 @@
   "veSdlHolderFeeClaim": "veSDL Holder Fee Claim",
   "vestingContract": "Vesting Contract",
   "veTokenCalculator": "veToken Calculator",
-  "viewAllVote": "View all votes",
   "virtualPrice": "Virtual price",
   "virtualSwap": "Virtual Swap",
   "virtualSwapSynthToSynthInfo": "This is a Synth-to-Synth Virtual Swap. You will see your swapped tokens in your wallet immediately after the swap executes, but must wait for up to 6 minutes before being able to transfer them.",

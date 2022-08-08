@@ -33,10 +33,17 @@ export default function AlertTheme(theme: Theme): Components {
       styleOverrides: {
         root: {
           fontSize: theme.typography.body1.fontSize,
+          justifyContent: "center",
+          "& .MuiAlert-icon": {
+            color: theme.palette.error.main,
+          },
         },
-        message: {
-          flex: 1,
+        icon: {
+          opacity: 1,
         },
+        // message: {
+        //   flex: 1,
+        // },
       },
     },
   }

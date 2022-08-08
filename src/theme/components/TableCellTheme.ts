@@ -9,15 +9,15 @@ export default function TableCellTheme(theme: Theme): Components {
             variant: "head",
           },
           style: {
-            fontSize: theme.typography.subtitle1.fontSize,
-            fontWeight: theme.typography.subtitle1.fontWeight,
+            fontSize: 14,
+            fontWeight: 500,
           },
         },
       ],
       styleOverrides: {
         root: {
-          fontSize: theme.typography.body1.fontSize,
-          fontWeight: theme.typography.body1.fontWeight,
+          fontSize: theme.typography.body2.fontSize,
+          fontWeight: theme.typography.body2.fontWeight,
           borderColor:
             theme.palette.mode === "dark"
               ? "rgba(255, 255, 255, 0.12)"
