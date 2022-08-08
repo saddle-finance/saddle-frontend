@@ -14,7 +14,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material"
-// import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline"
+import ArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
 import React from "react"
 
 export default function OnChainVote() {
@@ -41,6 +41,7 @@ export default function OnChainVote() {
       </Alert>
       <Autocomplete
         options={["first", "second"]}
+        popupIcon={<ArrowDownIcon />}
         renderInput={(params) => (
           <TextField
             variant="standard"
