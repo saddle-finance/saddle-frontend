@@ -25,5 +25,12 @@ export default function TableCellTheme(theme: Theme): Components {
         },
       },
     },
+    MuiTableRow: {
+      styleOverrides: {
+        root: {
+          "& td th": { border: 0, py: "6px", px: "8px" },
+        },
+      },
+    },
   }
 }
