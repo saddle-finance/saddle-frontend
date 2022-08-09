@@ -3,17 +3,6 @@ import { Components, Theme } from "@mui/material"
 export default function TableCellTheme(theme: Theme): Components {
   return {
     MuiTableCell: {
-      variants: [
-        {
-          props: {
-            variant: "head",
-          },
-          style: {
-            fontSize: 14,
-            fontWeight: 500,
-          },
-        },
-      ],
       styleOverrides: {
         root: {
           fontSize: theme.typography.body2.fontSize,
@@ -22,13 +11,14 @@ export default function TableCellTheme(theme: Theme): Components {
             theme.palette.mode === "dark"
               ? "rgba(255, 255, 255, 0.12)"
               : "rgba(0, 0, 0, 0.12)",
+          padding: "6px 8px",
         },
       },
     },
     MuiTableRow: {
       styleOverrides: {
         root: {
-          "& td th": { border: 0, py: "6px", px: "8px" },
+          "& td": { border: 0 },
         },
       },
     },

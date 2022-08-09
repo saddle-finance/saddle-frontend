@@ -26,11 +26,16 @@ export default function OnChainVote() {
         Vote for next week
       </Typography>
       <Box display="flex" justifyContent="space-between">
-        <Typography>Your voting power: 1000 veSDL</Typography>
+        <Box display="flex">
+          <Typography component="label">
+            Your voting power: 1000 veSDL{" "}
+          </Typography>
+        </Box>
         <Link
           sx={{
             color: theme.palette.text.primary,
             textDecorationColor: theme.palette.text.primary,
+            whiteSpace: "nowrap",
           }}
         >
           Gauge doc
@@ -50,7 +55,7 @@ export default function OnChainVote() {
           />
         )}
       />
-      <Box display="flex">
+      <Box display="flex" gap={4}>
         <TextField
           label="Voting Weight"
           type="text"
@@ -62,12 +67,12 @@ export default function OnChainVote() {
             ),
           }}
           helperText=" "
-          sx={{ flex: 0, minWidth: 160 }}
+          sx={{ flex: 0, minWidth: { xs: 130, sm: 160 } }}
         />
         <Button
           variant="outlined"
           size="medium"
-          sx={{ ml: 4, borderRadius: "4px" }}
+          sx={{ borderRadius: "4px", minWidth: 124 }}
         >
           Vote this gauge
         </Button>
@@ -78,11 +83,9 @@ export default function OnChainVote() {
 
       <Table>
         <TableHead>
-          <TableRow>
-            <TableCell>Gauge</TableCell>
-            <TableCell>Weight</TableCell>
-            <TableCell>Reset vote</TableCell>
-          </TableRow>
+          <TableCell>Gauge</TableCell>
+          <TableCell>Weight</TableCell>
+          <TableCell>Reset vote</TableCell>
         </TableHead>
         <TableBody>
           <TableRow sx={{ td: { border: 0, py: "6px", px: "8px" } }}>
