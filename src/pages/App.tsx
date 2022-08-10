@@ -18,15 +18,11 @@ import AprsProvider from "../providers/AprsProvider"
 import { BLOCK_TIME } from "../constants"
 import BasicPoolsProvider from "../providers/BasicPoolsProvider"
 import CoinbasePayTest from "./CoinbasePayTest"
-import CreatePool from "./CreatePool"
-import Deposit from "./Deposit"
 import ExpandedPoolsProvider from "../providers/ExpandedPoolsProvider"
-import Farm from "./Farm/Farm"
 import GaugeProvider from "../providers/GaugeProvider"
 import { LocalizationProvider } from "@mui/x-date-pickers"
 import MinichefProvider from "../providers/MinichefProvider"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
-import Pools from "./Pools"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import Swap from "./Swap"
@@ -34,10 +30,8 @@ import { ToastContainer } from "react-toastify"
 import TokensProvider from "../providers/TokensProvider"
 import TopMenu from "../components/TopMenu"
 import UserStateProvider from "../providers/UserStateProvider"
-import VeSDL from "./VeSDL"
 import Version from "../components/Version"
 import Web3ReactManager from "../components/Web3ReactManager"
-import Withdraw from "./Withdraw"
 import WrongNetworkModal from "../components/WrongNetworkModal"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchSdlWethSushiPoolInfo from "../utils/updateSdlWethSushiInfo"
@@ -49,8 +43,15 @@ import { useIntercom } from "react-use-intercom"
 import usePoller from "../hooks/usePoller"
 import { useSdlWethSushiPairContract } from "../hooks/useContract"
 
-const VestingClaim = lazy(() => import("./VestingClaim"))
+// Lazy Loaded Pages
+const CreatePool = lazy(() => import("./CreatePool"))
+const Deposit = lazy(() => import("./Deposit"))
+const Farm = lazy(() => import("./Farm/Farm"))
+const Pools = lazy(() => import("./Pools"))
 const Risk = lazy(() => import("./Risk"))
+const VeSDL = lazy(() => import("./VeSDL"))
+const VestingClaim = lazy(() => import("./VestingClaim"))
+const Withdraw = lazy(() => import("./Withdraw"))
 
 const AppContainer = styled("div")(({ theme }) => {
   const darkBackground =
