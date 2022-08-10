@@ -53,13 +53,13 @@ function useGaugeAprs() {
   if (!basicPools || !tokens || !tokenPricesUSD) return null
 
   return Object.values(gauges).reduce((acc, gauge) => {
-    const gaugeTVL = getGaugeTVL(gauge.address)
-    const { rewards } = gauge
+    const { rewards, address } = gauge
+    const gaugeTVL = getGaugeTVL(address)
 
     const rewardAprs = buildRewards(rewards, tokens, tokenPricesUSD, gaugeTVL)
     return {
       ...acc,
-      [gauge.address]: rewardAprs,
+      [address]: rewardAprs,
     }
   }, {}) as Aprs
 }
