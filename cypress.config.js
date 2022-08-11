@@ -14,7 +14,8 @@ module.exports = defineConfig({
   "e2e": { 
     setupNodeEvents,
     "supportFile": "cypress/support/commands.ts",
-    "specPattern":	"cypress/integration/e2e-suite.test.ts",
+    // "specPattern":	"cypress/integration/*.test.ts",
+    "specPattern":	"cypress/integration/e2e-suite.ts",
     "baseUrl": "http://localhost:3000",
     "pageLoadTimeout": 100000,
     "responseTimeout": 100000,

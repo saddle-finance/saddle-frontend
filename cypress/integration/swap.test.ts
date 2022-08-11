@@ -24,8 +24,12 @@ context("Swap Flow", () => {
           .contains("Choose")
           .as("dropdownButton")
           .click() // show
+          .wait(2000)
+          .click()
+          .wait(2000)
+          .click()
         poolTokenSymbols.forEach((tokenSymbol) => {
-          cy.react("ListItem", { options: { timeout: 3000 } }).should("exist") // wait for listitem to appear
+          cy.react("ListItem", { options: { timeout: 10000 } }).should("exist") // wait for listitem to appear
           cy.get('[data-testid="dropdownContainer"]')
             .contains(tokenSymbol, { matchCase: false })
             .should("exist")
