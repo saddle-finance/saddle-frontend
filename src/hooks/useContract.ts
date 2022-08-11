@@ -334,7 +334,9 @@ export function useLPTokenContract(
   }, [library, pool, account])
 }
 
-export function useGaugeControllerContract(): GaugeController | null {
+export function useGaugeControllerContract(
+  withSigner?: boolean,
+): GaugeController | null {
   const { chainId } = useActiveWeb3React()
   const contractAddress = chainId
     ? GAUGE_CONTROLLER_ADDRESSES[chainId]
@@ -342,7 +344,7 @@ export function useGaugeControllerContract(): GaugeController | null {
   return useContract(
     contractAddress,
     GAUGE_CONTROLLER_ABI,
-    false,
+    withSigner ? true : false,
   ) as GaugeController
 }
 

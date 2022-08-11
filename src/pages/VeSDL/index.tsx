@@ -101,6 +101,7 @@ export default function VeSDL(): JSX.Element {
         maxBalance: formatUnits(sdlTokenBal || Zero),
       }))
       const veSDLBal = await votingEscrowContract["balanceOf(address)"](account)
+      console.log("veSDL balance =>", formatBNToString(veSDLBal, 18))
       const totalSupply = await votingEscrowContract["totalSupply()"]()
       setVeSDLTotalSupply(totalSupply)
       setVeSdlTokenBalance(veSDLBal)
@@ -215,7 +216,7 @@ export default function VeSDL(): JSX.Element {
           sdlTokenInputValueBn,
           unlockTimeStamp,
         )
-        void enqueuePromiseToast(chainId, txn.wait(), "createLock")
+        await enqueuePromiseToast(chainId, txn.wait(), "createLock")
       } else if (shouldIncreaseAmountAndLockEnd) {
         const txnIncreaseAmount = await votingEscrowContract.increase_amount(
           sdlTokenInputValueBn,
@@ -525,7 +526,9 @@ export default function VeSDL(): JSX.Element {
 
         <Stack flex={1} spacing={2}>
           <LockedInfo />
-          <GaugeVote />
+          <GaugeVote
+            veSdlBalance={commify(formatBNToString(veSdlTokenBalance, 18, 2))}
+          />
         </Stack>
       </Box>
       {!loading ? (

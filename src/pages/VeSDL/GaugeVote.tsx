@@ -5,7 +5,12 @@ import OnChainVote from "./OnChainVote"
 import React from "react"
 import { useTranslation } from "react-i18next"
 
-export default function GaugeVote(): JSX.Element {
+interface GaugeVoteProps {
+  veSdlBalance: string
+}
+export default function GaugeVote({
+  veSdlBalance,
+}: GaugeVoteProps): JSX.Element {
   const { t } = useTranslation()
   return (
     <Paper sx={{ p: 2 }}>
@@ -15,7 +20,7 @@ export default function GaugeVote(): JSX.Element {
       <Box height="428px">
         <GaugeWeight />
       </Box>
-      <OnChainVote />
+      <OnChainVote veSdlBalance={veSdlBalance} />
     </Paper>
   )
 }
