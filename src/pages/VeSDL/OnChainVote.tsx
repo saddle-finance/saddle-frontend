@@ -48,12 +48,15 @@ const VoteTableRow = styled(TableRow)(({ theme }) => ({
   },
   backgroundColor: theme.palette.background.paper,
 }))
+
 export default function OnChainVote({ veSdlBalance }: OnChainVoteProps) {
   const theme = useTheme()
   const { gauges } = useContext(GaugeContext)
   const { account } = useActiveWeb3React()
   const [selectedGauge, setSelectedGauge] = useState<GaugeName | null>(null)
   const [voteLists, setVoteLists] = useState<VoteList[]>([])
+  const [voteUsed, setVoteUsed] = useState<number | undefined>()
+  const [voteWeightToSubmit, setVoteWeightToSubmit] = useState<string>("")
   const gaugeControllerContract = useGaugeControllerContract(true)
 
   console.log("vote lists ==>", voteLists)
@@ -70,8 +73,6 @@ export default function OnChainVote({ veSdlBalance }: OnChainVoteProps) {
         } as GaugeName
     })
 
-  console.log("gauge names ==>", gaugeNames)
-
   useEffect(() => {
     gaugeControllerContract?.on(
       "VoteForGauge",
@@ -79,6 +80,9 @@ export default function OnChainVote({ veSdlBalance }: OnChainVoteProps) {
         const gaugeName = gaugeNames.find(
           (gaugeName) => gaugeName?.address == (gaugeAddress as string),
         )?.gaugeName
+
+        console.log("gauge address =>", gaugeAddress)
+        console.log("gauge weight ==>", weight)
 
         if (gaugeName) {
           setVoteLists((currentVoteLists) => [
@@ -97,12 +101,18 @@ export default function OnChainVote({ veSdlBalance }: OnChainVoteProps) {
   }, [gaugeControllerContract, gaugeNames, selectedGauge?.gaugeName])
 
   const getVoteUserSlops = useCallback(async () => {
+    if (account) {
+      const voteUsed = await gaugeControllerContract?.[
+        "vote_user_power(address)"
+      ](account)
+      setVoteUsed(voteUsed?.toNumber())
+    }
     if (account && selectedGauge?.address) {
       const result = await gaugeControllerContract?.vote_user_slopes(
         account,
         selectedGauge.address,
       )
-      console.log("result ==>", result)
+      console.log("vote user slopes ==>", result)
     }
   }, [account, gaugeControllerContract, selectedGauge?.address])
 
@@ -113,16 +123,19 @@ export default function OnChainVote({ veSdlBalance }: OnChainVoteProps) {
   if (!gauges) return <div>Loading...</div>
 
   const handleVote = async () => {
-    try {
-      if (selectedGauge?.address && gaugeControllerContract) {
-        const txn = await gaugeControllerContract.vote_for_gauge_weights(
-          selectedGauge.address,
-          100,
-        )
-        void enqueuePromiseToast(1, txn.wait(), "unlock")
+    const voteWeightPercent = parseFloat(voteWeightToSubmit)
+    if (!Number.isNaN(voteWeightPercent)) {
+      try {
+        if (selectedGauge?.address && gaugeControllerContract) {
+          const txn = await gaugeControllerContract.vote_for_gauge_weights(
+            selectedGauge.address,
+            Math.round(voteWeightPercent * 100), //convert percent to bps
+          )
+          void enqueuePromiseToast(1, txn.wait(), "unlock")
+        }
+      } catch (error) {
+        console.log("error on vote ==>", error)
       }
-    } catch (error) {
-      console.log("error on vote ==>", error)
     }
   }
 
@@ -172,6 +185,7 @@ export default function OnChainVote({ veSdlBalance }: OnChainVoteProps) {
             onChange={(event, newGaugeName) => {
               if (newGaugeName) {
                 setSelectedGauge(newGaugeName)
+                setVoteWeightToSubmit("")
               }
             }}
             //value of selected gauge
@@ -186,6 +200,8 @@ export default function OnChainVote({ veSdlBalance }: OnChainVoteProps) {
               variant="standard"
               label="Voting Weight"
               type="text"
+              value={voteWeightToSubmit}
+              onChange={(event) => setVoteWeightToSubmit(event.target.value)}
               InputProps={{
                 startAdornment: (
                   <Typography variant="body1" color="text.secondary">
@@ -247,7 +263,9 @@ export default function OnChainVote({ veSdlBalance }: OnChainVoteProps) {
             </VoteTableRow>
           </TableBody>
         </Table>
-        <Typography mt={1}>Total weight used: 100%</Typography>
+        {voteUsed && (
+          <Typography mt={1}>Total weight used: {voteUsed / 100}%</Typography>
+        )}
       </TableContainer>
     </div>
   )
