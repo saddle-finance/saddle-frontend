@@ -12,6 +12,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material"
+import { BigNumber, ContractTransaction } from "ethers"
 import { ChainId, TRANSACTION_TYPES } from "../../constants"
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import {
@@ -19,6 +20,7 @@ import {
   format,
   formatDuration,
   getUnixTime,
+  isFuture,
   secondsToHours,
 } from "date-fns"
 import { commify, formatUnits, parseEther } from "@ethersproject/units"
@@ -34,7 +36,6 @@ import {
 
 import { AppState } from "../../state"
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
-import { BigNumber } from "ethers"
 import ConfirmModal from "../../components/ConfirmModal"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import GaugeVote from "./GaugeVote"
@@ -255,8 +256,8 @@ export default function VeSDL(): JSX.Element {
   }
 
   const unlock = async () => {
-    if (votingEscrowContract && chainId) {
-      const txn = await votingEscrowContract.force_withdraw()
+    if (votingEscrowContract && chainId && proposedUnlockDate) {
+      const txn = await getUnlockTransaction(proposedUnlockDate)
       void enqueuePromiseToast(chainId, txn.wait(), "unlock")
       dispatch(
         updateLastTransactionTimes({
@@ -273,6 +274,15 @@ export default function VeSDL(): JSX.Element {
     } else {
       setUnlockConfirmOpen(true)
     }
+  }
+
+  const getUnlockTransaction = (
+    unlockDate: Date,
+  ): Promise<ContractTransaction> => {
+    if (isFuture(unlockDate)) {
+      return votingEscrowContract.force_withdraw()
+    }
+    return votingEscrowContract.withdraw()
   }
 
   const duration =
