@@ -38,6 +38,7 @@ import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import { TokenPricesUSD } from "../state/application"
 import { chunk } from "lodash"
 import { getAddress } from "@ethersproject/address"
+import { intervalToDuration } from "date-fns"
 import { minBigNumber } from "./minBigNumber"
 
 export function isSynthAsset(chainId: ChainId, tokenAddress: string): boolean {
@@ -703,4 +704,20 @@ export function missingKeys(itemsMap: { [key: string]: unknown }): string[] {
   return Object.keys(itemsMap)
     .map((key) => itemsMap[key] == null && key)
     .filter(Boolean) as string[]
+}
+
+export function getIntervalBetweenTwoDates(
+  firstDate: Date | null,
+  secondDate: Date | null,
+): Duration {
+  const firstDateInSeconds = firstDate
+    ? firstDate.valueOf()
+    : new Date().valueOf()
+  const secondDateInSeconds = secondDate
+    ? secondDate.valueOf()
+    : new Date().valueOf()
+  const startDate = new Date(Math.min(firstDateInSeconds, secondDateInSeconds))
+  const endDate = new Date(Math.max(firstDateInSeconds, secondDateInSeconds))
+
+  return intervalToDuration({ start: startDate, end: endDate })
 }
