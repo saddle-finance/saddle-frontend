@@ -7,11 +7,7 @@ export default function TableCellTheme(theme: Theme): Components {
         root: {
           fontSize: theme.typography.body2.fontSize,
           fontWeight: theme.typography.body2.fontWeight,
-          borderColor:
-            theme.palette.mode === "dark"
-              ? "rgba(255, 255, 255, 0.12)"
-              : "rgba(0, 0, 0, 0.12)",
-          padding: "6px 8px",
+          padding: "0 8px",
         },
       },
     },
@@ -19,6 +15,10 @@ export default function TableCellTheme(theme: Theme): Components {
       styleOverrides: {
         root: {
           "& td": { border: 0 },
+          "& th": {
+            fontSize: 14,
+            fontWeight: 500,
+          },
         },
       },
     },

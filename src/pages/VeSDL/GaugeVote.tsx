@@ -13,7 +13,7 @@ export default function GaugeVote({
 }: GaugeVoteProps): JSX.Element {
   const { t } = useTranslation()
   return (
-    <Paper sx={{ p: 2 }}>
+    <Paper sx={{ pt: 2 }}>
       <Typography variant="h2" textAlign="center">
         {t("gaugeVote")}
       </Typography>

@@ -8,10 +8,12 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
   TextField,
   Typography,
+  styled,
   useTheme,
 } from "@mui/material"
 import React, { useCallback, useContext, useEffect, useState } from "react"
@@ -33,6 +35,19 @@ type VoteList = {
   gaugeName: string
   weight: BigNumber
 }
+
+const VoteTableRow = styled(TableRow)(({ theme }) => ({
+  "td:first-child": {
+    borderTopLeftRadius: "10px",
+    borderBottomLeftRadius: "10px",
+  },
+  "td:last-child": {
+    borderTopRightRadius: "10px",
+    borderBottomRightRadius: "10px",
+    padding: 0,
+  },
+  backgroundColor: theme.palette.background.paper,
+}))
 export default function OnChainVote({ veSdlBalance }: OnChainVoteProps) {
   const theme = useTheme()
   const { gauges } = useContext(GaugeContext)
@@ -112,105 +127,128 @@ export default function OnChainVote({ veSdlBalance }: OnChainVoteProps) {
   }
 
   return (
-    <Stack spacing={2}>
-      <Typography variant="h2" textAlign="center">
-        Vote for next week
-      </Typography>
-      <Box display="flex" justifyContent="space-between">
-        <Box display="flex">
-          <Typography component="label">
-            Your voting power: {veSdlBalance} veSDL{" "}
-          </Typography>
+    <div>
+      <Stack spacing={2} px={2} pt={2}>
+        <Typography variant="h2" textAlign="center">
+          Vote for next week
+        </Typography>
+        <Box display="flex" justifyContent="space-between">
+          <Box display="flex">
+            <Typography component="label">
+              Your voting power: {veSdlBalance} veSDL{" "}
+            </Typography>
+          </Box>
+          <Link
+            sx={{
+              color: theme.palette.text.primary,
+              textDecorationColor: theme.palette.text.primary,
+              whiteSpace: "nowrap",
+            }}
+          >
+            Gauge doc
+          </Link>
         </Box>
-        <Link
-          sx={{
-            color: theme.palette.text.primary,
-            textDecorationColor: theme.palette.text.primary,
-            whiteSpace: "nowrap",
-          }}
+        <Alert severity="error">
+          <Typography textAlign="center">Used too much power</Typography>
+        </Alert>
+        <Box
+          border={`1px solid ${theme.palette.other.divider}`}
+          px={2}
+          pt={2}
+          borderRadius="10px"
         >
-          Gauge doc
-        </Link>
-      </Box>
-      <Alert severity="error">
-        <Typography textAlign="center">Used too much power</Typography>
-      </Alert>
-      <Autocomplete
-        id="gauge-names"
-        options={gaugeNames}
-        getOptionLabel={(option) => option?.gaugeName ?? ""}
-        popupIcon={<ArrowDownIcon />}
-        renderInput={(params) => (
-          <TextField
-            variant="standard"
-            {...params}
-            placeholder="Choose a gauge"
+          <Autocomplete
+            id="gauge-names"
+            options={gaugeNames}
+            getOptionLabel={(option) => option?.gaugeName ?? ""}
+            popupIcon={<ArrowDownIcon />}
+            renderInput={(params) => (
+              <TextField
+                variant="standard"
+                {...params}
+                placeholder="Choose a gauge"
+              />
+            )}
+            onChange={(event, newGaugeName) => {
+              if (newGaugeName) {
+                setSelectedGauge(newGaugeName)
+              }
+            }}
+            //value of selected gauge
+            value={selectedGauge}
+            // check whether the current value belong to options
+            isOptionEqualToValue={(option, value) =>
+              option?.address === value?.address
+            }
           />
-        )}
-        onChange={(event, newGaugeName) => {
-          if (newGaugeName) {
-            setSelectedGauge(newGaugeName)
-          }
-        }}
-        //value of selected gauge
-        value={selectedGauge}
-        // check whether the current value belong to options
-        isOptionEqualToValue={(option, value) =>
-          option?.address === value?.address
-        }
-      />
-      <Box display="flex" gap={4}>
-        <TextField
-          label="Voting Weight"
-          type="text"
-          InputProps={{
-            startAdornment: (
-              <Typography variant="body1" color="text.secondary">
-                %
-              </Typography>
-            ),
-          }}
-          helperText=" "
-          sx={{ flex: 0, minWidth: { xs: 130, sm: 160 } }}
-        />
-        <Button
-          variant="outlined"
-          size="medium"
-          sx={{ borderRadius: "4px", minWidth: 124 }}
-          onClick={() => void handleVote()}
-        >
-          Vote this gauge
-        </Button>
-      </Box>
-      <Typography variant="subtitle1" textAlign="center">
+          <Box display="flex" gap={4} mt={2}>
+            <TextField
+              variant="standard"
+              label="Voting Weight"
+              type="text"
+              InputProps={{
+                startAdornment: (
+                  <Typography variant="body1" color="text.secondary">
+                    %
+                  </Typography>
+                ),
+              }}
+              helperText=" "
+              sx={{ flex: 0, minWidth: { xs: 130, sm: 160 } }}
+            />
+            <Button
+              variant="contained"
+              size="large"
+              sx={{ minWidth: 124 }}
+              onClick={() => void handleVote()}
+            >
+              Vote this gauge
+            </Button>
+          </Box>
+        </Box>
+      </Stack>
+      <Typography variant="h2" textAlign="center" my={2}>
         My Votes
       </Typography>
 
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Gauge</TableCell>
-            <TableCell>Weight</TableCell>
-            <TableCell>Reset vote</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          <TableRow sx={{ td: { border: 0, py: "6px", px: "8px" } }}>
-            <TableCell>SDL/WETH SLP(0x12...1234)</TableCell>
-            <TableCell>10.12%</TableCell>
-            <TableCell align="right">
-              <Button>Delete</Button>
-            </TableCell>
-          </TableRow>
-          <TableRow sx={{ td: { border: 0, py: "6px", px: "8px" } }}>
-            <TableCell>SDL/WETH SLP(0x12...1234)</TableCell>
-            <TableCell>10.12%</TableCell>
-            <TableCell align="right">
-              <Button>Delete</Button>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    </Stack>
+      <TableContainer
+        sx={{
+          p: 2,
+          backgroundColor: theme.palette.background.default,
+          borderRadius: "10px",
+        }}
+      >
+        <Table sx={{ borderCollapse: "separate", borderSpacing: "0 10px" }}>
+          <TableHead>
+            <TableRow sx={{ th: { border: 0 } }}>
+              <TableCell>Gauge</TableCell>
+              <TableCell>Weight</TableCell>
+              <TableCell align="right">Reset vote</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <VoteTableRow>
+              <TableCell>SDL/WETH SLP(0x12...1234)</TableCell>
+              <TableCell>10.12%</TableCell>
+              <TableCell align="right">
+                <Button variant="contained" color="secondary" size="large">
+                  Delete
+                </Button>
+              </TableCell>
+            </VoteTableRow>
+            <VoteTableRow>
+              <TableCell>SDL/WETH SLP(0x12...1234)</TableCell>
+              <TableCell>10.12%</TableCell>
+              <TableCell align="right">
+                <Button variant="contained" color="secondary" size="large">
+                  Delete
+                </Button>
+              </TableCell>
+            </VoteTableRow>
+          </TableBody>
+        </Table>
+        <Typography mt={1}>Total weight used: 100%</Typography>
+      </TableContainer>
+    </div>
   )
 }
