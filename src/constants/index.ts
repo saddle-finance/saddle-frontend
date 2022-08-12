@@ -2048,6 +2048,10 @@ const minichefPids: Partial<Record<ChainId, { [pool: string]: number }>> = {
     [FRAX_USDT_METAPOOL_SWAP_CONTRACT_ADDRESSES[
       ChainId.ARBITRUM
     ].toLowerCase()]: 4,
+    [ARB_FRAX_USDS_METAPOOL_SWAP_CONTRACT_ADDRESSES[
+      ChainId.ARBITRUM
+    ].toLowerCase()]: 5,
+    [FRAX_ARB_USD_SWAP_V2_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 7,
   },
   [ChainId.OPTIMISM]: {
     [FRAX_USDC_SWAP_ADDRESSES[ChainId.OPTIMISM].toLowerCase()]: 1,
@@ -2267,3 +2271,4 @@ export const BN_1E18 = BigNumber.from(10).pow(18)
 export const BN_DAY_IN_SECONDS = BigNumber.from(24 * 60 * 60)
 export const BN_YEAR_IN_SECONDS = BN_DAY_IN_SECONDS.mul(365)
 export const BN_MSIG_SDL_VEST_END_TIMESTAMP = BigNumber.from(1731651563)
+export const A_PRECISION = BigNumber.from(100)

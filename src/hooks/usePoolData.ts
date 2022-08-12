@@ -1,3 +1,4 @@
+import { A_PRECISION, PoolTypes } from "./../constants/index"
 import { AprsContext, GaugeApr } from "./../providers/AprsProvider"
 import {
   Partners,
@@ -11,7 +12,6 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { ExpandedPoolsContext } from "./../providers/ExpandedPoolsProvider"
 import { GaugeContext } from "./../providers/GaugeProvider"
 import { MinichefContext } from "../providers/MinichefProvider"
-import { PoolTypes } from "./../constants/index"
 import { UserStateContext } from "./../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
@@ -257,7 +257,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
           adminFee: expandedPool.adminFee,
           swapFee: expandedPool.swapFee,
           aParameter: expandedPool.aParameter,
-          futureA: expandedPool.futureA,
+          futureA: expandedPool.futureA.div(A_PRECISION),
           futureATime: expandedPool.futureATime,
           isPaused: expandedPool.isPaused,
           isMigrated: expandedPool.isMigrated,
