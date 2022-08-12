@@ -153,13 +153,9 @@ async function getUserTokenBalances(
         i === batchBalanceResults.length - 1
           ? NETWORK_NATIVE_TOKENS[chainId]
           : tokenAddresses[i]
-      if (!result || result.eq(Zero)) {
-        // don't store 0 balances
-        return acc
-      }
       return {
         ...acc,
-        [address]: result,
+        [address]: result || Zero,
       }
     }, {} as UserTokenBalances)
   } catch (e) {
