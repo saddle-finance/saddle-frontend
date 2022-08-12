@@ -51,7 +51,7 @@ export const FRAX_USDC_POOL_NAME = "FRAX-USDC-BP"
 export const FRAX_USDT_METAPOOL_NAME = "FRAXBP-USDT"
 export const FRAX_SUSD_METAPOOL_NAME = "FRAXBP-SUSD"
 export const FRAX_ALUSD_METAPOOL_NAME = "FRAXBP-alUSD"
-export const ARB_FRAX_USDS_METAPOOL_NAME = "arbFRAXBP-SUSD"
+export const ARB_FRAX_USDS_METAPOOL_NAME = "arbFRAXBP-USDs"
 export const FTM_FRAX_USDT_METAPOOL_NAME = "ftmFRAXBP-USDT"
 export const FTM_FRAX_ALUSD_METAPOOL_NAME = "ftmFRAXBP-alUSD"
 export const USDC_USX_POOL_NAME = "USDC-USX"
@@ -2048,6 +2048,9 @@ const minichefPids: Partial<Record<ChainId, { [pool: string]: number }>> = {
     [FRAX_USDT_METAPOOL_SWAP_CONTRACT_ADDRESSES[
       ChainId.ARBITRUM
     ].toLowerCase()]: 4,
+    [ARB_FRAX_USDS_METAPOOL_SWAP_CONTRACT_ADDRESSES[
+      ChainId.ARBITRUM
+    ].toLowerCase()]: 5,
   },
   [ChainId.OPTIMISM]: {
     [FRAX_USDC_SWAP_ADDRESSES[ChainId.OPTIMISM].toLowerCase()]: 1,
