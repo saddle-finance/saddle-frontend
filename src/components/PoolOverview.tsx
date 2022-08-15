@@ -43,7 +43,7 @@ export default function PoolOverview({
   const { chain } = useNetwork()
   const [poolData, userShareData] = usePoolData(poolName)
   const shouldMigrate = !!onClickMigrate
-  const gaugesAreActive = areGaugesActive(chain?.id)
+  const gaugesAreActive = areGaugesActive(chain?.id ?? 1)
   const formattedData = {
     name: poolData.name,
     reserve: poolData.reserve

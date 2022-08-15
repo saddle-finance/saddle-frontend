@@ -1,14 +1,8 @@
-import "react-toastify/dist/ReactToastify.css"
 import "@rainbow-me/rainbowkit/styles.css"
+import "react-toastify/dist/ReactToastify.css"
 
 import { AppDispatch, AppState } from "../state"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import {
-  RainbowKitProvider,
-  Theme,
-  darkTheme,
-  lightTheme,
-} from "@rainbow-me/rainbowkit"
+// import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import React, {
   ReactElement,
   Suspense,
@@ -17,7 +11,7 @@ import React, {
   useEffect,
 } from "react"
 import { Redirect, Route, Switch } from "react-router-dom"
-import { WagmiConfig, useNetwork } from "wagmi"
+import { Theme, darkTheme, lightTheme } from "@rainbow-me/rainbowkit"
 import { chains, wagmiClient } from "../constants/networks"
 import { styled, useTheme } from "@mui/material"
 import { useDispatch, useSelector } from "react-redux"
@@ -32,7 +26,8 @@ import GaugeProvider from "../providers/GaugeProvider"
 import { LocalizationProvider } from "@mui/x-date-pickers"
 import MinichefProvider from "../providers/MinichefProvider"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit"
+// import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import Swap from "./Swap"
 import { ToastContainer } from "react-toastify"
@@ -40,7 +35,8 @@ import TokensProvider from "../providers/TokensProvider"
 import TopMenu from "../components/TopMenu"
 import UserStateProvider from "../providers/UserStateProvider"
 import Version from "../components/Version"
-// import Web3ReactManager from "../components/Web3ReactManager"
+import { WagmiConfig } from "wagmi"
+import Web3ReactManager from "../components/Web3ReactManager"
 import WrongNetworkModal from "../components/WrongNetworkModal"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchSdlWethSushiPoolInfo from "../utils/updateSdlWethSushiInfo"
@@ -50,6 +46,7 @@ import getSnapshotVoteData from "../utils/getSnapshotVoteData"
 import merge from "lodash.merge"
 // import { useActiveWeb3React } from "../hooks"
 import { useIntercom } from "react-use-intercom"
+import { useNetwork } from "wagmi"
 import usePoller from "../hooks/usePoller"
 import { useSdlWethSushiPairContract } from "../hooks/useContract"
 
@@ -81,13 +78,13 @@ const AppContainer = styled("div")(({ theme }) => {
   }
 })
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      suspense: true,
-    },
-  },
-})
+// const queryClient = new QueryClient({
+//   defaultOptions: {
+//     queries: {
+//       suspense: true,
+//     },
+//   },
+// })
 
 export default function App(): ReactElement {
   const theme = useTheme()
@@ -112,17 +109,15 @@ export default function App(): ReactElement {
   )
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen />
-      <Suspense fallback={null}>
-        <WagmiConfig client={wagmiClient}>
-          <RainbowKitProvider
-            coolMode
-            showRecentTransactions
-            theme={rainbowWalletTheme}
-            chains={chains}
-          >
-            {/* <Web3ReactManager> */}
+    <WagmiConfig client={wagmiClient}>
+      <RainbowKitProvider
+        coolMode
+        showRecentTransactions
+        theme={rainbowWalletTheme}
+        chains={chains}
+      >
+        <Suspense fallback={null}>
+          <Web3ReactManager>
             <BasicPoolsProvider>
               <MinichefProvider>
                 <GaugeProvider>
@@ -208,11 +203,10 @@ export default function App(): ReactElement {
                 </GaugeProvider>
               </MinichefProvider>
             </BasicPoolsProvider>
-            {/* </Web3ReactManager> */}
-          </RainbowKitProvider>
-        </WagmiConfig>
-      </Suspense>
-    </QueryClientProvider>
+          </Web3ReactManager>
+        </Suspense>
+      </RainbowKitProvider>
+    </WagmiConfig>
   )
 }
 
@@ -231,7 +225,7 @@ function PricesAndVoteData({
     void fetchGasPrices(dispatch)
   }, [dispatch])
   const fetchAndUpdateTokensPrice = useCallback(() => {
-    fetchTokenPricesUSD(dispatch, sdlWethSushiPool, chain?.id)
+    fetchTokenPricesUSD(dispatch, sdlWethSushiPool, chain?.id ?? 1)
   }, [dispatch, chain, sdlWethSushiPool])
   const fetchAndUpdateSwapStats = useCallback(() => {
     void fetchSwapStats(dispatch)
@@ -240,7 +234,7 @@ function PricesAndVoteData({
     void fetchSdlWethSushiPoolInfo(
       dispatch,
       sdlWethSushiPoolContract,
-      chain?.id,
+      chain?.id ?? 1,
     )
   }, [dispatch, chain, sdlWethSushiPoolContract])
 

@@ -33,7 +33,7 @@ import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { PoolRegistry } from "../../types/ethers-contracts/PoolRegistry"
 import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
-import { getMigrationData } from "../utils/migrations"
+import { getMigrationDataOld } from "../utils/migrations"
 import { parseBytes32String } from "@ethersproject/strings"
 import { useActiveWeb3React } from "../hooks"
 import { useSelector } from "react-redux"
@@ -120,7 +120,7 @@ export default function BasicPoolsProvider({
           )
         : await getPoolsBaseData(library, chainId)
       const poolsAddresses = pools.map(({ poolAddress }) => poolAddress)
-      const migrationData = await getMigrationData(
+      const migrationData = await getMigrationDataOld(
         library,
         chainId,
         poolsAddresses,

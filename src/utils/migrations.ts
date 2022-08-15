@@ -9,13 +9,14 @@ import GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI from "../constants/abis/generalize
 import { GeneralizedSwapMigrator } from "../../types/ethers-contracts/GeneralizedSwapMigrator"
 import { MulticallContract } from "../types/ethcall"
 import { Web3Provider } from "@ethersproject/providers"
+import { useContractReads } from "wagmi"
 
 type MigrationData = { [poolAddress: string]: string } // current poolAddress => new poolAddress
 
 /**
  * Returns old -> new pool address mappings from GeneralizedMigrator for the given pool addresses.
  */
-export async function getMigrationData(
+export async function getMigrationDataOld(
   library: Web3Provider,
   chainId: ChainId,
   poolAddresses: string[],
@@ -49,4 +50,33 @@ export async function getMigrationData(
     console.error(error)
     return null
   }
+}
+
+export const useMigrationData = (
+  pools: { poolAddress: string }[],
+  chainId: number,
+) => {
+  const migratorAddress =
+    GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES[chainId as ChainId]
+  const poolsAddresses = pools?.map(({ poolAddress }) => poolAddress) ?? []
+  const migrationMapCalls = poolsAddresses.map((address) => ({
+    addressOrName: migratorAddress,
+    contractInterface: GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI,
+    functionName: "migrationMap",
+    args: address,
+  }))
+  const { data: migrationMapData } = useContractReads({
+    contracts: migrationMapCalls,
+    enabled: !!pools,
+  })
+  const migrations = migrationMapData as unknown as { newPoolAddress: string }[]
+  const parsedData = poolsAddresses.reduce((acc, address, i) => {
+    const migrationTarget = migrations?.[i].newPoolAddress?.toLowerCase() ?? ""
+    if (migrationTarget && !isAddressZero(migrationTarget)) {
+      return { [address]: migrationTarget, ...acc }
+    }
+    return acc
+  }, {} as MigrationData)
+
+  return parsedData
 }

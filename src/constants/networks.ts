@@ -1,9 +1,8 @@
 import {
   Chain,
   // Wallet,
-  connectorsForWallets,
+  getDefaultWallets,
   // getWalletConnectConnector,
-  wallet,
 } from "@rainbow-me/rainbowkit"
 import {
   chain,
@@ -13,7 +12,7 @@ import {
 
 import { ChainId } from "./index"
 // import { InjectedConnector } from "@web3-react/injected-connector"
-import { alchemyProvider } from "wagmi/providers/alchemy"
+// import { alchemyProvider } from "wagmi/providers/alchemy"
 import { hexlify } from "@ethersproject/bytes"
 // import { injectedTallyProvider } from "../connectors"
 import { publicProvider } from "wagmi/providers/public"
@@ -168,60 +167,60 @@ export const DEV_SUPPORTED_NETWORKS: SupportedNetworks = {
   },
 }
 
-const evmosChain: Chain = {
-  id: ChainId.EVMOS,
-  iconUrl:
-    "https://assets.coingecko.com/coins/images/24023/small/evmos.png?1653958927",
-  iconBackground: "#fff",
-  name: "Evmos",
-  nativeCurrency: {
-    name: "Evmos",
-    symbol: "EVMOS",
-    decimals: 18,
-  },
-  network: "evmos",
-  rpcUrls: { default: "https://eth.bd.evmos.org:8545" },
-  blockExplorers: {
-    default: { name: "Evmos", url: "https://evm.evmos.org" },
-  },
-  testnet: false,
-}
-const fantomChain: Chain = {
-  id: ChainId.FANTOM,
-  iconUrl:
-    "https://assets.coingecko.com/coins/images/4001/small/Fantom.png?1558015016",
-  iconBackground: "#fff",
-  name: "Fantom",
-  nativeCurrency: {
-    name: "Fantom",
-    symbol: "FTM",
-    decimals: 18,
-  },
-  network: "evmos",
-  rpcUrls: { default: "https://rpc.ftm.tools" },
-  blockExplorers: {
-    default: { name: "Fantom Scan", url: "https://ftmscan.com" },
-  },
-  testnet: false,
-}
-const kavaChain: Chain = {
-  id: ChainId.KAVA,
-  iconUrl:
-    "https://assets.coingecko.com/coins/images/9761/small/kava.jpg?1639703080",
-  iconBackground: "#fff",
-  name: "Kava",
-  nativeCurrency: {
-    name: "Kava",
-    symbol: "KAVA",
-    decimals: 18,
-  },
-  network: "kava",
-  rpcUrls: { default: "https://evm.kava.io" },
-  blockExplorers: {
-    default: { name: "Kava", url: "https://explorer.kava.io" },
-  },
-  testnet: false,
-}
+// const evmosChain: Chain = {
+//   id: ChainId.EVMOS,
+//   iconUrl:
+//     "https://assets.coingecko.com/coins/images/24023/small/evmos.png?1653958927",
+//   iconBackground: "#fff",
+//   name: "Evmos",
+//   nativeCurrency: {
+//     name: "Evmos",
+//     symbol: "EVMOS",
+//     decimals: 18,
+//   },
+//   network: "evmos",
+//   rpcUrls: { default: "https://eth.bd.evmos.org:8545" },
+//   blockExplorers: {
+//     default: { name: "Evmos", url: "https://evm.evmos.org" },
+//   },
+//   testnet: false,
+// }
+// const fantomChain: Chain = {
+//   id: ChainId.FANTOM,
+//   iconUrl:
+//     "https://assets.coingecko.com/coins/images/4001/small/Fantom.png?1558015016",
+//   iconBackground: "#fff",
+//   name: "Fantom",
+//   nativeCurrency: {
+//     name: "Fantom",
+//     symbol: "FTM",
+//     decimals: 18,
+//   },
+//   network: "evmos",
+//   rpcUrls: { default: "https://rpc.ftm.tools" },
+//   blockExplorers: {
+//     default: { name: "Fantom Scan", url: "https://ftmscan.com" },
+//   },
+//   testnet: false,
+// }
+// const kavaChain: Chain = {
+//   id: ChainId.KAVA,
+//   iconUrl:
+//     "https://assets.coingecko.com/coins/images/9761/small/kava.jpg?1639703080",
+//   iconBackground: "#fff",
+//   name: "Kava",
+//   nativeCurrency: {
+//     name: "Kava",
+//     symbol: "KAVA",
+//     decimals: 18,
+//   },
+//   network: "kava",
+//   rpcUrls: { default: "https://evm.kava.io" },
+//   blockExplorers: {
+//     default: { name: "Kava", url: "https://explorer.kava.io" },
+//   },
+//   testnet: false,
+// }
 // const avalancheChain: Chain = {
 //   id: 43_114,
 //   name: "Avalanche",
@@ -249,13 +248,13 @@ export const rainbowChains = [
   chain.optimism,
   chain.arbitrum,
   chain.hardhat,
-  evmosChain,
-  fantomChain,
-  kavaChain,
+  // evmosChain,
+  // fantomChain,
+  // kavaChain,
 ]
 
+// alchemyProvider({ apiKey: process.env.ALCHEMY_API_KEY }),
 export const { chains, provider } = configureChains(rainbowChains, [
-  alchemyProvider({ alchemyId: process.env.ALCHEMY_API_KEY }),
   publicProvider(),
 ])
 
@@ -355,30 +354,30 @@ export const { chains, provider } = configureChains(rainbowChains, [
 //   },
 // })
 
-// const { connectors } = getDefaultWallets({
-//   appName: "Saddle Exchange",
-//   chains,
-// })
+const { connectors } = getDefaultWallets({
+  appName: "Saddle Exchange",
+  chains,
+})
 
-const needsInjectedWalletFallback =
-  typeof window !== "undefined" && !window.ethereum?.isMetaMask
+// const needsInjectedWalletFallback =
+//   typeof window !== "undefined" && !window.ethereum?.isMetaMask
 
-const connectors = connectorsForWallets([
-  {
-    groupName: "Recommended",
-    wallets: [
-      wallet.metaMask({ chains }),
-      wallet.rainbow({ chains }),
-      wallet.walletConnect({ chains }),
-      wallet.brave({ chains }),
-      wallet.coinbase({ appName: "Saddle", chains }),
-      ...(needsInjectedWalletFallback
-        ? [wallet.injected({ chains: [chain.mainnet] })]
-        : []),
-      // tally({ chains }),
-    ],
-  },
-])
+// const connectors = connectorsForWallets([
+//   {
+//     groupName: "Recommended",
+//     wallets: [
+//       wallet.metaMask({ chains }),
+//       wallet.rainbow({ chains }),
+//       wallet.walletConnect({ chains }),
+//       wallet.brave({ chains }),
+//       wallet.coinbase({ appName: "Saddle", chains }),
+//       ...(needsInjectedWalletFallback
+//         ? [wallet.injected({ chains: [chain.mainnet] })]
+//         : []),
+//       // tally({ chains }),
+//     ],
+//   },
+// ])
 
 export const wagmiClient = createWagmiClient({
   autoConnect: true,
