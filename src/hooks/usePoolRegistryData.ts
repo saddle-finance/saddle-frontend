@@ -8,23 +8,13 @@ import {
 import { useContractRead, useContractReads } from "wagmi"
 
 import { BigNumber } from "@ethersproject/bignumber"
-// import { BigNumber } from "@ethersproject/bignumber"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import POOL_REGISTRY_ABI from "../constants/abis/poolRegistry.json"
 import { Provider } from "@wagmi/core"
-// import POOL_REGISTRY_ABI from "../constants/abis/poolRegistry.json"
-// import { PoolRegistry } from "../../types/ethers-contracts/PoolRegistry"
-// import { Provider } from "@wagmi/core"
 import { Zero } from "@ethersproject/constants"
 import { parseBytes32String } from "@ethersproject/strings"
-// import { enumerate } from "../utils"
 import { useMigrationData } from "../utils/migrations"
 import { usePoolRegistryAddr } from "../hooks/useContract"
-
-// import { useContractRead, useContractReads } from "wagmi"
-// import { usePoolRegistry2, usePoolRegistryAddr } from "../hooks/useContract"
-
-// import { useMigrationData } from "../utils/migrations"
 
 type SwapInfo = MetaSwapInfo | NonMetaSwapInfo
 type SharedSwapData = {
@@ -79,7 +69,7 @@ type PoolMigrationData =
 export type BasicPool = SwapInfo & PoolMigrationData
 export type BasicPools = Partial<{ [poolName: string]: BasicPool }> | null // indexed by name, which is unique in the Registry
 
-export const useRegPools = (poolCount: number, addr: string) => {
+export const useRegistryPoolResult = (poolCount: number, addr: string) => {
   const poolDataAtIndex = enumerate(poolCount).map((index) => {
     return {
       addressOrName: addr,
@@ -108,7 +98,7 @@ export const useRegPools = (poolCount: number, addr: string) => {
   }[]
 }
 
-export const useMappedPools = (
+export const useRegistryPools = (
   pools: {
     lpToken: string
     poolAddress: string
@@ -251,7 +241,7 @@ export const useMappedPools = (
   return swapInfos
 }
 
-export const usePoolsRegistryData = (addr: string) => {
+export const usePoolsCount = (addr: string) => {
   const { data: poolLength } = useContractRead({
     addressOrName: addr,
     contractInterface: POOL_REGISTRY_ABI,
@@ -265,18 +255,18 @@ export const usePoolsRegistryData = (addr: string) => {
 
 export const usePools = (chain: number, provider: Provider) => {
   const poolAddr = usePoolRegistryAddr(chain, provider)
-  const poolLen = usePoolsRegistryData(poolAddr)
-  const registryPools = useRegPools(poolLen, poolAddr)
-  const validPools = useMappedPools(registryPools, poolAddr, chain)
+  const poolLen = usePoolsCount(poolAddr)
+  const registryPools = useRegistryPoolResult(poolLen, poolAddr)
+  const validPools = useRegistryPools(registryPools, poolAddr, chain)
   const migrationData = useMigrationData(registryPools, chain)
   const pools = validPools?.reduce((acc, pool) => {
-    const poolData = { ...pool } as BasicPool
-    if (pool.poolAddress && pool.poolName) {
-      poolData.isMigrated = migrationData?.[pool.poolAddress] != null
-      poolData.newPoolAddress = migrationData?.[pool.poolAddress]
+    const poolData = pool as BasicPool
+    if (poolData.poolAddress && poolData.poolName) {
+      poolData.isMigrated = migrationData?.[poolData.poolAddress] != null
+      poolData.newPoolAddress = migrationData?.[poolData.poolAddress]
       return {
         ...acc,
-        [pool.poolName]: poolData,
+        [poolData.poolName]: poolData,
       }
     } else {
       return {
