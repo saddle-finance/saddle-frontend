@@ -16,7 +16,7 @@ export type MigrationData = { [poolAddress: string]: string } // current poolAdd
 /**
  * Returns old -> new pool address mappings from GeneralizedMigrator for the given pool addresses.
  */
-export async function getMigrationDataOld(
+export async function getMigrationDataOld( // TODO: delete once safe to remove basicPoolsContext
   library: Web3Provider,
   chainId: ChainId,
   poolAddresses: string[],
