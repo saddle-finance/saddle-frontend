@@ -1,3 +1,4 @@
+import { MigrationData, useMigrationData } from "../utils/migrations"
 import { PoolTypes, getMinichefPid } from "../constants"
 import {
   enumerate,
@@ -5,15 +6,13 @@ import {
   isSynthAsset,
   mapToLowerCase,
 } from "../utils"
-import { useContractRead, useContractReads } from "wagmi"
+import { useContractRead, useContractReads, useNetwork } from "wagmi"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import POOL_REGISTRY_ABI from "../constants/abis/poolRegistry.json"
-import { Provider } from "@wagmi/core"
 import { Zero } from "@ethersproject/constants"
 import { parseBytes32String } from "@ethersproject/strings"
-import { useMigrationData } from "../utils/migrations"
 import { usePoolRegistryAddr } from "../hooks/useContract"
 
 type SwapInfo = MetaSwapInfo | NonMetaSwapInfo
@@ -69,6 +68,17 @@ type PoolMigrationData =
 export type BasicPool = SwapInfo & PoolMigrationData
 export type BasicPools = Partial<{ [poolName: string]: BasicPool }> | null // indexed by name, which is unique in the Registry
 
+export const usePools = () => {
+  const poolAddr = usePoolRegistryAddr()
+  const poolLen = usePoolsCount(poolAddr)
+  const registryPools = useRegistryPoolResult(poolLen, poolAddr)
+  const validPools = useRegistryPools(registryPools, poolAddr)
+  const migrationData = useMigrationData(registryPools)
+  const pools = normalizePools(validPools, migrationData)
+
+  return pools
+}
+
 export const useRegistryPoolResult = (poolCount: number, addr: string) => {
   const poolDataAtIndex = enumerate(poolCount).map((index) => {
     return {
@@ -114,8 +124,8 @@ export const useRegistryPools = (
     typeOfAsset: PoolTypes
   }[],
   addr: string,
-  chainId: number,
 ) => {
+  const { chain } = useNetwork()
   const validPools = pools?.filter(Boolean) ?? []
   const poolRegistryReadProperties = (poolAddress: string) => ({
     addressOrName: addr,
@@ -186,15 +196,15 @@ export const useRegistryPools = (
   const swapInfos: SwapInfo[] = []
   pools?.forEach((poolDataResult, index) => {
     const poolData = poolDataResult
-    if (!chainId || !poolData) return
+    if (!chain?.id || !poolData) return
     const isMetaSwap = !isAddressZero(poolData.metaSwapDepositAddress)
     const rewardsPid = getMinichefPid(
-      chainId,
+      chain.id,
       poolData.poolAddress.toLowerCase(),
     )
     const isSynthetic = mapToLowerCase(
       isMetaSwap ? poolData.underlyingTokens : poolData.tokens,
-    ).some((addr) => isSynthAsset(chainId, addr))
+    ).some((addr) => isSynthAsset(chain.id, addr))
     const isPaused = arePoolsPaused[index] as unknown as boolean
     const virtualPrice = virtualPricesData[index] as unknown as BigNumber
     const swapStorage = swapStorages[index] as unknown as SwapInfo
@@ -253,13 +263,11 @@ export const usePoolsCount = (addr: string) => {
   return poolCount
 }
 
-export const usePools = (chain: number, provider: Provider) => {
-  const poolAddr = usePoolRegistryAddr(chain, provider)
-  const poolLen = usePoolsCount(poolAddr)
-  const registryPools = useRegistryPoolResult(poolLen, poolAddr)
-  const validPools = useRegistryPools(registryPools, poolAddr, chain)
-  const migrationData = useMigrationData(registryPools, chain)
-  const pools = validPools?.reduce((acc, pool) => {
+const normalizePools = (
+  validPools: SwapInfo[] | null,
+  migrationData: MigrationData,
+) =>
+  validPools?.reduce((acc, pool) => {
     const poolData = pool as BasicPool
     if (poolData.poolAddress && poolData.poolName) {
       poolData.isMigrated = migrationData?.[poolData.poolAddress] != null
@@ -274,8 +282,6 @@ export const usePools = (chain: number, provider: Provider) => {
       }
     }
   }, {} as BasicPools)
-  return pools
-}
 
 const buildMetaInfo = (
   swapInfo: Omit<MetaSwapInfo | NonMetaSwapInfo, "isMetaSwap">,

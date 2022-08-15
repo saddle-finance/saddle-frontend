@@ -3,15 +3,15 @@ import {
   GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES,
 } from "../constants"
 import { getMulticallProvider, isAddressZero } from "."
+import { useContractReads, useNetwork } from "wagmi"
 
 import { Contract } from "ethcall"
 import GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI from "../constants/abis/generalizedSwapMigrator.json"
 import { GeneralizedSwapMigrator } from "../../types/ethers-contracts/GeneralizedSwapMigrator"
 import { MulticallContract } from "../types/ethcall"
 import { Web3Provider } from "@ethersproject/providers"
-import { useContractReads } from "wagmi"
 
-type MigrationData = { [poolAddress: string]: string } // current poolAddress => new poolAddress
+export type MigrationData = { [poolAddress: string]: string } // current poolAddress => new poolAddress
 
 /**
  * Returns old -> new pool address mappings from GeneralizedMigrator for the given pool addresses.
@@ -52,12 +52,10 @@ export async function getMigrationDataOld(
   }
 }
 
-export const useMigrationData = (
-  pools: { poolAddress: string }[],
-  chainId: number,
-) => {
+export const useMigrationData = (pools: { poolAddress: string }[]) => {
+  const { chain } = useNetwork()
   const migratorAddress =
-    GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES[chainId as ChainId]
+    GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES[chain?.id as ChainId]
   const poolsAddresses = pools?.map(({ poolAddress }) => poolAddress) ?? []
   const migrationMapCalls = poolsAddresses.map((address) => ({
     addressOrName: migratorAddress,

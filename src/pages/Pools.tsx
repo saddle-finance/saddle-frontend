@@ -1,10 +1,8 @@
 import { Box, Button, Chip, Container, Stack, TextField } from "@mui/material"
 import React, { ReactElement, useContext, useEffect, useState } from "react"
-// import { useActiveWeb3React } from "../hooks"
-import { useAccount, useNetwork, useProvider } from "wagmi"
 
 import { AppState } from "../state"
-// import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
+import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "ethers"
 import ConfirmTransaction from "../components/ConfirmTransaction"
 import Dialog from "../components/Dialog"
@@ -17,18 +15,17 @@ import { Zero } from "@ethersproject/constants"
 import { getTokenSymbolForPoolType } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
 import { parseUnits } from "@ethersproject/units"
+import { useAccount } from "wagmi"
 import { useApproveAndMigrate } from "../hooks/useApproveAndMigrate"
 import { useHistory } from "react-router"
 import { usePools } from "../hooks/usePoolRegistryData"
 import { useSelector } from "react-redux"
 
 function Pools(): ReactElement | null {
-  const { chain } = useNetwork()
   const { address } = useAccount()
-  const provider = useProvider()
-  // const basicPools = useContext(BasicPoolsContext)
-  const wagmiPools = usePools(chain?.id ?? 1, provider)
-  console.log({ wagmiPools })
+  const basicPools = useContext(BasicPoolsContext)
+  const wagmiPools = usePools()
+  console.log({ wagmiPools, basicPools })
   const userState = useContext(UserStateContext)
   const approveAndMigrate = useApproveAndMigrate()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

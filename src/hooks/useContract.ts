@@ -19,7 +19,7 @@ import {
 import { Contract, ContractInterface } from "@ethersproject/contracts"
 import { createMultiCallContract, getContract, getSwapContract } from "../utils"
 import { useContext, useEffect, useMemo, useState } from "react"
-import { useContract, useContractRead } from "wagmi"
+import { useContract, useContractRead, useNetwork, useProvider } from "wagmi"
 
 import { AddressZero } from "@ethersproject/constants"
 import BRIDGE_CONTRACT_ABI from "../constants/abis/bridge.json"
@@ -96,13 +96,11 @@ function useContractOld(
   }, [address, ABI, library, withSignerIfPossible, account])
 }
 
-export function useMasterRegistry2(
-  chain: number,
-  provider: Provider,
-): MasterRegistry {
-  // const { chain } = useNetwork()
-  // const provider = useProvider()
-  const contractAddress = MASTER_REGISTRY_CONTRACT_ADDRESSES[chain as ChainId]
+export function useMasterRegistry2(): MasterRegistry {
+  const { chain } = useNetwork()
+  const provider = useProvider()
+  const contractAddress =
+    MASTER_REGISTRY_CONTRACT_ADDRESSES[chain?.id as ChainId]
 
   return useContract({
     addressOrName: contractAddress,
@@ -126,8 +124,8 @@ export function useMasterRegistry(): MasterRegistry | null {
 
 export const POOL_REGISTRY_NAME = formatBytes32String("PoolRegistry")
 
-export const usePoolRegistryAddr = (chain: number, provider: Provider) => {
-  const masterRegistryContract = useMasterRegistry2(chain, provider)
+export const usePoolRegistryAddr = () => {
+  const masterRegistryContract = useMasterRegistry2()
   const { data: contractAddress } = useContractRead({
     addressOrName: masterRegistryContract.address,
     contractInterface: MASTER_REGISTRY_ABI,
