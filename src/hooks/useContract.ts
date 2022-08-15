@@ -100,7 +100,7 @@ export function useMasterRegistry2(): MasterRegistry {
   const { chain } = useNetwork()
   const provider = useProvider()
   const contractAddress =
-    MASTER_REGISTRY_CONTRACT_ADDRESSES[chain?.id as ChainId]
+    MASTER_REGISTRY_CONTRACT_ADDRESSES[(chain?.id as ChainId) ?? 1]
 
   return useContract({
     addressOrName: contractAddress,

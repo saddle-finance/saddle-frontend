@@ -67,9 +67,11 @@ export const useMigrationData = (pools: { poolAddress: string }[]) => {
     contracts: migrationMapCalls,
     enabled: !!pools,
   })
-  const migrations = migrationMapData as unknown as { newPoolAddress: string }[]
+  const migrations = migrationMapData as unknown as
+    | { newPoolAddress: string }[]
+    | null[]
   const parsedData = poolsAddresses.reduce((acc, address, i) => {
-    const migrationTarget = migrations?.[i].newPoolAddress?.toLowerCase() ?? ""
+    const migrationTarget = migrations?.[i]?.newPoolAddress?.toLowerCase() ?? ""
     if (migrationTarget && !isAddressZero(migrationTarget)) {
       return { [address]: migrationTarget, ...acc }
     }
