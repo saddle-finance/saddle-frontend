@@ -2,7 +2,7 @@ import "@rainbow-me/rainbowkit/styles.css"
 import "react-toastify/dist/ReactToastify.css"
 
 import { AppDispatch, AppState } from "../state"
-// import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import React, {
   ReactElement,
   Suspense,
@@ -27,7 +27,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers"
 import MinichefProvider from "../providers/MinichefProvider"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit"
-// import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import Swap from "./Swap"
 import { ToastContainer } from "react-toastify"
@@ -44,7 +44,6 @@ import fetchSwapStats from "../utils/getSwapStats"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import getSnapshotVoteData from "../utils/getSnapshotVoteData"
 import merge from "lodash.merge"
-// import { useActiveWeb3React } from "../hooks"
 import { useIntercom } from "react-use-intercom"
 import { useNetwork } from "wagmi"
 import usePoller from "../hooks/usePoller"
@@ -78,13 +77,13 @@ const AppContainer = styled("div")(({ theme }) => {
   }
 })
 
-// const queryClient = new QueryClient({
-//   defaultOptions: {
-//     queries: {
-//       suspense: true,
-//     },
-//   },
-// })
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      suspense: true,
+    },
+  },
+})
 
 export default function App(): ReactElement {
   const theme = useTheme()
@@ -109,104 +108,111 @@ export default function App(): ReactElement {
   )
 
   return (
-    <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider
-        coolMode
-        showRecentTransactions
-        theme={rainbowWalletTheme}
-        chains={chains}
-      >
-        <Suspense fallback={null}>
-          <Web3ReactManager>
-            <BasicPoolsProvider>
-              <MinichefProvider>
-                <GaugeProvider>
-                  <TokensProvider>
-                    <ExpandedPoolsProvider>
-                      <UserStateProvider>
-                        <PricesAndVoteData>
-                          <PendingSwapsProvider>
-                            <AprsProvider>
-                              <RewardsBalancesProvider>
-                                <LocalizationProvider
-                                  dateAdapter={AdapterDateFns}
-                                >
-                                  <AppContainer>
-                                    <TopMenu />
-                                    <Switch>
-                                      <Route exact path="/" component={Swap} />
-                                      <Route
-                                        exact
-                                        path="/pools"
-                                        component={Pools}
+    <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools />
+      <WagmiConfig client={wagmiClient}>
+        <RainbowKitProvider
+          coolMode
+          showRecentTransactions
+          theme={rainbowWalletTheme}
+          chains={chains}
+        >
+          <Suspense fallback={null}>
+            <Web3ReactManager>
+              <BasicPoolsProvider>
+                <MinichefProvider>
+                  <GaugeProvider>
+                    <TokensProvider>
+                      <ExpandedPoolsProvider>
+                        <UserStateProvider>
+                          <PricesAndVoteData>
+                            <PendingSwapsProvider>
+                              <AprsProvider>
+                                <RewardsBalancesProvider>
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDateFns}
+                                  >
+                                    <AppContainer>
+                                      <TopMenu />
+                                      <Switch>
+                                        <Route
+                                          exact
+                                          path="/"
+                                          component={Swap}
+                                        />
+                                        <Route
+                                          exact
+                                          path="/pools"
+                                          component={Pools}
+                                        />
+                                        <Route
+                                          exact
+                                          path={`/pools/:poolName/deposit`}
+                                          component={Deposit}
+                                        />
+                                        <Route
+                                          exact
+                                          path={`/pools/:poolName/withdraw`}
+                                          component={Withdraw}
+                                        />
+                                        <Redirect
+                                          from="/pools/:route/:action"
+                                          to="/pools"
+                                        />
+                                        <Route
+                                          exact
+                                          path="/pools/create"
+                                          component={CreatePool}
+                                        />
+                                        <Route
+                                          exact
+                                          path="/risk"
+                                          component={Risk}
+                                        />
+                                        <Route
+                                          exact
+                                          path="/vesting-claim"
+                                          component={VestingClaim}
+                                        />
+                                        <Route
+                                          exact
+                                          path="/farm"
+                                          component={Farm}
+                                        />
+                                        <Route
+                                          exact
+                                          path="/vesdl"
+                                          component={VeSDL}
+                                        />
+                                        <Route
+                                          exact
+                                          path="/coinbase-pay-test"
+                                          component={CoinbasePayTest}
+                                        />
+                                      </Switch>
+                                      <WrongNetworkModal />
+                                      <Version />
+                                      <ToastContainer
+                                        theme={theme.palette.mode}
+                                        position="top-left"
                                       />
-                                      <Route
-                                        exact
-                                        path={`/pools/:poolName/deposit`}
-                                        component={Deposit}
-                                      />
-                                      <Route
-                                        exact
-                                        path={`/pools/:poolName/withdraw`}
-                                        component={Withdraw}
-                                      />
-                                      <Redirect
-                                        from="/pools/:route/:action"
-                                        to="/pools"
-                                      />
-                                      <Route
-                                        exact
-                                        path="/pools/create"
-                                        component={CreatePool}
-                                      />
-                                      <Route
-                                        exact
-                                        path="/risk"
-                                        component={Risk}
-                                      />
-                                      <Route
-                                        exact
-                                        path="/vesting-claim"
-                                        component={VestingClaim}
-                                      />
-                                      <Route
-                                        exact
-                                        path="/farm"
-                                        component={Farm}
-                                      />
-                                      <Route
-                                        exact
-                                        path="/vesdl"
-                                        component={VeSDL}
-                                      />
-                                      <Route
-                                        exact
-                                        path="/coinbase-pay-test"
-                                        component={CoinbasePayTest}
-                                      />
-                                    </Switch>
-                                    <WrongNetworkModal />
-                                    <Version />
-                                    <ToastContainer
-                                      theme={theme.palette.mode}
-                                      position="top-left"
-                                    />
-                                  </AppContainer>
-                                </LocalizationProvider>
-                              </RewardsBalancesProvider>
-                            </AprsProvider>
-                          </PendingSwapsProvider>
-                        </PricesAndVoteData>
-                      </UserStateProvider>
-                    </ExpandedPoolsProvider>
-                  </TokensProvider>
-                </GaugeProvider>
-              </MinichefProvider>
-            </BasicPoolsProvider>
-          </Web3ReactManager>
-        </Suspense>
-      </RainbowKitProvider>
-    </WagmiConfig>
+                                    </AppContainer>
+                                  </LocalizationProvider>
+                                </RewardsBalancesProvider>
+                              </AprsProvider>
+                            </PendingSwapsProvider>
+                          </PricesAndVoteData>
+                        </UserStateProvider>
+                      </ExpandedPoolsProvider>
+                    </TokensProvider>
+                  </GaugeProvider>
+                </MinichefProvider>
+              </BasicPoolsProvider>
+            </Web3ReactManager>
+          </Suspense>
+        </RainbowKitProvider>
+      </WagmiConfig>
+    </QueryClientProvider>
   )
 }
 
@@ -215,7 +221,6 @@ function PricesAndVoteData({
 }: React.PropsWithChildren<unknown>): ReactElement {
   const dispatch = useDispatch<AppDispatch>()
   const sdlWethSushiPoolContract = useSdlWethSushiPairContract()
-  // const { chainId } = useActiveWeb3React()
   const { chain } = useNetwork()
   const { sdlWethSushiPool } = useSelector(
     (state: AppState) => state.application,
