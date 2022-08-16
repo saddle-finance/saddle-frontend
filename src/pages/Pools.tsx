@@ -2,7 +2,6 @@ import { Box, Button, Chip, Container, Stack, TextField } from "@mui/material"
 import React, { ReactElement, useContext, useEffect, useState } from "react"
 
 import { AppState } from "../state"
-// import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "ethers"
 import ConfirmTransaction from "../components/ConfirmTransaction"
 import Dialog from "../components/Dialog"
@@ -23,8 +22,7 @@ import { useSelector } from "react-redux"
 
 function Pools(): ReactElement | null {
   const { address } = useAccount()
-  // const basicPools = useContext(BasicPoolsContext)
-  const wagmiPools = usePools()
+  const pools = usePools()
   const userState = useContext(UserStateContext)
   const approveAndMigrate = useApproveAndMigrate()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -105,7 +103,7 @@ function Pools(): ReactElement | null {
       </Stack>
 
       <Stack spacing={3}>
-        {Object.values(wagmiPools || {})
+        {Object.values(pools || {})
           .filter(
             (basicPool) =>
               filter === "all" ||

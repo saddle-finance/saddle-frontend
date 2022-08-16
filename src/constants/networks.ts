@@ -236,50 +236,6 @@ export const { chains, provider } = configureChains(rainbowChains, [
   publicProvider(),
 ])
 
-// export const unstoppableDomains = () => ({
-//   id: "unstoppableDomains",
-//   name: "Unstoppable Domains",
-//   iconUrl: unstoppableDomainsLogo,
-//   iconBackground: "#0c2f78",
-//   downloadUrls: {
-//     browserExtension: "https://unstoppabledomains.com/extension",
-//   },
-//   createConnector: () => {
-//     const connector = unstoppableDomainsConnector
-
-//     return {
-//       connector,
-//       desktop: {
-//         getUri: async () => {
-//           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-//           const c = (await connector.getProvider()).connector
-//           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-//           console.log({ c })
-//           // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-//           return connector.activate()
-//         },
-//       },
-//     }
-//   },
-// })
-
-// const unstoppableDomainsConnector = new UAuthConnector({
-//   clientID: process.env.REACT_APP_UD_CLIENT_ID,
-//   clientSecret: process.env.REACT_APP_UD_CLIENT_SECRET,
-//   redirectUri: process.env.REACT_APP_UD_REDIRECT_URI,
-//   postLogoutRedirectUri: process.env.REACT_APP_UD_POST_LOGOUT_REDIRECT_URI,
-
-//   // Scope must include openid and wallet
-//   scope: "openid wallet",
-//   connectors: {
-//     injected: new InjectedConnector({
-//       chains: [chain.mainnet],
-//       options: { shimDisconnect: true, shimChainChangedDisconnect: true },
-//     }) as unknown as AbstractConnector,
-//     walletconnect,
-//   },
-// })
-
 const tallyConnector = new InjectedConnector({
   chains: [chain.mainnet],
   options: {
