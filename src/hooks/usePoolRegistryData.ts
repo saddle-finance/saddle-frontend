@@ -69,7 +69,7 @@ export type BasicPool = SwapInfo & PoolMigrationData
 export type BasicPools = Partial<{ [poolName: string]: BasicPool }> | null // indexed by name, which is unique in the Registry
 
 export const usePools = () => {
-  const poolAddr = usePoolRegistryAddr()
+  const poolAddr: string = usePoolRegistryAddr()
   const poolLen = usePoolsCount(poolAddr)
   const registryPools = useRegistryPoolResult(poolLen, poolAddr)
   const validPools = useRegistryPools(registryPools, poolAddr)
@@ -148,7 +148,7 @@ export const useRegistryPools = (
     ...poolRegistryReadProperties(poolAddress),
     functionName: "getTokenBalances",
   }))
-  const getUnderlyingTokenBalances = validPools.map(({ poolAddress }) => ({
+  const getUnderlyingTokenBalancesCalls = validPools.map(({ poolAddress }) => ({
     ...poolRegistryReadProperties(poolAddress),
     functionName: "getUnderlyingTokenBalances",
   }))
@@ -174,7 +174,7 @@ export const useRegistryPools = (
     contracts: getTokenBalancesCalls,
   })
   const { data: underlyingTokensBalances } = useContractReads({
-    contracts: getUnderlyingTokenBalances,
+    contracts: getUnderlyingTokenBalancesCalls,
   })
   const { data: virtualPricesData } = useContractReads({
     contracts: getVirtualPriceCalls,

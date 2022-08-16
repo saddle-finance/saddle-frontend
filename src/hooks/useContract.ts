@@ -51,7 +51,6 @@ import PERMISSIONLESS_DEPLOYER_ABI from "../constants/abis/permissionlessDeploye
 import POOL_REGISTRY_ABI from "../constants/abis/poolRegistry.json"
 import { PermissionlessDeployer } from "../../types/ethers-contracts/PermissionlessDeployer"
 import { PoolRegistry } from "../../types/ethers-contracts/PoolRegistry"
-import { Provider } from "@wagmi/core"
 import RETROACTIVE_VESTING_CONTRACT_ABI from "../constants/abis/retroactiveVesting.json"
 import { RetroactiveVesting } from "../../types/ethers-contracts/RetroactiveVesting"
 import SDL_TOKEN_ABI from "../constants/abis/sdl.json"
@@ -122,7 +121,7 @@ export function useMasterRegistry(): MasterRegistry | null {
 
 export const POOL_REGISTRY_NAME = formatBytes32String("PoolRegistry")
 
-export const usePoolRegistryAddr = () => {
+export const usePoolRegistryAddr = (): string => {
   const masterRegistryContract = useMasterRegistry2()
   const { data: contractAddress } = useContractRead({
     addressOrName: masterRegistryContract.address,
@@ -133,19 +132,6 @@ export const usePoolRegistryAddr = () => {
   })
 
   return contractAddress as unknown as string
-}
-
-export const usePoolRegistry2 = (
-  addr: string | undefined,
-  provider: Provider,
-) => {
-  const poolRegistryContract: PoolRegistry = useContract({
-    addressOrName: addr ?? "",
-    contractInterface: POOL_REGISTRY_ABI,
-    signerOrProvider: provider,
-  })
-
-  return poolRegistryContract
 }
 
 export function usePoolRegistry(): PoolRegistry | null {
