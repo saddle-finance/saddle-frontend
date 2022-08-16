@@ -1,8 +1,8 @@
 import {
   Chain,
-  // Wallet,
-  getDefaultWallets,
-  // getWalletConnectConnector,
+  Wallet,
+  connectorsForWallets,
+  wallet,
 } from "@rainbow-me/rainbowkit"
 import {
   chain,
@@ -11,12 +11,11 @@ import {
 } from "wagmi"
 
 import { ChainId } from "./index"
-// import { InjectedConnector } from "@web3-react/injected-connector"
+import { InjectedConnector } from "wagmi/connectors/injected"
 import { alchemyProvider } from "wagmi/providers/alchemy"
 import { hexlify } from "@ethersproject/bytes"
-// import { injectedTallyProvider } from "../connectors"
 import { publicProvider } from "wagmi/providers/public"
-// import tallyIcon from "../assets/icons/tally.svg"
+import tallyIcon from "../assets/icons/tally.svg"
 
 export const NETWORK_LABEL: Partial<Record<ChainId, string>> = {
   [ChainId.MAINNET]: "Ethereum",
@@ -221,27 +220,6 @@ const kavaChain: Chain = {
   },
   testnet: false,
 }
-// const avalancheChain: Chain = {
-//   id: 43_114,
-//   name: "Avalanche",
-//   network: "avalanche",
-//   iconUrl:
-//     "https://assets.coingecko.com/coins/images/12559/small/coin-round-red.png?1604021818",
-//   iconBackground: "#fff",
-//   nativeCurrency: {
-//     decimals: 18,
-//     name: "Avalanche",
-//     symbol: "AVAX",
-//   },
-//   rpcUrls: {
-//     default: "https://api.avax.network/ext/bc/C/rpc",
-//   },
-//   blockExplorers: {
-//     default: { name: "SnowTrace", url: "https://snowtrace.io" },
-//     etherscan: { name: "SnowTrace", url: "https://snowtrace.io" },
-//   },
-//   testnet: false,
-// }
 
 export const rainbowChains = [
   chain.mainnet,
@@ -258,126 +236,101 @@ export const { chains, provider } = configureChains(rainbowChains, [
   publicProvider(),
 ])
 
-// export const rainbow = ({ chains }: MyWalletOptions): Wallet => ({
-//   id: "my-wallet",
-//   name: "My Wallet",
-//   iconUrl: "https://my-image.xyz",
+// export const unstoppableDomains = () => ({
+//   id: "unstoppableDomains",
+//   name: "Unstoppable Domains",
+//   iconUrl: unstoppableDomainsLogo,
 //   iconBackground: "#0c2f78",
 //   downloadUrls: {
-//     android: "https://my-wallet/android",
-//     ios: "https://my-wallet/ios",
-//     qrCode: "https://my-wallet/qr",
+//     browserExtension: "https://unstoppabledomains.com/extension",
 //   },
 //   createConnector: () => {
-//     const connector = getWalletConnectConnector({ chains })
+//     const connector = unstoppableDomainsConnector
 
 //     return {
 //       connector,
-//       mobile: {
+//       desktop: {
 //         getUri: async () => {
-//           const { uri } = (await connector.getProvider()).connector
-//           return uri
-//         },
-//       },
-//       qrCode: {
-//         getUri: async () => (await connector.getProvider()).connector.uri,
-//         instructions: {
-//           learnMoreUrl: "https://my-wallet/learn-more",
-//           steps: [
-//             {
-//               description:
-//                 "We recommend putting My Wallet on your home screen for faster access to your wallet.",
-//               step: "install",
-//               title: "Open the My Wallet app",
-//             },
-//             {
-//               description:
-//                 "After you scan, a connection prompt will appear for you to connect your wallet.",
-//               step: "scan",
-//               title: "Tap the scan button",
-//             },
-//           ],
+//           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+//           const c = (await connector.getProvider()).connector
+//           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+//           console.log({ c })
+//           // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+//           return connector.activate()
 //         },
 //       },
 //     }
 //   },
 // })
 
-// const tallyConnector = new InjectedConnector({
-// chains: [chain.mainnet],
-// })
+// const unstoppableDomainsConnector = new UAuthConnector({
+//   clientID: process.env.REACT_APP_UD_CLIENT_ID,
+//   clientSecret: process.env.REACT_APP_UD_CLIENT_SECRET,
+//   redirectUri: process.env.REACT_APP_UD_REDIRECT_URI,
+//   postLogoutRedirectUri: process.env.REACT_APP_UD_POST_LOGOUT_REDIRECT_URI,
 
-// export const tally = ({ chains }: MyWalletOptions): Wallet => ({
-//   id: "tally-wallet",
-//   name: "Tally Wallet",
-//   iconUrl: tallyIcon,
-//   iconBackground: "#0c2f78",
-//   downloadUrls: {
-//     browserExtension: "https://tally.cash/download",
-//     // android: "https://my-wallet/android",
-//     // ios: "https://my-wallet/ios",
-//     // qrCode: "https://my-wallet/qr",
-//   },
-//   createConnector: () => {
-//     // const connector = getWalletConnectConnector({ chains })
-
-//     // injectedTallyProvider,
-//     return {
-//       connector: tallyConnector,
-//       // mobile: {
-//       //   getUri: async () => {
-//       //     const { uri } = (await connector.getProvider()).connector
-//       //     return uri
-//       //   },
-//       // },
-//       // qrCode: {
-//       //   getUri: async () => (await connector.getProvider()).connector.uri,
-//       //   instructions: {
-//       //     learnMoreUrl: "https://my-wallet/learn-more",
-//       //     steps: [
-//       //       {
-//       //         description:
-//       //           "We recommend putting My Wallet on your home screen for faster access to your wallet.",
-//       //         step: "install",
-//       //         title: "Open the My Wallet app",
-//       //       },
-//       //       {
-//       //         description:
-//       //           "After you scan, a connection prompt will appear for you to connect your wallet.",
-//       //         step: "scan",
-//       //         title: "Tap the scan button",
-//       //       },
-//       //     ],
-//       //   },
-//       // },
-//     }
+//   // Scope must include openid and wallet
+//   scope: "openid wallet",
+//   connectors: {
+//     injected: new InjectedConnector({
+//       chains: [chain.mainnet],
+//       options: { shimDisconnect: true, shimChainChangedDisconnect: true },
+//     }) as unknown as AbstractConnector,
+//     walletconnect,
 //   },
 // })
 
-const { connectors } = getDefaultWallets({
-  appName: "Saddle Exchange",
-  chains,
+const tallyConnector = new InjectedConnector({
+  chains: [chain.mainnet],
+  options: {
+    shimDisconnect: true,
+    name: (detectedName) =>
+      `Injected (${
+        typeof detectedName === "string"
+          ? detectedName
+          : detectedName.join(", ")
+      })`,
+  },
 })
 
-// const needsInjectedWalletFallback =
-//   typeof window !== "undefined" && !window.ethereum?.isMetaMask
+const tally = (): Wallet => ({
+  id: "tally-wallet",
+  name: "Tally Wallet",
+  iconUrl: tallyIcon,
+  iconBackground: "#0c2f78",
+  downloadUrls: {
+    browserExtension: "https://tally.cash/download",
+  },
+  createConnector: () => {
+    const connector = tallyConnector
+    return {
+      connector: connector,
+    }
+  },
+})
 
-// const connectors = connectorsForWallets([
-//   {
-//     groupName: "Recommended",
-//     wallets: [
-//       wallet.metaMask({ chains }),
-//       wallet.rainbow({ chains }),
-//       wallet.walletConnect({ chains }),
-//       wallet.brave({ chains }),
-//       wallet.coinbase({ appName: "Saddle", chains }),
-//       ...(needsInjectedWalletFallback
-//         ? [wallet.injected({ chains: [chain.mainnet] })]
-//         : []),
-//       // tally({ chains }),
-//     ],
-//   },
-// ])
+const needsInjectedWalletFallback =
+  typeof window !== "undefined" &&
+  !window.ethereum?.isMetaMask &&
+  !window.ethereum?.isTally
+
+const connectors = connectorsForWallets([
+  {
+    groupName: "Recommended",
+    wallets: [
+      wallet.metaMask({ chains }),
+      wallet.rainbow({ chains }),
+      wallet.walletConnect({ chains }),
+      wallet.brave({ chains }),
+      wallet.coinbase({ appName: "Saddle", chains }),
+      wallet.ledger({ chains }),
+      tally(),
+      ...(needsInjectedWalletFallback
+        ? [wallet.injected({ chains: [chain.mainnet] })]
+        : []),
+    ],
+  },
+])
 
 export const wagmiClient = createWagmiClient({
   autoConnect: true,
