@@ -1,15 +1,13 @@
+import { Box, Divider, styled, useTheme } from "@mui/material"
+import { ChainId, IS_L2_SUPPORTED, SUPPORTED_WALLETS } from "../constants"
 import {
-  Box,
   Collapse,
-  Divider,
   ListItemButton,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem as MuiMenuItem,
-  styled,
 } from "@mui/material"
-import { ChainId, IS_L2_SUPPORTED, IS_SDL_LIVE, SDL_TOKEN } from "../constants"
 import {
   DEV_SUPPORTED_NETWORKS,
   SUPPORTED_NETWORKS,
@@ -20,7 +18,9 @@ import {
   LightMode,
   NightlightRound,
 } from "@mui/icons-material"
+import { IS_SDL_LIVE, SDL_TOKEN } from "../constants"
 import React, { ReactElement, useState } from "react"
+import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
 
 import CheckIcon from "@mui/icons-material/Check"
 import { IS_DEVELOPMENT } from "../utils/environment"
@@ -47,6 +47,9 @@ export default function SiteSettingsMenu({
   direction = "right",
 }: SiteSettingsMenuProps): ReactElement {
   const open = Boolean(anchorEl)
+  const { activate } = useWeb3React()
+  const theme = useTheme()
+  const [isWalletsVisibile, setIsWalletsVisible] = useState(false)
   return (
     <Menu
       open={open}
@@ -69,6 +72,39 @@ export default function SiteSettingsMenu({
         <LanguageSection key="language" />
         <Divider variant="middle" />
         <ThemeSection key="theme" />
+        <MenuItem
+          onClick={() => setIsWalletsVisible((state) => !state)}
+          data-testid="test"
+        >
+          Wallets
+          {isWalletsVisibile ? <ExpandLess /> : <ExpandMore />}
+        </MenuItem>
+        <Collapse in={isWalletsVisibile} data-testid="test">
+          <ListItemButton
+            color="inherit"
+            sx={{
+              justifyContent: "space-between",
+              padding: 2,
+              borderColor: theme.palette.grey[300],
+            }}
+            onClick={(): void => {
+              activate(
+                SUPPORTED_WALLETS.UNSTOPPABLE_DOMAINS.connector,
+                undefined,
+                true,
+              ).catch((error) => {
+                if (error instanceof UnsupportedChainIdError) {
+                  void activate(SUPPORTED_WALLETS.UNSTOPPABLE_DOMAINS.connector) // a little janky...can't use setError because the connector isn't set
+                } else {
+                  // TODO: handle error
+                }
+              })
+              close?.()
+            }}
+          >
+            <span>{SUPPORTED_WALLETS.UNSTOPPABLE_DOMAINS.name}</span>
+          </ListItemButton>
+        </Collapse>
         {IS_SDL_LIVE && <AddTokenSection key="token" />}
       </Box>
     </Menu>

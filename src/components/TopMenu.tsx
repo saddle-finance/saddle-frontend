@@ -17,6 +17,7 @@ import { NavLink, NavLinkProps, useLocation } from "react-router-dom"
 import React, { ReactElement, useContext, useState } from "react"
 
 import { AppState } from "../state"
+import { ConnectButton } from "@rainbow-me/rainbowkit"
 // import NetworkDisplay from "./NetworkDisplay"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
@@ -70,7 +71,7 @@ function TopMenu(): ReactElement {
   return (
     <AppBar position="static">
       <Toolbar data-testid="topMenuContainer">
-        <Stack flex={1}>
+        <Stack paddingRight={2}>
           <NavLink to="/">
             <SaddleLogo height={isUnderLaptopSize ? "40px" : "100"} />
           </NavLink>
@@ -91,11 +92,15 @@ function TopMenu(): ReactElement {
           flex={2}
           justifyContent="flex-end"
           alignItems="center"
+          paddingRight={2}
         >
           <SDLPrice sdlPrice={sdlPrice} />
           <RewardsButton setCurrentModal={setCurrentModal} />
-          {/* <Box display={isUnderLaptopSize ? "none" : "block"}> */}
-          <Web3Status />
+        </Stack>
+        {/* <Box display={isUnderLaptopSize ? "none" : "block"}> */}
+        <Stack spacing={1} direction="row">
+          <ConnectButton />
+          {/* <Web3Status /> */}
           {/* </Box> */}
           {/* <NetworkDisplay onClick={handleSettingMenu} /> */}
           <IconButton
