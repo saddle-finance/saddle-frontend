@@ -36,7 +36,7 @@ export default function Farm(): JSX.Element {
   const userState = useContext(UserStateContext)
   const getGaugeTVL = useGaugeTVL()
   return (
-    <Container sx={{ pt: 5 }}>
+    <Container sx={{ py: 5 }}>
       <Box
         position="sticky"
         top={0}

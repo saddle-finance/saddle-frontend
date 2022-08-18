@@ -25,6 +25,7 @@ type TxType =
   | "increaseLockEndTime"
   | "increaseLockAmtAndEndTime"
   | "unlock"
+  | "vote"
 
 export const enqueuePromiseToast = (
   chainId: ChainId,
@@ -60,6 +61,8 @@ export const enqueuePromiseToast = (
         return i18n.t("increaseLockTimeInitiate")
       case "unlock":
         return i18n.t("unlockInitiated")
+      case "vote":
+        return i18n.t("voted")
       default:
         return i18n.t("transactionInitiated")
     }

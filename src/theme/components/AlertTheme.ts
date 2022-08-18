@@ -41,9 +41,6 @@ export default function AlertTheme(theme: Theme): Components {
         icon: {
           opacity: 1,
         },
-        // message: {
-        //   flex: 1,
-        // },
       },
     },
   }

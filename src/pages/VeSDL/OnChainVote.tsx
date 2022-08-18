@@ -9,27 +9,53 @@ import {
   Typography,
   useTheme,
 } from "@mui/material"
-import React, { useContext, useMemo, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
+import { commify, formatBNToString, isNumberOrEmpty } from "../../utils"
 import ArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
-import { GaugeContext } from "../../providers/GaugeProvider"
-import VoteHistory from "./VoteHistory"
+import { BigNumber } from "ethers"
+import { Gauge } from "../../utils/gauges"
+import VoteHistory from "./Votes"
 import { enqueuePromiseToast } from "../../components/Toastify"
+import { useActiveWeb3React } from "../../hooks"
 import { useGaugeControllerContract } from "../../hooks/useContract"
+import { useTranslation } from "react-i18next"
 
 interface OnChainVoteProps {
-  veSdlBalance: string
+  veSdlBalance: BigNumber
+  gauges: Partial<{
+    [lpTokenAddress: string]: Gauge
+  }>
 }
 export type GaugeName = {
   address: string
   gaugeName: string
 }
 
-export default function OnChainVote({ veSdlBalance }: OnChainVoteProps) {
+export type VotesType = {
+  [gaugeAddress: string]: {
+    gaugeName: string
+    weight: BigNumber
+    voteDate: number
+  }
+}
+
+export default function OnChainVote({
+  veSdlBalance,
+  gauges,
+}: OnChainVoteProps) {
   const theme = useTheme()
-  const { gauges } = useContext(GaugeContext)
+  const { account } = useActiveWeb3React()
+  const { t } = useTranslation()
   const [selectedGauge, setSelectedGauge] = useState<GaugeName | null>(null)
+  const [alertMessage, setAlertMessage] = useState<string>()
   const [voteWeightToSubmit, setVoteWeightToSubmit] = useState<string>("")
+  const [voteUsed, setVoteUsed] = useState<number | undefined>()
+  const [votes, setVotes] = useState<VotesType>({})
   const gaugeControllerContract = useGaugeControllerContract(true)
+  const [voteWeightInputError, setVoteWeightInputError] = useState<{
+    hasError: boolean
+    errorText: string
+  }>({ hasError: false, errorText: " " })
 
   const gaugeNames = useMemo(
     () =>
@@ -44,22 +70,65 @@ export default function OnChainVote({ veSdlBalance }: OnChainVoteProps) {
               gaugeName: gaugeName,
             } as GaugeName
         }),
-
     [gauges],
   )
 
-  if (Object.keys(gauges).length === 0) return <div>Loading...</div>
+  const getVoteUsed = useCallback(async () => {
+    if (account) {
+      const voteUsed = await gaugeControllerContract?.[
+        "vote_user_power(address)"
+      ](account)
+      setVoteUsed(voteUsed?.toNumber())
+    }
+  }, [account, gaugeControllerContract])
+
+  useEffect(() => {
+    if (account && gaugeControllerContract) {
+      gaugeControllerContract.on(
+        "VoteForGauge",
+        (voteDate, fromAddress, gaugeAddress, voteWeight) => {
+          const gaugeName = gaugeNames.find(
+            (gaugeName) =>
+              gaugeName?.address.toLowerCase() ===
+              (gaugeAddress as string).toLowerCase(),
+          )?.gaugeName
+
+          if (
+            gaugeName &&
+            (fromAddress as string).toLowerCase() === account.toLowerCase()
+          ) {
+            setVotes((currentVoteLists) => ({
+              ...currentVoteLists,
+              [gaugeAddress]: {
+                gaugeName,
+                voteDate: (voteDate as BigNumber).toNumber(),
+                weight: voteWeight as BigNumber,
+              },
+            }))
+            void getVoteUsed()
+          }
+        },
+      )
+    }
+    return () => {
+      gaugeControllerContract?.removeAllListeners()
+    }
+  }, [gaugeControllerContract, gaugeNames, votes, getVoteUsed, account])
 
   const handleVote = async () => {
     const voteWeightPercent = parseFloat(voteWeightToSubmit)
     if (!Number.isNaN(voteWeightPercent)) {
       try {
-        if (selectedGauge?.address && gaugeControllerContract) {
+        if (veSdlBalance.isZero()) {
+          setAlertMessage("You need veSDL to vote")
+        } else if (selectedGauge?.address && gaugeControllerContract) {
           const txn = await gaugeControllerContract.vote_for_gauge_weights(
             selectedGauge.address,
             Math.round(voteWeightPercent * 100), //convert percent to bps
           )
-          void enqueuePromiseToast(1, txn.wait(), "unlock")
+          void enqueuePromiseToast(1, txn.wait(), "vote")
+          setSelectedGauge(null) // Initialize selectedGauge
+          setVoteWeightToSubmit("") // Initialize vote weight input
         }
       } catch (error) {
         console.log("error on vote ==>", error)
@@ -69,14 +138,18 @@ export default function OnChainVote({ veSdlBalance }: OnChainVoteProps) {
 
   return (
     <div>
-      <Stack spacing={2} px={2} pt={2}>
+      <Stack spacing={2} px={2} pt={2} mb={2}>
         <Typography variant="h2" textAlign="center">
-          Vote for next week
+          {t("voteForNextWeek")}
         </Typography>
         <Box display="flex" justifyContent="space-between">
           <Box display="flex">
             <Typography component="label">
-              Your voting power: {veSdlBalance} veSDL{" "}
+              {t("yourVotingPower")}:{" "}
+              <Typography component="span" mx="8px">
+                {commify(formatBNToString(veSdlBalance, 18, 2))}
+              </Typography>
+              veSDL
             </Typography>
           </Box>
           <Link
@@ -86,12 +159,14 @@ export default function OnChainVote({ veSdlBalance }: OnChainVoteProps) {
               whiteSpace: "nowrap",
             }}
           >
-            Gauge doc
+            {t("gaugeDoc")}
           </Link>
         </Box>
-        <Alert severity="error">
-          <Typography textAlign="center">Used too much power</Typography>
-        </Alert>
+        {alertMessage && (
+          <Alert severity="error">
+            <Typography textAlign="center">{alertMessage}</Typography>
+          </Alert>
+        )}
         <Box
           border={`1px solid ${theme.palette.other.divider}`}
           px={2}
@@ -107,13 +182,12 @@ export default function OnChainVote({ veSdlBalance }: OnChainVoteProps) {
               <TextField
                 variant="standard"
                 {...params}
-                placeholder="Choose a gauge"
+                placeholder={t("chooseGauge")}
               />
             )}
             onChange={(event, newGaugeName) => {
               if (newGaugeName) {
                 setSelectedGauge(newGaugeName)
-                setVoteWeightToSubmit("")
               }
             }}
             //value of selected gauge
@@ -123,21 +197,39 @@ export default function OnChainVote({ veSdlBalance }: OnChainVoteProps) {
               option?.address === value?.address
             }
           />
-          <Box display="flex" gap={4} mt={2}>
+          <Box display="flex" gap={4} my={2}>
             <TextField
               variant="standard"
-              label="Voting Weight"
+              label={t("votingWeight")}
               type="text"
               value={voteWeightToSubmit}
-              onChange={(event) => setVoteWeightToSubmit(event.target.value)}
+              onChange={(event) => {
+                if (isNumberOrEmpty(event.target.value)) {
+                  const estimatedWeight =
+                    parseFloat(event.target.value) + (voteUsed ?? 0) / 100
+                  if (estimatedWeight > 100) {
+                    setVoteWeightInputError({
+                      hasError: true,
+                      errorText: "Used too much power",
+                    })
+                  } else {
+                    setVoteWeightInputError({
+                      hasError: false,
+                      errorText: " ",
+                    })
+                  }
+                  setVoteWeightToSubmit(event.target.value)
+                }
+              }}
               InputProps={{
                 startAdornment: (
-                  <Typography variant="body1" color="text.secondary">
+                  <Typography variant="body1" color="text.secondary" mr={1}>
                     %
                   </Typography>
                 ),
               }}
-              helperText=" "
+              error={voteWeightInputError.hasError}
+              helperText={voteWeightInputError.errorText}
               sx={{ flex: 0, minWidth: { xs: 130, sm: 160 } }}
             />
             <Button
@@ -145,15 +237,17 @@ export default function OnChainVote({ veSdlBalance }: OnChainVoteProps) {
               size="large"
               sx={{ minWidth: 124 }}
               onClick={() => void handleVote()}
+              disabled={!voteWeightToSubmit || !selectedGauge}
             >
-              Vote this gauge
+              {t("voteThisGauge")}
             </Button>
           </Box>
         </Box>
       </Stack>
       <VoteHistory
         gaugeControllerContract={gaugeControllerContract}
-        gaugeNames={gaugeNames}
+        votes={votes}
+        voteUsed={voteUsed}
       />
     </div>
   )
