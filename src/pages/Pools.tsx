@@ -6,6 +6,7 @@ import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "ethers"
 import ConfirmTransaction from "../components/ConfirmTransaction"
 import Dialog from "../components/Dialog"
+import { ExpandedPoolsContext } from "../providers/ExpandedPoolsProvider"
 import PoolOverview from "../components/PoolOverview"
 import { PoolTypes } from "../constants"
 import ReviewMigration from "../components/ReviewMigration"
@@ -23,6 +24,8 @@ import { useSelector } from "react-redux"
 function Pools(): ReactElement | null {
   const { account, chainId } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
+  const expandedPools = useContext(ExpandedPoolsContext)
+  const pools = expandedPools.data.byName
   const userState = useContext(UserStateContext)
   const approveAndMigrate = useApproveAndMigrate()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -37,6 +40,8 @@ function Pools(): ReactElement | null {
     lpTokenAddress: string
   }>({ poolName: null, lpTokenBalance: Zero, lpTokenAddress: "" })
   const [filter, setFilter] = useState<PoolTypes | "all" | "outdated">("all")
+  const [poolOrTokenFilterValue, setPoolOrTokenFilterValue] =
+    useState<string>("")
   const handleClickMigrate = (
     poolName: string,
     lpTokenBalance: BigNumber,
@@ -65,6 +70,8 @@ function Pools(): ReactElement | null {
               InputProps={{
                 startAdornment: <Search />,
               }}
+              onChange={(e) => setPoolOrTokenFilterValue(e.target.value)}
+              value={poolOrTokenFilterValue}
             />
           </Box>
         )}
@@ -104,6 +111,17 @@ function Pools(): ReactElement | null {
 
       <Stack spacing={3}>
         {Object.values(basicPools || {})
+          .filter(
+            (pool) =>
+              pool.poolName
+                .toLowerCase()
+                .includes(poolOrTokenFilterValue.toLowerCase()) ||
+              pools[pool.poolName]?.tokens.some((token) =>
+                token.symbol
+                  .toLowerCase()
+                  .includes(poolOrTokenFilterValue.toLowerCase()),
+              ),
+          )
           .filter(
             (basicPool) =>
               filter === "all" ||
