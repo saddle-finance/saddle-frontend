@@ -26,7 +26,11 @@ import {
 import { commify, formatUnits, parseEther } from "@ethersproject/units"
 import { enUS, zhCN } from "date-fns/locale"
 import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
-import { formatBNToString, getIntervalBetweenTwoDates } from "../../utils"
+import {
+  formatBNToString,
+  getIntervalBetweenTwoDates,
+  missingKeys,
+} from "../../utils"
 import { useDispatch, useSelector } from "react-redux"
 import {
   useFeeDistributor,
@@ -256,15 +260,24 @@ export default function VeSDL(): JSX.Element {
   }
 
   const unlock = async () => {
-    if (votingEscrowContract && chainId && proposedUnlockDate) {
-      const txn = await getUnlockTransaction(proposedUnlockDate)
+    if (votingEscrowContract && chainId && lockEnd) {
+      const txn = await getUnlockTransaction(lockEnd)
       void enqueuePromiseToast(chainId, txn.wait(), "unlock")
       dispatch(
         updateLastTransactionTimes({
-          [TRANSACTION_TYPES.DEPOSIT]: Date.now(),
+          [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
         }),
       )
       void fetchData()
+    } else {
+      enqueueToast("error", "Unable to unlock")
+      console.error(
+        `Unable to Unlock: ${missingKeys({
+          votingEscrowContract,
+          chainId,
+          lockEnd,
+        }).join(", ")} missing`,
+      )
     }
   }
 
