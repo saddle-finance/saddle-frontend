@@ -28,7 +28,7 @@ import { Zero } from "@ethersproject/constants"
 import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { formatGasToString } from "../utils/gas"
-import { isLegacySwapABIPool } from "../constants"
+import { isWithdrawFeePool } from "../constants"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
 import { useParams } from "react-router-dom"
@@ -170,7 +170,7 @@ function Deposit(): ReactElement | null {
       )
       let depositLPTokenAmount
       if (poolData.totalLocked.gt(0) && tokenInputSum.gt(0)) {
-        if (isLegacySwapABIPool(poolData.name)) {
+        if (isWithdrawFeePool(poolData.name)) {
           depositLPTokenAmount = await (
             swapContract as SwapFlashLoan
           ).calculateTokenAmount(

@@ -2085,11 +2085,19 @@ export function getMinichefPid(
   return minichefPids?.[chainId]?.[poolAddress] || null
 }
 
-export function isLegacySwapABIPool(poolName: string): boolean {
+export function isGuardedPool(poolName: string): boolean {
+  return poolName === BTC_POOL_NAME
+}
+
+/**
+ * These pools use SwapV1, SwapFlashLoanV1 or SwapGuarded abi, those being the only swaps with a WithdrawFee
+ */
+export function isWithdrawFeePool(poolName: string): boolean {
   return new Set([BTC_POOL_NAME, STABLECOIN_POOL_NAME, VETH2_POOL_NAME]).has(
     poolName,
   )
 }
+
 export function isMetaPool(poolName = ""): boolean {
   return new Set([
     FRAX_OPT_USD_METAPOOL_NAME,

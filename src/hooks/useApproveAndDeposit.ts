@@ -1,9 +1,9 @@
-import {
-  BTC_POOL_NAME,
-  TRANSACTION_TYPES,
-  isLegacySwapABIPool,
-} from "../constants"
 import { BasicToken, useBasicTokens } from "./useBasicTokens"
+import {
+  TRANSACTION_TYPES,
+  isGuardedPool,
+  isWithdrawFeePool,
+} from "../constants"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { formatDeadlineToNumber, getContract } from "../utils"
 import { useContext, useMemo } from "react"
@@ -161,7 +161,7 @@ export function useApproveAndDeposit(
       if (isFirstTransaction) {
         minToMint = Zero
       } else {
-        if (isLegacySwapABIPool(poolName)) {
+        if (isWithdrawFeePool(poolName)) {
           minToMint = await (
             effectiveSwapContract as SwapFlashLoan
           ).calculateTokenAmount(
@@ -192,7 +192,7 @@ export function useApproveAndDeposit(
       const txnDeadline = Math.round(
         new Date().getTime() / 1000 + 60 * deadline,
       )
-      if (poolName === BTC_POOL_NAME) {
+      if (isGuardedPool(poolName)) {
         const swapGuardedContract =
           effectiveSwapContract as unknown as SwapGuarded
         spendTransaction = await swapGuardedContract?.addLiquidity(
