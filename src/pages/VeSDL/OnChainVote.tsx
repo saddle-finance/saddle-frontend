@@ -61,10 +61,7 @@ export default function OnChainVote({
   const gaugeNames = useMemo(
     () =>
       Object.keys(gauges)
-        .filter(
-          (lpAddress) =>
-            !gauges[lpAddress]?.isKilled && !gauges[lpAddress]?.gaugeName,
-        )
+        .filter((lpAddress) => !gauges[lpAddress]?.isKilled)
         .reduce((acc, curr) => {
           const gaugeName = gauges[curr]?.gaugeName
           const gaugeAddress = gauges[curr]?.address
@@ -80,7 +77,9 @@ export default function OnChainVote({
 
   const getVoteUsed = useCallback(async () => {
     if (account) {
-      const voteUsed = await gaugeControllerContract.vote_user_power(account)
+      const voteUsed = await gaugeControllerContract[
+        "vote_user_power(address)"
+      ](account)
       setVoteUsed(voteUsed.toNumber())
     }
   }, [account, gaugeControllerContract])

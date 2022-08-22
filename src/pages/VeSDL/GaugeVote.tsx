@@ -26,7 +26,7 @@ export default function GaugeVote({
       <Box height="428px">
         <GaugeWeight />
       </Box>
-      {!isGaugesLoading && !!gaugeControllerContract ? (
+      {!isGaugesLoading && gaugeControllerContract ? (
         <OnChainVote
           veSdlBalance={veSdlBalance}
           gauges={gauges}

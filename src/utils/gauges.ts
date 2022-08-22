@@ -106,7 +106,9 @@ export async function getGaugeData(
           gaugeControllerMultiCall.gauges(value),
         ),
       )
-    ).map((address) => address.toLowerCase())
+    )
+      .map((address) => address.toLowerCase())
+      .slice(0, -1)
 
     const gaugePoolAddresses = (
       await ethCallProvider.tryAll(
