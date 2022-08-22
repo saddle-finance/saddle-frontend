@@ -14,10 +14,10 @@ import { commify, formatBNToString, isNumberOrEmpty } from "../../utils"
 import ArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
 import { BigNumber } from "ethers"
 import { Gauge } from "../../utils/gauges"
+import { GaugeController } from "../../../types/ethers-contracts/GaugeController"
 import VoteHistory from "./Votes"
 import { enqueuePromiseToast } from "../../components/Toastify"
 import { useActiveWeb3React } from "../../hooks"
-import { useGaugeControllerContract } from "../../hooks/useContract"
 import { useTranslation } from "react-i18next"
 
 interface OnChainVoteProps {
@@ -25,6 +25,7 @@ interface OnChainVoteProps {
   gauges: Partial<{
     [lpTokenAddress: string]: Gauge
   }>
+  gaugeControllerContract: GaugeController
 }
 export type GaugeName = {
   address: string
@@ -42,6 +43,7 @@ export type VotesType = {
 export default function OnChainVote({
   veSdlBalance,
   gauges,
+  gaugeControllerContract,
 }: OnChainVoteProps) {
   const theme = useTheme()
   const { account } = useActiveWeb3React()
@@ -51,7 +53,6 @@ export default function OnChainVote({
   const [voteWeightToSubmit, setVoteWeightToSubmit] = useState<string>("")
   const [voteUsed, setVoteUsed] = useState<number | undefined>()
   const [votes, setVotes] = useState<VotesType>({})
-  const gaugeControllerContract = useGaugeControllerContract(true)
   const [voteWeightInputError, setVoteWeightInputError] = useState<{
     hasError: boolean
     errorText: string
@@ -60,25 +61,27 @@ export default function OnChainVote({
   const gaugeNames = useMemo(
     () =>
       Object.keys(gauges)
-        .filter((lpAddress) => !gauges[lpAddress]?.isKilled)
-        .map((lpAddress) => {
-          const gaugeName = gauges[lpAddress]?.gaugeName
-          const gaugeAddress = gauges[lpAddress]?.address
+        .filter(
+          (lpAddress) =>
+            !gauges[lpAddress]?.isKilled && !gauges[lpAddress]?.gaugeName,
+        )
+        .reduce((acc, curr) => {
+          const gaugeName = gauges[curr]?.gaugeName
+          const gaugeAddress = gauges[curr]?.address
           if (gaugeName && gaugeAddress)
-            return {
+            acc?.push({
               address: gaugeAddress,
               gaugeName: gaugeName,
-            } as GaugeName
-        }),
+            })
+          return acc
+        }, [] as GaugeName[]),
     [gauges],
   )
 
   const getVoteUsed = useCallback(async () => {
     if (account) {
-      const voteUsed = await gaugeControllerContract?.[
-        "vote_user_power(address)"
-      ](account)
-      setVoteUsed(voteUsed?.toNumber())
+      const voteUsed = await gaugeControllerContract.vote_user_power(account)
+      setVoteUsed(voteUsed.toNumber())
     }
   }, [account, gaugeControllerContract])
 
@@ -89,7 +92,7 @@ export default function OnChainVote({
         (voteDate, fromAddress, gaugeAddress, voteWeight) => {
           const gaugeName = gaugeNames.find(
             (gaugeName) =>
-              gaugeName?.address.toLowerCase() ===
+              gaugeName.address.toLowerCase() ===
               (gaugeAddress as string).toLowerCase(),
           )?.gaugeName
 
@@ -111,7 +114,7 @@ export default function OnChainVote({
       )
     }
     return () => {
-      gaugeControllerContract?.removeAllListeners()
+      gaugeControllerContract.removeAllListeners()
     }
   }, [gaugeControllerContract, gaugeNames, votes, getVoteUsed, account])
 
@@ -126,7 +129,7 @@ export default function OnChainVote({
             selectedGauge.address,
             Math.round(voteWeightPercent * 100), //convert percent to bps
           )
-          void enqueuePromiseToast(1, txn.wait(), "vote")
+          await enqueuePromiseToast(1, txn.wait(), "vote")
           setSelectedGauge(null) // Initialize selectedGauge
           setVoteWeightToSubmit("") // Initialize vote weight input
         }
@@ -137,7 +140,7 @@ export default function OnChainVote({
   }
 
   return (
-    <div>
+    <React.Fragment>
       <Stack spacing={2} px={2} pt={2} mb={2}>
         <Typography variant="h2" textAlign="center">
           {t("voteForNextWeek")}
@@ -145,7 +148,7 @@ export default function OnChainVote({
         <Box display="flex" justifyContent="space-between">
           <Box display="flex">
             <Typography component="label">
-              {t("yourVotingPower")}:{" "}
+              {t("yourVotingPower")}:
               <Typography component="span" mx="8px">
                 {commify(formatBNToString(veSdlBalance, 18, 2))}
               </Typography>
@@ -190,7 +193,6 @@ export default function OnChainVote({
                 setSelectedGauge(newGaugeName)
               }
             }}
-            //value of selected gauge
             value={selectedGauge}
             // check whether the current value belong to options
             isOptionEqualToValue={(option, value) =>
@@ -249,6 +251,6 @@ export default function OnChainVote({
         votes={votes}
         voteUsed={voteUsed}
       />
-    </div>
+    </React.Fragment>
   )
 }

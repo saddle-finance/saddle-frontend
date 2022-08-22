@@ -5,6 +5,7 @@ import { BigNumber } from "ethers"
 import { GaugeContext } from "../../providers/GaugeProvider"
 import GaugeWeight from "../../components/GaugeWeight"
 import OnChainVote from "./OnChainVote"
+import { useGaugeControllerContract } from "../../hooks/useContract"
 import { useTranslation } from "react-i18next"
 
 interface GaugeVoteProps {
@@ -16,6 +17,7 @@ export default function GaugeVote({
   const { t } = useTranslation()
   const { gauges } = useContext(GaugeContext)
   const isGaugesLoading = Object.keys(gauges).length === 0
+  const gaugeControllerContract = useGaugeControllerContract(true)
   return (
     <Paper sx={{ pt: 2 }}>
       <Typography variant="h2" textAlign="center">
@@ -24,8 +26,12 @@ export default function GaugeVote({
       <Box height="428px">
         <GaugeWeight />
       </Box>
-      {!isGaugesLoading ? (
-        <OnChainVote veSdlBalance={veSdlBalance} gauges={gauges} />
+      {!isGaugesLoading && !!gaugeControllerContract ? (
+        <OnChainVote
+          veSdlBalance={veSdlBalance}
+          gauges={gauges}
+          gaugeControllerContract={gaugeControllerContract}
+        />
       ) : (
         <Skeleton width="100%" height={100} />
       )}
