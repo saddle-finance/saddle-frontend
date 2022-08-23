@@ -92,10 +92,6 @@ export default function ButtonTheme(theme: Theme): Components {
             boxShadow: "none",
           },
         },
-        sizeLarge: {
-          lineHeight: 0,
-          height: 40,
-        },
         sizeMedium: {
           lineHeight: 0,
           minWidth: 70,

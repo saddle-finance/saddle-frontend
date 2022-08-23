@@ -236,7 +236,7 @@ export default function OnChainVote({
             <Button
               variant="contained"
               size="large"
-              sx={{ minWidth: 124 }}
+              sx={{ minWidth: 124, height: 40 }}
               onClick={() => void handleVote()}
               disabled={!voteWeightToSubmit || !selectedGauge}
             >
