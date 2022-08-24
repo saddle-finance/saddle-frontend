@@ -2,7 +2,6 @@ import { Box, Button, Chip, Container, Stack, TextField } from "@mui/material"
 import React, { ReactElement, useContext, useEffect, useState } from "react"
 
 import { AppState } from "../state"
-import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "ethers"
 import ConfirmTransaction from "../components/ConfirmTransaction"
 import Dialog from "../components/Dialog"
@@ -23,7 +22,6 @@ import { useSelector } from "react-redux"
 
 function Pools(): ReactElement | null {
   const { account, chainId } = useActiveWeb3React()
-  const basicPools = useContext(BasicPoolsContext)
   const expandedPools = useContext(ExpandedPoolsContext)
   const pools = expandedPools.data.byName
   const userState = useContext(UserStateContext)
@@ -110,7 +108,7 @@ function Pools(): ReactElement | null {
       </Stack>
 
       <Stack spacing={3}>
-        {Object.values(basicPools || {})
+        {Object.values(pools || {})
           .filter(
             (pool) =>
               pool.poolName
@@ -136,9 +134,9 @@ function Pools(): ReactElement | null {
             // 2. active pools
             // 3. higher TVL pools
             const userLpTokenBalanceA =
-              userState?.tokenBalances?.[a.lpToken] || Zero
+              userState?.tokenBalances?.[a.lpToken.address] || Zero
             const userLpTokenBalanceB =
-              userState?.tokenBalances?.[b.lpToken] || Zero
+              userState?.tokenBalances?.[b.lpToken.address] || Zero
             const poolAssetA = parseUnits(
               String(
                 tokenPricesUSD?.[getTokenSymbolForPoolType(a.typeOfAsset)] || 0,
@@ -186,8 +184,9 @@ function Pools(): ReactElement | null {
                   ? () =>
                       handleClickMigrate(
                         basicPool.poolName,
-                        userState?.tokenBalances?.[basicPool.lpToken] || Zero,
-                        basicPool.lpToken,
+                        userState?.tokenBalances?.[basicPool.lpToken.address] ||
+                          Zero,
+                        basicPool.lpToken.address,
                       )
                   : undefined
               }
