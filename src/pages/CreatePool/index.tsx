@@ -101,7 +101,7 @@ export default function CreatePool(): React.ReactElement {
     setPoolName("")
     setPoolSymbol("")
     setAParameter("")
-    setPoolType(PoolType.Base)
+    setPoolType(PoolType.UsdMeta)
     setAssetType(0)
     setFee("")
     setTokenInfo([
@@ -352,7 +352,7 @@ export default function CreatePool(): React.ReactElement {
                   size="large"
                   exclusive
                   onChange={(event, value: PoolType) => {
-                    setPoolType(value)
+                    if (value) setPoolType(value)
                     setTokenInputs([tokenInputs[0]])
                   }}
                   fullWidth
@@ -424,6 +424,7 @@ export default function CreatePool(): React.ReactElement {
                   >
                     <TextField
                       autoComplete="off"
+                      value={tokenInputs[index]}
                       label={`Token ${index}`}
                       fullWidth
                       color={tokenInfo[index]?.checkResult ?? "primary"}
