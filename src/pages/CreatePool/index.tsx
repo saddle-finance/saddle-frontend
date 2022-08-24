@@ -389,7 +389,9 @@ export default function CreatePool(): React.ReactElement {
                   color="secondary"
                   fullWidth
                   exclusive
-                  onChange={(event, value: AssetType) => setAssetType(value)}
+                  onChange={(event, value: AssetType) => {
+                    if (value !== null) setAssetType(value)
+                  }}
                   size="large"
                   disabled={poolType !== PoolType.Base}
                 >
