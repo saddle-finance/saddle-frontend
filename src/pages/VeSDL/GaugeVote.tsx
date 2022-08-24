@@ -33,7 +33,7 @@ export default function GaugeVote({
           gaugeControllerContract={gaugeControllerContract}
         />
       ) : (
-        <Skeleton width="100%" height={100} />
+        <Skeleton height={100} sx={{ mx: 3, flex: 1 }} />
       )}
     </Paper>
   )

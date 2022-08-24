@@ -28,8 +28,10 @@ interface OnChainVoteProps {
   gaugeControllerContract: GaugeController
 }
 export type GaugeName = {
-  address: string
-  gaugeName: string
+  [gaugeAddress: string]: {
+    address: string
+    gaugeName: string
+  }
 }
 
 export type VotesType = {
@@ -48,7 +50,10 @@ export default function OnChainVote({
   const theme = useTheme()
   const { account } = useActiveWeb3React()
   const { t } = useTranslation()
-  const [selectedGauge, setSelectedGauge] = useState<GaugeName | null>(null)
+  const [selectedGauge, setSelectedGauge] = useState<{
+    gaugeName: string
+    address: string
+  } | null>(null)
   const [alertMessage, setAlertMessage] = useState<string>()
   const [voteWeightToSubmit, setVoteWeightToSubmit] = useState<string>("")
   const [voteUsed, setVoteUsed] = useState<number | undefined>()
@@ -64,14 +69,14 @@ export default function OnChainVote({
         .filter((lpAddress) => !gauges[lpAddress]?.isKilled)
         .reduce((acc, curr) => {
           const gaugeName = gauges[curr]?.gaugeName
-          const gaugeAddress = gauges[curr]?.address
+          const gaugeAddress = gauges[curr]?.address.toLowerCase()
           if (gaugeName && gaugeAddress)
-            acc?.push({
+            acc[gaugeAddress] = {
               address: gaugeAddress,
               gaugeName: gaugeName,
-            })
+            }
           return acc
-        }, [] as GaugeName[]),
+        }, {} as GaugeName),
     [gauges],
   )
 
@@ -84,16 +89,43 @@ export default function OnChainVote({
     }
   }, [account, gaugeControllerContract])
 
+  const getFilteredVotes = useCallback(async () => {
+    const voteFilter = gaugeControllerContract.filters.VoteForGauge(
+      null,
+      null,
+      null,
+      null,
+    )
+    const filteredRes = await gaugeControllerContract.queryFilter(voteFilter)
+
+    const filteredVotes = filteredRes.reduce(
+      (acc, { args: { user, time, weight, gauge_addr } }) => {
+        if (user === account) {
+          acc[gauge_addr.toLowerCase()] = {
+            gaugeName: gaugeNames[gauge_addr.toLowerCase()].gaugeName,
+            voteDate: time.toNumber(),
+            weight,
+          }
+        }
+        return acc
+      },
+      {} as VotesType,
+    )
+    setVotes(filteredVotes)
+  }, [account, gaugeControllerContract, gaugeNames])
+
+  useEffect(() => {
+    void getFilteredVotes()
+    void getVoteUsed()
+  }, [getFilteredVotes, getVoteUsed])
+
   useEffect(() => {
     if (account && gaugeControllerContract) {
       gaugeControllerContract.on(
         "VoteForGauge",
         (voteDate, fromAddress, gaugeAddress, voteWeight) => {
-          const gaugeName = gaugeNames.find(
-            (gaugeName) =>
-              gaugeName.address.toLowerCase() ===
-              (gaugeAddress as string).toLowerCase(),
-          )?.gaugeName
+          const gaugeName =
+            gaugeNames[(gaugeAddress as string).toLowerCase()].gaugeName
 
           if (
             gaugeName &&
@@ -101,8 +133,8 @@ export default function OnChainVote({
           ) {
             setVotes((currentVoteLists) => ({
               ...currentVoteLists,
-              [gaugeAddress]: {
-                gaugeName,
+              [(gaugeAddress as string).toLowerCase()]: {
+                gaugeName: gaugeName,
                 voteDate: (voteDate as BigNumber).toNumber(),
                 weight: voteWeight as BigNumber,
               },
@@ -133,7 +165,7 @@ export default function OnChainVote({
           setVoteWeightToSubmit("") // Initialize vote weight input
         }
       } catch (error) {
-        console.log("error on vote ==>", error)
+        console.error("error on vote ==>", error)
       }
     }
   }
@@ -177,7 +209,7 @@ export default function OnChainVote({
         >
           <Autocomplete
             id="gauge-names"
-            options={gaugeNames}
+            options={Object.keys(gaugeNames).map((key) => gaugeNames[key])}
             getOptionLabel={(option) => option?.gaugeName ?? ""}
             popupIcon={<ArrowDownIcon />}
             renderInput={(params) => (
