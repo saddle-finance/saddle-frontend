@@ -114,7 +114,7 @@ function Pools(): ReactElement | null {
               pool.poolName
                 .toLowerCase()
                 .includes(poolOrTokenFilterValue.toLowerCase()) ||
-              pools[pool.poolName]?.tokens.some((token) =>
+              pool.tokens.some((token) =>
                 token.symbol
                   .toLowerCase()
                   .includes(poolOrTokenFilterValue.toLowerCase()),
