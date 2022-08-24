@@ -101,8 +101,20 @@ export default function ReviewCreatePool({
       }
       resetFields()
     } catch (err) {
-      console.error(err)
-      enqueueToast("error", "Unable to deploy Permissionless Pool")
+      console.error({ err })
+      const er = err as { error: { data: { message: string } } }
+      if (
+        er.error.data.message.includes(
+          "SafeERC20: approve from non-zero to non-zero allowance",
+        )
+      ) {
+        enqueueToast(
+          "error",
+          "Unable to create pool with tokens that the base pool consists of",
+        )
+      } else {
+        enqueueToast("error", "Unable to deploy Permissionless Pool")
+      }
     } finally {
       onClose()
     }
