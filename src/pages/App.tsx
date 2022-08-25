@@ -41,6 +41,7 @@ import getSnapshotVoteData from "../utils/getSnapshotVoteData"
 import { useActiveWeb3React } from "../hooks"
 import { useIntercom } from "react-use-intercom"
 import usePoller from "../hooks/usePoller"
+import usePrivateData from "../hooks/usePrivateData"
 import { useSdlWethSushiPairContract } from "../hooks/useContract"
 
 // Lazy Loaded Pages
@@ -54,6 +55,8 @@ const VestingClaim = lazy(() => import("./VestingClaim"))
 const Withdraw = lazy(() => import("./Withdraw"))
 
 const AppContainer = styled("div")(({ theme }) => {
+  usePrivateData()
+
   const darkBackground =
     "linear-gradient(180deg, #000000, #070713 10%, #121334 50%, rgba(0,0,0,0) 50%, rgba(0,0,0,0) 100%), radial-gradient(50% 395.51% at 50% 4.9%, #121334 0%, #000000 100%)"
   const lightBackground =
