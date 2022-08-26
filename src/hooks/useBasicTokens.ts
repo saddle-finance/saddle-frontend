@@ -19,9 +19,10 @@ import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
 import { GaugeContext } from "../providers/GaugeProvider"
 import { MinichefContext } from "../providers/MinichefProvider"
 import { areGaugesActive } from "../utils/gauges"
-import { useActiveWeb3React } from "../hooks"
+// import { useActiveWeb3React } from "../hooks"
 import { useContext } from "react"
 import { useMulticallProvider } from "./useMulticallProvider"
+import { useNetwork } from "wagmi"
 
 export type BasicToken = {
   address: string
@@ -35,17 +36,18 @@ export type BasicToken = {
 export type BasicTokens = Partial<{ [address: string]: BasicToken }> | null
 
 export const useBasicTokens = (): UseQueryResult<BasicTokens> => {
-  const { chainId } = useActiveWeb3React()
+  // const { chainId } = useActiveWeb3React()
+  const { chain } = useNetwork()
   const basicPools = useContext(BasicPoolsContext)
   const minichefData = useContext(MinichefContext)
   const { gauges } = useContext(GaugeContext)
   const { data: ethCallProvider } = useMulticallProvider()
-  const gaugesAreActive = areGaugesActive(chainId)
+  const gaugesAreActive = areGaugesActive(chain?.id)
   const lpTokens = new Set()
   const tokenType: Partial<{ [tokenAddress: string]: PoolTypes }> = {}
 
   return useQuery(["tokens"], async () => {
-    if (!chainId || !basicPools || !ethCallProvider) {
+    if (!chain || !basicPools || !ethCallProvider) {
       return null
     }
     const pools = Object.values(basicPools)
@@ -81,21 +83,27 @@ export const useBasicTokens = (): UseQueryResult<BasicTokens> => {
         })
       })
     }
-    if (SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chainId] && gaugesAreActive) {
+    if (
+      SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chain.id as ChainId] &&
+      gaugesAreActive
+    ) {
       // add sushi token
       targetTokenAddresses.add(
-        SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chainId].toLowerCase(),
+        SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chain.id as ChainId].toLowerCase(),
       )
     }
-    if (VOTING_ESCROW_CONTRACT_ADDRESS[chainId] && gaugesAreActive) {
+    if (
+      VOTING_ESCROW_CONTRACT_ADDRESS[chain.id as ChainId] &&
+      gaugesAreActive
+    ) {
       // add voting escrow token
       targetTokenAddresses.add(
-        VOTING_ESCROW_CONTRACT_ADDRESS[chainId].toLowerCase(),
+        VOTING_ESCROW_CONTRACT_ADDRESS[chain.id as ChainId].toLowerCase(),
       )
     }
     const tokenInfos = await getTokenInfos(
       ethCallProvider,
-      chainId,
+      chain.id,
       Array.from(targetTokenAddresses),
     )
     if (!tokenInfos) return

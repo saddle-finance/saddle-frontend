@@ -21,8 +21,9 @@ import TokenIcon from "./TokenIcon"
 import { Zero } from "@ethersproject/constants"
 import { areGaugesActive } from "../utils/gauges"
 import logo from "../assets/icons/logo.svg"
-import { useActiveWeb3React } from "../hooks"
+// import { useActiveWeb3React } from "../hooks"
 import { useHistory } from "react-router-dom"
+import { useNetwork } from "wagmi"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -38,10 +39,11 @@ export default function PoolOverview({
 }: Props): ReactElement | null {
   const { t } = useTranslation()
   const theme = useTheme()
-  const { chainId } = useActiveWeb3React()
+  // const { chainId } = useActiveWeb3React()
+  const { chain } = useNetwork()
   const [poolData, userShareData] = usePoolData(poolName)
   const shouldMigrate = !!onClickMigrate
-  const gaugesAreActive = areGaugesActive(chainId)
+  const gaugesAreActive = areGaugesActive(chain?.id ?? 1)
   const formattedData = {
     name: poolData.name,
     reserve: poolData.reserve

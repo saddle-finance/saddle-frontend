@@ -136,6 +136,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
     async function getSwapData(): Promise<void> {
       const expandedPool = poolName ? expandedPools.byName[poolName] : null
       if (
+        // isLoading ||
         expandedPool == null ||
         poolName == null ||
         tokenPricesUSD == null ||

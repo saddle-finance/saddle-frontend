@@ -17,7 +17,8 @@ import { NavLink, NavLinkProps, useLocation } from "react-router-dom"
 import React, { ReactElement, useContext, useState } from "react"
 
 import { AppState } from "../state"
-import NetworkDisplay from "./NetworkDisplay"
+import { ConnectButton } from "@rainbow-me/rainbowkit"
+// import NetworkDisplay from "./NetworkDisplay"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
 import SiteSettingsMenu from "./SiteSettingsMenu"
@@ -25,7 +26,8 @@ import TokenClaimDialog from "./TokenClaimDialog"
 import Web3Status from "./Web3Status"
 import { areGaugesActive } from "../utils/gauges"
 import { formatBNToShortString } from "../utils"
-import { useActiveWeb3React } from "../hooks"
+import { useNetwork } from "wagmi"
+// import { useActiveWeb3React } from "../hooks"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
@@ -67,60 +69,57 @@ function TopMenu(): ReactElement {
     }
   }
   return (
-    <AppBar position="static" elevation={0}>
-      <Toolbar data-testid="topMenuContainer" sx={{ xs: 0, lg: 7 }}>
-        <Box display="flex" width="100%" alignItems="center">
-          <Box flex={1}>
-            <NavLink to="/">
-              <SaddleLogo height={isUnderLaptopSize ? "40px" : "100"} />
-            </NavLink>
-          </Box>
+    <AppBar position="static">
+      <Toolbar data-testid="topMenuContainer">
+        <Stack paddingRight={2}>
+          <NavLink to="/">
+            <SaddleLogo height={isUnderLaptopSize ? "40px" : "100"} />
+          </NavLink>
+        </Stack>
 
-          <Stack
-            display={isUnderLaptopSize ? "none" : "flex"}
-            bottom={{ xs: theme.spacing(4) }}
-            right="50%"
-            flex={1}
-            direction="row"
-            spacing={4}
-            justifyContent="center"
-            padding={theme.spacing(1, 3)}
+        <Stack
+          flex={1}
+          justifyContent="flex-start"
+          direction="row"
+          spacing={4}
+          // padding={theme.spacing(1, 3)}
+        >
+          <MenuList />
+        </Stack>
+        <Stack
+          direction="row"
+          spacing={1}
+          flex={2}
+          justifyContent="flex-end"
+          alignItems="center"
+          paddingRight={2}
+        >
+          <SDLPrice sdlPrice={sdlPrice} />
+          <RewardsButton setCurrentModal={setCurrentModal} />
+        </Stack>
+        {/* <Box display={isUnderLaptopSize ? "none" : "block"}> */}
+        <Stack spacing={1} direction="row">
+          <ConnectButton />
+          {/* <Web3Status /> */}
+          {/* </Box> */}
+          {/* <NetworkDisplay onClick={handleSettingMenu} /> */}
+          <IconButton
+            onClick={handleMoreMenu}
+            data-testid="settingsMenuBtn"
+            sx={{
+              minWidth: 0,
+              padding: 0.5,
+              backgroundColor: theme.palette.background.default,
+              borderRadius: theme.spacing(1),
+            }}
           >
-            <MenuList />
-          </Stack>
-          <Stack
-            direction="row"
-            spacing={1}
-            flex={1}
-            justifyContent="flex-end"
-            alignItems="center"
-          >
-            <SDLPrice sdlPrice={sdlPrice} />
-            <RewardsButton setCurrentModal={setCurrentModal} />
-            <Box display={isUnderLaptopSize ? "none" : "block"}>
-              <Web3Status />
-            </Box>
-            <NetworkDisplay onClick={handleSettingMenu} />
-            <IconButton
-              onClick={handleMoreMenu}
-              data-testid="settingsMenuBtn"
-              sx={{
-                minWidth: 0,
-                padding: 0.5,
-                backgroundColor: theme.palette.background.default,
-                borderRadius: theme.spacing(1),
-              }}
-            >
-              <MoreVert
-                htmlColor={theme.palette.text.primary}
-                sx={{ display: isUnderLaptopSize ? "none" : "block" }}
-              />
-              <MenuIcon
-                sx={{ display: !isUnderLaptopSize ? "none" : "block" }}
-              />
-            </IconButton>
-          </Stack>
-        </Box>
+            <MoreVert
+              htmlColor={theme.palette.text.primary}
+              sx={{ display: isUnderLaptopSize ? "none" : "block" }}
+            />
+            <MenuIcon sx={{ display: !isUnderLaptopSize ? "none" : "block" }} />
+          </IconButton>
+        </Stack>
 
         <SiteSettingsMenu
           key="buttonSettings"
@@ -176,8 +175,9 @@ function RewardsButton({
 
 function MenuList() {
   const { t } = useTranslation()
-  const { chainId } = useActiveWeb3React()
-  const gaugesAreActive = areGaugesActive(chainId)
+  // const { chainId } = useActiveWeb3React()
+  const { chain } = useNetwork()
+  const gaugesAreActive = areGaugesActive(chain?.id)
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { pathname } = useLocation()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call

@@ -1,14 +1,17 @@
-import { Button, Typography } from "@mui/material"
+// import { Box, Button } from "@mui/material"
+// import { Button, Typography } from "@mui/material"
 import React, { ReactElement, useEffect, useState } from "react"
 
 import AccountDetails from "./AccountDetails"
+// import { Button } from "@mui/material"
+import { ConnectButton } from "@rainbow-me/rainbowkit"
 import ConnectWallet from "./ConnectWallet"
 import Dialog from "./Dialog"
-import Identicon from "./Identicon"
-import { shortenAddress } from "../utils/shortenAddress"
-import { useENS } from "../hooks/useENS"
-import { useTranslation } from "react-i18next"
-import { useUDName } from "../hooks/useUDName"
+// import Identicon from "./Identicon"
+// import { shortenAddress } from "../utils/shortenAddress"
+// import { useENS } from "../hooks/useENS"
+// import { useTranslation } from "react-i18next"
+// import { useUDName } from "../hooks/useUDName"
 import { useWeb3React } from "@web3-react/core"
 
 const WALLET_VIEWS = {
@@ -20,9 +23,8 @@ const Web3Status = (): ReactElement => {
   const { account } = useWeb3React()
   const [modalOpen, setModalOpen] = useState(false)
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT)
-  const { t } = useTranslation()
-  const { ensName } = useENS(account)
-  const udName = useUDName()
+  // const { t } = useTranslation()
+  // const udName = useUDName()
 
   // always reset to account view
   useEffect(() => {
@@ -33,7 +35,7 @@ const Web3Status = (): ReactElement => {
 
   return (
     <div data-testid="walletStatusContainer">
-      <Button
+      {/* <Button
         variant={account ? "contained" : "outlined"}
         color={account ? "mute" : "secondary"}
         onClick={(): void => setModalOpen(true)}
@@ -45,7 +47,8 @@ const Web3Status = (): ReactElement => {
             ? udName || ensName || shortenAddress(account)
             : t("connectWallet")}
         </Typography>
-      </Button>
+      </Button> */}
+      <ConnectButton />
       <Dialog
         open={modalOpen}
         onClose={(): void => setModalOpen(false)}

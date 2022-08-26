@@ -35,8 +35,9 @@ import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { debounce } from "lodash"
 import { formatGasToString } from "../utils/gas"
-import { useActiveWeb3React } from "../hooks"
+// import { useActiveWeb3React } from "../hooks"
 import { useApproveAndSwap } from "../hooks/useApproveAndSwap"
+import { useNetwork } from "wagmi"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
 import { useSelector } from "react-redux"
 import { useTokenMaps } from "../hooks/useTokenMaps"
@@ -92,7 +93,8 @@ const EMPTY_FORM_STATE = {
 
 function Swap(): ReactElement {
   const { t } = useTranslation()
-  const { chainId } = useActiveWeb3React()
+  // const { chainId } = useActiveWeb3React()
+  const { chain } = useNetwork()
   const approveAndSwap = useApproveAndSwap()
   const tokenBalances = usePoolTokenBalances()
   const basicPools = useContext(BasicPoolsContext)
@@ -115,13 +117,13 @@ function Swap(): ReactElement {
   useEffect(() => {
     setFormState(EMPTY_FORM_STATE)
     setPrevFormState(EMPTY_FORM_STATE)
-  }, [chainId])
+  }, [chain])
 
   const swapContract = useSwapContract(formState.to.poolName)
 
   // build a representation of pool tokens for the UI
   const tokenOptions = useMemo(() => {
-    if (!chainId || !tokenBalances)
+    if (!chain?.id || !tokenBalances)
       return {
         from: [],
         to: [],
@@ -205,7 +207,7 @@ function Swap(): ReactElement {
     tokenPricesUSD,
     tokenBalances,
     formState.currentSwapPairs,
-    chainId,
+    chain,
     basicPools,
   ])
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -215,7 +217,7 @@ function Swap(): ReactElement {
       const tokenTo = tokenSymbolToTokenMap[formStateArg.to.symbol]
       if (!tokenFrom || !tokenTo || !basicPools) return
       if (formStateArg.swapType === SWAP_TYPES.INVALID) return
-      if (tokenBalances === null || chainId == null)
+      if (tokenBalances === null || chain == null)
         // || bridgeContract == null
         return
       if (
@@ -364,7 +366,7 @@ function Swap(): ReactElement {
         return newState
       })
     }, 250),
-    [tokenBalances, swapContract, bridgeContract, chainId, tokenPricesUSD],
+    [tokenBalances, swapContract, bridgeContract, chain, tokenPricesUSD],
   )
 
   useEffect(() => {

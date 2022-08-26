@@ -3,7 +3,6 @@ import {
   TRANSACTION_TYPES,
   isLegacySwapABIPool,
 } from "../constants"
-import { BasicToken, useBasicTokens } from "./useBasicTokens"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { formatDeadlineToNumber, getContract } from "../utils"
 import { useContext, useMemo } from "react"
@@ -12,6 +11,7 @@ import { useLPTokenContract, useSwapContract } from "./useContract"
 
 import { AppState } from "../state"
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
+import { BasicToken } from "./useBasicTokens"
 import { BigNumber } from "@ethersproject/bignumber"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
@@ -23,12 +23,14 @@ import { NumberInputState } from "../utils/numberInputState"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
+import { TokensContext } from "../providers/TokensProvider"
 import { Zero } from "@ethersproject/constants"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
+import { useAddRecentTransaction } from "@rainbow-me/rainbowkit"
 
 interface ApproveAndDepositStateArgument {
   [tokenSymbol: string]: NumberInputState
@@ -57,7 +59,7 @@ export function useApproveAndDeposit(
     infiniteApproval,
   } = useSelector((state: AppState) => state.user)
   const basicPools = useContext(BasicPoolsContext)
-  const { data: tokens } = useBasicTokens()
+  const tokens = useContext(TokensContext)
   const pool = basicPools?.[poolName]
   const metaSwapContract = useMemo(() => {
     if (pool?.poolAddress && chainId && library) {
@@ -70,6 +72,7 @@ export function useApproveAndDeposit(
     }
     return null
   }, [chainId, library, account, pool?.poolAddress])
+  const addRecentTransaction = useAddRecentTransaction()
 
   return async function approveAndDeposit(
     state: ApproveAndDepositStateArgument,
@@ -209,8 +212,13 @@ export function useApproveAndDeposit(
           txnDeadline,
         )
       }
-      await enqueuePromiseToast(chainId, spendTransaction.wait(), "deposit", {
+      const txn = spendTransaction
+      await enqueuePromiseToast(chainId, txn.wait(), "deposit", {
         poolName,
+      })
+      addRecentTransaction({
+        hash: txn.hash,
+        description: "Deposit",
       })
 
       dispatch(
