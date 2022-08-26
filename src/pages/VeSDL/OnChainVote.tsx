@@ -63,22 +63,21 @@ export default function OnChainVote({
     errorText: string
   }>({ hasError: false, errorText: " " })
 
-  const gaugeNames = useMemo(
-    () =>
-      Object.keys(gauges)
-        .filter((lpAddress) => !gauges[lpAddress]?.isKilled)
-        .reduce((acc, curr) => {
-          const gaugeName = gauges[curr]?.gaugeName
-          const gaugeAddress = gauges[curr]?.address.toLowerCase()
-          if (gaugeName && gaugeAddress)
-            acc[gaugeAddress] = {
-              address: gaugeAddress,
-              gaugeName: gaugeName,
-            }
-          return acc
-        }, {} as GaugeName),
-    [gauges],
-  )
+  const gaugeNames = useMemo(() => {
+    const gaugeNameObj = {} as GaugeName
+    Object.keys(gauges)
+      .filter((lpAddress) => !gauges[lpAddress]?.isKilled)
+      .forEach((lpAddress) => {
+        const gaugeName = gauges[lpAddress]?.gaugeName
+        const gaugeAddress = gauges[lpAddress]?.address.toLowerCase()
+        if (gaugeName && gaugeAddress)
+          gaugeNameObj[gaugeAddress] = {
+            address: gaugeAddress,
+            gaugeName: gaugeName,
+          }
+      })
+    return gaugeNameObj
+  }, [gauges])
 
   const getVoteUsed = useCallback(async () => {
     if (account) {
