@@ -2,14 +2,7 @@ import "react-toastify/dist/ReactToastify.css"
 
 import { AppDispatch, AppState } from "../state"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import React, {
-  ReactElement,
-  Suspense,
-  lazy,
-  useCallback,
-  useEffect,
-} from "react"
-import { Redirect, Route, Switch } from "react-router-dom"
+import React, { ReactElement, Suspense, useCallback, useEffect } from "react"
 import { styled, useTheme } from "@mui/material"
 import { useDispatch, useSelector } from "react-redux"
 
@@ -17,15 +10,14 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 import AprsProvider from "../providers/AprsProvider"
 import { BLOCK_TIME } from "../constants"
 import BasicPoolsProvider from "../providers/BasicPoolsProvider"
-import CoinbasePayTest from "./CoinbasePayTest"
 import ExpandedPoolsProvider from "../providers/ExpandedPoolsProvider"
 import GaugeProvider from "../providers/GaugeProvider"
 import { LocalizationProvider } from "@mui/x-date-pickers"
 import MinichefProvider from "../providers/MinichefProvider"
+import Pages from "./Pages"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
-import Swap from "./Swap"
 import { ToastContainer } from "react-toastify"
 import TokensProvider from "../providers/TokensProvider"
 import TopMenu from "../components/TopMenu"
@@ -42,16 +34,6 @@ import { useActiveWeb3React } from "../hooks"
 import { useIntercom } from "react-use-intercom"
 import usePoller from "../hooks/usePoller"
 import { useSdlWethSushiPairContract } from "../hooks/useContract"
-
-// Lazy Loaded Pages
-const CreatePool = lazy(() => import("./CreatePool"))
-const Deposit = lazy(() => import("./Deposit"))
-const Farm = lazy(() => import("./Farm/Farm"))
-const Pools = lazy(() => import("./Pools"))
-const Risk = lazy(() => import("./Risk"))
-const VeSDL = lazy(() => import("./VeSDL"))
-const VestingClaim = lazy(() => import("./VestingClaim"))
-const Withdraw = lazy(() => import("./Withdraw"))
 
 const AppContainer = styled("div")(({ theme }) => {
   const darkBackground =
@@ -89,99 +71,47 @@ export default function App(): ReactElement {
   return (
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen />
-      <Suspense fallback={null}>
-        <Web3ReactManager>
-          <BasicPoolsProvider>
-            <MinichefProvider>
-              <GaugeProvider>
-                <TokensProvider>
-                  <ExpandedPoolsProvider>
-                    <UserStateProvider>
-                      <PricesAndVoteData>
-                        <PendingSwapsProvider>
-                          <AprsProvider>
-                            <RewardsBalancesProvider>
-                              <LocalizationProvider
-                                dateAdapter={AdapterDateFns}
-                              >
-                                <AppContainer>
-                                  <TopMenu />
-                                  <Switch>
-                                    <Route exact path="/" component={Swap} />
-                                    <Route
-                                      exact
-                                      path="/pools"
-                                      component={Pools}
-                                    />
-                                    <Route
-                                      exact
-                                      path={`/pools/:poolName/deposit`}
-                                      component={Deposit}
-                                    />
-                                    <Route
-                                      exact
-                                      path={`/pools/:poolName/withdraw`}
-                                      component={Withdraw}
-                                    />
-                                    <Redirect
-                                      from="/pools/:route/:action"
-                                      to="/pools"
-                                    />
-                                    <Route
-                                      exact
-                                      path="/pools/create"
-                                      component={CreatePool}
-                                    />
-                                    <Route
-                                      exact
-                                      path="/risk"
-                                      component={Risk}
-                                    />
-                                    <Route
-                                      exact
-                                      path="/vesting-claim"
-                                      component={VestingClaim}
-                                    />
-                                    <Route
-                                      exact
-                                      path="/farm"
-                                      component={Farm}
-                                    />
-                                    <Route
-                                      exact
-                                      path="/vesdl"
-                                      component={VeSDL}
-                                    />
-                                    <Route
-                                      exact
-                                      path="/coinbase-pay-test"
-                                      component={CoinbasePayTest}
-                                    />
-                                  </Switch>
-                                  <WrongNetworkModal />
-                                  <Version />
-                                  <ToastContainer
-                                    theme={
-                                      theme.palette.mode === "dark"
-                                        ? "dark"
-                                        : "light"
-                                    }
-                                    position="top-left"
-                                  />
-                                </AppContainer>
-                              </LocalizationProvider>
-                            </RewardsBalancesProvider>
-                          </AprsProvider>
-                        </PendingSwapsProvider>
-                      </PricesAndVoteData>
-                    </UserStateProvider>
-                  </ExpandedPoolsProvider>
-                </TokensProvider>
-              </GaugeProvider>
-            </MinichefProvider>
-          </BasicPoolsProvider>
-        </Web3ReactManager>
-      </Suspense>
+
+      <Web3ReactManager>
+        <BasicPoolsProvider>
+          <MinichefProvider>
+            <GaugeProvider>
+              <TokensProvider>
+                <ExpandedPoolsProvider>
+                  <UserStateProvider>
+                    <PricesAndVoteData>
+                      <PendingSwapsProvider>
+                        <AprsProvider>
+                          <RewardsBalancesProvider>
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                              <AppContainer>
+                                <TopMenu />
+                                <Suspense fallback={null}>
+                                  <Pages />
+                                </Suspense>
+                                <WrongNetworkModal />
+                                <Version />
+                                <ToastContainer
+                                  theme={
+                                    theme.palette.mode === "dark"
+                                      ? "dark"
+                                      : "light"
+                                  }
+                                  position="top-left"
+                                />
+                              </AppContainer>
+                            </LocalizationProvider>
+                          </RewardsBalancesProvider>
+                        </AprsProvider>
+                      </PendingSwapsProvider>
+                    </PricesAndVoteData>
+                  </UserStateProvider>
+                </ExpandedPoolsProvider>
+              </TokensProvider>
+            </GaugeProvider>
+          </MinichefProvider>
+        </BasicPoolsProvider>
+      </Web3ReactManager>
     </QueryClientProvider>
   )
 }
