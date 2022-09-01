@@ -21,6 +21,7 @@ import { SWAP_TYPES } from "../constants"
 import Search from "@mui/icons-material/Search"
 import TokenIcon from "./TokenIcon"
 import { TokenOption } from "../pages/Swap"
+import { matchSorter } from "match-sorter"
 import { useTranslation } from "react-i18next"
 
 const StyledPopper = styled(Popper)(({ theme }) => ({
@@ -56,6 +57,19 @@ export default function SwapTokenInput({
   const containerRef = useRef<HTMLDivElement>(null)
   const [popOverWidth, setPopOverWidth] = useState<number | undefined>()
   const theme = useTheme()
+
+  const filterOptions = (
+    options: TokenOption[],
+    { inputValue }: { inputValue: string },
+  ) =>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+    matchSorter(options, inputValue, {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      sorter: (rankedItems) => rankedItems,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      threshold: matchSorter.rankings.WORD_STARTS_WITH,
+      keys: ["symbol", "address", "name"],
+    })
 
   useEffect(() => {
     const containerWidth = containerRef.current?.offsetWidth
@@ -206,6 +220,7 @@ export default function SwapTokenInput({
               renderOption={(props, option) => (
                 <ListItem listItemProps={props} {...option} key={option.name} />
               )}
+              filterOptions={filterOptions}
               getOptionLabel={(option) => option.symbol}
               getOptionDisabled={(option) => !option.isAvailable}
               PopperComponent={(props) => (

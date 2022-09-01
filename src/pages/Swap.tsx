@@ -61,6 +61,7 @@ type FormState = {
   currentSwapPairs: SwapData[]
 }
 export interface TokenOption {
+  address: string
   symbol: string
   name: string
   valueUSD: BigNumber
@@ -150,9 +151,10 @@ function Swap(): ReactElement {
         })
         return hasAnyUnpaused && hasAnyBalance
       })
-      .map(({ symbol, name, decimals, isOnTokenLists }) => {
+      .map(({ address, symbol, name, decimals, isOnTokenLists }) => {
         const amount = tokenBalances[symbol] || Zero
         return {
+          address,
           name,
           symbol,
           decimals,

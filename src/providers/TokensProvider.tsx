@@ -105,13 +105,12 @@ export default function TokensProvider({
       )
       if (!tokenInfos) return
       const tokenListsRes = await fetch(
-        "https://gateway.ipfs.io/ipns/tokens.uniswap.org",
+        "https://tokens.coingecko.com/uniswap/all.json",
       )
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const tokenLists = await tokenListsRes.json()
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      const tokenListsTokensTyped = tokenLists.tokens as { address: string }[]
-      const tokenListsTokens = tokenListsTokensTyped.map((token) =>
+      const tokenLists: { tokens: { address: string }[] } =
+        await tokenListsRes.json()
+      const tokenListsTokenAddrs = tokenLists.tokens.map((token) =>
         token.address.toLowerCase(),
       )
       Object.keys(tokenInfos).forEach((address) => {
@@ -119,7 +118,7 @@ export default function TokensProvider({
         ;(tokenInfos[address] as BasicToken).typeAsset =
           tokenType[address] ?? PoolTypes.OTHER
         ;(tokenInfos[address] as BasicToken).isOnTokenLists =
-          tokenListsTokens.some((tokenAddr) => tokenAddr === address)
+          tokenListsTokenAddrs.some((tokenAddr) => tokenAddr === address)
       })
       console.log({ tokenInfos })
       setTokens(tokenInfos)

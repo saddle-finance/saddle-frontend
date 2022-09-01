@@ -16,6 +16,7 @@ const Template: ComponentStory<typeof SwapTokenInput> = (args) => (
 
 const tokenOptionLists: TokenOption[] = [
   {
+    address: "0x6b175474e89094c44da98b954eedeac495271d0f",
     name: "sBTC",
     symbol: "sBTC",
     decimals: 18,
@@ -26,6 +27,7 @@ const tokenOptionLists: TokenOption[] = [
     isOnTokenLists: true,
   },
   {
+    address: "0x6b175474e89094c44da98b954eedeac495271d0f",
     name: "renBTC",
     symbol: "RENBTC",
     decimals: 8,
@@ -36,6 +38,7 @@ const tokenOptionLists: TokenOption[] = [
     isOnTokenLists: false,
   },
   {
+    address: "0x6b175474e89094c44da98b954eedeac495271d0f",
     name: "WBTC",
     symbol: "WBTC",
     decimals: 8,
@@ -46,6 +49,7 @@ const tokenOptionLists: TokenOption[] = [
     isOnTokenLists: false,
   },
   {
+    address: "0x6b175474e89094c44da98b954eedeac495271d0f",
     name: "Dai",
     symbol: "DAI",
     decimals: 18,
@@ -56,6 +60,7 @@ const tokenOptionLists: TokenOption[] = [
     isOnTokenLists: false,
   },
   {
+    address: "0x6b175474e89094c44da98b954eedeac495271d0f",
     name: "USDC Coin",
     symbol: "USDC",
     decimals: 6,
@@ -66,6 +71,7 @@ const tokenOptionLists: TokenOption[] = [
     isOnTokenLists: false,
   },
   {
+    address: "0x6b175474e89094c44da98b954eedeac495271d0f",
     name: "Tether",
     symbol: "USDT",
     decimals: 6,
@@ -76,6 +82,7 @@ const tokenOptionLists: TokenOption[] = [
     isOnTokenLists: false,
   },
   {
+    address: "0x6b175474e89094c44da98b954eedeac495271d0f",
     name: "WETH",
     symbol: "WETH",
     decimals: 18,
@@ -86,6 +93,7 @@ const tokenOptionLists: TokenOption[] = [
     isOnTokenLists: false,
   },
   {
+    address: "0x6b175474e89094c44da98b954eedeac495271d0f",
     name: "Alchemix ETH",
     symbol: "alETH",
     decimals: 18,
@@ -96,6 +104,7 @@ const tokenOptionLists: TokenOption[] = [
     isOnTokenLists: false,
   },
   {
+    address: "0x6b175474e89094c44da98b954eedeac495271d0f",
     name: "Synth sETH",
     symbol: "sETH",
     decimals: 18,
@@ -106,6 +115,7 @@ const tokenOptionLists: TokenOption[] = [
     isOnTokenLists: false,
   },
   {
+    address: "0x6b175474e89094c44da98b954eedeac495271d0f",
     name: "sUSD",
     symbol: "sUSD",
     decimals: 18,
@@ -116,6 +126,7 @@ const tokenOptionLists: TokenOption[] = [
     isOnTokenLists: false,
   },
   {
+    address: "0x6b175474e89094c44da98b954eedeac495271d0f",
     name: "tBTCv2",
     symbol: "TBTCv2",
     decimals: 18,
@@ -126,6 +137,7 @@ const tokenOptionLists: TokenOption[] = [
     isOnTokenLists: false,
   },
   {
+    address: "0x6b175474e89094c44da98b954eedeac495271d0f",
     name: "Alchemix USD",
     symbol: "alUSD",
     decimals: 18,
@@ -136,6 +148,7 @@ const tokenOptionLists: TokenOption[] = [
     isOnTokenLists: false,
   },
   {
+    address: "0x6b175474e89094c44da98b954eedeac495271d0f",
     name: "Fei Protocol",
     symbol: "FEI",
     decimals: 18,
@@ -146,6 +159,7 @@ const tokenOptionLists: TokenOption[] = [
     isOnTokenLists: false,
   },
   {
+    address: "0x6b175474e89094c44da98b954eedeac495271d0f",
     name: "Frax",
     symbol: "FRAX",
     decimals: 18,
@@ -156,6 +170,7 @@ const tokenOptionLists: TokenOption[] = [
     isOnTokenLists: false,
   },
   {
+    address: "0x6b175474e89094c44da98b954eedeac495271d0f",
     name: "Liquity USD",
     symbol: "LUSD",
     decimals: 18,
@@ -166,6 +181,7 @@ const tokenOptionLists: TokenOption[] = [
     isOnTokenLists: false,
   },
   {
+    address: "0x6b175474e89094c44da98b954eedeac495271d0f",
     name: "Wrapped Celo USD",
     symbol: "wCUSD",
     decimals: 18,
