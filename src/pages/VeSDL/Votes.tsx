@@ -10,6 +10,7 @@ import {
   styled,
   useTheme,
 } from "@mui/material"
+import { BigNumber } from "ethers"
 import { GaugeController } from "../../../types/ethers-contracts/GaugeController"
 import React from "react"
 import { VotesType } from "./OnChainVote"
@@ -33,7 +34,7 @@ const VoteTableRow = styled(TableRow)(({ theme }) => ({
 
 interface VoteHistoryProps {
   gaugeControllerContract: GaugeController | null
-  voteUsed?: number
+  voteUsed?: BigNumber
   votes: VotesType
 }
 
@@ -109,7 +110,7 @@ export default function VoteHistory({
         </Table>
         {!!voteUsed && (
           <Typography mt={1}>
-            {t("totalWeightUsed")}: {voteUsed / 100}%
+            {t("totalWeightUsed")}: {voteUsed.toNumber() / 100}%
           </Typography>
         )}
       </TableContainer>

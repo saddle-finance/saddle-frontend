@@ -9,7 +9,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material"
-import React, { useCallback, useEffect, useMemo, useState } from "react"
+import React, { useMemo, useState } from "react"
 import { commify, formatBNToString, isNumberOrEmpty } from "../../utils"
 import ArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
 import { BigNumber } from "ethers"
@@ -18,6 +18,7 @@ import { GaugeController } from "../../../types/ethers-contracts/GaugeController
 import VoteHistory from "./Votes"
 import { enqueuePromiseToast } from "../../components/Toastify"
 import { useActiveWeb3React } from "../../hooks"
+import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 
 interface OnChainVoteProps {
@@ -56,8 +57,6 @@ export default function OnChainVote({
   } | null>(null)
   const [alertMessage, setAlertMessage] = useState<string>()
   const [voteWeightToSubmit, setVoteWeightToSubmit] = useState<string>("")
-  const [voteUsed, setVoteUsed] = useState<number | undefined>()
-  const [votes, setVotes] = useState<VotesType>({})
   const [voteWeightInputError, setVoteWeightInputError] = useState<{
     hasError: boolean
     errorText: string
@@ -79,74 +78,36 @@ export default function OnChainVote({
     return gaugeNameObj
   }, [gauges])
 
-  const getVoteUsed = useCallback(async () => {
-    if (account) {
-      const voteUsed = await gaugeControllerContract[
-        "vote_user_power(address)"
-      ](account)
-      setVoteUsed(voteUsed.toNumber())
-    }
-  }, [account, gaugeControllerContract])
-
-  const getFilteredVotes = useCallback(async () => {
+  const getVoteUsed = async () => {
+    if (!account) return
+    return gaugeControllerContract["vote_user_power(address)"](account)
+  }
+  const getFilteredVotes = async () => {
     const voteFilter = gaugeControllerContract.filters.VoteForGauge(
       null,
       null,
       null,
       null,
     )
-    const filteredRes = await gaugeControllerContract.queryFilter(voteFilter)
+    return gaugeControllerContract.queryFilter(voteFilter)
+  }
 
-    const filteredVotes = filteredRes.reduce(
-      (acc, { args: { user, time, weight, gauge_addr } }) => {
-        if (user === account) {
-          acc[gauge_addr.toLowerCase()] = {
-            gaugeName: gaugeNames[gauge_addr.toLowerCase()].gaugeName,
-            voteDate: time.toNumber(),
-            weight,
-          }
+  const { data: voteUsed } = useQuery(["voteUsed"], getVoteUsed)
+  const { data: filteredRes } = useQuery(["filteredVotes"], getFilteredVotes)
+
+  const filteredVote = filteredRes?.reduce(
+    (acc, { args: { user, time, weight, gauge_addr } }) => {
+      if (user === account) {
+        acc[gauge_addr.toLowerCase()] = {
+          gaugeName: gaugeNames[gauge_addr.toLowerCase()].gaugeName,
+          voteDate: time.toNumber(),
+          weight,
         }
-        return acc
-      },
-      {} as VotesType,
-    )
-    setVotes(filteredVotes)
-  }, [account, gaugeControllerContract, gaugeNames])
-
-  useEffect(() => {
-    void getFilteredVotes()
-    void getVoteUsed()
-  }, [getFilteredVotes, getVoteUsed])
-
-  useEffect(() => {
-    if (account && gaugeControllerContract) {
-      gaugeControllerContract.on(
-        "VoteForGauge",
-        (voteDate, fromAddress, gaugeAddress, voteWeight) => {
-          const gaugeName =
-            gaugeNames[(gaugeAddress as string).toLowerCase()].gaugeName
-
-          if (
-            gaugeName &&
-            (fromAddress as string).toLowerCase() === account.toLowerCase()
-          ) {
-            setVotes((currentVoteLists) => ({
-              ...currentVoteLists,
-              [(gaugeAddress as string).toLowerCase()]: {
-                gaugeName: gaugeName,
-                voteDate: (voteDate as BigNumber).toNumber(),
-                weight: voteWeight as BigNumber,
-              },
-            }))
-            void getVoteUsed()
-          }
-        },
-      )
-    }
-    return () => {
-      gaugeControllerContract.removeAllListeners()
-    }
-  }, [gaugeControllerContract, gaugeNames, votes, getVoteUsed, account])
+      }
+      return acc
+    },
+    {} as VotesType,
+  )
 
   const handleVote = async () => {
     const voteWeightPercent = parseFloat(voteWeightToSubmit)
@@ -238,7 +199,8 @@ export default function OnChainVote({
               onChange={(event) => {
                 if (isNumberOrEmpty(event.target.value)) {
                   const estimatedWeight =
-                    parseFloat(event.target.value) + (voteUsed ?? 0) / 100
+                    parseFloat(event.target.value) +
+                    (voteUsed?.toNumber() ?? 0) / 100
                   if (estimatedWeight > 100) {
                     setVoteWeightInputError({
                       hasError: true,
@@ -278,7 +240,7 @@ export default function OnChainVote({
       </Stack>
       <VoteHistory
         gaugeControllerContract={gaugeControllerContract}
-        votes={votes}
+        votes={filteredVote ?? {}}
         voteUsed={voteUsed}
       />
     </React.Fragment>
