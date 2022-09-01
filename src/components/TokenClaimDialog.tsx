@@ -199,6 +199,7 @@ export default function TokenClaimDialog({
           {rewardBalances.retroactive && isClaimableNetwork && (
             <>
               <ClaimListItem
+                key="claim item"
                 items={[
                   [t("retroactiveDrop"), rewardBalances.retroactive || Zero],
                 ]}
@@ -236,6 +237,7 @@ export default function TokenClaimDialog({
             ? allPoolsWithRewards.map((pool, i, arr) => (
                 <React.Fragment key={pool.poolName}>
                   <ClaimListItem
+                    key={pool.poolName}
                     items={[
                       [pool.poolName, rewardBalances[pool.poolName] || Zero],
                     ]}

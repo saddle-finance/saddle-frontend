@@ -51,6 +51,9 @@ function GaugeWeight({ ...props }: HighchartsReact.Props): JSX.Element {
         color: theme.palette.text.primary,
       },
     },
+    accessibility: {
+      enabled: false, //To remove console error according to the accessibility
+    },
     exporting: {
       enabled: true,
       buttons: {
