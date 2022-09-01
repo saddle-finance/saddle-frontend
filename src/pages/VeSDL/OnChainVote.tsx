@@ -110,15 +110,14 @@ export default function OnChainVote({
   )
 
   const handleVote = async () => {
-    const voteWeightPercent = parseFloat(voteWeightToSubmit)
-    if (!Number.isNaN(voteWeightPercent)) {
+    if (voteWeightToSubmit && isNumberOrEmpty(voteWeightToSubmit)) {
       try {
         if (veSdlBalance.isZero()) {
           setAlertMessage("You need veSDL to vote")
         } else if (selectedGauge?.address && gaugeControllerContract) {
           const txn = await gaugeControllerContract.vote_for_gauge_weights(
             selectedGauge.address,
-            Math.round(voteWeightPercent * 100), //convert percent to bps
+            Math.round(parseFloat(voteWeightToSubmit) * 100), //convert percent to bps
           )
           await enqueuePromiseToast(1, txn.wait(), "vote")
           setSelectedGauge(null) // Initialize selectedGauge
