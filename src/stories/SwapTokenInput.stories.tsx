@@ -23,6 +23,7 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: true,
   },
   {
     name: "renBTC",
@@ -32,6 +33,7 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
     name: "WBTC",
@@ -41,6 +43,7 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
     name: "Dai",
@@ -50,6 +53,7 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
     name: "USDC Coin",
@@ -59,6 +63,7 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x42"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
     name: "Tether",
@@ -68,6 +73,7 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
     name: "WETH",
@@ -77,6 +83,7 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
     name: "Alchemix ETH",
@@ -86,6 +93,7 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
     name: "Synth sETH",
@@ -95,6 +103,7 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
     name: "sUSD",
@@ -104,6 +113,7 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
     name: "tBTCv2",
@@ -113,6 +123,7 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
     name: "Alchemix USD",
@@ -122,6 +133,7 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: false,
+    isOnTokenLists: false,
   },
   {
     name: "Fei Protocol",
@@ -131,6 +143,7 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: false,
+    isOnTokenLists: false,
   },
   {
     name: "Frax",
@@ -140,6 +153,7 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: false,
+    isOnTokenLists: false,
   },
   {
     name: "Liquity USD",
@@ -149,6 +163,7 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: false,
+    isOnTokenLists: false,
   },
   {
     name: "Wrapped Celo USD",
@@ -158,6 +173,7 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: false,
+    isOnTokenLists: false,
   },
 ]
 export const SwapInput = Template.bind({})

@@ -29,6 +29,7 @@ export type BasicToken = {
   isLPToken: boolean
   isSynthetic: boolean
   typeAsset: PoolTypes
+  isOnTokenLists: boolean
 }
 export type BasicTokens = Partial<{ [address: string]: BasicToken }> | null
 export const TokensContext = React.createContext<BasicTokens>(null)
@@ -103,11 +104,24 @@ export default function TokensProvider({
         Array.from(targetTokenAddresses),
       )
       if (!tokenInfos) return
+      const tokenListsRes = await fetch(
+        "https://gateway.ipfs.io/ipns/tokens.uniswap.org",
+      )
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const tokenLists = await tokenListsRes.json()
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const tokenListsTokensTyped = tokenLists.tokens as { address: string }[]
+      const tokenListsTokens = tokenListsTokensTyped.map((token) =>
+        token.address.toLowerCase(),
+      )
       Object.keys(tokenInfos).forEach((address) => {
         ;(tokenInfos[address] as BasicToken).isLPToken = lpTokens.has(address)
         ;(tokenInfos[address] as BasicToken).typeAsset =
           tokenType[address] ?? PoolTypes.OTHER
+        ;(tokenInfos[address] as BasicToken).isOnTokenLists =
+          tokenListsTokens.some((tokenAddr) => tokenAddr === address)
       })
+      console.log({ tokenInfos })
       setTokens(tokenInfos)
     }
     void fetchTokens()

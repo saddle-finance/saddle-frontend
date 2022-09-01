@@ -1,4 +1,14 @@
-import { Box, Button, Chip, Container, Stack, TextField } from "@mui/material"
+import {
+  Box,
+  Button,
+  Checkbox,
+  Chip,
+  Container,
+  FormControlLabel,
+  FormGroup,
+  Stack,
+  TextField,
+} from "@mui/material"
 import React, { ReactElement, useContext, useEffect, useState } from "react"
 
 import { AppState } from "../state"
@@ -37,6 +47,8 @@ function Pools(): ReactElement | null {
     lpTokenAddress: string
   }>({ poolName: null, lpTokenBalance: Zero, lpTokenAddress: "" })
   const [filter, setFilter] = useState<PoolTypes | "all" | "outdated">("all")
+  const [communityPoolsFilter, setCommunityPoolsFilter] =
+    useState<boolean>(false)
   const handleClickMigrate = (
     poolName: string,
     lpTokenBalance: BigNumber,
@@ -66,6 +78,24 @@ function Pools(): ReactElement | null {
                 startAdornment: <Search />,
               }}
             />
+            {false && (
+              <Box ml={1} mt={1}>
+                <FormGroup>
+                  <FormControlLabel
+                    label="Community Pools"
+                    control={
+                      <Checkbox
+                        placeholder="Community Pools"
+                        checked={communityPoolsFilter}
+                        onChange={() =>
+                          setCommunityPoolsFilter(!communityPoolsFilter)
+                        }
+                      />
+                    }
+                  />
+                </FormGroup>
+              </Box>
+            )}
           </Box>
         )}
         <Stack direction="row" spacing={1} my={3}>
@@ -104,6 +134,9 @@ function Pools(): ReactElement | null {
 
       <Stack spacing={3}>
         {Object.values(basicPools || {})
+          .filter((basicPool) =>
+            communityPoolsFilter ? !basicPool.isSaddleApproved : basicPool,
+          )
           .filter(
             (basicPool) =>
               filter === "all" ||

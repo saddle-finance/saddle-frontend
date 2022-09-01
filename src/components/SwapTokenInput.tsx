@@ -1,3 +1,4 @@
+import { ArrowDropDown, CheckCircleOutline } from "@mui/icons-material"
 import {
   Button,
   Chip,
@@ -11,7 +12,6 @@ import { commify, formatBNToString, isNumberOrEmpty } from "../utils"
 import { styled, useTheme } from "@mui/material/styles"
 import { useRef, useState } from "react"
 
-import { ArrowDropDown } from "@mui/icons-material"
 import Autocomplete from "@mui/material/Autocomplete"
 import { BigNumber } from "ethers"
 import Box from "@mui/material/Box"
@@ -229,6 +229,7 @@ function ListItem({
   symbol,
   decimals,
   isAvailable,
+  isOnTokenLists,
   swapType,
   listItemProps,
 }: TokenOption & {
@@ -258,8 +259,11 @@ function ListItem({
           <TokenIcon symbol={symbol} alt={name} height="100%" width="100%" />
         </Box>
         <Box>
-          <Box display="flex">
+          <Box display="flex" alignItems="center">
             <Typography color="text.primary">{symbol}</Typography>
+            {isOnTokenLists && (
+              <CheckCircleOutline sx={{ marginLeft: 1, width: 20 }} />
+            )}
             {!isAvailable && (
               <Chip
                 variant="outlined"

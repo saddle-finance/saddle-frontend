@@ -36,9 +36,9 @@ export enum PoolType {
 }
 
 export enum AssetType {
-  USD,
-  ETH,
   BTC,
+  ETH,
+  USD,
   OTHERS,
 }
 
@@ -68,7 +68,7 @@ export default function CreatePool(): React.ReactElement {
   const [poolSymbol, setPoolSymbol] = useState<string>("")
   const [aParameter, setAParameter] = useState<string>("")
   const [poolType, setPoolType] = useState<PoolType>(PoolType.UsdMeta)
-  const [assetType, setAssetType] = useState<AssetType>(0)
+  const [assetType, setAssetType] = useState<AssetType>(2)
   const [tokenInputs, setTokenInputs] = useState<string[]>([""])
   const [tokenInfo, setTokenInfo] = useState<
     {
@@ -152,7 +152,7 @@ export default function CreatePool(): React.ReactElement {
     !isValidNumber(aParameter) || parseFloat(aParameter) < 1
 
   const feeError =
-    !isValidNumber(fee) || parseFloat(fee) > 1 || parseFloat(fee) < 0.04
+    !isValidNumber(fee) || parseFloat(fee) > 1 || parseFloat(fee) < 0.01
 
   useEffect(() => {
     const getBasePoolLPTokenAddrs = async () => {

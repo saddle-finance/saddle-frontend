@@ -68,6 +68,7 @@ export interface TokenOption {
   decimals: number
   swapType: SWAP_TYPES | null
   isAvailable: boolean
+  isOnTokenLists: boolean
 }
 
 const EMPTY_FORM_STATE = {
@@ -149,7 +150,7 @@ function Swap(): ReactElement {
         })
         return hasAnyUnpaused && hasAnyBalance
       })
-      .map(({ symbol, name, decimals }) => {
+      .map(({ symbol, name, decimals, isOnTokenLists }) => {
         const amount = tokenBalances[symbol] || Zero
         return {
           name,
@@ -158,6 +159,7 @@ function Swap(): ReactElement {
           amount,
           valueUSD: calculatePrice(amount, tokenPricesUSD?.[symbol], decimals),
           isAvailable: true,
+          isOnTokenLists,
           swapType: null,
         }
       })
