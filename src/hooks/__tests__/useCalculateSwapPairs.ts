@@ -15,6 +15,7 @@ const createTestToken = (name: string, isSynth?: boolean): BasicToken => {
     decimals: 18,
     isSynthetic: isSynth || false,
     isLPToken: false,
+    isOnTokenLists: true,
     typeAsset: 1,
   }
 }
