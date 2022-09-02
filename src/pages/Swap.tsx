@@ -116,9 +116,13 @@ function Swap(): ReactElement {
   const [formState, setFormState] = useState<FormState>(EMPTY_FORM_STATE)
   const [prevFormState, setPrevFormState] =
     useState<FormState>(EMPTY_FORM_STATE)
+  const [openFrom, setOpenFrom] = useState(false)
+  const [openTo, setOpenTo] = useState(false)
   useEffect(() => {
     setFormState(EMPTY_FORM_STATE)
     setPrevFormState(EMPTY_FORM_STATE)
+    setOpenFrom(false)
+    setOpenTo(false)
   }, [chainId])
 
   const swapContract = useSwapContract(formState.to.poolName)
@@ -187,6 +191,7 @@ function Swap(): ReactElement {
                   symbol: token.symbol,
                   decimals: token.decimals,
                   amount,
+                  isOnTokenLists: token.isOnTokenLists,
                   valueUSD: calculatePrice(
                     amount,
                     tokenPricesUSD?.[token.symbol],
@@ -462,8 +467,8 @@ function Swap(): ReactElement {
     })
   }
   function handleUpdateTokenFrom(address: string): void {
-    console.log({ address, tokens })
     if (!tokens || !tokenPricesUSD || !tokens[address]) return
+    !tokens[address]?.isOnTokenLists ? setOpenFrom(true) : setOpenFrom(false)
     if (address === formState.to.address)
       return handleReverseExchangeDirection()
     setFormState((prevState) => {
@@ -513,6 +518,7 @@ function Swap(): ReactElement {
 
   function handleUpdateTokenTo(address: string): void {
     if (!tokens?.[address]) return
+    !tokens[address]?.isOnTokenLists ? setOpenTo(true) : setOpenTo(false)
     if (address === formState.from.address)
       return handleReverseExchangeDirection()
     setFormState((prevState) => {
@@ -656,6 +662,10 @@ function Swap(): ReactElement {
       error={formState.error}
       onConfirmTransaction={handleConfirmTransaction}
       onClickReverseExchangeDirection={handleReverseExchangeDirection}
+      openFrom={openFrom}
+      setOpenFrom={setOpenFrom}
+      openTo={openTo}
+      setOpenTo={setOpenTo}
     />
   )
 }

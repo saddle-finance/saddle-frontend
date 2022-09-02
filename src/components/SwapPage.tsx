@@ -2,7 +2,9 @@ import {
   Alert,
   Box,
   Button,
+  Collapse,
   Container,
+  IconButton,
   Link,
   Paper,
   Typography,
@@ -14,6 +16,7 @@ import { formatBNToPercentString, formatBNToString } from "../utils"
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state/index"
 import { BigNumber } from "@ethersproject/bignumber"
+import { Close } from "@mui/icons-material"
 import ConfirmTransaction from "./ConfirmTransaction"
 import Dialog from "./Dialog"
 import InfoIcon from "@mui/icons-material/Info"
@@ -27,6 +30,7 @@ import type { TokenOption } from "../pages/Swap"
 import { Zero } from "@ethersproject/constants"
 import { commify } from "../utils"
 import { formatUnits } from "@ethersproject/units"
+import { getMultichainScanLink } from "../utils/getEtherscanLink"
 import { isHighPriceImpact } from "../utils/priceImpact"
 import { logEvent } from "../utils/googleAnalytics"
 import { useActiveWeb3React } from "../hooks"
@@ -51,18 +55,27 @@ interface Props {
   error: string | null
   swapType: SWAP_TYPES
   fromState: { symbol: string; value: string; valueUSD: BigNumber }
-  toState: { symbol: string; value: string; valueUSD: BigNumber }
+  toState: {
+    address: string
+    symbol: string
+    value: string
+    valueUSD: BigNumber
+  }
   pendingSwaps: PendingSwap[]
   onChangeFromToken: (tokenSymbol: string) => void
   onChangeFromAmount: (amount: string) => void
   onChangeToToken: (tokenSymbol: string) => void
   onConfirmTransaction: () => Promise<void>
   onClickReverseExchangeDirection: () => void
+  openFrom: boolean
+  setOpenFrom: (open: boolean) => void
+  openTo: boolean
+  setOpenTo: (open: boolean) => void
 }
 
 const SwapPage = (props: Props): ReactElement => {
   const { t } = useTranslation()
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const {
     tokenOptions,
     exchangeRateInfo,
@@ -77,6 +90,10 @@ const SwapPage = (props: Props): ReactElement => {
     onChangeToToken,
     onConfirmTransaction,
     onClickReverseExchangeDirection,
+    openFrom,
+    setOpenFrom,
+    openTo,
+    setOpenTo,
   } = props
 
   const [currentModal, setCurrentModal] = useState<string | null>(null)
@@ -106,6 +123,53 @@ const SwapPage = (props: Props): ReactElement => {
     slippageSelected === Slippages.OneTenth ||
     (slippageSelected === Slippages.Custom &&
       parseFloat(slippageCustom?.valueRaw || "0") < 0.5)
+
+  const renderTokenListsWarning = (
+    open: boolean,
+    setOpen: (open: boolean) => void,
+    type: "from" | "to",
+  ) => {
+    return (
+      <Collapse in={open}>
+        <Alert
+          variant="filled"
+          severity="error"
+          sx={{ mb: 2, mt: type === "to" ? 2 : -3 }}
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setOpen(false)
+              }}
+            >
+              <Close fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          <Typography>
+            This token doesnt appear in our token list. Make sure this is the
+            correct token address of the token you want to trade.
+          </Typography>
+          <Link
+            href={getMultichainScanLink(
+              chainId ?? 1,
+              type === "from"
+                ? fromToken?.address ?? ""
+                : toState.address ?? "",
+              "address",
+            )}
+            target="_blank"
+          >
+            <Typography mt={1}>
+              {type === "from" ? fromToken?.address : toState.address}
+            </Typography>
+          </Link>
+        </Alert>
+      </Collapse>
+    )
+  }
 
   return (
     <Container maxWidth="sm" sx={{ pt: 5, pb: 20 }}>
@@ -150,6 +214,7 @@ const SwapPage = (props: Props): ReactElement => {
               isSwapFrom={true}
             />
           </Box>
+          {renderTokenListsWarning(openFrom, setOpenFrom, "from")}
           <Typography variant="subtitle1">
             {t("to").toLocaleUpperCase()}
           </Typography>
@@ -165,6 +230,7 @@ const SwapPage = (props: Props): ReactElement => {
             inputValueUSD={toState.valueUSD}
             isSwapFrom={false}
           />
+          {renderTokenListsWarning(openTo, setOpenTo, "to")}
           <div style={{ height: "24px" }}></div>
           {fromState.symbol && toState.symbol && (
             <Box display="flex" justifyContent="space-between">
