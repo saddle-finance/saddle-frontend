@@ -103,6 +103,7 @@ export enum ChainId {
   // RINKEBY = 4,
   // GÖRLI = 5,
   // KOVAN = 42,
+  TEST_SIDE_CHAIN = 11,
   HARDHAT = 31337,
   ARBITRUM = 42161,
   OPTIMISM = 10,
@@ -715,6 +716,10 @@ export const GAUGE_HELPER_CONTRACT_ADDRESSES = buildAddresses({
 export const GAUGE_CONTROLLER_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0x5fc748f1FEb28d7b76fa1c6B07D8ba2d5535177c",
   [ChainId.MAINNET]: "0x99Cb6c36816dE2131eF2626bb5dEF7E5cc8b9B14",
+})
+
+export const ROOT_GAUGE_FACTORY_CONTRACT_ADDRESSES = buildAddresses({
+  [ChainId.HARDHAT]: "0x26B862f640357268Bd2d9E95bc81553a2Aa81D7E",
 })
 
 export const SPA = new Token(

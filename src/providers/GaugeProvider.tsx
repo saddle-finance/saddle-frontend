@@ -3,6 +3,7 @@ import React, { ReactElement, useContext, useEffect, useState } from "react"
 import {
   useGaugeControllerContract,
   useGaugeMinterContract,
+  useRootGaugeFactory,
 } from "../hooks/useContract"
 
 import { BasicPoolsContext } from "./BasicPoolsProvider"
@@ -15,6 +16,7 @@ export default function GaugeProvider({
 }: React.PropsWithChildren<unknown>): ReactElement {
   const { chainId, library, account } = useActiveWeb3React()
   const gaugeControllerContract = useGaugeControllerContract()
+  const rootGaugeFactory = useRootGaugeFactory()
   const basicPools = useContext(BasicPoolsContext)
   const gaugeMinterContract = useGaugeMinterContract() // only exists on mainnet
   const [gauges, setGauges] = useState<Gauges>(initialGaugesState)
@@ -23,6 +25,7 @@ export default function GaugeProvider({
     async function fetchGauges() {
       if (
         !gaugeControllerContract ||
+        !rootGaugeFactory ||
         !chainId ||
         !library ||
         !gaugeMinterContract
@@ -34,6 +37,7 @@ export default function GaugeProvider({
           chainId,
           gaugeControllerContract,
           basicPools,
+          rootGaugeFactory,
           gaugeMinterContract,
           account ?? undefined,
         )) || initialGaugesState
@@ -48,6 +52,7 @@ export default function GaugeProvider({
     gaugeMinterContract,
     account,
     basicPools,
+    rootGaugeFactory,
   ])
 
   return (
