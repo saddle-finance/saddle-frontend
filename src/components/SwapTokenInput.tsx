@@ -213,8 +213,8 @@ export default function SwapTokenInput({
                   return
                 }
                 setAnchorEl(null)
-                if (newValue?.symbol) {
-                  onSelect?.(newValue?.symbol)
+                if (newValue?.address) {
+                  onSelect?.(newValue?.address)
                 }
               }}
               renderOption={(props, option) => (

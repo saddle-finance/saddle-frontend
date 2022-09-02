@@ -120,7 +120,6 @@ export default function TokensProvider({
         ;(tokenInfos[address] as BasicToken).isOnTokenLists =
           tokenListsTokenAddrs.some((tokenAddr) => tokenAddr === address)
       })
-      console.log({ tokenInfos })
       setTokens(tokenInfos)
     }
     void fetchTokens()

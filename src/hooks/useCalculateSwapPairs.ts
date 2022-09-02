@@ -131,6 +131,7 @@ function buildSwapSideData(
   pool?: ExpandedBasicPool,
 ): Required<SwapSide> | SwapSide {
   return {
+    address: token.address,
     symbol: token.symbol,
     poolName: pool?.poolName,
     tokenIndex: (pool?.underlyingTokens || pool?.tokens || []).findIndex(
@@ -140,6 +141,7 @@ function buildSwapSideData(
 }
 
 export type SwapSide = {
+  address: string
   symbol: string
   poolName?: string
   tokenIndex?: number

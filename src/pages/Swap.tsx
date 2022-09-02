@@ -1,4 +1,3 @@
-import { BasicToken, TokensContext } from "../providers/TokensProvider"
 import { IS_VIRTUAL_SWAP_ACTIVE, SWAP_TYPES } from "../constants"
 import React, {
   ReactElement,
@@ -30,6 +29,7 @@ import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { PendingSwapsContext } from "../providers/PendingSwapsProvider"
 import SwapPage from "../components/SwapPage"
+import { TokensContext } from "../providers/TokensProvider"
 import { Zero } from "@ethersproject/constants"
 import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
@@ -75,11 +75,13 @@ export interface TokenOption {
 const EMPTY_FORM_STATE = {
   error: null,
   from: {
+    address: "",
     symbol: "",
     value: "0.0",
     valueUSD: Zero,
   },
   to: {
+    address: "",
     symbol: "",
     value: Zero,
     valueUSD: Zero,
@@ -175,10 +177,12 @@ function Swap(): ReactElement {
                   console.log("unknown symbol", { to, swapType })
                   return null
                 }
-                const token = tokenSymbolToTokenMap[to.symbol] as BasicToken
+                if (!tokens) return null
+                const token = tokens[to.address]
                 if (!token) return null
                 const amount = tokenBalances[token.symbol]
                 return {
+                  address: token.address,
                   name: token.name,
                   symbol: token.symbol,
                   decimals: token.decimals,
@@ -215,8 +219,9 @@ function Swap(): ReactElement {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const calculateSwapAmount = useCallback(
     debounce(async (formStateArg: FormState) => {
-      const tokenFrom = tokenSymbolToTokenMap[formStateArg.from.symbol]
-      const tokenTo = tokenSymbolToTokenMap[formStateArg.to.symbol]
+      if (!tokens) return
+      const tokenFrom = tokens[formStateArg.from.address]
+      const tokenTo = tokens[formStateArg.from.address]
       if (!tokenFrom || !tokenTo || !basicPools) return
       if (formStateArg.swapType === SWAP_TYPES.INVALID) return
       if (tokenBalances === null || chainId == null)
@@ -233,7 +238,7 @@ function Swap(): ReactElement {
       if (
         cleanedFormFromValue === "" ||
         isNaN(+cleanedFormFromValue) ||
-        formStateArg.to.symbol === ""
+        tokens[formStateArg.to.address]?.symbol === ""
       ) {
         setFormState((prevState) => ({
           ...prevState,
@@ -249,7 +254,12 @@ function Swap(): ReactElement {
       let error: string | null = null
       let amountToReceive = Zero
       let amountMediumSynth = Zero
-      if (amountToGive.gt(tokenBalances[formStateArg.from.symbol] || Zero)) {
+      if (
+        amountToGive.gt(
+          tokenBalances[tokens[formStateArg.from.address]?.symbol ?? ""] ||
+            Zero,
+        )
+      ) {
         error = t("insufficientBalance")
       }
       if (amountToGive.isZero()) {
@@ -294,7 +304,9 @@ function Swap(): ReactElement {
           const [amountOutSynth, amountOutToken] =
             await bridgeContract.calcSynthToToken(
               destinationPool.metaSwapDepositAddress,
-              utils.formatBytes32String(formStateArg.from.symbol),
+              utils.formatBytes32String(
+                tokens[formStateArg.from.address]?.symbol ?? "",
+              ),
               formStateArg.to.tokenIndex,
               amountToGive,
             )
@@ -314,7 +326,9 @@ function Swap(): ReactElement {
           amountToReceive = await bridgeContract.calcTokenToSynth(
             originPool.metaSwapDepositAddress,
             formStateArg.from.tokenIndex,
-            utils.formatBytes32String(formStateArg.to.symbol),
+            utils.formatBytes32String(
+              tokens[formStateArg.to.address]?.symbol ?? "",
+            ),
             amountToGive,
           )
         }
@@ -332,14 +346,18 @@ function Swap(): ReactElement {
         snxEchangeRatesContract != null
       ) {
         amountToReceive = await snxEchangeRatesContract.effectiveValue(
-          utils.formatBytes32String(formStateArg.from.symbol),
+          utils.formatBytes32String(
+            tokens[formStateArg.from.address]?.symbol ?? "",
+          ),
           amountToGive,
-          utils.formatBytes32String(formStateArg.to.symbol),
+          utils.formatBytes32String(
+            tokens[formStateArg.to.address]?.symbol ?? "",
+          ),
         )
       }
       const toValueUSD = calculatePrice(
         amountToReceive,
-        tokenPricesUSD?.[tokenTo.symbol],
+        tokenPricesUSD?.[tokens[tokenTo.address]?.symbol ?? ""],
         tokenTo.decimals,
       )
       const priceImpact = calculatePriceImpact(
@@ -383,6 +401,7 @@ function Swap(): ReactElement {
   }, [prevFormState, formState, calculateSwapAmount])
 
   function handleUpdateAmountFrom(value: string): void {
+    if (!tokens) return
     setFormState((prevState) => {
       const nextState = {
         ...prevState,
@@ -396,7 +415,7 @@ function Swap(): ReactElement {
           value,
           valueUSD: calculatePrice(
             value,
-            tokenPricesUSD?.[prevState.from.symbol],
+            tokenPricesUSD?.[tokens[prevState.from.address]?.symbol ?? ""],
           ),
         },
         priceImpact: Zero,
@@ -407,15 +426,17 @@ function Swap(): ReactElement {
   }
   function handleReverseExchangeDirection(): void {
     setFormState((prevState) => {
-      const swapPairs = calculateSwapPairs(
-        tokenSymbolToTokenMap[prevState.to.symbol],
-      )
+      if (!tokens) return EMPTY_FORM_STATE
+      const swapPairs = calculateSwapPairs(tokens[prevState.to.address])
       const activeSwapPair = swapPairs.find(
-        (pair) => pair.to.symbol === prevState.from.symbol,
+        (pair) =>
+          tokens[pair.to.address]?.symbol ===
+          tokens[prevState.from.address]?.symbol,
       )
       const nextState = {
         error: null,
         from: {
+          address: prevState.to.address,
           symbol: prevState.to.symbol,
           value: prevState.from.value,
           valueUSD: calculatePrice(
@@ -426,6 +447,7 @@ function Swap(): ReactElement {
           tokenIndex: activeSwapPair?.from.tokenIndex,
         },
         to: {
+          address: prevState.from.address,
           symbol: prevState.from.symbol,
           value: Zero,
           valueUSD: Zero,
@@ -442,12 +464,14 @@ function Swap(): ReactElement {
       return nextState
     })
   }
-  function handleUpdateTokenFrom(symbol: string): void {
-    if (symbol === formState.to.symbol) return handleReverseExchangeDirection()
+  function handleUpdateTokenFrom(address: string): void {
+    if (!tokens || !tokenPricesUSD || !tokens[address]) return
+    if (address === formState.to.address)
+      return handleReverseExchangeDirection()
     setFormState((prevState) => {
-      const swapPairs = calculateSwapPairs(tokenSymbolToTokenMap[symbol])
+      const swapPairs = calculateSwapPairs(tokens[address])
       const activeSwapPair = swapPairs.find(
-        (pair) => pair.to.symbol === prevState.to.symbol,
+        (pair) => pair.to.address === prevState.to.address,
       )
       const isValidSwap =
         IS_VIRTUAL_SWAP_ACTIVE && activeSwapPair
@@ -458,10 +482,11 @@ function Swap(): ReactElement {
         error: null,
         from: {
           ...prevState.from,
-          symbol,
+          symbol: tokens[address]?.symbol ?? "",
+          address,
           valueUSD: calculatePrice(
             prevState.from.value,
-            tokenPricesUSD?.[symbol],
+            tokenPricesUSD[tokens[address]?.symbol ?? ""],
           ),
           poolName: activeSwapPair?.from.poolName,
           tokenIndex: activeSwapPair?.from.tokenIndex,
@@ -471,7 +496,7 @@ function Swap(): ReactElement {
           value: Zero,
           valueSynth: Zero,
           valueUSD: Zero,
-          symbol: isValidSwap ? prevState.to.symbol : "",
+          symbol: isValidSwap ? tokens[prevState.to.address]?.symbol ?? "" : "",
           poolName: isValidSwap ? activeSwapPair?.to.poolName : undefined,
           tokenIndex: isValidSwap ? activeSwapPair?.to.tokenIndex : undefined,
         },
@@ -485,12 +510,13 @@ function Swap(): ReactElement {
     })
   }
 
-  function handleUpdateTokenTo(symbol: string): void {
-    if (symbol === formState.from.symbol)
+  function handleUpdateTokenTo(address: string): void {
+    if (!tokens?.[address]) return
+    if (address === formState.from.address)
       return handleReverseExchangeDirection()
     setFormState((prevState) => {
       const activeSwapPair = prevState.currentSwapPairs.find(
-        (pair) => pair.to.symbol === symbol,
+        (pair) => pair.to.address === address,
       )
       const nextState = {
         ...prevState,
@@ -503,7 +529,8 @@ function Swap(): ReactElement {
           ...prevState.to,
           value: Zero,
           valueSynth: Zero,
-          symbol,
+          symbol: tokens[address]?.symbol ?? "",
+          address,
           valueUSD: Zero,
           poolName: activeSwapPair?.to.poolName,
           tokenIndex: activeSwapPair?.to.tokenIndex,
@@ -518,7 +545,8 @@ function Swap(): ReactElement {
   }
 
   async function handleConfirmTransaction(): Promise<void> {
-    const fromToken = tokenSymbolToTokenMap[formState.from.symbol]
+    if (!tokens) return
+    const fromToken = tokens[formState.from.address]
     if (
       formState.swapType === SWAP_TYPES.INVALID ||
       formState.from.tokenIndex === undefined ||
@@ -612,11 +640,11 @@ function Swap(): ReactElement {
       toState={{
         ...formState.to,
         value:
-          formState.to.symbol === ""
+          formState.to.address === ""
             ? "0"
             : formatUnits(
                 formState.to.value,
-                tokenSymbolToTokenMap[formState.to.symbol]?.decimals,
+                tokens?.[formState.to.address]?.decimals,
               ),
       }}
       swapType={formState.swapType}
