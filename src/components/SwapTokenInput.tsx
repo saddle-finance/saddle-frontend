@@ -200,7 +200,7 @@ export default function SwapTokenInput({
                     startAdornment: <Search />,
                   }}
                   inputProps={params.inputProps}
-                  placeholder="Search name"
+                  placeholder="Search name, symbol, or address"
                   autoFocus
                 />
               )}
