@@ -62,11 +62,8 @@ export default function SwapTokenInput({
     options: TokenOption[],
     { inputValue }: { inputValue: string },
   ) =>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
     matchSorter(options, inputValue, {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       sorter: (rankedItems) => rankedItems,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       threshold: matchSorter.rankings.WORD_STARTS_WITH,
       keys: ["symbol", "address", "name"],
     })
