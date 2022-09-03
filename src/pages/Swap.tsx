@@ -101,7 +101,7 @@ function Swap(): ReactElement {
   const tokenBalances = usePoolTokenBalances()
   const basicPools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
-  const { tokenSymbolToTokenMap, tokenSymbolToPoolNameMap } = useTokenMaps()
+  const { tokenSymbolToPoolNameMap } = useTokenMaps()
   const bridgeContract = useBridgeContract()
   const snxEchangeRatesContract = useSynthetixExchangeRatesContract()
   const calculateSwapPairs = useCalculateSwapPairs()
@@ -129,7 +129,7 @@ function Swap(): ReactElement {
 
   // build a representation of pool tokens for the UI
   const tokenOptions = useMemo(() => {
-    if (!chainId || !tokenBalances)
+    if (!chainId || !tokenBalances || !tokens)
       return {
         from: [],
         to: [],
@@ -137,10 +137,12 @@ function Swap(): ReactElement {
 
     const allTokens = Object.values(tokens || {})
       .filter(({ isLPToken }) => !isLPToken)
-      .filter(({ symbol }) => {
+      .filter(({ address }) => {
         // get list of pools containing the token
-        if (!tokenSymbolToPoolNameMap[symbol]) return false
-        const tokenPools = tokenSymbolToPoolNameMap[symbol]
+        if (!tokenSymbolToPoolNameMap[tokens[address]?.symbol ?? ""])
+          return false
+        const tokenPools =
+          tokenSymbolToPoolNameMap[tokens[address]?.symbol ?? ""]
         // ensure at least one pool is unpaused to include token in swappable list
         const hasAnyUnpaused = tokenPools.some((poolName) => {
           if (!basicPools) return false
@@ -177,7 +179,7 @@ function Swap(): ReactElement {
         ? (
             formState.currentSwapPairs
               .map(({ to, type: swapType }) => {
-                if (!tokenSymbolToTokenMap[to.symbol]) {
+                if (!tokens[to.address]?.symbol) {
                   console.log("unknown symbol", { to, swapType })
                   return null
                 }
@@ -214,7 +216,6 @@ function Swap(): ReactElement {
   }, [
     tokenSymbolToPoolNameMap,
     tokens,
-    tokenSymbolToTokenMap,
     tokenPricesUSD,
     tokenBalances,
     formState.currentSwapPairs,
