@@ -16,6 +16,7 @@ import React, { ReactElement, useMemo } from "react"
 import { formatBNToPercentString, formatBNToShortString } from "../utils"
 import usePoolData, { PoolDataType } from "../hooks/usePoolData"
 
+import { CheckCircleOutline } from "@mui/icons-material"
 import GaugeRewardsDisplay from "./GaugeRewardsDisplay"
 import TokenIcon from "./TokenIcon"
 import { Zero } from "@ethersproject/constants"
@@ -136,12 +137,15 @@ export default function PoolOverview({
         <Grid item xs={12} lg={2.5}>
           <Stack spacing={1} direction={{ xs: "row", lg: "column" }}>
             {poolData.tokens.length > 0 ? (
-              poolData.tokens.map(({ symbol }) => (
+              poolData.tokens.map(({ symbol, isOnTokenLists }) => (
                 <Box display="flex" alignItems="center" key={symbol}>
                   <TokenIcon alt="icon" symbol={symbol} width="24px" />
                   <Typography marginLeft={1} sx={{ wordBreak: "break-all" }}>
                     {symbol}
                   </Typography>
+                  {isOnTokenLists && (
+                    <CheckCircleOutline sx={{ marginLeft: 0.5, width: 15 }} />
+                  )}
                 </Box>
               ))
             ) : (

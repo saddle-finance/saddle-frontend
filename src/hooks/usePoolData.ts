@@ -19,6 +19,7 @@ import { useActiveWeb3React } from "."
 import { useSelector } from "react-redux"
 
 interface TokenShareType {
+  isOnTokenLists: boolean
   symbol: string
   value: BigNumber
   decimals: number
@@ -221,6 +222,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
           userPoolTokenBalancesUSD.reduce(bnSum)
 
         const poolTokens = expandedPool.tokens.map((token, i) => ({
+          isOnTokenLists: token.isOnTokenLists,
           symbol: token.symbol,
           name: token.name,
           decimals: token.decimals,
@@ -229,6 +231,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
         }))
         const underlyingPoolTokens =
           expandedPool.underlyingTokens?.map((token, i) => ({
+            isOnTokenLists: token.isOnTokenLists,
             symbol: token.symbol,
             name: token.name,
             decimals: token.decimals,
@@ -236,6 +239,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
             address: token.address,
           })) || []
         const userPoolTokens = expandedPool.tokens.map((token, i) => ({
+          isOnTokenLists: token.isOnTokenLists,
           symbol: token.symbol,
           name: token.name,
           decimals: token.decimals,
