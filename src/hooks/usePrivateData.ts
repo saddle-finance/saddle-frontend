@@ -182,8 +182,27 @@ export default function usePrivateData() {
         ],
         ...Object.keys(newData)
           .sort((a, b) => {
+            // Sort by max User SDL per day, then min pool dollars per SDL, then max pool TVL
             const [infoA, infoB] = [newData[a], newData[b]]
-            return infoB.current.userDailySDL - infoA.current.userDailySDL
+            const userDailySDLDiff =
+              infoB.current.userDailySDL - infoA.current.userDailySDL
+            const poolDollarsPerSDLDiff =
+              infoA.current.dollarsPerSDL - infoB.current.dollarsPerSDL
+
+            if (userDailySDLDiff !== 0) {
+              return userDailySDLDiff
+            }
+            if (infoA.current.dollarsPerSDL && !infoB.current.dollarsPerSDL) {
+              return -1
+            } else if (
+              infoB.current.dollarsPerSDL &&
+              !infoA.current.dollarsPerSDL
+            ) {
+              return 1
+            } else {
+              return poolDollarsPerSDLDiff
+            }
+            return infoB.tvl - infoA.tvl
           })
           .map((gaugeName) => {
             const info = newData[gaugeName]
