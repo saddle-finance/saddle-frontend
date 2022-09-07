@@ -65,10 +65,10 @@ export default function OnChainVote({
   const gaugeNames = useMemo(() => {
     const gaugeNameObj = {} as GaugeName
     Object.keys(gauges)
-      .filter((lpAddress) => !gauges[lpAddress]?.isKilled)
-      .forEach((lpAddress) => {
-        const gaugeName = gauges[lpAddress]?.gaugeName
-        const gaugeAddress = gauges[lpAddress]?.address.toLowerCase()
+      .filter((lpTokenAddress) => !gauges[lpTokenAddress]?.isKilled)
+      .forEach((lpTokenAddress) => {
+        const gaugeName = gauges[lpTokenAddress]?.gaugeName
+        const gaugeAddress = gauges[lpTokenAddress]?.address.toLowerCase()
         if (gaugeName && gaugeAddress)
           gaugeNameObj[gaugeAddress] = {
             address: gaugeAddress,
