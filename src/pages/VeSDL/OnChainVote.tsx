@@ -49,7 +49,7 @@ export default function OnChainVote({
   gaugeControllerContract,
 }: OnChainVoteProps) {
   const theme = useTheme()
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
   const [selectedGauge, setSelectedGauge] = useState<{
     gaugeName: string
@@ -110,7 +110,7 @@ export default function OnChainVote({
   )
 
   const handleVote = async () => {
-    if (voteWeightToSubmit && isNumberOrEmpty(voteWeightToSubmit)) {
+    if (voteWeightToSubmit && isNumberOrEmpty(voteWeightToSubmit) && chainId) {
       try {
         if (veSdlBalance.isZero()) {
           setAlertMessage("You need veSDL to vote")
@@ -119,7 +119,7 @@ export default function OnChainVote({
             selectedGauge.address,
             Math.round(parseFloat(voteWeightToSubmit) * 100), //convert percent to bps
           )
-          await enqueuePromiseToast(1, txn.wait(), "vote")
+          await enqueuePromiseToast(chainId, txn.wait(), "vote")
           setSelectedGauge(null) // Initialize selectedGauge
           setVoteWeightToSubmit("") // Initialize vote weight input
         }
