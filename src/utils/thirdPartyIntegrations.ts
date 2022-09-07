@@ -1,5 +1,6 @@
 import {
   ALETH_POOL_NAME,
+  ARB_FRAX_USDS_METAPOOL_NAME,
   ChainId,
   D4_POOL_NAME,
   MINICHEF_CONTRACT_ADDRESSES,
@@ -98,6 +99,18 @@ export async function getThirdPartyDataForPool(
         lpTokenPriceUSD,
         tokenPricesUSD?.[rewardSymbol],
         lpTokenAddress,
+        poolName,
+      )
+      result.aprs.sperax = { apr, symbol: rewardSymbol }
+      result.amountsStaked.sperax = userStakedAmount
+    } else if (poolName === ARB_FRAX_USDS_METAPOOL_NAME) {
+      const rewardSymbol = "SPA"
+      const [apr, userStakedAmount] = await getSperaxData(
+        library,
+        chainId,
+        lpTokenPriceUSD,
+        tokenPricesUSD?.[rewardSymbol],
+        lpTokenAddress,
       )
       result.aprs.sperax = { apr, symbol: rewardSymbol }
       result.amountsStaked.sperax = userStakedAmount
@@ -174,6 +187,7 @@ async function getSperaxData(
   spaPrice = 0,
   lpTokenAddress: string,
   accountId?: string | null,
+  poolName?: string,
 ): Promise<[BigNumber, BigNumber]> {
   if (
     library == null ||
@@ -182,8 +196,12 @@ async function getSperaxData(
     chainId !== ChainId.ARBITRUM
   )
     return [Zero, Zero]
+  const rewardContractAddr =
+    poolName === USDS_ARB_USD_METAPOOL_NAME
+      ? "0x1e35ebF875f8A2185EDf22da02e7dBCa0F5558aB"
+      : "0x492ebe7816b6934cc55f3001e1ac165a6c5afab0"
   const rewardsContract = getContract(
-    "0x1e35ebF875f8A2185EDf22da02e7dBCa0F5558aB", // prod address on arbitrum
+    rewardContractAddr, // prod address on arbitrum
     IREWARDER_ABI,
     library,
   ) as IRewarder
