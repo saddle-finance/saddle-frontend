@@ -91,7 +91,8 @@ const DepositPage = (props: Props): ReactElement => {
     useState<LiquidityGaugeV5 | null>(null)
   const lpTokenContract = useLPTokenContract(poolData?.name ?? "")
   const validDepositAmount = transactionData?.to.totalAmount.gt(0)
-  const shouldDisplayWrappedOption = isMetaPool(poolData?.name)
+  const shouldDisplayWrappedOption =
+    isMetaPool(poolData?.name) || poolData?.isMetaSwap
   const theme = useTheme()
   const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
   const { gauges } = useContext(GaugeContext)
