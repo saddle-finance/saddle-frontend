@@ -78,11 +78,11 @@ export default function OnChainVote({
     return gaugeNameObj
   }, [gauges])
 
-  const getVoteUsed = async () => {
+  const getVoteUsed = () => {
     if (!account) return
     return gaugeControllerContract["vote_user_power(address)"](account)
   }
-  const getFilteredVotes = async () => {
+  const getFilteredVotes = () => {
     const voteFilter = gaugeControllerContract.filters.VoteForGauge(
       null,
       null,
