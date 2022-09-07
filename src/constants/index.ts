@@ -1729,7 +1729,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "frax-arbusdv2",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.ARBITRUM]: 7 }),
   },
   [SUSD_METAPOOL_V2_NAME]: {
     name: SUSD_METAPOOL_V2_NAME,
@@ -1919,7 +1919,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "fraxusdc",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.ARBITRUM]: 3 }),
   },
   [FRAX_USDT_METAPOOL_NAME]: {
     name: FRAX_USDT_METAPOOL_NAME,
@@ -1932,7 +1932,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: FRAX_USDT_UNDERLYING_POOL_TOKENS,
     underlyingPool: FRAX_USDC_POOL_NAME,
     route: "fraxusdtmeta",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.ARBITRUM]: 4 }),
   },
   [FRAX_SUSD_METAPOOL_NAME]: {
     name: FRAX_SUSD_METAPOOL_NAME,
@@ -1971,7 +1971,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: ARB_FRAX_USDS_UNDERLYING_POOL_TOKENS,
     underlyingPool: FRAX_USDC_POOL_NAME,
     route: "fraxusdsmeta",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.ARBITRUM]: 5 }),
   },
   [FTM_FRAX_USDT_METAPOOL_NAME]: {
     name: FTM_FRAX_USDT_METAPOOL_NAME,
@@ -2049,6 +2049,9 @@ const minichefPids: Partial<Record<ChainId, { [pool: string]: number }>> = {
       ChainId.ARBITRUM
     ].toLowerCase()]: 4,
     [ARB_FRAX_USDS_METAPOOL_SWAP_CONTRACT_ADDRESSES[
+      ChainId.ARBITRUM
+    ].toLowerCase()]: 5,
+    [ARB_FRAX_USDS_METAPOOL_DEPOSIT_CONTRACT_ADDRESSES[
       ChainId.ARBITRUM
     ].toLowerCase()]: 5,
     [FRAX_ARB_USD_SWAP_V2_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 7,
