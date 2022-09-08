@@ -166,6 +166,7 @@ export default function usePrivateData() {
           "Name",
           "TVL",
           "Curr. $LP per SDL",
+          "Fut. $LP per SDL",
           "User Share %",
           "User Boost",
           "Curr. User SDL",
@@ -173,6 +174,7 @@ export default function usePrivateData() {
         ],
         [
           "Total",
+          null,
           null,
           null,
           null,
@@ -202,7 +204,6 @@ export default function usePrivateData() {
             } else {
               return poolDollarsPerSDLDiff
             }
-            return infoB.tvl - infoA.tvl
           })
           .map((gaugeName) => {
             const info = newData[gaugeName]
@@ -210,6 +211,7 @@ export default function usePrivateData() {
               gaugeName,
               commify(info.tvl.toFixed(0)),
               commify(info.current.dollarsPerSDL.toFixed(2)),
+              commify(info.future.dollarsPerSDL.toFixed(2)),
               `${(info.userShare * 100).toFixed(2)}%`,
               info.userBoost,
               commify(info.current.userDailySDL.toFixed(0)),
@@ -351,7 +353,6 @@ async function getSnapshotVoteData(): Promise<Record<string, number>> {
           skip: 0,
           where: {
             space_in: ["saddlefinance.eth"],
-            state: "closed",
             title_contains: "Gauge reward allocation"
           },
           orderBy: "created",
