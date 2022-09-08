@@ -1,11 +1,9 @@
 import {
   ALETH_POOL_NAME,
-  ARB_FRAX_USDS_METAPOOL_NAME,
   ChainId,
   D4_POOL_NAME,
   MINICHEF_CONTRACT_ADDRESSES,
   TBTC_METAPOOL_V2_NAME,
-  USDS_ARB_USD_METAPOOL_NAME,
 } from "../constants"
 import { AddressZero, Zero } from "@ethersproject/constants"
 import { getContract, getMulticallProvider, shiftBNDecimals } from "../utils"
@@ -91,10 +89,7 @@ export async function getThirdPartyDataForPool(
       )
       result.aprs.frax = { apr, symbol: rewardSymbol }
       result.amountsStaked.frax = userStakedAmount
-    } else if (
-      poolName === USDS_ARB_USD_METAPOOL_NAME ||
-      poolName === ARB_FRAX_USDS_METAPOOL_NAME
-    ) {
+    } else if (poolName === "USDS-ArbUSDV2" || poolName === "FRAXBP-USDs") {
       const rewardSymbol = "SPA"
       const [apr, userStakedAmount] = await getSperaxData(
         library,
@@ -103,6 +98,7 @@ export async function getThirdPartyDataForPool(
         tokenPricesUSD?.[rewardSymbol],
         lpTokenAddress,
         poolName,
+        accountId,
       )
       result.aprs.sperax = { apr, symbol: rewardSymbol }
       result.amountsStaked.sperax = userStakedAmount
@@ -178,8 +174,8 @@ async function getSperaxData(
   lpTokenPrice: BigNumber,
   spaPrice = 0,
   lpTokenAddress: string,
+  poolName: string,
   accountId?: string | null,
-  poolName?: string,
 ): Promise<[BigNumber, BigNumber]> {
   if (
     library == null ||
@@ -193,7 +189,7 @@ async function getSperaxData(
   const usdsArbUsdRewarderContractAddr =
     "0x1e35ebF875f8A2185EDf22da02e7dBCa0F5558aB"
   const rewardContractAddr =
-    poolName === USDS_ARB_USD_METAPOOL_NAME
+    poolName === "USDS-ArbUSDV2"
       ? usdsArbUsdRewarderContractAddr
       : arbFraxUsdsRewarderContractAddr
   const rewardsContract = getContract(
