@@ -719,7 +719,7 @@ export const GAUGE_CONTROLLER_ADDRESSES = buildAddresses({
 })
 
 export const ROOT_GAUGE_FACTORY_CONTRACT_ADDRESSES = buildAddresses({
-  [ChainId.HARDHAT]: "0x26B862f640357268Bd2d9E95bc81553a2Aa81D7E",
+  [ChainId.HARDHAT]: "0x359570B3a0437805D0a71457D61AD26a28cAC9A2",
 })
 
 export const SPA = new Token(

@@ -8,6 +8,7 @@ import Highcharts from "highcharts"
 import HighchartsExporting from "highcharts/modules/exporting"
 import HighchartsReact from "highcharts-react-official"
 import PieChart from "highcharts-react-official"
+import { SidechainGaugeContext } from "../providers/SidechainGaugeProvider"
 
 export type GaugeWeightData = {
   displayName: string
@@ -19,6 +20,7 @@ function GaugeWeight({ ...props }: HighchartsReact.Props): JSX.Element {
   const chartComponentRef = useRef<HighchartsReact.RefObject>(null)
   const basicPools = useContext(BasicPoolsContext)
   const { gauges } = useContext(GaugeContext)
+  const { gauges: sidechainGauges } = useContext(SidechainGaugeContext)
   const theme = useTheme()
 
   const gaugesInfo = Object.values(gauges)
@@ -34,7 +36,17 @@ function GaugeWeight({ ...props }: HighchartsReact.Props): JSX.Element {
     })
     .filter(Boolean) as GaugeWeightData[]
 
-  const data = gaugesInfo.map((g) => {
+  const sidechainGaugesInfo = sidechainGauges
+    .map(({ gaugeName: displayName, gaugeRelativeWeight, isKilled }) => {
+      if (isKilled) return
+      return {
+        displayName,
+        gaugeRelativeWeight,
+      }
+    })
+    .filter(Boolean) as GaugeWeightData[]
+
+  const data = gaugesInfo.concat(sidechainGaugesInfo).map((g) => {
     return {
       name: g.displayName,
       y: g.gaugeRelativeWeight.div(BigNumber.from(10).pow(14)).toNumber(),

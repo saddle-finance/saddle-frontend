@@ -75,7 +75,7 @@ import { useActiveWeb3React } from "./index"
 export const POOL_REGISTRY_NAME = formatBytes32String("PoolRegistry")
 export const GAUGE_FACTORY_NAME = formatBytes32String("GaugeFactory")
 // returns null on errors
-function useContract(
+export function useContract(
   address: string | undefined,
   ABI: ContractInterface,
   withSignerIfPossible = true,

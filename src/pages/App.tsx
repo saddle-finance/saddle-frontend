@@ -18,6 +18,7 @@ import Pages from "./Pages"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
+import SidechainGaugeProvider from "../providers/SidechainGaugeProvider"
 import { ToastContainer } from "react-toastify"
 import TokensProvider from "../providers/TokensProvider"
 import TopMenu from "../components/TopMenu"
@@ -76,38 +77,42 @@ export default function App(): ReactElement {
         <BasicPoolsProvider>
           <MinichefProvider>
             <GaugeProvider>
-              <TokensProvider>
-                <ExpandedPoolsProvider>
-                  <UserStateProvider>
-                    <PricesAndVoteData>
-                      <PendingSwapsProvider>
-                        <AprsProvider>
-                          <RewardsBalancesProvider>
-                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                              <AppContainer>
-                                <TopMenu />
-                                <Suspense fallback={null}>
-                                  <Pages />
-                                </Suspense>
-                                <WrongNetworkModal />
-                                <Version />
-                                <ToastContainer
-                                  theme={
-                                    theme.palette.mode === "dark"
-                                      ? "dark"
-                                      : "light"
-                                  }
-                                  position="top-left"
-                                />
-                              </AppContainer>
-                            </LocalizationProvider>
-                          </RewardsBalancesProvider>
-                        </AprsProvider>
-                      </PendingSwapsProvider>
-                    </PricesAndVoteData>
-                  </UserStateProvider>
-                </ExpandedPoolsProvider>
-              </TokensProvider>
+              <SidechainGaugeProvider>
+                <TokensProvider>
+                  <ExpandedPoolsProvider>
+                    <UserStateProvider>
+                      <PricesAndVoteData>
+                        <PendingSwapsProvider>
+                          <AprsProvider>
+                            <RewardsBalancesProvider>
+                              <LocalizationProvider
+                                dateAdapter={AdapterDateFns}
+                              >
+                                <AppContainer>
+                                  <TopMenu />
+                                  <Suspense fallback={null}>
+                                    <Pages />
+                                  </Suspense>
+                                  <WrongNetworkModal />
+                                  <Version />
+                                  <ToastContainer
+                                    theme={
+                                      theme.palette.mode === "dark"
+                                        ? "dark"
+                                        : "light"
+                                    }
+                                    position="top-left"
+                                  />
+                                </AppContainer>
+                              </LocalizationProvider>
+                            </RewardsBalancesProvider>
+                          </AprsProvider>
+                        </PendingSwapsProvider>
+                      </PricesAndVoteData>
+                    </UserStateProvider>
+                  </ExpandedPoolsProvider>
+                </TokensProvider>
+              </SidechainGaugeProvider>
             </GaugeProvider>
           </MinichefProvider>
         </BasicPoolsProvider>
