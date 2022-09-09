@@ -18,13 +18,18 @@ export default function MinichefProvider({
         setRewardsData(null)
         return
       }
-      const poolAddresses = Object.values(pools || {}).map(
-        ({ poolAddress }) => poolAddress,
+      const poolsData = Object.values(pools || {}).map(
+        ({ poolAddress, lpToken, miniChefRewardsPid, lpTokenSupply }) => ({
+          poolAddress,
+          lpToken,
+          miniChefRewardsPid,
+          lpTokenSupply,
+        }),
       )
       const rewardsData = await getMinichefRewardsPoolsData(
         library,
         chainId,
-        poolAddresses,
+        poolsData,
       )
       setRewardsData(rewardsData)
     }

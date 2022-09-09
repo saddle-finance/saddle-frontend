@@ -1,4 +1,3 @@
-import { BasicToken, useBasicTokens } from "./useBasicTokens"
 import {
   TRANSACTION_TYPES,
   isGuardedPool,
@@ -12,6 +11,7 @@ import { useLPTokenContract, useSwapContract } from "./useContract"
 
 import { AppState } from "../state"
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
+import { BasicToken } from "./useBasicTokens"
 import { BigNumber } from "@ethersproject/bignumber"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
@@ -23,6 +23,7 @@ import { NumberInputState } from "../utils/numberInputState"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
+import { TokensContext } from "../providers/TokensProvider"
 import { Zero } from "@ethersproject/constants"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { parseUnits } from "@ethersproject/units"
@@ -57,7 +58,7 @@ export function useApproveAndDeposit(
     infiniteApproval,
   } = useSelector((state: AppState) => state.user)
   const basicPools = useContext(BasicPoolsContext)
-  const { data: tokens } = useBasicTokens()
+  const tokens = useContext(TokensContext)
   const pool = basicPools?.[poolName]
   const metaSwapContract = useMemo(() => {
     if (pool?.poolAddress && chainId && library) {
