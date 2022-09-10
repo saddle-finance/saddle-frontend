@@ -9,12 +9,14 @@ import {
 import { AbstractConnector } from "@web3-react/abstract-connector"
 import { BasicToken } from "../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
+import { ChainId } from "./networks"
 import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
 import metamaskIcon from "../assets/icons/metamask.svg"
 import tallyIcon from "../assets/icons/tally.svg"
 import unstoppableDomainsLogo from "../assets/icons/unstoppableDomainsLogo.png"
 import walletconnectIcon from "../assets/icons/walletconnect.svg"
 
+export { ChainId } from "./networks"
 export const NetworkContextName = "NETWORK"
 export const BTC_POOL_NAME = "BTC"
 export const BTC_POOL_V2_NAME = "BTC V2"
@@ -97,21 +99,6 @@ export type PoolName =
   | typeof FTM_FRAX_ALUSD_METAPOOL_NAME
   | typeof USDC_USX_POOL_NAME
 
-export enum ChainId {
-  MAINNET = 1,
-  ROPSTEN = 3,
-  // RINKEBY = 4,
-  // GÖRLI = 5,
-  // KOVAN = 42,
-  HARDHAT = 31337,
-  ARBITRUM = 42161,
-  OPTIMISM = 10,
-  FANTOM = 250,
-  EVMOS = 9001,
-  EVMOS_TESTNET = 9000,
-  KAVA_TESTNET = 2221,
-  KAVA = 2222,
-}
 export enum PoolTypes {
   BTC,
   ETH,

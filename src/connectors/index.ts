@@ -1,8 +1,8 @@
 import { BaseProvider, getDefaultProvider } from "@ethersproject/providers"
+import { SUPPORTED_NETWORKS, SupportedNetwork } from "../constants/networks"
 
 import { InjectedConnector } from "@web3-react/injected-connector"
 import { NetworkConnector } from "@web3-react/network-connector"
-import { SUPPORTED_NETWORKS } from "../constants/networks"
 import { UAuthConnector } from "@uauth/web3-react"
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
 import { WalletLinkConnector } from "@web3-react/walletlink-connector"
@@ -51,11 +51,14 @@ export const injectedMetaMaskProvider = createInjectedMetaMaskProvider()
 export const injectedTallyProvider = createInjectedTallyProvider()
 
 export const walletconnect = new WalletConnectConnector({
-  rpc: Object.values(SUPPORTED_NETWORKS).reduce(
-    (acc, { rpcUrls, chainId }) => ({ ...acc, [chainId]: rpcUrls[0] }),
-  ),
+  // rpc: { [NETWORK_CHAIN_ID]: NETWORK_URL },
+  rpc: Object.keys(SUPPORTED_NETWORKS).reduce((acc, chainId) => {
+    const { rpcUrls } = SUPPORTED_NETWORKS[chainId] as SupportedNetwork
+    return { ...acc, [chainId]: rpcUrls[0] }
+  }, {}),
   bridge: "https://bridge.walletconnect.org",
   qrcode: true,
+  supportedChainIds: Object.keys(SUPPORTED_NETWORKS),
   // chainId: NETWORK_CHAIN_ID,
   // pollingInterval: POLLING_INTERVAL / 12000
 })

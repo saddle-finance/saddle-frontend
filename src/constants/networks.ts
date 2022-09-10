@@ -1,5 +1,20 @@
-import { ChainId } from "./index"
 import { hexlify } from "@ethersproject/bytes"
+
+export enum ChainId {
+  MAINNET = 1,
+  ROPSTEN = 3,
+  // RINKEBY = 4,
+  // GÖRLI = 5,
+  // KOVAN = 42,
+  HARDHAT = 31337,
+  ARBITRUM = 42161,
+  OPTIMISM = 10,
+  FANTOM = 250,
+  EVMOS = 9001,
+  EVMOS_TESTNET = 9000,
+  KAVA_TESTNET = 2221,
+  KAVA = 2222,
+}
 
 export const NETWORK_LABEL: Partial<Record<ChainId, string>> = {
   [ChainId.MAINNET]: "Ethereum",
