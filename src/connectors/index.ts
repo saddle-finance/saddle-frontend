@@ -2,6 +2,7 @@ import { BaseProvider, getDefaultProvider } from "@ethersproject/providers"
 
 import { InjectedConnector } from "@web3-react/injected-connector"
 import { NetworkConnector } from "@web3-react/network-connector"
+import { SUPPORTED_NETWORKS } from "../constants/networks"
 import { UAuthConnector } from "@uauth/web3-react"
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
 import { WalletLinkConnector } from "@web3-react/walletlink-connector"
@@ -50,7 +51,9 @@ export const injectedMetaMaskProvider = createInjectedMetaMaskProvider()
 export const injectedTallyProvider = createInjectedTallyProvider()
 
 export const walletconnect = new WalletConnectConnector({
-  rpc: { [NETWORK_CHAIN_ID]: NETWORK_URL },
+  rpc: Object.values(SUPPORTED_NETWORKS).reduce(
+    (acc, { rpcUrls, chainId }) => ({ ...acc, [chainId]: rpcUrls[0] }),
+  ),
   bridge: "https://bridge.walletconnect.org",
   qrcode: true,
   // chainId: NETWORK_CHAIN_ID,
