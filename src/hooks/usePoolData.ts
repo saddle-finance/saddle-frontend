@@ -60,6 +60,7 @@ export interface PoolDataType {
   lpToken: string
   isMigrated: boolean
   isGuarded: boolean
+  isSaddleApproved: boolean
   isMetaSwap: boolean
   poolType: PoolTypes
 }
@@ -106,6 +107,7 @@ const emptyPoolData = {
   sdlPerDay: null,
   isGuarded: false,
   isMetaSwap: false,
+  isSaddleApproved: false,
   poolType: PoolTypes.OTHER,
 } as PoolDataType
 
@@ -266,6 +268,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
           isMigrated: expandedPool.isMigrated,
           isMetaSwap: expandedPool.isMetaSwap,
           isGuarded: expandedPool.isGuarded,
+          isSaddleApproved: expandedPool.isSaddleApproved,
           lpToken: expandedPool.lpToken.address, // will be address, was symbol
           poolType: expandedPool.typeOfAsset,
           poolAddress: expandedPool.poolAddress,

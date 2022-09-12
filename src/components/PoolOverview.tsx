@@ -73,10 +73,12 @@ export default function PoolOverview({
       return <span>OUTDATED</span>
     } else if (poolData.isPaused) {
       return <span>PAUSED</span>
+    } else if (!poolData.isSaddleApproved) {
+      return <span>COMMUNITY</span>
     } else {
       return null
     }
-  }, [poolData.isGuarded, shouldMigrate, poolData.isPaused])
+  }, [shouldMigrate, poolData])
 
   return (
     <Paper
@@ -118,7 +120,11 @@ export default function PoolOverview({
                   size="small"
                   label={chipLabel}
                   color={
-                    poolData.isGuarded || shouldMigrate ? "secondary" : "error"
+                    poolData.isGuarded || shouldMigrate
+                      ? "secondary"
+                      : !poolData.isSaddleApproved
+                      ? "info"
+                      : "error"
                   }
                 />
               )}

@@ -1,4 +1,4 @@
-import { Box, Divider, Link, Typography, styled } from "@mui/material"
+import { Box, Chip, Divider, Link, Typography, styled } from "@mui/material"
 import { POOL_FEE_PRECISION, PoolTypes } from "../constants"
 import React, { ReactElement, useContext } from "react"
 import {
@@ -112,9 +112,19 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
           </Typography>
         </Tooltip>
       ) : (
-        <Typography component="span" variant="h1" mr={2}>
-          {formattedData.name}
-        </Typography>
+        <Box display="flex">
+          <Typography component="span" variant="h1" mr={1}>
+            {formattedData.name}
+          </Typography>
+          {!data.isSaddleApproved && (
+            <Chip
+              variant="filled"
+              size="small"
+              color="info"
+              label="Community"
+            />
+          )}
+        </Box>
       )}
       <InfoItem mt={3}>
         <Typography>{`${t("status")}:`}</Typography>
