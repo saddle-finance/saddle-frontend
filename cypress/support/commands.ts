@@ -1,7 +1,7 @@
+import { Eip1193Bridge } from "@ethersproject/experimental/lib/eip1193-bridge"
 /* eslint-disable */
 import { JsonRpcProvider } from "@ethersproject/providers"
 import { Wallet } from "@ethersproject/wallet"
-import { _Eip1193Bridge } from "@ethersproject/experimental/lib/eip1193-bridge"
 
 declare global {
   namespace Cypress {
@@ -47,7 +47,7 @@ Cypress.Commands.add("getBySelLike", getBySelLike)
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-class CustomizedBridge extends _Eip1193Bridge {
+class CustomizedBridge extends Eip1193Bridge {
   async sendAsync(...args) {
     return this.send(...args)
   }
@@ -65,7 +65,7 @@ class CustomizedBridge extends _Eip1193Bridge {
       method = args[0]
       params = args[1]
     }
-    console.log(`method: ${method}`)
+    // console.log(`method: ${method}`)
     function wrapResponse(result, error = null) {
       if (result == null && result == null) {
         error = new Error(`Something went wrong on result, result is${result}`)
