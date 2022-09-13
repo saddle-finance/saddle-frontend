@@ -12,6 +12,7 @@ const poolTokensSymbols: { [key: string]: string[] } = {
 context("Withdrawal Flow", () => {
   beforeEach(() => {
     cy.visit(`/#/pools`)
+    cy.wait(6000)
   })
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

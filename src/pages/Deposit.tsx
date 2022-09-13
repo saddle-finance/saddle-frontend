@@ -285,7 +285,6 @@ function Deposit(): ReactElement | null {
     gasPrice,
     newTokenPricesUSD,
   )
-  console.log("depositTransaction", depositTransaction)
 
   return (
     <DepositPage
