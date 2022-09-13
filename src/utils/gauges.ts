@@ -33,13 +33,13 @@ export type Gauge = {
   gaugeTotalSupply: BigNumber
   gaugeWeight: BigNumber
   lpTokenAddress: string
-  poolAddress: string | null
-  poolName: string | null
+  poolAddress: string | null | undefined
+  poolName: string | null | undefined
   gaugeRelativeWeight: BigNumber
   workingBalances: BigNumber
   workingSupply: BigNumber
   rewards: GaugeReward[]
-  gaugeName: string | null
+  gaugeName: string | null | undefined
   isKilled: boolean
 }
 
@@ -68,6 +68,11 @@ export type GaugeUserReward = {
 export type GaugeRewardUserData = Partial<{
   [gaugeAddress: string]: GaugeUserReward
 }>
+
+export type GaugePool = {
+  poolName: string
+  poolAddress: string
+}
 
 export const initialGaugesState: Gauges = {
   gaugeCount: 0,
@@ -197,10 +202,7 @@ export async function getGaugeData(
       : Promise.resolve(Zero))
 
     const lpTokenToPool: Partial<{
-      [lpToken: string]: {
-        poolName: string
-        poolAddress: string
-      }
+      [lpToken: string]: GaugePool
     }> = Object.values(basicPools || {}).reduce(
       (prevData, { lpToken, poolAddress, poolName }) => {
         return {
@@ -216,8 +218,9 @@ export async function getGaugeData(
         const lpTokenAddress = gaugeLpTokenAddresses[index]?.toLowerCase()
         const pool = lpTokenToPool[lpTokenAddress]
         const isValidPoolAddress = Boolean(
-          pool && pool.poolAddress && !isAddressZero(pool.poolAddress),
+          pool?.poolAddress && !isAddressZero(pool?.poolAddress),
         )
+        const poolAddress = isValidPoolAddress ? pool?.poolAddress : null
         const gaugeRelativeWeight = gaugeRelativeWeights[index]
         const sdlRate = minterSDLRate.mul(gaugeRelativeWeight).div(BN_1E18) // @dev see "Math" section of readme
         const sdlReward = {
@@ -238,9 +241,8 @@ export async function getGaugeData(
           gaugeName: gaugeNames[index],
           lpTokenAddress,
           isKilled: gaugeKillStatuses[index] ?? false,
-          poolAddress:
-            isValidPoolAddress && pool?.poolAddress ? pool?.poolAddress : null,
-          poolName: pool?.poolName || null,
+          poolAddress,
+          poolName: pool?.poolName,
           rewards: gaugeRewards[index]
             .map((reward) => ({
               periodFinish: reward.period_finish,
