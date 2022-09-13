@@ -17,6 +17,8 @@ export default function useAddTokenToMetamask(token: Token | undefined): {
   const isMetaMask: boolean =
     find(SUPPORTED_WALLETS, ["connector", connector])?.name == "MetaMask"
   const canAdd = Boolean(isMetaMask && chainId && token?.addresses[chainId])
+  const sdlLogoUrl =
+    "https://assets.coingecko.com/coins/images/20476/small/edit_saddle.png?1660734429"
 
   const addToken = useCallback(() => {
     if (library && library.provider.request && isMetaMask && token && chainId) {
@@ -32,7 +34,7 @@ export default function useAddTokenToMetamask(token: Token | undefined): {
               decimals: token.decimals,
               image:
                 token.symbol === "SDL"
-                  ? "https://assets.coingecko.com/coins/images/20476/small/edit_saddle.png?1660734429"
+                  ? sdlLogoUrl
                   : getTokenIconPath(token.symbol),
             },
           },
