@@ -24,6 +24,8 @@ import { AddressZero } from "@ethersproject/constants"
 import BRIDGE_CONTRACT_ABI from "../constants/abis/bridge.json"
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { Bridge } from "../../types/ethers-contracts/Bridge"
+import CHILD_GAUGE_FACTORY_ABI from "../constants/abis/childGaugeFactory.json"
+import { ChildGaugeFactory } from "../../types/ethers-contracts/ChildGaugeFactory"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import FEE_DISTRIBUTOR_ABI from "../constants/abis/feeDistributor.json"
 import { FeeDistributor } from "../../types/ethers-contracts/FeeDistributor"
@@ -73,6 +75,7 @@ import { formatBytes32String } from "@ethersproject/strings"
 import { useActiveWeb3React } from "./index"
 
 export const POOL_REGISTRY_NAME = formatBytes32String("PoolRegistry")
+export const CHILD_GAUGE_FACTORY_NAME = formatBytes32String("ChildGaugeFactory")
 export const GAUGE_FACTORY_NAME = formatBytes32String("GaugeFactory")
 // returns null on errors
 function useContract(
@@ -108,6 +111,38 @@ export function useMasterRegistry(): MasterRegistry | null {
     MASTER_REGISTRY_ABI,
     false,
   ) as MasterRegistry
+}
+
+export function useChildGaugeFactory(): ChildGaugeFactory | null {
+  const { library } = useActiveWeb3React()
+  const masterRegistryContract = useMasterRegistry()
+  const [contractAddress, setContractAddress] = useState<string | undefined>()
+  useEffect(() => {
+    if (masterRegistryContract) {
+      masterRegistryContract
+        ?.resolveNameToLatestAddress(CHILD_GAUGE_FACTORY_NAME)
+        .then((contractAddress) => {
+          if (contractAddress !== AddressZero) {
+            setContractAddress(contractAddress)
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+          setContractAddress(undefined)
+        })
+    } else {
+      setContractAddress(undefined)
+    }
+  }, [masterRegistryContract])
+
+  return useMemo(() => {
+    if (!library || !contractAddress) return null
+    return getContract(
+      contractAddress,
+      CHILD_GAUGE_FACTORY_ABI,
+      library,
+    ) as ChildGaugeFactory
+  }, [contractAddress, library])
 }
 
 export function useRootGaugeFactory(): RootGaugeFactory | null {

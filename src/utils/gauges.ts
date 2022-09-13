@@ -1,4 +1,3 @@
-/* eslint-disable */
 import {
   BN_1E18,
   BN_MSIG_SDL_VEST_END_TIMESTAMP,
@@ -6,7 +5,6 @@ import {
   GAUGE_CONTROLLER_ADDRESSES,
   GAUGE_HELPER_CONTRACT_ADDRESSES,
   IS_VESDL_LIVE,
-  ROOT_GAUGE_FACTORY_CONTRACT_ADDRESSES,
 } from "../constants"
 import {
   createMultiCallContract,
@@ -17,31 +15,39 @@ import {
 import { BasicPools } from "./../providers/BasicPoolsProvider"
 import { BasicToken } from "./../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
+import { ChildGaugeFactory } from "../../types/ethers-contracts/ChildGaugeFactory"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
 import GAUGE_HELPER_CONTRACT_ABI from "../constants/abis/gaugeHelperContract.json"
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
 import { GaugeHelperContract } from "../../types/ethers-contracts/GaugeHelperContract"
 import LIQUIDITY_GAUGE_V5_ABI from "../constants/abis/liquidityGaugeV5.json"
-import ROOT_GAUGE_FACTORY_ABI from "../constants/abis/rootGaugeFactory.json"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { Minter } from "../../types/ethers-contracts/Minter"
 import { SDL_TOKEN_ADDRESSES } from "./../constants/index"
 import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
 import { isAddressZero } from "."
-import { RootGaugeFactory } from "../../types/ethers-contracts/RootGaugeFactory"
-import { RootGauge } from "../../types/ethers-contracts/RootGauge"
-import { useRootGauge } from "../hooks/useContract"
 
-export type Gauge = {
+export type Gauge = BaseGauge & GaugeWeight
+
+export type GaugeWeight = {
+  gaugeRelativeWeight: BigNumber
+  gaugeWeight: BigNumber
+}
+
+export type BaseGauge = {
   address: string
   gaugeBalance: BigNumber
   gaugeTotalSupply: BigNumber
-  gaugeWeight: BigNumber
   lpTokenAddress: string
+<<<<<<< HEAD
   poolAddress: string | null | undefined
   poolName: string | null | undefined
   gaugeRelativeWeight: BigNumber
+=======
+  poolAddress: string | null
+  poolName: string | null
+>>>>>>> 03a929a (WIP removed gaugeHelperContract to get pooladdress)
   workingBalances: BigNumber
   workingSupply: BigNumber
   rewards: GaugeReward[]
@@ -88,23 +94,22 @@ export const initialGaugesState: Gauges = {
 export async function getGaugeData(
   library: Web3Provider,
   chainId: ChainId,
-  gaugeController: GaugeController,
   basicPools: BasicPools,
-  rootGaugeFactory: RootGaugeFactory,
-  gaugeMinterContract: Minter,
+  gaugeController: GaugeController | null,
+  childGaugeFactory: ChildGaugeFactory | null,
+  gaugeMinterContract: Minter | null,
   account?: string,
 ): Promise<Gauges | null> {
+  if (!childGaugeFactory || (!gaugeController && !gaugeMinterContract))
+    return null
   if (!areGaugesActive(chainId)) return initialGaugesState
   try {
-    const gaugeCount = (await gaugeController.n_gauges()).toNumber()
-    const sideChainGaugeCount = (
-      await rootGaugeFactory.get_gauge_count(ChainId.TEST_SIDE_CHAIN)
+    const gaugeCount: number = (
+      await getGaugeCount(childGaugeFactory, gaugeController)
     ).toNumber()
     const ethCallProvider = await getMulticallProvider(library, chainId)
     const gaugeHelperContractAddress = GAUGE_HELPER_CONTRACT_ADDRESSES[chainId]
     const gaugeControllerContractAddress = GAUGE_CONTROLLER_ADDRESSES[chainId]
-    const rootGaugeFactoryContractAddress =
-      ROOT_GAUGE_FACTORY_CONTRACT_ADDRESSES[chainId]
 
     const gaugeHelperContractMultiCall =
       createMultiCallContract<GaugeHelperContract>(
@@ -117,10 +122,6 @@ export async function getGaugeData(
       GAUGE_CONTROLLER_ABI,
     )
 
-    const rootGaugeFactoryMultiCall = createMultiCallContract<RootGaugeFactory>(
-      rootGaugeFactoryContractAddress,
-      ROOT_GAUGE_FACTORY_ABI,
-    )
     const gaugeAddresses: string[] = (
       await ethCallProvider.all(
         enumerate(gaugeCount, 0).map((value) =>
@@ -129,6 +130,7 @@ export async function getGaugeData(
       )
     ).map((address) => address.toLowerCase())
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
     const sideChainGaugeAddresses: string[] = (
@@ -152,12 +154,13 @@ export async function getGaugeData(
     ).map((poolAddress) => poolAddress?.toLowerCase())
 
 >>>>>>> 24305ea (WIP)
+=======
+>>>>>>> 03a929a (WIP removed gaugeHelperContract to get pooladdress)
     const gaugeRewardsPromise = ethCallProvider.all(
       gaugeAddresses.map((address) =>
         gaugeHelperContractMultiCall.getGaugeRewards(address),
       ),
     )
-
     const gaugeWeightsPromise: Promise<BigNumber[]> = ethCallProvider.all(
       gaugeAddresses.map((gaugeAddress) =>
         gaugeControllerMultiCall.get_gauge_weight(gaugeAddress),
@@ -256,9 +259,18 @@ export async function getGaugeData(
     const gauges: LPTokenAddressToGauge = gaugeAddresses.reduce(
       (previousGaugeData, gaugeAddress, index) => {
         const lpTokenAddress = gaugeLpTokenAddresses[index]?.toLowerCase()
+<<<<<<< HEAD
         const pool = lpTokenToPool[lpTokenAddress] as GaugePool
         const isValidPoolAddress = Boolean(
           pool?.poolAddress && !isAddressZero(pool?.poolAddress),
+=======
+        const pool = lpTokenToPool[lpTokenAddress] as {
+          poolName: string
+          poolAddress: string
+        }
+        const isValidPoolAddress = Boolean(
+          pool && pool.poolAddress && !isAddressZero(pool.poolAddress),
+>>>>>>> 03a929a (WIP removed gaugeHelperContract to get pooladdress)
         )
         const poolAddress = isValidPoolAddress ? pool?.poolAddress : null
         const gaugeRelativeWeight = gaugeRelativeWeights[index]
@@ -281,8 +293,16 @@ export async function getGaugeData(
           gaugeName: gaugeNames[index],
           lpTokenAddress,
           isKilled: gaugeKillStatuses[index] ?? false,
+<<<<<<< HEAD
           poolAddress,
           poolName: pool?.poolName,
+=======
+          poolAddress:
+            isValidPoolAddress && pool?.poolAddress != null
+              ? pool?.poolAddress
+              : null,
+          poolName: pool?.poolName || null,
+>>>>>>> 03a929a (WIP removed gaugeHelperContract to get pooladdress)
           rewards: gaugeRewards[index]
             .map((reward) => ({
               periodFinish: reward.period_finish,
@@ -411,4 +431,19 @@ export function areGaugesActive(chainId?: ChainId): boolean {
     (chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT) &&
     IS_VESDL_LIVE
   )
+}
+
+async function getGaugeCount(
+  childGaugeFactory: ChildGaugeFactory | null,
+  gaugeController: GaugeController | null,
+): Promise<BigNumber> {
+  if (childGaugeFactory) {
+    return await childGaugeFactory.get_gauge_count()
+  }
+
+  if (gaugeController) {
+    return await gaugeController.n_gauges()
+  }
+
+  return Promise.resolve(Zero)
 }
