@@ -1,7 +1,7 @@
 import { SUPPORTED_WALLETS, Token } from "../constants"
 import { useCallback, useState } from "react"
-import { find } from "lodash"
 
+import { find } from "lodash"
 import { getTokenIconPath } from "../utils"
 import { useActiveWeb3React } from "./index"
 
@@ -30,7 +30,10 @@ export default function useAddTokenToMetamask(token: Token | undefined): {
               address: token.addresses[chainId],
               symbol: token.symbol,
               decimals: token.decimals,
-              image: getTokenIconPath(token.symbol),
+              image:
+                token.symbol === "SDL"
+                  ? "https://assets.coingecko.com/coins/images/20476/small/edit_saddle.png?1660734429"
+                  : getTokenIconPath(token.symbol),
             },
           },
         })
