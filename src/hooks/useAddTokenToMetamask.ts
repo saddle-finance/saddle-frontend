@@ -1,7 +1,7 @@
 import { SUPPORTED_WALLETS, Token } from "../constants"
 import { useCallback, useState } from "react"
-import { find } from "lodash"
 
+import { find } from "lodash"
 import { getTokenIconPath } from "../utils"
 import { useActiveWeb3React } from "./index"
 
