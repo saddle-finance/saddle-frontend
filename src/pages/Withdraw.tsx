@@ -17,7 +17,7 @@ import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
-import { isLegacySwapABIPool } from "../constants"
+import { isWithdrawFeePool } from "../constants"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndWithdraw } from "../hooks/useApproveAndWithdraw"
 import { useParams } from "react-router-dom"
@@ -73,7 +73,7 @@ function Withdraw(): ReactElement {
           (token) =>
             withdrawFormState.tokenInputs[token.address]?.valueSafe || Zero,
         )
-        if (isLegacySwapABIPool(poolData.name)) {
+        if (isWithdrawFeePool(poolData.name)) {
           const calculatedTokenAmount = await (
             swapContract as SwapFlashLoan
           ).calculateTokenAmount(account, withdrawTokenAmounts, false)
