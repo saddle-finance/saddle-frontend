@@ -394,8 +394,10 @@ export function getTokenIconPath(tokenSymbol: string): string {
   const iconName = tokenSymbol.toLowerCase().includes("saddle")
     ? "saddle_lp_token"
     : tokenSymbol.toLowerCase()
+  const img = new Image()
+  img.src = `/static/icons/svg/${iconName}.svg`
 
-  return `/static/icons/svg/${iconName}.svg`
+  return img.src
 }
 
 /**
