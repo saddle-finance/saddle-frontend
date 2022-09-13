@@ -216,7 +216,7 @@ export async function getGaugeData(
     const gauges: LPTokenAddressToGauge = gaugeAddresses.reduce(
       (previousGaugeData, gaugeAddress, index) => {
         const lpTokenAddress = gaugeLpTokenAddresses[index]?.toLowerCase()
-        const pool = lpTokenToPool[lpTokenAddress]
+        const pool = lpTokenToPool[lpTokenAddress] as GaugePool
         const isValidPoolAddress = Boolean(
           pool?.poolAddress && !isAddressZero(pool?.poolAddress),
         )
