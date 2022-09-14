@@ -12,6 +12,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material"
+import { BigNumber, ContractTransaction } from "ethers"
 import { ChainId, TRANSACTION_TYPES } from "../../constants"
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import {
@@ -19,12 +20,17 @@ import {
   format,
   formatDuration,
   getUnixTime,
+  isFuture,
   secondsToHours,
 } from "date-fns"
 import { commify, formatUnits, parseEther } from "@ethersproject/units"
 import { enUS, zhCN } from "date-fns/locale"
 import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
-import { formatBNToString, getIntervalBetweenTwoDates } from "../../utils"
+import {
+  formatBNToString,
+  getIntervalBetweenTwoDates,
+  missingKeys,
+} from "../../utils"
 import { useDispatch, useSelector } from "react-redux"
 import {
   useFeeDistributor,
@@ -34,7 +40,6 @@ import {
 
 import { AppState } from "../../state"
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
-import { BigNumber } from "ethers"
 import ConfirmModal from "../../components/ConfirmModal"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import GaugeVote from "./GaugeVote"
@@ -255,15 +260,24 @@ export default function VeSDL(): JSX.Element {
   }
 
   const unlock = async () => {
-    if (votingEscrowContract && chainId) {
-      const txn = await votingEscrowContract.force_withdraw()
+    if (votingEscrowContract && chainId && lockEnd) {
+      const txn = await getUnlockTransaction(lockEnd)
       void enqueuePromiseToast(chainId, txn.wait(), "unlock")
       dispatch(
         updateLastTransactionTimes({
-          [TRANSACTION_TYPES.DEPOSIT]: Date.now(),
+          [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
         }),
       )
       void fetchData()
+    } else {
+      enqueueToast("error", "Unable to unlock")
+      console.error(
+        `Unable to Unlock: ${missingKeys({
+          votingEscrowContract,
+          chainId,
+          lockEnd,
+        }).join(", ")} missing`,
+      )
     }
   }
 
@@ -273,6 +287,15 @@ export default function VeSDL(): JSX.Element {
     } else {
       setUnlockConfirmOpen(true)
     }
+  }
+
+  const getUnlockTransaction = (
+    unlockDate: Date,
+  ): Promise<ContractTransaction> => {
+    if (isFuture(unlockDate)) {
+      return votingEscrowContract.force_withdraw()
+    }
+    return votingEscrowContract.withdraw()
   }
 
   const duration =

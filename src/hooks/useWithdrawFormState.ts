@@ -9,7 +9,7 @@ import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { Zero } from "@ethersproject/constants"
 import { debounce } from "lodash"
-import { isLegacySwapABIPool } from "../constants"
+import { isWithdrawFeePool } from "../constants"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import usePoolData from "../hooks/usePoolData"
@@ -110,7 +110,7 @@ export default function useWithdrawFormState(
       if (state.withdrawType === IMBALANCE) {
         try {
           let inputCalculatedLPTokenAmount: BigNumber
-          if (isLegacySwapABIPool(poolData.name)) {
+          if (isWithdrawFeePool(poolData.name)) {
             inputCalculatedLPTokenAmount = await (
               swapContract as SwapFlashLoan
             ).calculateTokenAmount(
@@ -158,7 +158,7 @@ export default function useWithdrawFormState(
       } else if (state.withdrawType === ALL) {
         try {
           let tokenAmounts: BigNumber[]
-          if (isLegacySwapABIPool(poolName)) {
+          if (isWithdrawFeePool(poolName)) {
             tokenAmounts = await (
               swapContract as SwapFlashLoan
             ).calculateRemoveLiquidity(account, effectiveUserLPTokenBalance)
@@ -193,7 +193,7 @@ export default function useWithdrawFormState(
               ({ address }) => address === state.withdrawType,
             )
             let tokenAmount: BigNumber
-            if (isLegacySwapABIPool(poolName)) {
+            if (isWithdrawFeePool(poolName)) {
               tokenAmount = await (
                 swapContract as SwapFlashLoan
               ).calculateRemoveLiquidityOneToken(
@@ -225,7 +225,7 @@ export default function useWithdrawFormState(
           } else {
             // This branch addresses a user manually inputting a value for one token
             let inputCalculatedLPTokenAmount: BigNumber
-            if (isLegacySwapABIPool(poolData.name)) {
+            if (isWithdrawFeePool(poolData.name)) {
               inputCalculatedLPTokenAmount = await (
                 swapContract as SwapFlashLoan
               ).calculateTokenAmount(

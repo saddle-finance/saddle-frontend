@@ -1,3 +1,4 @@
+import { BN_1E18, BN_DAY_IN_SECONDS } from "../../constants"
 import {
   Box,
   Container,
@@ -6,17 +7,19 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material"
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 
 import { AprsContext } from "../../providers/AprsProvider"
 import { BasicPoolsContext } from "../../providers/BasicPoolsProvider"
 import ClaimRewardsDlg from "./ClaimRewardsDlg"
 import FarmOverview from "./FarmOverview"
 import { GaugeContext } from "../../providers/GaugeProvider"
+import { IS_DEVELOPMENT } from "../../utils/environment"
 import StakeDialog from "./StakeDialog"
 import { UserStateContext } from "../../providers/UserStateProvider"
 import VeSDLWrongNetworkModal from "../VeSDL/VeSDLWrongNetworkModal"
 import { Zero } from "@ethersproject/constants"
+import { formatUnits } from "ethers/lib/utils"
 import useGaugeTVL from "../../hooks/useGaugeTVL"
 import { useTranslation } from "react-i18next"
 
@@ -35,6 +38,81 @@ export default function Farm(): JSX.Element {
   const gaugeAprs = useContext(AprsContext)
   const userState = useContext(UserStateContext)
   const getGaugeTVL = useGaugeTVL()
+  const farmData = Object.values(gauges)
+    .filter(({ isKilled }) => !isKilled)
+    .map((gauge) => {
+      const {
+        poolName,
+        gaugeTotalSupply,
+        gaugeName,
+        address,
+        poolAddress,
+        rewards,
+      } = gauge
+      const farmName =
+        gaugeName === sushiGaugeName
+          ? "SDL/WETH SLP"
+          : poolName || gaugeName || ""
+      const gaugeAddress = address
+      const aprs = gaugeAprs?.[gaugeAddress]
+      const myStake =
+        userState?.gaugeRewards?.[gaugeAddress]?.amountStaked || Zero
+      const tvl = getGaugeTVL(gaugeAddress)
+      const gaugePoolAddress = poolAddress
+      const userShare = gaugeTotalSupply.gt(Zero)
+        ? myStake.mul(BN_1E18).div(gaugeTotalSupply)
+        : Zero
+      const sdlReward = rewards[rewards.length - 1]
+      const userSdlRewardRate = userShare
+        .mul(sdlReward?.rate || Zero)
+        .div(BN_1E18)
+
+      const gaugePool = Object.values(basicPools || {}).find(
+        (pool) => pool.poolAddress === gaugePoolAddress,
+      )
+      const poolTokens = gaugePool?.tokens
+      return {
+        gauge,
+        gaugeAddress,
+        farmName,
+        poolTokens,
+        aprs,
+        tvl,
+        myStake,
+        userSdlRewardRate,
+      } as const
+    })
+    .sort((a, b) => {
+      // Put SLP gauge at top
+      if (a.gauge.gaugeName === sushiGaugeName) {
+        return -1
+      }
+      if (b.gauge.gaugeName === sushiGaugeName) {
+        return 1
+      }
+      // Sort by highest user balance
+      if (a.myStake.gt(b.myStake)) {
+        return -1
+      }
+      if (b.myStake.gt(a.myStake)) {
+        return 1
+      }
+      // Sort by gauge TVL
+      return a.tvl.gt(b.tvl) ? -1 : 1
+    })
+
+  useEffect(() => {
+    // TODO expose this to user once we have designs
+    const userTotalRate = farmData.reduce(
+      (sum, d) => sum.add(d.userSdlRewardRate),
+      Zero,
+    )
+    const userDailyRate = userTotalRate.mul(BN_DAY_IN_SECONDS)
+    if (IS_DEVELOPMENT && userDailyRate.gt(Zero)) {
+      console.log("user SDL earned per day", formatUnits(userDailyRate, 18))
+    }
+  }, [farmData])
+
   return (
     <Container sx={{ py: 5 }}>
       <Box
@@ -47,54 +125,8 @@ export default function Farm(): JSX.Element {
         <FarmListHeader />
       </Box>
 
-      {Object.values(gauges)
-        .filter(({ isKilled }) => !isKilled)
-        .map((gauge) => {
-          const poolName = gauge.poolName
-          const farmName =
-            gauge.gaugeName === sushiGaugeName
-              ? "SDL/WETH SLP"
-              : poolName || gauge.gaugeName || ""
-          const gaugeAddress = gauge.address
-          const aprs = gaugeAprs?.[gaugeAddress]
-          const myStake =
-            userState?.gaugeRewards?.[gaugeAddress]?.amountStaked || Zero
-          const tvl = getGaugeTVL(gaugeAddress)
-          const gaugePoolAddress = gauge.poolAddress
-
-          const gaugePool = Object.values(basicPools || {}).find(
-            (pool) => pool.poolAddress === gaugePoolAddress,
-          )
-          const poolTokens = gaugePool?.tokens
-          return {
-            gauge,
-            gaugeAddress,
-            farmName,
-            poolTokens,
-            aprs,
-            tvl,
-            myStake,
-          } as const
-        })
-        .sort((a, b) => {
-          // Put SLP gauge at top
-          if (a.gauge.gaugeName === sushiGaugeName) {
-            return -1
-          }
-          if (b.gauge.gaugeName === sushiGaugeName) {
-            return 1
-          }
-          // Sort by highest user balance
-          if (a.myStake.gt(b.myStake)) {
-            return -1
-          }
-          if (b.myStake.gt(a.myStake)) {
-            return 1
-          }
-          // Sort by gauge TVL
-          return a.tvl.gt(b.tvl) ? -1 : 1
-        })
-        .map(({ gaugeAddress, farmName, aprs, poolTokens, tvl, myStake }) => {
+      {farmData.map(
+        ({ gaugeAddress, farmName, aprs, poolTokens, tvl, myStake }) => {
           return (
             <FarmOverview
               farmName={farmName}
@@ -119,7 +151,8 @@ export default function Farm(): JSX.Element {
               }}
             />
           )
-        })}
+        },
+      )}
 
       <StakeDialog
         farmName={activeGauge?.displayName}

@@ -150,7 +150,7 @@ function Swap(): ReactElement {
         return hasAnyUnpaused && hasAnyBalance
       })
       .map(({ symbol, name, decimals }) => {
-        const amount = tokenBalances[symbol]
+        const amount = tokenBalances[symbol] || Zero
         return {
           name,
           symbol,

@@ -1729,7 +1729,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "frax-arbusdv2",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.ARBITRUM]: 7 }),
   },
   [SUSD_METAPOOL_V2_NAME]: {
     name: SUSD_METAPOOL_V2_NAME,
@@ -1919,7 +1919,7 @@ export const POOLS_MAP: PoolsMap = {
     isSynthetic: false,
     type: PoolTypes.USD,
     route: "fraxusdc",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.ARBITRUM]: 3 }),
   },
   [FRAX_USDT_METAPOOL_NAME]: {
     name: FRAX_USDT_METAPOOL_NAME,
@@ -1932,7 +1932,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: FRAX_USDT_UNDERLYING_POOL_TOKENS,
     underlyingPool: FRAX_USDC_POOL_NAME,
     route: "fraxusdtmeta",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.ARBITRUM]: 4 }),
   },
   [FRAX_SUSD_METAPOOL_NAME]: {
     name: FRAX_SUSD_METAPOOL_NAME,
@@ -1971,7 +1971,7 @@ export const POOLS_MAP: PoolsMap = {
     underlyingPoolTokens: ARB_FRAX_USDS_UNDERLYING_POOL_TOKENS,
     underlyingPool: FRAX_USDC_POOL_NAME,
     route: "fraxusdsmeta",
-    rewardPids: buildPids({}),
+    rewardPids: buildPids({ [ChainId.ARBITRUM]: 5 }),
   },
   [FTM_FRAX_USDT_METAPOOL_NAME]: {
     name: FTM_FRAX_USDT_METAPOOL_NAME,
@@ -2048,6 +2048,13 @@ const minichefPids: Partial<Record<ChainId, { [pool: string]: number }>> = {
     [FRAX_USDT_METAPOOL_SWAP_CONTRACT_ADDRESSES[
       ChainId.ARBITRUM
     ].toLowerCase()]: 4,
+    [ARB_FRAX_USDS_METAPOOL_SWAP_CONTRACT_ADDRESSES[
+      ChainId.ARBITRUM
+    ].toLowerCase()]: 5,
+    [ARB_FRAX_USDS_METAPOOL_DEPOSIT_CONTRACT_ADDRESSES[
+      ChainId.ARBITRUM
+    ].toLowerCase()]: 5,
+    [FRAX_ARB_USD_SWAP_V2_ADDRESSES[ChainId.ARBITRUM].toLowerCase()]: 7,
   },
   [ChainId.OPTIMISM]: {
     [FRAX_USDC_SWAP_ADDRESSES[ChainId.OPTIMISM].toLowerCase()]: 1,
@@ -2081,11 +2088,19 @@ export function getMinichefPid(
   return minichefPids?.[chainId]?.[poolAddress] || null
 }
 
-export function isLegacySwapABIPool(poolName: string): boolean {
+export function isGuardedPool(poolName: string): boolean {
+  return poolName === BTC_POOL_NAME
+}
+
+/**
+ * These pools use SwapV1, SwapFlashLoanV1 or SwapGuarded abi, those being the only swaps with a WithdrawFee
+ */
+export function isWithdrawFeePool(poolName: string): boolean {
   return new Set([BTC_POOL_NAME, STABLECOIN_POOL_NAME, VETH2_POOL_NAME]).has(
     poolName,
   )
 }
+
 export function isMetaPool(poolName = ""): boolean {
   return new Set([
     FRAX_OPT_USD_METAPOOL_NAME,
