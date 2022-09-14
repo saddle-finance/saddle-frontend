@@ -263,9 +263,11 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
           const rewardPerYearUSD = rewardPerYear.mul(
             parseUnits(tokenPricesUSD.SDL.toFixed(3), 3),
           ) // 1e18 * 1e3 = 1e21
-          minichefSDLApr = shiftBNDecimals(rewardPerYearUSD, 15).div(
-            amountStakedInMinichefUSD,
-          ) // (1e21 * 1e15 = 1e36) / 1e18 = 1e18
+          minichefSDLApr = amountStakedInMinichefUSD.gt(Zero)
+            ? shiftBNDecimals(rewardPerYearUSD, 15).div(
+                amountStakedInMinichefUSD,
+              ) // (1e21 * 1e15 = 1e36) / 1e18 = 1e18
+            : Zero
         }
 
         const poolData = {
