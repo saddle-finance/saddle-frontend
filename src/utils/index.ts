@@ -88,13 +88,9 @@ export function getContract(
   return new Contract(address, ABI, getProviderOrSigner(library, account))
 }
 
-interface PoolAttributes {
-  isGuarded?: boolean
-  isMetaSwap?: boolean
-  isMetaSwapDeposit?: boolean
-  isLegacySwap?: boolean
-  isMigrated?: boolean
-}
+type PoolAttributes = Partial<
+  Pick<BasicPool, "isGuarded" | "isMetaSwap" | "isWithdrawFeeAbi">
+> & { isMetaSwapDeposit?: boolean }
 
 export function getSwapContract(
   library: Web3Provider,
@@ -108,7 +104,7 @@ export function getSwapContract(
   | MetaSwap
   | MetaSwapDeposit
   | null {
-  const { isGuarded, isMetaSwap, isMetaSwapDeposit, isLegacySwap, isMigrated } =
+  const { isGuarded, isMetaSwap, isMetaSwapDeposit, isWithdrawFeeAbi } =
     poolAttributes
 
   // address error cases
@@ -127,7 +123,7 @@ export function getSwapContract(
       library,
       account ?? undefined,
     ) as SwapGuarded
-  } else if (isLegacySwap || isMigrated) {
+  } else if (isWithdrawFeeAbi) {
     return getContract(
       address,
       SWAP_FLASH_LOAN_ABI,
@@ -398,8 +394,10 @@ export function getTokenIconPath(tokenSymbol: string): string {
   const iconName = tokenSymbol.toLowerCase().includes("saddle")
     ? "saddle_lp_token"
     : tokenSymbol.toLowerCase()
+  const img = new Image()
+  img.src = `/static/icons/svg/${iconName}.svg`
 
-  return `/static/icons/svg/${iconName}.svg`
+  return img.src
 }
 
 /**

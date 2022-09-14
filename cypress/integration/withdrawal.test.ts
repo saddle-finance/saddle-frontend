@@ -12,6 +12,7 @@ const poolTokensSymbols: { [key: string]: string[] } = {
 context("Withdrawal Flow", () => {
   beforeEach(() => {
     cy.visit(`/#/pools`)
+    cy.wait(6000)
   })
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -45,6 +46,16 @@ context("Withdrawal Flow", () => {
         .within(() => {
           cy.get("button").contains("Withdraw").click()
         })
+      cy.get("[data-testid=advTableContainer]").then(($tableContainer) => {
+        if ($tableContainer.is(":visible")) {
+          cy.log("container is visible")
+        } else {
+          cy.get("[data-testid=advOptionContainer]").click()
+        }
+      })
+      cy.get("[data-testid=txnDeadlineInputGroup]")
+        .find("input")
+        .type((60 * 60 * 7).toString()) // 1 week for safety
       // test single item
       const tokens = poolTokensSymbols[poolName]
       cy.get('[data-testid="withdrawTokenRadio"]')

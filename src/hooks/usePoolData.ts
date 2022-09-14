@@ -1,10 +1,15 @@
-import { A_PRECISION, PoolTypes } from "./../constants/index"
+import { A_PRECISION, BN_1E18, PoolTypes } from "./../constants/index"
 import { AprsContext, GaugeApr } from "./../providers/AprsProvider"
 import {
   Partners,
   getThirdPartyDataForPool,
 } from "../utils/thirdPartyIntegrations"
-import { bnSum, calculateFraction, getPriceDataForExpandedPool } from "../utils"
+import {
+  bnSum,
+  calculateFraction,
+  getPriceDataForExpandedPool,
+  shiftBNDecimals,
+} from "../utils"
 import { useContext, useEffect, useState } from "react"
 
 import { AppState } from "../state"
@@ -43,6 +48,7 @@ export interface PoolDataType {
   virtualPrice: BigNumber
   volume: BigNumber | null
   sdlPerDay: BigNumber | null
+  minichefSDLApr: BigNumber
   isPaused: boolean
   poolAddress: string
   gaugeAprs: GaugeApr[] | null
@@ -105,6 +111,7 @@ const emptyPoolData = {
   sdlPerDay: null,
   isGuarded: false,
   isMetaSwap: false,
+  minichefSDLApr: Zero,
   poolType: PoolTypes.OTHER,
 } as PoolDataType
 
@@ -247,6 +254,22 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
           expandedPool.poolAddress
         ] || { oneDayVolume: null, apy: null, utilization: null }
 
+        let [amountStakedInMinichefUSD, minichefSDLApr] = [Zero, Zero]
+        if (poolMinichefData && tokenPricesUSD?.SDL) {
+          amountStakedInMinichefUSD = priceDataForPool.tokenBalancesSumUSD
+            .mul(poolMinichefData.pctOfSupplyStaked)
+            .div(BN_1E18)
+          const rewardPerYear = poolMinichefData.sdlPerDay.mul(365) // 1e18
+          const rewardPerYearUSD = rewardPerYear.mul(
+            parseUnits(tokenPricesUSD.SDL.toFixed(3), 3),
+          ) // 1e18 * 1e3 = 1e21
+          minichefSDLApr = amountStakedInMinichefUSD.gt(Zero)
+            ? shiftBNDecimals(rewardPerYearUSD, 15).div(
+                amountStakedInMinichefUSD,
+              ) // (1e21 * 1e15 = 1e36) / 1e18 = 1e18
+            : Zero
+        }
+
         const poolData = {
           name: poolName,
           tokens: poolTokens,
@@ -275,8 +298,8 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
 
           gaugeAprs: poolGaugeAprs ?? null,
           aprs, // rm - move to minichef provider + thirdparty provider
-          sdlPerDay:
-            minichefData?.pools[expandedPool.poolAddress]?.sdlPerDay || Zero,
+          sdlPerDay: poolMinichefData?.sdlPerDay || Zero,
+          minichefSDLApr,
           claimableAmount, // move to minichef provider
         }
         const userShareData = account
