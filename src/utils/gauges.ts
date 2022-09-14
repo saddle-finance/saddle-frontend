@@ -33,13 +33,13 @@ export type Gauge = {
   gaugeTotalSupply: BigNumber
   gaugeWeight: BigNumber
   lpTokenAddress: string
-  poolAddress: string | null
-  poolName: string | null
+  poolAddress: string | null | undefined
+  poolName: string | null | undefined
   gaugeRelativeWeight: BigNumber
   workingBalances: BigNumber
   workingSupply: BigNumber
   rewards: GaugeReward[]
-  gaugeName: string | null
+  gaugeName: string | null | undefined
   isKilled: boolean
 }
 
@@ -68,6 +68,11 @@ export type GaugeUserReward = {
 export type GaugeRewardUserData = Partial<{
   [gaugeAddress: string]: GaugeUserReward
 }>
+
+export type GaugePool = {
+  poolName: string
+  poolAddress: string
+}
 
 export const initialGaugesState: Gauges = {
   gaugeCount: 0,
@@ -108,14 +113,6 @@ export async function getGaugeData(
       )
     ).map((address) => address.toLowerCase())
 
-    const gaugePoolAddresses = (
-      await ethCallProvider.tryAll(
-        gaugeAddresses.map((address) =>
-          gaugeHelperContractMultiCall.gaugeToPoolAddress(address),
-        ),
-      )
-    ).map((poolAddress) => poolAddress?.toLowerCase())
-
     const gaugeRewardsPromise = ethCallProvider.all(
       gaugeAddresses.map((address) =>
         gaugeHelperContractMultiCall.getGaugeRewards(address),
@@ -141,6 +138,7 @@ export async function getGaugeData(
         LIQUIDITY_GAUGE_V5_ABI,
       ),
     )
+
     const gaugeBalancePromise = account
       ? ethCallProvider.tryAll(
           gaugeMulticallContracts.map((gaugeContract) =>
@@ -198,20 +196,31 @@ export async function getGaugeData(
       gaugeNamesPromise,
       gaugeKillStatusesPromise,
     ])
+
     const minterSDLRate = await (gaugeMinterContract
       ? gaugeMinterContract.rate()
       : Promise.resolve(Zero))
 
+    const lpTokenToPool: Partial<{
+      [lpToken: string]: GaugePool
+    }> = Object.values(basicPools || {}).reduce(
+      (prevData, { lpToken, poolAddress, poolName }) => {
+        return {
+          ...prevData,
+          [lpToken]: { poolAddress, poolName },
+        }
+      },
+      {},
+    )
+
     const gauges: LPTokenAddressToGauge = gaugeAddresses.reduce(
       (previousGaugeData, gaugeAddress, index) => {
         const lpTokenAddress = gaugeLpTokenAddresses[index]?.toLowerCase()
-        const poolAddress = gaugePoolAddresses[index]
+        const pool = lpTokenToPool[lpTokenAddress] as GaugePool
         const isValidPoolAddress = Boolean(
-          poolAddress && !isAddressZero(poolAddress),
+          pool?.poolAddress && !isAddressZero(pool?.poolAddress),
         )
-        const gaugePool = Object.values(basicPools || {}).find(
-          (pool) => pool.poolAddress === poolAddress,
-        )
+        const poolAddress = isValidPoolAddress ? pool?.poolAddress : null
         const gaugeRelativeWeight = gaugeRelativeWeights[index]
         const sdlRate = minterSDLRate.mul(gaugeRelativeWeight).div(BN_1E18) // @dev see "Math" section of readme
         const sdlReward = {
@@ -232,8 +241,8 @@ export async function getGaugeData(
           gaugeName: gaugeNames[index],
           lpTokenAddress,
           isKilled: gaugeKillStatuses[index] ?? false,
-          poolAddress: isValidPoolAddress && poolAddress ? poolAddress : null,
-          poolName: gaugePool?.poolName || null,
+          poolAddress,
+          poolName: pool?.poolName,
           rewards: gaugeRewards[index]
             .map((reward) => ({
               periodFinish: reward.period_finish,
