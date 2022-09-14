@@ -109,6 +109,15 @@ context("Swap Flow", () => {
         cy.get("button").contains("Swap").should("be.enabled").click()
       })
       it("completes a swap", () => {
+        cy.getBySelId("highPriceImpactConfirmationContainer").then(
+          ($highPriceImpaceContainer) => {
+            if ($highPriceImpaceContainer.is(":visible")) {
+              cy.getBySelId("highPriceImpactConfirmCheck").find("input").check()
+            } else {
+              cy.log("high price impact is not detected")
+            }
+          },
+        )
         cy.get("button").contains("Confirm Swap").should("be.enabled").click()
       })
     })
