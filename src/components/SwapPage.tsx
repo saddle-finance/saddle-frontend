@@ -54,7 +54,12 @@ interface Props {
   }
   error: string | null
   swapType: SWAP_TYPES
-  fromState: { symbol: string; value: string; valueUSD: BigNumber }
+  fromState: {
+    address: string
+    symbol: string
+    value: string
+    valueUSD: BigNumber
+  }
   toState: {
     address: string
     symbol: string
@@ -133,7 +138,7 @@ const SwapPage = (props: Props): ReactElement => {
       <Collapse in={open}>
         <Alert
           variant="filled"
-          severity="error"
+          severity="warning"
           sx={{ mb: 2, mt: type === "to" ? 2 : -3 }}
           action={
             <IconButton
@@ -204,7 +209,7 @@ const SwapPage = (props: Props): ReactElement => {
             <SwapTokenInput
               data-testid="swapTokenInputFrom"
               tokens={tokenOptions.from.filter(
-                ({ symbol }) => symbol !== toState.symbol,
+                ({ address }) => address !== toState.address,
               )}
               onSelect={onChangeFromToken}
               onChangeAmount={onChangeFromAmount}
@@ -222,7 +227,7 @@ const SwapPage = (props: Props): ReactElement => {
           <SwapTokenInput
             data-testid="swapTokenInputTo"
             tokens={tokenOptions.to.filter(
-              ({ symbol }) => symbol !== fromState.symbol,
+              ({ address }) => address !== fromState.address,
             )}
             onSelect={onChangeToToken}
             selected={toState.symbol}

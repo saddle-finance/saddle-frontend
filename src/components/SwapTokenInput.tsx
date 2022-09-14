@@ -215,10 +215,14 @@ export default function SwapTokenInput({
                 }
               }}
               renderOption={(props, option) => (
-                <ListItem listItemProps={props} {...option} key={option.name} />
+                <ListItem
+                  listItemProps={props}
+                  {...option}
+                  key={option.address}
+                />
               )}
               filterOptions={filterOptions}
-              getOptionLabel={(option) => option.symbol}
+              getOptionLabel={(option) => option.address}
               getOptionDisabled={(option) => !option.isAvailable}
               PopperComponent={(props) => (
                 <div {...props} data-testid="dropdownContainer"></div>

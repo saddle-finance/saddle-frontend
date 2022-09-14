@@ -69,7 +69,7 @@ function Pools(): ReactElement | null {
   return (
     <Container sx={{ pb: 5 }}>
       <Stack direction="row" alignItems="center" justifyContent="center">
-        {false && (
+        {true && (
           <Box flex={1}>
             <TextField
               variant="standard"
@@ -78,7 +78,7 @@ function Pools(): ReactElement | null {
                 startAdornment: <Search />,
               }}
             />
-            {false && (
+            {true && (
               <Box ml={1} mt={1}>
                 <FormGroup>
                   <FormControlLabel

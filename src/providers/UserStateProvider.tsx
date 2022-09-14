@@ -92,9 +92,17 @@ export default function UserStateProvider({
         gaugeRewardsPromise,
         feedDistributorRewardsPromise,
       ])
+      let tokenBalances
+      if (userTokenBalances?.ETH) {
+        // eslint-disable-next-line
+        const { ETH: _, ...rest } = userTokenBalances
+        tokenBalances = rest
+      } else {
+        tokenBalances = userTokenBalances
+      }
 
       setUserState({
-        tokenBalances: userTokenBalances,
+        tokenBalances,
         minichef: minichefData,
         gaugeRewards,
         feeDistributorRewards,
