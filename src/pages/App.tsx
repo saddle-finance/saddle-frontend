@@ -70,7 +70,7 @@ export default function App(): ReactElement {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen />
+      <ReactQueryDevtools initialIsOpen={false} />
 
       <Web3ReactManager>
         <BasicPoolsProvider>

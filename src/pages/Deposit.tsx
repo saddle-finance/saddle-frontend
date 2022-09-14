@@ -60,7 +60,10 @@ function Deposit(): ReactElement | null {
     [pool?.underlyingTokens, basicTokens],
   )
   const poolTokens = useMemo(
-    () => pool?.tokens.map((token) => basicTokens?.[token]) ?? [],
+    () =>
+      basicTokens && pool?.tokens
+        ? pool.tokens.map((tokenAddr) => basicTokens?.[tokenAddr])
+        : [],
     [basicTokens, pool?.tokens],
   )
   const poolBaseTokens = pool?.isMetaSwap ? poolUnderlyingTokens : poolTokens
