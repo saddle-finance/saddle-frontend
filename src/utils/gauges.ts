@@ -197,6 +197,8 @@ export async function getGaugeData(
       gaugeKillStatusesPromise,
     ])
 
+    console.log({ gaugeRewards })
+
     const minterSDLRate = await (gaugeMinterContract
       ? gaugeMinterContract.rate()
       : Promise.resolve(Zero))
