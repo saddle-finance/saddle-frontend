@@ -1,6 +1,7 @@
 import {
   BRIDGE_CONTRACT_ADDRESSES,
   BTC_POOL_NAME,
+  ChainId,
   FEE_DISTRIBUTOR_ADDRESSES,
   GAUGE_CONTROLLER_ADDRESSES,
   GAUGE_MINTER_ADDRESSES,
@@ -113,11 +114,30 @@ export function useMasterRegistry(): MasterRegistry | null {
   ) as MasterRegistry
 }
 
+export async function getChildGaugeFactoryAddress(
+  chainId: ChainId,
+  masterRegistryContract: MasterRegistry,
+): Promise<string> {
+  if (chainId !== ChainId.MAINNET && chainId !== ChainId.HARDHAT)
+    return await masterRegistryContract.resolveNameToLatestAddress(
+      CHILD_GAUGE_FACTORY_NAME,
+    )
+
+  return Promise.resolve("")
+}
+
 export function useChildGaugeFactory(): ChildGaugeFactory | null {
-  const { library } = useActiveWeb3React()
+  const { library, chainId } = useActiveWeb3React()
   const masterRegistryContract = useMasterRegistry()
   const [contractAddress, setContractAddress] = useState<string | undefined>()
   useEffect(() => {
+    if (chainId === ChainId.MAINNET) {
+      console.error(
+        "User is currently on mainnet. Child Gauge Factory does not exist",
+      )
+      setContractAddress(undefined)
+      return
+    }
     if (masterRegistryContract) {
       masterRegistryContract
         ?.resolveNameToLatestAddress(CHILD_GAUGE_FACTORY_NAME)
@@ -133,7 +153,7 @@ export function useChildGaugeFactory(): ChildGaugeFactory | null {
     } else {
       setContractAddress(undefined)
     }
-  }, [masterRegistryContract])
+  }, [chainId, masterRegistryContract])
 
   return useMemo(() => {
     if (!library || !contractAddress) return null
