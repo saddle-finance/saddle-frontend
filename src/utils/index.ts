@@ -205,6 +205,7 @@ export function formatBNToString(
 ): string {
   const fullPrecision = formatUnits(bn, nativePrecison)
   const decimalIdx = fullPrecision.indexOf(".")
+  console.log({ bn, nativePrecison, decimalPlaces, fullPrecision, decimalIdx })
   return decimalPlaces === undefined || decimalIdx === -1
     ? fullPrecision
     : fullPrecision.slice(
@@ -304,11 +305,17 @@ export function calculatePrice(
   tokenPrice = 0,
   decimals?: number,
 ): BigNumber {
+  console.log({ amount, tokenPrice, decimals })
   // returns amount * price as BN 18 precision
   if (typeof amount === "string") {
     if (isNaN(+amount)) return Zero
     return parseUnits((+amount * tokenPrice).toFixed(2), 18)
   } else if (decimals != null) {
+    console.log({
+      amount: amount
+        .mul(parseUnits(tokenPrice.toFixed(2), 18))
+        .div(BigNumber.from(10).pow(decimals)),
+    })
     return amount
       .mul(parseUnits(tokenPrice.toFixed(2), 18))
       .div(BigNumber.from(10).pow(decimals))
@@ -327,6 +334,17 @@ export function getTokenSymbolForPoolType(poolType: PoolTypes): string {
   } else {
     return ""
   }
+}
+
+export function getTokenAddrForPoolType(poolType: PoolTypes): string {
+  if (poolType === PoolTypes.BTC) {
+    return "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599" // WBTC
+  } else if (poolType === PoolTypes.ETH) {
+    return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" // "WETH"
+  } else if (poolType === PoolTypes.USD) {
+    return "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" // "USDC"
+  }
+  return ""
 }
 
 export async function getMulticallProvider(
@@ -593,7 +611,7 @@ export function getPriceDataForPool(
     underlyingTokens,
   } = basicPool
   const poolAssetPrice = parseUnits(
-    String(tokenPricesUSD?.[getTokenSymbolForPoolType(typeOfAsset)] || 0),
+    String(tokenPricesUSD?.[getTokenAddrForPoolType(typeOfAsset)] || 0),
     18,
   )
   const expandedTokens = poolTokens.map((token) => (tokens || {})[token])
@@ -662,7 +680,7 @@ export function getPriceDataForExpandedPool(
     underlyingTokens,
   } = expandedPool
   const poolAssetPrice = parseUnits(
-    String(tokenPricesUSD?.[getTokenSymbolForPoolType(typeOfAsset)] || 0),
+    String(tokenPricesUSD?.[getTokenAddrForPoolType(typeOfAsset)] ?? 0),
     18,
   )
   const tokenBalances1e18 = tokenBalances.map((balance, i) =>

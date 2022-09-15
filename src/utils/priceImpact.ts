@@ -20,6 +20,7 @@ export function calculatePriceImpact(
   // Swaps: (1 * output) / input - 1
   // Withdraws: output / (input * VP) - 1
   if (tokenInputAmount.lte(0)) return Zero
+  console.log({ virtualPrice })
 
   return isWithdraw
     ? tokenOutputAmount

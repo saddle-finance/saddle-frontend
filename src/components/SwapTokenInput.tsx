@@ -53,6 +53,11 @@ export default function SwapTokenInput({
   onChangeAmount,
   ...rest
 }: SwapTokenInputProps): JSX.Element {
+  console.log({
+    inputValue,
+    inputValueUSD,
+    c: commify(formatBNToString(inputValueUSD, 18, 2)),
+  })
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [popOverWidth, setPopOverWidth] = useState<number | undefined>()
