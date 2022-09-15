@@ -187,7 +187,6 @@ function Swap(): ReactElement {
                 const token = tokens[to.address]
                 if (!token) return null
                 const amount = tokenBalances[token.address]
-                // console.log({ amount, tokenPricesUSD, token })
                 return {
                   name: token.name,
                   address: token.address,
@@ -272,7 +271,6 @@ function Swap(): ReactElement {
         formStateArg.swapType === SWAP_TYPES.TOKEN_TO_TOKEN &&
         bridgeContract != null
       ) {
-        console.log("t2t")
         const originPool = basicPools[formStateArg.from.poolName]
         const destinationPool = basicPools[formStateArg.to.poolName]
         if (
@@ -346,7 +344,6 @@ function Swap(): ReactElement {
           formStateArg.to.tokenIndex,
           amountToGive,
         )
-        console.log("direct", { amountToReceive })
       } else if (
         formStateArg.swapType === SWAP_TYPES.SYNTH_TO_SYNTH &&
         snxEchangeRatesContract != null
@@ -360,20 +357,13 @@ function Swap(): ReactElement {
           utils.formatBytes32String(toTokenAddr),
         )
       }
-      console.log({ tokenTo })
       const tokenToAddr = tokens[tokenTo.address]?.address
       if (!tokenToAddr) return
-      console.log({
-        amountToReceive,
-        tp: tokenPricesUSD?.[tokenToAddr],
-        decimals: tokenTo.decimals,
-      })
       const toValueUSD = calculatePrice(
         amountToReceive,
         tokenPricesUSD?.[tokenToAddr],
         tokenTo.decimals,
       )
-      console.log({ formStateArg, amountToReceive, toValueUSD })
       const priceImpact = calculatePriceImpact(
         formStateArg.from.valueUSD,
         toValueUSD,

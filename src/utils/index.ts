@@ -205,7 +205,6 @@ export function formatBNToString(
 ): string {
   const fullPrecision = formatUnits(bn, nativePrecison)
   const decimalIdx = fullPrecision.indexOf(".")
-  console.log({ bn, nativePrecison, decimalPlaces, fullPrecision, decimalIdx })
   return decimalPlaces === undefined || decimalIdx === -1
     ? fullPrecision
     : fullPrecision.slice(
@@ -305,17 +304,11 @@ export function calculatePrice(
   tokenPrice = 0,
   decimals?: number,
 ): BigNumber {
-  console.log({ amount, tokenPrice, decimals })
   // returns amount * price as BN 18 precision
   if (typeof amount === "string") {
     if (isNaN(+amount)) return Zero
     return parseUnits((+amount * tokenPrice).toFixed(2), 18)
   } else if (decimals != null) {
-    console.log({
-      amount: amount
-        .mul(parseUnits(tokenPrice.toFixed(2), 18))
-        .div(BigNumber.from(10).pow(decimals)),
-    })
     return amount
       .mul(parseUnits(tokenPrice.toFixed(2), 18))
       .div(BigNumber.from(10).pow(decimals))
