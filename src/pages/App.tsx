@@ -1,17 +1,11 @@
 import "react-toastify/dist/ReactToastify.css"
+import { AppDispatch, AppState } from "../state"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import React, {
-  ReactElement,
-  Suspense,
-  useCallback,
-  useContext,
-  useEffect,
-} from "react"
-import TokensProvider, { TokensContext } from "../providers/TokensProvider"
+import React, { ReactElement, Suspense, useCallback, useEffect } from "react"
 import { styled, useTheme } from "@mui/material"
+import { useDispatch, useSelector } from "react-redux"
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
-import { AppDispatch } from "../state"
 import AprsProvider from "../providers/AprsProvider"
 import { BLOCK_TIME } from "../constants"
 import BasicPoolsProvider from "../providers/BasicPoolsProvider"
@@ -24,6 +18,7 @@ import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import { ToastContainer } from "react-toastify"
+import TokensProvider from "../providers/TokensProvider"
 import TopMenu from "../components/TopMenu"
 import UserStateProvider from "../providers/UserStateProvider"
 import Version from "../components/Version"
@@ -32,10 +27,9 @@ import WrongNetworkModal from "../components/WrongNetworkModal"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchSdlWethSushiPoolInfo from "../utils/updateSdlWethSushiInfo"
 import fetchSwapStats from "../utils/getSwapStats"
+import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import getSnapshotVoteData from "../utils/getSnapshotVoteData"
-import { getTokenPrice } from "../utils/updateTokenPrices"
 import { useActiveWeb3React } from "../hooks"
-import { useDispatch } from "react-redux"
 import { useIntercom } from "react-use-intercom"
 import usePoller from "../hooks/usePoller"
 import { useSdlWethSushiPairContract } from "../hooks/useContract"
@@ -125,20 +119,18 @@ function PricesAndVoteData({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
   const dispatch = useDispatch<AppDispatch>()
-  const tokens = useContext(TokensContext)
   const sdlWethSushiPoolContract = useSdlWethSushiPairContract()
   const { chainId } = useActiveWeb3React()
-  // const { sdlWethSushiPool } = useSelector(
-  //   (state: AppState) => state.application,
-  // )
+  const { sdlWethSushiPool } = useSelector(
+    (state: AppState) => state.application,
+  )
 
   const fetchAndUpdateGasPrice = useCallback(() => {
     void fetchGasPrices(dispatch)
   }, [dispatch])
   const fetchAndUpdateTokensPrice = useCallback(() => {
-    void getTokenPrice(tokens, dispatch, chainId ?? 1)
-    // getTokenPrice(tokens, dispatch, chainId, sdlWethSushiPool)
-  }, [dispatch, chainId, tokens])
+    fetchTokenPricesUSD(dispatch, sdlWethSushiPool, chainId)
+  }, [dispatch, chainId, sdlWethSushiPool])
   const fetchAndUpdateSwapStats = useCallback(() => {
     void fetchSwapStats(dispatch)
   }, [dispatch])
