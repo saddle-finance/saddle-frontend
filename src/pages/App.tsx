@@ -1,6 +1,4 @@
 import "react-toastify/dist/ReactToastify.css"
-
-import { AppDispatch, AppState } from "../state"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import React, {
   ReactElement,
@@ -11,9 +9,9 @@ import React, {
 } from "react"
 import TokensProvider, { TokensContext } from "../providers/TokensProvider"
 import { styled, useTheme } from "@mui/material"
-import { useDispatch, useSelector } from "react-redux"
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
+import { AppDispatch } from "../state"
 import AprsProvider from "../providers/AprsProvider"
 import { BLOCK_TIME } from "../constants"
 import BasicPoolsProvider from "../providers/BasicPoolsProvider"
@@ -37,6 +35,7 @@ import fetchSwapStats from "../utils/getSwapStats"
 import getSnapshotVoteData from "../utils/getSnapshotVoteData"
 import { getTokenPrice } from "../utils/updateTokenPrices"
 import { useActiveWeb3React } from "../hooks"
+import { useDispatch } from "react-redux"
 import { useIntercom } from "react-use-intercom"
 import usePoller from "../hooks/usePoller"
 import { useSdlWethSushiPairContract } from "../hooks/useContract"
@@ -129,9 +128,9 @@ function PricesAndVoteData({
   const tokens = useContext(TokensContext)
   const sdlWethSushiPoolContract = useSdlWethSushiPairContract()
   const { chainId } = useActiveWeb3React()
-  const { sdlWethSushiPool } = useSelector(
-    (state: AppState) => state.application,
-  )
+  // const { sdlWethSushiPool } = useSelector(
+  //   (state: AppState) => state.application,
+  // )
 
   const fetchAndUpdateGasPrice = useCallback(() => {
     void fetchGasPrices(dispatch)
@@ -139,7 +138,7 @@ function PricesAndVoteData({
   const fetchAndUpdateTokensPrice = useCallback(() => {
     void getTokenPrice(tokens, dispatch, chainId ?? 1)
     // getTokenPrice(tokens, dispatch, chainId, sdlWethSushiPool)
-  }, [dispatch, chainId, sdlWethSushiPool, tokens])
+  }, [dispatch, chainId, tokens])
   const fetchAndUpdateSwapStats = useCallback(() => {
     void fetchSwapStats(dispatch)
   }, [dispatch])
