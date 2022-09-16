@@ -13,13 +13,21 @@ export default function HighPriceImpactConfirmation({
 }: Props): ReactElement {
   const { t } = useTranslation()
   return (
-    <Box bgcolor="error.main" p={2}>
+    <Box
+      bgcolor="error.main"
+      p={2}
+      data-testid="highPriceImpactConfirmationContainer"
+    >
       {t("highPriceImpactConfirmation")}
       <Box mt={2}>
         <Typography component="span" mr={1}>
           {t("iConfirm")}
         </Typography>
-        <Checkbox checked={checked} onChange={onCheck} />
+        <Checkbox
+          data-testid="highPriceImpactConfirmCheck"
+          checked={checked}
+          onChange={onCheck}
+        />
       </Box>
     </Box>
   )

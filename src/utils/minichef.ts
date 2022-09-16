@@ -1,12 +1,11 @@
 import { AddressZero, Zero } from "@ethersproject/constants"
-import {
-  ChainId,
-  MINICHEF_CONTRACT_ADDRESSES,
-  getMinichefPid,
-} from "../constants"
+import { BN_1E18, ChainId, MINICHEF_CONTRACT_ADDRESSES } from "../constants"
 import { createMultiCallContract, getMulticallProvider } from "."
 
+import { BasicPool } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
+import ERC20_ABI from "../constants/abis/erc20.json"
+import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { Contract as EthcallContract } from "ethcall"
 import { IRewarder } from "../../types/ethers-contracts/IRewarder"
 import IRewarder_ABI from "../constants/abis/IRewarder.json"
@@ -18,6 +17,7 @@ import { Web3Provider } from "@ethersproject/providers"
 export type MinichefPoolData = {
   sdlPerDay: BigNumber
   pid: number
+  pctOfSupplyStaked: BigNumber
   rewards?: Rewards
 }
 export type MinichefData = {
@@ -43,6 +43,19 @@ export type MinichefRewardersData = {
   [pid: number]: Rewards
 }
 const oneDaySecs = BigNumber.from(24 * 60 * 60)
+type PoolInfo = Pick<
+  BasicPool,
+  "poolAddress" | "lpToken" | "miniChefRewardsPid" | "lpTokenSupply"
+>
+type NonNullableFields<T> = {
+  [P in keyof T]: NonNullable<T[P]>
+} // TODO move to types file
+
+function getPoolsWithPids(pools: PoolInfo[]) {
+  return pools.filter(
+    ({ miniChefRewardsPid }) => miniChefRewardsPid,
+  ) as NonNullableFields<PoolInfo>[]
+}
 
 /**
  * Returns sdlPerDay and pid from minichef for the given pool addresses.
@@ -50,13 +63,12 @@ const oneDaySecs = BigNumber.from(24 * 60 * 60)
 export async function getMinichefRewardsPoolsData(
   library: Web3Provider,
   chainId: ChainId,
-  poolAddresses: string[],
+  poolData: PoolInfo[],
 ): Promise<MinichefData | null> {
   const ethCallProvider = await getMulticallProvider(library, chainId)
   const minichefAddress = MINICHEF_CONTRACT_ADDRESSES[chainId]
-  const addressesPidTuples = getPidsForPools(chainId, poolAddresses)
-  if (!addressesPidTuples.length || !minichefAddress || !ethCallProvider)
-    return null
+  const poolsWithPids = getPoolsWithPids(poolData)
+  if (!poolsWithPids.length || !minichefAddress || !ethCallProvider) return null
   try {
     const minichefContract = new EthcallContract(
       minichefAddress,
@@ -75,34 +87,58 @@ export async function getMinichefRewardsPoolsData(
       )
 
     // Fetch SDL reward info for each pool
-    const poolInfos = await ethCallProvider.tryEach(
-      addressesPidTuples.map(([, pid]) => minichefContract.poolInfo(pid)),
-      Array(addressesPidTuples.length).fill(true),
+    const poolInfos = await ethCallProvider.tryAll(
+      poolsWithPids.map(({ miniChefRewardsPid: pid }) =>
+        minichefContract.poolInfo(pid),
+      ),
+    )
+
+    // Fetch minichef LP balances
+    const minichefLPBalances = await ethCallProvider.tryAll(
+      poolsWithPids.map(({ lpToken }) => {
+        const lpTokenContract = createMultiCallContract<Erc20>(
+          lpToken,
+          ERC20_ABI,
+        )
+        return lpTokenContract.balanceOf(minichefAddress)
+      }),
     )
 
     // Fetch Rewarder Data
     const rewardersData = await getMinichefRewardsRewardersData(
       library,
       chainId,
-      poolAddresses,
+      poolData,
     )
 
     // Aggregate Data
-    const poolsData = addressesPidTuples.reduce((acc, [address, pid], i) => {
-      const poolInfo = poolInfos[i]
-      const rewardsData = rewardersData?.[pid]
-      if (poolInfo) {
-        const sdlPerDay = saddlePerSecond
-          .mul(oneDaySecs)
-          .mul(poolInfo.allocPoint)
-          .div(totalAllocPoint)
-        return {
-          [address]: { sdlPerDay, pid, ...({ rewards: rewardsData } || {}) },
-          ...acc,
+    const poolsData = poolsWithPids.reduce(
+      (acc, { poolAddress, miniChefRewardsPid: pid, lpTokenSupply }, i) => {
+        const poolInfo = poolInfos[i]
+        const rewardsData = rewardersData?.[pid]
+        const miniChefLpBalance = minichefLPBalances[i] || Zero
+        if (poolInfo) {
+          const pctOfSupplyStaked = lpTokenSupply.gt(Zero)
+            ? miniChefLpBalance.mul(BN_1E18).div(lpTokenSupply)
+            : Zero
+          const sdlPerDay = saddlePerSecond
+            .mul(oneDaySecs)
+            .mul(poolInfo.allocPoint)
+            .div(totalAllocPoint)
+          return {
+            [poolAddress]: {
+              sdlPerDay,
+              pid,
+              pctOfSupplyStaked,
+              ...({ rewards: rewardsData } || {}),
+            },
+            ...acc,
+          }
         }
-      }
-      return acc
-    }, {} as { [address: string]: MinichefPoolData })
+        return acc
+      },
+      {} as { [address: string]: MinichefPoolData },
+    )
     const allRewardTokens = [
       sdlAddress.toLowerCase(),
       ...Object.values(poolsData)
@@ -122,41 +158,32 @@ export async function getMinichefRewardsPoolsData(
   }
 }
 
-function getPidsForPools(
-  chainId: ChainId,
-  poolAddresses: string[],
-): [string, number][] {
-  return poolAddresses
-    .map((poolAddress) => [poolAddress, getMinichefPid(chainId, poolAddress)])
-    .filter(([, pid]) => !!pid) as [string, number][]
-}
-
 export async function getMinichefRewardsRewardersData(
   library: Web3Provider,
   chainId: ChainId,
-  poolAddresses: string[],
+  poolData: PoolInfo[],
 ): Promise<MinichefRewardersData | null> {
   const ethCallProvider = await getMulticallProvider(library, chainId)
   const minichefAddress = MINICHEF_CONTRACT_ADDRESSES[chainId]
-  const addressesPidTuples = getPidsForPools(chainId, poolAddresses)
-  if (!addressesPidTuples.length || !minichefAddress || !ethCallProvider)
-    return null
+  const poolsWithPids = getPoolsWithPids(poolData)
+  if (!poolsWithPids.length || !minichefAddress || !ethCallProvider) return null
   try {
     const minichefContract = createMultiCallContract<MiniChef>(
       minichefAddress,
       MINICHEF_CONTRACT_ABI,
     )
     // Fetch Rewarder Data
-    const rewarderAddresses = await ethCallProvider.tryEach(
-      addressesPidTuples.map(([, pid]) => minichefContract.rewarder(pid)),
-      Array(addressesPidTuples.length).fill(true),
+    const rewarderAddresses = await ethCallProvider.tryAll(
+      poolsWithPids.map(({ miniChefRewardsPid: pid }) =>
+        minichefContract.rewarder(pid),
+      ),
     )
     const rewarderContractsMap = {} as {
       [pid: number]: MulticallContract<IRewarder>
     }
     rewarderAddresses.forEach((address, i) => {
       if (address && address !== AddressZero) {
-        const pid = addressesPidTuples[i][1]
+        const pid = poolsWithPids[i].miniChefRewardsPid
         rewarderContractsMap[pid] = createMultiCallContract<IRewarder>(
           address,
           IRewarder_ABI,
@@ -207,18 +234,13 @@ export async function getMinichefRewardsRewardersData(
 export async function getMinichefRewardsUserData(
   library: Web3Provider,
   chainId: ChainId,
-  poolAddresses: string[],
+  poolData: PoolInfo[],
   account?: string,
 ): Promise<MinichefUserData | null> {
   const ethCallProvider = await getMulticallProvider(library, chainId)
   const minichefAddress = MINICHEF_CONTRACT_ADDRESSES[chainId]
-  const addressesPidTuples = getPidsForPools(chainId, poolAddresses)
-  if (
-    !addressesPidTuples.length ||
-    !minichefAddress ||
-    !ethCallProvider ||
-    !account
-  )
+  const poolsWithPids = getPoolsWithPids(poolData)
+  if (!poolsWithPids.length || !minichefAddress || !ethCallProvider || !account)
     return null
   try {
     const minichefContract = new EthcallContract(
@@ -228,19 +250,21 @@ export async function getMinichefRewardsUserData(
 
     // amount of lpToken staked, and SDL reward debt to user
     const userPoolsInfoPromise = ethCallProvider.all(
-      addressesPidTuples.map(([, pid]) =>
+      poolsWithPids.map(({ miniChefRewardsPid: pid }) =>
         minichefContract.userInfo(pid, account),
       ),
     )
     const pendingSDLAmountsPromise = ethCallProvider.all(
-      addressesPidTuples.map(([, pid]) =>
+      poolsWithPids.map(({ miniChefRewardsPid: pid }) =>
         minichefContract.pendingSaddle(pid, account),
       ),
     )
     // TODO rewarderAddresses are already fetched in getMinichefRewardsRewardersData and could be resused
     // addresses of rewarder contracts for third-party rewards
     const rewarderAddressesPromise = ethCallProvider.all(
-      addressesPidTuples.map(([, pid]) => minichefContract.rewarder(pid)),
+      poolsWithPids.map(({ miniChefRewardsPid: pid }) =>
+        minichefContract.rewarder(pid),
+      ),
     )
     const [userPoolsInfo, pendingSDLAmounts, rewarderAddresses] =
       await Promise.all([
@@ -254,7 +278,7 @@ export async function getMinichefRewardsUserData(
     }
     rewarderAddresses.forEach((address, i) => {
       if (address !== AddressZero) {
-        const pid = addressesPidTuples[i][1]
+        const pid = poolsWithPids[i].miniChefRewardsPid
         rewarderContractsMap[pid] = createMultiCallContract<IRewarder>(
           address,
           IRewarder_ABI,
@@ -275,7 +299,7 @@ export async function getMinichefRewardsUserData(
       }
     }, {} as { [pid: number]: BigNumber })
 
-    return addressesPidTuples.reduce((acc, [, pid], i) => {
+    return poolsWithPids.reduce((acc, { miniChefRewardsPid: pid }, i) => {
       const userPoolInfo = userPoolsInfo[i]
       const pendingSDL = pendingSDLAmounts[i]
       const pendingExternal = pidToExternalRewardsMap[pid] || Zero // denominated in rewarder.token

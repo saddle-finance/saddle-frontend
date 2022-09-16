@@ -5,7 +5,7 @@ context("Swap Flow", () => {
       before(() => {
         cy.visit(`/#/`)
         cy.waitForReact()
-        cy.wait(2000)
+        cy.wait(10000)
       })
       it("starts in a neutral state", () => {
         cy.get('[data-testid="swapTokenInputFrom"]')
@@ -15,14 +15,16 @@ context("Swap Flow", () => {
           .eq(0)
           .should("include.text", "Choose")
       })
-      it("shows all of the pool's tokens and balances in dropdown", () => {
+      it("shows all of the pool's tokens and balances in dropdown", function () {
         cy.get('[data-testid="swapTokenInputFrom"]')
           .eq(0)
           .contains("Choose")
           .as("dropdownButton")
           .click() // show
+        cy.wait(1000)
         poolTokenSymbols.forEach((tokenSymbol) => {
-          cy.react("ListItem", { options: { timeout: 3000 } }).should("exist") // wait for listitem to appear
+          cy.get('[data-testid="swapTokenItem"]').should("exist") // wait for listitem to appear
+          // cy.react("ListItem", { options: { timeout: 3000 } }).should("exist") // wait for listitem to appear
           cy.get('[data-testid="dropdownContainer"]')
             .contains(tokenSymbol, { matchCase: false })
             .should("exist")
@@ -42,11 +44,9 @@ context("Swap Flow", () => {
         cy.get('[data-testid="dropdownContainer"]')
           .contains(poolTokenSymbols[0], { matchCase: false })
           .click()
-        cy.react("SearchSelect", { options: { timeout: 1000 } }).should(
-          "not.exist",
-        )
+        // cy.react("SearchSelect").should("not.exist") //, { options: { timeout: 1000 } }
         // cy.react("SwapTokenInput")
-        //   .eq(0)
+        //   .eq(0) // TODO add back once cy.react unbroken
         cy.get('[data-testid="swapTokenInputFrom"]').contains(
           poolTokenSymbols[0],
           { matchCase: false },
@@ -66,22 +66,25 @@ context("Swap Flow", () => {
           .contains("Choose")
           .as("dropdownButton")
           .click() // show
-        cy.react("ListItem", { props: { isAvailable: false } }).should(
-          "have.length.above",
-          0,
-        )
+        cy.get('[data-testid="swapTokenItem"]').should("have.length.above", 0)
+        // cy.react("ListItem", { props: { isAvailable: false } }).should(
+        //   "have.length.above",
+        //   0,
+        // ) // TODO add back once cy.react unbroken
         poolTokenSymbols.slice(1).forEach((tokenSymbol, i) => {
-          const el = cy.react("ListItem", {
-            props: { symbol: tokenSymbol, isAvailable: true },
-          })
+          // const el = cy.react("ListItem", {
+          //   props: { symbol: tokenSymbol, isAvailable: true },
+          // }) // TODO add back once cy.react unbroken
+          const el = cy
+            .get('[data-testid="swapTokenItem"]')
+            .contains(tokenSymbol)
           el.should("exist")
           el.should("not.include.text", "≈$0")
           if (i === poolTokenSymbols.length - 2) {
             el.click()
           }
         })
-        cy.react("SwapTokenInput")
-          .eq(1)
+        cy.get('[data-testid="swapTokenInputFrom"]')
           .find("input")
           .as("swapInputEl")
           .should("not.have", "0")
@@ -106,6 +109,15 @@ context("Swap Flow", () => {
         cy.get("button").contains("Swap").should("be.enabled").click()
       })
       it("completes a swap", () => {
+        cy.getBySelId("highPriceImpactConfirmationContainer").then(
+          ($highPriceImpaceContainer) => {
+            if ($highPriceImpaceContainer.is(":visible")) {
+              cy.getBySelId("highPriceImpactConfirmCheck").find("input").check()
+            } else {
+              cy.log("high price impact is not detected")
+            }
+          },
+        )
         cy.get("button").contains("Confirm Swap").should("be.enabled").click()
       })
     })

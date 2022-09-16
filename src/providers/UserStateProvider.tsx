@@ -56,7 +56,14 @@ export default function UserStateProvider({
       const minichefDataPromise = getMinichefRewardsUserData(
         library,
         chainId,
-        Object.values(basicPools).map(({ poolAddress }) => poolAddress),
+        Object.values(basicPools).map(
+          ({ poolAddress, lpToken, miniChefRewardsPid, lpTokenSupply }) => ({
+            poolAddress,
+            lpToken,
+            miniChefRewardsPid,
+            lpTokenSupply,
+          }),
+        ),
         account,
       )
       const gaugeRewardsPromise = gauges
