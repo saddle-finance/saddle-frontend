@@ -46,7 +46,7 @@ context("Deposit Flow", () => {
       })
       cy.get("[data-testid=txnDeadlineInputGroup]")
         .find("input")
-        .type((60 * 60 * 7).toString()) // 1 week for safety
+        .type((99999).toString()) // 1 week for safety
       cy.get("#tokenInput input").then(($inputs) => {
         cy.wrap($inputs).each(($input) => {
           cy.wrap($input).type("100")

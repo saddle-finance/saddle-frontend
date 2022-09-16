@@ -55,7 +55,7 @@ context("Withdrawal Flow", () => {
       })
       cy.get("[data-testid=txnDeadlineInputGroup]")
         .find("input")
-        .type((60 * 60 * 7).toString()) // 1 week for safety
+        .type((99999).toString()) // 1 week for safety
       // test single item
       const tokens = poolTokensSymbols[poolName]
       cy.get('[data-testid="withdrawTokenRadio"]')
