@@ -20,7 +20,6 @@ export default function useGaugeTVL(): (gaugeAddress?: string) => BigNumber {
   )
   const basicPools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
-
   return useCallback(
     (gaugeAddress?: string): BigNumber => {
       if (!gaugeAddress) return Zero

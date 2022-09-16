@@ -49,7 +49,6 @@ FarmOverviewProps): JSX.Element | null {
   const tokens = useContext(TokensContext)
   const theme = useTheme()
   const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
-
   if (!chainId) return null
 
   return (

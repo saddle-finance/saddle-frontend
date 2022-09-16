@@ -33,6 +33,7 @@ export default function Farm(): JSX.Element {
   const [activeDialog, setActiveDialog] = useState<
     "stake" | "claim" | undefined
   >()
+
   const basicPools = useContext(BasicPoolsContext)
   const { gauges } = useContext(GaugeContext)
   const gaugeAprs = useContext(AprsContext)
@@ -127,6 +128,14 @@ export default function Farm(): JSX.Element {
 
       {farmData.map(
         ({ gaugeAddress, farmName, aprs, poolTokens, tvl, myStake }) => {
+          console.log({
+            gaugeAddress,
+            farmName,
+            aprs,
+            poolTokens,
+            tvl,
+            myStake,
+          })
           return (
             <FarmOverview
               farmName={farmName}

@@ -48,6 +48,7 @@ export default function StakeDialog({
 }: StakeDialogProps): JSX.Element | null {
   const { chainId, account, library } = useActiveWeb3React()
   const userGauge = useUserGauge(gaugeAddress)
+  console.log({ userGauge })
   const dispatch = useDispatch()
   const [stakeStatus, setStakeStatus] = useState<"stake" | "unstake">("stake")
   const [amountInput, setAmountInput] = useState<string>(defaultInput)

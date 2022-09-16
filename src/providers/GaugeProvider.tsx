@@ -47,9 +47,9 @@ export default function GaugeProvider({
     gaugeControllerContract,
     account,
     basicPools,
-    childGaugeFactory,
     gaugeMinterContract,
     masterRegistry,
+    childGaugeFactory,
   ])
 
   return (
