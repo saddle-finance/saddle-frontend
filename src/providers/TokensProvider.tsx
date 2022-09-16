@@ -108,17 +108,25 @@ export default function TokensProvider({
         "https://tokens.coingecko.com/uniswap/all.json",
       )
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const tokenLists: { tokens: { address: string }[] } =
-        await tokenListsRes.json()
-      const tokenListsTokenAddrs = tokenLists.tokens.map((token) =>
-        token.address.toLowerCase(),
-      )
+      let tokenLists
+      let tokenListsTokenAddrs: Set<string>
+      try {
+        tokenLists = (await tokenListsRes.json()) as {
+          tokens: { address: string }[]
+        }
+        tokenListsTokenAddrs = new Set(
+          tokenLists.tokens.map((token) => token.address.toLowerCase()),
+        )
+      } catch (e) {
+        console.error("Error parsing token lists", e)
+        tokenListsTokenAddrs = new Set()
+      }
       Object.keys(tokenInfos).forEach((address) => {
         ;(tokenInfos[address] as BasicToken).isLPToken = lpTokens.has(address)
         ;(tokenInfos[address] as BasicToken).typeAsset =
           tokenType[address] ?? PoolTypes.OTHER
         ;(tokenInfos[address] as BasicToken).isOnTokenLists =
-          tokenListsTokenAddrs.some((tokenAddr) => tokenAddr === address)
+          tokenListsTokenAddrs.has(String(address))
       })
       setTokens(tokenInfos)
     }

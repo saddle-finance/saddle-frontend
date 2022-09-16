@@ -2,7 +2,14 @@ import "react-toastify/dist/ReactToastify.css"
 
 import { AppDispatch, AppState } from "../state"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import React, { ReactElement, Suspense, useCallback, useEffect } from "react"
+import React, {
+  ReactElement,
+  Suspense,
+  useCallback,
+  useContext,
+  useEffect,
+} from "react"
+import TokensProvider, { TokensContext } from "../providers/TokensProvider"
 import { styled, useTheme } from "@mui/material"
 import { useDispatch, useSelector } from "react-redux"
 
@@ -19,7 +26,6 @@ import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import { ToastContainer } from "react-toastify"
-import TokensProvider from "../providers/TokensProvider"
 import TopMenu from "../components/TopMenu"
 import UserStateProvider from "../providers/UserStateProvider"
 import Version from "../components/Version"
@@ -28,8 +34,8 @@ import WrongNetworkModal from "../components/WrongNetworkModal"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchSdlWethSushiPoolInfo from "../utils/updateSdlWethSushiInfo"
 import fetchSwapStats from "../utils/getSwapStats"
-import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import getSnapshotVoteData from "../utils/getSnapshotVoteData"
+import { getTokenPrice } from "../utils/updateTokenPrices"
 import { useActiveWeb3React } from "../hooks"
 import { useIntercom } from "react-use-intercom"
 import usePoller from "../hooks/usePoller"
@@ -120,6 +126,7 @@ function PricesAndVoteData({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
   const dispatch = useDispatch<AppDispatch>()
+  const tokens = useContext(TokensContext)
   const sdlWethSushiPoolContract = useSdlWethSushiPairContract()
   const { chainId } = useActiveWeb3React()
   const { sdlWethSushiPool } = useSelector(
@@ -130,8 +137,9 @@ function PricesAndVoteData({
     void fetchGasPrices(dispatch)
   }, [dispatch])
   const fetchAndUpdateTokensPrice = useCallback(() => {
-    fetchTokenPricesUSD(dispatch, sdlWethSushiPool, chainId)
-  }, [dispatch, chainId, sdlWethSushiPool])
+    void getTokenPrice(tokens, dispatch, chainId ?? 1)
+    // getTokenPrice(tokens, dispatch, chainId, sdlWethSushiPool)
+  }, [dispatch, chainId, sdlWethSushiPool, tokens])
   const fetchAndUpdateSwapStats = useCallback(() => {
     void fetchSwapStats(dispatch)
   }, [dispatch])

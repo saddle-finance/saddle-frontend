@@ -300,7 +300,9 @@ export default function CreatePool(): React.ReactElement {
               <Divider />
               <Stack direction="row" spacing={3} mt={2}>
                 <Box flex={1}>
-                  <Typography mb={2}>{t("setFeeDescription")}</Typography>
+                  <Typography mb={2}>
+                    {t("setFeeDescription", { minFee: "0.01", maxFee: "1" })}
+                  </Typography>
                   <TextField
                     label={`${t("fee")} (%)`}
                     fullWidth

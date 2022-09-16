@@ -469,7 +469,7 @@ function Swap(): ReactElement {
   }
   function handleUpdateTokenFrom(address: string): void {
     if (!tokens || !tokenPricesUSD || !tokens[address]) return
-    !tokens[address]?.isOnTokenLists ? setOpenFrom(true) : setOpenFrom(false)
+    setOpenFrom(!tokens[address]?.isOnTokenLists)
     if (address === formState.to.address)
       return handleReverseExchangeDirection()
     setFormState((prevState) => {
