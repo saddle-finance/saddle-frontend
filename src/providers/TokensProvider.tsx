@@ -121,12 +121,20 @@ export default function TokensProvider({
         console.error("Error parsing token lists", e)
         tokenListsTokenAddrs = new Set()
       }
+      const additionalSdlApprovedAddrsHardhat = [
+        "0x9A676e781A523b5d0C0e43731313A708CB607508",
+        "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1",
+      ].map((addr) => addr.toLowerCase())
+      const additionalSdlApprovedAddrsSet = new Set([
+        ...tokenListsTokenAddrs,
+        ...additionalSdlApprovedAddrsHardhat,
+      ])
       Object.keys(tokenInfos).forEach((address) => {
         ;(tokenInfos[address] as BasicToken).isLPToken = lpTokens.has(address)
         ;(tokenInfos[address] as BasicToken).typeAsset =
           tokenType[address] ?? PoolTypes.OTHER
         ;(tokenInfos[address] as BasicToken).isOnTokenLists =
-          tokenListsTokenAddrs.has(String(address))
+          additionalSdlApprovedAddrsSet.has(String(address))
       })
       setTokens(tokenInfos)
     }
