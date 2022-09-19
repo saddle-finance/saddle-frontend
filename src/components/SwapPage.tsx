@@ -33,6 +33,7 @@ import { formatUnits } from "@ethersproject/units"
 import { getMultichainScanLink } from "../utils/getEtherscanLink"
 import { isHighPriceImpact } from "../utils/priceImpact"
 import { logEvent } from "../utils/googleAnalytics"
+import { shortenAddress } from "../utils/shortenAddress"
 import { useActiveWeb3React } from "../hooks"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
@@ -160,15 +161,19 @@ const SwapPage = (props: Props): ReactElement => {
           <Link
             href={getMultichainScanLink(
               chainId ?? 1,
-              type === "from"
-                ? fromToken?.address ?? ""
-                : toState.address ?? "",
+              type === "from" && fromToken
+                ? fromToken.address
+                : toState.address,
               "address",
             )}
             target="_blank"
           >
             <Typography mt={1}>
-              {type === "from" ? fromToken?.address : toState.address}
+              {type === "from" && fromToken
+                ? shortenAddress(fromToken.address)
+                : type === "to" && toState.address
+                ? shortenAddress(toState.address)
+                : "Unable to detect Token address"}
             </Typography>
           </Link>
         </Alert>

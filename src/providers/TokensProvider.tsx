@@ -104,13 +104,13 @@ export default function TokensProvider({
         Array.from(targetTokenAddresses),
       )
       if (!tokenInfos) return
-      const tokenListsRes = await fetch(
-        "https://tokens.coingecko.com/uniswap/all.json",
-      )
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       let tokenLists
       let tokenListsTokenAddrs: Set<string>
       try {
+        const tokenListsRes = await fetch(
+          "https://tokens.coingecko.com/uniswap/all.json",
+        )
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         tokenLists = (await tokenListsRes.json()) as {
           tokens: { address: string }[]
         }
