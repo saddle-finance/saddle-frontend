@@ -37,6 +37,7 @@ import { useTranslation } from "react-i18next"
 
 export interface ReviewWithdrawData {
   withdraw: {
+    address: string
     name: string
     symbol: string
     value: string

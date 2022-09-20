@@ -117,7 +117,7 @@ function Withdraw(): ReactElement {
         symbol,
         address,
         decimals,
-        priceUSD: tokenPricesUSD?.[symbol] || 0, // @dev TODO handle lpToken Price when wrapped withdraw implemented
+        priceUSD: tokenPricesUSD?.[address] || 0, // @dev TODO handle lpToken Price when wrapped withdraw implemented
         inputValue: withdrawFormState.tokenInputs[address]?.valueRaw || "",
       })),
     [withdrawFormState, withdrawTokens, tokenPricesUSD],
@@ -171,6 +171,7 @@ function Withdraw(): ReactElement {
           ),
         ),
         symbol,
+        address,
       })
       if (tokenPricesUSD?.[symbol] != null) {
         // null check since price may be 0
