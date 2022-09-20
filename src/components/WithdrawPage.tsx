@@ -178,6 +178,7 @@ const WithdrawPage = (props: Props): ReactElement | null => {
                     <TokenInput
                       key={index}
                       token={{
+                        address,
                         decimals,
                         symbol,
                         name,

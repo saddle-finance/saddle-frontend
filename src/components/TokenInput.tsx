@@ -23,6 +23,7 @@ interface Props {
   error?: boolean
   helperText?: string
   token: {
+    address: string
     symbol: string
     name: string
     priceUSD?: number

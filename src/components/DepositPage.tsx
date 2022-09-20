@@ -52,10 +52,11 @@ import { useRewardsHelpers } from "../hooks/useRewardsHelpers"
 interface Props {
   title: string
   onConfirmTransaction: () => Promise<void>
-  onChangeTokenInputValue: (tokenSymbol: string, value: string) => void
   onToggleDepositWrapped: () => void
+  onChangeTokenInputValue: (tokenAddr: string, value: string) => void
   shouldDepositWrapped: boolean
   tokens: Array<{
+    address: string
     symbol: string
     name: string
     max: string
@@ -236,13 +237,22 @@ const DepositPage = (props: Props): ReactElement => {
               <Stack direction="column" spacing={2}>
                 {tokens.map(
                   (
-                    { decimals, symbol, name, priceUSD, inputValue, max },
+                    {
+                      address,
+                      decimals,
+                      symbol,
+                      name,
+                      priceUSD,
+                      inputValue,
+                      max,
+                    },
                     index,
                   ) => (
                     <TokenInput
                       key={index}
                       max={max}
                       token={{
+                        address,
                         decimals,
                         symbol,
                         name,
@@ -251,7 +261,7 @@ const DepositPage = (props: Props): ReactElement => {
                       inputValue={inputValue}
                       disabled={poolData?.isPaused}
                       onChange={(value): void =>
-                        onChangeTokenInputValue(symbol, value)
+                        onChangeTokenInputValue(address, value)
                       }
                     />
                   ),

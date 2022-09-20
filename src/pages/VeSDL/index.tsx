@@ -366,6 +366,7 @@ export default function VeSDL(): JSX.Element {
               inputType="numeric"
               showUSDprice={false}
               token={{
+                address: "0x0",
                 decimals: 18,
                 symbol: "SDL",
                 name: "SDL",
@@ -414,6 +415,7 @@ export default function VeSDL(): JSX.Element {
             </Box>
             <TokenInput
               token={{
+                address: "0x0",
                 decimals: 18,
                 symbol: "veSDL",
                 name: t("voteEscrowSDL"),
