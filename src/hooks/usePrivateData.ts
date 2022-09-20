@@ -109,6 +109,7 @@ export default function usePrivateData() {
           [k]: (voteWeights[k] * sdlRatePerDay) / 1000,
         }
       }, {})
+      console.log({ currentSDLPerChoice, futureSDLPerChoice })
 
       let [currentUserTotalDailySDL, futureUserTotalDailySDL] = [0, 0]
       const newData = Object.values(gauges).reduce(
@@ -161,12 +162,13 @@ export default function usePrivateData() {
         {} as PrivateGaugeData,
       )
       setData({ ...newData, futureUserTotalDailySDL, currentUserTotalDailySDL })
-      console.table([
+      const tableData = [
         [
           "Name",
           "TVL",
           "Curr. $LP per SDL",
           "Fut. $LP per SDL",
+          "Fut. Gauge SDL/Day",
           "User Share %",
           "User Boost",
           "Curr. User SDL",
@@ -179,27 +181,33 @@ export default function usePrivateData() {
           null,
           null,
           null,
+          null,
           commify(currentUserTotalDailySDL.toFixed(0)),
           commify(futureUserTotalDailySDL.toFixed(0)),
         ],
         ...Object.keys(newData)
           .sort((a, b) => {
+            const SORT_BY = "future" // | "current"
             // Sort by max User SDL per day, then min pool dollars per SDL, then max pool TVL
             const [infoA, infoB] = [newData[a], newData[b]]
-            const userDailySDLDiff =
-              infoB.current.userDailySDL - infoA.current.userDailySDL
+            const {
+              userDailySDL: userDailySDLA,
+              dollarsPerSDL: dollarsPerSDLA,
+            } = infoA[SORT_BY]
+            const {
+              userDailySDL: userDailySDLB,
+              dollarsPerSDL: dollarsPerSDLB,
+            } = infoB[SORT_BY]
+            const userDailySDLDiff = userDailySDLB - userDailySDLA // 5 - 2, greater to lesser
             const poolDollarsPerSDLDiff =
-              infoA.current.dollarsPerSDL - infoB.current.dollarsPerSDL
+              Math.round(dollarsPerSDLA) - Math.round(dollarsPerSDLB) // 2 - 5, less to greater
 
             if (userDailySDLDiff !== 0) {
               return userDailySDLDiff
             }
-            if (infoA.current.dollarsPerSDL && !infoB.current.dollarsPerSDL) {
+            if (dollarsPerSDLA && !dollarsPerSDLB) {
               return -1
-            } else if (
-              infoB.current.dollarsPerSDL &&
-              !infoA.current.dollarsPerSDL
-            ) {
+            } else if (dollarsPerSDLB && !dollarsPerSDLA) {
               return 1
             } else {
               return poolDollarsPerSDLDiff
@@ -209,16 +217,19 @@ export default function usePrivateData() {
             const info = newData[gaugeName]
             return [
               gaugeName,
-              commify(info.tvl.toFixed(0)),
-              commify(info.current.dollarsPerSDL.toFixed(2)),
-              commify(info.future.dollarsPerSDL.toFixed(2)),
+              `$${commify(info.tvl.toFixed(0))}`,
+              `$${commify(info.current.dollarsPerSDL.toFixed(2))}`,
+              `$${commify(info.future.dollarsPerSDL.toFixed(2))}`,
+              commify(info.future.gaugeDailySDL.toFixed(0)),
               `${(info.userShare * 100).toFixed(2)}%`,
               info.userBoost,
               commify(info.current.userDailySDL.toFixed(0)),
               commify(info.future.userDailySDL.toFixed(0)),
             ]
           }),
-      ])
+      ]
+      console.log(tableData)
+      console.table(tableData)
       // console.log({
       //   ...newData,
       //   futureUserTotalDailySDL,
