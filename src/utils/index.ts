@@ -691,7 +691,6 @@ export function getPriceDataForExpandedPool(
     ),
     18,
   )
-  console.log({ poolAssetPrice, tokenPricesUSD, typeOfAsset })
   const tokenBalances1e18 = tokenBalances.map((balance, i) =>
     balance.mul(BigNumber.from(10).pow(18 - (tokens[i].decimals || 0))),
   )
