@@ -1,0 +1,323 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_callProxy",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "int128",
+            "name": "bias",
+            "type": "int128"
+          },
+          {
+            "internalType": "int128",
+            "name": "slope",
+            "type": "int128"
+          },
+          {
+            "internalType": "uint256",
+            "name": "ts",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ChildOracle.Point",
+        "name": "userPoint",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "int128",
+            "name": "bias",
+            "type": "int128"
+          },
+          {
+            "internalType": "int128",
+            "name": "slope",
+            "type": "int128"
+          },
+          {
+            "internalType": "uint256",
+            "name": "ts",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct ChildOracle.Point",
+        "name": "globalPoint",
+        "type": "tuple"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "Recieve",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "oldOwner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "TransferOwnership",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "oldCallProxy",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newCallProxy",
+        "type": "address"
+      }
+    ],
+    "name": "UpdateCallProxy",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "acceptTransferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      }
+    ],
+    "name": "balanceOf",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "callProxy",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_futureOwner",
+        "type": "address"
+      }
+    ],
+    "name": "commitTransferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "futureOwner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "globalPoint",
+    "outputs": [
+      {
+        "internalType": "int128",
+        "name": "bias",
+        "type": "int128"
+      },
+      {
+        "internalType": "int128",
+        "name": "slope",
+        "type": "int128"
+      },
+      {
+        "internalType": "uint256",
+        "name": "ts",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "int128",
+            "name": "bias",
+            "type": "int128"
+          },
+          {
+            "internalType": "int128",
+            "name": "slope",
+            "type": "int128"
+          },
+          {
+            "internalType": "uint256",
+            "name": "ts",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ChildOracle.Point",
+        "name": "_userPoint",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "int128",
+            "name": "bias",
+            "type": "int128"
+          },
+          {
+            "internalType": "int128",
+            "name": "slope",
+            "type": "int128"
+          },
+          {
+            "internalType": "uint256",
+            "name": "ts",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ChildOracle.Point",
+        "name": "_globalPoint",
+        "type": "tuple"
+      },
+      {
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      }
+    ],
+    "name": "recieve",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_newCallProxy",
+        "type": "address"
+      }
+    ],
+    "name": "setCallProxy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalSupply",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "userPoints",
+    "outputs": [
+      {
+        "internalType": "int128",
+        "name": "bias",
+        "type": "int128"
+      },
+      {
+        "internalType": "int128",
+        "name": "slope",
+        "type": "int128"
+      },
+      {
+        "internalType": "uint256",
+        "name": "ts",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

@@ -17,10 +17,10 @@ export default function GaugeProvider({
 }: React.PropsWithChildren<unknown>): ReactElement {
   const { chainId, library, account } = useActiveWeb3React()
   const gaugeControllerContract = useGaugeControllerContract()
-  const childGaugeFactory = useChildGaugeFactory()
+  const gaugeMinterContract = useGaugeMinterContract() // only exists on mainnet
   const masterRegistry = useMasterRegistry()
   const basicPools = useContext(BasicPoolsContext)
-  const gaugeMinterContract = useGaugeMinterContract() // only exists on mainnet
+  const childGaugeFactory = useChildGaugeFactory() // Only exists on sidechain
   const [gauges, setGauges] = useState<Gauges>(initialGaugesState)
 
   useEffect(() => {
