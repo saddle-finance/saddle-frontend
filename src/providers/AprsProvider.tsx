@@ -75,7 +75,7 @@ function buildRewards(
 ): GaugeApr[] {
   return gaugeRewards.map(({ tokenAddress, rate: rewardPerSecond }) => {
     const rewardToken = tokens[tokenAddress]
-    const rewardPrice = tokenPricesUSD[rewardToken?.address || ""] || 0
+    const rewardPrice = tokenPricesUSD[rewardToken?.symbol || ""] || 0
 
     if (rewardPrice === 0 || amountStakedUSD.isZero()) {
       const maxRewardPerDay = rewardPerSecond.mul(BN_DAY_IN_SECONDS)
