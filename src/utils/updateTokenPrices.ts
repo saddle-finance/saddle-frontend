@@ -133,18 +133,28 @@ export default function fetchTokenPricesUSD(
                 body?.[token.geckoId]?.usd,
             }
           }, otherTokensResult)
-          result.alETH = result?.ETH || result?.alETH || 0 // TODO: remove once CG price is fixed
+          // result.alETH = result?.ETH || result?.alETH || 0 // TODO: remove once CG price is fixed
           result.nUSD = 1
-          result.VETH2 = result?.ETH || 0
+          // result.VETH2 = result?.ETH || 0
           const sdlPerEth = sdlWethSushiPool?.wethReserve
             ? sdlWethSushiPool?.sdlReserve
                 ?.mul(BN_1E18)
                 .div(sdlWethSushiPool.wethReserve)
             : Zero
-          if (!result.SDL && sdlPerEth) {
-            result.SDL =
-              (result?.ETH || 0) / parseFloat(formatUnits(sdlPerEth, 18))
+          const sdlAddrLowercased =
+            "0xf1Dc500FdE233A4055e25e5BbF516372BC4F6871".toLowerCase()
+          const ethAddrLowercased =
+            "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2".toLowerCase()
+          // same logic as below but w\ addr key
+          if (!result[sdlAddrLowercased] && sdlPerEth) {
+            result[sdlAddrLowercased] =
+              (result[ethAddrLowercased] || 0) /
+              parseFloat(formatUnits(sdlPerEth, 18))
           }
+          // if (!result.SDL && sdlPerEth) {
+          //   result.SDL =
+          //     (result?.ETH || 0) / parseFloat(formatUnits(sdlPerEth, 18))
+          // }
           dispatch(updateTokensPricesUSD(result))
         }),
     { retries: 3 },

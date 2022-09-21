@@ -40,6 +40,7 @@ function MyShareCard({ data }: Props): ReactElement | null {
     }, {} as typeof data.amountsStaked),
     tokens: data.tokens.map((coin) => {
       return {
+        address: coin.address,
         isOnTokenLists: coin.isOnTokenLists,
         symbol: coin.symbol,
         name: coin.name,
@@ -78,7 +79,7 @@ function MyShareCard({ data }: Props): ReactElement | null {
       })}
       <Stack direction="row" mb={2} flexWrap="wrap">
         {formattedData.tokens.map((token) => (
-          <Box key={token.symbol} pt={3} pr={4}>
+          <Box key={token.address} pt={3} pr={4}>
             <Box display="flex" alignItems="center">
               <TokenIcon
                 alt="icon"

@@ -111,8 +111,10 @@ const SwapPage = (props: Props): ReactElement => {
   )
 
   const fromToken = useMemo(() => {
-    return tokenOptions.from.find(({ symbol }) => symbol === fromState.symbol)
-  }, [tokenOptions.from, fromState.symbol])
+    return tokenOptions.from.find(
+      ({ address }) => address === fromState.address,
+    )
+  }, [tokenOptions.from, fromState.address])
 
   const formattedPriceImpact = commify(
     formatBNToPercentString(exchangeRateInfo.priceImpact, 18),
