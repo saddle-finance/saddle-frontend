@@ -56,7 +56,7 @@
     "react-use-intercom": "^1.5.0",
     "redux": "^4.1.0",
     "redux-localstorage-simple": "^2.4.0",
-    "wagmi": "^0.6.3",
+    "wagmi": "^0.6.6",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
