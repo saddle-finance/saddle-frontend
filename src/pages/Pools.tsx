@@ -12,10 +12,10 @@ import {
 import React, { ReactElement, useContext, useEffect, useState } from "react"
 
 import { AppState } from "../state"
-import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "ethers"
 import ConfirmTransaction from "../components/ConfirmTransaction"
 import Dialog from "../components/Dialog"
+import { ExpandedPoolsContext } from "../providers/ExpandedPoolsProvider"
 import PoolOverview from "../components/PoolOverview"
 import { PoolTypes } from "../constants"
 import ReviewMigration from "../components/ReviewMigration"
@@ -32,7 +32,8 @@ import { useSelector } from "react-redux"
 
 function Pools(): ReactElement | null {
   const { account, chainId } = useActiveWeb3React()
-  const basicPools = useContext(BasicPoolsContext)
+  const expandedPools = useContext(ExpandedPoolsContext)
+  const pools = expandedPools.data.byName
   const userState = useContext(UserStateContext)
   const approveAndMigrate = useApproveAndMigrate()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -49,6 +50,8 @@ function Pools(): ReactElement | null {
   const [filter, setFilter] = useState<PoolTypes | "all" | "outdated">("all")
   const [communityPoolsFilter, setCommunityPoolsFilter] =
     useState<boolean>(false)
+  const [poolOrTokenFilterValue, setPoolOrTokenFilterValue] =
+    useState<string>("")
   const handleClickMigrate = (
     poolName: string,
     lpTokenBalance: BigNumber,
@@ -77,6 +80,8 @@ function Pools(): ReactElement | null {
               InputProps={{
                 startAdornment: <Search />,
               }}
+              onChange={(e) => setPoolOrTokenFilterValue(e.target.value)}
+              value={poolOrTokenFilterValue}
             />
             {true && (
               <Box ml={1} mt={1}>
@@ -133,7 +138,18 @@ function Pools(): ReactElement | null {
       </Stack>
 
       <Stack spacing={3}>
-        {Object.values(basicPools || {})
+        {Object.values(pools || {})
+          .filter(
+            (pool) =>
+              pool.poolName
+                .toLowerCase()
+                .includes(poolOrTokenFilterValue.toLowerCase()) ||
+              pool.tokens.some((token) =>
+                token.symbol
+                  .toLowerCase()
+                  .includes(poolOrTokenFilterValue.toLowerCase()),
+              ),
+          )
           .filter((basicPool) =>
             communityPoolsFilter ? !basicPool.isSaddleApproved : basicPool,
           )
@@ -151,9 +167,9 @@ function Pools(): ReactElement | null {
             // 2. active pools
             // 3. higher TVL pools
             const userLpTokenBalanceA =
-              userState?.tokenBalances?.[a.lpToken] || Zero
+              userState?.tokenBalances?.[a.lpToken.address] || Zero
             const userLpTokenBalanceB =
-              userState?.tokenBalances?.[b.lpToken] || Zero
+              userState?.tokenBalances?.[b.lpToken.address] || Zero
             const poolAssetA = parseUnits(
               String(
                 tokenPricesUSD?.[getTokenSymbolForPoolType(a.typeOfAsset)] || 0,
@@ -201,8 +217,9 @@ function Pools(): ReactElement | null {
                   ? () =>
                       handleClickMigrate(
                         basicPool.poolName,
-                        userState?.tokenBalances?.[basicPool.lpToken] || Zero,
-                        basicPool.lpToken,
+                        userState?.tokenBalances?.[basicPool.lpToken.address] ||
+                          Zero,
+                        basicPool.lpToken.address,
                       )
                   : undefined
               }
