@@ -325,15 +325,28 @@ export function getTokenSymbolForPoolType(poolType: PoolTypes): string {
   }
 }
 
-export function getTokenAddrForPoolType(poolType: PoolTypes): string {
-  if (poolType === PoolTypes.BTC) {
-    return "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599".toLowerCase() // WBTC
-  } else if (poolType === PoolTypes.ETH) {
-    return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2".toLowerCase() // "WETH"
-  } else if (poolType === PoolTypes.USD) {
-    // return "0x9A676e781A523b5d0C0e43731313A708CB607508".toLowerCase() // "USDC" Hardhat
-    return "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48".toLowerCase() // "USDC"
+export function getTokenAddrForPoolType(
+  poolType: PoolTypes,
+  chainId?: ChainId,
+): string {
+  if (chainId === ChainId.MAINNET) {
+    if (poolType === PoolTypes.BTC) {
+      return "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599".toLowerCase() // WBTC
+    } else if (poolType === PoolTypes.ETH) {
+      return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2".toLowerCase() // "WETH"
+    } else if (poolType === PoolTypes.USD) {
+      return "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48".toLowerCase() // "USDC"
+    }
+  } else if (chainId === ChainId.HARDHAT) {
+    if (poolType === PoolTypes.BTC) {
+      return ""
+    } else if (poolType === PoolTypes.ETH) {
+      return "".toLowerCase() // "WETH"
+    } else if (poolType === PoolTypes.USD) {
+      return "0x9A676e781A523b5d0C0e43731313A708CB607508".toLowerCase() // "USDC" Hardhat
+    }
   }
+
   return ""
 }
 
@@ -652,6 +665,7 @@ export function getPriceDataForPool(
 
 export function getPriceDataForExpandedPool(
   expandedPool: ExpandedPool,
+  chainId: ChainId,
   tokenPricesUSD?: TokenPricesUSD,
 ): {
   assetPrice: BigNumber
@@ -672,9 +686,12 @@ export function getPriceDataForExpandedPool(
     underlyingTokens,
   } = expandedPool
   const poolAssetPrice = parseUnits(
-    String(tokenPricesUSD?.[getTokenAddrForPoolType(typeOfAsset)] ?? 0),
+    String(
+      tokenPricesUSD?.[getTokenAddrForPoolType(typeOfAsset, chainId)] ?? 0,
+    ),
     18,
   )
+  console.log({ poolAssetPrice, tokenPricesUSD, typeOfAsset })
   const tokenBalances1e18 = tokenBalances.map((balance, i) =>
     balance.mul(BigNumber.from(10).pow(18 - (tokens[i].decimals || 0))),
   )

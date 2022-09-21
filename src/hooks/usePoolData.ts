@@ -164,6 +164,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
         const poolGaugeData = gauges?.[expandedPool.lpToken.address]
         const priceDataForPool = getPriceDataForExpandedPool(
           expandedPool,
+          chainId,
           tokenPricesUSD,
         )
 
