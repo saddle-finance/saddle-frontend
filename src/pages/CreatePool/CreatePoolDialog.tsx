@@ -9,11 +9,11 @@ import {
 } from "@mui/material"
 import { AssetType, PoolType, ValidationStatus } from "."
 import { BigNumber, BigNumberish, ethers } from "ethers"
+import React, { useState } from "react"
 import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 
 import Dialog from "../../components/Dialog"
 import DialogTitle from "../../components/DialogTitle"
-import React from "react"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../../hooks"
 import { usePermissionlessDeployer } from "../../hooks/useContract"
@@ -53,9 +53,11 @@ export default function ReviewCreatePool({
   const { t } = useTranslation()
   const permissionlessDeployer = usePermissionlessDeployer()
   const { account, chainId, library } = useActiveWeb3React()
+  const [isPoolDeploying, setIsPoolDeploying] = useState<boolean>(false)
 
   const onCreatePoolClick = async () => {
     if (!library || !chainId || !account || !permissionlessDeployer) return
+    setIsPoolDeploying(true)
 
     const enqueueCreatePoolToast = async (deployTxn: {
       wait: () => Promise<unknown>
@@ -116,6 +118,7 @@ export default function ReviewCreatePool({
         enqueueToast("error", "Unable to deploy Permissionless Pool")
       }
     } finally {
+      setIsPoolDeploying(false)
       onClose()
     }
   }
@@ -163,6 +166,7 @@ export default function ReviewCreatePool({
           <Button
             variant="contained"
             size="large"
+            disabled={isPoolDeploying}
             onClick={() => void onCreatePoolClick()}
           >
             <Typography>{t("createPool")}</Typography>

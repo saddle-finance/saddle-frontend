@@ -189,7 +189,9 @@ export default function CreatePool(): React.ReactElement {
       fee.length > 0 &&
       aParameter.length > 0
 
-    setDisableCreatePool(hasFieldError || !hasAllValues)
+    setDisableCreatePool(
+      hasFieldError || !hasAllValues || Boolean(tokenInputErrorMsg),
+    )
   }, [
     fee.length,
     feeError,
@@ -200,6 +202,7 @@ export default function CreatePool(): React.ReactElement {
     poolSymbol.length,
     poolSymbolError,
     tokenInfo,
+    tokenInputErrorMsg,
   ])
 
   const onTokenInputBlur = async (
@@ -354,8 +357,14 @@ export default function CreatePool(): React.ReactElement {
                   size="large"
                   exclusive
                   onChange={(event, value: PoolType) => {
-                    if (value) setPoolType(value)
-                    setTokenInputs([tokenInputs[0]])
+                    if (value) {
+                      setPoolType(value)
+                      if (value === PoolType.Base) {
+                        setTokenInputs([tokenInputs[0], ""])
+                      } else {
+                        setTokenInputs([tokenInputs[0]])
+                      }
+                    }
                   }}
                   fullWidth
                 >
@@ -436,7 +445,10 @@ export default function CreatePool(): React.ReactElement {
                       onChange={(e) => {
                         tokenInputs[index] = e.target.value
                         setTokenInputs([...tokenInputs])
-                        if (new Set(tokenInputs).size !== tokenInputs.length) {
+                        if (
+                          new Set(tokenInputs).size !== tokenInputs.length &&
+                          e.target.value
+                        ) {
                           setTokenInputErrorMsg("Duplicate Tokens Not Allowed")
                         } else {
                           setTokenInputErrorMsg("")
