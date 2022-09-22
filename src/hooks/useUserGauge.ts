@@ -46,7 +46,6 @@ export default function useUserGauge(
   const gauge = Object.values(gauges).find(
     ({ address }) => address === gaugeAddress,
   )
-  console.log("gauge in use user gauge", gauge)
   const lpToken = tokens?.[gauge?.lpTokenAddress ?? ""]
   const userState = useContext(UserStateContext)
   useEffect(() => {
@@ -54,6 +53,7 @@ export default function useUserGauge(
       if (!account || !chainId || !library) {
         return
       }
+
       await retrieveAndSetSDLValues(
         account,
         chainId,
@@ -168,9 +168,9 @@ async function retrieveAndSetSDLValues(
     setTotalVeSdl(supply)
   } else {
     const childOracle = getChildOracle(chainId, account, library)
-    const veSDLBalance = await childOracle["balanceOf(address)"](account)
+    const veSDLBalance = await childOracle.balanceOf(account)
     setVeSdlBalance(veSDLBalance)
-    const supply = await childOracle["totalSupply()"]()
+    const supply = await childOracle.totalSupply()
     setTotalVeSdl(supply)
   }
 }

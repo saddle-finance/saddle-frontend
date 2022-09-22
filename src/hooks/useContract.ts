@@ -120,18 +120,6 @@ export function useMasterRegistry(): MasterRegistry | null {
   ) as MasterRegistry
 }
 
-export async function getChildGaugeFactoryAddress(
-  chainId: ChainId,
-  masterRegistryContract: MasterRegistry,
-): Promise<string> {
-  if (chainId !== ChainId.MAINNET && chainId !== ChainId.HARDHAT)
-    return await masterRegistryContract.resolveNameToLatestAddress(
-      CHILD_GAUGE_FACTORY_NAME,
-    )
-
-  return Promise.resolve("")
-}
-
 export function useChildGaugeFactory(): ChildGaugeFactory | null {
   const { library, chainId } = useActiveWeb3React()
   const masterRegistryContract = useMasterRegistry()

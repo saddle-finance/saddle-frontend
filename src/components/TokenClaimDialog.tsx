@@ -69,7 +69,7 @@ export default function TokenClaimDialog({
     if (!basicPools || !userState?.gaugeRewards) return []
     return (
       Object.values(gauges)
-        .map(({ gaugeName, rewards, address }) => {
+        .map(({ gaugeName, address, rewards }) => {
           return {
             gaugeName,
             address,
@@ -273,7 +273,6 @@ export default function TokenClaimDialog({
                           ...userClaimableOtherRewards,
                         ]}
                         claimCallback={() => {
-                          console.log({ gauge })
                           void claimGaugeReward(gauge)
                         }}
                         status={
@@ -464,8 +463,6 @@ function useRewardClaims() {
         enqueueToast("error", "Unable to claim reward")
         return
       }
-
-      console.log({ gauge })
 
       if (gauge.rewards.length === 0) {
         enqueueToast("error", "No rewards to claim")
