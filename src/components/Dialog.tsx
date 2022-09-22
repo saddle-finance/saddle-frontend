@@ -17,7 +17,12 @@ export default function Dialog({
     <MuiDialog {...props} onClose={hideClose ? undefined : onClose}>
       {!hideClose && (
         <IconButton
-          sx={{ position: "absolute", right: 16, top: 16 }}
+          sx={{
+            position: "absolute",
+            right: 16,
+            top: 16,
+            zIndex: (theme) => theme.zIndex.modal + 1,
+          }}
           onClick={() => onClose()}
           data-testid="dialogCloseBtn"
         >
