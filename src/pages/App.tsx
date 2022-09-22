@@ -17,6 +17,7 @@ import MinichefProvider from "../providers/MinichefProvider"
 import Pages from "./Pages"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+import RegistryAddressProvider from "../providers/RegistryAddressProvider"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import { ToastContainer } from "react-toastify"
 import TokensProvider from "../providers/TokensProvider"
@@ -75,40 +76,45 @@ export default function App(): ReactElement {
       <Web3ReactManager>
         <BasicPoolsProvider>
           <MinichefProvider>
-            <GaugeProvider>
-              <TokensProvider>
-                <ExpandedPoolsProvider>
-                  <UserStateProvider>
-                    <PricesAndVoteData>
-                      <PendingSwapsProvider>
-                        <AprsProvider>
-                          <RewardsBalancesProvider>
-                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                              <AppContainer>
-                                <TopMenu />
-                                <Suspense fallback={null}>
-                                  <Pages />
-                                </Suspense>
-                                <WrongNetworkModal />
-                                <Version />
-                                <ToastContainer
-                                  theme={
-                                    theme.palette.mode === "dark"
-                                      ? "dark"
-                                      : "light"
-                                  }
-                                  position="top-left"
-                                />
-                              </AppContainer>
-                            </LocalizationProvider>
-                          </RewardsBalancesProvider>
-                        </AprsProvider>
-                      </PendingSwapsProvider>
-                    </PricesAndVoteData>
-                  </UserStateProvider>
-                </ExpandedPoolsProvider>
-              </TokensProvider>
-            </GaugeProvider>
+            <RegistryAddressProvider>
+              <GaugeProvider>
+                <TokensProvider>
+                  <ExpandedPoolsProvider>
+                    <UserStateProvider>
+                      <PricesAndVoteData>
+                        <PendingSwapsProvider>
+                          <AprsProvider>
+                            <RewardsBalancesProvider>
+                              <LocalizationProvider
+                                dateAdapter={AdapterDateFns}
+                              >
+                                <AppContainer>
+                                  <TopMenu />
+                                  <Suspense fallback={null}>
+                                    <Pages />
+                                  </Suspense>
+                                  <WrongNetworkModal />
+                                  <Version />
+                                  <ToastContainer
+                                    theme={
+                                      theme.palette.mode === "dark"
+                                        ? "dark"
+                                        : "light"
+                                    }
+                                    position="top-left"
+                                  />
+                                </AppContainer>
+                              </LocalizationProvider>
+                            </RewardsBalancesProvider>
+                          </AprsProvider>
+                        </PendingSwapsProvider>
+                      </PricesAndVoteData>
+                    </UserStateProvider>
+                  </ExpandedPoolsProvider>
+                </TokensProvider>
+                <RegistryAddressProvider />
+              </GaugeProvider>
+            </RegistryAddressProvider>
           </MinichefProvider>
         </BasicPoolsProvider>
       </Web3ReactManager>

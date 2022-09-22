@@ -67,6 +67,9 @@ import { VotingEscrow } from "../../types/ethers-contracts/VotingEscrow"
 import { formatBytes32String } from "@ethersproject/strings"
 import { useActiveWeb3React } from "./index"
 
+export const POOL_REGISTRY_NAME = formatBytes32String("PoolRegistry")
+export const CHILD_GAUGE_FACTORY_NAME = formatBytes32String("ChildGaugeFactory")
+
 // returns null on errors
 function useContract(
   address: string | undefined,
@@ -102,8 +105,6 @@ export function useMasterRegistry(): MasterRegistry | null {
     false,
   ) as MasterRegistry
 }
-
-export const POOL_REGISTRY_NAME = formatBytes32String("PoolRegistry")
 
 export function usePoolRegistry(): PoolRegistry | null {
   const { library } = useActiveWeb3React()
