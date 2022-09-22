@@ -345,6 +345,22 @@ export function getTokenAddrForPoolType(
     } else if (poolType === PoolTypes.USD) {
       return "0x9A676e781A523b5d0C0e43731313A708CB607508".toLowerCase() // "USDC" Hardhat
     }
+  } else if (chainId === ChainId.ARBITRUM) {
+    if (poolType === PoolTypes.USD) {
+      return "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8".toLowerCase() // "USDC" Arbi
+    }
+  } else if (chainId === ChainId.OPTIMISM) {
+    if (poolType === PoolTypes.USD) {
+      return "0x7f5c764cbc14f9669b88837ca1490cca17c31607".toLowerCase() // "USDC" OPTIMISM
+    }
+  } else if (chainId === ChainId.EVMOS) {
+    if (poolType === PoolTypes.USD) {
+      return "0x51e44ffad5c2b122c8b635671fcc8139dc636e82".toLowerCase() // "USDC" EVMOS
+    }
+  } else if (chainId === ChainId.KAVA) {
+    if (poolType === PoolTypes.USD) {
+      return "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f".toLowerCase() // "USDC" KAVA
+    }
   }
 
   return ""
