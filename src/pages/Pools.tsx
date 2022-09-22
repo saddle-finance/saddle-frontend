@@ -72,7 +72,7 @@ function Pools(): ReactElement | null {
   return (
     <Container sx={{ pb: 5 }}>
       <Stack direction="row" alignItems="center" justifyContent="center">
-        {true && (
+        {false && (
           <Box flex={1}>
             <TextField
               variant="standard"
@@ -83,7 +83,7 @@ function Pools(): ReactElement | null {
               onChange={(e) => setPoolOrTokenFilterValue(e.target.value)}
               value={poolOrTokenFilterValue}
             />
-            {true && (
+            {false && (
               <Box ml={1} mt={1}>
                 <FormGroup>
                   <FormControlLabel
@@ -122,7 +122,7 @@ function Pools(): ReactElement | null {
           ))}
         </Stack>
 
-        {true /* TODO: Change when perm pool turned on */ && (
+        {false /* TODO: Change when perm pool turned on */ && (
           <Box flex={1}>
             <Button
               variant="contained"

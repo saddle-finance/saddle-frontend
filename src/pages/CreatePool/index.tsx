@@ -158,7 +158,8 @@ export default function CreatePool(): React.ReactElement {
   useEffect(() => {
     const getBasePoolLPTokenAddrs = async () => {
       if (poolRegistry) {
-        const basePoolName = poolType === PoolType.UsdMeta ? "USDv2" : "BTCv2"
+        const basePoolName =
+          poolType === PoolType.UsdMeta ? "FRAX-USDC-BP" : "BTCv2"
         try {
           const poolRegistryData = await poolRegistry.getPoolDataByName(
             ethers.utils.formatBytes32String(basePoolName),
