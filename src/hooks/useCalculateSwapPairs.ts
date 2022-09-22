@@ -114,7 +114,10 @@ export function useCalculateSwapPairs(): (token?: BasicToken) => SwapData[] {
         originToken,
         chainId === ChainId.MAINNET, // virtualSwap only supports mainnet
       )
-      setPairCache((prevState) => ({ ...prevState, [token.symbol]: swapPairs }))
+      setPairCache((prevState) => ({
+        ...prevState,
+        [token.address]: swapPairs,
+      }))
       return swapPairs
     },
     [pairCache, tokens, poolsSortedByTVL, tokenToPoolsMapSorted, chainId],

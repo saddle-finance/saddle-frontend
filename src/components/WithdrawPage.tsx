@@ -61,6 +61,7 @@ export interface ReviewWithdrawData {
 interface Props {
   title: string
   tokensData: Array<{
+    isOnTokenLists: boolean
     symbol: string
     address: string
     name: string
@@ -173,12 +174,21 @@ const WithdrawPage = (props: Props): ReactElement | null => {
               <Stack spacing={3}>
                 {tokensData.map(
                   (
-                    { decimals, symbol, name, priceUSD, inputValue, address },
+                    {
+                      isOnTokenLists,
+                      decimals,
+                      symbol,
+                      name,
+                      priceUSD,
+                      inputValue,
+                      address,
+                    },
                     index,
                   ) => (
                     <TokenInput
                       key={index}
                       token={{
+                        isOnTokenLists,
                         address,
                         decimals,
                         symbol,

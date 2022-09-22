@@ -244,6 +244,7 @@ function Deposit(): ReactElement | null {
         priceUSD: 0,
         max: "0",
         inputValue: "0.0",
+        isOnTokenLists: false,
       }
 
     const priceUSD =
@@ -256,6 +257,7 @@ function Deposit(): ReactElement | null {
       symbol: token.symbol,
       name: token.name,
       decimals: token.decimals,
+      isOnTokenLists: token.isOnTokenLists,
       priceUSD,
       max: formatBNToString(
         tokenBalances?.[token.address] || Zero,

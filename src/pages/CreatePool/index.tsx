@@ -86,6 +86,7 @@ export default function CreatePool(): React.ReactElement {
     },
   ])
   const [fee, setFee] = useState<string>("")
+  const [tokenInputErrorMsg, setTokenInputErrorMsg] = useState<string>("")
 
   const handleAddToken = () => {
     setTokenInputs((prev) => [...prev, ""])
@@ -215,7 +216,6 @@ export default function CreatePool(): React.ReactElement {
       }
       setTokenInfo([...tokenInfo])
     }
-
     inputLoading[index] = true
     setInputLoading([...inputLoading])
     let tokenData
@@ -436,6 +436,11 @@ export default function CreatePool(): React.ReactElement {
                       onChange={(e) => {
                         tokenInputs[index] = e.target.value
                         setTokenInputs([...tokenInputs])
+                        if (new Set(tokenInputs).size !== tokenInputs.length) {
+                          setTokenInputErrorMsg("Duplicate Tokens Not Allowed")
+                        } else {
+                          setTokenInputErrorMsg("")
+                        }
                       }}
                       onBlur={(e) => void onTokenInputBlur(e.target, index)}
                       helperText={
@@ -502,6 +507,13 @@ export default function CreatePool(): React.ReactElement {
             >
               {t("addToken")}
             </Button>
+            <Box display="flex" justifyContent="center" pb={1}>
+              {tokenInputErrorMsg ? (
+                <Typography color="error">{tokenInputErrorMsg}</Typography>
+              ) : (
+                <Box sx={{ height: 20.11 }} />
+              )}
+            </Box>
             <Button
               variant="contained"
               size="large"

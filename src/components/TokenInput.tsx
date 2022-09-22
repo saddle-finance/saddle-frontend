@@ -9,6 +9,7 @@ import {
 import React, { ReactElement } from "react"
 import { calculatePrice, commify, isNumberOrEmpty } from "../utils"
 
+import { CheckCircleOutline } from "@mui/icons-material"
 import TokenIcon from "./TokenIcon"
 import { formatBNToString } from "../utils"
 import { useTranslation } from "react-i18next"
@@ -23,6 +24,7 @@ interface Props {
   error?: boolean
   helperText?: string
   token: {
+    isOnTokenLists: boolean
     address: string
     symbol: string
     name: string
@@ -46,6 +48,7 @@ function TokenInput({
     name: tokenName,
     priceUSD: tokenPriceUSD = 0,
     decimals: tokenDecimals,
+    isOnTokenLists,
   },
   inputType,
   ...rest
@@ -105,12 +108,17 @@ function TokenInput({
       >
         <TokenIcon symbol={tokenSymbol} alt="icon" width={24} height={24} />
         <Box ml={1}>
-          <Typography
-            variant="subtitle1"
-            color={disabled ? "text.secondary" : "text.primary"}
-          >
-            {tokenSymbol}
-          </Typography>
+          <Box display="flex" alignItems="center">
+            <Typography
+              variant="subtitle1"
+              color={disabled ? "text.secondary" : "text.primary"}
+            >
+              {tokenSymbol}
+            </Typography>
+            {isOnTokenLists && (
+              <CheckCircleOutline sx={{ marginLeft: 0.5, width: 15 }} />
+            )}
+          </Box>
           <Typography
             variant="body2"
             color={disabled ? "text.secondary" : "text.primary"}

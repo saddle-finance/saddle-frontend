@@ -206,7 +206,9 @@ function Swap(): ReactElement {
                 }
               })
               .filter(Boolean) as TokenOption[]
-          ).sort(sortTokenOptions)
+          )
+            .sort(sortTokenOptions)
+            .sort((a, b) => Number(b.isOnTokenLists) - Number(a.isOnTokenLists))
         : allTokens
     // from: all tokens always available. to: limited by selected "from" token.
     return {

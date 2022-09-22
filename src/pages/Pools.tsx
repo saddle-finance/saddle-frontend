@@ -122,7 +122,7 @@ function Pools(): ReactElement | null {
           ))}
         </Stack>
 
-        {false /* TODO: Change when perm pool turned on */ && (
+        {true /* TODO: Change when perm pool turned on */ && (
           <Box flex={1}>
             <Button
               variant="contained"

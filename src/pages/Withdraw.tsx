@@ -112,14 +112,17 @@ function Withdraw(): ReactElement {
 
   const tokensData = React.useMemo(
     () =>
-      withdrawTokens.map(({ name, symbol, address, decimals }) => ({
-        name,
-        symbol,
-        address,
-        decimals,
-        priceUSD: tokenPricesUSD?.[address] || 0, // @dev TODO handle lpToken Price when wrapped withdraw implemented
-        inputValue: withdrawFormState.tokenInputs[address]?.valueRaw || "",
-      })),
+      withdrawTokens.map(
+        ({ isOnTokenLists, name, symbol, address, decimals }) => ({
+          name,
+          symbol,
+          address,
+          decimals,
+          priceUSD: tokenPricesUSD?.[address] || 0, // @dev TODO handle lpToken Price when wrapped withdraw implemented
+          inputValue: withdrawFormState.tokenInputs[address]?.valueRaw || "",
+          isOnTokenLists,
+        }),
+      ),
     [withdrawFormState, withdrawTokens, tokenPricesUSD],
   )
   const gasPrice = BigNumber.from(

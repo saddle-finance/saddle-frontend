@@ -56,6 +56,7 @@ interface Props {
   onChangeTokenInputValue: (tokenAddr: string, value: string) => void
   shouldDepositWrapped: boolean
   tokens: Array<{
+    isOnTokenLists: boolean
     address: string
     symbol: string
     name: string
@@ -244,6 +245,7 @@ const DepositPage = (props: Props): ReactElement => {
                       name,
                       priceUSD,
                       inputValue,
+                      isOnTokenLists,
                       max,
                     },
                     index,
@@ -252,6 +254,7 @@ const DepositPage = (props: Props): ReactElement => {
                       key={index}
                       max={max}
                       token={{
+                        isOnTokenLists,
                         address,
                         decimals,
                         symbol,
