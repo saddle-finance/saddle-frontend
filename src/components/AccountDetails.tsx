@@ -90,20 +90,21 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
               {ethBalanceFormatted}&#926;
             </Typography>
           </Box>
+        </Box>
+        <Box display="flex" gap="16px" justifyContent="space-between" mt="16px">
           <Box display="flex" alignItems="center">
             {account && <Copy toCopy={account} />}
           </Box>
-          <Box display="flex" alignItems="center">
-            <Button
-              onClick={() => {
-                openOptions()
-              }}
-              startIcon={<ChangeIcon />}
-              data-testid="changeAccountBtn"
-            >
-              {t("changeAccount")}
-            </Button>
-          </Box>
+
+          <Button
+            onClick={() => {
+              openOptions()
+            }}
+            startIcon={<ChangeIcon />}
+            data-testid="changeAccountBtn"
+          >
+            {t("changeAccount")}
+          </Button>
         </Box>
       </DialogContent>
       <Box bgcolor={theme.palette.background.paper} p={3}>
