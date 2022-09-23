@@ -6,6 +6,7 @@ import {
   PoolTypes,
   Token,
   getMinichefPid,
+  isWithdrawFeePool,
 } from "../constants"
 import {
   MulticallCall,
@@ -48,6 +49,7 @@ type SharedSwapData = {
   isRemoved: boolean
   isSaddleApproved: boolean
   isSynthetic: boolean
+  isWithdrawFeeAbi: boolean
   lpToken: string
   lpTokenSupply: BigNumber
   miniChefRewardsPid: number | null
@@ -235,11 +237,11 @@ export async function getPoolsDataFromRegistry(
 
     registryPoolData.forEach((poolData, index) => {
       if (poolData == null) return
+      const poolAddress = poolData.poolAddress.toLowerCase()
+      const poolName = parseBytes32String(poolData.poolName)
+      const rewardsPid = getMinichefPid(chainId, poolAddress)
+      const isWithdrawFeeAbi = isWithdrawFeePool(poolName)
       const isMetaSwap = !isAddressZero(poolData.metaSwapDepositAddress)
-      const rewardsPid = getMinichefPid(
-        chainId,
-        poolData.poolAddress.toLowerCase(),
-      )
       const isSynthetic = mapToLowerCase(
         isMetaSwap ? poolData.underlyingTokens : poolData.tokens,
       ).some((addr) => isSynthAsset(chainId, addr))
@@ -275,12 +277,13 @@ export async function getPoolsDataFromRegistry(
         isRemoved: poolData.isRemoved,
         isSaddleApproved: poolData.isSaddleApproved,
         isSynthetic,
+        isWithdrawFeeAbi,
         lpToken: poolData.lpToken.toLowerCase(),
         lpTokenSupply,
         metaSwapDepositAddress: poolData.metaSwapDepositAddress.toLowerCase(),
         miniChefRewardsPid: rewardsPid,
-        poolAddress: poolData.poolAddress.toLowerCase(),
-        poolName: parseBytes32String(poolData.poolName),
+        poolAddress,
+        poolName,
         swapFee: swapStorage.swapFee,
         targetAddress: poolData.targetAddress.toLowerCase(),
         tokenBalances,
@@ -386,6 +389,7 @@ export async function getSwapInfo(
     const isSynthetic = (tokens || underlyingTokens || []).some((addr) =>
       isSynthAsset(chainId, addr),
     )
+    const isWithdrawFeeAbi = isWithdrawFeePool(poolName)
 
     // Swap Contract logic
     const swapContractMulticall = createMultiCallContract<MetaSwap>(
@@ -435,6 +439,7 @@ export async function getSwapInfo(
       futureA,
       futureATime,
       aParameter,
+      isWithdrawFeeAbi,
       tokenBalances, // in native token precision
       underlyingTokenBalances,
       lpTokenSupply,

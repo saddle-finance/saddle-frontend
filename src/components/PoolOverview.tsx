@@ -47,7 +47,7 @@ export default function PoolOverview({
     reserve: poolData.reserve
       ? formatBNToShortString(poolData.reserve, 18)
       : "-",
-    apy: poolData.apy ? `${formatBNToPercentString(poolData.apy, 18, 2)}` : "-",
+    apy: poolData.apy ? formatBNToPercentString(poolData.apy, 18, 2) : "-",
     volume: poolData.volume
       ? `$${formatBNToShortString(poolData.volume, 18)}`
       : "-",
@@ -56,6 +56,7 @@ export default function PoolOverview({
       18,
     ),
     sdlPerDay: formatBNToShortString(poolData?.sdlPerDay || Zero, 18),
+    minichefSDLInfo: formatBNToPercentString(poolData.minichefSDLApr, 18, 2),
   }
   const hasShare = !!userShareData?.usdBalance.gt(Zero)
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -77,6 +78,14 @@ export default function PoolOverview({
     }
   }, [poolData.isGuarded, shouldMigrate, poolData.isPaused])
 
+  let minichefSDLInfo = null
+  if (!gaugesAreActive) {
+    if (poolData.minichefSDLApr.gt(Zero)) {
+      minichefSDLInfo = ["SDL apr", formattedData.minichefSDLInfo]
+    } else if (poolData.sdlPerDay?.gt(Zero)) {
+      minichefSDLInfo = ["SDL/24h", formattedData.sdlPerDay]
+    }
+  }
   return (
     <Paper
       sx={{
@@ -167,7 +176,13 @@ export default function PoolOverview({
           )}
         </StyledGrid>
         <StyledGrid item xs={6} lg={2.5} disabled={disableText}>
-          {poolData.sdlPerDay?.gt(Zero) && !gaugesAreActive && (
+          {formattedData.apy && (
+            <div>
+              <Typography component="span">{`${t("apy")}`}: </Typography>
+              <Typography component="span">{formattedData.apy}</Typography>
+            </div>
+          )}
+          {minichefSDLInfo && (
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Typography variant="subtitle1" mr={1}>
                 <Link
@@ -176,19 +191,13 @@ export default function PoolOverview({
                   rel="noreferrer"
                   sx={{ textDecoration: "underline" }}
                 >
-                  SDL/24h
+                  {minichefSDLInfo[0]}
                 </Link>
               </Typography>
               <img src={logo} width="24px" />
               :&nbsp;
-              <Typography>{formattedData.sdlPerDay}</Typography>
+              <Typography>{minichefSDLInfo[1]}</Typography>
             </Box>
-          )}
-          {formattedData.apy && (
-            <div>
-              <Typography component="span">{`${t("apy")}`}: </Typography>
-              <Typography component="span">{formattedData.apy}</Typography>
-            </div>
           )}
           {gaugesAreActive ? (
             <GaugeRewardsDisplay aprs={poolData.gaugeAprs} />

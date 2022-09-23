@@ -7,7 +7,7 @@ const pools = [STABLECOIN_POOL_V2_NAME, SUSD_METAPOOL_V3_NAME] // order is impor
 
 async function increaseTime() {
   const provider = getDefaultProvider(
-    Cypress.env("PROVIDER_HOST"),
+    Cypress.env("PROVIDER_HOST") as string,
   ) as JsonRpcProvider
   // move block time forward +10 minutes
   // this is necessary since metapools have a 10 minute cache of base pool virtualPrice
@@ -21,7 +21,7 @@ async function increaseTime() {
 context("Deposit Flow", () => {
   beforeEach(() => {
     cy.visit(`/#/pools`)
-    cy.wait(2000)
+    cy.wait(6000)
   })
 
   function testPoolDeposit(poolName: string) {
@@ -37,9 +37,20 @@ context("Deposit Flow", () => {
       if (poolName === SUSD_METAPOOL_V3_NAME) {
         cy.get("[data-testid=deposit-wrapped-checkbox]").click()
       }
+      cy.get("[data-testid=advTableContainer]").then(($tableContainer) => {
+        if ($tableContainer.is(":visible")) {
+          cy.log("container is visible")
+        } else {
+          cy.get("[data-testid=advOptionContainer]").click()
+        }
+      })
+      cy.get("[data-testid=txnDeadlineInputGroup]")
+        .find("input")
+        .type((60 * 60 * 7).toString()) // 1 week for safety
       cy.get("#tokenInput input").then(($inputs) => {
         cy.wrap($inputs).each(($input) => {
           cy.wrap($input).type("100")
+          cy.wait(50)
         })
       })
       cy.get("[data-testid=tokenValue]")
