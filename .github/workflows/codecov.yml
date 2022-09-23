@@ -1,2 +1,3 @@
-github_checks:
-  annotations: false
+coverage:
+  github_checks:
+    annotations: false

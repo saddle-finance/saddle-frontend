@@ -320,6 +320,8 @@ export function getTokenSymbolForPoolType(poolType: PoolTypes): string {
     return "WETH"
   } else if (poolType === PoolTypes.USD) {
     return "USDC"
+  } else if (poolType === PoolTypes.OTHER) {
+    return "FTM"
   } else {
     return ""
   }
