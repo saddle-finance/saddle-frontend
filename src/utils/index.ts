@@ -312,6 +312,47 @@ export function calculatePrice(
   return Zero
 }
 
+export function getTokenAddrForPoolType(
+  poolType: PoolTypes,
+  chainId?: ChainId,
+): string {
+  if (chainId === ChainId.MAINNET) {
+    if (poolType === PoolTypes.BTC) {
+      return "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599".toLowerCase() // WBTC
+    } else if (poolType === PoolTypes.ETH) {
+      return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2".toLowerCase() // "WETH"
+    } else if (poolType === PoolTypes.USD) {
+      return "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48".toLowerCase() // "USDC"
+    }
+  } else if (chainId === ChainId.HARDHAT) {
+    if (poolType === PoolTypes.BTC) {
+      return ""
+    } else if (poolType === PoolTypes.ETH) {
+      return "".toLowerCase() // "WETH"
+    } else if (poolType === PoolTypes.USD) {
+      return "0x9A676e781A523b5d0C0e43731313A708CB607508".toLowerCase() // "USDC" Hardhat
+    }
+  } else if (chainId === ChainId.ARBITRUM) {
+    if (poolType === PoolTypes.USD) {
+      return "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8".toLowerCase() // "USDC" Arbi
+    }
+  } else if (chainId === ChainId.OPTIMISM) {
+    if (poolType === PoolTypes.USD) {
+      return "0x7f5c764cbc14f9669b88837ca1490cca17c31607".toLowerCase() // "USDC" OPTIMISM
+    }
+  } else if (chainId === ChainId.EVMOS) {
+    if (poolType === PoolTypes.USD) {
+      return "0x51e44ffad5c2b122c8b635671fcc8139dc636e82".toLowerCase() // "USDC" EVMOS
+    }
+  } else if (chainId === ChainId.KAVA) {
+    if (poolType === PoolTypes.USD) {
+      return "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f".toLowerCase() // "USDC" KAVA
+    }
+  }
+
+  return ""
+}
+
 export function getTokenSymbolForPoolType(poolType: PoolTypes): string {
   // TODO modify for native assets (eg ETH vs FTM)
   if (poolType === PoolTypes.BTC) {
