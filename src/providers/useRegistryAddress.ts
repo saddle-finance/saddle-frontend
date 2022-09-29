@@ -4,35 +4,35 @@ import {
 } from "../hooks/useContract"
 import { UseQueryResult, useQuery } from "@tanstack/react-query"
 import { ChainId } from "../constants"
-import { parseBytes32String } from "ethers/lib/utils"
+import { ContractNotLoadedError } from "../errors/ContractNotLoadedError"
+import { formatBytes32String } from "ethers/lib/utils"
 import { useActiveWeb3React } from "../hooks"
 
-export type RegistryAddress = Partial<Record<string, string>>
+export type RegistryAddresses = Partial<Record<string, string>>
 
-export const useRegistryAddress = (): UseQueryResult<RegistryAddress> => {
+enum QueryKeys {
+  RegistryAddress = "registryAddress",
+}
+
+export const useRegistryAddress = (): UseQueryResult<RegistryAddresses> => {
   const { chainId } = useActiveWeb3React()
   const masterRegistry = useMasterRegistry()
 
-  return useQuery(["registryAddress"], async () => {
+  return useQuery([QueryKeys.RegistryAddress], async () => {
     if (!masterRegistry) {
-      console.error(
-        "Master Registry not available. Unable to retrieve contract addresses",
-      )
-      return {}
+      throw new ContractNotLoadedError("Master Registry")
     }
+
+    const addresses: Partial<Record<string, string>> = {}
 
     if (chainId !== ChainId.MAINNET && chainId !== ChainId.HARDHAT) {
       const childGaugeFactoryAddress =
         await masterRegistry.resolveNameToLatestAddress(
-          CHILD_GAUGE_FACTORY_NAME,
+          formatBytes32String(CHILD_GAUGE_FACTORY_NAME),
         )
-      const addresses: Partial<Record<string, string>> = {}
-      addresses[parseBytes32String(CHILD_GAUGE_FACTORY_NAME)] =
-        childGaugeFactoryAddress
-
-      return addresses
+      addresses[CHILD_GAUGE_FACTORY_NAME] = childGaugeFactoryAddress
     }
 
-    return {}
+    return addresses
   })
 }

@@ -67,8 +67,8 @@ import { VotingEscrow } from "../../types/ethers-contracts/VotingEscrow"
 import { formatBytes32String } from "@ethersproject/strings"
 import { useActiveWeb3React } from "./index"
 
-export const POOL_REGISTRY_NAME = formatBytes32String("PoolRegistry")
-export const CHILD_GAUGE_FACTORY_NAME = formatBytes32String("ChildGaugeFactory")
+export const POOL_REGISTRY_NAME = "PoolRegistry"
+export const CHILD_GAUGE_FACTORY_NAME = "ChildGaugeFactory"
 
 // returns null on errors
 function useContract(
@@ -113,7 +113,7 @@ export function usePoolRegistry(): PoolRegistry | null {
   useEffect(() => {
     if (masterRegistryContract) {
       masterRegistryContract
-        ?.resolveNameToLatestAddress(POOL_REGISTRY_NAME)
+        ?.resolveNameToLatestAddress(formatBytes32String(POOL_REGISTRY_NAME))
         .then((contractAddress) => {
           if (contractAddress !== AddressZero) {
             setContractAddress(contractAddress)
@@ -145,7 +145,7 @@ export function usePoolRegistryMultiCall(): MulticallContract<PoolRegistry> | nu
   useEffect(() => {
     if (masterRegistryContract) {
       masterRegistryContract
-        ?.resolveNameToLatestAddress(POOL_REGISTRY_NAME)
+        ?.resolveNameToLatestAddress(formatBytes32String(POOL_REGISTRY_NAME))
         .then((contractAddress) => {
           if (contractAddress !== AddressZero) {
             setContractAddress(contractAddress)
