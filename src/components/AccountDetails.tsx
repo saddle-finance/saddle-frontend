@@ -102,6 +102,7 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
             }}
             startIcon={<ChangeIcon />}
             data-testid="changeAccountBtn"
+            sx={{ padding: 0 }}
           >
             {t("changeAccount")}
           </Button>
