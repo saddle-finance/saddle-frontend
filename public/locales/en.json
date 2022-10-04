@@ -183,7 +183,7 @@
   "poolName": "Pool Name",
   "poolNameError": "Pool Name length should be 32 characters or less",
   "poolSymbol": "Pool Symbol",
-  "poolSymbolError": "Pool Symbol should be 32 characters or less",
+  "poolSymbolError": "Pool Symbol should be 32 characters or less and not include spaces",
   "poolOverview": "Pool Overview",
   "pools": "Pools",
   "poolType": "Pool Type",

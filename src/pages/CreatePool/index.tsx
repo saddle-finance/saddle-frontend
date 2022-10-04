@@ -148,7 +148,7 @@ export default function CreatePool(): React.ReactElement {
   }
 
   const poolNameError = poolName.length > 32
-  const poolSymbolError = poolSymbol.length > 32
+  const poolSymbolError = poolSymbol.length > 32 || poolSymbol.includes(" ")
   const aParameterError =
     !isValidNumber(aParameter) || parseFloat(aParameter) < 1
 
