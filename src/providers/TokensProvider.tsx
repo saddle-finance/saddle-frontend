@@ -9,7 +9,7 @@ import {
   MulticallContract,
   MulticallProvider,
 } from "../types/ethcall"
-import React, { ReactElement, useContext, useEffect, useState } from "react"
+import React, { ReactElement, useContext } from "react"
 import { chunkedTryAll, getMulticallProvider, isSynthAsset } from "../utils"
 
 import { BasicPoolsContext } from "./BasicPoolsProvider"
@@ -20,6 +20,7 @@ import { GaugeContext } from "./GaugeProvider"
 import { MinichefContext } from "./MinichefProvider"
 import { areGaugesActive } from "../utils/gauges"
 import { useActiveWeb3React } from "../hooks"
+import { useQuery } from "@tanstack/react-query"
 
 export type BasicToken = {
   address: string
@@ -40,80 +41,72 @@ export default function TokensProvider({
   const basicPools = useContext(BasicPoolsContext)
   const minichefData = useContext(MinichefContext)
   const { gauges } = useContext(GaugeContext)
-  const [tokens, setTokens] = useState<BasicTokens>(null)
 
-  useEffect(() => {
-    async function fetchTokens() {
-      if (!chainId || !library || !basicPools) {
-        setTokens(null)
-        return
-      }
-      const gaugesAreActive = areGaugesActive(chainId)
-      const ethCallProvider = await getMulticallProvider(library, chainId)
-      const lpTokens = new Set()
-      const tokenType: Partial<{ [tokenAddress: string]: PoolTypes }> = {}
-      const targetTokenAddresses = new Set(
-        Object.values(basicPools)
-          .map((pool) => {
-            lpTokens.add(pool.lpToken)
-            const tokensInPool = [
-              ...pool.tokens,
-              ...(pool.underlyingTokens || []),
-              pool.lpToken,
-            ]
-            Object.assign(
-              tokenType,
-              ...tokensInPool.map((address) => ({
-                [address]: pool.typeOfAsset,
-              })),
-            ) as Record<string, PoolTypes>
-            return tokensInPool
-          })
-          .flat(),
-      )
-      if (minichefData) {
-        // add minichef reward tokens
-        minichefData.allRewardTokens.forEach((address) => {
-          targetTokenAddresses.add(address)
-        })
-      }
-      if (gauges) {
-        // add gauge tokens
-        Object.values(gauges).forEach((gauge) => {
-          gauge.rewards.forEach(({ tokenAddress }) => {
-            targetTokenAddresses.add(tokenAddress)
-          })
-        })
-      }
-      if (SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chainId] && gaugesAreActive) {
-        // add sushi token
-        targetTokenAddresses.add(
-          SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chainId].toLowerCase(),
-        )
-      }
-      if (VOTING_ESCROW_CONTRACT_ADDRESS[chainId] && gaugesAreActive) {
-        // add voting escrow token
-        targetTokenAddresses.add(
-          VOTING_ESCROW_CONTRACT_ADDRESS[chainId].toLowerCase(),
-        )
-      }
-      const tokenInfos = await getTokenInfos(
-        ethCallProvider,
-        chainId,
-        Array.from(targetTokenAddresses),
-      )
-      if (!tokenInfos) return
-      Object.keys(tokenInfos).forEach((address) => {
-        ;(tokenInfos[address] as BasicToken).isLPToken = lpTokens.has(address)
-        ;(tokenInfos[address] as BasicToken).typeAsset =
-          tokenType[address] ?? PoolTypes.OTHER
-      })
-      setTokens(tokenInfos)
+  const fetchTokens = async () => {
+    if (!chainId || !library || !basicPools) {
+      throw new Error("error on fetch tokens ")
     }
-    void fetchTokens()
-  }, [chainId, library, basicPools, minichefData, gauges])
+    const gaugesAreActive = areGaugesActive(chainId)
+    const ethCallProvider = await getMulticallProvider(library, chainId)
+    const lpTokens = new Set()
+    const tokenType: Partial<{ [tokenAddress: string]: PoolTypes }> = {}
+    const targetTokenAddresses = new Set(
+      Object.values(basicPools)
+        .map((pool) => {
+          lpTokens.add(pool.lpToken)
+          const tokensInPool = [
+            ...pool.tokens,
+            ...(pool.underlyingTokens || []),
+            pool.lpToken,
+          ]
+          Object.assign(
+            tokenType,
+            ...tokensInPool.map((address) => ({
+              [address]: pool.typeOfAsset,
+            })),
+          ) as Record<string, PoolTypes>
+          return tokensInPool
+        })
+        .flat(),
+    )
+    if (minichefData) {
+      // add minichef reward tokens
+      minichefData.allRewardTokens.forEach((address) => {
+        targetTokenAddresses.add(address)
+      })
+    }
+    if (gauges) {
+      // add gauge tokens
+      Object.values(gauges).forEach((gauge) => {
+        gauge.rewards.forEach(({ tokenAddress }) => {
+          targetTokenAddresses.add(tokenAddress)
+        })
+      })
+    }
+    if (SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chainId] && gaugesAreActive) {
+      // add sushi token
+      targetTokenAddresses.add(
+        SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chainId].toLowerCase(),
+      )
+    }
+    if (VOTING_ESCROW_CONTRACT_ADDRESS[chainId] && gaugesAreActive) {
+      // add voting escrow token
+      targetTokenAddresses.add(
+        VOTING_ESCROW_CONTRACT_ADDRESS[chainId].toLowerCase(),
+      )
+    }
+    return getTokenInfos(
+      ethCallProvider,
+      chainId,
+      Array.from(targetTokenAddresses),
+    )
+  }
+  const { data: tokenInfos } = useQuery(["fetchTokens"], fetchTokens)
+
   return (
-    <TokensContext.Provider value={tokens}>{children}</TokensContext.Provider>
+    <TokensContext.Provider value={tokenInfos || {}}>
+      {children}
+    </TokensContext.Provider>
   )
 }
 

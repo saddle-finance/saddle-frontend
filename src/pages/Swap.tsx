@@ -121,7 +121,7 @@ function Swap(): ReactElement {
 
   // build a representation of pool tokens for the UI
   const tokenOptions = useMemo(() => {
-    if (!chainId || !tokenBalances)
+    if (!chainId)
       return {
         from: [],
         to: [],
@@ -150,7 +150,7 @@ function Swap(): ReactElement {
         return hasAnyUnpaused && hasAnyBalance
       })
       .map(({ symbol, name, decimals }) => {
-        const amount = tokenBalances[symbol] || Zero
+        const amount = tokenBalances?.[symbol] || Zero
         return {
           name,
           symbol,
@@ -173,7 +173,7 @@ function Swap(): ReactElement {
                 }
                 const token = tokenSymbolToTokenMap[to.symbol] as BasicToken
                 if (!token) return null
-                const amount = tokenBalances[token.symbol]
+                const amount = tokenBalances?.[token.symbol] || Zero
                 return {
                   name: token.name,
                   symbol: token.symbol,
@@ -208,6 +208,7 @@ function Swap(): ReactElement {
     chainId,
     basicPools,
   ])
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const calculateSwapAmount = useCallback(
     debounce(async (formStateArg: FormState) => {
@@ -594,35 +595,37 @@ function Swap(): ReactElement {
   }
 
   return (
-    <SwapPage
-      pendingSwaps={pendingSwapData}
-      tokenOptions={tokenOptions}
-      exchangeRateInfo={{
-        pair: `${formState.from.symbol}/${formState.to.symbol}`,
-        exchangeRate: formState.exchangeRate,
-        priceImpact: formState.priceImpact,
-        route: formState.route,
-      }}
-      txnGasCost={txnGasCost}
-      fromState={formState.from}
-      toState={{
-        ...formState.to,
-        value:
-          formState.to.symbol === ""
-            ? "0"
-            : formatUnits(
-                formState.to.value,
-                tokenSymbolToTokenMap[formState.to.symbol]?.decimals,
-              ),
-      }}
-      swapType={formState.swapType}
-      onChangeFromAmount={handleUpdateAmountFrom}
-      onChangeFromToken={handleUpdateTokenFrom}
-      onChangeToToken={handleUpdateTokenTo}
-      error={formState.error}
-      onConfirmTransaction={handleConfirmTransaction}
-      onClickReverseExchangeDirection={handleReverseExchangeDirection}
-    />
+    <div>
+      <SwapPage
+        pendingSwaps={pendingSwapData}
+        tokenOptions={tokenOptions}
+        exchangeRateInfo={{
+          pair: `${formState.from.symbol}/${formState.to.symbol}`,
+          exchangeRate: formState.exchangeRate,
+          priceImpact: formState.priceImpact,
+          route: formState.route,
+        }}
+        txnGasCost={txnGasCost}
+        fromState={formState.from}
+        toState={{
+          ...formState.to,
+          value:
+            formState.to.symbol === ""
+              ? "0"
+              : formatUnits(
+                  formState.to.value,
+                  tokenSymbolToTokenMap[formState.to.symbol]?.decimals,
+                ),
+        }}
+        swapType={formState.swapType}
+        onChangeFromAmount={handleUpdateAmountFrom}
+        onChangeFromToken={handleUpdateTokenFrom}
+        onChangeToToken={handleUpdateTokenTo}
+        error={formState.error}
+        onConfirmTransaction={handleConfirmTransaction}
+        onClickReverseExchangeDirection={handleReverseExchangeDirection}
+      />
+    </div>
   )
 }
 

@@ -23,7 +23,9 @@ export const network = new NetworkConnector({
 
 let networkLibrary: BaseProvider | undefined
 export function getNetworkLibrary(): BaseProvider {
-  const provider = getDefaultProvider(NETWORK_URL)
+  const provider = getDefaultProvider(
+    "https://eth-mainnet.alchemyapi.io/v2/qNhZ_-GaDehhI-HSlG_dff9nxS6nuXGg",
+  )
   return (networkLibrary = networkLibrary ?? provider)
 }
 

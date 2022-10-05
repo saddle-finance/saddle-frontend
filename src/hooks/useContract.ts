@@ -66,6 +66,7 @@ import VOTING_ESCROW_CONTRACT_ABI from "../constants/abis/votingEscrow.json"
 import { VotingEscrow } from "../../types/ethers-contracts/VotingEscrow"
 import { formatBytes32String } from "@ethersproject/strings"
 import { useActiveWeb3React } from "./index"
+import { useQuery } from "@tanstack/react-query"
 
 export const POOL_REGISTRY_NAME = "PoolRegistry"
 export const CHILD_GAUGE_FACTORY_NAME = "ChildGaugeFactory"
@@ -75,26 +76,23 @@ function useContract(
   address: string | undefined,
   ABI: ContractInterface,
   withSignerIfPossible = true,
-): Contract | null {
+): Contract {
   const { library, account } = useActiveWeb3React()
 
   return useMemo(() => {
-    if (!address || !ABI || !library) return null
-    try {
-      return getContract(
-        address,
-        ABI,
-        library,
-        withSignerIfPossible && account ? account : undefined,
-      )
-    } catch (error) {
-      console.error("Failed to get contract", error)
-      return null
+    if (!address || !ABI || !library) {
+      throw new Error("Error on contract")
     }
+    return getContract(
+      address,
+      ABI,
+      library,
+      withSignerIfPossible && account ? account : undefined,
+    )
   }, [address, ABI, library, withSignerIfPossible, account])
 }
 
-export function useMasterRegistry(): MasterRegistry | null {
+export function useMasterRegistry(): MasterRegistry {
   const { chainId } = useActiveWeb3React()
   const contractAddress = chainId
     ? MASTER_REGISTRY_CONTRACT_ADDRESSES[chainId]
@@ -106,62 +104,77 @@ export function useMasterRegistry(): MasterRegistry | null {
   ) as MasterRegistry
 }
 
-export function usePoolRegistry(): PoolRegistry | null {
+export function usePoolRegistry(): PoolRegistry {
   const { library } = useActiveWeb3React()
   const masterRegistryContract = useMasterRegistry()
-  const [contractAddress, setContractAddress] = useState<string | undefined>()
-  useEffect(() => {
-    if (masterRegistryContract) {
-      masterRegistryContract
-        ?.resolveNameToLatestAddress(formatBytes32String(POOL_REGISTRY_NAME))
-        .then((contractAddress) => {
-          if (contractAddress !== AddressZero) {
-            setContractAddress(contractAddress)
-          }
-        })
-        .catch((error) => {
-          console.error(error)
-          setContractAddress(undefined)
-        })
-    } else {
-      setContractAddress(undefined)
-    }
-  }, [masterRegistryContract])
+  // const [contractAddress, setContractAddress] = useState<string | undefined>()
+  const { data: contractAddress } = useQuery(["poolRegistry"], () =>
+    masterRegistryContract.resolveNameToLatestAddress(
+      formatBytes32String(POOL_REGISTRY_NAME),
+    ),
+  )
+  // useEffect(() => {
+  //   if (masterRegistryContract) {
+  //     masterRegistryContract
+  //       ?.resolveNameToLatestAddress(formatBytes32String(POOL_REGISTRY_NAME))
+  //       .then((contractAddress) => {
+  //         if (contractAddress !== AddressZero) {
+  //           setContractAddress(contractAddress)
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.error(error)
+  //         setContractAddress(undefined)
+  //       })
+  //   } else {
+  //     setContractAddress(undefined)
+  //   }
+  // }, [masterRegistryContract])
 
-  return useMemo(() => {
-    if (!library || !contractAddress) return null
-    return getContract(
-      contractAddress,
-      POOL_REGISTRY_ABI,
-      library,
-    ) as PoolRegistry
-  }, [contractAddress, library])
+  // return useMemo(() => {
+  //   if (!library || !contractAddress) return null
+  if (!contractAddress || !library) throw new Error("")
+
+  return getContract(
+    contractAddress,
+    POOL_REGISTRY_ABI,
+    library,
+  ) as PoolRegistry
+  // }, [contractAddress, library])
 }
 
-export function usePoolRegistryMultiCall(): MulticallContract<PoolRegistry> | null {
+export function usePoolRegistryMultiCall(): MulticallContract<PoolRegistry> {
   const { library } = useActiveWeb3React()
   const masterRegistryContract = useMasterRegistry()
-  const [contractAddress, setContractAddress] = useState<string | undefined>()
-  useEffect(() => {
-    if (masterRegistryContract) {
-      masterRegistryContract
-        ?.resolveNameToLatestAddress(formatBytes32String(POOL_REGISTRY_NAME))
-        .then((contractAddress) => {
-          if (contractAddress !== AddressZero) {
-            setContractAddress(contractAddress)
-          }
-        })
-        .catch((error) => {
-          console.error(error)
-          setContractAddress(undefined)
-        })
-    } else {
-      setContractAddress(undefined)
-    }
-  }, [masterRegistryContract])
+  // const [contractAddress, setContractAddress] = useState<string | undefined>()
+  const { data: contractAddress } = useQuery(["masterRegistryContract"], () =>
+    masterRegistryContract.resolveNameToLatestAddress(
+      formatBytes32String(POOL_REGISTRY_NAME),
+    ),
+  )
+
+  // useEffect(() => {
+  //   if (masterRegistryContract) {
+  //     masterRegistryContract
+  //       ?.resolveNameToLatestAddress(formatBytes32String(POOL_REGISTRY_NAME))
+  //       .then((contractAddress) => {
+  //         if (contractAddress !== AddressZero) {
+  //           setContractAddress(contractAddress)
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.error(error)
+  //         setContractAddress(undefined)
+  //       })
+  //   } else {
+  //     setContractAddress(undefined)
+  //   }
+  // }, [masterRegistryContract])
 
   return useMemo(() => {
-    if (!library || !contractAddress) return null
+    if (!library || !contractAddress)
+      throw new Error("Error on master regisry contract")
+
     return createMultiCallContract<PoolRegistry>(
       contractAddress,
       POOL_REGISTRY_ABI,

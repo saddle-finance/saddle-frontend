@@ -13,7 +13,7 @@ import {
   MulticallContract,
   MulticallProvider,
 } from "../types/ethcall"
-import React, { ReactElement, useEffect, useState } from "react"
+import React, { ReactElement } from "react"
 import {
   chunkedTryAll,
   createMultiCallContract,
@@ -37,6 +37,7 @@ import { Zero } from "@ethersproject/constants"
 import { getMigrationData } from "../utils/migrations"
 import { parseBytes32String } from "@ethersproject/strings"
 import { useActiveWeb3React } from "../hooks"
+import { useQuery } from "@tanstack/react-query"
 import { useSelector } from "react-redux"
 
 type SharedSwapData = {
@@ -99,62 +100,60 @@ export default function BasicPoolsProvider({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
   const { chainId, library } = useActiveWeb3React()
-  const [basicPools, setBasicPools] = useState<BasicPools>(null)
   const { lastTransactionTimes } = useSelector(
     (state: AppState) => state.application,
   )
 
   const poolRegistry = usePoolRegistry()
   const poolRegistryMultiCall = usePoolRegistryMultiCall()
-  useEffect(() => {
-    async function fetchBasicPools() {
-      if (!chainId || !library || !poolRegistry || !poolRegistryMultiCall) {
-        setBasicPools(null)
-        return
-      }
-      const ethCallProvider = await getMulticallProvider(library, chainId)
-      const pools = IS_POOL_REGISTRY_MIGRATION_LIVE
-        ? await getPoolsDataFromRegistry(
-            chainId,
-            poolRegistry,
-            poolRegistryMultiCall,
-            ethCallProvider,
-          )
-        : await getPoolsBaseData(library, chainId)
-      const poolsAddresses = pools.map(({ poolAddress }) => poolAddress)
-      const migrationData = await getMigrationData(
-        library,
-        chainId,
-        poolsAddresses,
-      )
-      const result = pools.reduce((acc, pool) => {
-        const poolData = { ...pool } as BasicPool
-        if (pool.poolAddress && pool.poolName) {
-          poolData.isMigrated = migrationData?.[pool.poolAddress] != null
-          poolData.newPoolAddress = migrationData?.[pool.poolAddress]
-          return {
-            ...acc,
-            [pool.poolName]: poolData,
-          }
-        } else {
-          return {
-            ...acc,
-          }
-        }
-      }, {} as BasicPools)
-      setBasicPools(result)
+
+  if (!chainId || !library || !poolRegistry || !poolRegistryMultiCall) {
+    throw new Error("Error on fetch basic pools")
+  }
+  async function fetchBasicPools() {
+    if (!chainId || !library || !poolRegistry || !poolRegistryMultiCall) {
+      throw new Error("Error on fetch basic pools")
     }
-    void fetchBasicPools()
-  }, [
-    chainId,
-    library,
-    lastTransactionTimes,
-    poolRegistry,
-    poolRegistryMultiCall,
-  ])
+    const ethCallProvider = await getMulticallProvider(library, chainId)
+    return IS_POOL_REGISTRY_MIGRATION_LIVE
+      ? getPoolsDataFromRegistry(
+          chainId,
+          poolRegistry,
+          poolRegistryMultiCall,
+          ethCallProvider,
+        )
+      : getPoolsBaseData(library, chainId)
+  }
+  const { data: pools } = useQuery(
+    ["fetchBasicPools", lastTransactionTimes],
+    () => fetchBasicPools(),
+  )
+
+  const poolsAddresses = pools?.map(({ poolAddress }) => poolAddress)
+
+  const { data: migrationData } = useQuery(
+    ["fetchBasicPools"],
+    () => getMigrationData(library, chainId, poolsAddresses),
+    { enabled: !poolsAddresses },
+  )
+  const basicPools = pools?.reduce((acc, pool) => {
+    const poolData = { ...pool } as BasicPool
+    if (pool.poolAddress && pool.poolName) {
+      poolData.isMigrated = migrationData?.[pool.poolAddress] != null
+      poolData.newPoolAddress = migrationData?.[pool.poolAddress]
+      return {
+        ...acc,
+        [pool.poolName]: poolData,
+      }
+    } else {
+      return {
+        ...acc,
+      }
+    }
+  }, {} as BasicPools)
 
   return (
-    <BasicPoolsContext.Provider value={basicPools}>
+    <BasicPoolsContext.Provider value={basicPools ?? null}>
       {children}
     </BasicPoolsContext.Provider>
   )

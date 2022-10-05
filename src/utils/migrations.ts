@@ -18,10 +18,12 @@ type MigrationData = { [poolAddress: string]: string } // current poolAddress =>
 export async function getMigrationData(
   library: Web3Provider,
   chainId: ChainId,
-  poolAddresses: string[],
+  poolAddresses?: string[],
 ): Promise<MigrationData | null> {
   const ethCallProvider = await getMulticallProvider(library, chainId)
   const migratorAddress = GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES[chainId]
+  if (!poolAddresses) throw new Error("Pool address is not defined")
+
   if (!ethCallProvider || !chainId || !migratorAddress) {
     return null
   }
