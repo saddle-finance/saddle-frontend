@@ -12,7 +12,7 @@ import {
   styled,
   useTheme,
 } from "@mui/material"
-import React, { ReactElement, useMemo } from "react"
+import React, { ReactElement, useCallback } from "react"
 import { formatBNToPercentString, formatBNToShortString } from "../utils"
 import usePoolData, { PoolDataType } from "../hooks/usePoolData"
 
@@ -63,23 +63,34 @@ export default function PoolOverview({
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const history = useHistory()
   const disableText = poolData.isGuarded || shouldMigrate || poolData.isPaused
-  const chipLabel = useMemo(() => {
-    if ((poolData.isGuarded || shouldMigrate) && poolData.isPaused) {
-      return (
-        <span>
-          OUTDATED <br />& PAUSED
-        </span>
-      )
-    } else if (poolData.isGuarded || shouldMigrate) {
-      return <span>OUTDATED</span>
-    } else if (poolData.isPaused) {
-      return <span>PAUSED</span>
-    } else if (!poolData.isSaddleApproved) {
-      return <span>COMMUNITY</span>
-    } else {
-      return null
+  const renderChips = useCallback(() => {
+    let labels: string[] = []
+    if (poolData.isGuarded || shouldMigrate) {
+      labels = [...labels, "OUTDATED"]
     }
-  }, [shouldMigrate, poolData])
+    if (poolData.isPaused) {
+      labels = [...labels, "PAUSED"]
+    }
+    if (!poolData.isSaddleApproved) {
+      labels = [...labels, "COMMUNITY"]
+    }
+
+    return labels.map((label, i) => (
+      <Chip
+        key={i}
+        variant="filled"
+        size="small"
+        label={label}
+        color={
+          poolData.isGuarded || shouldMigrate
+            ? "secondary"
+            : !poolData.isSaddleApproved
+            ? "info"
+            : "error"
+        }
+      />
+    ))
+  }, [poolData, shouldMigrate])
 
   let minichefSDLInfo = null
   if (!gaugesAreActive) {
@@ -123,20 +134,7 @@ export default function PoolOverview({
                   {formattedData.name}
                 </Typography>
               </Tooltip>
-              {chipLabel && (
-                <Chip
-                  variant="filled"
-                  size="small"
-                  label={chipLabel}
-                  color={
-                    poolData.isGuarded || shouldMigrate
-                      ? "secondary"
-                      : !poolData.isSaddleApproved
-                      ? "info"
-                      : "error"
-                  }
-                />
-              )}
+              <Stack direction="column">{renderChips()}</Stack>
             </Box>
             {hasShare && (
               <div>
