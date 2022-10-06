@@ -5,13 +5,13 @@ import { TokensContext } from "../providers/TokensProvider"
 import { useContext } from "react"
 
 export const useTokenMaps = (): {
-  tokenSymbolToTokenMap: BasicTokensMap
-  tokenSymbolToPoolNameMap: TokenToPoolsMap
+  tokenAddrToTokenMap: BasicTokensMap
+  tokenAddrToPoolNameMap: TokenToPoolsMap
 } => {
   const basicPools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
 
-  const tokenSymbolToTokenMap = Object.keys(basicPools ?? {}).reduce(
+  const tokenAddrToTokenMap = Object.keys(basicPools ?? {}).reduce(
     (acc, poolName) => {
       const pool = basicPools?.[poolName]
       if (!pool) return acc
@@ -19,17 +19,17 @@ export const useTokenMaps = (): {
       const newAcc = { ...acc }
       poolTokens.forEach((token) => {
         if (!token) return
-        newAcc[token.symbol] = token
+        newAcc[token.address] = token
       })
-      const lpTokenSymbol = tokens?.[pool.lpToken]?.symbol ?? ""
+      const lpTokenAddr = tokens?.[pool.lpToken]?.address ?? ""
       const lpToken = tokens?.[pool.lpToken]
-      newAcc[lpTokenSymbol] = lpToken
+      newAcc[lpTokenAddr] = lpToken
       return newAcc
     },
     {} as BasicTokensMap,
   )
 
-  const tokenSymbolToPoolNameMap = Object.keys(basicPools ?? {}).reduce(
+  const tokenAddrToPoolNameMap = Object.keys(basicPools ?? {}).reduce(
     (acc, poolName) => {
       const pool = basicPools?.[poolName]
       if (!pool) return acc
@@ -37,7 +37,7 @@ export const useTokenMaps = (): {
       const newAcc = { ...acc }
       poolTokens.forEach((token) => {
         if (!token) return
-        newAcc[token.symbol] = (newAcc[token.symbol] || []).concat(
+        newAcc[token.address] = (newAcc[token.address] || []).concat(
           poolName as string,
         )
       })
@@ -46,5 +46,5 @@ export const useTokenMaps = (): {
     {} as TokenToPoolsMap,
   )
 
-  return { tokenSymbolToTokenMap, tokenSymbolToPoolNameMap }
+  return { tokenAddrToTokenMap, tokenAddrToPoolNameMap }
 }

@@ -1,7 +1,6 @@
 import {
   ALETH_POOL_NAME,
   ChainId,
-  D4_POOL_NAME,
   MINICHEF_CONTRACT_ADDRESSES,
   TBTC_METAPOOL_V2_NAME,
 } from "../constants"
@@ -78,17 +77,6 @@ export async function getThirdPartyDataForPool(
       result.aprs.threshold = { apr, symbol: rewardSymbol }
       result.amountsStaked.threshold = userStakedAmount
       result.claimableAmount.threshold = thresholdClaimableAmount
-    } else if (poolName === D4_POOL_NAME) {
-      // this is a slight bastardization of how this is supposed to work
-      // TODO: update once we have UI for multiple APYS
-      const rewardSymbol = "ALCX/FXS/LQTY/TRIBE"
-      const [apr, userStakedAmount] = await getFraxData(
-        library,
-        chainId,
-        lpTokenPriceUSD,
-      )
-      result.aprs.frax = { apr, symbol: rewardSymbol }
-      result.amountsStaked.frax = userStakedAmount
     } else if (poolName === "USDS-ArbUSDV2" || poolName === "FRAXBP-USDs") {
       const rewardSymbol = "SPA"
       const [apr, userStakedAmount] = await getSperaxData(
@@ -107,26 +95,6 @@ export async function getThirdPartyDataForPool(
     console.error(e)
   }
   return result
-}
-
-type FraxCombinedData = {
-  liq_staking: { "Saddle alUSD/FEI/FRAX/LUSD": { apy: number } }
-}
-async function getFraxData(
-  library: Web3Provider,
-  chainId: ChainId,
-  lpTokenPrice: BigNumber,
-): Promise<[BigNumber, BigNumber]> {
-  if (library == null || lpTokenPrice.eq("0") || chainId !== ChainId.MAINNET)
-    return [Zero, Zero]
-  const fetchFraxData = (): Promise<FraxCombinedData> =>
-    fetch("https://api.frax.finance/combineddata/")
-      .then((r) => r.json())
-      .then((data: FraxCombinedData) => data)
-  const fraxData = await fetchFraxData()
-  const resApy = fraxData?.["liq_staking"]["Saddle alUSD/FEI/FRAX/LUSD"]["apy"]
-  const apy = resApy ? parseUnits(resApy.toFixed(4), 16) : Zero // comes back as 1e-2 so we do 18-2
-  return [apy, Zero]
 }
 
 async function getAlEthData(

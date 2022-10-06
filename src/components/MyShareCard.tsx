@@ -3,6 +3,7 @@ import React, { ReactElement, useContext } from "react"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
+import { CheckCircleOutline } from "@mui/icons-material"
 import { Partners } from "../utils/thirdPartyIntegrations"
 import { PoolTypes } from "../constants"
 import TokenIcon from "./TokenIcon"
@@ -39,6 +40,8 @@ function MyShareCard({ data }: Props): ReactElement | null {
     }, {} as typeof data.amountsStaked),
     tokens: data.tokens.map((coin) => {
       return {
+        address: coin.address,
+        isOnTokenLists: coin.isOnTokenLists,
         symbol: coin.symbol,
         name: coin.name,
         value: commify(formatBNToString(coin.value, 18, formattedDecimals)),
@@ -76,7 +79,7 @@ function MyShareCard({ data }: Props): ReactElement | null {
       })}
       <Stack direction="row" mb={2} flexWrap="wrap">
         {formattedData.tokens.map((token) => (
-          <Box key={token.symbol} pt={3} pr={4}>
+          <Box key={token.address} pt={3} pr={4}>
             <Box display="flex" alignItems="center">
               <TokenIcon
                 alt="icon"
@@ -87,6 +90,9 @@ function MyShareCard({ data }: Props): ReactElement | null {
               <Typography variant="subtitle1" ml={1} data-testid="tokenName">
                 {token.symbol}
               </Typography>
+              {token.isOnTokenLists && (
+                <CheckCircleOutline sx={{ marginLeft: 0.5, width: 15 }} />
+              )}
             </Box>
             <Typography data-testid="tokenValue">{token.value}</Typography>
           </Box>

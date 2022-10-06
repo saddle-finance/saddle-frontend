@@ -22,6 +22,7 @@ import CircularProgress from "@mui/material/CircularProgress"
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever"
 import ERC20_ABI from "../../constants/abis/erc20.json"
 import { Erc20 } from "../../../types/ethers-contracts/Erc20"
+import { PoolTypes } from "../../constants"
 import ReviewCreatePool from "./CreatePoolDialog"
 import { Link as RouteLink } from "react-router-dom"
 import { getContract } from "../../utils"
@@ -33,13 +34,6 @@ export enum PoolType {
   UsdMeta = "usdMetapool",
   BtcMeta = "btcMetapool",
   Base = "basepool",
-}
-
-export enum AssetType {
-  USD,
-  ETH,
-  BTC,
-  OTHERS,
 }
 
 export type ValidationStatus =
@@ -68,7 +62,7 @@ export default function CreatePool(): React.ReactElement {
   const [poolSymbol, setPoolSymbol] = useState<string>("")
   const [aParameter, setAParameter] = useState<string>("")
   const [poolType, setPoolType] = useState<PoolType>(PoolType.UsdMeta)
-  const [assetType, setAssetType] = useState<AssetType>(0)
+  const [assetType, setAssetType] = useState<PoolTypes>(2)
   const [tokenInputs, setTokenInputs] = useState<string[]>([""])
   const [tokenInfo, setTokenInfo] = useState<
     {
@@ -86,6 +80,7 @@ export default function CreatePool(): React.ReactElement {
     },
   ])
   const [fee, setFee] = useState<string>("")
+  const [tokenInputErrorMsg, setTokenInputErrorMsg] = useState<string>("")
 
   const handleAddToken = () => {
     setTokenInputs((prev) => [...prev, ""])
@@ -101,7 +96,7 @@ export default function CreatePool(): React.ReactElement {
     setPoolName("")
     setPoolSymbol("")
     setAParameter("")
-    setPoolType(PoolType.Base)
+    setPoolType(PoolType.UsdMeta)
     setAssetType(0)
     setFee("")
     setTokenInfo([
@@ -147,17 +142,23 @@ export default function CreatePool(): React.ReactElement {
   }
 
   const poolNameError = poolName.length > 32
-  const poolSymbolError = poolSymbol.length > 32
+  const poolSymbolError = poolSymbol.length > 32 || poolSymbol.includes(" ")
   const aParameterError =
     !isValidNumber(aParameter) || parseFloat(aParameter) < 1
 
+  const minFee = "0.01"
+  const maxFee = "1"
+
   const feeError =
-    !isValidNumber(fee) || parseFloat(fee) > 1 || parseFloat(fee) < 0.04
+    !isValidNumber(fee) ||
+    parseFloat(fee) > Number(maxFee) ||
+    parseFloat(fee) < Number(minFee)
 
   useEffect(() => {
     const getBasePoolLPTokenAddrs = async () => {
       if (poolRegistry) {
-        const basePoolName = poolType === PoolType.UsdMeta ? "USDv2" : "BTCv2"
+        const basePoolName =
+          poolType === PoolType.UsdMeta ? "FRAX-USDC-BP" : "BTCv2"
         try {
           const poolRegistryData = await poolRegistry.getPoolDataByName(
             ethers.utils.formatBytes32String(basePoolName),
@@ -188,7 +189,9 @@ export default function CreatePool(): React.ReactElement {
       fee.length > 0 &&
       aParameter.length > 0
 
-    setDisableCreatePool(hasFieldError || !hasAllValues)
+    setDisableCreatePool(
+      hasFieldError || !hasAllValues || Boolean(tokenInputErrorMsg),
+    )
   }, [
     fee.length,
     feeError,
@@ -199,6 +202,7 @@ export default function CreatePool(): React.ReactElement {
     poolSymbol.length,
     poolSymbolError,
     tokenInfo,
+    tokenInputErrorMsg,
   ])
 
   const onTokenInputBlur = async (
@@ -215,7 +219,6 @@ export default function CreatePool(): React.ReactElement {
       }
       setTokenInfo([...tokenInfo])
     }
-
     inputLoading[index] = true
     setInputLoading([...inputLoading])
     let tokenData
@@ -300,7 +303,9 @@ export default function CreatePool(): React.ReactElement {
               <Divider />
               <Stack direction="row" spacing={3} mt={2}>
                 <Box flex={1}>
-                  <Typography mb={2}>{t("setFeeDescription")}</Typography>
+                  <Typography mb={2}>
+                    {t("setFeeDescription", { minFee, maxFee })}
+                  </Typography>
                   <TextField
                     label={`${t("fee")} (%)`}
                     fullWidth
@@ -308,7 +313,7 @@ export default function CreatePool(): React.ReactElement {
                     type="text"
                     error={feeError}
                     onChange={(e) => setFee(e.target.value)}
-                    helperText={feeError && t("feeError")}
+                    helperText={feeError && t("feeError", { minFee, maxFee })}
                   />
                 </Box>
                 <Box flex={1}>
@@ -352,8 +357,14 @@ export default function CreatePool(): React.ReactElement {
                   size="large"
                   exclusive
                   onChange={(event, value: PoolType) => {
-                    setPoolType(value)
-                    setTokenInputs([tokenInputs[0]])
+                    if (value) {
+                      setPoolType(value)
+                      if (value === PoolType.Base) {
+                        setTokenInputs([tokenInputs[0], ""])
+                      } else {
+                        setTokenInputs([tokenInputs[0]])
+                      }
+                    }
                   }}
                   fullWidth
                 >
@@ -389,16 +400,18 @@ export default function CreatePool(): React.ReactElement {
                   color="secondary"
                   fullWidth
                   exclusive
-                  onChange={(event, value: AssetType) => setAssetType(value)}
+                  onChange={(event, value: PoolTypes) => {
+                    if (value !== null) setAssetType(value)
+                  }}
                   size="large"
                   disabled={poolType !== PoolType.Base}
                 >
-                  <ToggleButton value={AssetType.USD} color="secondary">
+                  <ToggleButton value={PoolTypes.USD} color="secondary">
                     USD
                   </ToggleButton>
-                  <ToggleButton value={AssetType.ETH}>ETH</ToggleButton>
-                  <ToggleButton value={AssetType.BTC}>BTC</ToggleButton>
-                  <ToggleButton value={AssetType.OTHERS}>
+                  <ToggleButton value={PoolTypes.ETH}>ETH</ToggleButton>
+                  <ToggleButton value={PoolTypes.BTC}>BTC</ToggleButton>
+                  <ToggleButton value={PoolTypes.OTHER}>
                     {t("others")}
                   </ToggleButton>
                 </ToggleButtonGroup>
@@ -424,6 +437,7 @@ export default function CreatePool(): React.ReactElement {
                   >
                     <TextField
                       autoComplete="off"
+                      value={tokenInputs[index]}
                       label={`Token ${index}`}
                       fullWidth
                       color={tokenInfo[index]?.checkResult ?? "primary"}
@@ -431,6 +445,14 @@ export default function CreatePool(): React.ReactElement {
                       onChange={(e) => {
                         tokenInputs[index] = e.target.value
                         setTokenInputs([...tokenInputs])
+                        if (
+                          new Set(tokenInputs).size !== tokenInputs.length &&
+                          e.target.value
+                        ) {
+                          setTokenInputErrorMsg("Duplicate Tokens Not Allowed")
+                        } else {
+                          setTokenInputErrorMsg("")
+                        }
                       }}
                       onBlur={(e) => void onTokenInputBlur(e.target, index)}
                       helperText={
@@ -497,6 +519,13 @@ export default function CreatePool(): React.ReactElement {
             >
               {t("addToken")}
             </Button>
+            <Box display="flex" justifyContent="center" pb={1}>
+              {tokenInputErrorMsg ? (
+                <Typography color="error">{tokenInputErrorMsg}</Typography>
+              ) : (
+                <Box sx={{ height: 20.11 }} />
+              )}
+            </Box>
             <Button
               variant="contained"
               size="large"

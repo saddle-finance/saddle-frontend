@@ -29,6 +29,7 @@ export type BasicToken = {
   isLPToken: boolean
   isSynthetic: boolean
   typeAsset: PoolTypes
+  isOnTokenLists: boolean
 }
 export type BasicTokens = Partial<{ [address: string]: BasicToken }> | null
 export const TokensContext = React.createContext<BasicTokens>(null)
@@ -103,10 +104,36 @@ export default function TokensProvider({
         Array.from(targetTokenAddresses),
       )
       if (!tokenInfos) return
+      let tokenLists
+      let tokenListsTokenAddrs: Set<string>
+      try {
+        const tokenListsRes = await fetch(
+          "https://tokens.coingecko.com/uniswap/all.json",
+        )
+        tokenLists = (await tokenListsRes.json()) as {
+          tokens: { address: string }[]
+        }
+        tokenListsTokenAddrs = new Set(
+          tokenLists.tokens.map((token) => token.address.toLowerCase()),
+        )
+      } catch (e) {
+        console.error("Error parsing token lists", e)
+        tokenListsTokenAddrs = new Set()
+      }
+      const additionalSdlApprovedAddrsHardhat = [
+        "0x9A676e781A523b5d0C0e43731313A708CB607508", // USDC
+        "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1", // USDT
+      ].map((addr) => addr.toLowerCase())
+      const additionalSdlApprovedAddrsSet = new Set([
+        ...tokenListsTokenAddrs,
+        ...(ChainId.HARDHAT && additionalSdlApprovedAddrsHardhat),
+      ])
       Object.keys(tokenInfos).forEach((address) => {
         ;(tokenInfos[address] as BasicToken).isLPToken = lpTokens.has(address)
         ;(tokenInfos[address] as BasicToken).typeAsset =
           tokenType[address] ?? PoolTypes.OTHER
+        ;(tokenInfos[address] as BasicToken).isOnTokenLists =
+          additionalSdlApprovedAddrsSet.has(String(address))
       })
       setTokens(tokenInfos)
     }

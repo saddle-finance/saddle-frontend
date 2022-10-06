@@ -194,7 +194,7 @@ function ReviewDeposit({
                 ),
               )}
               {[transactionData?.to.item].map((item) => (
-                <Typography key={item?.token?.symbol}>
+                <Typography key={item?.token?.address}>
                   1 {item?.token?.symbol} = $
                   {commify(
                     formatBNToString(item?.singleTokenPriceUSD ?? Zero, 18, 2),

@@ -15,6 +15,7 @@ const createTestToken = (name: string, isSynth?: boolean): BasicToken => {
     decimals: 18,
     isSynthetic: isSynth || false,
     isLPToken: false,
+    isOnTokenLists: true,
     typeAsset: 1,
   }
 }
@@ -102,11 +103,13 @@ describe("getTradingPairsForToken", () => {
     expect(selfPair).toEqual({
       type: SWAP_TYPES.INVALID,
       from: {
+        address: "0xtokena",
         symbol: tokenA.symbol,
         poolName: undefined,
         tokenIndex: -1,
       },
       to: {
+        address: "0xtokena",
         symbol: tokenA.symbol,
         poolName: undefined,
         tokenIndex: -1,
@@ -126,11 +129,13 @@ describe("getTradingPairsForToken", () => {
     expect(pairs).toContainEqual({
       type: SWAP_TYPES.DIRECT,
       from: {
+        address: "0xtokena",
         symbol: tokenA.symbol,
         poolName: pool1.poolName,
         tokenIndex: pool1.tokens.indexOf(tokenA.address),
       },
       to: {
+        address: "0xtokenb",
         symbol: tokenB.symbol,
         poolName: pool1.poolName,
         tokenIndex: pool1.tokens.indexOf(tokenB.address),
@@ -158,11 +163,13 @@ describe("getTradingPairsForToken", () => {
     expect(pairs).toContainEqual({
       type: SWAP_TYPES.SYNTH_TO_SYNTH,
       from: {
+        address: "0xtokenesynth",
         symbol: tokenE.symbol,
         poolName: pool2.poolName,
         tokenIndex: pool2.tokens.indexOf(tokenE.address),
       },
       to: {
+        address: "0xtokenfsynth",
         symbol: tokenF.symbol,
         poolName: pool3.poolName,
         tokenIndex: pool3.tokens.indexOf(tokenF.address),
@@ -184,11 +191,13 @@ describe("getTradingPairsForToken", () => {
     expect(pairs).toContainEqual({
       type: SWAP_TYPES.INVALID,
       from: {
+        address: "0xtokenesynth",
         symbol: tokenE.symbol,
         poolName: undefined,
         tokenIndex: -1,
       },
       to: {
+        address: "0xtokenfsynth",
         symbol: tokenF.symbol,
         poolName: undefined,
         tokenIndex: -1,
@@ -210,11 +219,13 @@ describe("getTradingPairsForToken", () => {
     expect(pairs).toContainEqual({
       type: SWAP_TYPES.SYNTH_TO_TOKEN,
       from: {
+        address: "0xtokenfsynth",
         symbol: tokenF.symbol,
         poolName: pool3.poolName,
         tokenIndex: pool3.tokens.indexOf(tokenF.address),
       },
       to: {
+        address: "0xtokenc",
         symbol: tokenC.symbol,
         poolName: pool2.poolName,
         tokenIndex: pool2.tokens.indexOf(tokenC.address),
@@ -236,11 +247,13 @@ describe("getTradingPairsForToken", () => {
     expect(pairs).toContainEqual({
       type: SWAP_TYPES.TOKEN_TO_TOKEN,
       from: {
+        address: "0xtokenc",
         symbol: tokenC.symbol,
         poolName: pool2.poolName,
         tokenIndex: pool2.tokens.indexOf(tokenC.address),
       },
       to: {
+        address: "0xtokeng",
         symbol: tokenG.symbol,
         poolName: pool3.poolName,
         tokenIndex: pool3.tokens.indexOf(tokenG.address),
@@ -262,11 +275,13 @@ describe("getTradingPairsForToken", () => {
     expect(pairs).toContainEqual({
       type: SWAP_TYPES.TOKEN_TO_SYNTH,
       from: {
+        address: "0xtokenc",
         symbol: tokenC.symbol,
         poolName: pool2.poolName,
         tokenIndex: pool2.tokens.indexOf(tokenC.address),
       },
       to: {
+        address: "0xtokenfsynth",
         symbol: tokenF.symbol,
         poolName: pool3.poolName,
         tokenIndex: pool3.tokens.indexOf(tokenF.address),

@@ -7,13 +7,14 @@ import {
   Stack,
   Typography,
 } from "@mui/material"
-import { AssetType, PoolType, ValidationStatus } from "."
 import { BigNumber, BigNumberish, ethers } from "ethers"
+import { PoolType, ValidationStatus } from "."
+import React, { useState } from "react"
 import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 
 import Dialog from "../../components/Dialog"
 import DialogTitle from "../../components/DialogTitle"
-import React from "react"
+import { PoolTypes } from "../../constants"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../../hooks"
 import { usePermissionlessDeployer } from "../../hooks/useContract"
@@ -28,7 +29,7 @@ type Props = {
     aParameter: string
     poolType: PoolType
     fee: string
-    assetType: AssetType
+    assetType: PoolTypes
     tokenInputs: string[]
     tokenInfo: {
       name: string
@@ -53,9 +54,11 @@ export default function ReviewCreatePool({
   const { t } = useTranslation()
   const permissionlessDeployer = usePermissionlessDeployer()
   const { account, chainId, library } = useActiveWeb3React()
+  const [isPoolDeploying, setIsPoolDeploying] = useState<boolean>(false)
 
   const onCreatePoolClick = async () => {
     if (!library || !chainId || !account || !permissionlessDeployer) return
+    setIsPoolDeploying(true)
 
     const enqueueCreatePoolToast = async (deployTxn: {
       wait: () => Promise<unknown>
@@ -101,9 +104,22 @@ export default function ReviewCreatePool({
       }
       resetFields()
     } catch (err) {
-      console.error(err)
-      enqueueToast("error", "Unable to deploy Permissionless Pool")
+      console.error({ err })
+      const er = err as { error: { data: { message: string } } }
+      if (
+        er.error.data.message.includes(
+          "SafeERC20: approve from non-zero to non-zero allowance",
+        )
+      ) {
+        enqueueToast(
+          "error",
+          "Unable to create pool with tokens that the base pool consists of",
+        )
+      } else {
+        enqueueToast("error", "Unable to deploy Permissionless Pool")
+      }
     } finally {
+      setIsPoolDeploying(false)
       onClose()
     }
   }
@@ -151,6 +167,7 @@ export default function ReviewCreatePool({
           <Button
             variant="contained"
             size="large"
+            disabled={isPoolDeploying}
             onClick={() => void onCreatePoolClick()}
           >
             <Typography>{t("createPool")}</Typography>

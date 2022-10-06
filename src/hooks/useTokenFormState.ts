@@ -21,13 +21,13 @@ export function useTokenFormState(
 ): UseTokenFormStateReturnType {
   // Token input state handlers
   const tokenInputStateCreators: {
-    [tokenSymbol: string]: ReturnType<typeof numberInputStateCreator>
+    [tokenAddr: string]: ReturnType<typeof numberInputStateCreator>
   } = useMemo(
     () =>
       tokens.reduce(
         (acc, token) => ({
           ...acc,
-          [token?.symbol ?? ""]: numberInputStateCreator(
+          [token?.address ?? ""]: numberInputStateCreator(
             token?.decimals ?? 0,
             Zero,
           ),
@@ -42,7 +42,8 @@ export function useTokenFormState(
     tokens.reduce(
       (acc, token) => ({
         ...acc,
-        [token?.symbol ?? ""]: tokenInputStateCreators[token?.symbol ?? ""](""),
+        [token?.address ?? ""]:
+          tokenInputStateCreators[token?.address ?? ""](""),
       }),
       {},
     ),
@@ -55,11 +56,11 @@ export function useTokenFormState(
   //   }))
   // }
   const updateTokenFormState = useCallback(
-    (newState: { [symbol: string]: string | BigNumber }) => {
+    (newState: { [address: string]: string | BigNumber }) => {
       const convertedNewState = Object.keys(newState).reduce(
-        (acc, symbol) => ({
+        (acc, address) => ({
           ...acc,
-          [symbol]: tokenInputStateCreators[symbol](newState[symbol]),
+          [address]: tokenInputStateCreators[address](newState[address]),
         }),
         {},
       )

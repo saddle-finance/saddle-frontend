@@ -97,7 +97,7 @@ export const SUPPORTED_NETWORKS: SupportedNetworks = {
       symbol: "FTM",
       decimals: 18,
     },
-    rpcUrls: ["https://rpc.ftm.tools"],
+    rpcUrls: ["https://rpc.ankr.com/fantom/"],
     blockExplorerUrls: ["https://ftmscan.com"],
   },
   [ChainId.EVMOS]: {

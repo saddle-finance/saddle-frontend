@@ -14,8 +14,11 @@ const Template: ComponentStory<typeof SwapTokenInput> = (args) => (
   <SwapTokenInput {...args} />
 )
 
+const dummyAddr = "0x6b175474e89094c44da98b954eedeac495271d0f"
+
 const tokenOptionLists: TokenOption[] = [
   {
+    address: dummyAddr,
     name: "sBTC",
     symbol: "sBTC",
     decimals: 18,
@@ -23,8 +26,10 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: true,
   },
   {
+    address: dummyAddr,
     name: "renBTC",
     symbol: "RENBTC",
     decimals: 8,
@@ -32,8 +37,10 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
+    address: dummyAddr,
     name: "WBTC",
     symbol: "WBTC",
     decimals: 8,
@@ -41,8 +48,10 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
+    address: dummyAddr,
     name: "Dai",
     symbol: "DAI",
     decimals: 18,
@@ -50,8 +59,10 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
+    address: dummyAddr,
     name: "USDC Coin",
     symbol: "USDC",
     decimals: 6,
@@ -59,8 +70,10 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x42"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
+    address: dummyAddr,
     name: "Tether",
     symbol: "USDT",
     decimals: 6,
@@ -68,8 +81,10 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
+    address: dummyAddr,
     name: "WETH",
     symbol: "WETH",
     decimals: 18,
@@ -77,8 +92,10 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
+    address: dummyAddr,
     name: "Alchemix ETH",
     symbol: "alETH",
     decimals: 18,
@@ -86,8 +103,10 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
+    address: dummyAddr,
     name: "Synth sETH",
     symbol: "sETH",
     decimals: 18,
@@ -95,8 +114,10 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
+    address: dummyAddr,
     name: "sUSD",
     symbol: "sUSD",
     decimals: 18,
@@ -104,8 +125,10 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
+    address: dummyAddr,
     name: "tBTCv2",
     symbol: "TBTCv2",
     decimals: 18,
@@ -113,8 +136,10 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: true,
+    isOnTokenLists: false,
   },
   {
+    address: dummyAddr,
     name: "Alchemix USD",
     symbol: "alUSD",
     decimals: 18,
@@ -122,8 +147,10 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: false,
+    isOnTokenLists: false,
   },
   {
+    address: dummyAddr,
     name: "Fei Protocol",
     symbol: "FEI",
     decimals: 18,
@@ -131,8 +158,10 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: false,
+    isOnTokenLists: false,
   },
   {
+    address: dummyAddr,
     name: "Frax",
     symbol: "FRAX",
     decimals: 18,
@@ -140,8 +169,10 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: false,
+    isOnTokenLists: false,
   },
   {
+    address: dummyAddr,
     name: "Liquity USD",
     symbol: "LUSD",
     decimals: 18,
@@ -149,8 +180,10 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: false,
+    isOnTokenLists: false,
   },
   {
+    address: dummyAddr,
     name: "Wrapped Celo USD",
     symbol: "wCUSD",
     decimals: 18,
@@ -158,6 +191,7 @@ const tokenOptionLists: TokenOption[] = [
     valueUSD: BigNumber.from("0x00"),
     swapType: SWAP_TYPES.DIRECT,
     isAvailable: false,
+    isOnTokenLists: false,
   },
 ]
 export const SwapInput = Template.bind({})

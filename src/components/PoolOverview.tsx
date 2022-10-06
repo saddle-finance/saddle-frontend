@@ -12,10 +12,11 @@ import {
   styled,
   useTheme,
 } from "@mui/material"
-import React, { ReactElement, useMemo } from "react"
+import React, { ReactElement, useCallback } from "react"
 import { formatBNToPercentString, formatBNToShortString } from "../utils"
 import usePoolData, { PoolDataType } from "../hooks/usePoolData"
 
+import { CheckCircleOutline } from "@mui/icons-material"
 import GaugeRewardsDisplay from "./GaugeRewardsDisplay"
 import TokenIcon from "./TokenIcon"
 import { Zero } from "@ethersproject/constants"
@@ -62,21 +63,34 @@ export default function PoolOverview({
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const history = useHistory()
   const disableText = poolData.isGuarded || shouldMigrate || poolData.isPaused
-  const chipLabel = useMemo(() => {
-    if ((poolData.isGuarded || shouldMigrate) && poolData.isPaused) {
-      return (
-        <span>
-          OUTDATED <br />& PAUSED
-        </span>
-      )
-    } else if (poolData.isGuarded || shouldMigrate) {
-      return <span>OUTDATED</span>
-    } else if (poolData.isPaused) {
-      return <span>PAUSED</span>
-    } else {
-      return null
+  const renderChips = useCallback(() => {
+    let labels: string[] = []
+    if (poolData.isGuarded || shouldMigrate) {
+      labels = [...labels, "OUTDATED"]
     }
-  }, [poolData.isGuarded, shouldMigrate, poolData.isPaused])
+    if (poolData.isPaused) {
+      labels = [...labels, "PAUSED"]
+    }
+    if (!poolData.isSaddleApproved) {
+      labels = [...labels, "COMMUNITY"]
+    }
+
+    return labels.map((label, i) => (
+      <Chip
+        key={i}
+        variant="filled"
+        size="small"
+        label={label}
+        color={
+          poolData.isGuarded || shouldMigrate
+            ? "secondary"
+            : !poolData.isSaddleApproved
+            ? "info"
+            : "error"
+        }
+      />
+    ))
+  }, [poolData, shouldMigrate])
 
   let minichefSDLInfo = null
   if (!gaugesAreActive) {
@@ -120,17 +134,8 @@ export default function PoolOverview({
                   {formattedData.name}
                 </Typography>
               </Tooltip>
-              {chipLabel && (
-                <Chip
-                  variant="filled"
-                  size="small"
-                  label={chipLabel}
-                  color={
-                    poolData.isGuarded || shouldMigrate ? "secondary" : "error"
-                  }
-                />
-              )}
             </Box>
+            <>{renderChips()}</>
             {hasShare && (
               <div>
                 <Typography component="span">{t("balance")}: </Typography>
@@ -145,12 +150,15 @@ export default function PoolOverview({
         <Grid item xs={12} lg={2.5}>
           <Stack spacing={1} direction={{ xs: "row", lg: "column" }}>
             {poolData.tokens.length > 0 ? (
-              poolData.tokens.map(({ symbol }) => (
+              poolData.tokens.map(({ symbol, isOnTokenLists }) => (
                 <Box display="flex" alignItems="center" key={symbol}>
                   <TokenIcon alt="icon" symbol={symbol} width="24px" />
                   <Typography marginLeft={1} sx={{ wordBreak: "break-all" }}>
                     {symbol}
                   </Typography>
+                  {isOnTokenLists && (
+                    <CheckCircleOutline sx={{ marginLeft: 0.5, width: 15 }} />
+                  )}
                 </Box>
               ))
             ) : (

@@ -77,7 +77,7 @@ function Deposit(): ReactElement | null {
         poolUnderlyingTokens.reduce(
           (acc, token) => ({
             ...acc,
-            [token?.symbol ?? ""]: "",
+            [token?.address ?? ""]: "",
           }),
           {},
         ),
@@ -87,7 +87,7 @@ function Deposit(): ReactElement | null {
         poolTokens.reduce(
           (acc, token) => ({
             ...acc,
-            [token?.symbol ?? ""]: "",
+            [token?.address ?? ""]: "",
           }),
           {},
         ),
@@ -165,7 +165,7 @@ function Deposit(): ReactElement | null {
         allPoolTokens
           .reduce(
             (sum, token) =>
-              sum + (+tokenFormState[token?.symbol ?? ""]?.valueRaw || 0),
+              sum + (+tokenFormState[token?.address ?? ""]?.valueRaw || 0),
             0,
           )
           .toFixed(18),
@@ -179,7 +179,7 @@ function Deposit(): ReactElement | null {
           ).calculateTokenAmount(
             account,
             poolBaseTokens.map(
-              (token) => tokenFormState[token?.symbol ?? ""]?.valueSafe ?? "0",
+              (token) => tokenFormState[token?.address ?? ""]?.valueSafe ?? "0",
             ),
             true, // deposit boolean
           )
@@ -188,7 +188,7 @@ function Deposit(): ReactElement | null {
             ? await metaSwapContract.calculateTokenAmount(
                 poolTokens.map(
                   (token) =>
-                    tokenFormState[token?.symbol ?? ""]?.valueSafe ?? "0",
+                    tokenFormState[token?.address ?? ""]?.valueSafe ?? "0",
                 ),
                 true, // deposit boolean
               )
@@ -198,7 +198,7 @@ function Deposit(): ReactElement | null {
             swapContract as SwapFlashLoanNoWithdrawFee
           ).calculateTokenAmount(
             poolBaseTokens.map(
-              (token) => tokenFormState[token?.symbol ?? ""]?.valueSafe ?? "0",
+              (token) => tokenFormState[token?.address ?? ""]?.valueSafe ?? "0",
             ),
             true, // deposit boolean
           )
@@ -235,27 +235,45 @@ function Deposit(): ReactElement | null {
   // A represention of tokens used for UI
   const tmpDepositTokens = shouldDepositWrapped ? poolTokens : poolBaseTokens
   const tokens = tmpDepositTokens.map((token, i) => {
+    if (!token)
+      return {
+        address: "",
+        symbol: "",
+        name: "",
+        decimals: 18,
+        priceUSD: 0,
+        max: "0",
+        inputValue: "0.0",
+        isOnTokenLists: false,
+      }
+
     const priceUSD =
       (shouldDepositWrapped && i === tmpDepositTokens.length - 1
         ? parseFloat(formatUnits(poolData.lpTokenPriceUSD, 18))
-        : tokenPricesUSD?.[token?.symbol ?? ""]) || 0
+        : tokenPricesUSD?.[token.address]) || 0
+
     return {
-      symbol: token?.symbol ?? "",
-      name: token?.name ?? "",
-      decimals: token?.decimals ?? 18,
+      address: token.address,
+      symbol: token.symbol,
+      name: token.name,
+      decimals: token.decimals,
+      isOnTokenLists: token.isOnTokenLists,
       priceUSD,
       max: formatBNToString(
-        tokenBalances?.[token?.symbol ?? ""] || Zero,
-        token?.decimals ?? 18,
+        tokenBalances?.[token.address] || Zero,
+        token.decimals,
       ),
-      inputValue: tokenFormState[token?.symbol ?? ""]?.valueRaw,
+      inputValue: tokenFormState[token.address]?.valueRaw,
     }
   })
 
   const exceedsWallet = allPoolTokens.some((token) => {
-    const exceedsBoolean = (tokenBalances?.[token?.symbol ?? ""] || Zero).lt(
-      BigNumber.from(tokenFormState[token?.symbol ?? ""]?.valueSafe ?? "0"),
+    if (!token || !tokenBalances) return false
+
+    const exceedsBoolean = (tokenBalances[token.address] || Zero).lt(
+      BigNumber.from(tokenFormState[token.address]?.valueSafe ?? "0"),
     )
+
     return exceedsBoolean
   })
 
@@ -266,14 +284,14 @@ function Deposit(): ReactElement | null {
       allPoolTokens.reduce(
         (acc, t) => ({
           ...acc,
-          [t?.symbol ?? ""]: "",
+          [t?.address ?? ""]: "",
         }),
         {},
       ),
     )
   }
-  function updateTokenFormValue(symbol: string, value: string): void {
-    updateTokenFormState({ [symbol]: value })
+  function updateTokenFormValue(address: string, value: string): void {
+    updateTokenFormState({ [address]: value })
   }
   const depositTransaction = buildTransactionData(
     tokenFormState,
@@ -323,10 +341,10 @@ function buildTransactionData(
   poolTokens.forEach((token) => {
     if (!token) return
     const amount = BigNumber.from(
-      tokenFormState[token.symbol]?.valueSafe ?? "0",
+      tokenFormState[token.address]?.valueSafe ?? "0",
     )
     const usdPriceBN = parseUnits(
-      (tokenPricesUSD?.[token.symbol] || 0).toFixed(2),
+      (tokenPricesUSD?.[token.address] || 0).toFixed(2),
       18,
     )
     if (amount.lte("0")) return

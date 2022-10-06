@@ -56,6 +56,12 @@ function Risk(): ReactElement {
           ERC: Token standard · Issue #20 · ethereum/EIPs
         </a>
       </p>
+      <Typography variant="h3" mt={5} mb={2}>
+        {t("permissionlessPools")}
+      </Typography>
+      <Typography variant="body1" data-testid="risk-lossofpeg">
+        {t("riskPermissionlessPools")}
+      </Typography>
     </Container>
   )
 }
