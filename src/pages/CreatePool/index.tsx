@@ -313,7 +313,7 @@ export default function CreatePool(): React.ReactElement {
                     type="text"
                     error={feeError}
                     onChange={(e) => setFee(e.target.value)}
-                    helperText={feeError && t("feeError")}
+                    helperText={feeError && t("feeError", { minFee, maxFee })}
                   />
                 </Box>
                 <Box flex={1}>
