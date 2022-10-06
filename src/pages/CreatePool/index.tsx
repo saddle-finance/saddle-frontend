@@ -22,6 +22,7 @@ import CircularProgress from "@mui/material/CircularProgress"
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever"
 import ERC20_ABI from "../../constants/abis/erc20.json"
 import { Erc20 } from "../../../types/ethers-contracts/Erc20"
+import { PoolTypes } from "../../constants"
 import ReviewCreatePool from "./CreatePoolDialog"
 import { Link as RouteLink } from "react-router-dom"
 import { getContract } from "../../utils"
@@ -33,13 +34,6 @@ export enum PoolType {
   UsdMeta = "usdMetapool",
   BtcMeta = "btcMetapool",
   Base = "basepool",
-}
-
-export enum AssetType {
-  BTC,
-  ETH,
-  USD,
-  OTHERS,
 }
 
 export type ValidationStatus =
@@ -68,7 +62,7 @@ export default function CreatePool(): React.ReactElement {
   const [poolSymbol, setPoolSymbol] = useState<string>("")
   const [aParameter, setAParameter] = useState<string>("")
   const [poolType, setPoolType] = useState<PoolType>(PoolType.UsdMeta)
-  const [assetType, setAssetType] = useState<AssetType>(2)
+  const [assetType, setAssetType] = useState<PoolTypes>(2)
   const [tokenInputs, setTokenInputs] = useState<string[]>([""])
   const [tokenInfo, setTokenInfo] = useState<
     {
@@ -152,8 +146,13 @@ export default function CreatePool(): React.ReactElement {
   const aParameterError =
     !isValidNumber(aParameter) || parseFloat(aParameter) < 1
 
+  const minFee = "0.01"
+  const maxFee = "1"
+
   const feeError =
-    !isValidNumber(fee) || parseFloat(fee) > 1 || parseFloat(fee) < 0.01
+    !isValidNumber(fee) ||
+    parseFloat(fee) > Number(maxFee) ||
+    parseFloat(fee) < Number(minFee)
 
   useEffect(() => {
     const getBasePoolLPTokenAddrs = async () => {
@@ -305,7 +304,7 @@ export default function CreatePool(): React.ReactElement {
               <Stack direction="row" spacing={3} mt={2}>
                 <Box flex={1}>
                   <Typography mb={2}>
-                    {t("setFeeDescription", { minFee: "0.01", maxFee: "1" })}
+                    {t("setFeeDescription", { minFee, maxFee })}
                   </Typography>
                   <TextField
                     label={`${t("fee")} (%)`}
@@ -401,18 +400,18 @@ export default function CreatePool(): React.ReactElement {
                   color="secondary"
                   fullWidth
                   exclusive
-                  onChange={(event, value: AssetType) => {
+                  onChange={(event, value: PoolTypes) => {
                     if (value !== null) setAssetType(value)
                   }}
                   size="large"
                   disabled={poolType !== PoolType.Base}
                 >
-                  <ToggleButton value={AssetType.USD} color="secondary">
+                  <ToggleButton value={PoolTypes.USD} color="secondary">
                     USD
                   </ToggleButton>
-                  <ToggleButton value={AssetType.ETH}>ETH</ToggleButton>
-                  <ToggleButton value={AssetType.BTC}>BTC</ToggleButton>
-                  <ToggleButton value={AssetType.OTHERS}>
+                  <ToggleButton value={PoolTypes.ETH}>ETH</ToggleButton>
+                  <ToggleButton value={PoolTypes.BTC}>BTC</ToggleButton>
+                  <ToggleButton value={PoolTypes.OTHER}>
                     {t("others")}
                   </ToggleButton>
                 </ToggleButtonGroup>

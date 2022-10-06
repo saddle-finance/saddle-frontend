@@ -29,6 +29,7 @@ import { useActiveWeb3React } from "../hooks"
 import { useApproveAndMigrate } from "../hooks/useApproveAndMigrate"
 import { useHistory } from "react-router"
 import { useSelector } from "react-redux"
+import { useTranslation } from "react-i18next"
 
 function Pools(): ReactElement | null {
   const { account, chainId } = useActiveWeb3React()
@@ -36,6 +37,7 @@ function Pools(): ReactElement | null {
   const pools = expandedPools.data.byName
   const userState = useContext(UserStateContext)
   const approveAndMigrate = useApproveAndMigrate()
+  const { t } = useTranslation()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const history = useHistory()
 
@@ -69,10 +71,12 @@ function Pools(): ReactElement | null {
     })
   }, [account, chainId])
 
+  const permissionlessPoolsFF = false
+
   return (
     <Container sx={{ pb: 5 }}>
       <Stack direction="row" alignItems="center" justifyContent="center">
-        {false && (
+        {permissionlessPoolsFF && (
           <Box flex={1}>
             <TextField
               variant="standard"
@@ -83,14 +87,14 @@ function Pools(): ReactElement | null {
               onChange={(e) => setPoolOrTokenFilterValue(e.target.value)}
               value={poolOrTokenFilterValue}
             />
-            {false && (
+            {permissionlessPoolsFF && (
               <Box ml={1} mt={1}>
                 <FormGroup>
                   <FormControlLabel
-                    label="Community Pools"
+                    label={t("communityPools")}
                     control={
                       <Checkbox
-                        placeholder="Community Pools"
+                        placeholder={t("communityPools")}
                         checked={communityPoolsFilter}
                         onChange={() =>
                           setCommunityPoolsFilter(!communityPoolsFilter)
@@ -122,7 +126,7 @@ function Pools(): ReactElement | null {
           ))}
         </Stack>
 
-        {false /* TODO: Change when perm pool turned on */ && (
+        {permissionlessPoolsFF /* TODO: Change when perm pool turned on */ && (
           <Box flex={1}>
             <Button
               variant="contained"

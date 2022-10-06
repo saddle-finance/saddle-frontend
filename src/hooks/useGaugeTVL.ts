@@ -9,11 +9,13 @@ import { TokensContext } from "../providers/TokensProvider"
 import { Zero } from "@ethersproject/constants"
 import { getPriceDataForPool } from "../utils"
 import { parseUnits } from "@ethersproject/units"
+import { useActiveWeb3React } from "."
 import { useSelector } from "react-redux"
 
 const sushiGaugeName = "SLP-gauge"
 
 export default function useGaugeTVL(): (gaugeAddress?: string) => BigNumber {
+  const { chainId } = useActiveWeb3React()
   const { gauges } = useContext(GaugeContext)
   const { sdlWethSushiPool, tokenPricesUSD } = useSelector(
     (state: AppState) => state.application,
@@ -47,11 +49,12 @@ export default function useGaugeTVL(): (gaugeAddress?: string) => BigNumber {
           tokens,
           basicPool,
           tokenPricesUSD,
+          chainId,
         )
         return lpTokenPriceUSD.mul(gauge.gaugeTotalSupply || Zero).div(BN_1E18)
       }
       return Zero
     },
-    [gauges, basicPools, sdlWethSushiPool, tokenPricesUSD, tokens],
+    [gauges, basicPools, sdlWethSushiPool, tokenPricesUSD, tokens, chainId],
   )
 }

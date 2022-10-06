@@ -110,7 +110,6 @@ export default function TokensProvider({
         const tokenListsRes = await fetch(
           "https://tokens.coingecko.com/uniswap/all.json",
         )
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         tokenLists = (await tokenListsRes.json()) as {
           tokens: { address: string }[]
         }
@@ -122,12 +121,12 @@ export default function TokensProvider({
         tokenListsTokenAddrs = new Set()
       }
       const additionalSdlApprovedAddrsHardhat = [
-        "0x9A676e781A523b5d0C0e43731313A708CB607508",
-        "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1",
+        "0x9A676e781A523b5d0C0e43731313A708CB607508", // USDC
+        "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1", // USDT
       ].map((addr) => addr.toLowerCase())
       const additionalSdlApprovedAddrsSet = new Set([
         ...tokenListsTokenAddrs,
-        ...additionalSdlApprovedAddrsHardhat,
+        ...(ChainId.HARDHAT && additionalSdlApprovedAddrsHardhat),
       ])
       Object.keys(tokenInfos).forEach((address) => {
         ;(tokenInfos[address] as BasicToken).isLPToken = lpTokens.has(address)

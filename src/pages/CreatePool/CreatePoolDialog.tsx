@@ -7,13 +7,14 @@ import {
   Stack,
   Typography,
 } from "@mui/material"
-import { AssetType, PoolType, ValidationStatus } from "."
 import { BigNumber, BigNumberish, ethers } from "ethers"
+import { PoolType, ValidationStatus } from "."
 import React, { useState } from "react"
 import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 
 import Dialog from "../../components/Dialog"
 import DialogTitle from "../../components/DialogTitle"
+import { PoolTypes } from "../../constants"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../../hooks"
 import { usePermissionlessDeployer } from "../../hooks/useContract"
@@ -28,7 +29,7 @@ type Props = {
     aParameter: string
     poolType: PoolType
     fee: string
-    assetType: AssetType
+    assetType: PoolTypes
     tokenInputs: string[]
     tokenInfo: {
       name: string

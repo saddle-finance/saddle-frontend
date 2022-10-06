@@ -34,6 +34,7 @@ import { Zero } from "@ethersproject/constants"
 import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { debounce } from "lodash"
+import { enqueueToast } from "../components/Toastify"
 import { formatGasToString } from "../utils/gas"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndSwap } from "../hooks/useApproveAndSwap"
@@ -311,7 +312,7 @@ function Swap(): ReactElement {
           const [amountOutSynth, amountOutToken] =
             await bridgeContract.calcSynthToToken(
               destinationPool.metaSwapDepositAddress,
-              utils.formatBytes32String(tokenAddr),
+              utils.formatBytes32String(formStateArg.from.symbol),
               formStateArg.to.tokenIndex,
               amountToGive,
             )
@@ -333,7 +334,7 @@ function Swap(): ReactElement {
           amountToReceive = await bridgeContract.calcTokenToSynth(
             originPool.metaSwapDepositAddress,
             formStateArg.from.tokenIndex,
-            utils.formatBytes32String(tokenAddr),
+            utils.formatBytes32String(formStateArg.to.symbol),
             amountToGive,
           )
         }
@@ -354,9 +355,9 @@ function Swap(): ReactElement {
         const toTokenAddr = tokens[formStateArg.to.address]?.address
         if (!fromTokenAddr || !toTokenAddr) return
         amountToReceive = await snxEchangeRatesContract.effectiveValue(
-          utils.formatBytes32String(fromTokenAddr),
+          utils.formatBytes32String(formStateArg.from.symbol),
           amountToGive,
-          utils.formatBytes32String(toTokenAddr),
+          utils.formatBytes32String(formStateArg.to.symbol),
         )
       }
       const tokenToAddr = tokens[tokenTo.address]?.address
@@ -557,7 +558,11 @@ function Swap(): ReactElement {
   }
 
   async function handleConfirmTransaction(): Promise<void> {
-    if (!tokens) return
+    if (!tokens) {
+      console.error("Unable to obtain tokens info")
+      enqueueToast("error", "Unable to obtain tokens info")
+      return
+    }
     const fromToken = tokens[formState.from.address]
     if (
       formState.swapType === SWAP_TYPES.INVALID ||

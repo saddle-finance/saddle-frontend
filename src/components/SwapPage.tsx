@@ -132,56 +132,52 @@ const SwapPage = (props: Props): ReactElement => {
     (slippageSelected === Slippages.Custom &&
       parseFloat(slippageCustom?.valueRaw || "0") < 0.5)
 
-  const renderTokenListsWarning = (
-    open: boolean,
-    setOpen: (open: boolean) => void,
-    type: "from" | "to",
-  ) => {
-    return (
-      <Collapse in={open}>
-        <Alert
-          variant="filled"
-          severity="warning"
-          sx={{ mb: 2, mt: type === "to" ? 2 : -3 }}
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={() => {
-                setOpen(false)
-              }}
-            >
-              <Close fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          <Typography>
-            This token doesnt appear in our token list. Make sure this is the
-            correct token address of the token you want to trade.
-          </Typography>
-          <Link
-            href={getMultichainScanLink(
-              chainId ?? 1,
-              type === "from" && fromToken
-                ? fromToken.address
-                : toState.address,
-              "address",
-            )}
-            target="_blank"
+  const renderTokenListsWarning = React.useCallback(
+    (open: boolean, setOpen: (open: boolean) => void, type: "from" | "to") => {
+      return (
+        <Collapse in={open}>
+          <Alert
+            variant="filled"
+            severity="warning"
+            sx={{ mb: 2, mt: type === "to" ? 2 : -3 }}
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpen(false)
+                }}
+              >
+                <Close fontSize="inherit" />
+              </IconButton>
+            }
           >
-            <Typography mt={1}>
-              {type === "from" && fromToken
-                ? shortenAddress(fromToken.address)
-                : type === "to" && toState.address
-                ? shortenAddress(toState.address)
-                : "Unable to detect Token address"}
-            </Typography>
-          </Link>
-        </Alert>
-      </Collapse>
-    )
-  }
+            <Typography>{t("tokenNotFoundTokenLists")}</Typography>
+            <Link
+              href={getMultichainScanLink(
+                chainId ?? 1,
+                type === "from" && fromToken
+                  ? fromToken.address
+                  : toState.address,
+                "address",
+              )}
+              target="_blank"
+            >
+              <Typography mt={1}>
+                {type === "from" && fromToken
+                  ? shortenAddress(fromToken.address)
+                  : type === "to" && toState.address
+                  ? shortenAddress(toState.address)
+                  : "Unable to detect Token address"}
+              </Typography>
+            </Link>
+          </Alert>
+        </Collapse>
+      )
+    },
+    [chainId, fromToken, t, toState.address],
+  )
 
   return (
     <Container maxWidth="sm" sx={{ pt: 5, pb: 20 }}>

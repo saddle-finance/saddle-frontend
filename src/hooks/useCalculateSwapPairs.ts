@@ -46,7 +46,12 @@ export function useCalculateSwapPairs(): (token?: BasicToken) => SwapData[] {
     if (basicPools === null || tokens === null) return []
     const basicPoolsWithPriceData = Object.values(basicPools)
       .map((pool) => {
-        const priceData = getPriceDataForPool(tokens, pool, tokenPricesUSD)
+        const priceData = getPriceDataForPool(
+          tokens,
+          pool,
+          tokenPricesUSD,
+          chainId,
+        )
         const expandedTokens = pool.tokens.map((addr) => tokens?.[addr])
         const expandedUnderlyingTokens =
           pool.underlyingTokens?.map((addr) => tokens?.[addr]) || null
@@ -92,7 +97,7 @@ export function useCalculateSwapPairs(): (token?: BasicToken) => SwapData[] {
       return newAcc
     }, {} as TokenToPoolsMap)
     return [sortedPools, tokenToPools]
-  }, [basicPools, tokens, tokenPricesUSD]) // TODO reduce refresh rate caused by tokenPricesUSD
+  }, [basicPools, tokens, tokenPricesUSD, chainId]) // TODO reduce refresh rate caused by tokenPricesUSD
 
   useEffect(() => {
     // @dev clear cache when moving chains

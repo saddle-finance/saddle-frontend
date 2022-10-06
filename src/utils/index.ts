@@ -613,6 +613,7 @@ export function getPriceDataForPool(
   tokens: BasicTokens,
   basicPool: BasicPool,
   tokenPricesUSD?: TokenPricesUSD,
+  chainId?: ChainId,
 ): {
   assetPrice: BigNumber
   lpTokenPriceUSD: BigNumber
@@ -632,7 +633,9 @@ export function getPriceDataForPool(
     underlyingTokens,
   } = basicPool
   const poolAssetPrice = parseUnits(
-    String(tokenPricesUSD?.[getTokenAddrForPoolType(typeOfAsset)] || 0),
+    String(
+      tokenPricesUSD?.[getTokenAddrForPoolType(typeOfAsset, chainId)] || 0,
+    ),
     18,
   )
   const expandedTokens = poolTokens.map((token) => (tokens || {})[token])

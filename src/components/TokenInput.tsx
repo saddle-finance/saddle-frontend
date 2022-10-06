@@ -24,8 +24,8 @@ interface Props {
   error?: boolean
   helperText?: string
   token: {
-    isOnTokenLists: boolean
-    address: string
+    isOnTokenLists?: boolean
+    address?: string
     symbol: string
     name: string
     priceUSD?: number
