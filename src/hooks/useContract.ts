@@ -31,7 +31,6 @@ import GAUGE_MINTER_ABI from "../constants/abis/minter.json"
 import GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI from "../constants/abis/generalizedSwapMigrator.json"
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
 import { GeneralizedSwapMigrator } from "../../types/ethers-contracts/GeneralizedSwapMigrator"
-import { IS_VESDL_LIVE } from "./../constants/index"
 import LIQUIDITY_V5_GAUGE_ABI from "../constants/abis/liquidityGaugeV5.json"
 import LPTOKEN_GUARDED_ABI from "../constants/abis/lpTokenGuarded.json"
 import LPTOKEN_UNGUARDED_ABI from "../constants/abis/lpTokenUnguarded.json"
@@ -73,30 +72,33 @@ export const CHILD_GAUGE_FACTORY_NAME = "ChildGaugeFactory"
 
 // returns null on errors
 function useContract(
-  address: string | undefined,
+  address: string,
   ABI: ContractInterface,
   withSignerIfPossible = true,
 ): Contract {
   const { library, account } = useActiveWeb3React()
 
   return useMemo(() => {
+    console.log("contract address ==>", address, ABI, library)
     if (!address || !ABI || !library) {
       throw new Error("Error on contract")
     }
-    return getContract(
+    const contract = getContract(
       address,
       ABI,
       library,
       withSignerIfPossible && account ? account : undefined,
     )
+    console.log("contract signer ==>", contract.signer)
+    return contract
   }, [address, ABI, library, withSignerIfPossible, account])
 }
 
 export function useMasterRegistry(): MasterRegistry {
   const { chainId } = useActiveWeb3React()
-  const contractAddress = chainId
-    ? MASTER_REGISTRY_CONTRACT_ADDRESSES[chainId]
-    : undefined
+  if (!chainId) throw new Error("There is no chain id")
+
+  const contractAddress = MASTER_REGISTRY_CONTRACT_ADDRESSES[chainId]
   return useContract(
     contractAddress,
     MASTER_REGISTRY_ABI,
@@ -220,9 +222,7 @@ export function usePermissionlessDeployer(): PermissionlessDeployer | null {
 
 export function useGeneralizedSwapMigratorContract(): GeneralizedSwapMigrator | null {
   const { chainId } = useActiveWeb3React()
-  const contractAddress = chainId
-    ? GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES[chainId]
-    : undefined
+  const contractAddress = GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES[chainId]
   return useContract(
     contractAddress,
     GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI,
@@ -231,25 +231,22 @@ export function useGeneralizedSwapMigratorContract(): GeneralizedSwapMigrator | 
 
 export function useBridgeContract(): Bridge | null {
   const { chainId } = useActiveWeb3React()
-  const contractAddress = chainId
-    ? BRIDGE_CONTRACT_ADDRESSES[chainId]
-    : undefined
+  const contractAddress = BRIDGE_CONTRACT_ADDRESSES[chainId]
+
   return useContract(contractAddress, BRIDGE_CONTRACT_ABI) as Bridge
 }
 
 export function useMiniChefContract(): MiniChef | null {
   const { chainId } = useActiveWeb3React()
-  const contractAddress = chainId
-    ? MINICHEF_CONTRACT_ADDRESSES[chainId]
-    : undefined
+  const contractAddress = MINICHEF_CONTRACT_ADDRESSES[chainId]
+
   return useContract(contractAddress, MINICHEF_CONTRACT_ABI) as MiniChef
 }
 
 export function useRetroactiveVestingContract(): RetroactiveVesting | null {
   const { chainId } = useActiveWeb3React()
-  const contractAddress = chainId
-    ? RETROACTIVE_VESTING_CONTRACT_ADDRESSES[chainId]
-    : undefined
+  const contractAddress = RETROACTIVE_VESTING_CONTRACT_ADDRESSES[chainId]
+
   return useContract(
     contractAddress,
     RETROACTIVE_VESTING_CONTRACT_ABI,
@@ -258,9 +255,8 @@ export function useRetroactiveVestingContract(): RetroactiveVesting | null {
 
 export function useSynthetixContract(): SynthetixNetworkToken | null {
   const { chainId } = useActiveWeb3React()
-  const contractAddress = chainId
-    ? SYNTHETIX_CONTRACT_ADDRESSES[chainId]
-    : undefined
+  const contractAddress = SYNTHETIX_CONTRACT_ADDRESSES[chainId]
+
   return useContract(
     contractAddress,
     SYNTHETIX_NETWORK_TOKEN_CONTRACT_ABI,
@@ -269,9 +265,8 @@ export function useSynthetixContract(): SynthetixNetworkToken | null {
 
 export function useSynthetixExchangeRatesContract(): SynthetixExchangeRate | null {
   const { chainId } = useActiveWeb3React()
-  const contractAddress = chainId
-    ? SYNTHETIX_EXCHANGE_RATES_CONTRACT_ADDRESSES[chainId]
-    : undefined
+  const contractAddress = SYNTHETIX_EXCHANGE_RATES_CONTRACT_ADDRESSES[chainId]
+
   return useContract(
     contractAddress,
     SYNTHETIX_EXCHANGE_RATE_CONTRACT_ABI,
@@ -284,7 +279,7 @@ export function useTokenContract(
   withSignerIfPossible?: boolean,
 ): Contract | null {
   const { chainId } = useActiveWeb3React()
-  const tokenAddress = chainId ? t.addresses[chainId] : undefined
+  const tokenAddress = t.addresses[chainId]
   return useContract(tokenAddress, ERC20_ABI, withSignerIfPossible)
 }
 
@@ -350,9 +345,8 @@ export function useLPTokenContract(
 
 export function useGaugeControllerContract(): GaugeController | null {
   const { chainId } = useActiveWeb3React()
-  const contractAddress = chainId
-    ? GAUGE_CONTROLLER_ADDRESSES[chainId]
-    : undefined
+  const contractAddress = GAUGE_CONTROLLER_ADDRESSES[chainId]
+
   return useContract(
     contractAddress,
     GAUGE_CONTROLLER_ABI,
@@ -362,15 +356,13 @@ export function useGaugeControllerContract(): GaugeController | null {
 
 export const useSdlContract = (): Sdl => {
   const { chainId } = useActiveWeb3React()
-  const contractAddress = chainId ? SDL_TOKEN_ADDRESSES[chainId] : undefined
+  const contractAddress = SDL_TOKEN_ADDRESSES[chainId]
   return useContract(contractAddress, SDL_TOKEN_ABI) as Sdl
 }
 
 export const useVotingEscrowContract = (): VotingEscrow => {
   const { chainId } = useActiveWeb3React()
-  const contractAddress = chainId
-    ? VOTING_ESCROW_CONTRACT_ADDRESS[chainId]
-    : undefined
+  const contractAddress = VOTING_ESCROW_CONTRACT_ADDRESS[chainId]
 
   return useContract(
     contractAddress,
@@ -380,27 +372,25 @@ export const useVotingEscrowContract = (): VotingEscrow => {
 
 export const useFeeDistributor = (): FeeDistributor | null => {
   const { chainId } = useActiveWeb3React()
-  const contractAddress =
-    chainId && IS_VESDL_LIVE ? FEE_DISTRIBUTOR_ADDRESSES[chainId] : undefined
+  const contractAddress = FEE_DISTRIBUTOR_ADDRESSES[chainId]
   return useContract(contractAddress, FEE_DISTRIBUTOR_ABI) as FeeDistributor
 }
 
 export const useGaugeMinterContract = (): Minter | null => {
   const { chainId } = useActiveWeb3React()
-  const contractAddress = chainId ? GAUGE_MINTER_ADDRESSES[chainId] : undefined
+  const contractAddress = GAUGE_MINTER_ADDRESSES[chainId]
   return useContract(contractAddress, GAUGE_MINTER_ABI) as Minter
 }
 
 export const useSdlWethSushiPairContract = (): SushiPool | null => {
   const { chainId } = useActiveWeb3React()
-  const contractAddress = chainId
-    ? SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chainId]
-    : undefined
+  const contractAddress = SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES[chainId]
+
   return useContract(contractAddress, SUSHI_POOL_ABI, false) as SushiPool
 }
 
 export function useLiquidityGaugeContract(
-  gaugeAddress?: string,
+  gaugeAddress: string,
 ): LiquidityGaugeV5 | null {
   return useContract(gaugeAddress, LIQUIDITY_V5_GAUGE_ABI) as LiquidityGaugeV5
 }

@@ -154,27 +154,31 @@ export default function Farm(): JSX.Element {
         },
       )}
 
-      <StakeDialog
-        farmName={activeGauge?.displayName}
-        open={activeDialog === "stake"}
-        gaugeAddress={activeGauge?.address}
-        onClose={() => {
-          setActiveDialog(undefined)
-          setActiveGauge(undefined)
-        }}
-        onClickClaim={() => {
-          setActiveDialog("claim")
-        }}
-      />
-      <ClaimRewardsDlg
-        open={activeDialog === "claim"}
-        gaugeAddress={activeGauge?.address}
-        displayName={activeGauge?.displayName}
-        onClose={() => {
-          setActiveDialog(undefined)
-          setActiveGauge(undefined)
-        }}
-      />
+      {activeGauge && (
+        <StakeDialog
+          farmName={activeGauge.displayName}
+          open={activeDialog === "stake"}
+          gaugeAddress={activeGauge.address}
+          onClose={() => {
+            setActiveDialog(undefined)
+            setActiveGauge(undefined)
+          }}
+          onClickClaim={() => {
+            setActiveDialog("claim")
+          }}
+        />
+      )}
+      {activeGauge && (
+        <ClaimRewardsDlg
+          open={activeDialog === "claim"}
+          gaugeAddress={activeGauge.address}
+          displayName={activeGauge.displayName}
+          onClose={() => {
+            setActiveDialog(undefined)
+            setActiveGauge(undefined)
+          }}
+        />
+      )}
       <VeSDLWrongNetworkModal />
     </Container>
   )

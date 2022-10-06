@@ -8,11 +8,20 @@ import { isMobile } from "react-device-detect"
 import { useWeb3React as useWeb3ReactCore } from "@web3-react/core"
 
 export function useActiveWeb3React(): Web3ReactContextInterface<Web3Provider> & {
-  chainId?: ChainId
+  chainId: ChainId
 } {
   const context = useWeb3ReactCore<Web3Provider>()
   const contextNetwork = useWeb3ReactCore<Web3Provider>(NetworkContextName)
-  return context.active ? context : contextNetwork
+  if (contextNetwork.chainId && context.chainId)
+    throw new Error("There is no chain Id")
+
+  const resContext = context.active ? context : contextNetwork
+  const chainId = context.chainId || contextNetwork.chainId
+  resContext.chainId = chainId
+
+  return resContext as Web3ReactContextInterface<Web3Provider> & {
+    chainId: ChainId
+  }
 }
 
 export function useEagerConnect(): boolean {

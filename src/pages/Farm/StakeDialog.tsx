@@ -34,8 +34,8 @@ interface StakeDialogProps {
   open: boolean
   onClose: () => void
   onClickClaim: () => void
-  farmName?: string
-  gaugeAddress?: string
+  farmName: string
+  gaugeAddress: string
 }
 
 const defaultInput = "0.0"

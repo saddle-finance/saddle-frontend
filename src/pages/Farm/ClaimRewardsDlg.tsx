@@ -21,7 +21,7 @@ import useUserGauge from "../../hooks/useUserGauge"
 
 type Props = {
   open: boolean
-  gaugeAddress?: string
+  gaugeAddress: string
   displayName?: string
   onClose: () => void
 }

@@ -28,7 +28,7 @@ type UserGauge = {
   boost: BigNumber | null
 }
 
-export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
+export default function useUserGauge(gaugeAddress: string): UserGauge | null {
   const { account } = useActiveWeb3React()
   const [veSdlBalance, setVeSdlBalance] = useState(Zero)
   const [totalVeSdl, setTotalVeSdl] = useState(Zero)
