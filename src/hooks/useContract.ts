@@ -335,14 +335,14 @@ export function useLPTokenContract(
 }
 
 export function useGaugeControllerContract(): GaugeController | null {
-  const { account, chainId } = useActiveWeb3React()
+  const { chainId } = useActiveWeb3React()
   const contractAddress = chainId
     ? GAUGE_CONTROLLER_ADDRESSES[chainId]
     : undefined
   return useContract(
     contractAddress,
     GAUGE_CONTROLLER_ABI,
-    account ? true : false,
+    undefined,
   ) as GaugeController
 }
 
