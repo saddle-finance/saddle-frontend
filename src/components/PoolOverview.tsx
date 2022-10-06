@@ -134,8 +134,8 @@ export default function PoolOverview({
                   {formattedData.name}
                 </Typography>
               </Tooltip>
-              <Stack direction="column">{renderChips()}</Stack>
             </Box>
+            <>{renderChips()}</>
             {hasShare && (
               <div>
                 <Typography component="span">{t("balance")}: </Typography>
