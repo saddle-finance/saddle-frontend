@@ -22,7 +22,9 @@ export default function VeSDLWrongNetworkModal(): JSX.Element {
   useEffect(() => {
     if (chainId) {
       const isValidNetwork =
-        chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT
+        chainId === ChainId.MAINNET ||
+        chainId === ChainId.HARDHAT ||
+        chainId == ChainId.OPTIMISM
       const networkName = SUPPORTED_NETWORKS[chainId]?.chainName
       setOpenDialog(!isValidNetwork && !!networkName)
     }

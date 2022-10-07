@@ -1,6 +1,8 @@
 import {
   BRIDGE_CONTRACT_ADDRESSES,
   BTC_POOL_NAME,
+  CHILD_ORACLE_CONTRACT_ADDRESSES,
+  ChainId,
   FEE_DISTRIBUTOR_ADDRESSES,
   GAUGE_CONTROLLER_ADDRESSES,
   GAUGE_MINTER_ADDRESSES,
@@ -8,6 +10,7 @@ import {
   MASTER_REGISTRY_CONTRACT_ADDRESSES,
   MINICHEF_CONTRACT_ADDRESSES,
   RETROACTIVE_VESTING_CONTRACT_ADDRESSES,
+  ROOT_GAUGE_FACTORY_CONTRACT_ADDRESSES,
   SDL_TOKEN_ADDRESSES,
   SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES,
   SYNTHETIX_CONTRACT_ADDRESSES,
@@ -23,6 +26,12 @@ import { AddressZero } from "@ethersproject/constants"
 import BRIDGE_CONTRACT_ABI from "../constants/abis/bridge.json"
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { Bridge } from "../../types/ethers-contracts/Bridge"
+import CHILD_GAUGE_ABI from "../constants/abis/childGauge.json"
+import CHILD_GAUGE_FACTORY_ABI from "../constants/abis/childGaugeFactory.json"
+import CHILD_ORACLE_ABI from "../constants/abis/childOracle.json"
+import { ChildGauge } from "../../types/ethers-contracts/ChildGauge"
+import { ChildGaugeFactory } from "../../types/ethers-contracts/ChildGaugeFactory"
+import { ChildOracle } from "../../types/ethers-contracts/ChildOracle"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import FEE_DISTRIBUTOR_ABI from "../constants/abis/feeDistributor.json"
 import { FeeDistributor } from "../../types/ethers-contracts/FeeDistributor"
@@ -50,7 +59,11 @@ import POOL_REGISTRY_ABI from "../constants/abis/poolRegistry.json"
 import { PermissionlessDeployer } from "../../types/ethers-contracts/PermissionlessDeployer"
 import { PoolRegistry } from "../../types/ethers-contracts/PoolRegistry"
 import RETROACTIVE_VESTING_CONTRACT_ABI from "../constants/abis/retroactiveVesting.json"
+import ROOT_GAUGE_ABI from "../constants/abis/rootGauge.json"
+import ROOT_GAUGE_FACTORY_ABI from "../constants/abis/rootGaugeFactory.json"
 import { RetroactiveVesting } from "../../types/ethers-contracts/RetroactiveVesting"
+import { RootGauge } from "../../types/ethers-contracts/RootGauge"
+import { RootGaugeFactory } from "../../types/ethers-contracts/RootGaugeFactory"
 import SDL_TOKEN_ABI from "../constants/abis/sdl.json"
 import SUSHI_POOL_ABI from "../constants/abis/sushiPool.json"
 import SYNTHETIX_EXCHANGE_RATE_CONTRACT_ABI from "../constants/abis/synthetixExchangeRate.json"
@@ -64,12 +77,13 @@ import { SynthetixExchangeRate } from "../../types/ethers-contracts/SynthetixExc
 import { SynthetixNetworkToken } from "../../types/ethers-contracts/SynthetixNetworkToken"
 import VOTING_ESCROW_CONTRACT_ABI from "../constants/abis/votingEscrow.json"
 import { VotingEscrow } from "../../types/ethers-contracts/VotingEscrow"
+import { Web3Provider } from "@ethersproject/providers"
 import { formatBytes32String } from "@ethersproject/strings"
 import { useActiveWeb3React } from "./index"
 
 export const POOL_REGISTRY_NAME = "PoolRegistry"
 export const CHILD_GAUGE_FACTORY_NAME = "ChildGaugeFactory"
-
+export const GAUGE_FACTORY_NAME = "GaugeFactory"
 // returns null on errors
 function useContract(
   address: string | undefined,
@@ -104,6 +118,63 @@ export function useMasterRegistry(): MasterRegistry | null {
     MASTER_REGISTRY_ABI,
     false,
   ) as MasterRegistry
+}
+
+export function useChildGaugeFactory(): ChildGaugeFactory | null {
+  const { library, chainId } = useActiveWeb3React()
+  const masterRegistryContract = useMasterRegistry()
+  const [contractAddress, setContractAddress] = useState<string | undefined>()
+  useEffect(() => {
+    if (chainId === ChainId.MAINNET) {
+      console.error(
+        "User is currently on mainnet. Child Gauge Factory does not exist",
+      )
+      setContractAddress(undefined)
+      return
+    }
+    if (masterRegistryContract) {
+      masterRegistryContract
+        ?.resolveNameToLatestAddress(
+          formatBytes32String(CHILD_GAUGE_FACTORY_NAME),
+        )
+        .then((contractAddress) => {
+          if (contractAddress !== AddressZero) {
+            setContractAddress(contractAddress)
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+          setContractAddress(undefined)
+        })
+    } else {
+      setContractAddress(undefined)
+    }
+  }, [chainId, masterRegistryContract])
+
+  return useMemo(() => {
+    if (!library || !contractAddress) return null
+    return getContract(
+      contractAddress,
+      CHILD_GAUGE_FACTORY_ABI,
+      library,
+    ) as ChildGaugeFactory
+  }, [contractAddress, library])
+}
+
+export function useRootGaugeFactory(): RootGaugeFactory | null {
+  const { chainId } = useActiveWeb3React()
+  const contractAddress = chainId
+    ? ROOT_GAUGE_FACTORY_CONTRACT_ADDRESSES[chainId]
+    : undefined
+  return useContract(
+    contractAddress,
+    ROOT_GAUGE_FACTORY_ABI,
+    false,
+  ) as RootGaugeFactory
+}
+
+export function useRootGauge(address: string): RootGauge | null {
+  return useContract(address, ROOT_GAUGE_ABI, false) as RootGauge
 }
 
 export function usePoolRegistry(): PoolRegistry | null {
@@ -390,4 +461,75 @@ export function useLiquidityGaugeContract(
   gaugeAddress?: string,
 ): LiquidityGaugeV5 | null {
   return useContract(gaugeAddress, LIQUIDITY_V5_GAUGE_ABI) as LiquidityGaugeV5
+}
+
+// This section instantiate new contract without Hooks
+export function getGaugeContract(
+  library: Web3Provider,
+  chainId: ChainId,
+  address: string,
+  account: string,
+): LiquidityGaugeV5 | ChildGauge {
+  if (chainId === ChainId.MAINNET) {
+    return getContract(
+      address,
+      LIQUIDITY_V5_GAUGE_ABI,
+      library,
+      account,
+    ) as LiquidityGaugeV5
+  }
+
+  return getContract(address, CHILD_GAUGE_ABI, library, account) as ChildGauge
+}
+
+export function getGaugeMinterContract(
+  chainId: ChainId,
+  account: string,
+  library: Web3Provider,
+) {
+  return getContract(
+    GAUGE_MINTER_ADDRESSES[chainId],
+    GAUGE_MINTER_ABI,
+    library,
+    account,
+  ) as Minter
+}
+
+export function getChildGaugeFactory(
+  account: string,
+  library: Web3Provider,
+  address: string,
+) {
+  return getContract(
+    address,
+    CHILD_GAUGE_FACTORY_ABI,
+    library,
+    account,
+  ) as ChildGaugeFactory
+}
+
+export const getVotingEscrowContract = (
+  chainId: ChainId,
+  account: string,
+  library: Web3Provider,
+): VotingEscrow => {
+  return getContract(
+    VOTING_ESCROW_CONTRACT_ADDRESS[chainId],
+    VOTING_ESCROW_CONTRACT_ABI,
+    library,
+    account,
+  ) as VotingEscrow
+}
+
+export const getChildOracle = (
+  chainId: ChainId,
+  account: string,
+  library: Web3Provider,
+): ChildOracle => {
+  return getContract(
+    CHILD_ORACLE_CONTRACT_ADDRESSES[chainId],
+    CHILD_ORACLE_ABI,
+    library,
+    account,
+  ) as ChildOracle
 }

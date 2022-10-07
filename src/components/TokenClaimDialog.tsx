@@ -20,10 +20,12 @@ import React, {
   useState,
 } from "react"
 import { Trans, useTranslation } from "react-i18next"
-import { commify, formatBNToString, getContract } from "../utils"
+import { commify, formatBNToString } from "../utils"
 import { enqueuePromiseToast, enqueueToast } from "./Toastify"
 import {
-  useGaugeMinterContract,
+  getChildGaugeFactory,
+  getGaugeContract,
+  getGaugeMinterContract,
   useMiniChefContract,
   useRetroactiveVestingContract,
 } from "../hooks/useContract"
@@ -33,14 +35,13 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { ContractTransaction } from "@ethersproject/contracts"
 import Dialog from "./Dialog"
 import { GaugeContext } from "../providers/GaugeProvider"
-import LIQUIDITY_GAUGE_V5_ABI from "../constants/abis/liquidityGaugeV5.json"
-import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { UserStateContext } from "../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
 import logo from "../assets/icons/logo.svg"
 import { useActiveWeb3React } from "../hooks"
 import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
+import { useRegistryAddress } from "../providers/useRegistryAddress"
 import { useRetroMerkleData } from "../hooks/useRetroMerkleData"
 
 // TODO: update token launch link
@@ -68,7 +69,7 @@ export default function TokenClaimDialog({
     if (!basicPools || !userState?.gaugeRewards) return []
     return (
       Object.values(gauges)
-        .map(({ gaugeName, rewards, address }) => {
+        .map(({ gaugeName, address, rewards }) => {
           return {
             gaugeName,
             address,
@@ -271,7 +272,9 @@ export default function TokenClaimDialog({
                           ["SDL", userClaimableSdl ?? Zero],
                           ...userClaimableOtherRewards,
                         ]}
-                        claimCallback={() => void claimGaugeReward(gauge)}
+                        claimCallback={() => {
+                          void claimGaugeReward(gauge)
+                        }}
                         status={
                           claimsStatuses["allGauges"] ||
                           claimsStatuses[gauge?.gaugeName ?? ""]
@@ -407,8 +410,8 @@ type PendingClaimsKeys = string | "allPools" | "allGauges" | "retroactive"
 type PendingClaims = Record<PendingClaimsKeys, STATUSES>
 function useRewardClaims() {
   const { chainId, account, library } = useActiveWeb3React()
+  const { data: registryAddresses } = useRegistryAddress()
   const rewardsContract = useMiniChefContract()
-  const gaugeMinterContract = useGaugeMinterContract()
   const retroRewardsContract = useRetroactiveVestingContract()
   const userMerkleData = useRetroMerkleData() // @dev todo hoist this to avoid refetches
   const [pendingClaims, setPendingClaims] = useState<PendingClaims>(
@@ -456,7 +459,7 @@ function useRewardClaims() {
         rewards: GaugeReward[]
       } | null,
     ) => {
-      if (!chainId || !account || !gaugeMinterContract || !library || !gauge) {
+      if (!chainId || !account || !library || !gauge || !registryAddresses) {
         enqueueToast("error", "Unable to claim reward")
         return
       }
@@ -471,18 +474,36 @@ function useRewardClaims() {
         const minterRewards = gauge.rewards.filter(({ isMinter }) => isMinter)
         const gaugeRewards = gauge.rewards.filter(({ isMinter }) => !isMinter)
         if (minterRewards.length > 0) {
-          claimPromises.push(gaugeMinterContract.mint(gauge.address))
+          if (chainId == ChainId.MAINNET || chainId == ChainId.HARDHAT) {
+            const gaugeMinterContract = getGaugeMinterContract(
+              chainId,
+              account,
+              library,
+            )
+            claimPromises.push(gaugeMinterContract.mint(gauge.address))
+          } else {
+            if (registryAddresses["ChildGaugeFactory"]) {
+              const childGaugeFactory = getChildGaugeFactory(
+                account,
+                library,
+                registryAddresses["ChildGaugeFactory"],
+              )
+              claimPromises.push(childGaugeFactory.mint(gauge.address))
+            } else {
+              console.error(
+                "Unable to retrieve necessary ChildGaugeFactory contract address",
+              )
+            }
+          }
         }
         if (gaugeRewards.length > 0) {
-          const liquidityGaugeContract = getContract(
-            gauge.address,
-            LIQUIDITY_GAUGE_V5_ABI,
+          const gaugeContract = getGaugeContract(
             library,
+            chainId,
+            gauge.address,
             account,
-          ) as LiquidityGaugeV5
-          claimPromises.push(
-            liquidityGaugeContract["claim_rewards(address)"](account),
           )
+          claimPromises.push(gaugeContract["claim_rewards(address)"](account))
         }
         const txns = await Promise.all(claimPromises)
         await enqueuePromiseToast(
@@ -498,7 +519,7 @@ function useRewardClaims() {
         enqueueToast("error", "Unable to claim reward")
       }
     },
-    [chainId, account, updateClaimStatus, gaugeMinterContract, library],
+    [chainId, account, library, updateClaimStatus, registryAddresses],
   )
 
   const claimRetroReward = useCallback(async () => {

@@ -388,7 +388,7 @@
     ]
   },
   {
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function",
     "name": "claimable_tokens",
     "inputs": [

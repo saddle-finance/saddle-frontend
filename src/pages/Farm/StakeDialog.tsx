@@ -47,11 +47,11 @@ export default function StakeDialog({
   onClickClaim,
 }: StakeDialogProps): JSX.Element | null {
   const { chainId, account, library } = useActiveWeb3React()
-  const userGauge = useUserGauge(gaugeAddress)
   const dispatch = useDispatch()
   const [stakeStatus, setStakeStatus] = useState<"stake" | "unstake">("stake")
   const [amountInput, setAmountInput] = useState<string>(defaultInput)
   const { infiniteApproval } = useSelector((state: AppState) => state.user)
+  const userGauge = useUserGauge(account, chainId, library, gaugeAddress)
 
   const onClickStake = useCallback(async () => {
     const errorMsg = "Unable to stake"

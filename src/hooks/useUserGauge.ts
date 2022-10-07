@@ -1,20 +1,23 @@
 import { BasicToken, TokensContext } from "../providers/TokensProvider"
-import { useContext, useEffect, useState } from "react"
+import { SetStateAction, useContext, useEffect, useState } from "react"
 import {
-  useGaugeMinterContract,
-  useLiquidityGaugeContract,
-  useVotingEscrowContract,
+  getChildGaugeFactory,
+  getChildOracle,
+  getGaugeContract,
+  getGaugeMinterContract,
+  getVotingEscrowContract,
 } from "./useContract"
-
 import { BigNumber } from "@ethersproject/bignumber"
+import { ChainId } from "../constants"
 import { ContractTransaction } from "ethers"
 import { GaugeContext } from "../providers/GaugeProvider"
 import { GaugeUserReward } from "../utils/gauges"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { UserStateContext } from "../providers/UserStateProvider"
+import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
 import { calculateBoost } from "../utils"
-import { useActiveWeb3React } from "."
+import { useRegistryAddress } from "../providers/useRegistryAddress"
 
 type UserGauge = {
   stake: LiquidityGaugeV5["deposit(uint256)"]
@@ -28,46 +31,59 @@ type UserGauge = {
   boost: BigNumber | null
 }
 
-export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
-  const { account } = useActiveWeb3React()
+export default function useUserGauge(
+  account?: string | null,
+  chainId?: ChainId,
+  library?: Web3Provider,
+  gaugeAddress?: string,
+): UserGauge | null {
   const [veSdlBalance, setVeSdlBalance] = useState(Zero)
   const [totalVeSdl, setTotalVeSdl] = useState(Zero)
-  const gaugeContract = useLiquidityGaugeContract(gaugeAddress)
-  const gaugeMinterContract = useGaugeMinterContract()
+
   const { gauges } = useContext(GaugeContext)
-  const votingEscrowContract = useVotingEscrowContract()
+  const { data: registryAddresses } = useRegistryAddress()
   const tokens = useContext(TokensContext)
-  const userState = useContext(UserStateContext)
   const gauge = Object.values(gauges).find(
     ({ address }) => address === gaugeAddress,
   )
   const lpToken = tokens?.[gauge?.lpTokenAddress ?? ""]
-
+  const userState = useContext(UserStateContext)
   useEffect(() => {
     const fetchVeSdlBalance = async () => {
-      if (votingEscrowContract && account) {
-        const veSDLBal = await votingEscrowContract["balanceOf(address)"](
-          account,
-        )
-        setVeSdlBalance(veSDLBal)
-        const totalSupply = await votingEscrowContract["totalSupply()"]()
-        setTotalVeSdl(totalSupply)
+      if (!account || !chainId || !library) {
+        return
       }
+
+      await retrieveAndSetSDLValues(
+        account,
+        chainId,
+        library,
+        setVeSdlBalance,
+        setTotalVeSdl,
+      )
     }
 
     void fetchVeSdlBalance()
-  }, [votingEscrowContract, account])
+  }, [account, chainId, library])
 
   if (
-    !gaugeAddress ||
-    !gaugeContract ||
     !gauge ||
-    !lpToken ||
     !account ||
     !userState ||
-    !gaugeMinterContract
+    !library ||
+    !chainId ||
+    !lpToken ||
+    !gaugeAddress ||
+    !registryAddresses
   )
     return null
+
+  const gaugeContract = getGaugeContract(
+    library,
+    chainId,
+    gauge?.address,
+    account,
+  )
 
   const userGaugeRewards = userState.gaugeRewards?.[gaugeAddress]
   const hasSDLRewards = Boolean(userGaugeRewards?.claimableSDL.gt(Zero))
@@ -95,9 +111,32 @@ export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
     stake: gaugeContract["deposit(uint256)"],
     unstake: gaugeContract["withdraw(uint256)"],
     claim: () => {
-      const promises = [gaugeMinterContract.mint(gaugeAddress)]
+      const promises = []
       if (hasExternalRewards) {
         promises.push(gaugeContract["claim_rewards(address)"](account))
+      }
+
+      if (chainId == ChainId.MAINNET || chainId == ChainId.HARDHAT) {
+        const gaugeMinterContract = getGaugeMinterContract(
+          chainId,
+          account,
+          library,
+        )
+
+        promises.push(gaugeMinterContract.mint(gaugeAddress))
+      } else {
+        if (registryAddresses["ChildGaugeFactory"]) {
+          const childGaugeFactory = getChildGaugeFactory(
+            account,
+            library,
+            registryAddresses["ChildGaugeFactory"],
+          )
+          promises.push(childGaugeFactory.mint(gaugeAddress))
+        } else {
+          console.error(
+            "Unable to retrieve necessary ChildGaugeFactory contract address",
+          )
+        }
       }
 
       return Promise.all(promises)
@@ -109,5 +148,30 @@ export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
     userStakedLpTokenBalance: userGaugeRewards?.amountStaked || Zero,
     userGaugeRewards: userGaugeRewards || null,
     boost,
+  }
+}
+
+async function retrieveAndSetSDLValues(
+  account: string,
+  chainId: ChainId,
+  library: Web3Provider,
+  setVeSdlBalance: (value: SetStateAction<BigNumber>) => void,
+  setTotalVeSdl: (value: SetStateAction<BigNumber>) => void,
+): Promise<void> {
+  if (chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT) {
+    const votingEscrowContract = getVotingEscrowContract(
+      chainId,
+      account,
+      library,
+    )
+    setVeSdlBalance(await votingEscrowContract["balanceOf(address)"](account))
+    const supply = await votingEscrowContract["totalSupply()"]()
+    setTotalVeSdl(supply)
+  } else {
+    const childOracle = getChildOracle(chainId, account, library)
+    const veSDLBalance = await childOracle.balanceOf(account)
+    setVeSdlBalance(veSDLBalance)
+    const supply = await childOracle.totalSupply()
+    setTotalVeSdl(supply)
   }
 }
