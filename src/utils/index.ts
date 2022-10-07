@@ -312,19 +312,6 @@ export function calculatePrice(
   return Zero
 }
 
-export function getTokenSymbolForPoolType(poolType: PoolTypes): string {
-  // TODO modify for native assets (eg ETH vs FTM)
-  if (poolType === PoolTypes.BTC) {
-    return "WBTC"
-  } else if (poolType === PoolTypes.ETH) {
-    return "WETH"
-  } else if (poolType === PoolTypes.USD) {
-    return "USDC"
-  } else {
-    return ""
-  }
-}
-
 export function getTokenAddrForPoolType(
   poolType: PoolTypes,
   chainId?: ChainId,
