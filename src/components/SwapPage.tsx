@@ -9,8 +9,8 @@ import {
   Paper,
   Typography,
 } from "@mui/material"
+import { ChainId, SWAP_TYPES, getIsVirtualSwap } from "../constants"
 import React, { ReactElement, useMemo, useState } from "react"
-import { SWAP_TYPES, getIsVirtualSwap } from "../constants"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 
 import AdvancedOptions from "./AdvancedOptions"
@@ -222,7 +222,9 @@ const SwapPage = (props: Props): ReactElement => {
               isSwapFrom={true}
             />
           </Box>
-          {renderTokenListsWarning(openFrom, setOpenFrom, "from")}
+          {chainId &&
+            [ChainId.MAINNET, ChainId.HARDHAT].includes(chainId) &&
+            renderTokenListsWarning(openFrom, setOpenFrom, "from")}
           <Typography variant="subtitle1">
             {t("to").toLocaleUpperCase()}
           </Typography>
@@ -238,7 +240,9 @@ const SwapPage = (props: Props): ReactElement => {
             inputValueUSD={toState.valueUSD}
             isSwapFrom={false}
           />
-          {renderTokenListsWarning(openTo, setOpenTo, "to")}
+          {chainId &&
+            [ChainId.MAINNET, ChainId.HARDHAT].includes(chainId) &&
+            renderTokenListsWarning(openTo, setOpenTo, "to")}
           <div style={{ height: "24px" }}></div>
           {fromState.symbol && toState.symbol && (
             <Box display="flex" justifyContent="space-between">
