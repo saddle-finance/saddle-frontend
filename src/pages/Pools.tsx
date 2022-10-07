@@ -22,7 +22,7 @@ import ReviewMigration from "../components/ReviewMigration"
 import { Search } from "@mui/icons-material"
 import { UserStateContext } from "../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
-import { getTokenSymbolForPoolType } from "../utils"
+import { getTokenAddrForPoolType } from "../utils"
 import { logEvent } from "../utils/googleAnalytics"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "../hooks"
@@ -176,13 +176,17 @@ function Pools(): ReactElement | null {
               userState?.tokenBalances?.[b.lpToken.address] || Zero
             const poolAssetA = parseUnits(
               String(
-                tokenPricesUSD?.[getTokenSymbolForPoolType(a.typeOfAsset)] || 0,
+                tokenPricesUSD?.[
+                  getTokenAddrForPoolType(a.typeOfAsset, chainId)
+                ] || 0,
               ),
               18,
             )
             const poolAssetB = parseUnits(
               String(
-                tokenPricesUSD?.[getTokenSymbolForPoolType(b.typeOfAsset)] || 0,
+                tokenPricesUSD?.[
+                  getTokenAddrForPoolType(b.typeOfAsset, chainId)
+                ] || 0,
               ),
               18,
             )
