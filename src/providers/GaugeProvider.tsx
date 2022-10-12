@@ -7,6 +7,7 @@ import {
 
 import { BasicPoolsContext } from "./BasicPoolsProvider"
 import { useActiveWeb3React } from "../hooks"
+import { useRegistryAddress } from "./useRegistryAddress"
 
 export const GaugeContext = React.createContext<Gauges>(initialGaugesState)
 
@@ -17,24 +18,20 @@ export default function GaugeProvider({
   const gaugeControllerContract = useGaugeControllerContract()
   const basicPools = useContext(BasicPoolsContext)
   const gaugeMinterContract = useGaugeMinterContract() // only exists on mainnet
+  const { data: registryAddresses } = useRegistryAddress()
   const [gauges, setGauges] = useState<Gauges>(initialGaugesState)
 
   useEffect(() => {
     async function fetchGauges() {
-      if (
-        !gaugeControllerContract ||
-        !chainId ||
-        !library ||
-        !gaugeMinterContract
-      )
-        return
+      if (!chainId || !library || !registryAddresses) return
       const gauges: Gauges =
         (await getGaugeData(
           library,
           chainId,
-          gaugeControllerContract,
           basicPools,
+          gaugeControllerContract,
           gaugeMinterContract,
+          registryAddresses,
           account ?? undefined,
         )) || initialGaugesState
       setGauges(gauges)
@@ -48,6 +45,7 @@ export default function GaugeProvider({
     gaugeMinterContract,
     account,
     basicPools,
+    registryAddresses,
   ])
 
   return (
