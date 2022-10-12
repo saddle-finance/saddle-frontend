@@ -71,7 +71,7 @@ function Pools(): ReactElement | null {
     })
   }, [account, chainId])
 
-  const permissionlessPoolsFF = false
+  const permissionlessPoolsFF = true
 
   return (
     <Container sx={{ pb: 5 }}>
