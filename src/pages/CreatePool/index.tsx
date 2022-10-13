@@ -175,7 +175,7 @@ export default function CreatePool(): React.ReactElement {
 
   useEffect(() => {
     const tokenInfoErrors = tokenInfo.map((token) =>
-      token.checkResult === "success" ? "success" : "error",
+      token?.checkResult === "success" ? "success" : "error",
     )
     const hasFieldError =
       poolNameError ||

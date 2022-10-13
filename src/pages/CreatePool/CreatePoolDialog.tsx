@@ -134,28 +134,28 @@ export default function ReviewCreatePool({
         <Stack my={3} spacing={1}>
           <Box display="flex" justifyContent="space-between">
             <Typography>{t("poolName")}</Typography>
-            <Typography>{poolData.poolName}</Typography>
+            <Typography>{poolData?.poolName}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography>{t("poolSymbol")}</Typography>
-            <Typography>{poolData.poolSymbol}</Typography>
+            <Typography>{poolData?.poolSymbol}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography>{t("fee")}</Typography>
-            <Typography>{poolData.fee}%</Typography>
+            <Typography>{poolData?.fee}%</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography>{t("aParameter")}</Typography>
-            <Typography>{poolData.aParameter}</Typography>
+            <Typography>{poolData?.aParameter}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography>{t("poolType")}</Typography>
-            <Typography>{t(poolData.poolType)}</Typography>
+            <Typography>{t(poolData?.poolType)}</Typography>
           </Box>
           <Box display="flex" justifyContent="space-between">
             <Typography>{t("tokens")}</Typography>
             <Typography>
-              {poolData.tokenInfo.map((token) => token.name).join(", ")}
+              {poolData.tokenInfo.map((token) => token?.name).join(", ")}
             </Typography>
           </Box>
         </Stack>

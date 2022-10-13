@@ -9,6 +9,7 @@ import {
   Stack,
   TextField,
 } from "@mui/material"
+import { ChainId, PoolTypes } from "../constants"
 import React, { ReactElement, useContext, useEffect, useState } from "react"
 
 import { AppState } from "../state"
@@ -17,7 +18,6 @@ import ConfirmTransaction from "../components/ConfirmTransaction"
 import Dialog from "../components/Dialog"
 import { ExpandedPoolsContext } from "../providers/ExpandedPoolsProvider"
 import PoolOverview from "../components/PoolOverview"
-import { PoolTypes } from "../constants"
 import ReviewMigration from "../components/ReviewMigration"
 import { Search } from "@mui/icons-material"
 import { UserStateContext } from "../providers/UserStateProvider"
@@ -72,11 +72,15 @@ function Pools(): ReactElement | null {
   }, [account, chainId])
 
   const permissionlessPoolsFF = true
+  const communityPoolsEnabled =
+    permissionlessPoolsFF &&
+    chainId &&
+    [ChainId.MAINNET, ChainId.HARDHAT].includes(chainId)
 
   return (
     <Container sx={{ pb: 5 }}>
       <Stack direction="row" alignItems="center" justifyContent="center">
-        {permissionlessPoolsFF && (
+        {communityPoolsEnabled && (
           <Box flex={1}>
             <TextField
               variant="standard"
@@ -87,7 +91,7 @@ function Pools(): ReactElement | null {
               onChange={(e) => setPoolOrTokenFilterValue(e.target.value)}
               value={poolOrTokenFilterValue}
             />
-            {permissionlessPoolsFF && (
+            {communityPoolsEnabled && (
               <Box ml={1} mt={1}>
                 <FormGroup>
                   <FormControlLabel
@@ -126,7 +130,7 @@ function Pools(): ReactElement | null {
           ))}
         </Stack>
 
-        {permissionlessPoolsFF /* TODO: Change when perm pool turned on */ && (
+        {communityPoolsEnabled /* TODO: Change when perm pool turned on */ && (
           <Box flex={1}>
             <Button
               variant="contained"
