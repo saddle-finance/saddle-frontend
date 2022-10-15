@@ -420,10 +420,23 @@ export function getGaugeContract(
   return getContract(address, CHILD_GAUGE_ABI, library, account) as ChildGauge
 }
 
+export function getGaugeControllerContract(
+  chainId: ChainId,
+  library: Web3Provider,
+  account?: string,
+) {
+  return getContract(
+    GAUGE_CONTROLLER_ADDRESSES[chainId],
+    GAUGE_CONTROLLER_ABI,
+    library,
+    account,
+  ) as GaugeController
+}
+
 export function getGaugeMinterContract(
   chainId: ChainId,
-  account: string,
   library: Web3Provider,
+  account?: string,
 ) {
   return getContract(
     GAUGE_MINTER_ADDRESSES[chainId],
@@ -434,7 +447,6 @@ export function getGaugeMinterContract(
 }
 
 export function getChildGaugeFactory(library: Web3Provider, address: string) {
-  if (!address) return null
   return getContract(
     address,
     CHILD_GAUGE_FACTORY_ABI,

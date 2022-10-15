@@ -9,6 +9,8 @@ import { BigNumberish, CallOverrides } from "ethers/lib/ethers"
 import {
   CHILD_GAUGE_FACTORY_NAME,
   getChildGaugeFactory,
+  getGaugeControllerContract,
+  getGaugeMinterContract,
 } from "../hooks/useContract"
 import {
   MulticallCall,
@@ -95,38 +97,30 @@ export const initialGaugesState: Gauges = {
   gauges: {},
 }
 
-export async function getGaugeData(
+export async function getGaugeDataMainnet(
   library: Web3Provider,
   chainId: ChainId,
   basicPools: BasicPools,
-  gaugeController: GaugeController | null,
-  gaugeMinterContract: Minter | null,
   registryAddresses: Partial<Record<string, string>>,
   account?: string,
-): Promise<Gauges | null> {
-  const childGaugeFactoryAddress =
-    registryAddresses[CHILD_GAUGE_FACTORY_NAME] || ""
-
-  if (
-    !gaugeController &&
-    !gaugeMinterContract &&
-    !registryAddresses &&
-    !childGaugeFactoryAddress
-  )
-    return initialGaugesState
-
-  if (!areGaugesActive(chainId)) return initialGaugesState
-
+) {
+  if (!registryAddresses || !areGaugesActive(chainId)) return initialGaugesState
   try {
-    const childGaugeFactory = getChildGaugeFactory(
-      library,
-      childGaugeFactoryAddress,
-    )
-    const gaugeCount: number = (
-      await getGaugeCount(childGaugeFactory, gaugeController)
-    ).toNumber()
-
     const ethCallProvider = await getMulticallProvider(library, chainId)
+    const gaugeController = getGaugeControllerContract(
+      chainId,
+      library,
+      account,
+    )
+
+    const gaugeMinterContract = getGaugeMinterContract(
+      chainId,
+      library,
+      account,
+    )
+
+    const gaugeCount: number = (await gaugeController.n_gauges()).toNumber()
+
     // mainnet contracts
     const gaugeControllerContractAddress = GAUGE_CONTROLLER_ADDRESSES[chainId]
 
@@ -135,51 +129,36 @@ export async function getGaugeData(
       GAUGE_CONTROLLER_ABI,
     )
 
-    // sidechain contracts
-
-    const childGaugeFactoryMultiCall =
-      createMultiCallContract<ChildGaugeFactory>(
-        childGaugeFactoryAddress,
-        CHILD_GAUGE_FACTORY_ABI,
-      )
-
-    /* ------- end of base contracts instantiation -------  */
-
     const gaugeAddresses: string[] = (
-      await ethCallProvider.all(
-        enumerate(gaugeCount, 0).map(
-          retrieveGaugeAddresses(
-            gaugeControllerMultiCall,
-            childGaugeFactoryMultiCall,
-          ),
+      await ethCallProvider.tryAll(
+        enumerate(gaugeCount, 0).map((value) =>
+          gaugeControllerMultiCall.gauges(value),
         ),
       )
-    ).map((address) => address.toLowerCase())
+    )
+      .map((address) => address && address.toLowerCase())
+      .filter(Boolean) as string[]
 
     const gaugeMulticallContracts = retrieveGaugeContracts(
       gaugeAddresses,
       chainId,
     )
 
-    const gaugeWeightsPromise: Promise<BigNumber[]> =
-      chainId === ChainId.MAINNET
-        ? ethCallProvider.all(
-            gaugeAddresses.map((gaugeAddress) =>
-              gaugeControllerMultiCall.get_gauge_weight(gaugeAddress),
-            ),
-          )
-        : Promise.resolve(Array<BigNumber>(gaugeAddresses.length).fill(Zero))
+    const gaugeWeightsPromise: Promise<(BigNumber | null)[]> =
+      ethCallProvider.tryAll(
+        gaugeAddresses.map((gaugeAddress) =>
+          gaugeControllerMultiCall.get_gauge_weight(gaugeAddress),
+        ),
+      )
 
-    const gaugeRelativeWeightsPromise: Promise<BigNumber[]> =
-      chainId === ChainId.MAINNET
-        ? ethCallProvider.all(
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            gaugeAddresses.map((gaugeAddress) =>
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-              gaugeControllerMultiCall.gauge_relative_weight(gaugeAddress),
-            ),
-          )
-        : Promise.resolve(Array<BigNumber>(gaugeAddresses.length).fill(Zero))
+    const gaugeRelativeWeightsPromise: Promise<(BigNumber | null)[]> =
+      ethCallProvider.tryAll(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        gaugeAddresses.map((gaugeAddress) =>
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+          gaugeControllerMultiCall.gauge_relative_weight(gaugeAddress),
+        ),
+      )
 
     const gaugeBalancePromise = account
       ? ethCallProvider.tryAll(
@@ -254,11 +233,9 @@ export async function getGaugeData(
       ethCallProvider,
     )
 
-    const sdlRates = await getSDLRates(
+    const sdlRates = await getSDLRatesMainnet(
       gaugeMinterContract,
       gaugeRelativeWeights,
-      gaugeMulticallContracts as MulticallContract<ChildGauge>[],
-      ethCallProvider,
     )
 
     const lpTokenToPool: Partial<{
@@ -332,7 +309,202 @@ export async function getGaugeData(
     )
     error.stack = (e as Error).stack
     console.error(error)
-    return null
+    return initialGaugesState
+  }
+}
+
+export async function getGaugeDataSidechain(
+  library: Web3Provider,
+  chainId: ChainId,
+  basicPools: BasicPools,
+  registryAddresses: Partial<Record<string, string>>,
+  account?: string,
+) {
+  const childGaugeFactoryAddress = registryAddresses[CHILD_GAUGE_FACTORY_NAME]
+
+  if (
+    !areGaugesActive(chainId) ||
+    !registryAddresses ||
+    !childGaugeFactoryAddress
+  )
+    return initialGaugesState
+
+  try {
+    const childGaugeFactory = getChildGaugeFactory(
+      library,
+      childGaugeFactoryAddress,
+    )
+    const gaugeCount: number = (
+      await childGaugeFactory.get_gauge_count()
+    ).toNumber()
+
+    const ethCallProvider = await getMulticallProvider(library, chainId)
+    const childGaugeFactoryMultiCall =
+      createMultiCallContract<ChildGaugeFactory>(
+        childGaugeFactoryAddress,
+        CHILD_GAUGE_FACTORY_ABI,
+      )
+
+    const gaugeAddresses: string[] = (
+      await ethCallProvider.tryAll(
+        enumerate(gaugeCount, 0).map(
+          retrieveGaugeAddressesSidechain(childGaugeFactoryMultiCall),
+        ),
+      )
+    )
+      .map((address) => address && address.toLowerCase())
+      .filter(Boolean) as string[]
+
+    const gaugeMulticallContracts = retrieveGaugeContracts(
+      gaugeAddresses,
+      chainId,
+    )
+
+    const gaugeBalancePromise = account
+      ? ethCallProvider.tryAll(
+          gaugeMulticallContracts.map((gaugeContract) =>
+            gaugeContract.balanceOf(account),
+          ),
+        )
+      : null
+    const gaugeTotalSupplyPromise = ethCallProvider.tryAll(
+      gaugeMulticallContracts.map((gaugeContract) =>
+        gaugeContract.totalSupply(),
+      ),
+    )
+    const gaugeWorkingSuppliesPromise = ethCallProvider.tryAll(
+      gaugeMulticallContracts.map((gaugeContract) =>
+        gaugeContract.working_supply(),
+      ),
+    )
+    const gaugeWorkingBalancesPromise = account
+      ? ethCallProvider.tryAll(
+          gaugeMulticallContracts.map((gaugeContract) =>
+            gaugeContract.working_balances(account),
+          ),
+        )
+      : null
+    const gaugeLpTokenAddressesPromise = ethCallProvider.tryAll(
+      gaugeMulticallContracts.map((gaugeContract) => gaugeContract.lp_token()),
+    )
+    const gaugeNamesPromise = ethCallProvider.tryAll(
+      gaugeMulticallContracts.map((gaugeContract) => gaugeContract.symbol()),
+    )
+    const gaugeKillStatusesPromise = ethCallProvider.tryAll(
+      gaugeMulticallContracts.map((gaugeContract) => gaugeContract.is_killed()),
+    )
+
+    const gaugeRewardCounts = await getGaugeRewardCounts(
+      gaugeMulticallContracts,
+      ethCallProvider,
+    )
+    const [
+      gaugeRewardTokens,
+      gaugeBalances,
+      gaugeWorkingBalances,
+      gaugeWorkingSupplies,
+      gaugeTotalSupplies,
+      gaugeLpTokenAddresses,
+      gaugeNames,
+      gaugeKillStatuses,
+    ] = await Promise.all([
+      getGaugeRewardTokens(
+        gaugeMulticallContracts,
+        gaugeRewardCounts,
+        ethCallProvider,
+      ),
+      gaugeBalancePromise,
+      gaugeWorkingBalancesPromise,
+      gaugeWorkingSuppliesPromise,
+      gaugeTotalSupplyPromise,
+      gaugeLpTokenAddressesPromise,
+      gaugeNamesPromise,
+      gaugeKillStatusesPromise,
+    ])
+
+    const gaugeRewards = await getGaugeRewardsFromTokens(
+      gaugeRewardCounts,
+      gaugeMulticallContracts,
+      gaugeRewardTokens,
+      ethCallProvider,
+    )
+
+    const sdlRates = await getSDLRatesSidechain(
+      gaugeMulticallContracts as MulticallContract<ChildGauge>[],
+      ethCallProvider,
+    )
+
+    const lpTokenToPool: Partial<{
+      [lpToken: string]: GaugePool
+    }> = Object.values(basicPools || {}).reduce(
+      (prevData, { lpToken, poolAddress, poolName }) => {
+        return {
+          ...prevData,
+          [lpToken]: { poolAddress, poolName },
+        }
+      },
+      {},
+    )
+
+    const gauges: LPTokenAddressToGauge = gaugeAddresses.reduce(
+      (previousGaugeData, gaugeAddress, index) => {
+        const lpTokenAddress = gaugeLpTokenAddresses[index]?.toLowerCase()
+        const pool = lpTokenToPool[lpTokenAddress || ""] as GaugePool
+        const isValidPoolAddress = Boolean(
+          pool?.poolAddress && !isAddressZero(pool?.poolAddress),
+        )
+
+        const poolAddress = isValidPoolAddress ? pool?.poolAddress : null
+        const sdlRate = sdlRates[index] || Zero
+        const sdlReward = {
+          periodFinish: BN_MSIG_SDL_VEST_END_TIMESTAMP,
+          rate: sdlRate,
+          tokenAddress: SDL_TOKEN_ADDRESSES[chainId].toLowerCase(),
+          isMinter: true,
+        }
+        if (!lpTokenAddress) return previousGaugeData
+        const gauge: Gauge = {
+          address: gaugeAddress,
+          gaugeWeight: Zero,
+          gaugeRelativeWeight: Zero,
+          gaugeTotalSupply: gaugeTotalSupplies[index] || Zero,
+          workingSupply: gaugeWorkingSupplies[index] || Zero,
+          workingBalances: gaugeWorkingBalances?.[index] || Zero,
+          gaugeBalance: gaugeBalances?.[index] || Zero,
+          gaugeName: gaugeNames[index],
+          lpTokenAddress,
+          isKilled: gaugeKillStatuses[index] ?? false,
+          poolAddress,
+          poolName: pool?.poolName,
+          rewards: gaugeRewards[index]
+            .map((reward) => ({
+              periodFinish: reward.period_finish,
+              rate: reward.rate,
+              tokenAddress: reward.token.toLowerCase(),
+              isMinter: false,
+            }))
+            .concat(sdlRate.gt(Zero) ? [sdlReward] : []),
+        }
+
+        return {
+          ...previousGaugeData,
+          [lpTokenAddress]: gauge,
+        }
+      },
+      {},
+    )
+
+    return {
+      gaugeCount,
+      gauges,
+    }
+  } catch (e) {
+    const error = new Error(
+      `Unable to get Gauge data \n${(e as Error).message}`,
+    )
+    error.stack = (e as Error).stack
+    console.error(error)
+    return initialGaugesState
   }
 }
 
@@ -431,23 +603,7 @@ export function areGaugesActive(chainId?: ChainId): boolean {
   )
 }
 
-async function getGaugeCount(
-  childGaugeFactory: ChildGaugeFactory | null,
-  gaugeController: GaugeController | null,
-): Promise<BigNumber> {
-  if (childGaugeFactory) {
-    return await childGaugeFactory.get_gauge_count()
-  }
-
-  if (gaugeController) {
-    return await gaugeController.n_gauges()
-  }
-
-  return Promise.resolve(Zero)
-}
-
-function retrieveGaugeAddresses(
-  gaugeControllerMultiCall: MulticallContract<GaugeController>,
+function retrieveGaugeAddressesSidechain(
   childGaugeFactoryMultiCall: MulticallContract<ChildGaugeFactory>,
 ): (
   value: number,
@@ -457,9 +613,6 @@ function retrieveGaugeAddresses(
   [arg0: BigNumberish, overrides?: CallOverrides | undefined],
   string
 > {
-  if (gaugeControllerMultiCall.address) {
-    return (value) => gaugeControllerMultiCall.gauges(value)
-  }
   return (value) => childGaugeFactoryMultiCall.get_gauge(value)
 }
 
@@ -481,24 +634,25 @@ const retrieveGaugeContracts = (
   )
 }
 
-async function getSDLRates(
-  gaugeMinterContract: Minter | null,
-  gaugeRelativeWeights: BigNumber[],
+async function getSDLRatesSidechain(
   gaugeMulticallContracts: MulticallContract<ChildGauge>[],
   ethCallProvider: MulticallProvider,
-) {
-  if (gaugeMinterContract) {
-    const minterSDLRate = await gaugeMinterContract.rate()
-    return gaugeRelativeWeights.map((weight) =>
-      minterSDLRate.mul(weight).div(BN_1E18),
-    )
-  }
-
-  const currentTimeStamp = Date.now() / 1000
+): Promise<(BigNumber | null)[]> {
+  const currentTimeStamp = Math.floor(Date.now() / 1000 / 604800)
   return await ethCallProvider.tryAll(
     gaugeMulticallContracts.map((contract) =>
-      contract.inflation_rate(Math.floor(currentTimeStamp / 604800)),
+      contract.inflation_rate(Math.floor(currentTimeStamp)),
     ),
+  )
+}
+
+async function getSDLRatesMainnet(
+  gaugeMinterContract: Minter,
+  gaugeRelativeWeights: (BigNumber | null)[],
+): Promise<(BigNumber | null)[]> {
+  const minterSDLRate = await gaugeMinterContract.rate()
+  return gaugeRelativeWeights.map(
+    (weight) => weight && minterSDLRate.mul(weight).div(BN_1E18),
   )
 }
 
