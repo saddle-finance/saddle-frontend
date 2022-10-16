@@ -11,21 +11,23 @@ import {
 } from "@mui/material"
 import React, { useMemo, useState } from "react"
 import { commify, formatBNToString, isNumberOrEmpty } from "../../utils"
+import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 import ArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
 import { BigNumber } from "ethers"
-import { Gauge } from "../../utils/gauges"
 import { GaugeController } from "../../../types/ethers-contracts/GaugeController"
+import { LPTokenAddressToGauge } from "../../utils/gauges"
 import VoteHistory from "./Votes"
-import { enqueuePromiseToast } from "../../components/Toastify"
 import { useActiveWeb3React } from "../../hooks"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 
+// export type LPTokenAddressToGauge = Partial<{
+//   [lpTokenAddress: string]: Gauge
+// }>
+
 interface OnChainVoteProps {
   veSdlBalance: BigNumber
-  gauges: Partial<{
-    [lpTokenAddress: string]: Gauge
-  }>
+  gauges: LPTokenAddressToGauge
   gaugeControllerContract: GaugeController
 }
 export type GaugeName = {
@@ -110,6 +112,7 @@ export default function OnChainVote({
   )
 
   const handleVote = async () => {
+    const errorMsg = "Failed to vote"
     if (voteWeightToSubmit && isNumberOrEmpty(voteWeightToSubmit) && chainId) {
       try {
         if (veSdlBalance.isZero()) {
@@ -117,7 +120,7 @@ export default function OnChainVote({
         } else if (selectedGauge?.address && gaugeControllerContract) {
           const txn = await gaugeControllerContract.vote_for_gauge_weights(
             selectedGauge.address,
-            Math.round(parseFloat(voteWeightToSubmit) * 100), //convert percent to bps
+            parseFloat(voteWeightToSubmit) * 100, //convert percent to bps
           )
           await enqueuePromiseToast(chainId, txn.wait(), "vote")
           setSelectedGauge(null) // Initialize selectedGauge
@@ -125,6 +128,7 @@ export default function OnChainVote({
         }
       } catch (error) {
         console.error("error on vote ==>", error)
+        enqueueToast("error", errorMsg)
       }
     }
   }
@@ -186,7 +190,7 @@ export default function OnChainVote({
             value={selectedGauge}
             // check whether the current value belong to options
             isOptionEqualToValue={(option, value) =>
-              option?.address === value?.address
+              option.address === value.address
             }
           />
           <Box display="flex" gap={4} my={2}>

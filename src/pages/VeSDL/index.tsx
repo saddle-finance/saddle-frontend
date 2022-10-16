@@ -13,7 +13,11 @@ import {
   Typography,
 } from "@mui/material"
 import { BigNumber, ContractTransaction } from "ethers"
-import { ChainId, TRANSACTION_TYPES } from "../../constants"
+import {
+  ChainId,
+  IS_ON_CHAIN_VOTE_LIVE,
+  TRANSACTION_TYPES,
+} from "../../constants"
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import {
   addWeeks,
@@ -548,7 +552,9 @@ export default function VeSDL(): JSX.Element {
 
         <Stack flex={1} spacing={2}>
           <LockedInfo />
-          <GaugeVote veSdlBalance={veSdlTokenBalance} />
+          {IS_ON_CHAIN_VOTE_LIVE && (
+            <GaugeVote veSdlBalance={veSdlTokenBalance} />
+          )}
         </Stack>
       </Box>
       {!loading ? (

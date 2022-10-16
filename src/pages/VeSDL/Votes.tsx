@@ -10,11 +10,12 @@ import {
   styled,
   useTheme,
 } from "@mui/material"
+import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 import { BigNumber } from "ethers"
 import { GaugeController } from "../../../types/ethers-contracts/GaugeController"
 import React from "react"
 import { VotesType } from "./OnChainVote"
-import { enqueuePromiseToast } from "../../components/Toastify"
+import { formatBNToPercentString } from "../../utils"
 import { useTranslation } from "react-i18next"
 
 const tenDaysInSecond = 3600 * 24 * 10
@@ -47,6 +48,7 @@ export default function VoteHistory({
   const { t } = useTranslation()
 
   const handleResetVote = async (gaugeAddress: string) => {
+    const errorMsg = "Failed to reset vote"
     try {
       if (gaugeControllerContract) {
         const txn = await gaugeControllerContract.vote_for_gauge_weights(
@@ -57,6 +59,7 @@ export default function VoteHistory({
       }
     } catch (error) {
       console.error("error on vote ==>", error)
+      enqueueToast("error", errorMsg)
     }
   }
 
@@ -91,7 +94,9 @@ export default function VoteHistory({
               return (
                 <VoteTableRow key={gaugeAddress}>
                   <TableCell>{vote.gaugeName}</TableCell>
-                  <TableCell>{vote.weight.toNumber() / 100}%</TableCell>
+                  <TableCell>
+                    {formatBNToPercentString(vote.weight.div(100), 2)}
+                  </TableCell>
                   <TableCell align="right">
                     <Button
                       variant="contained"
@@ -110,7 +115,8 @@ export default function VoteHistory({
         </Table>
         {!!voteUsed && (
           <Typography mt={1}>
-            {t("totalWeightUsed")}: {voteUsed.toNumber() / 100}%
+            {t("totalWeightUsed")}:{" "}
+            {formatBNToPercentString(voteUsed.div(100), 2)}
           </Typography>
         )}
       </TableContainer>
