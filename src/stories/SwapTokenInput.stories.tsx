@@ -3,10 +3,10 @@ import { BigNumber } from "ethers"
 import React from "react"
 import { SWAP_TYPES } from "../constants"
 import SwapTokenInput from "../components/SwapTokenInput"
-import { TokenOption } from "../pages/Swap"
+import { TokenOption } from "../types"
 
 export default {
-  title: "Light components/SwapTokenInput",
+  title: "Components/SwapTokenInput",
   component: SwapTokenInput,
 } as ComponentMeta<typeof SwapTokenInput>
 
