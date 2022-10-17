@@ -175,7 +175,7 @@ export default function CreatePool(): React.ReactElement {
 
   useEffect(() => {
     const tokenInfoErrors = tokenInfo.map((token) =>
-      token.checkResult === "success" ? "success" : "error",
+      token?.checkResult === "success" ? "success" : "error",
     )
     const hasFieldError =
       poolNameError ||
@@ -281,6 +281,8 @@ export default function CreatePool(): React.ReactElement {
                     helperText={poolNameError && t("poolNameError")}
                     fullWidth
                     sx={{ mr: [0, 1.5], flex: 1 }}
+                    spellCheck={false}
+                    autoComplete="off"
                   />
                 </Box>
                 <Box flex={1} mt={2}>
@@ -293,6 +295,8 @@ export default function CreatePool(): React.ReactElement {
                     onChange={(e) => setPoolSymbol(e.target.value)}
                     value={poolSymbol}
                     sx={{ ml: [0, 1.5], flex: 1 }}
+                    spellCheck={false}
+                    autoComplete="off"
                   />
                 </Box>
               </Box>
@@ -314,6 +318,8 @@ export default function CreatePool(): React.ReactElement {
                     error={feeError}
                     onChange={(e) => setFee(e.target.value)}
                     helperText={feeError && t("feeError", { minFee, maxFee })}
+                    spellCheck={false}
+                    autoComplete="off"
                   />
                 </Box>
                 <Box flex={1}>
@@ -331,6 +337,8 @@ export default function CreatePool(): React.ReactElement {
                     error={aParameterError}
                     helperText={aParameterError && t("aParameterError")}
                     fullWidth
+                    spellCheck={false}
+                    autoComplete="off"
                   />
                 </Box>
               </Stack>
