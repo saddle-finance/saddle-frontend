@@ -256,6 +256,7 @@ export async function getPoolsDataFromRegistry(
       const lpTokenSupply = lpTokensSupplies[index]
 
       if (
+        poolData.isRemoved || // don't include removed pools
         aParameter == null ||
         isPaused == null ||
         lpTokenSupply == null ||
