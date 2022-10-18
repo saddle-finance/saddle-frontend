@@ -27,7 +27,6 @@ export default function GaugeProvider({
         account ?? undefined,
       )
 
-      console.log({ gauges })
       setGauges(gauges)
     }
 

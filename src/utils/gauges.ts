@@ -113,16 +113,16 @@ export async function getGaugeData(
   try {
     if (chainId === ChainId.MAINNET) {
       return buildGaugeData(
-        chainId,
         library,
+        chainId,
         basicPools,
         registryAddresses,
         account,
       )
     } else {
       return buildGaugeDataSidechain(
-        chainId,
         library,
+        chainId,
         basicPools,
         registryAddresses,
         account,
@@ -141,8 +141,8 @@ export async function getGaugeData(
 /* ------- Start of helper functions ------- */
 // Mainnet specific
 async function buildGaugeData(
-  chainId: ChainId,
   library: Web3Provider,
+  chainId: ChainId,
   basicPools: BasicPools,
   registryAddresses: Partial<Record<string, string>>,
   account?: string,
@@ -524,11 +524,10 @@ function buildLpTokenAddressToGauge(
     const gaugeTokenReward = (gaugeRewards[index] as GaugeTokenRewardData[])
       .map((reward) => {
         if (reward) {
-          console.log({ reward })
           return {
             periodFinish: reward.period_finish,
             rate: reward.rate,
-            tokenAddress: reward.token,
+            tokenAddress: reward.token.toLowerCase(),
             isMinter: false,
           }
         }
@@ -596,8 +595,8 @@ function getGaugeRewardTokens(
 
 // Sidechain-specific helper functions
 async function buildGaugeDataSidechain(
-  chainId: ChainId,
   library: Web3Provider,
+  chainId: ChainId,
   basicPools: BasicPools,
   registryAddresses: Partial<Record<string, string>>,
   account?: string,
@@ -722,9 +721,7 @@ async function getSDLRatesSidechain(
 
 export function areGaugesActive(chainId?: ChainId): boolean {
   return (
-    (chainId === ChainId.MAINNET ||
-      chainId === ChainId.HARDHAT ||
-      chainId === ChainId.OPTIMISM) &&
+    (chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT) &&
     IS_VESDL_LIVE
   )
 }
