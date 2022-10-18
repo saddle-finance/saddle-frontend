@@ -68,8 +68,8 @@ export default function UserStateProvider({
       )
       const gaugeRewardsPromise = gauges
         ? getGaugeRewardsUserData(
-            library,
             chainId,
+            library,
             Object.values(gauges).map(({ address }) => address),
             Object.values(gauges).map(({ rewards }) =>
               rewards.map(({ tokenAddress }) => {

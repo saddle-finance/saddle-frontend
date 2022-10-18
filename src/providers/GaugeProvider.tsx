@@ -26,6 +26,8 @@ export default function GaugeProvider({
         registryAddresses,
         account ?? undefined,
       )
+
+      console.log({ gauges })
       setGauges(gauges)
     }
 

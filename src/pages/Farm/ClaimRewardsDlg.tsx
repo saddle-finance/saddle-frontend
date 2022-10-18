@@ -32,8 +32,8 @@ export default function ClaimRewardsDlg({
   gaugeAddress,
   displayName,
 }: Props): JSX.Element {
-  const { chainId } = useActiveWeb3React()
-  const userGauge = useUserGauge(gaugeAddress)
+  const { account, library, chainId } = useActiveWeb3React()
+  const userGauge = useUserGauge(account, chainId, library, gaugeAddress)
   const dispatch = useDispatch()
 
   const onClickClaim = useCallback(async () => {
@@ -98,6 +98,7 @@ function UserRewards({
   claimableExternalRewards.forEach((reward) => {
     rewardItems.push([reward.token.symbol, reward.amount])
   })
+
   return (
     <Box sx={{ width: "100%" }}>
       {rewardItems.map((item, i) => {

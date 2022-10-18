@@ -421,8 +421,8 @@ export function getGaugeContract(
 }
 
 export function getGaugeControllerContract(
-  chainId: ChainId,
   library: Web3Provider,
+  chainId: ChainId,
   account?: string,
 ) {
   return getContract(
@@ -434,8 +434,8 @@ export function getGaugeControllerContract(
 }
 
 export function getGaugeMinterContract(
-  chainId: ChainId,
   library: Web3Provider,
+  chainId: ChainId,
   account?: string,
 ) {
   return getContract(
@@ -446,18 +446,24 @@ export function getGaugeMinterContract(
   ) as Minter
 }
 
-export function getChildGaugeFactory(library: Web3Provider, address: string) {
+export function getChildGaugeFactory(
+  library: Web3Provider,
+  chainId: ChainId,
+  address: string,
+  account?: string,
+) {
   return getContract(
     address,
     CHILD_GAUGE_FACTORY_ABI,
     library,
+    account ?? undefined,
   ) as ChildGaugeFactory
 }
 
 export const getVotingEscrowContract = (
-  chainId: ChainId,
-  account: string,
   library: Web3Provider,
+  chainId: ChainId,
+  account?: string,
 ): VotingEscrow => {
   return getContract(
     VOTING_ESCROW_CONTRACT_ADDRESS[chainId],
@@ -468,9 +474,9 @@ export const getVotingEscrowContract = (
 }
 
 export const getChildOracle = (
-  chainId: ChainId,
-  account: string,
   library: Web3Provider,
+  chainId: ChainId,
+  account?: string,
 ): ChildOracle => {
   return getContract(
     CHILD_ORACLE_CONTRACT_ADDRESSES[chainId],
