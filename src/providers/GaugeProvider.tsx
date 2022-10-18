@@ -1,12 +1,6 @@
-import {
-  Gauges,
-  getGaugeDataMainnet,
-  getGaugeDataSidechain,
-  initialGaugesState,
-} from "../utils/gauges"
+import { Gauges, getGaugeData, initialGaugesState } from "../utils/gauges"
 import React, { ReactElement, useContext, useEffect, useState } from "react"
 import { BasicPoolsContext } from "./BasicPoolsProvider"
-import { ChainId } from "../constants"
 import { useActiveWeb3React } from "../hooks"
 import { useGaugeMinterContract } from "../hooks/useContract"
 import { useRegistryAddress } from "./useRegistryAddress"
@@ -25,22 +19,13 @@ export default function GaugeProvider({
   useEffect(() => {
     async function fetchGauges() {
       if (!chainId || !library || !registryAddresses) return
-      const gauges: Gauges =
-        chainId === ChainId.MAINNET
-          ? await getGaugeDataMainnet(
-              library,
-              chainId,
-              basicPools,
-              registryAddresses,
-              account ?? undefined,
-            )
-          : await getGaugeDataSidechain(
-              library,
-              chainId,
-              basicPools,
-              registryAddresses,
-              account ?? undefined,
-            )
+      const gauges: Gauges = await getGaugeData(
+        library,
+        chainId,
+        basicPools,
+        registryAddresses,
+        account ?? undefined,
+      )
       setGauges(gauges)
     }
 
