@@ -4,6 +4,7 @@ import React, { useContext } from "react"
 import { BigNumber } from "ethers"
 import { GaugeContext } from "../../providers/GaugeProvider"
 import GaugeWeight from "../../components/GaugeWeight"
+import { IS_ON_CHAIN_VOTE_LIVE } from "../../constants"
 import OnChainVote from "./OnChainVote"
 import { useGaugeControllerContract } from "../../hooks/useContract"
 import { useTranslation } from "react-i18next"
@@ -26,7 +27,9 @@ export default function GaugeVote({
       <Box height="428px">
         <GaugeWeight />
       </Box>
-      {!isGaugesLoading && gaugeControllerContract?.signer ? (
+      {!isGaugesLoading &&
+      gaugeControllerContract?.signer &&
+      IS_ON_CHAIN_VOTE_LIVE ? (
         <OnChainVote
           veSdlBalance={veSdlBalance}
           gauges={gauges}

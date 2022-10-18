@@ -172,7 +172,7 @@ export default function OnChainVote({
         >
           <Autocomplete
             id="gauge-names"
-            options={Object.keys(gaugeNames).map((key) => gaugeNames[key])}
+            options={Object.values(gaugeNames)}
             getOptionLabel={(option) => option?.gaugeName ?? ""}
             popupIcon={<ArrowDownIcon />}
             renderInput={(params) => (
