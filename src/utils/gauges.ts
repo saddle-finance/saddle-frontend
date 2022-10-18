@@ -535,8 +535,6 @@ function buildLpTokenAddressToGauge(
       })
       .filter(Boolean) as GaugeReward[]
 
-    console.log({ gaugeTokenReward })
-
     const combinedRewards = gaugeTokenReward.concat(
       sdlRate.gt(Zero) ? [sdlReward] : [],
     )
@@ -701,11 +699,6 @@ async function buildGaugeDataSidechain(
     gaugeNames,
     gaugeKillStatuses,
   )
-
-  console.log({
-    gaugeCount,
-    gauges,
-  })
 
   return {
     gaugeCount,

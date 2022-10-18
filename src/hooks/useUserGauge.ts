@@ -86,7 +86,6 @@ export default function useUserGauge(
   )
 
   const userGaugeRewards = userState.gaugeRewards?.[gaugeAddress]
-  console.log({ userGaugeRewards })
   const hasSDLRewards = Boolean(userGaugeRewards?.claimableSDL.gt(Zero))
   const hasExternalRewards = Boolean(
     userGaugeRewards?.claimableExternalRewards.length,
