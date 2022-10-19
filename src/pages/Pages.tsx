@@ -26,7 +26,10 @@ export default function Pages() {
       <Route exact path={`/pools/:poolName/withdraw`} component={Withdraw} />
       <Redirect from="/pools/:route/:action" to="/pools" />
       <Route exact path="/pools/create">
-        {chainId && [ChainId.MAINNET, ChainId.HARDHAT].includes(chainId) ? (
+        {chainId &&
+        [ChainId.MAINNET, ChainId.HARDHAT, ChainId.ARBITRUM].includes(
+          chainId,
+        ) ? (
           <CreatePool />
         ) : (
           <Redirect to="/pools" />

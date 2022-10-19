@@ -75,7 +75,7 @@ function Pools(): ReactElement | null {
   const communityPoolsEnabled =
     permissionlessPoolsFF &&
     chainId &&
-    [ChainId.MAINNET, ChainId.HARDHAT].includes(chainId)
+    [ChainId.MAINNET, ChainId.HARDHAT, ChainId.ARBITRUM].includes(chainId)
 
   return (
     <Container sx={{ pb: 5 }}>
