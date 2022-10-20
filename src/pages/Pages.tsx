@@ -15,6 +15,17 @@ const VeSDL = lazy(() => import("./VeSDL"))
 const VestingClaim = lazy(() => import("./VestingClaim"))
 const Withdraw = lazy(() => import("./Withdraw"))
 
+const permissionlessPoolsFF = true
+export const communityPoolsEnabled = (chainId: ChainId | undefined) => {
+  if (!chainId) return false
+
+  return (
+    permissionlessPoolsFF &&
+    chainId &&
+    [ChainId.MAINNET, ChainId.HARDHAT, ChainId.ARBITRUM].includes(chainId)
+  )
+}
+
 export default function Pages() {
   const { chainId } = useActiveWeb3React()
 
