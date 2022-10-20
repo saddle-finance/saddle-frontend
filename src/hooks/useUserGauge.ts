@@ -6,6 +6,7 @@ import {
   getGaugeContract,
   getGaugeMinterContract,
   getVotingEscrowContract,
+  isMainnet,
 } from "./useContract"
 import { BigNumber } from "@ethersproject/bignumber"
 import { ChainId } from "../constants"
@@ -17,6 +18,7 @@ import { UserStateContext } from "../providers/UserStateProvider"
 import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
 import { calculateBoost } from "../utils"
+import { useActiveWeb3React } from "."
 import { useRegistryAddress } from "../providers/useRegistryAddress"
 
 type UserGauge = {
@@ -31,16 +33,12 @@ type UserGauge = {
   boost: BigNumber | null
 }
 
-export default function useUserGauge(
-  account?: string | null,
-  chainId?: ChainId,
-  library?: Web3Provider,
-  gaugeAddress?: string,
-): UserGauge | null {
+export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
   const [veSdlBalance, setVeSdlBalance] = useState(Zero)
   const [totalVeSdl, setTotalVeSdl] = useState(Zero)
 
   const { gauges } = useContext(GaugeContext)
+  const { account, library, chainId } = useActiveWeb3React()
   const { data: registryAddresses } = useRegistryAddress()
   const tokens = useContext(TokensContext)
   const gauge = Object.values(gauges).find(
@@ -159,20 +157,15 @@ async function retrieveAndSetSDLValues(
   setVeSdlBalance: (value: SetStateAction<BigNumber>) => void,
   setTotalVeSdl: (value: SetStateAction<BigNumber>) => void,
 ): Promise<void> {
-  if (chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT) {
-    const votingEscrowContract = getVotingEscrowContract(
-      library,
-      chainId,
-      account,
-    )
-    setVeSdlBalance(await votingEscrowContract["balanceOf(address)"](account))
-    const supply = await votingEscrowContract["totalSupply()"]()
-    setTotalVeSdl(supply)
-  } else {
-    const childOracle = getChildOracle(library, chainId, account)
-    const veSDLBalance = await childOracle.balanceOf(account)
-    setVeSdlBalance(veSDLBalance)
-    const supply = await childOracle.totalSupply()
-    setTotalVeSdl(supply)
-  }
+  const votingEscrowOrChildOracleContract = isMainnet(chainId)
+    ? getVotingEscrowContract(library, chainId, account)
+    : getChildOracle(library, chainId, account)
+
+  const [veSDLBalance, veSDLSupply] = await Promise.all([
+    votingEscrowOrChildOracleContract["balanceOf(address)"](account),
+    votingEscrowOrChildOracleContract["totalSupply()"](),
+  ])
+
+  setVeSdlBalance(veSDLBalance)
+  setTotalVeSdl(veSDLSupply)
 }

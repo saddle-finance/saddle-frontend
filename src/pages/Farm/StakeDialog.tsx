@@ -47,7 +47,7 @@ export default function StakeDialog({
   onClickClaim,
 }: StakeDialogProps): JSX.Element | null {
   const { chainId, account, library } = useActiveWeb3React()
-  const userGauge = useUserGauge(account, chainId, library, gaugeAddress)
+  const userGauge = useUserGauge(gaugeAddress)
   const dispatch = useDispatch()
   const [stakeStatus, setStakeStatus] = useState<"stake" | "unstake">("stake")
   const [amountInput, setAmountInput] = useState<string>(defaultInput)

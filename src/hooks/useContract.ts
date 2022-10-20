@@ -402,12 +402,12 @@ export function useLiquidityGaugeContract(
 }
 
 // This section instantiate new contract without Hooks
-export function getGaugeContract(
+export const getGaugeContract = (
   library: Web3Provider,
   chainId: ChainId,
   address: string,
   account: string,
-): LiquidityGaugeV5 | ChildGauge {
+): LiquidityGaugeV5 | ChildGauge => {
   if (chainId === ChainId.MAINNET) {
     return getContract(
       address,
@@ -420,11 +420,11 @@ export function getGaugeContract(
   return getContract(address, CHILD_GAUGE_ABI, library, account) as ChildGauge
 }
 
-export function getGaugeControllerContract(
+export const getGaugeControllerContract = (
   library: Web3Provider,
   chainId: ChainId,
   account?: string,
-) {
+) => {
   return getContract(
     GAUGE_CONTROLLER_ADDRESSES[chainId],
     GAUGE_CONTROLLER_ABI,
@@ -433,11 +433,11 @@ export function getGaugeControllerContract(
   ) as GaugeController
 }
 
-export function getGaugeMinterContract(
+export const getGaugeMinterContract = (
   library: Web3Provider,
   chainId: ChainId,
   account?: string,
-) {
+) => {
   return getContract(
     GAUGE_MINTER_ADDRESSES[chainId],
     GAUGE_MINTER_ABI,
@@ -446,12 +446,12 @@ export function getGaugeMinterContract(
   ) as Minter
 }
 
-export function getChildGaugeFactory(
+export const getChildGaugeFactory = (
   library: Web3Provider,
   chainId: ChainId,
   address: string,
   account?: string,
-) {
+) => {
   return getContract(
     address,
     CHILD_GAUGE_FACTORY_ABI,
@@ -484,4 +484,8 @@ export const getChildOracle = (
     library,
     account,
   ) as ChildOracle
+}
+
+export const isMainnet = (chainId: ChainId) => {
+  return chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT
 }

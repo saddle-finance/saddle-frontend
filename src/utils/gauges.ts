@@ -11,6 +11,7 @@ import {
   getChildGaugeFactory,
   getGaugeControllerContract,
   getGaugeMinterContract,
+  isMainnet,
 } from "../hooks/useContract"
 import { MulticallContract, MulticallProvider } from "../types/ethcall"
 import {
@@ -102,6 +103,10 @@ export const initialGaugesState: Gauges = {
   gauges: {},
 }
 
+export function areGaugesActive(chainId: ChainId): boolean {
+  return isMainnet(chainId) && IS_VESDL_LIVE
+}
+
 export async function getGaugeData(
   library: Web3Provider,
   chainId: ChainId,
@@ -147,7 +152,9 @@ async function buildGaugeData(
   registryAddresses: Partial<Record<string, string>>,
   account?: string,
 ) {
-  if (!registryAddresses || !areGaugesActive(chainId)) return initialGaugesState
+  if (!registryAddresses || !areGaugesActive(chainId))
+    throw new Error("Unable to retrieve and build gauge data")
+
   const ethCallProvider = await getMulticallProvider(library, chainId)
   const gaugeController = getGaugeControllerContract(library, chainId, account)
   const gaugeMinterContract = getGaugeMinterContract(library, chainId, account)
@@ -270,7 +277,7 @@ async function getClaimableRewardsFromTokens(
 ) {
   return Promise.all(
     gaugeRewardCounts.map((count, index) =>
-      ethCallProvider.all(
+      ethCallProvider.tryAll(
         enumerate(count.toNumber(), 0).map((num) =>
           gaugeMulticallContracts[index].claimable_reward(
             account,
@@ -313,8 +320,8 @@ async function getGaugeRewardsFromTokens(
 
 // Combined helper functions
 export async function getGaugeRewardsUserData(
-  chainId: ChainId,
   library: Web3Provider,
+  chainId: ChainId,
   gaugeAddresses: string[],
   rewardsTokens: (BasicToken | undefined)[][],
   account?: string,
@@ -379,7 +386,7 @@ export async function getGaugeRewardsUserData(
       const hasDeposit = amountStaked.gt(Zero)
       const hasExternalRewards =
         claimableExternalRewards.length > 0 &&
-        claimableExternalRewards.some(({ amount }) => amount.gt(Zero))
+        claimableExternalRewards.some(({ amount }) => amount && amount.gt(Zero))
 
       if (!hasExternalRewards && !hasSDLRewards && !hasDeposit) return acc // don't include 0 rewards
 
@@ -603,7 +610,8 @@ async function buildGaugeDataSidechain(
 ) {
   const childGaugeFactoryAddress = registryAddresses[CHILD_GAUGE_FACTORY_NAME]
 
-  if (!childGaugeFactoryAddress) return initialGaugesState
+  if (!childGaugeFactoryAddress)
+    throw new Error("Unable to retrieve and build gauge data")
 
   const childGaugeFactory = getChildGaugeFactory(
     library,
@@ -716,13 +724,6 @@ async function getSDLRatesSidechain(
     gaugeMulticallContracts.map((contract) =>
       contract.inflation_rate(Math.floor(currentTimeStamp)),
     ),
-  )
-}
-
-export function areGaugesActive(chainId?: ChainId): boolean {
-  return (
-    (chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT) &&
-    IS_VESDL_LIVE
   )
 }
 

@@ -32,8 +32,8 @@ export default function ClaimRewardsDlg({
   gaugeAddress,
   displayName,
 }: Props): JSX.Element {
-  const { account, library, chainId } = useActiveWeb3React()
-  const userGauge = useUserGauge(account, chainId, library, gaugeAddress)
+  const { chainId } = useActiveWeb3React()
+  const userGauge = useUserGauge(gaugeAddress)
   const dispatch = useDispatch()
 
   const onClickClaim = useCallback(async () => {
