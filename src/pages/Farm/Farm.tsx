@@ -114,7 +114,7 @@ export default function Farm(): JSX.Element {
   }, [farmData])
 
   return (
-    <Container sx={{ pt: 5 }}>
+    <Container sx={{ pt: 5, pb: 5 }}>
       <Box
         position="sticky"
         top={0}
