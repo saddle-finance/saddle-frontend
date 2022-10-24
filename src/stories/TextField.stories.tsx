@@ -6,7 +6,7 @@ import React from "react"
 // Check controls from https://storybook.js.org/docs/react/essentials/controls
 
 export default {
-  title: "Light components/TextField",
+  title: "Components/TextField",
   component: TextField,
   argTypes: {
     variant: {

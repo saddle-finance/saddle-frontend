@@ -1,4 +1,4 @@
-import { IS_VIRTUAL_SWAP_ACTIVE, SWAP_TYPES } from "../constants"
+import { IS_VIRTUAL_SWAP_ACTIVE, SWAP_TYPES } from "../../constants"
 import React, {
   ReactElement,
   useCallback,
@@ -11,36 +11,37 @@ import {
   SwapData,
   SwapSide,
   useCalculateSwapPairs,
-} from "../hooks/useCalculateSwapPairs"
+} from "../../hooks/useCalculateSwapPairs"
 import {
   calculateExchangeRate,
   calculatePrice,
   shiftBNDecimals,
-} from "../utils"
+} from "../../utils"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 import {
   useBridgeContract,
   useSwapContract,
   useSynthetixExchangeRatesContract,
-} from "../hooks/useContract"
+} from "../../hooks/useContract"
 
-import { AppState } from "../state/index"
-import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
+import { AppState } from "../../state/index"
+import { BasicPoolsContext } from "../../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
-import { PendingSwapsContext } from "../providers/PendingSwapsProvider"
-import SwapPage from "../components/SwapPage"
-import { TokensContext } from "../providers/TokensProvider"
+import { PendingSwapsContext } from "../../providers/PendingSwapsProvider"
+import SwapPage from "../../components/SwapPage"
+import { TokenOption } from "../../types"
+import { TokensContext } from "../../providers/TokensProvider"
 import { Zero } from "@ethersproject/constants"
-import { calculateGasEstimate } from "../utils/gasEstimate"
-import { calculatePriceImpact } from "../utils/priceImpact"
+import { calculateGasEstimate } from "../../utils/gasEstimate"
+import { calculatePriceImpact } from "../../utils/priceImpact"
 import { debounce } from "lodash"
-import { enqueueToast } from "../components/Toastify"
-import { formatGasToString } from "../utils/gas"
-import { useActiveWeb3React } from "../hooks"
-import { useApproveAndSwap } from "../hooks/useApproveAndSwap"
-import { usePoolTokenBalances } from "../state/wallet/hooks"
+import { enqueueToast } from "../../components/Toastify"
+import { formatGasToString } from "../../utils/gas"
+import { useActiveWeb3React } from "../../hooks"
+import { useApproveAndSwap } from "../../hooks/useApproveAndSwap"
+import { usePoolTokenBalances } from "../../state/wallet/hooks"
 import { useSelector } from "react-redux"
-import { useTokenMaps } from "../hooks/useTokenMaps"
+import { useTokenMaps } from "../../hooks/useTokenMaps"
 import { useTranslation } from "react-i18next"
 import { utils } from "ethers"
 
@@ -60,17 +61,6 @@ type FormState = {
   route: string[]
   swapType: SWAP_TYPES
   currentSwapPairs: SwapData[]
-}
-export interface TokenOption {
-  address: string
-  symbol: string
-  name: string
-  valueUSD: BigNumber
-  amount: BigNumber
-  decimals: number
-  swapType: SWAP_TYPES | null
-  isAvailable: boolean
-  isOnTokenLists: boolean
 }
 
 const EMPTY_FORM_STATE = {

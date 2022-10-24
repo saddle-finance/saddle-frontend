@@ -8,10 +8,18 @@ import { useActiveWeb3React } from "../hooks"
 const CreatePool = lazy(() => import("./CreatePool"))
 const Deposit = lazy(() => import("./Deposit"))
 const Farm = lazy(() => import("./Farm/Farm"))
-const Pools = lazy(() => import("./Pools"))
-const Risk = lazy(() => import("./Risk"))
-const Swap = lazy(() => import("./Swap"))
-const VeSDL = lazy(() => import("./VeSDL"))
+const Pools = lazy(() =>
+  import("./Pools").then(({ Pools }) => ({ default: Pools })),
+)
+const Risk = lazy(() =>
+  import("./Risk").then(({ Risk }) => ({ default: Risk })),
+)
+const Swap = lazy(() =>
+  import("./Swap").then(({ Swap }) => ({ default: Swap })),
+)
+const VeSDL = lazy(() =>
+  import("./VeSDL").then(({ VeSDL }) => ({ default: VeSDL })),
+)
 const VestingClaim = lazy(() => import("./VestingClaim"))
 const Withdraw = lazy(() => import("./Withdraw"))
 
