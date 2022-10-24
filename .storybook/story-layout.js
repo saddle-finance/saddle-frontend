@@ -17,7 +17,6 @@ export default function StoryLayout({ children }) {
     setIsLightTheme(event.target.checked)
   }
 
-  console.log("first", currentTheme.palette.background.paper)
   return (
     <MUIThemeProvider theme={currentTheme}>
       <ThemeProvider theme={currentTheme}>
