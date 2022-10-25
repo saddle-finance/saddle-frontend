@@ -449,11 +449,11 @@ export const getGaugeMinterContract = (
 export const getChildGaugeFactory = (
   library: Web3Provider,
   chainId: ChainId,
-  address: string,
+  address?: string,
   account?: string,
 ) => {
   return getContract(
-    address,
+    address ?? "",
     CHILD_GAUGE_FACTORY_ABI,
     library,
     account ?? undefined,
@@ -486,6 +486,8 @@ export const getChildOracle = (
   ) as ChildOracle
 }
 
-export const isMainnet = (chainId: ChainId) => {
-  return chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT
+export const isMainnet = (chainId?: ChainId): boolean => {
+  return (
+    !!chainId && (chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT)
+  )
 }

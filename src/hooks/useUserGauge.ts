@@ -18,6 +18,7 @@ import { UserStateContext } from "../providers/UserStateProvider"
 import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
 import { calculateBoost } from "../utils"
+import { enqueueToast } from "../components/Toastify"
 import { useActiveWeb3React } from "."
 import { useRegistryAddress } from "../providers/useRegistryAddress"
 
@@ -110,20 +111,20 @@ export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
     unstake: gaugeContract["withdraw(uint256)"],
     claim: () => {
       const promises = []
-      if (hasExternalRewards) {
-        promises.push(gaugeContract["claim_rewards(address)"](account))
-      }
+      try {
+        if (hasExternalRewards) {
+          promises.push(gaugeContract["claim_rewards(address)"](account))
+        }
 
-      if (isMainnet(chainId)) {
-        const gaugeMinterContract = getGaugeMinterContract(
-          library,
-          chainId,
-          account,
-        )
+        if (isMainnet(chainId)) {
+          const gaugeMinterContract = getGaugeMinterContract(
+            library,
+            chainId,
+            account,
+          )
 
-        promises.push(gaugeMinterContract.mint(gaugeAddress))
-      } else {
-        if (registryAddresses["ChildGaugeFactory"]) {
+          promises.push(gaugeMinterContract.mint(gaugeAddress))
+        } else {
           const childGaugeFactory = getChildGaugeFactory(
             library,
             chainId,
@@ -131,11 +132,10 @@ export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
             account,
           )
           promises.push(childGaugeFactory.mint(gaugeAddress))
-        } else {
-          console.error(
-            "Unable to retrieve necessary ChildGaugeFactory contract address",
-          )
         }
+      } catch (e) {
+        console.error(e)
+        enqueueToast("error", "Unable to claim reward")
       }
 
       return Promise.all(promises)

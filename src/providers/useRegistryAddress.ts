@@ -1,9 +1,9 @@
 import {
   CHILD_GAUGE_FACTORY_NAME,
+  isMainnet,
   useMasterRegistry,
 } from "../hooks/useContract"
 import { UseQueryResult, useQuery } from "@tanstack/react-query"
-import { ChainId } from "../constants"
 import { ContractNotLoadedError } from "../errors/ContractNotLoadedError"
 import { formatBytes32String } from "ethers/lib/utils"
 import { useActiveWeb3React } from "../hooks"
@@ -25,7 +25,7 @@ export const useRegistryAddress = (): UseQueryResult<RegistryAddresses> => {
 
     const addresses: RegistryAddresses = {}
 
-    if (chainId !== ChainId.MAINNET && chainId !== ChainId.HARDHAT) {
+    if (!isMainnet(chainId)) {
       const childGaugeFactoryAddress =
         await masterRegistry.resolveNameToLatestAddress(
           formatBytes32String(CHILD_GAUGE_FACTORY_NAME),
