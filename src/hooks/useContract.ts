@@ -408,7 +408,7 @@ export const getGaugeContract = (
   address: string,
   account: string,
 ): LiquidityGaugeV5 | ChildGauge => {
-  if (chainId === ChainId.MAINNET) {
+  if (isMainnet(chainId)) {
     return getContract(
       address,
       LIQUIDITY_V5_GAUGE_ABI,

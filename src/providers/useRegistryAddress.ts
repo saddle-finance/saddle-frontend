@@ -23,7 +23,7 @@ export const useRegistryAddress = (): UseQueryResult<RegistryAddresses> => {
       throw new ContractNotLoadedError("Master Registry")
     }
 
-    const addresses: Partial<Record<string, string>> = {}
+    const addresses: RegistryAddresses = {}
 
     if (chainId !== ChainId.MAINNET && chainId !== ChainId.HARDHAT) {
       const childGaugeFactoryAddress =

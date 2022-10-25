@@ -114,7 +114,7 @@ export default function useUserGauge(gaugeAddress?: string): UserGauge | null {
         promises.push(gaugeContract["claim_rewards(address)"](account))
       }
 
-      if (chainId == ChainId.MAINNET || chainId == ChainId.HARDHAT) {
+      if (isMainnet(chainId)) {
         const gaugeMinterContract = getGaugeMinterContract(
           library,
           chainId,

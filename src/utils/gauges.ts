@@ -32,11 +32,21 @@ import { GaugeController } from "../../types/ethers-contracts/GaugeController"
 import LIQUIDITY_GAUGE_V5_ABI from "../constants/abis/liquidityGaugeV5.json"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { Minter } from "../../types/ethers-contracts/Minter"
+import { RegistryAddresses } from "../providers/useRegistryAddress"
 import { SDL_TOKEN_ADDRESSES } from "./../constants/index"
 import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
 import { isAddressZero } from "."
 
+/**
+ * These 2 types separate mainnet and sidechain gauges
+ * Mainnet gauges have both BaseGauge and GaugeWeight attributes
+ *
+ * Sidechain gauges only have BaseGauge attribute
+ * since GaugeController (only available on mainnet)
+ * provides the gaugeRelativeWeight and gaugeWeights
+ *
+ */
 export type Gauge = BaseGauge & GaugeWeight
 
 export type GaugeWeight = {
@@ -111,12 +121,12 @@ export async function getGaugeData(
   library: Web3Provider,
   chainId: ChainId,
   basicPools: BasicPools,
-  registryAddresses: Partial<Record<string, string>>,
+  registryAddresses: RegistryAddresses,
   account?: string,
 ) {
   if (!registryAddresses || !areGaugesActive(chainId)) return initialGaugesState
   try {
-    if (chainId === ChainId.MAINNET) {
+    if (isMainnet(chainId)) {
       return buildGaugeData(
         library,
         chainId,
@@ -135,7 +145,7 @@ export async function getGaugeData(
     }
   } catch (e) {
     const error = new Error(
-      `Unable to get Gauge data \n${(e as Error).message}`,
+      `Unable to get Gauge data. \n${(e as Error).message}`,
     )
     error.stack = (e as Error).stack
     console.error(error)
@@ -149,7 +159,7 @@ async function buildGaugeData(
   library: Web3Provider,
   chainId: ChainId,
   basicPools: BasicPools,
-  registryAddresses: Partial<Record<string, string>>,
+  registryAddresses: RegistryAddresses,
   account?: string,
 ) {
   if (!registryAddresses || !areGaugesActive(chainId))
@@ -355,13 +365,13 @@ export async function getGaugeRewardsUserData(
         ethCallProvider,
       )
 
-    const gaugeUserClaimableSDLPromise = ethCallProvider.all(
+    const gaugeUserClaimableSDLPromise = ethCallProvider.tryAll(
       gaugeMulticallContracts.map((gaugeContract) =>
         gaugeContract.claimable_tokens(account),
       ),
     )
 
-    const gaugeUserDepositBalancesPromise = ethCallProvider.all(
+    const gaugeUserDepositBalancesPromise = ethCallProvider.tryAll(
       gaugeMulticallContracts.map((gaugeContract) =>
         gaugeContract.balanceOf(account),
       ),
@@ -382,8 +392,8 @@ export async function getGaugeRewardsUserData(
         .filter(({ token }) => !!token)
       const claimableSDL = gaugeUserClaimableSDL[i]
 
-      const hasSDLRewards = claimableSDL.gt(Zero)
-      const hasDeposit = amountStaked.gt(Zero)
+      const hasSDLRewards = claimableSDL && claimableSDL.gt(Zero)
+      const hasDeposit = amountStaked && amountStaked.gt(Zero)
       const hasExternalRewards =
         claimableExternalRewards.length > 0 &&
         claimableExternalRewards.some(({ amount }) => amount && amount.gt(Zero))
@@ -411,7 +421,7 @@ function retrieveGaugeContracts(
   chainId: ChainId,
   gaugeAddresses: string[],
 ): MulticallContract<LiquidityGaugeV5>[] | MulticallContract<ChildGauge>[] {
-  if (chainId === ChainId.MAINNET) {
+  if (isMainnet(chainId)) {
     return gaugeAddresses.map((address) =>
       createMultiCallContract<LiquidityGaugeV5>(
         address,
@@ -605,7 +615,7 @@ async function buildGaugeDataSidechain(
   library: Web3Provider,
   chainId: ChainId,
   basicPools: BasicPools,
-  registryAddresses: Partial<Record<string, string>>,
+  registryAddresses: RegistryAddresses,
   account?: string,
 ) {
   const childGaugeFactoryAddress = registryAddresses[CHILD_GAUGE_FACTORY_NAME]
