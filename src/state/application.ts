@@ -21,7 +21,7 @@ type SwapStats = {
   }>
 }
 export type TokenPricesUSD = Partial<{
-  [tokenSymbol: string]: number
+  [tokenAddr: string]: number
 }>
 interface LastTransactionTimes {
   [transactionType: string]: number

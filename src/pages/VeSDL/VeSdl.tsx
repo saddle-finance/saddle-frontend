@@ -414,6 +414,8 @@ export default function VeSDL(): JSX.Element {
             </Box>
             <TokenInput
               token={{
+                isOnTokenLists: false,
+                address: "0x0",
                 decimals: 18,
                 symbol: "veSDL",
                 name: t("voteEscrowSDL"),

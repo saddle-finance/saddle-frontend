@@ -1,30 +1,43 @@
-import { Box, Button, Chip, Container, Stack, TextField } from "@mui/material"
+import {
+  Box,
+  Button,
+  Checkbox,
+  Chip,
+  Container,
+  FormControlLabel,
+  FormGroup,
+  Stack,
+  TextField,
+} from "@mui/material"
+import { ChainId, PoolTypes } from "../../constants"
 import React, { ReactElement, useContext, useEffect, useState } from "react"
 
-import { AppState } from "../state"
-import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
+import { AppState } from "../../state"
 import { BigNumber } from "ethers"
-import ConfirmTransaction from "../components/ConfirmTransaction"
-import Dialog from "../components/Dialog"
-import PoolOverview from "../components/PoolOverview"
-import { PoolTypes } from "../constants"
-import ReviewMigration from "../components/ReviewMigration"
+import ConfirmTransaction from "../../components/ConfirmTransaction"
+import Dialog from "../../components/Dialog"
+import { ExpandedPoolsContext } from "../../providers/ExpandedPoolsProvider"
+import PoolOverview from "../../components/PoolOverview"
+import ReviewMigration from "../../components/ReviewMigration"
 import { Search } from "@mui/icons-material"
-import { UserStateContext } from "../providers/UserStateProvider"
+import { UserStateContext } from "../../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
-import { getTokenSymbolForPoolType } from "../utils"
-import { logEvent } from "../utils/googleAnalytics"
+import { getTokenAddrForPoolType } from "../../utils"
+import { logEvent } from "../../utils/googleAnalytics"
 import { parseUnits } from "@ethersproject/units"
-import { useActiveWeb3React } from "../hooks"
-import { useApproveAndMigrate } from "../hooks/useApproveAndMigrate"
+import { useActiveWeb3React } from "../../hooks"
+import { useApproveAndMigrate } from "../../hooks/useApproveAndMigrate"
 import { useHistory } from "react-router"
 import { useSelector } from "react-redux"
+import { useTranslation } from "react-i18next"
 
 function Pools(): ReactElement | null {
   const { account, chainId } = useActiveWeb3React()
-  const basicPools = useContext(BasicPoolsContext)
+  const expandedPools = useContext(ExpandedPoolsContext)
+  const pools = expandedPools.data.byName
   const userState = useContext(UserStateContext)
   const approveAndMigrate = useApproveAndMigrate()
+  const { t } = useTranslation()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const history = useHistory()
 
@@ -37,6 +50,10 @@ function Pools(): ReactElement | null {
     lpTokenAddress: string
   }>({ poolName: null, lpTokenBalance: Zero, lpTokenAddress: "" })
   const [filter, setFilter] = useState<PoolTypes | "all" | "outdated">("all")
+  const [communityPoolsFilter, setCommunityPoolsFilter] =
+    useState<boolean>(false)
+  const [poolOrTokenFilterValue, setPoolOrTokenFilterValue] =
+    useState<string>("")
   const handleClickMigrate = (
     poolName: string,
     lpTokenBalance: BigNumber,
@@ -54,10 +71,16 @@ function Pools(): ReactElement | null {
     })
   }, [account, chainId])
 
+  const permissionlessPoolsFF = true
+  const communityPoolsEnabled =
+    permissionlessPoolsFF &&
+    chainId &&
+    [ChainId.MAINNET, ChainId.HARDHAT].includes(chainId)
+
   return (
     <Container sx={{ pb: 5 }}>
       <Stack direction="row" alignItems="center" justifyContent="center">
-        {false && (
+        {communityPoolsEnabled && (
           <Box flex={1}>
             <TextField
               variant="standard"
@@ -65,7 +88,27 @@ function Pools(): ReactElement | null {
               InputProps={{
                 startAdornment: <Search />,
               }}
+              onChange={(e) => setPoolOrTokenFilterValue(e.target.value)}
+              value={poolOrTokenFilterValue}
             />
+            {communityPoolsEnabled && (
+              <Box ml={1} mt={1}>
+                <FormGroup>
+                  <FormControlLabel
+                    label={t("communityPools")}
+                    control={
+                      <Checkbox
+                        placeholder={t("communityPools")}
+                        checked={communityPoolsFilter}
+                        onChange={() =>
+                          setCommunityPoolsFilter(!communityPoolsFilter)
+                        }
+                      />
+                    }
+                  />
+                </FormGroup>
+              </Box>
+            )}
           </Box>
         )}
         <Stack direction="row" spacing={1} my={3}>
@@ -87,7 +130,7 @@ function Pools(): ReactElement | null {
           ))}
         </Stack>
 
-        {false /* TODO: Change when perm pool turned on */ && (
+        {communityPoolsEnabled /* TODO: Change when perm pool turned on */ && (
           <Box flex={1}>
             <Button
               variant="contained"
@@ -103,7 +146,21 @@ function Pools(): ReactElement | null {
       </Stack>
 
       <Stack spacing={3}>
-        {Object.values(basicPools || {})
+        {Object.values(pools || {})
+          .filter(
+            (pool) =>
+              pool.poolName
+                .toLowerCase()
+                .includes(poolOrTokenFilterValue.toLowerCase()) ||
+              pool.tokens.some((token) =>
+                token.symbol
+                  .toLowerCase()
+                  .includes(poolOrTokenFilterValue.toLowerCase()),
+              ),
+          )
+          .filter((basicPool) =>
+            communityPoolsFilter ? !basicPool.isSaddleApproved : basicPool,
+          )
           .filter(
             (basicPool) =>
               filter === "all" ||
@@ -118,18 +175,22 @@ function Pools(): ReactElement | null {
             // 2. active pools
             // 3. higher TVL pools
             const userLpTokenBalanceA =
-              userState?.tokenBalances?.[a.lpToken] || Zero
+              userState?.tokenBalances?.[a.lpToken.address] || Zero
             const userLpTokenBalanceB =
-              userState?.tokenBalances?.[b.lpToken] || Zero
+              userState?.tokenBalances?.[b.lpToken.address] || Zero
             const poolAssetA = parseUnits(
               String(
-                tokenPricesUSD?.[getTokenSymbolForPoolType(a.typeOfAsset)] || 0,
+                tokenPricesUSD?.[
+                  getTokenAddrForPoolType(a.typeOfAsset, chainId)
+                ] || 0,
               ),
               18,
             )
             const poolAssetB = parseUnits(
               String(
-                tokenPricesUSD?.[getTokenSymbolForPoolType(b.typeOfAsset)] || 0,
+                tokenPricesUSD?.[
+                  getTokenAddrForPoolType(b.typeOfAsset, chainId)
+                ] || 0,
               ),
               18,
             )
@@ -168,8 +229,9 @@ function Pools(): ReactElement | null {
                   ? () =>
                       handleClickMigrate(
                         basicPool.poolName,
-                        userState?.tokenBalances?.[basicPool.lpToken] || Zero,
-                        basicPool.lpToken,
+                        userState?.tokenBalances?.[basicPool.lpToken.address] ||
+                          Zero,
+                        basicPool.lpToken.address,
                       )
                   : undefined
               }

@@ -164,8 +164,8 @@ export default function Transactions(): ReactElement {
           ) as BasicToken[]
           if (exchanges && poolTokens) {
             exchanges.map(({ soldId, boughtId, transaction, timestamp }) => {
-              const soldToken = poolTokens[parseInt(soldId)].symbol
-              const boughtToken = poolTokens[parseInt(boughtId)].symbol
+              const soldToken = poolTokens[parseInt(soldId)].address
+              const boughtToken = poolTokens[parseInt(boughtId)].address
               const message =
                 soldToken && boughtToken
                   ? `${t("swap")} ${soldToken} ${t("toBe")} ${boughtToken}`

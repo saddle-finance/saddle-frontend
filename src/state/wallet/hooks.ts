@@ -15,7 +15,7 @@ export function usePoolTokenBalances(): { [token: string]: BigNumber } | null {
         const token = tokens[tokenAddress]
         const balance = userState.tokenBalances?.[tokenAddress]
         if (!token || !balance) return acc
-        return { ...acc, [token.symbol]: balance }
+        return { ...acc, [token.address]: balance }
       },
       {},
     )

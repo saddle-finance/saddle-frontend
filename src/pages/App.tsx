@@ -1,5 +1,4 @@
 import "react-toastify/dist/ReactToastify.css"
-
 import { AppDispatch, AppState } from "../state"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import React, { ReactElement, Suspense, useCallback, useEffect } from "react"

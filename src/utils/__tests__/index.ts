@@ -11,7 +11,6 @@ import {
   formatDeadlineToNumber,
   generateSnapshotVoteLink,
   getTokenIconPath,
-  getTokenSymbolForPoolType,
   intersection,
   isAddressZero,
   mapToLowerCase,
@@ -22,7 +21,6 @@ import { Contract } from "ethcall"
 import { Deadlines } from "../../state/user"
 import GAUGE_HELPER_CONTRACT_ABI from "../../../src/constants/abis/gaugeHelperContract.json"
 import { GaugeHelperContract } from "../../../types/ethers-contracts/GaugeHelperContract"
-import { PoolTypes } from "../../constants/index"
 import { parseUnits } from "@ethersproject/units"
 
 describe("bnSum", () => {
@@ -157,21 +155,6 @@ describe("formatDeadlineToNumber", () => {
   })
   it("correctly formats empty custom deadline to default", () => {
     expect(formatDeadlineToNumber(Deadlines.Custom, "")).toEqual(20)
-  })
-})
-
-describe("getTokenSymbolForPoolType", () => {
-  it("correctly gets token symbol for btc pool", () => {
-    expect(getTokenSymbolForPoolType(PoolTypes.BTC)).toBe("WBTC")
-  })
-  it("correctly gets token symbol for eth pool", () => {
-    expect(getTokenSymbolForPoolType(PoolTypes.ETH)).toBe("WETH")
-  })
-  it("correctly gets token symbol for usd pool", () => {
-    expect(getTokenSymbolForPoolType(PoolTypes.USD)).toBe("USDC")
-  })
-  it("correctly gets nothing for other pool", () => {
-    expect(getTokenSymbolForPoolType(PoolTypes.OTHER)).toBe("")
   })
 })
 

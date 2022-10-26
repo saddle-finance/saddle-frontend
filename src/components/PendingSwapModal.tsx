@@ -204,8 +204,8 @@ const PendingSwapModal = ({
         <div>
           <div>
             <b>
-              {formattedSynthBalance} {synthTokenFrom.symbol} {"->"}{" "}
-              {tokenTo.symbol}
+              {formattedSynthBalance} {synthTokenFrom.address} {"->"}{" "}
+              {tokenTo.address}
             </b>
           </div>
           <div>
@@ -270,12 +270,12 @@ const PendingSwapModal = ({
                       ? calculatePriceImpact(
                           calculatePrice(
                             fromAmount,
-                            tokenPricesUSD[synthTokenFrom.symbol],
+                            tokenPricesUSD[synthTokenFrom.address],
                             synthTokenFrom.decimals,
                           ),
                           calculatePrice(
                             calculatedTokenAmount || Zero,
-                            tokenPricesUSD[tokenTo.symbol],
+                            tokenPricesUSD[tokenTo.address],
                             tokenTo.decimals,
                           ),
                         )

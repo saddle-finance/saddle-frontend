@@ -46,7 +46,12 @@ export function useCalculateSwapPairs(): (token?: BasicToken) => SwapData[] {
     if (basicPools === null || tokens === null) return []
     const basicPoolsWithPriceData = Object.values(basicPools)
       .map((pool) => {
-        const priceData = getPriceDataForPool(tokens, pool, tokenPricesUSD)
+        const priceData = getPriceDataForPool(
+          tokens,
+          pool,
+          tokenPricesUSD,
+          chainId,
+        )
         const expandedTokens = pool.tokens.map((addr) => tokens?.[addr])
         const expandedUnderlyingTokens =
           pool.underlyingTokens?.map((addr) => tokens?.[addr]) || null
@@ -92,7 +97,7 @@ export function useCalculateSwapPairs(): (token?: BasicToken) => SwapData[] {
       return newAcc
     }, {} as TokenToPoolsMap)
     return [sortedPools, tokenToPools]
-  }, [basicPools, tokens, tokenPricesUSD]) // TODO reduce refresh rate caused by tokenPricesUSD
+  }, [basicPools, tokens, tokenPricesUSD, chainId]) // TODO reduce refresh rate caused by tokenPricesUSD
 
   useEffect(() => {
     // @dev clear cache when moving chains
@@ -114,7 +119,10 @@ export function useCalculateSwapPairs(): (token?: BasicToken) => SwapData[] {
         originToken,
         chainId === ChainId.MAINNET, // virtualSwap only supports mainnet
       )
-      setPairCache((prevState) => ({ ...prevState, [token.symbol]: swapPairs }))
+      setPairCache((prevState) => ({
+        ...prevState,
+        [token.address]: swapPairs,
+      }))
       return swapPairs
     },
     [pairCache, tokens, poolsSortedByTVL, tokenToPoolsMapSorted, chainId],
@@ -131,6 +139,7 @@ function buildSwapSideData(
   pool?: ExpandedBasicPool,
 ): Required<SwapSide> | SwapSide {
   return {
+    address: token.address,
     symbol: token.symbol,
     poolName: pool?.poolName,
     tokenIndex: (pool?.underlyingTokens || pool?.tokens || []).findIndex(
@@ -140,6 +149,7 @@ function buildSwapSideData(
 }
 
 export type SwapSide = {
+  address: string
   symbol: string
   poolName?: string
   tokenIndex?: number
