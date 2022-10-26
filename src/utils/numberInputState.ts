@@ -27,7 +27,7 @@ export function numberInputStateCreator(
    * @return {NumberInputState}
    */
   return function createNumberInputState(
-    inputValue: string | BigNumber,
+    inputValue: string | BigNumber = "",
   ): NumberInputState {
     if (BigNumber.isBigNumber(inputValue)) {
       return {

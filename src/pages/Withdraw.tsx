@@ -29,8 +29,13 @@ import useWithdrawFormState from "../hooks/useWithdrawFormState"
 function Withdraw(): ReactElement {
   const { poolName } = useParams<{ poolName: string }>()
   const [poolData, userShareData] = usePoolData(poolName)
-  const [withdrawFormState, updateWithdrawFormState] =
-    useWithdrawFormState(poolName)
+  const {
+    formState: withdrawFormState,
+    handleUpdateForm: updateWithdrawFormState,
+    shouldWithdrawWrapped,
+    setShouldWithdrawWrapped,
+    withdrawTokens,
+  } = useWithdrawFormState(poolName)
   const { slippageCustom, slippageSelected, gasPriceSelected, gasCustom } =
     useSelector((state: AppState) => state.user)
   const { tokenPricesUSD, gasStandard, gasFast, gasInstant } = useSelector(
@@ -41,9 +46,6 @@ function Withdraw(): ReactElement {
   const { account } = useActiveWeb3React()
   const [withdrawLPTokenAmount, setWithdrawLPTokenAmount] =
     useState<BigNumber>(Zero)
-  const withdrawTokens = poolData.isMetaSwap
-    ? poolData.underlyingTokens
-    : poolData.tokens
   const tokenInputSum = useMemo(() => {
     return withdrawTokens.reduce(
       (sum, { address }) =>
@@ -102,11 +104,14 @@ function Withdraw(): ReactElement {
   async function onConfirmTransaction(): Promise<void> {
     const { withdrawType, tokenInputs, lpTokenAmountToSpend } =
       withdrawFormState
-    await approveAndWithdraw({
-      tokenFormState: tokenInputs,
-      withdrawType,
-      lpTokenAmountToSpend,
-    })
+    await approveAndWithdraw(
+      {
+        tokenFormState: tokenInputs,
+        withdrawType,
+        lpTokenAmountToSpend,
+      },
+      shouldWithdrawWrapped,
+    )
     updateWithdrawFormState({ fieldName: "reset", value: "reset" })
   }
 
@@ -201,6 +206,8 @@ function Withdraw(): ReactElement {
       formStateData={withdrawFormState}
       onConfirmTransaction={onConfirmTransaction}
       onFormChange={updateWithdrawFormState}
+      shouldWithdrawWrapped={shouldWithdrawWrapped}
+      onToggleWithdrawWrapped={() => setShouldWithdrawWrapped((prev) => !prev)}
     />
   )
 }

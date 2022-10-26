@@ -42,8 +42,8 @@ export interface PoolDataType {
   name: string
   reserve: BigNumber | null
   swapFee: BigNumber
-  tokens: TokenShareType[]
-  underlyingTokens: TokenShareType[]
+  tokens: TokenShareType[] // Tokens of pool: If pool is MetaSwapPool `tokens` will contain LP token
+  underlyingTokens: TokenShareType[] // All tokens MetaSwap pool is containing
   totalLocked: BigNumber
   utilization: BigNumber | null
   virtualPrice: BigNumber

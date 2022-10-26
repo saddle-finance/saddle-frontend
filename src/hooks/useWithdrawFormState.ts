@@ -2,14 +2,17 @@ import {
   NumberInputState,
   numberInputStateCreator,
 } from "../utils/numberInputState"
-import { useCallback, useMemo, useState } from "react"
+import { isMetaPool, isWithdrawFeePool } from "../constants"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { BigNumber } from "@ethersproject/bignumber"
+import META_SWAP_ABI from "../constants/abis/metaSwap.json"
+import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { Zero } from "@ethersproject/constants"
 import { debounce } from "lodash"
-import { isWithdrawFeePool } from "../constants"
+import { getContract } from "../utils"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import usePoolData from "../hooks/usePoolData"
@@ -27,7 +30,7 @@ interface TokenInputs {
 }
 export interface WithdrawFormState {
   percentage: string | null
-  withdrawType: string
+  withdrawType: "IMBALANCE" | "ALL" | ""
   tokenInputs: TokenInputs
   lpTokenAmountToSpend: BigNumber
   error: ErrorState | null
@@ -39,20 +42,42 @@ export type WithdrawFormAction = {
   value: string
 }
 
-export default function useWithdrawFormState(
-  poolName: string,
-): [WithdrawFormState, (action: WithdrawFormAction) => void] {
+export default function useWithdrawFormState(poolName: string) {
   const swapContract = useSwapContract(poolName)
   const [poolData, userShareData] = usePoolData(poolName)
-  const { account } = useActiveWeb3React()
-  const withdrawTokens = poolData.isMetaSwap
-    ? poolData.underlyingTokens
-    : poolData.tokens
+  const [shouldWithdrawWrapped, setShouldWithdrawWrapped] = useState(false)
+  const [formState, setFormState] = useState<WithdrawFormState>({
+    error: null,
+    lpTokenAmountToSpend: BigNumber.from("0"),
+    percentage: "",
+    tokenInputs: {},
+    withdrawType: "",
+  })
+  const { account, library } = useActiveWeb3React()
+
+  const metaSwapContract = useMemo(() => {
+    if (poolData?.poolAddress && library) {
+      return getContract(
+        poolData.poolAddress,
+        META_SWAP_ABI,
+        library,
+        account ?? undefined,
+      ) as MetaSwap
+    }
+    return null
+  }, [library, account, poolData?.poolAddress])
+
+  const withdrawTokens = !isMetaPool(poolName)
+    ? poolData.tokens
+    : shouldWithdrawWrapped
+    ? poolData.tokens
+    : poolData.underlyingTokens
+
   const tokenInputStateCreators: {
     [address: string]: ReturnType<typeof numberInputStateCreator>
   } = useMemo(
     () =>
-      withdrawTokens.reduce(
+      withdrawTokens?.reduce(
         (acc, { address, decimals }) => ({
           ...acc,
           [address]: numberInputStateCreator(decimals, BigNumber.from("0")),
@@ -66,23 +91,28 @@ export default function useWithdrawFormState(
       withdrawTokens.reduce(
         (acc, { address }) => ({
           ...acc,
-          [address]: tokenInputStateCreators[address]("0"),
+          [address]: tokenInputStateCreators[address](),
         }),
         {},
       ),
     [withdrawTokens, tokenInputStateCreators],
   )
   const formEmptyState = useMemo(
-    () => ({
-      percentage: "",
-      tokenInputs: tokenInputsEmptyState,
-      withdrawType: ALL,
-      error: null,
-      lpTokenAmountToSpend: BigNumber.from("0"),
-    }),
+    () =>
+      ({
+        percentage: "",
+        tokenInputs: tokenInputsEmptyState,
+        withdrawType: "",
+        error: null,
+        lpTokenAmountToSpend: BigNumber.from("0"),
+      } as WithdrawFormState),
     [tokenInputsEmptyState],
   )
-  const [formState, setFormState] = useState<WithdrawFormState>(formEmptyState)
+
+  useEffect(() => {
+    setFormState(formEmptyState)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(formEmptyState)]) // TODO: improve this logic later
 
   // TODO: resolve this, it's a little unsafe
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -192,22 +222,36 @@ export default function useWithdrawFormState(
             const tokenIndex = withdrawTokens.findIndex(
               ({ address }) => address === state.withdrawType,
             )
+
             let tokenAmount: BigNumber
-            if (isWithdrawFeePool(poolName)) {
-              tokenAmount = await (
-                swapContract as SwapFlashLoan
-              ).calculateRemoveLiquidityOneToken(
-                account,
-                effectiveUserLPTokenBalance, // lp token to be burnt
-                tokenIndex,
-              ) // actual coin amount to be returned
+            const withdrawAmount = withdrawTokens[tokenIndex].value
+              .mul(parseUnits(percentageRaw, 5)) // difference between numerator and denominator because we're going from 100 to 1.00
+              .div(10 ** 7)
+
+            if (isMetaPool(poolName)) {
+              if (shouldWithdrawWrapped) {
+                tokenAmount = await (
+                  metaSwapContract as MetaSwap
+                ).calculateRemoveLiquidityOneToken(withdrawAmount, tokenIndex) // calculate withdraw-able token amount using MetaSwap's calculateRemoveLiquidityOneToken()
+              } else {
+                tokenAmount = await (
+                  swapContract as SwapFlashLoanNoWithdrawFee
+                ).calculateRemoveLiquidityOneToken(withdrawAmount, tokenIndex) // calculate withdraw-able token amount using MetaSwapDeposit's calculateRemoveLiquidityOneToken()
+              }
             } else {
-              tokenAmount = await (
-                swapContract as SwapFlashLoanNoWithdrawFee
-              ).calculateRemoveLiquidityOneToken(
-                effectiveUserLPTokenBalance, // lp token to be burnt
-                tokenIndex,
-              ) // actual coin amount to be returned
+              if (isWithdrawFeePool(poolName)) {
+                tokenAmount = await (
+                  swapContract as SwapFlashLoan
+                ).calculateRemoveLiquidityOneToken(
+                  account,
+                  withdrawAmount,
+                  tokenIndex,
+                ) // actual coin amount to be returned
+              } else {
+                tokenAmount = await (
+                  swapContract as SwapFlashLoanNoWithdrawFee
+                ).calculateRemoveLiquidityOneToken(withdrawAmount, tokenIndex) //calculate withdraw-able token amount using Swap's calculateRemoveLiquidityOneToken()
+              }
             }
             nextState = {
               lpTokenAmountToSpend: effectiveUserLPTokenBalance,
@@ -215,7 +259,7 @@ export default function useWithdrawFormState(
                 (acc, { address }, i) => ({
                   ...acc,
                   [address]: tokenInputStateCreators[address](
-                    i === tokenIndex ? tokenAmount : "0",
+                    i === tokenIndex ? tokenAmount : "",
                   ),
                 }),
                 {},
@@ -262,13 +306,14 @@ export default function useWithdrawFormState(
                   error: null,
                 }
           }
-        } catch {
+        } catch (error) {
           nextState = {
             error: {
               field: "tokenInputs",
               message: "Insufficient balance in pool.",
             },
           }
+          console.error("error on withdraw form", error)
         }
       }
       setFormState((prevState) => ({
@@ -362,5 +407,11 @@ export default function useWithdrawFormState(
     ],
   )
 
-  return [formState, handleUpdateForm]
+  return {
+    formState,
+    handleUpdateForm,
+    withdrawTokens,
+    shouldWithdrawWrapped,
+    setShouldWithdrawWrapped,
+  }
 }

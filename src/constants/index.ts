@@ -2112,7 +2112,7 @@ export function isWithdrawFeePool(poolName: string): boolean {
 }
 
 export function isMetaPool(poolName = ""): boolean {
-  return new Set([
+  return [
     FRAX_OPT_USD_METAPOOL_NAME,
     SUSD_METAPOOL_NAME,
     SUSD_METAPOOL_V2_NAME,
@@ -2131,7 +2131,9 @@ export function isMetaPool(poolName = ""): boolean {
     ARB_FRAX_USDS_METAPOOL_NAME,
     FTM_FRAX_USDT_METAPOOL_NAME,
     FTM_FRAX_ALUSD_METAPOOL_NAME,
-  ]).has(poolName)
+  ]
+    .map((poolName) => poolName.toLocaleLowerCase())
+    .includes(poolName.toLocaleLowerCase())
 }
 
 // maps a symbol string to a token object
