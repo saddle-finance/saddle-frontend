@@ -109,7 +109,6 @@ const WithdrawPage = (props: Props): ReactElement | null => {
   const handleWithdrawTypeChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    console.log("value ==>", event.target.value)
     onFormChange({
       fieldName: "withdrawType",
       value: event.target.value,
