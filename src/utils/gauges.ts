@@ -251,6 +251,7 @@ async function buildGaugeData(
     gaugeWeights,
     gaugeRelativeWeights,
     gaugeRewards,
+    gaugeRewardTokens,
     gaugeBalances,
     gaugeWorkingBalances,
     gaugeWorkingSupplies,
@@ -504,6 +505,7 @@ function buildLpTokenAddressToGauge(
       | typeof getGaugeRewardsFromTokensSidechain
     >
   >,
+  gaugeRewardTokens: (string | null)[][],
   gaugeBalances: (BigNumber | null)[] | null,
   gaugeWorkingBalances: (BigNumber | null)[] | null,
   gaugeWorkingSupplies: (BigNumber | null)[],
@@ -515,11 +517,13 @@ function buildLpTokenAddressToGauge(
   return gaugeAddresses.reduce((previousGaugeData, gaugeAddress, index) => {
     const lpTokenAddress = gaugeLpTokenAddresses[index]?.toLowerCase()
     const pool = lpTokenToPool[lpTokenAddress || ""] as GaugePool
+    if (!lpTokenAddress || !pool) return previousGaugeData
+
     const isValidPoolAddress = Boolean(
-      pool?.poolAddress && !isAddressZero(pool?.poolAddress),
+      pool.poolAddress && !isAddressZero(pool.poolAddress),
     )
 
-    const poolAddress = isValidPoolAddress ? pool?.poolAddress : null
+    const poolAddress = isValidPoolAddress ? pool.poolAddress : null
     const sdlRate = sdlRates[index] || Zero
     const sdlReward = {
       periodFinish: BN_MSIG_SDL_VEST_END_TIMESTAMP,
@@ -527,14 +531,15 @@ function buildLpTokenAddressToGauge(
       tokenAddress: SDL_TOKEN_ADDRESSES[chainId].toLowerCase(),
       isMinter: true,
     }
-
+    const gaugeTokens = gaugeRewardTokens[index]
     const gaugeTokenReward = (gaugeRewards[index] as GaugeTokenRewardData[])
-      .map((reward) => {
-        if (reward) {
+      .map((reward, tokenIndex) => {
+        if (gaugeTokens[tokenIndex] != null && reward) {
+          const tokenAddress = gaugeTokens[tokenIndex]?.toLowerCase()
           return {
             periodFinish: reward.period_finish,
             rate: reward.rate,
-            tokenAddress: reward.token.toLowerCase(),
+            tokenAddress,
             isMinter: false,
           }
         }
@@ -545,7 +550,6 @@ function buildLpTokenAddressToGauge(
       sdlRate.gt(Zero) ? [sdlReward] : [],
     )
 
-    if (!lpTokenAddress) return previousGaugeData
     const gauge: Gauge = {
       address: gaugeAddress,
       gaugeWeight: gaugeWeights[index] || Zero,
@@ -558,7 +562,7 @@ function buildLpTokenAddressToGauge(
       lpTokenAddress,
       isKilled: gaugeKillStatuses[index] ?? false,
       poolAddress,
-      poolName: pool?.poolName,
+      poolName: pool.poolName,
       rewards: combinedRewards,
     }
 
@@ -698,6 +702,7 @@ async function buildGaugeDataSidechain(
     [],
     [],
     gaugeRewards,
+    gaugeRewardTokens,
     gaugeBalances,
     gaugeWorkingBalances,
     gaugeWorkingSupplies,
@@ -734,18 +739,16 @@ async function getGaugeRewardsFromTokensSidechain(
   ethCallProvider: MulticallProvider,
 ) {
   return Promise.all(
-    gaugeRewardCounts.map((count, index) =>
-      ethCallProvider.tryAll(
-        enumerate(count.toNumber(), 0).map((num) => {
-          const token = gaugeRewardsTokens[index][num] || ""
-          const rewardData = gaugeMulticallContracts[index].reward_data(token)
-          return {
-            ...rewardData,
-            token,
-          }
-        }),
-      ),
-    ),
+    gaugeRewardCounts.map((count, index) => {
+      return ethCallProvider.tryAll(
+        enumerate(count.toNumber(), 0).map((num) =>
+          gaugeMulticallContracts[index].reward_data(
+            gaugeRewardsTokens[index][num] || "",
+          ),
+        ),
+      )
+    }),
   )
 }
+
 /* ------- End of helper functions ------- */
