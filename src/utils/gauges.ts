@@ -37,12 +37,13 @@ import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
 import { isAddressZero } from "."
 
+/**
+ * Gauge represents the shape of mainnet Gauges
+ * Base Gauge represents the shape of side chain gauges
+ * Difference: When on side chain, the app doesn't have access to the GaugeController contract,
+ * which is responsible for providing the GaugeWeight attributes
+ */
 export type Gauge = BaseGauge & GaugeWeight
-
-export type GaugeWeight = {
-  gaugeRelativeWeight: BigNumber
-  gaugeWeight: BigNumber
-}
 
 export type BaseGauge = {
   address: string
@@ -56,6 +57,11 @@ export type BaseGauge = {
   gaugeName: string | null | undefined
   isKilled: boolean
   rewards: GaugeReward[]
+}
+
+export type GaugeWeight = {
+  gaugeRelativeWeight: BigNumber
+  gaugeWeight: BigNumber
 }
 
 export type GaugeReward = {
