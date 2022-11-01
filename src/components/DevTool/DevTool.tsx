@@ -7,13 +7,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material"
-import React, { useEffect, useState } from "react"
+import { JsonRpcProvider, getDefaultProvider } from "@ethersproject/providers"
+import React, { useEffect, useMemo, useState } from "react"
 
 import CalculateIcon from "@mui/icons-material/Calculate"
 import { IS_PRODUCTION } from "../../utils/environment"
-import { JsonRpcProvider } from "@ethersproject/providers"
 import { isNumberOrEmpty } from "../../utils"
-import { useActiveWeb3React } from "../../hooks"
 
 type BlockState = {
   blockNumber: number
@@ -22,8 +21,7 @@ type BlockState = {
 }
 
 export default function DevTool() {
-  const { library } = useActiveWeb3React()
-  // const library = getDefaultProvider()
+  const library = useMemo(() => getDefaultProvider("http://localhost:8545"), [])
   const [stateBefore, setStateBefore] = useState<BlockState | null>(null)
   const [stateAfter, setStateAfter] = useState<BlockState | null>(null)
 
