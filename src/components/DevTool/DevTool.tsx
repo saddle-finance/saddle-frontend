@@ -7,35 +7,57 @@ import {
   TextField,
   Typography,
 } from "@mui/material"
-
 import React, { useEffect, useState } from "react"
+
 import CalculateIcon from "@mui/icons-material/Calculate"
 import { IS_PRODUCTION } from "../../utils/environment"
 import { JsonRpcProvider } from "@ethersproject/providers"
-import { getNetworkLibrary } from "../../connectors"
 import { isNumberOrEmpty } from "../../utils"
+import { useActiveWeb3React } from "../../hooks"
+
+type BlockState = {
+  blockNumber: number
+  blockTimestamp: number
+  error: string | null
+}
 
 export default function DevTool() {
-  const provider = getNetworkLibrary() as JsonRpcProvider
-  const [blockNumBefore, setBlockNumBefore] = useState<number | null>(null)
-  const [blockTimeBefore, setBlockTimeBefore] = useState<number | null>(null)
-  const [updatedBlockNum, setUpdatedBlockNum] = useState<number | null>(null)
-  const [updatedBlockTime, setUpdatedBlockTime] = useState<number | null>(null)
+  const { library } = useActiveWeb3React()
+  // const library = getDefaultProvider()
+  const [stateBefore, setStateBefore] = useState<BlockState | null>(null)
+  const [stateAfter, setStateAfter] = useState<BlockState | null>(null)
+
   const [skippingTime, setSkippingTime] = useState<string>("")
-  const [openCollapse, setOpenCollapse] = useState(false)
   const [openTool, setOpenTool] = useState<boolean>(false)
 
   useEffect(() => {
     const getTBlockAndTime = async () => {
-      const blockNum = await provider.getBlockNumber()
-      const blockTime = (await provider.getBlock(blockNum)).timestamp
-
-      setBlockNumBefore(blockNum)
-      setBlockTimeBefore(blockTime)
+      if (!library) {
+        setStateBefore({
+          blockNumber: 0,
+          blockTimestamp: 0,
+          error: "Error fetching current block, provider undefined",
+        })
+        return
+      }
+      try {
+        const block = await library.getBlock("latest")
+        setStateBefore({
+          blockNumber: block.number,
+          blockTimestamp: block.timestamp,
+          error: null,
+        })
+      } catch {
+        setStateBefore({
+          blockNumber: 0,
+          blockTimestamp: 0,
+          error: "Error fetching current block",
+        })
+      }
     }
     void getTBlockAndTime()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [library])
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -47,15 +69,30 @@ export default function DevTool() {
 
   const handleSubmit = async () => {
     try {
-      await provider.send("evm_increaseTime", [+skippingTime])
-      await provider.send("evm_mine", [])
-      const blockNumber = await provider.getBlockNumber()
-      const blockTime = (await provider.getBlock(blockNumber)).timestamp
-      setUpdatedBlockNum(blockNumber)
-      setUpdatedBlockTime(blockTime)
-      setOpenCollapse(true)
+      if (!library) {
+        setStateAfter({
+          blockNumber: 0,
+          blockTimestamp: 0,
+          error: "Error, provider undefined",
+        })
+        return
+      }
+      await (library as JsonRpcProvider).send("evm_increaseTime", [
+        +skippingTime,
+      ])
+      await (library as JsonRpcProvider).send("evm_mine", [])
+      const block = await library.getBlock("latest")
+      setStateAfter({
+        blockNumber: block.number,
+        blockTimestamp: block.timestamp,
+        error: null,
+      })
     } catch (error) {
-      console.log(error)
+      setStateAfter({
+        blockNumber: 0,
+        blockTimestamp: 0,
+        error: (error as Error).message,
+      })
     }
   }
 
@@ -64,8 +101,11 @@ export default function DevTool() {
       <Drawer open={openTool} anchor="right" onClose={() => setOpenTool(false)}>
         <Box width={300} mx="12px" mt="24px">
           <Box>
-            <Typography>Block number: {blockNumBefore}</Typography>
-            <Typography>Timestamp: {blockTimeBefore}</Typography>
+            <Typography>Block number: {stateBefore?.blockNumber}</Typography>
+            <Typography>Timestamp: {stateBefore?.blockTimestamp}</Typography>
+            {stateBefore?.error ? (
+              <Typography>{stateBefore?.error}</Typography>
+            ) : null}
           </Box>
           <Box my="20px">
             <TextField
@@ -83,12 +123,17 @@ export default function DevTool() {
           >
             Submit
           </Button>
-          <Collapse in={openCollapse}>
+          <Collapse in={!!stateAfter}>
             <Box mt="12px">
-              <Typography>Updated block number: {updatedBlockNum}</Typography>
               <Typography>
-                Updated block Timestamp: {updatedBlockTime}
+                Updated block number: {stateAfter?.blockNumber}
               </Typography>
+              <Typography>
+                Updated block Timestamp: {stateAfter?.blockTimestamp}
+              </Typography>
+              {stateAfter?.error ? (
+                <Typography>Error: {stateAfter?.error}</Typography>
+              ) : null}
             </Box>
           </Collapse>
         </Box>
