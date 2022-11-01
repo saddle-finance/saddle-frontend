@@ -11,22 +11,23 @@ import {
 } from "@mui/material"
 import React, { ReactElement, useContext, useEffect, useState } from "react"
 
-import { AppState } from "../state"
+import { AppState } from "../../state"
 import { BigNumber } from "ethers"
-import ConfirmTransaction from "../components/ConfirmTransaction"
-import Dialog from "../components/Dialog"
-import { ExpandedPoolsContext } from "../providers/ExpandedPoolsProvider"
-import PoolOverview from "../components/PoolOverview"
-import { PoolTypes } from "../constants"
-import ReviewMigration from "../components/ReviewMigration"
+import ConfirmTransaction from "../../components/ConfirmTransaction"
+import Dialog from "../../components/Dialog"
+import { ExpandedPoolsContext } from "../../providers/ExpandedPoolsProvider"
+import PoolOverview from "../../components/PoolOverview"
+import { PoolTypes } from "../../constants"
+import ReviewMigration from "../../components/ReviewMigration"
 import { Search } from "@mui/icons-material"
-import { UserStateContext } from "../providers/UserStateProvider"
+import { UserStateContext } from "../../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
-import { getTokenAddrForPoolType } from "../utils"
-import { logEvent } from "../utils/googleAnalytics"
+import { communityPoolsEnabled } from "../Pages"
+import { getTokenAddrForPoolType } from "../../utils"
+import { logEvent } from "../../utils/googleAnalytics"
 import { parseUnits } from "@ethersproject/units"
-import { useActiveWeb3React } from "../hooks"
-import { useApproveAndMigrate } from "../hooks/useApproveAndMigrate"
+import { useActiveWeb3React } from "../../hooks"
+import { useApproveAndMigrate } from "../../hooks/useApproveAndMigrate"
 import { useHistory } from "react-router"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
@@ -71,12 +72,10 @@ function Pools(): ReactElement | null {
     })
   }, [account, chainId])
 
-  const permissionlessPoolsFF = false
-
   return (
     <Container sx={{ pb: 5 }}>
       <Stack direction="row" alignItems="center" justifyContent="center">
-        {permissionlessPoolsFF && (
+        {communityPoolsEnabled(chainId) && (
           <Box flex={1}>
             <TextField
               variant="standard"
@@ -87,7 +86,7 @@ function Pools(): ReactElement | null {
               onChange={(e) => setPoolOrTokenFilterValue(e.target.value)}
               value={poolOrTokenFilterValue}
             />
-            {permissionlessPoolsFF && (
+            {communityPoolsEnabled(chainId) && (
               <Box ml={1} mt={1}>
                 <FormGroup>
                   <FormControlLabel
@@ -126,7 +125,9 @@ function Pools(): ReactElement | null {
           ))}
         </Stack>
 
-        {permissionlessPoolsFF /* TODO: Change when perm pool turned on */ && (
+        {communityPoolsEnabled(
+          chainId,
+        ) /* TODO: Change when perm pool turned on */ && (
           <Box flex={1}>
             <Button
               variant="contained"

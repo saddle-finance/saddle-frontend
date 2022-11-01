@@ -1,4 +1,4 @@
-import { Container, Typography } from "@mui/material"
+import { Container, Link, Typography } from "@mui/material"
 import React, { ReactElement } from "react"
 
 import { useTranslation } from "react-i18next"
@@ -13,9 +13,9 @@ function Risk(): ReactElement {
       </Typography>
       <Typography variant="body1" data-testid="risk-intro">
         {t("riskIntro")}{" "}
-        <a href="https://github.com/saddle-finance/saddle-contract">
+        <Link href="https://github.com/saddle-finance/saddle-contract">
           {t("riskIntro2")}
-        </a>{" "}
+        </Link>{" "}
         {t("riskIntro3")}
       </Typography>
       <Typography variant="h3" mt={5} mb={2}>
@@ -23,9 +23,9 @@ function Risk(): ReactElement {
       </Typography>
       <Typography variant="body1" data-testid="risk-audits">
         {t("riskAudits")}{" "}
-        <a href="https://github.com/saddle-finance/saddle-audits">
+        <Link href="https://github.com/saddle-finance/saddle-audits">
           {t("riskAudits2")}
-        </a>
+        </Link>
         {"."}
         <br />
         <br />
@@ -52,9 +52,9 @@ function Risk(): ReactElement {
       <p>
         {t("unnecessaryApprovalAskA")} <br />
         <br />
-        <a href="https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729">
+        <Link href="https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729">
           ERC: Token standard · Issue #20 · ethereum/EIPs
-        </a>
+        </Link>
       </p>
       <Typography variant="h3" mt={5} mb={2}>
         {t("permissionlessPools")}

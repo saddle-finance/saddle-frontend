@@ -42,6 +42,7 @@ import { AppState } from "../../state"
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
 import ConfirmModal from "../../components/ConfirmModal"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
+import DevTool from "../../components/DevTool/DevTool"
 import GaugeVote from "./GaugeVote"
 import LaunchIcon from "@mui/icons-material/Launch"
 import LockedInfo from "./LockedInfo"
@@ -520,6 +521,7 @@ export default function VeSDL(): JSX.Element {
               {t("unlock")}
             </Button>
           </Paper>
+          <DevTool />
           <Paper sx={{ p: 4 }}>
             <Typography variant="h2" textAlign="center" mb={2}>
               {t("veSdlHolderFeeClaim")}

@@ -20,7 +20,7 @@ import Popper from "@mui/material/Popper"
 import { SWAP_TYPES } from "../constants"
 import Search from "@mui/icons-material/Search"
 import TokenIcon from "./TokenIcon"
-import { TokenOption } from "../pages/Swap"
+import { TokenOption } from "../types"
 import { matchSorter } from "match-sorter"
 import { useTranslation } from "react-i18next"
 

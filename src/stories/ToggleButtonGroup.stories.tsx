@@ -3,7 +3,7 @@ import { ToggleButton, ToggleButtonGroup } from "@mui/material"
 import React from "react"
 
 export default {
-  title: "Light components/ToggleButtonGroup",
+  title: "Components/ToggleButtonGroup",
   component: ToggleButtonGroup,
   argTypes: {
     color: {

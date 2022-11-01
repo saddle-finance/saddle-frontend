@@ -17,10 +17,12 @@ import MenuTheme from "./MenuTheme"
 import PaperTheme from "./PaperTheme"
 import RadioButtonTheme from "./RadioButtonTheme"
 import SelectTheme from "./SelectTheme"
+import SkeletonTheme from "./SkeletonTheme"
 import TableCellTheme from "./TableCellTheme"
 import TextFieldTheme from "./TextFieldTheme"
 import ToggleButtonTheme from "./ToggleButtonTheme"
 import TooltipTheme from "./TooltipTheme"
+import TypographyTheme from "./TypographyTheme"
 import { merge } from "lodash"
 
 export default function componentsOverrides(theme: Theme): Components {
@@ -46,6 +48,8 @@ export default function componentsOverrides(theme: Theme): Components {
     ListItemIconTheme(theme),
     RadioButtonTheme(),
     SelectTheme(theme),
+    SkeletonTheme(),
     TextFieldTheme(),
+    TypographyTheme(theme),
   ) as Components
 }
