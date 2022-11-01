@@ -80,11 +80,10 @@ export function useApproveAndWithdraw(
         throw new Error("Swap contract is not loaded")
       if (state.lpTokenAmountToSpend.isZero()) return
 
-      const withdrawTokens = !isMetaPool(poolName)
-        ? basicPool.tokens
-        : shouldWithdrawWrapped
-        ? basicPool.tokens // When pool is MetaSwap pool, it includes LP token and other token ex: ["wCUSD","saddleUSD-V2"]
-        : basicPool.underlyingTokens // If pool is not MetaSwap pool, this value is empty
+      const withdrawTokens = // When pool is MetaSwap pool, it includes LP token and other token ex: ["wCUSD","saddleUSD-V2"]
+        !isMetaPool(poolName) || shouldWithdrawWrapped
+          ? basicPool.tokens
+          : basicPool.underlyingTokens // If pool is not MetaSwap pool, this value is empty
 
       if (!withdrawTokens) return
 
@@ -232,11 +231,13 @@ export function useApproveAndWithdraw(
           deadline,
         )
       } else {
-        const lpTokenAmountToRemoveOneToken =
-          state.tokenFormState?.[state.withdrawType]?.valueSafe
         const tokenIndexToRemove = withdrawTokens.findIndex(
           (address) => address === state.withdrawType,
         )
+
+        if (!state.tokenFormState || !state.withdrawType) return
+        const lpTokenAmountToRemoveOneToken =
+          state.tokenFormState[state.withdrawType]?.valueSafe
 
         if (lpTokenAmountToRemoveOneToken) {
           spendTransaction =
@@ -244,10 +245,7 @@ export function useApproveAndWithdraw(
               lpTokenAmountToRemoveOneToken,
               tokenIndexToRemove,
               subtractSlippage(
-                BigNumber.from(
-                  state.tokenFormState?.[state.withdrawType || ""]?.valueSafe ||
-                    "0",
-                ),
+                BigNumber.from(lpTokenAmountToRemoveOneToken || "0"),
                 slippageSelected,
                 slippageCustom,
               ),
