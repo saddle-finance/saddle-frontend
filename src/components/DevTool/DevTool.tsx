@@ -21,7 +21,10 @@ type BlockState = {
 }
 
 export default function DevTool() {
-  const library = useMemo(() => getDefaultProvider("http://localhost:8545"), [])
+  const provider = useMemo(
+    () => getDefaultProvider("http://localhost:8545"),
+    [],
+  ) as JsonRpcProvider
   const [stateBefore, setStateBefore] = useState<BlockState | null>(null)
   const [stateAfter, setStateAfter] = useState<BlockState | null>(null)
 
@@ -30,7 +33,7 @@ export default function DevTool() {
 
   useEffect(() => {
     const getTBlockAndTime = async () => {
-      if (!library) {
+      if (!provider) {
         setStateBefore({
           blockNumber: 0,
           blockTimestamp: 0,
@@ -39,7 +42,7 @@ export default function DevTool() {
         return
       }
       try {
-        const block = await library.getBlock("latest")
+        const block = await provider.getBlock("latest")
         setStateBefore({
           blockNumber: block.number,
           blockTimestamp: block.timestamp,
@@ -55,7 +58,7 @@ export default function DevTool() {
     }
     void getTBlockAndTime()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [library])
+  }, [provider])
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -67,7 +70,7 @@ export default function DevTool() {
 
   const handleSubmit = async () => {
     try {
-      if (!library) {
+      if (!provider) {
         setStateAfter({
           blockNumber: 0,
           blockTimestamp: 0,
@@ -75,11 +78,9 @@ export default function DevTool() {
         })
         return
       }
-      await (library as JsonRpcProvider).send("evm_increaseTime", [
-        +skippingTime,
-      ])
-      await (library as JsonRpcProvider).send("evm_mine", [])
-      const block = await library.getBlock("latest")
+      await provider.send("evm_increaseTime", [+skippingTime])
+      await provider.send("evm_mine", [])
+      const block = await provider.getBlock("latest")
       setStateAfter({
         blockNumber: block.number,
         blockTimestamp: block.timestamp,
