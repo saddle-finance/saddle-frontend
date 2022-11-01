@@ -103,7 +103,7 @@ export default function DevTool() {
             <Typography>Block number: {stateBefore?.blockNumber}</Typography>
             <Typography>Timestamp: {stateBefore?.blockTimestamp}</Typography>
             {stateBefore?.error ? (
-              <Typography>{stateBefore?.error}</Typography>
+              <Typography color="error">{stateBefore?.error}</Typography>
             ) : null}
           </Box>
           <Box my="20px">
@@ -131,7 +131,9 @@ export default function DevTool() {
                 Updated block Timestamp: {stateAfter?.blockTimestamp}
               </Typography>
               {stateAfter?.error ? (
-                <Typography>Error: {stateAfter?.error}</Typography>
+                <Typography color="error">
+                  Error: {stateAfter?.error}
+                </Typography>
               ) : null}
             </Box>
           </Collapse>
