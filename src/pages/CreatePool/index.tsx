@@ -15,6 +15,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material"
+import { ChainId, PoolTypes } from "../../constants"
 import React, { useEffect, useState } from "react"
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
@@ -22,7 +23,6 @@ import CircularProgress from "@mui/material/CircularProgress"
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever"
 import ERC20_ABI from "../../constants/abis/erc20.json"
 import { Erc20 } from "../../../types/ethers-contracts/Erc20"
-import { PoolTypes } from "../../constants"
 import ReviewCreatePool from "./CreatePoolDialog"
 import { Link as RouteLink } from "react-router-dom"
 import { getContract } from "../../utils"
@@ -48,7 +48,7 @@ export default function CreatePool(): React.ReactElement {
   const { t } = useTranslation()
   const theme = useTheme()
   const poolRegistry = usePoolRegistry()
-  const { account, library } = useActiveWeb3React()
+  const { account, library, chainId } = useActiveWeb3React()
 
   const [disableCreatePool, setDisableCreatePool] = useState<boolean>(true)
   const [metapoolBasepoolAddr, setMetapoolBasepoolAddr] = useState<string>(
@@ -353,9 +353,11 @@ export default function CreatePool(): React.ReactElement {
                 <Typography my={2}>
                   {t("createPoolTypeDescription1")}
                 </Typography>
-                <Typography mb={2}>
-                  {t("createPoolTypeDescription2")}
-                </Typography>
+                {chainId && ![ChainId.ARBITRUM].includes(chainId) && (
+                  <Typography mb={2}>
+                    {t("createPoolTypeDescription2")}
+                  </Typography>
+                )}
                 <Typography mb={2}>
                   {t("createPoolTypeDescription3")}
                 </Typography>
@@ -379,9 +381,12 @@ export default function CreatePool(): React.ReactElement {
                   <ToggleButton value={PoolType.UsdMeta} size="large">
                     {t("usdMetapool")}
                   </ToggleButton>
-                  <ToggleButton value={PoolType.BtcMeta}>
-                    {t("btcMetapool")}
-                  </ToggleButton>
+                  {chainId &&
+                    [ChainId.MAINNET, ChainId.HARDHAT].includes(chainId) && (
+                      <ToggleButton value={PoolType.BtcMeta}>
+                        {t("btcMetapool")}
+                      </ToggleButton>
+                    )}
                   <ToggleButton value={PoolType.Base}>
                     {t("basepool")}
                   </ToggleButton>
