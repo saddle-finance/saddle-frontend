@@ -2,10 +2,10 @@ import "react-toastify/dist/ReactToastify.css"
 import { AppDispatch, AppState } from "../state"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import React, { ReactElement, Suspense, useCallback, useEffect } from "react"
-import { styled, useTheme } from "@mui/material"
 import { useDispatch, useSelector } from "react-redux"
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
+import AppContainer from "./AppContainer"
 import AprsProvider from "../providers/AprsProvider"
 import { BLOCK_TIME } from "../constants"
 import BasicPoolsProvider from "../providers/BasicPoolsProvider"
@@ -33,24 +33,7 @@ import { useActiveWeb3React } from "../hooks"
 import { useIntercom } from "react-use-intercom"
 import usePoller from "../hooks/usePoller"
 import { useSdlWethSushiPairContract } from "../hooks/useContract"
-
-const AppContainer = styled("div")(({ theme }) => {
-  const darkBackground =
-    "linear-gradient(180deg, #000000, #070713 10%, #121334 50%, rgba(0,0,0,0) 50%, rgba(0,0,0,0) 100%), radial-gradient(50% 395.51% at 50% 4.9%, #121334 0%, #000000 100%)"
-  const lightBackground =
-    "linear-gradient(180deg, #FFFFFF, #FAF3CE 50%, rgba(0,0,0,0) 50%, rgba(0,0,0,0) 100%), radial-gradient(87.11% 100% at 50% 0%, #FFFFFF 0%, #FDF8DD 100%)"
-  return {
-    backgroundImage:
-      theme.palette.mode === "light" ? lightBackground : darkBackground,
-    minHeight: "100vh",
-    minWidth: "100vw",
-    marginRight: "calc(-1 * (100vw - 100%))",
-    backgroundAttachment: "fixed",
-    backgroundPosition: "center center",
-    backgroundRepeat: "no-repeat",
-    backgroundSize: "cover",
-  }
-})
+import { useTheme } from "@mui/material"
 
 const queryClient = new QueryClient({
   defaultOptions: {
