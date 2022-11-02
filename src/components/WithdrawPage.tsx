@@ -32,7 +32,6 @@ import PoolInfoCard from "./PoolInfoCard"
 import ReviewWithdraw from "./ReviewWithdraw"
 import TokenInput from "./TokenInput"
 import { Zero } from "@ethersproject/constants"
-import { isMetaPool } from "../constants"
 import { logEvent } from "../utils/googleAnalytics"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
@@ -100,8 +99,7 @@ const WithdrawPage = (props: Props): ReactElement | null => {
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const theme = useTheme()
   const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
-  const shouldDisplayWrappedOption =
-    isMetaPool(poolData?.name) || poolData?.isMetaSwap
+  const shouldDisplayWrappedOption = poolData?.isMetaSwap
 
   const onSubmit = (): void => {
     setCurrentModal("review")

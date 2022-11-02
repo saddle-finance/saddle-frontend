@@ -2111,31 +2111,6 @@ export function isWithdrawFeePool(poolName: string): boolean {
   )
 }
 
-export function isMetaPool(poolName = ""): boolean {
-  return [
-    FRAX_OPT_USD_METAPOOL_NAME,
-    SUSD_METAPOOL_NAME,
-    SUSD_METAPOOL_V2_NAME,
-    TBTC_METAPOOL_NAME,
-    TBTC_METAPOOL_V2_NAME,
-    USDS_ARB_USD_METAPOOL_NAME,
-    WCUSD_METAPOOL_NAME,
-    WCUSD_METAPOOL_V2_NAME,
-    TBTC_EVMOS_BTC_METAPOOL_NAME,
-    TBTC_METAPOOL_V2_BTCV2_V3_NAME,
-    WCUSD_METAPOOL_V2_USDV2_V3_NAME,
-    SUSD_METAPOOL_V2_USDV2_V3_NAME,
-    FRAX_USDT_METAPOOL_NAME,
-    FRAX_SUSD_METAPOOL_NAME,
-    FRAX_ALUSD_METAPOOL_NAME,
-    ARB_FRAX_USDS_METAPOOL_NAME,
-    FTM_FRAX_USDT_METAPOOL_NAME,
-    FTM_FRAX_ALUSD_METAPOOL_NAME,
-  ]
-    .map((poolName) => poolName.toLocaleLowerCase())
-    .includes(poolName.toLocaleLowerCase())
-}
-
 // maps a symbol string to a token object
 export type TokensMap = {
   [symbol: string]: Token
