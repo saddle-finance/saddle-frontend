@@ -1,5 +1,4 @@
 import { BasicToken, TokensContext } from "../providers/TokensProvider"
-import { TRANSACTION_TYPES, isMetaPool } from "../constants"
 import { addSlippage, subtractSlippage } from "../utils/slippage"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { formatUnits, parseUnits } from "@ethersproject/units"
@@ -17,6 +16,7 @@ import { IS_PRODUCTION } from "../utils/environment"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { NumberInputState } from "../utils/numberInputState"
+import { TRANSACTION_TYPES } from "../constants"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { formatDeadlineToNumber } from "../utils"
 import { getContract } from "../utils"
@@ -81,7 +81,7 @@ export function useApproveAndWithdraw(
       if (state.lpTokenAmountToSpend.isZero()) return
 
       const withdrawTokens = // When pool is MetaSwap pool, it includes LP token and other token ex: ["wCUSD","saddleUSD-V2"]
-        !isMetaPool(poolName) || shouldWithdrawWrapped
+        !basicPool.isMetaSwap || shouldWithdrawWrapped
           ? basicPool.tokens
           : basicPool.underlyingTokens // If pool is not MetaSwap pool, this value is empty
 

@@ -2,7 +2,6 @@ import {
   NumberInputState,
   numberInputStateCreator,
 } from "../utils/numberInputState"
-import { isMetaPool, isWithdrawFeePool } from "../constants"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { BigNumber } from "@ethersproject/bignumber"
@@ -13,6 +12,7 @@ import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFla
 import { Zero } from "@ethersproject/constants"
 import { debounce } from "lodash"
 import { getContract } from "../utils"
+import { isWithdrawFeePool } from "../constants"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import usePoolData from "../hooks/usePoolData"
@@ -67,11 +67,10 @@ export default function useWithdrawFormState(poolName: string) {
     return null
   }, [library, account, poolData?.poolAddress])
 
-  const withdrawTokens = !isMetaPool(poolName)
-    ? poolData.tokens
-    : shouldWithdrawWrapped
-    ? poolData.tokens
-    : poolData.underlyingTokens
+  const withdrawTokens = // When pool is MetaSwap pool, it includes LP token and other token ex: ["wCUSD","saddleUSD-V2"]
+    !poolData.isMetaSwap || shouldWithdrawWrapped
+      ? poolData.tokens
+      : poolData.underlyingTokens // If pool is not MetaSwap pool, this value is empty
 
   const tokenInputStateCreators: {
     [address: string]: ReturnType<typeof numberInputStateCreator>
@@ -228,7 +227,7 @@ export default function useWithdrawFormState(poolName: string) {
               .mul(parseUnits(percentageRaw, 5)) // difference between numerator and denominator because we're going from 100 to 1.00
               .div(10 ** 7)
 
-            if (isMetaPool(poolName)) {
+            if (poolData.isMetaSwap) {
               if (shouldWithdrawWrapped) {
                 tokenAmount = await (
                   metaSwapContract as MetaSwap
