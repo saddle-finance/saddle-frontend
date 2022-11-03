@@ -422,36 +422,6 @@ export default function CreatePool(): React.ReactElement {
                     ))}
                   </Select>
                 </FormControl>
-                {/* <ToggleButtonGroup */}
-                {/*   value={poolType} */}
-                {/*   color="secondary" */}
-                {/*   size="large" */}
-                {/*   exclusive */}
-                {/*   onChange={(event, value: PoolType) => { */}
-                {/*     if (value) { */}
-                {/*       setPoolType(value) */}
-                {/*       if (value === PoolType.Base) { */}
-                {/*         setTokenInputs([tokenInputs[0], ""]) */}
-                {/*       } else { */}
-                {/*         setTokenInputs([tokenInputs[0]]) */}
-                {/*       } */}
-                {/*     } */}
-                {/*   }} */}
-                {/*   fullWidth */}
-                {/* > */}
-                {/*   <ToggleButton value={PoolType.UsdMeta} size="large"> */}
-                {/*     {t("usdMetapool")} */}
-                {/*   </ToggleButton> */}
-                {/*   {chainId && */}
-                {/*     [ChainId.MAINNET, ChainId.HARDHAT].includes(chainId) && ( */}
-                {/*       <ToggleButton value={PoolType.BtcMeta}> */}
-                {/*         {t("btcMetapool")} */}
-                {/*       </ToggleButton> */}
-                {/*     )} */}
-                {/*   <ToggleButton value={PoolType.Base}> */}
-                {/*     {t("basepool")} */}
-                {/*   </ToggleButton> */}
-                {/* </ToggleButtonGroup> */}
               </Box>
 
               <Box flex={1}>
