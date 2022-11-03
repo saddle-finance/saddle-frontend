@@ -1,4 +1,3 @@
-import { BigNumberish, ethers } from "ethers"
 import {
   Box,
   Button,
@@ -23,6 +22,7 @@ import { ChainId, PoolTypes } from "../../constants"
 import React, { useContext, useEffect, useState } from "react"
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
+import { BigNumberish } from "ethers"
 import CircularProgress from "@mui/material/CircularProgress"
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever"
 import ERC20_ABI from "../../constants/abis/erc20.json"
@@ -32,7 +32,6 @@ import ReviewCreatePool from "./CreatePoolDialog"
 import { Link as RouteLink } from "react-router-dom"
 import { getContract } from "../../utils"
 import { useActiveWeb3React } from "../../hooks"
-import { usePoolRegistry } from "../../hooks/useContract"
 import { useTranslation } from "react-i18next"
 
 export enum PoolType {
@@ -53,7 +52,6 @@ export type ValidationStatus =
 export default function CreatePool(): React.ReactElement {
   const { t } = useTranslation()
   const theme = useTheme()
-  const poolRegistry = usePoolRegistry()
   const expandedPools = useContext(ExpandedPoolsContext)
   const expandedPoolsRemapped = Object.values(expandedPools.data.byName)
     .map((pool) => ({
@@ -178,25 +176,6 @@ export default function CreatePool(): React.ReactElement {
     !isValidNumber(fee) ||
     parseFloat(fee) > Number(maxFee) ||
     parseFloat(fee) < Number(minFee)
-
-  useEffect(() => {
-    const getBasePoolLPTokenAddrs = async () => {
-      if (poolRegistry) {
-        const basePoolName =
-          poolType === PoolType.UsdMeta ? "FRAX-USDC-BP" : "BTCv2"
-        try {
-          const poolRegistryData = await poolRegistry.getPoolDataByName(
-            ethers.utils.formatBytes32String(basePoolName),
-          )
-          setMetapoolBasepoolAddr(poolRegistryData.poolAddress)
-          setMetapoolBasepoolLpAddr(poolRegistryData.lpToken)
-        } catch (err) {
-          console.error(err)
-        }
-      }
-    }
-    void getBasePoolLPTokenAddrs()
-  }, [poolRegistry, poolType])
 
   useEffect(() => {
     const tokenInfoErrors = tokenInfo.map((token) =>
@@ -396,13 +375,15 @@ export default function CreatePool(): React.ReactElement {
                         setPoolType(e.target.value as PoolType)
                         setTokenInputs(["", ""])
                       } else {
-                        const tokensLength =
+                        const pool =
                           expandedPools.data.byAddress[e.target.value as string]
-                            ?.tokens.length ?? 0
-                        setPoolType(
-                          expandedPools.data.byAddress[e.target.value as string]
-                            ?.poolName as PoolType,
-                        )
+                        if (!pool) {
+                          console.error("Unable to locate pool")
+                          return
+                        }
+                        const tokensLength = pool.tokens.length
+                        const lpTokenAddr = pool.lpToken.address
+                        setPoolType(pool.poolName as PoolType)
                         setSelectedTokensLength(tokensLength)
                         setTokenInputs([
                           ...(Array(maxAmountOfTokens - tokensLength).fill(
@@ -411,6 +392,7 @@ export default function CreatePool(): React.ReactElement {
                           ) as string[]),
                         ])
                         setMetapoolBasepoolAddr(e.target.value as string)
+                        setMetapoolBasepoolLpAddr(lpTokenAddr)
                       }
                     }}
                   >
