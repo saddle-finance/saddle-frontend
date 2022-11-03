@@ -18,8 +18,8 @@ import {
   Typography,
   useTheme,
 } from "@mui/material"
-import { ChainId, PoolTypes } from "../../constants"
 import React, { useContext, useEffect, useState } from "react"
+import { getContract, isAddress } from "../../utils"
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 import { BigNumberish } from "ethers"
@@ -28,9 +28,9 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever"
 import ERC20_ABI from "../../constants/abis/erc20.json"
 import { Erc20 } from "../../../types/ethers-contracts/Erc20"
 import { ExpandedPoolsContext } from "../../providers/ExpandedPoolsProvider"
+import { PoolTypes } from "../../constants"
 import ReviewCreatePool from "./CreatePoolDialog"
 import { Link as RouteLink } from "react-router-dom"
-import { getContract } from "../../utils"
 import { useActiveWeb3React } from "../../hooks"
 import { useTranslation } from "react-i18next"
 
@@ -68,7 +68,7 @@ export default function CreatePool(): React.ReactElement {
     .filter((pool) => !pool.basePoolAddress)
     .filter((pool) => !pool.isMigrated)
     .filter((pool) => !pool.isPaused)
-  const { account, library, chainId } = useActiveWeb3React()
+  const { account, library } = useActiveWeb3React()
 
   const [disableCreatePool, setDisableCreatePool] = useState<boolean>(true)
   const [metapoolBasepoolAddr, setMetapoolBasepoolAddr] = useState<string>(
@@ -223,6 +223,15 @@ export default function CreatePool(): React.ReactElement {
       }
       setTokenInfo([...tokenInfo])
     }
+    if (!isAddress(value)) {
+      tokenInfo[index] = {
+        name: "",
+        symbol: "",
+        decimals: 0,
+        checkResult: "error" as ValidationStatus,
+      }
+      return
+    }
     inputLoading[index] = true
     setInputLoading([...inputLoading])
     let tokenData
@@ -357,13 +366,8 @@ export default function CreatePool(): React.ReactElement {
                 <Typography my={2}>
                   {t("createPoolTypeDescription1")}
                 </Typography>
-                {chainId && ![ChainId.ARBITRUM].includes(chainId) && (
-                  <Typography mb={2}>
-                    {t("createPoolTypeDescription2")}
-                  </Typography>
-                )}
                 <Typography mb={2}>
-                  {t("createPoolTypeDescription3")}
+                  {t("createPoolTypeDescription2")}
                 </Typography>
                 <FormControl fullWidth>
                   <InputLabel id="pool-type-label">Choose Pool Type</InputLabel>
@@ -399,7 +403,7 @@ export default function CreatePool(): React.ReactElement {
                     <MenuItem value={PoolType.Base}>Base Pool</MenuItem>
                     {expandedPoolsRemapped.map((pool) => (
                       <MenuItem key={pool.address} value={pool.address}>
-                        {pool.poolName}
+                        {`${pool.poolName} Metapool`}
                       </MenuItem>
                     ))}
                   </Select>
