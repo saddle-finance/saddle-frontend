@@ -82,7 +82,7 @@ export default function CreatePool(): React.ReactElement {
   const [poolSymbol, setPoolSymbol] = useState<string>("")
   const [aParameter, setAParameter] = useState<string>("")
   const [poolType, setPoolType] = useState<PoolType>(PoolType.Empty)
-  const [assetType, setAssetType] = useState<PoolTypes>(2)
+  const [assetType, setAssetType] = useState<PoolTypes>(PoolTypes.ETH)
   const [tokenInputs, setTokenInputs] = useState<string[]>([""])
   const [selectedTokensLength, setSelectedTokensLength] = useState(0)
   const [tokenInfo, setTokenInfo] = useState<
@@ -397,8 +397,8 @@ export default function CreatePool(): React.ReactElement {
                     }}
                   >
                     <MenuItem value={PoolType.Base}>Base Pool</MenuItem>
-                    {expandedPoolsRemapped.map((pool, i) => (
-                      <MenuItem key={i} value={pool.address}>
+                    {expandedPoolsRemapped.map((pool) => (
+                      <MenuItem key={pool.address} value={pool.address}>
                         {pool.poolName}
                       </MenuItem>
                     ))}
