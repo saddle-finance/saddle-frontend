@@ -41,19 +41,29 @@ export enum PoolType {
   Empty = "",
 }
 
-export type ValidationStatus =
-  | "primary"
-  | "secondary"
-  | "error"
-  | "info"
-  | "success"
-  | "warning"
+export enum ValidationStatus {
+  Primary = "primary",
+  Secondary = "secondary",
+  Error = "error",
+  Info = "info",
+  Warning = "warning",
+  Success = "success",
+}
 
 export default function CreatePool(): React.ReactElement {
   const { t } = useTranslation()
   const theme = useTheme()
   const expandedPools = useContext(ExpandedPoolsContext)
   const expandedPoolsRemapped = Object.values(expandedPools.data.byName)
+    .filter((pool) => {
+      return (
+        pool.tokens.length < 4 &&
+        pool.isSaddleApproved &&
+        !pool.basePoolAddress &&
+        !pool.isMigrated &&
+        !pool.isPaused
+      )
+    })
     .map((pool) => ({
       basePoolAddress: pool.basePoolAddress,
       poolName: pool.poolName,
@@ -61,13 +71,7 @@ export default function CreatePool(): React.ReactElement {
       address: pool.poolAddress,
       isPaused: pool.isPaused,
       isMigrated: pool.isMigrated,
-      tokensLength: pool.tokens.length,
     }))
-    .filter((pool) => pool.tokensLength < 4)
-    .filter((pool) => pool.isSaddleApproved)
-    .filter((pool) => !pool.basePoolAddress)
-    .filter((pool) => !pool.isMigrated)
-    .filter((pool) => !pool.isPaused)
   const { account, library } = useActiveWeb3React()
 
   const [disableCreatePool, setDisableCreatePool] = useState<boolean>(true)
@@ -97,7 +101,7 @@ export default function CreatePool(): React.ReactElement {
       name: "",
       symbol: "",
       decimals: 0,
-      checkResult: "primary",
+      checkResult: ValidationStatus.Primary,
     },
   ])
   const [fee, setFee] = useState<string>("")
@@ -145,7 +149,7 @@ export default function CreatePool(): React.ReactElement {
         name: "",
         symbol: "",
         decimals: 0,
-        checkResult: "primary" as ValidationStatus,
+        checkResult: ValidationStatus.Primary,
       }
 
     const tokenContractResult = getContract(
@@ -159,7 +163,7 @@ export default function CreatePool(): React.ReactElement {
       name: (await tokenContractResult?.name()) ?? "",
       symbol: (await tokenContractResult?.symbol()) ?? "",
       decimals: (await tokenContractResult?.decimals()) ?? 0,
-      checkResult: "success",
+      checkResult: ValidationStatus.Success,
     }
   }
 
@@ -219,7 +223,7 @@ export default function CreatePool(): React.ReactElement {
         name: "",
         symbol: "",
         decimals: 0,
-        checkResult: "primary" as ValidationStatus,
+        checkResult: ValidationStatus.Primary,
       }
       setTokenInfo([...tokenInfo])
     }
@@ -228,7 +232,7 @@ export default function CreatePool(): React.ReactElement {
         name: "",
         symbol: "",
         decimals: 0,
-        checkResult: "error" as ValidationStatus,
+        checkResult: ValidationStatus.Error,
       }
       return
     }
@@ -243,7 +247,7 @@ export default function CreatePool(): React.ReactElement {
         name: "",
         symbol: "",
         decimals: 0,
-        checkResult: "error" as ValidationStatus,
+        checkResult: ValidationStatus.Error,
       }
     }
     inputLoading[index] = false
@@ -385,12 +389,12 @@ export default function CreatePool(): React.ReactElement {
                           console.error("Unable to locate pool")
                           return
                         }
-                        const tokensLength = pool.tokens.length
+                        const tokensCount = pool.tokens.length
                         const lpTokenAddr = pool.lpToken.address
                         setPoolType(pool.poolName as PoolType)
-                        setSelectedTokensLength(tokensLength)
+                        setSelectedTokensLength(tokensCount)
                         setTokenInputs([
-                          ...(Array(maxAmountOfTokens - tokensLength).fill(
+                          ...(Array(maxAmountOfTokens - tokensCount).fill(
                             "",
                             0,
                           ) as string[]),
@@ -401,9 +405,9 @@ export default function CreatePool(): React.ReactElement {
                     }}
                   >
                     <MenuItem value={PoolType.Base}>Base Pool</MenuItem>
-                    {expandedPoolsRemapped.map((pool) => (
-                      <MenuItem key={pool.address} value={pool.address}>
-                        {`${pool.poolName} Metapool`}
+                    {expandedPoolsRemapped.map(({ address, poolName }) => (
+                      <MenuItem key={address} value={address}>
+                        {`${poolName} Metapool`}
                       </MenuItem>
                     ))}
                   </Select>
