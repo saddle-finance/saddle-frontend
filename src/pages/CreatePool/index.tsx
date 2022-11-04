@@ -1,3 +1,4 @@
+import { BigNumberish, ethers } from "ethers"
 import {
   Box,
   Button,
@@ -19,10 +20,8 @@ import {
   useTheme,
 } from "@mui/material"
 import React, { useContext, useEffect, useState } from "react"
-import { getContract, isAddress } from "../../utils"
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
-import { BigNumberish } from "ethers"
 import CircularProgress from "@mui/material/CircularProgress"
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever"
 import ERC20_ABI from "../../constants/abis/erc20.json"
@@ -31,6 +30,7 @@ import { ExpandedPoolsContext } from "../../providers/ExpandedPoolsProvider"
 import { PoolTypes } from "../../constants"
 import ReviewCreatePool from "./CreatePoolDialog"
 import { Link as RouteLink } from "react-router-dom"
+import { getContract } from "../../utils"
 import { useActiveWeb3React } from "../../hooks"
 import { useTranslation } from "react-i18next"
 
@@ -72,7 +72,7 @@ export default function CreatePool(): React.ReactElement {
       isPaused: pool.isPaused,
       isMigrated: pool.isMigrated,
     }))
-  const { account, library } = useActiveWeb3React()
+  const { library } = useActiveWeb3React()
 
   const [disableCreatePool, setDisableCreatePool] = useState<boolean>(true)
   const [metapoolBasepoolAddr, setMetapoolBasepoolAddr] = useState<string>(
@@ -130,7 +130,7 @@ export default function CreatePool(): React.ReactElement {
         name: "",
         symbol: "",
         decimals: 0,
-        checkResult: "primary",
+        checkResult: ValidationStatus.Primary,
       },
     ])
     setTokenInputs([""])
@@ -144,7 +144,7 @@ export default function CreatePool(): React.ReactElement {
     decimals: BigNumberish
     checkResult: ValidationStatus
   }> => {
-    if (!library || !account || !addr)
+    if (!library || !addr)
       return {
         name: "",
         symbol: "",
@@ -152,17 +152,21 @@ export default function CreatePool(): React.ReactElement {
         checkResult: ValidationStatus.Primary,
       }
 
-    const tokenContractResult = getContract(
-      addr,
-      ERC20_ABI,
-      library,
-      account,
-    ) as Erc20
+    const tokenContractResult = getContract(addr, ERC20_ABI, library) as Erc20
+    const namePromise = tokenContractResult.name()
+    const symbolPromise = tokenContractResult.symbol()
+    const decimalsPromise = tokenContractResult.decimals()
+
+    const [name, symbol, decimals] = await Promise.all([
+      namePromise,
+      symbolPromise,
+      decimalsPromise,
+    ])
 
     return {
-      name: (await tokenContractResult?.name()) ?? "",
-      symbol: (await tokenContractResult?.symbol()) ?? "",
-      decimals: (await tokenContractResult?.decimals()) ?? 0,
+      name,
+      symbol,
+      decimals,
       checkResult: ValidationStatus.Success,
     }
   }
@@ -227,7 +231,7 @@ export default function CreatePool(): React.ReactElement {
       }
       setTokenInfo([...tokenInfo])
     }
-    if (!isAddress(value)) {
+    if (!ethers.utils.isAddress(value)) {
       tokenInfo[index] = {
         name: "",
         symbol: "",
