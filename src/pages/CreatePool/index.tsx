@@ -186,7 +186,7 @@ export default function CreatePool(): React.ReactElement {
   const isFeeValid =
     isValidNumber(fee) && parseFloat(fee) < maxFee && parseFloat(fee) > minFee
   const areTokensValid =
-    tokenInfo.find((token) => token?.checkResult === ValidationStatus.Error) !==
+    tokenInfo.find((token) => token.checkResult === ValidationStatus.Error) ===
     undefined
 
   useEffect(() => {
