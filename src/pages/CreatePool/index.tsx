@@ -31,7 +31,9 @@ import { ExpandedPoolsContext } from "../../providers/ExpandedPoolsProvider"
 import ReviewCreatePool from "./CreatePoolDialog"
 import { Link as RouteLink } from "react-router-dom"
 import { getContract } from "../../utils"
+import { isAddress } from "ethers/lib/utils"
 import { useActiveWeb3React } from "../../hooks"
+import { useQueries } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 
 export enum PoolType {
@@ -77,13 +79,20 @@ export default function CreatePool(): React.ReactElement {
   const [metapoolBasepoolLpAddr, setMetapoolBasepoolLpAddr] =
     useState<string>("")
   const [openCreatePoolDlg, setOpenCreatePoolDlg] = useState<boolean>(false)
-  const [inputLoading, setInputLoading] = useState<boolean[]>([false])
+  const [inputLoading] = useState<boolean[]>([false])
   const [poolName, setPoolName] = useState<string>("")
   const [poolSymbol, setPoolSymbol] = useState<string>("")
   const [aParameter, setAParameter] = useState<string>("")
   const [poolType, setPoolType] = useState<PoolType>(PoolType.Empty)
   const [assetType, setAssetType] = useState<PoolTypes>(PoolTypes.ETH)
   const [tokenInputs, setTokenInputs] = useState<string[]>([""])
+  const results = useQueries({
+    queries: tokenInputs.map((address) => ({
+      queryKey: [address],
+      queryFn: async () => await getUserTokenInputContract(address),
+      enabled: isAddress(address),
+    })),
+  })
   const [selectedTokensLength, setSelectedTokensLength] = useState(0)
   const [tokenInfo, setTokenInfo] = useState<
     {
@@ -132,21 +141,9 @@ export default function CreatePool(): React.ReactElement {
     setTokenInputs([""])
   }
 
-  const getUserTokenInputContract = async (
-    addr: string,
-  ): Promise<{
-    name: string
-    symbol: string
-    decimals: BigNumberish
-    checkResult: ValidationStatus
-  }> => {
+  const getUserTokenInputContract = (addr: string) => {
     if (!library || !account || !addr)
-      return {
-        name: "",
-        symbol: "",
-        decimals: 0,
-        checkResult: "primary" as ValidationStatus,
-      }
+      throw new Error("error on token contract")
 
     const tokenContractResult = getContract(
       addr,
@@ -155,12 +152,11 @@ export default function CreatePool(): React.ReactElement {
       account,
     ) as Erc20
 
-    return {
-      name: (await tokenContractResult?.name()) ?? "",
-      symbol: (await tokenContractResult?.symbol()) ?? "",
-      decimals: (await tokenContractResult?.decimals()) ?? 0,
-      checkResult: "success",
-    }
+    return Promise.all([
+      tokenContractResult.name(),
+      tokenContractResult.symbol(),
+      tokenContractResult.decimals(),
+    ])
   }
 
   const poolNameError = poolName.length > 32
@@ -209,38 +205,22 @@ export default function CreatePool(): React.ReactElement {
     tokenInputErrorMsg,
   ])
 
-  const onTokenInputBlur = async (
-    eventTarget: EventTarget & (HTMLInputElement | HTMLTextAreaElement),
+  const handleTokenInputchange = async (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     index: number,
-  ): Promise<void> => {
-    const value = eventTarget.value
-    if (!value) {
-      tokenInfo[index] = {
-        name: "",
-        symbol: "",
-        decimals: 0,
-        checkResult: "primary" as ValidationStatus,
-      }
-      setTokenInfo([...tokenInfo])
+  ) => {
+    tokenInputs[index] = event.target.value
+    console.log("token inputs ==>", tokenInputs)
+    setTokenInputs(tokenInputs)
+    if (isAddress(event.target.value)) await results[index].refetch()
+    if (
+      new Set(tokenInputs).size !== tokenInputs.length &&
+      event.target.value
+    ) {
+      setTokenInputErrorMsg("Duplicate Tokens Not Allowed")
+    } else {
+      setTokenInputErrorMsg("")
     }
-    inputLoading[index] = true
-    setInputLoading([...inputLoading])
-    let tokenData
-    try {
-      tokenData = await getUserTokenInputContract(tokenInputs[index])
-    } catch (err) {
-      console.error(err)
-      tokenData = {
-        name: "",
-        symbol: "",
-        decimals: 0,
-        checkResult: "error" as ValidationStatus,
-      }
-    }
-    inputLoading[index] = false
-    setInputLoading([...inputLoading])
-    tokenInfo[index] = tokenData
-    setTokenInfo([...tokenInfo])
   }
 
   return (
@@ -450,74 +430,62 @@ export default function CreatePool(): React.ReactElement {
                     justifyContent="space-between"
                     flexWrap="wrap"
                   >
-                    {tokenInputs.map((tokenInput, index) => (
-                      <Box
-                        key={`token-input-${index}`}
-                        flexBasis={`calc(50% - ${theme.spacing(1.5)})`}
-                      >
-                        <TextField
-                          autoComplete="off"
-                          value={tokenInputs[index]}
-                          label={`Token ${index}`}
-                          fullWidth
-                          color={tokenInfo[index]?.checkResult ?? "primary"}
-                          margin="normal"
-                          onChange={(e) => {
-                            tokenInputs[index] = e.target.value
-                            setTokenInputs([...tokenInputs])
-                            if (
-                              new Set(tokenInputs).size !==
-                                tokenInputs.length &&
-                              e.target.value
-                            ) {
-                              setTokenInputErrorMsg(
-                                "Duplicate Tokens Not Allowed",
-                              )
-                            } else {
-                              setTokenInputErrorMsg("")
+                    {tokenInputs.map((tokenInput, index) => {
+                      const tokenData = results[index].data
+                      const tokenName = tokenData?.[0]
+                      const tokenSymbol = tokenData?.[1] || ""
+                      const tokenDecimal = tokenData?.[2] ?? ""
+                      const helperText = tokenName
+                        ? `${tokenName} (${tokenSymbol}: ${tokenDecimal} decimals)`
+                        : ""
+                      return (
+                        <Box
+                          key={`token-input-${index}`}
+                          flexBasis={`calc(50% - ${theme.spacing(1.5)})`}
+                        >
+                          <TextField
+                            autoComplete="off"
+                            value={tokenInputs[index]}
+                            label={`Token ${index}`}
+                            fullWidth
+                            color={tokenInfo[index]?.checkResult ?? "primary"}
+                            margin="normal"
+                            onChange={(e) =>
+                              void handleTokenInputchange(e, index)
                             }
-                          }}
-                          onBlur={(e) => void onTokenInputBlur(e.target, index)}
-                          helperText={
-                            tokenInfo[index]?.name
-                              ? `${tokenInfo[index]?.name} (${
-                                  tokenInfo[index]?.symbol
-                                }: ${String(
-                                  tokenInfo[index]?.decimals,
-                                )} decimals)`
-                              : " "
-                          }
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                {(poolType === PoolType.Base && index > 1) ||
-                                (poolType !== PoolType.Base && index > 0) ? (
-                                  <IconButton
-                                    onClick={() =>
-                                      setTokenInputs((prev) =>
-                                        prev.filter(
-                                          (value, tokenIndex) =>
-                                            index !== tokenIndex,
-                                        ),
-                                      )
-                                    }
-                                  >
-                                    {inputLoading[index] ? (
-                                      <CircularProgress size={20} />
-                                    ) : (
-                                      <DeleteForeverIcon />
-                                    )}
-                                  </IconButton>
-                                ) : null}
-                                {index <= 1 && inputLoading[index] && (
-                                  <CircularProgress size={20} />
-                                )}
-                              </InputAdornment>
-                            ),
-                          }}
-                        />
-                      </Box>
-                    ))}
+                            helperText={helperText}
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  {(poolType === PoolType.Base && index > 1) ||
+                                  (poolType !== PoolType.Base && index > 0) ? (
+                                    <IconButton
+                                      onClick={() =>
+                                        setTokenInputs((prev) =>
+                                          prev.filter(
+                                            (value, tokenIndex) =>
+                                              index !== tokenIndex,
+                                          ),
+                                        )
+                                      }
+                                    >
+                                      {results[index].isLoading ? (
+                                        <CircularProgress size={20} />
+                                      ) : (
+                                        <DeleteForeverIcon />
+                                      )}
+                                    </IconButton>
+                                  ) : null}
+                                  {index <= 1 && inputLoading[index] && (
+                                    <CircularProgress size={20} />
+                                  )}
+                                </InputAdornment>
+                              ),
+                            }}
+                          />
+                        </Box>
+                      )
+                    })}
                     {poolType !== PoolType.Base && (
                       <Box flexBasis={`calc(50% - ${theme.spacing(1.5)})`}>
                         <TextField
