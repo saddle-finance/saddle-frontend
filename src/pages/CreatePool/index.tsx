@@ -160,7 +160,7 @@ export default function CreatePool(): React.ReactElement {
       tokenContract.decimals(),
     ])
 
-    if (!name || !symbol || !(typeof decimals === "number"))
+    if (!name || !symbol || typeof decimals !== "number")
       throw new Error("Unable to retrieve token attributes")
 
     return {
