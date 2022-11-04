@@ -112,7 +112,7 @@ export default function CreatePool(): React.ReactElement {
   }
 
   const isValidNumber = (text: string) => {
-    const digitRegex = /^\d*(\.\d+)?$/
+    const digitRegex = /^\d+(?:[.,]\d+)?$/
 
     return digitRegex.test(text)
   }
@@ -175,9 +175,7 @@ export default function CreatePool(): React.ReactElement {
   const isPoolSymbolValid =
     32 > poolSymbol.length && poolSymbol.length > 0 && !poolSymbol.includes(" ")
   const isaParameterValid =
-    aParameter.length > 0 &&
-    isValidNumber(aParameter) &&
-    parseFloat(aParameter) < 1
+    isValidNumber(aParameter) && parseFloat(aParameter) < 1
 
   const minFee = Number("0.01")
   const maxFee = Number("1")
