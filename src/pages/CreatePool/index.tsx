@@ -171,50 +171,45 @@ export default function CreatePool(): React.ReactElement {
     }
   }
 
-  const poolNameError = poolName.length > 32
-  const poolSymbolError = poolSymbol.length > 32 || poolSymbol.includes(" ")
-  const aParameterError =
-    !isValidNumber(aParameter) || parseFloat(aParameter) < 1
+  const isPoolNameValid = 32 > poolName.length && poolName.length > 0
+  const isPoolSymbolValid =
+    32 > poolSymbol.length && poolSymbol.length > 0 && !poolSymbol.includes(" ")
+  const isaParameterValid =
+    aParameter.length > 0 &&
+    isValidNumber(aParameter) &&
+    parseFloat(aParameter) < 1
 
-  const minFee = "0.01"
-  const maxFee = "1"
+  const minFee = Number("0.01")
+  const maxFee = Number("1")
   const maxAmountOfTokens = 4
 
-  const feeError =
-    !isValidNumber(fee) ||
-    parseFloat(fee) > Number(maxFee) ||
-    parseFloat(fee) < Number(minFee)
+  const isFeeValid =
+    isValidNumber(fee) && parseFloat(fee) < maxFee && parseFloat(fee) > minFee
+  const areTokensValid =
+    tokenInfo.find((token) => token?.checkResult === ValidationStatus.Error) !==
+    undefined
 
   useEffect(() => {
-    const tokenInfoErrors = tokenInfo.map((token) =>
-      token?.checkResult === "success" ? "success" : "error",
-    )
-    const hasFieldError =
-      poolNameError ||
-      poolSymbolError ||
-      aParameterError ||
-      feeError ||
-      tokenInfoErrors.includes("error")
-    const hasAllValues =
-      poolName.length > 0 &&
-      poolSymbol.length > 0 &&
-      fee.length > 0 &&
-      aParameter.length > 0
+    const areAllFieldsValid =
+      isPoolNameValid &&
+      isPoolSymbolValid &&
+      isaParameterValid &&
+      isFeeValid &&
+      areTokensValid
 
-    setDisableCreatePool(
-      hasFieldError || !hasAllValues || Boolean(tokenInputErrorMsg),
-    )
+    setDisableCreatePool(!areAllFieldsValid || Boolean(tokenInputErrorMsg))
   }, [
     fee.length,
-    feeError,
     aParameter.length,
-    aParameterError,
     poolName.length,
-    poolNameError,
     poolSymbol.length,
-    poolSymbolError,
     tokenInfo,
     tokenInputErrorMsg,
+    isPoolNameValid,
+    isPoolSymbolValid,
+    isaParameterValid,
+    isFeeValid,
+    areTokensValid,
   ])
 
   const onTokenInputBlur = async (
@@ -298,8 +293,8 @@ export default function CreatePool(): React.ReactElement {
                     label={t("poolName")}
                     value={poolName}
                     onChange={(e) => setPoolName(e.target.value)}
-                    error={poolNameError}
-                    helperText={poolNameError && t("poolNameError")}
+                    error={!isPoolNameValid}
+                    helperText={!isPoolNameValid && t("poolNameError")}
                     fullWidth
                     sx={{ mr: [0, 1.5], flex: 1 }}
                     spellCheck={false}
@@ -311,8 +306,8 @@ export default function CreatePool(): React.ReactElement {
                     size="medium"
                     label={t("poolSymbol")}
                     fullWidth
-                    error={poolSymbolError}
-                    helperText={poolSymbolError && t("poolSymbolError")}
+                    error={!isPoolSymbolValid}
+                    helperText={!isPoolSymbolValid && t("poolSymbolError")}
                     onChange={(e) => setPoolSymbol(e.target.value)}
                     value={poolSymbol}
                     sx={{ ml: [0, 1.5], flex: 1 }}
@@ -336,9 +331,11 @@ export default function CreatePool(): React.ReactElement {
                     fullWidth
                     value={fee}
                     type="text"
-                    error={feeError}
+                    error={!isFeeValid}
                     onChange={(e) => setFee(e.target.value)}
-                    helperText={feeError && t("feeError", { minFee, maxFee })}
+                    helperText={
+                      !isFeeValid && t("feeError", { minFee, maxFee })
+                    }
                     spellCheck={false}
                     autoComplete="off"
                   />
@@ -355,8 +352,8 @@ export default function CreatePool(): React.ReactElement {
                     label={t("aParameter")}
                     onChange={(e) => setAParameter(e.target.value)}
                     value={aParameter}
-                    error={aParameterError}
-                    helperText={aParameterError && t("aParameterError")}
+                    error={!isaParameterValid}
+                    helperText={!isaParameterValid && t("aParameterError")}
                     fullWidth
                     spellCheck={false}
                     autoComplete="off"
