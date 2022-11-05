@@ -23,6 +23,17 @@ const VeSDL = lazy(() =>
 const VestingClaim = lazy(() => import("./VestingClaim"))
 const Withdraw = lazy(() => import("./Withdraw"))
 
+const permissionlessPoolsFF = true
+export const communityPoolsEnabled = (chainId: ChainId | undefined) => {
+  if (!chainId) return false
+
+  return (
+    permissionlessPoolsFF &&
+    chainId &&
+    [ChainId.MAINNET, ChainId.HARDHAT, ChainId.ARBITRUM].includes(chainId)
+  )
+}
+
 export default function Pages() {
   const { chainId } = useActiveWeb3React()
 
@@ -34,7 +45,7 @@ export default function Pages() {
       <Route exact path={`/pools/:poolName/withdraw`} component={Withdraw} />
       <Redirect from="/pools/:route/:action" to="/pools" />
       <Route exact path="/pools/create">
-        {chainId && [ChainId.MAINNET, ChainId.HARDHAT].includes(chainId) ? (
+        {communityPoolsEnabled(chainId) ? (
           <CreatePool />
         ) : (
           <Redirect to="/pools" />
