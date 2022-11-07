@@ -112,7 +112,7 @@ export default function CreatePool(): React.ReactElement {
   }
 
   const isValidNumber = (text: string) => {
-    const digitRegex = /^\d+(?:[.,]\d+)?$/
+    const digitRegex = /^\d*(\.\d+)?$/
 
     return digitRegex.test(text)
   }
