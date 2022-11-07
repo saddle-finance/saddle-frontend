@@ -339,6 +339,7 @@
   "withdrawPercentage": "Withdraw percentage",
   "withdrawSynth": "Withdraw as",
   "withdrewNToken": "Withdrew {{amount}} {{name}}",
+  "withdrawWrapped": "Withdraw wrapped",
   "wrongNetworkContent": "Oops, looks like you're trying to use Saddle while your wallet is connected to an unsupported network.\n\nPlease switch to Ethereum mainnet or another supported network.",
   "yes": "Yes",
   "yourRecentTransactions": "Your recent transactions will be here.",

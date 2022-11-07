@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Checkbox,
   Container,
   FormControlLabel,
   Paper,
@@ -75,6 +76,8 @@ interface Props {
   formStateData: WithdrawFormState
   onFormChange: (action: WithdrawFormAction) => void
   onConfirmTransaction: () => Promise<void>
+  shouldWithdrawWrapped: boolean
+  onToggleWithdrawWrapped?: () => void
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
@@ -88,17 +91,22 @@ const WithdrawPage = (props: Props): ReactElement | null => {
     formStateData,
     reviewData,
     onConfirmTransaction,
+    shouldWithdrawWrapped,
+    onToggleWithdrawWrapped,
   } = props
 
   const { gasPriceSelected } = useSelector((state: AppState) => state.user)
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const theme = useTheme()
   const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
+  const shouldDisplayWrappedOption = poolData?.isMetaSwap
 
   const onSubmit = (): void => {
     setCurrentModal("review")
   }
-  const handleWithdrawChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleWithdrawTypeChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     onFormChange({
       fieldName: "withdrawType",
       value: event.target.value,
@@ -126,7 +134,7 @@ const WithdrawPage = (props: Props): ReactElement | null => {
                   )} (%):`}</Typography>
                 </Box>
                 <TextField
-                  placeholder="0"
+                  placeholder="0.0"
                   size="small"
                   data-testid="withdrawPercentageInput"
                   onChange={(e): void => {
@@ -149,7 +157,7 @@ const WithdrawPage = (props: Props): ReactElement | null => {
               <RadioGroup
                 row
                 value={formStateData.withdrawType}
-                onChange={handleWithdrawChange}
+                onChange={handleWithdrawTypeChange}
                 sx={{ mb: 2 }}
               >
                 <FormControlLabel
@@ -207,6 +215,21 @@ const WithdrawPage = (props: Props): ReactElement | null => {
                   ),
                 )}
               </Stack>
+              <Box
+                sx={{
+                  display: shouldDisplayWrappedOption ? "block" : "none",
+                  mt: 2,
+                }}
+              >
+                <Checkbox
+                  onChange={onToggleWithdrawWrapped}
+                  checked={shouldWithdrawWrapped}
+                  data-testid="withdraw-wrapped-checkbox"
+                />
+                <Typography component="span" variant="body1">
+                  {t("withdrawWrapped")}
+                </Typography>
+              </Box>
               <Box mt={3}>
                 {reviewData.priceImpact.gte(0) ? (
                   <Typography component="span" color="primary" marginRight={1}>
