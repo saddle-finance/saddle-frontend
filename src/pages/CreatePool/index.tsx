@@ -474,19 +474,18 @@ export default function CreatePool(): React.ReactElement {
                           color={tokenInfo[index]?.checkResult ?? "primary"}
                           margin="normal"
                           onChange={(e) => {
+                            const lowerCasedTokenAddrs = tokenInputs.map(
+                              (input) => input.toLowerCase(),
+                            )
+                            lowerCasedTokenAddrs.includes(
+                              e.target.value.toLowerCase(),
+                            )
+                              ? setTokenInputErrorMsg(
+                                  "Duplicate Tokens Not Allowed",
+                                )
+                              : setTokenInputErrorMsg("")
                             tokenInputs[index] = e.target.value
                             setTokenInputs([...tokenInputs])
-                            if (
-                              new Set(tokenInputs).size !==
-                                tokenInputs.length &&
-                              e.target.value
-                            ) {
-                              setTokenInputErrorMsg(
-                                "Duplicate Tokens Not Allowed",
-                              )
-                            } else {
-                              setTokenInputErrorMsg("")
-                            }
                           }}
                           onBlur={(e) => void onTokenInputBlur(e.target, index)}
                           helperText={
