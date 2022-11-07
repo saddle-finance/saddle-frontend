@@ -20,6 +20,7 @@ import {
   useTheme,
 } from "@mui/material"
 import React, { useContext, useEffect, useState } from "react"
+import { createMultiCallContract, getMulticallProvider } from "../../utils"
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 import CircularProgress from "@mui/material/CircularProgress"
@@ -30,7 +31,6 @@ import { ExpandedPoolsContext } from "../../providers/ExpandedPoolsProvider"
 import { PoolTypes } from "../../constants"
 import ReviewCreatePool from "./CreatePoolDialog"
 import { Link as RouteLink } from "react-router-dom"
-import { getContract } from "../../utils"
 import { useActiveWeb3React } from "../../hooks"
 import { useTranslation } from "react-i18next"
 
@@ -72,7 +72,7 @@ export default function CreatePool(): React.ReactElement {
       isPaused: pool.isPaused,
       isMigrated: pool.isMigrated,
     }))
-  const { library } = useActiveWeb3React()
+  const { library, chainId } = useActiveWeb3React()
 
   const [disableCreatePool, setDisableCreatePool] = useState<boolean>(true)
   const [metapoolBasepoolAddr, setMetapoolBasepoolAddr] = useState<string>(
@@ -112,7 +112,7 @@ export default function CreatePool(): React.ReactElement {
   }
 
   const isValidNumber = (text: string) => {
-    const digitRegex = /^\d*(\.\d+)?$/
+    const digitRegex = /^\d+(?:[.,]\d+)?$/
 
     return digitRegex.test(text)
   }
@@ -144,7 +144,7 @@ export default function CreatePool(): React.ReactElement {
     decimals: BigNumberish
     checkResult: ValidationStatus
   }> => {
-    if (!library || !addr)
+    if (!library || !addr || !chainId)
       return {
         name: "",
         symbol: "",
@@ -152,16 +152,15 @@ export default function CreatePool(): React.ReactElement {
         checkResult: ValidationStatus.Primary,
       }
 
-    const tokenContractResult = getContract(addr, ERC20_ABI, library) as Erc20
-    const namePromise = tokenContractResult.name()
-    const symbolPromise = tokenContractResult.symbol()
-    const decimalsPromise = tokenContractResult.decimals()
-
-    const [name, symbol, decimals] = await Promise.all([
-      namePromise,
-      symbolPromise,
-      decimalsPromise,
+    const ethCallProvider = await getMulticallProvider(library, chainId)
+    const tokenContract = createMultiCallContract<Erc20>(addr, ERC20_ABI)
+    const [name, symbol, decimals] = await ethCallProvider.tryAll([
+      tokenContract.name(),
+      tokenContract.symbol(),
+      tokenContract.decimals(),
     ])
+    if (!name || !symbol || typeof decimals !== "number")
+      throw new Error("Unable to retrieve token attributes")
 
     return {
       name,
