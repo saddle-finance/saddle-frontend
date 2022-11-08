@@ -1,85 +1,43 @@
-import {
-  Box,
-  Button,
-  Link,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from "@mui/material"
-import {
-  SNAPSHOT_STATE,
-  VoteEscrowSnapshots,
-} from "../../state/voteEscrowSnapshots"
+import { Box, Paper, Skeleton, Typography } from "@mui/material"
+import React, { useContext } from "react"
 
-import { AppState } from "../../state"
+import { BigNumber } from "ethers"
+import { GaugeContext } from "../../providers/GaugeProvider"
 import GaugeWeight from "../../components/GaugeWeight"
-import React from "react"
-import { generateSnapshotVoteLink } from "../../utils"
-import { useSelector } from "react-redux"
+import { IS_ON_CHAIN_VOTE_LIVE } from "../../constants"
+import OnChainVote from "./OnChainVote"
+import { useGaugeControllerContract } from "../../hooks/useContract"
 import { useTranslation } from "react-i18next"
 
-export default function GaugeVote(): JSX.Element {
-  const { snapshots }: VoteEscrowSnapshots = useSelector(
-    (state: AppState) => state.voteEscrowSnapshots,
-  )
-
+interface GaugeVoteProps {
+  veSdlBalance: BigNumber
+}
+export default function GaugeVote({
+  veSdlBalance,
+}: GaugeVoteProps): JSX.Element {
   const { t } = useTranslation()
+  const { gauges } = useContext(GaugeContext)
+  const isGaugesLoading = Object.keys(gauges).length === 0
+  const gaugeControllerContract = useGaugeControllerContract()
   return (
-    <Paper sx={{ p: 2 }}>
+    <Paper sx={{ pt: 2 }}>
       <Typography variant="h2" textAlign="center">
         {t("gaugeVote")}
       </Typography>
       <Box height="428px">
         <GaugeWeight />
       </Box>
-      <TableContainer>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell variant="head">{t("votePeriod")}</TableCell>
-              <TableCell variant="head" align="center">
-                {t("snapshotLink")}
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {snapshots.map((snapshot, index) => {
-              const voteOrView =
-                snapshot.state === SNAPSHOT_STATE.CLOSED
-                  ? t("results")
-                  : t("vote")
-              return (
-                <TableRow key={`snapshot-${index}`}>
-                  <TableCell>
-                    {new Date(snapshot.start * 1000).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell align="center">
-                    <Button
-                      variant="contained"
-                      size="medium"
-                      href={generateSnapshotVoteLink(snapshot.id)}
-                      target="_blank"
-                      sx={{ minWidth: 100 }}
-                    >
-                      <Typography>{voteOrView}</Typography>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Typography textAlign="end" mt={1}>
-        <Link color="inherit" href={generateSnapshotVoteLink()} target="_blank">
-          {t("viewAllVote")}
-        </Link>
-      </Typography>
+      {!isGaugesLoading &&
+      gaugeControllerContract?.signer &&
+      IS_ON_CHAIN_VOTE_LIVE ? (
+        <OnChainVote
+          veSdlBalance={veSdlBalance}
+          gauges={gauges}
+          gaugeControllerContract={gaugeControllerContract}
+        />
+      ) : (
+        <Skeleton height={100} sx={{ mx: 3, flex: 1 }} />
+      )}
     </Paper>
   )
 }
