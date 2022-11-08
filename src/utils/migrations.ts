@@ -58,10 +58,10 @@ export const useMigrationData = (pools: { poolAddress: string }[]) => {
     GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES[chain?.id as ChainId]
   const poolsAddresses = pools?.map(({ poolAddress }) => poolAddress) ?? []
   const migrationMapCalls = poolsAddresses.map((address) => ({
-    addressOrName: migratorAddress,
-    contractInterface: GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI,
+    address: migratorAddress,
+    abi: GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI,
     functionName: "migrationMap",
-    args: address,
+    args: [address],
   }))
   const { data: migrationMapData } = useContractReads({
     contracts: migrationMapCalls,

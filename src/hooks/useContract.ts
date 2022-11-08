@@ -93,15 +93,15 @@ function useContractOld(
   }, [address, ABI, library, withSignerIfPossible, account])
 }
 
-export function useMasterRegistry2(): MasterRegistry {
+export function useMasterRegistry2() {
   const { chain } = useNetwork()
   const provider = useProvider()
   const contractAddress =
     MASTER_REGISTRY_CONTRACT_ADDRESSES[(chain?.id as ChainId) ?? 1]
 
   return useContract({
-    addressOrName: contractAddress,
-    contractInterface: MASTER_REGISTRY_ABI,
+    address: contractAddress,
+    abi: MASTER_REGISTRY_ABI,
     signerOrProvider: provider,
   })
 }
@@ -124,14 +124,14 @@ export const POOL_REGISTRY_NAME = formatBytes32String("PoolRegistry")
 export const usePoolRegistryAddr = (): string => {
   const masterRegistryContract = useMasterRegistry2()
   const { data: contractAddress } = useContractRead({
-    addressOrName: masterRegistryContract.address,
-    contractInterface: MASTER_REGISTRY_ABI,
+    address: masterRegistryContract?.address ?? AddressZero,
+    abi: MASTER_REGISTRY_ABI,
     functionName: "resolveNameToLatestAddress",
-    args: POOL_REGISTRY_NAME,
+    args: [POOL_REGISTRY_NAME],
     enabled: !!masterRegistryContract,
   })
 
-  return contractAddress as unknown as string
+  return contractAddress as string
 }
 
 export function usePoolRegistry(): PoolRegistry | null {

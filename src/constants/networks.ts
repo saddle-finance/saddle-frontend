@@ -232,7 +232,7 @@ export const rainbowChains = [
 ]
 
 export const { chains, provider } = configureChains(rainbowChains, [
-  alchemyProvider({ apiKey: process.env.ALCHEMY_API_KEY }),
+  alchemyProvider({ apiKey: "qNhZ_-GaDehhI-HSlG_dff9nxS6nuXGg" }),
   publicProvider(),
 ])
 

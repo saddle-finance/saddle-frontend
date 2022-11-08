@@ -72,9 +72,13 @@ export const usePools = () => {
   const poolAddr: string = usePoolRegistryAddr()
   const poolLen = usePoolsCount(poolAddr)
   const registryPools = useRegistryPoolResult(poolLen, poolAddr)
+  console.log({ registryPools })
   const validPools = useRegistryPools(registryPools, poolAddr)
+  console.log({ validPools })
   const migrationData = useMigrationData(registryPools)
+  console.log({ migrationData })
   const pools = normalizePools(validPools, migrationData)
+  console.log({ pools })
 
   return pools
 }
@@ -82,10 +86,10 @@ export const usePools = () => {
 export const useRegistryPoolResult = (poolCount: number, addr: string) => {
   const poolDataAtIndex = enumerate(poolCount).map((index) => {
     return {
-      addressOrName: addr,
-      contractInterface: POOL_REGISTRY_ABI,
+      address: addr,
+      abi: POOL_REGISTRY_ABI,
       functionName: "getPoolDataAtIndex",
-      args: String(index),
+      args: [String(index)],
     }
   })
   const { data: registryPools } = useContractReads({
@@ -128,8 +132,8 @@ export const useRegistryPools = (
   const { chain } = useNetwork()
   const validPools = pools?.filter(Boolean) ?? []
   const poolRegistryReadProperties = (poolAddress: string) => ({
-    addressOrName: addr,
-    contractInterface: POOL_REGISTRY_ABI,
+    address: addr,
+    abi: POOL_REGISTRY_ABI,
     args: [poolAddress],
   })
   const aParametersCalls = validPools.map(({ poolAddress }) => ({
@@ -157,8 +161,8 @@ export const useRegistryPools = (
     functionName: "getVirtualPrice",
   }))
   const lpTokenAddrs = validPools.map(({ lpToken }) => ({
-    addressOrName: lpToken.toLowerCase(),
-    contractInterface: ERC20_ABI,
+    address: lpToken.toLowerCase(),
+    abi: ERC20_ABI,
     functionName: "totalSupply",
   }))
   const { data: aParameters } = useContractReads({
@@ -205,17 +209,15 @@ export const useRegistryPools = (
     const isSynthetic = mapToLowerCase(
       isMetaSwap ? poolData.underlyingTokens : poolData.tokens,
     ).some((addr) => isSynthAsset(chain.id, addr))
-    const isPaused = arePoolsPaused[index] as unknown as boolean
-    const virtualPrice = virtualPricesData[index] as unknown as BigNumber
-    const swapStorage = swapStorages[index] as unknown as SwapInfo
-    const aParameter = aParameters[index] as unknown as BigNumber
-    const tokenBalances = tokensBalances[index] as unknown as BigNumber[]
+    const isPaused = arePoolsPaused[index] as boolean
+    const virtualPrice = virtualPricesData[index] as BigNumber
+    const swapStorage = swapStorages[index] as SwapInfo
+    const aParameter = aParameters[index] as BigNumber
+    const tokenBalances = tokensBalances[index] as BigNumber[]
     const underlyingTokenBalances = (underlyingTokensBalances[index] ||
-      Array(poolData.underlyingTokens?.length).fill(
-        Zero,
-      )) as unknown as BigNumber[]
+      Array(poolData.underlyingTokens?.length).fill(Zero)) as BigNumber[]
     const lpTokenSupply =
-      (lpTokensSupplies?.[index] as unknown as BigNumber | undefined) ?? Zero
+      (lpTokensSupplies?.[index] as BigNumber | undefined) ?? Zero
 
     const sharedSwapData = {
       adminFee: swapStorage.adminFee,
@@ -253,11 +255,11 @@ export const useRegistryPools = (
 
 export const usePoolsCount = (addr: string) => {
   const { data: poolLength } = useContractRead({
-    addressOrName: addr,
-    contractInterface: POOL_REGISTRY_ABI,
+    address: addr,
+    abi: POOL_REGISTRY_ABI,
     functionName: "getPoolsLength",
   })
-  const pc = poolLength as unknown as BigNumber | undefined
+  const pc = poolLength as BigNumber | undefined
   const poolCount = pc?.toNumber() ?? 0
 
   return poolCount
