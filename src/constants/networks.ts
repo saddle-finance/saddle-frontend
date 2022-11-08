@@ -1,9 +1,4 @@
-import {
-  Chain,
-  Wallet,
-  connectorsForWallets,
-  wallet,
-} from "@rainbow-me/rainbowkit"
+import { Chain, getDefaultWallets } from "@rainbow-me/rainbowkit"
 import {
   chain,
   configureChains,
@@ -11,11 +6,19 @@ import {
 } from "wagmi"
 
 import { ChainId } from "./index"
-import { InjectedConnector } from "wagmi/connectors/injected"
-import { alchemyProvider } from "wagmi/providers/alchemy"
+// import { InjectedConnector } from "wagmi/connectors/injected"
 import { hexlify } from "@ethersproject/bytes"
 import { publicProvider } from "wagmi/providers/public"
-import tallyIcon from "../assets/icons/tally.svg"
+
+// import {
+//   coinbaseWallet,
+//   injectedWallet,
+//   metaMaskWallet,
+//   rainbowWallet,
+//   walletConnectWallet,
+// } from "@rainbow-me/rainbowkit/wallets"
+
+// import tallyIcon from "../assets/icons/tally.svg"
 
 export const NETWORK_LABEL: Partial<Record<ChainId, string>> = {
   [ChainId.MAINNET]: "Ethereum",
@@ -234,61 +237,59 @@ export const rainbowChains = [
 ]
 
 export const { chains, provider } = configureChains(rainbowChains, [
-  alchemyProvider({ apiKey: process.env.ALCHEMY_API_KEY }),
   publicProvider(),
 ])
 
-const tallyConnector = new InjectedConnector({
-  chains: [chain.mainnet],
-  options: {
-    shimDisconnect: true,
-    name: (detectedName) =>
-      `Injected (${
-        typeof detectedName === "string"
-          ? detectedName
-          : detectedName.join(", ")
-      })`,
-  },
-})
+// const tallyConnector = new InjectedConnector({
+//   chains: [chain.mainnet],
+//   options: {
+//     shimDisconnect: true,
+//     name: (detectedName) =>
+//       `Injected (${
+//         typeof detectedName === "string"
+//           ? detectedName
+//           : detectedName.join(", ")
+//       })`,
+//   },
+// })
 
-const tally = (): Wallet => ({
-  id: "tally-wallet",
-  name: "Tally Wallet",
-  iconUrl: tallyIcon,
-  iconBackground: "#0c2f78",
-  downloadUrls: {
-    browserExtension: "https://tally.cash/download",
-  },
-  createConnector: () => {
-    const connector = tallyConnector
-    return {
-      connector: connector,
-    }
-  },
-})
+// const tally = (): Wallet => ({
+//   id: "tally-wallet",
+//   name: "Tally Wallet",
+//   iconUrl: tallyIcon,
+//   iconBackground: "#0c2f78",
+//   downloadUrls: {
+//     browserExtension: "https://tally.cash/download",
+//   },
+//   createConnector: () => {
+//     const connector = tallyConnector
+//     return {
+//       connector: connector,
+//     }
+//   },
+// })
 
-const needsInjectedWalletFallback =
-  typeof window !== "undefined" &&
-  !window.ethereum?.isMetaMask &&
-  !window.ethereum?.isTally
+// const needsInjectedWalletFallback =
+//   typeof window !== "undefined" &&
+//   !window.ethereum?.isMetaMask &&
+//   !window.ethereum?.isTally
 
-const connectors = connectorsForWallets([
-  {
-    groupName: "Recommended",
-    wallets: [
-      wallet.metaMask({ chains }),
-      wallet.rainbow({ chains }),
-      wallet.walletConnect({ chains }),
-      wallet.brave({ chains }),
-      wallet.coinbase({ appName: "Saddle", chains }),
-      wallet.ledger({ chains }),
-      tally(),
-      ...(needsInjectedWalletFallback
-        ? [wallet.injected({ chains: [chain.mainnet] })]
-        : []),
-    ],
-  },
-])
+const { connectors } = getDefaultWallets({ appName: "Saddle", chains })
+// connectorsForWallets([
+//   {
+//     groupName: "Recommended",
+//     wallets: [
+//       metaMaskWallet({ chains }),
+//       rainbowWallet({ chains }),
+//       walletConnectWallet({ chains }),
+//       coinbaseWallet({ appName: "Saddle", chains }),
+//       tally(),
+//       ...(needsInjectedWalletFallback
+//         ? [injectedWallet({ chains: [chain.mainnet] })]
+//         : []),
+//     ],
+//   },
+// ])
 
 export const wagmiClient = createWagmiClient({
   autoConnect: true,
