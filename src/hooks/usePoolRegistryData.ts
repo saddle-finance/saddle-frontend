@@ -85,7 +85,7 @@ export const useRegistryPoolResult = (poolCount: number, addr: string) => {
       address: addr,
       abi: POOL_REGISTRY_ABI,
       functionName: "getPoolDataAtIndex",
-      args: [String(index)],
+      args: [index],
     }
   })
   const { data: registryPools } = useContractReads({
@@ -127,34 +127,32 @@ export const useRegistryPools = (
 ) => {
   const { chain } = useNetwork()
   const validPools = pools?.filter(Boolean) ?? []
-  const poolRegistryReadProperties = (poolAddress: string) => ({
-    address: addr,
+  const poolRegistryReadProperties = (
+    poolAddress: string,
+    functionName: string,
+  ) => ({
+    address: addr.toLowerCase(),
     abi: POOL_REGISTRY_ABI,
-    args: [poolAddress],
+    args: [poolAddress.toLowerCase()],
+    functionName,
   })
   const aParametersCalls = validPools.map(({ poolAddress }) => ({
-    ...poolRegistryReadProperties(poolAddress),
-    functionName: "getA",
+    ...poolRegistryReadProperties(poolAddress, "getA"),
   }))
   const getPausedCalls = validPools.map(({ poolAddress }) => ({
-    ...poolRegistryReadProperties(poolAddress),
-    functionName: "getPaused",
+    ...poolRegistryReadProperties(poolAddress, "getPaused"),
   }))
   const getSwapStorageCalls = validPools.map(({ poolAddress }) => ({
-    ...poolRegistryReadProperties(poolAddress),
-    functionName: "getSwapStorage",
+    ...poolRegistryReadProperties(poolAddress, "getSwapStorage"),
   }))
   const getTokenBalancesCalls = validPools.map(({ poolAddress }) => ({
-    ...poolRegistryReadProperties(poolAddress),
-    functionName: "getTokenBalances",
+    ...poolRegistryReadProperties(poolAddress, "getTokenBalances"),
   }))
   const getUnderlyingTokenBalancesCalls = validPools.map(({ poolAddress }) => ({
-    ...poolRegistryReadProperties(poolAddress),
-    functionName: "getUnderlyingTokenBalances",
+    ...poolRegistryReadProperties(poolAddress, "getUnderlyingTokenBalances"),
   }))
   const getVirtualPriceCalls = validPools.map(({ poolAddress }) => ({
-    ...poolRegistryReadProperties(poolAddress),
-    functionName: "getVirtualPrice",
+    ...poolRegistryReadProperties(poolAddress, "getVirtualPrice"),
   }))
   const lpTokenAddrs = validPools.map(({ lpToken }) => ({
     address: lpToken.toLowerCase(),

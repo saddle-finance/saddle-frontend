@@ -76,8 +76,6 @@ function Pools(): ReactElement | null {
     })
   }, [address])
 
-  if (!ePools) return <>loading pools</>
-
   return (
     <Container sx={{ pb: 5 }}>
       <Stack direction="row" alignItems="center" justifyContent="center">
