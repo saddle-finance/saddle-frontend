@@ -38,7 +38,7 @@ const otherTokens = {
   [SPA.symbol]: SPA.geckoId,
 }
 
-export default function fetchTokenPricesUSD(
+export function oldFetchTokenPricesUSD(
   dispatch: AppDispatch,
   sdlWethSushiPool?: SdlWethSushiPool,
   chainId?: ChainId,
@@ -92,6 +92,75 @@ export default function fetchTokenPricesUSD(
   )
 }
 
+export default function fetchTokenPricesUSD(
+  dispatch: AppDispatch,
+  sdlWethSushiPool?: SdlWethSushiPool,
+  chainId?: ChainId,
+): void {
+  if (!chainId) return
+  const tokens = Object.values(TOKENS_MAP).filter(({ addresses }) =>
+    chainId ? addresses[chainId] : false,
+  )
+  const tokenIds = Array.from(
+    new Set(
+      tokens.map(({ geckoId }) => geckoId).concat(Object.values(otherTokens)),
+    ),
+  )
+  void retry(
+    () =>
+      fetch(`${coinGeckoAPI}?ids=${encodeURIComponent(
+        tokenIds.join(","),
+      )}&vs_currencies=usd
+    `)
+        .then((res) => res.json())
+        .then((body: CoinGeckoReponse) => {
+          const otherTokensResult = Object.keys(otherTokens).reduce(
+            (acc, key) => {
+              const price = body?.[otherTokens[key]]?.usd
+              return price
+                ? {
+                    ...acc,
+                    [key]: price,
+                  }
+                : acc
+            },
+            {} as { [address: string]: number },
+          )
+          const result = tokens.reduce((acc, token) => {
+            return {
+              ...acc,
+              [token.addresses[chainId].toLowerCase()]:
+                body?.[token.geckoId]?.usd,
+            }
+          }, otherTokensResult)
+          // result.alETH = result?.ETH || result?.alETH || 0 // TODO: remove once CG price is fixed
+          result.nUSD = 1
+          // result.VETH2 = result?.ETH || 0
+          const sdlPerEth = sdlWethSushiPool?.wethReserve
+            ? sdlWethSushiPool?.sdlReserve
+                ?.mul(BN_1E18)
+                .div(sdlWethSushiPool.wethReserve)
+            : Zero
+          const sdlAddrLowercased =
+            "0xf1Dc500FdE233A4055e25e5BbF516372BC4F6871".toLowerCase()
+          const ethAddrLowercased =
+            "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2".toLowerCase()
+          // same logic as below but w\ addr key
+          if (!result[sdlAddrLowercased] && sdlPerEth) {
+            result[sdlAddrLowercased] =
+              (result[ethAddrLowercased] || 0) /
+              parseFloat(formatUnits(sdlPerEth, 18))
+          }
+          // if (!result.SDL && sdlPerEth) {
+          //   result.SDL =
+          //     (result?.ETH || 0) / parseFloat(formatUnits(sdlPerEth, 18))
+          // }
+          dispatch(updateTokensPricesUSD(result))
+        }),
+    { retries: 3 },
+  )
+}
+
 export const getTokenPrice = async (
   tokens: BasicTokens,
   dispatch: AppDispatch,
@@ -121,7 +190,7 @@ export const getTokenPrice = async (
                     Array.from(
                       Object.entries(prices).map(
                         ([address, { usd: usdPrice }]) => [
-                          (tokens[address] as BasicToken).symbol,
+                          (tokens[address] as BasicToken).address,
                           usdPrice,
                         ],
                       ),
@@ -161,21 +230,21 @@ export const getTokenPrice = async (
                   switch (tokens[tokenAddress]?.typeAsset) {
                     case PoolTypes.BTC:
                       return {
-                        [(tokens[tokenAddress] as BasicToken).symbol]:
+                        [(tokens[tokenAddress] as BasicToken).address]:
                           nativeTokenPrice.btc,
                       }
                     case PoolTypes.ETH:
                       return {
-                        [(tokens[tokenAddress] as BasicToken).symbol]:
+                        [(tokens[tokenAddress] as BasicToken).address]:
                           nativeTokenPrice.eth,
                       }
                     case PoolTypes.USD:
                       return {
-                        [(tokens[tokenAddress] as BasicToken).symbol]: 1,
+                        [(tokens[tokenAddress] as BasicToken).address]: 1,
                       }
                     default:
                       return {
-                        [(tokens[tokenAddress] as BasicToken).symbol]: 100, //100 is fake price for OTHER or "unknown" token
+                        [(tokens[tokenAddress] as BasicToken).address]: 100, //100 is fake price for OTHER or "unknown" token
                       }
                   }
                 }),

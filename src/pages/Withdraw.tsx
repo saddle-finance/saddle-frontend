@@ -29,8 +29,13 @@ import useWithdrawFormState from "../hooks/useWithdrawFormState"
 function Withdraw(): ReactElement {
   const { poolName } = useParams<{ poolName: string }>()
   const [poolData, userShareData] = usePoolData(poolName)
-  const [withdrawFormState, updateWithdrawFormState] =
-    useWithdrawFormState(poolName)
+  const {
+    formState: withdrawFormState,
+    handleUpdateForm: updateWithdrawFormState,
+    shouldWithdrawWrapped,
+    setShouldWithdrawWrapped,
+    withdrawTokens,
+  } = useWithdrawFormState(poolName)
   const { slippageCustom, slippageSelected, gasPriceSelected, gasCustom } =
     useSelector((state: AppState) => state.user)
   const { tokenPricesUSD, gasStandard, gasFast, gasInstant } = useSelector(
@@ -41,9 +46,6 @@ function Withdraw(): ReactElement {
   const { account } = useActiveWeb3React()
   const [withdrawLPTokenAmount, setWithdrawLPTokenAmount] =
     useState<BigNumber>(Zero)
-  const withdrawTokens = poolData.isMetaSwap
-    ? poolData.underlyingTokens
-    : poolData.tokens
   const tokenInputSum = useMemo(() => {
     return withdrawTokens.reduce(
       (sum, { address }) =>
@@ -102,24 +104,30 @@ function Withdraw(): ReactElement {
   async function onConfirmTransaction(): Promise<void> {
     const { withdrawType, tokenInputs, lpTokenAmountToSpend } =
       withdrawFormState
-    await approveAndWithdraw({
-      tokenFormState: tokenInputs,
-      withdrawType,
-      lpTokenAmountToSpend,
-    })
+    await approveAndWithdraw(
+      {
+        tokenFormState: tokenInputs,
+        withdrawType,
+        lpTokenAmountToSpend,
+      },
+      shouldWithdrawWrapped,
+    )
     updateWithdrawFormState({ fieldName: "reset", value: "reset" })
   }
 
   const tokensData = React.useMemo(
     () =>
-      withdrawTokens.map(({ name, symbol, address, decimals }) => ({
-        name,
-        symbol,
-        address,
-        decimals,
-        priceUSD: tokenPricesUSD?.[symbol] || 0, // @dev TODO handle lpToken Price when wrapped withdraw implemented
-        inputValue: withdrawFormState.tokenInputs[address]?.valueRaw || "",
-      })),
+      withdrawTokens.map(
+        ({ isOnTokenLists, name, symbol, address, decimals }) => ({
+          name,
+          symbol,
+          address,
+          decimals,
+          priceUSD: tokenPricesUSD?.[address] || 0, // @dev TODO handle lpToken Price when wrapped withdraw implemented
+          inputValue: withdrawFormState.tokenInputs[address]?.valueRaw || "",
+          isOnTokenLists,
+        }),
+      ),
     [withdrawFormState, withdrawTokens, tokenPricesUSD],
   )
   const gasPrice = BigNumber.from(
@@ -171,6 +179,7 @@ function Withdraw(): ReactElement {
           ),
         ),
         symbol,
+        address,
       })
       if (tokenPricesUSD?.[symbol] != null) {
         // null check since price may be 0
@@ -197,6 +206,8 @@ function Withdraw(): ReactElement {
       formStateData={withdrawFormState}
       onConfirmTransaction={onConfirmTransaction}
       onFormChange={updateWithdrawFormState}
+      shouldWithdrawWrapped={shouldWithdrawWrapped}
+      onToggleWithdrawWrapped={() => setShouldWithdrawWrapped((prev) => !prev)}
     />
   )
 }

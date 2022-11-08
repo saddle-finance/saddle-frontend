@@ -6,7 +6,7 @@ import React from "react"
 // Check controls from https://storybook.js.org/docs/react/essentials/controls
 
 export default {
-  title: "Light components/Button",
+  title: "Components/Button",
   component: Button,
   argTypes: {
     variant: {

@@ -42,6 +42,7 @@ export const NETWORK_NATIVE_TOKENS: Record<ChainId, string> = {
   [ChainId.KAVA_TESTNET]: "KAVA",
   [ChainId.KAVA]: "KAVA",
   [ChainId.HARDHAT]: "ETH",
+  [ChainId.TEST_SIDE_CHAIN]: "ETH",
 }
 export const COINGECKO_PLATFORM_ID: Record<ChainId, string | null> = {
   [ChainId.MAINNET]: "ethereum",
@@ -54,6 +55,7 @@ export const COINGECKO_PLATFORM_ID: Record<ChainId, string | null> = {
   [ChainId.KAVA_TESTNET]: null,
   [ChainId.KAVA]: "kava",
   [ChainId.HARDHAT]: null,
+  [ChainId.TEST_SIDE_CHAIN]: null,
 }
 
 export type SupportedNetwork = {
@@ -113,7 +115,7 @@ export const SUPPORTED_NETWORKS: SupportedNetworks = {
       symbol: "FTM",
       decimals: 18,
     },
-    rpcUrls: ["https://rpc.ftm.tools"],
+    rpcUrls: ["https://rpc.ankr.com/fantom/"],
     blockExplorerUrls: ["https://ftmscan.com"],
   },
   [ChainId.EVMOS]: {

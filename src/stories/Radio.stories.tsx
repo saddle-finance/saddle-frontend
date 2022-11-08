@@ -3,7 +3,7 @@ import { Radio as MuiRadio } from "@mui/material"
 import React from "react"
 
 export default {
-  title: "Light components/Button",
+  title: "Components/Radio",
   component: MuiRadio,
   argTypes: {
     color: {
@@ -17,8 +17,13 @@ const Template: ComponentStory<typeof MuiRadio> = (args) => (
   <MuiRadio {...args} />
 )
 
-export const Radio = Template.bind({})
-Radio.args = {
+export const Primary = Template.bind({})
+Primary.args = {
+  color: "primary",
+  checked: true,
+}
+export const Secondary = Template.bind({})
+Secondary.args = {
   color: "secondary",
   checked: true,
 }

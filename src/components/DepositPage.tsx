@@ -2,7 +2,6 @@ import {
   ALETH_POOL_NAME,
   TBTC_METAPOOL_V2_NAME,
   VETH2_POOL_NAME,
-  isMetaPool,
 } from "../constants"
 import {
   Alert,
@@ -52,10 +51,12 @@ import { useRewardsHelpers } from "../hooks/useRewardsHelpers"
 interface Props {
   title: string
   onConfirmTransaction: () => Promise<void>
-  onChangeTokenInputValue: (tokenSymbol: string, value: string) => void
   onToggleDepositWrapped: () => void
+  onChangeTokenInputValue: (tokenAddr: string, value: string) => void
   shouldDepositWrapped: boolean
   tokens: Array<{
+    isOnTokenLists: boolean
+    address: string
     symbol: string
     name: string
     max: string
@@ -91,8 +92,7 @@ const DepositPage = (props: Props): ReactElement => {
     useState<LiquidityGaugeV5 | null>(null)
   const lpTokenContract = useLPTokenContract(poolData?.name ?? "")
   const validDepositAmount = transactionData?.to.totalAmount.gt(0)
-  const shouldDisplayWrappedOption =
-    isMetaPool(poolData?.name) || poolData?.isMetaSwap
+  const shouldDisplayWrappedOption = poolData?.isMetaSwap
   const theme = useTheme()
   const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
   const { gauges } = useContext(GaugeContext)
@@ -236,13 +236,24 @@ const DepositPage = (props: Props): ReactElement => {
               <Stack direction="column" spacing={2}>
                 {tokens.map(
                   (
-                    { decimals, symbol, name, priceUSD, inputValue, max },
+                    {
+                      address,
+                      decimals,
+                      symbol,
+                      name,
+                      priceUSD,
+                      inputValue,
+                      isOnTokenLists,
+                      max,
+                    },
                     index,
                   ) => (
                     <TokenInput
                       key={index}
                       max={max}
                       token={{
+                        isOnTokenLists,
+                        address,
                         decimals,
                         symbol,
                         name,
@@ -251,7 +262,7 @@ const DepositPage = (props: Props): ReactElement => {
                       inputValue={inputValue}
                       disabled={poolData?.isPaused}
                       onChange={(value): void =>
-                        onChangeTokenInputValue(symbol, value)
+                        onChangeTokenInputValue(address, value)
                       }
                     />
                   ),

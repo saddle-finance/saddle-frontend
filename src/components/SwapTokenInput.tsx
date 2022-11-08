@@ -1,3 +1,4 @@
+import { ArrowDropDown, CheckCircleOutline } from "@mui/icons-material"
 import {
   Button,
   Chip,
@@ -11,7 +12,6 @@ import { commify, formatBNToString, isNumberOrEmpty } from "../utils"
 import { styled, useTheme } from "@mui/material/styles"
 import { useRef, useState } from "react"
 
-import { ArrowDropDown } from "@mui/icons-material"
 import Autocomplete from "@mui/material/Autocomplete"
 import { BigNumber } from "ethers"
 import Box from "@mui/material/Box"
@@ -20,7 +20,8 @@ import Popper from "@mui/material/Popper"
 import { SWAP_TYPES } from "../constants"
 import Search from "@mui/icons-material/Search"
 import TokenIcon from "./TokenIcon"
-import { TokenOption } from "../pages/Swap"
+import { TokenOption } from "../types"
+import { matchSorter } from "match-sorter"
 import { useTranslation } from "react-i18next"
 
 const StyledPopper = styled(Popper)(({ theme }) => ({
@@ -56,6 +57,16 @@ export default function SwapTokenInput({
   const containerRef = useRef<HTMLDivElement>(null)
   const [popOverWidth, setPopOverWidth] = useState<number | undefined>()
   const theme = useTheme()
+
+  const filterOptions = (
+    options: TokenOption[],
+    { inputValue }: { inputValue: string },
+  ) =>
+    matchSorter(options, inputValue, {
+      sorter: (rankedItems) => rankedItems,
+      threshold: matchSorter.rankings.WORD_STARTS_WITH,
+      keys: ["symbol", "address", "name"],
+    })
 
   useEffect(() => {
     const containerWidth = containerRef.current?.offsetWidth
@@ -186,7 +197,7 @@ export default function SwapTokenInput({
                     startAdornment: <Search />,
                   }}
                   inputProps={params.inputProps}
-                  placeholder="Search name"
+                  placeholder="Search name, symbol, or address"
                   autoFocus
                 />
               )}
@@ -199,14 +210,19 @@ export default function SwapTokenInput({
                   return
                 }
                 setAnchorEl(null)
-                if (newValue?.symbol) {
-                  onSelect?.(newValue?.symbol)
+                if (newValue?.address) {
+                  onSelect?.(newValue?.address)
                 }
               }}
               renderOption={(props, option) => (
-                <ListItem listItemProps={props} {...option} key={option.name} />
+                <ListItem
+                  listItemProps={props}
+                  {...option}
+                  key={option.address}
+                />
               )}
-              getOptionLabel={(option) => option.symbol}
+              filterOptions={filterOptions}
+              getOptionLabel={(option) => option.address}
               getOptionDisabled={(option) => !option.isAvailable}
               PopperComponent={(props) => (
                 <div {...props} data-testid="dropdownContainer"></div>
@@ -229,6 +245,7 @@ function ListItem({
   symbol,
   decimals,
   isAvailable,
+  isOnTokenLists,
   swapType,
   listItemProps,
 }: TokenOption & {
@@ -258,8 +275,11 @@ function ListItem({
           <TokenIcon symbol={symbol} alt={name} height="100%" width="100%" />
         </Box>
         <Box>
-          <Box display="flex">
+          <Box display="flex" alignItems="center">
             <Typography color="text.primary">{symbol}</Typography>
+            {isOnTokenLists && (
+              <CheckCircleOutline sx={{ marginLeft: 1, width: 20 }} />
+            )}
             {!isAvailable && (
               <Chip
                 variant="outlined"

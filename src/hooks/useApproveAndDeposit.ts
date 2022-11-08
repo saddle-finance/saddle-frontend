@@ -32,7 +32,7 @@ import { updateLastTransactionTimes } from "../state/application"
 import { useActiveWeb3React } from "."
 
 interface ApproveAndDepositStateArgument {
-  [tokenSymbol: string]: NumberInputState
+  [tokenAddr: string]: NumberInputState
 }
 
 export function useApproveAndDeposit(
@@ -123,7 +123,7 @@ export function useApproveAndDeposit(
           console.error("Token or library is not loaded")
           return
         }
-        const spendingValue = BigNumber.from(state[token.symbol].valueSafe)
+        const spendingValue = BigNumber.from(state[token.address].valueSafe)
         if (spendingValue.isZero()) return
         const tokenContract = getContract(
           token.address,
@@ -167,14 +167,14 @@ export function useApproveAndDeposit(
             effectiveSwapContract as SwapFlashLoan
           ).calculateTokenAmount(
             account,
-            poolTokens.map((token) => state[token?.symbol ?? ""].valueSafe),
+            poolTokens.map((token) => state[token?.address ?? ""].valueSafe),
             true, // deposit boolean
           )
         } else {
           minToMint = await (
             effectiveSwapContract as SwapFlashLoanNoWithdrawFee
           ).calculateTokenAmount(
-            poolTokens.map((token) => state[token?.symbol ?? ""].valueSafe),
+            poolTokens.map((token) => state[token?.address ?? ""].valueSafe),
             true, // deposit boolean
           )
         }
@@ -188,7 +188,7 @@ export function useApproveAndDeposit(
 
       let spendTransaction
       const txnAmounts = poolTokens.map(
-        (token) => state[token?.symbol ?? ""].valueSafe,
+        (token) => state[token?.address ?? ""].valueSafe,
       )
       const txnDeadline = Math.round(
         new Date().getTime() / 1000 + 60 * deadline,

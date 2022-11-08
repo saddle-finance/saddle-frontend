@@ -24,6 +24,7 @@ import { useActiveWeb3React } from "."
 import { useSelector } from "react-redux"
 
 interface TokenShareType {
+  isOnTokenLists: boolean
   symbol: string
   value: BigNumber
   decimals: number
@@ -41,8 +42,8 @@ export interface PoolDataType {
   name: string
   reserve: BigNumber | null
   swapFee: BigNumber
-  tokens: TokenShareType[]
-  underlyingTokens: TokenShareType[]
+  tokens: TokenShareType[] // Tokens of pool: If pool is MetaSwapPool `tokens` will contain LP token
+  underlyingTokens: TokenShareType[] // All tokens MetaSwap pool is containing
   totalLocked: BigNumber
   utilization: BigNumber | null
   virtualPrice: BigNumber
@@ -65,6 +66,7 @@ export interface PoolDataType {
   lpToken: string
   isMigrated: boolean
   isGuarded: boolean
+  isSaddleApproved: boolean
   isMetaSwap: boolean
   poolType: PoolTypes
 }
@@ -111,6 +113,7 @@ const emptyPoolData = {
   sdlPerDay: null,
   isGuarded: false,
   isMetaSwap: false,
+  isSaddleApproved: false,
   minichefSDLApr: Zero,
   poolType: PoolTypes.OTHER,
 } as PoolDataType
@@ -161,6 +164,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
         const poolGaugeData = gauges?.[expandedPool.lpToken.address]
         const priceDataForPool = getPriceDataForExpandedPool(
           expandedPool,
+          chainId,
           tokenPricesUSD,
         )
 
@@ -228,6 +232,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
           userPoolTokenBalancesUSD.reduce(bnSum)
 
         const poolTokens = expandedPool.tokens.map((token, i) => ({
+          isOnTokenLists: token.isOnTokenLists,
           symbol: token.symbol,
           name: token.name,
           decimals: token.decimals,
@@ -236,6 +241,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
         }))
         const underlyingPoolTokens =
           expandedPool.underlyingTokens?.map((token, i) => ({
+            isOnTokenLists: token.isOnTokenLists,
             symbol: token.symbol,
             name: token.name,
             decimals: token.decimals,
@@ -243,6 +249,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
             address: token.address,
           })) || []
         const userPoolTokens = expandedPool.tokens.map((token, i) => ({
+          isOnTokenLists: token.isOnTokenLists,
           symbol: token.symbol,
           name: token.name,
           decimals: token.decimals,
@@ -285,6 +292,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
           isMigrated: expandedPool.isMigrated,
           isMetaSwap: expandedPool.isMetaSwap,
           isGuarded: expandedPool.isGuarded,
+          isSaddleApproved: expandedPool.isSaddleApproved,
           lpToken: expandedPool.lpToken.address, // will be address, was symbol
           poolType: expandedPool.typeOfAsset,
           poolAddress: expandedPool.poolAddress,
