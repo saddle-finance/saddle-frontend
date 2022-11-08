@@ -37,10 +37,8 @@ import { useTranslation } from "react-i18next"
 function Pools(): ReactElement | null {
   const { address } = useAccount()
   const pools = usePools()
-  console.log({ xxx: pools })
   const { chainId } = useActiveWeb3React()
   const expandedPools = useContext(ExpandedPoolsContext)
-  console.log({ expandedPools })
   const ePools = expandedPools.data.byName
   const userState = useContext(UserStateContext)
   const approveAndMigrate = useApproveAndMigrate()
