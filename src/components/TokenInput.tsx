@@ -73,7 +73,7 @@ function TokenInput({
   }
 
   return (
-    <div {...rest}>
+    <div {...rest} data-testid="tokenInputWrapper">
       {max && (
         <Box display="flex" alignItems="center" justifyContent="end">
           <Typography variant="subtitle2" sx={{ mr: 1 }}>
@@ -84,7 +84,9 @@ function TokenInput({
             disabled={readonly || disabled}
             onClick={() => onChange && onChange(String(max))}
           >
-            <Typography variant="subtitle2">{commify(max)}</Typography>
+            <Typography variant="subtitle2" data-testid="tokenInputMax">
+              {commify(max)}
+            </Typography>
           </Button>
         </Box>
       )}

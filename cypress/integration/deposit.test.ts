@@ -47,6 +47,10 @@ context("Deposit Flow", () => {
       cy.get("[data-testid=txnDeadlineInputGroup]")
         .find("input")
         .type((60 * 60 * 7).toString()) // 1 week for safety
+
+      // wait for balances to update
+      cy.get("[data-testid=tokenInputMax]").should("not.have.text", "0.0")
+
       cy.get("#tokenInput input").then(($inputs) => {
         cy.wrap($inputs).each(($input) => {
           cy.wrap($input).type("100")
