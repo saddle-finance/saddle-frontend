@@ -374,7 +374,7 @@ export function useGaugeControllerContract(): GaugeController | null {
   return useContractOld(
     contractAddress,
     GAUGE_CONTROLLER_ABI,
-    false,
+    true,
   ) as GaugeController
 }
 
