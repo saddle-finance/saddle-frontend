@@ -10,6 +10,7 @@ import {
   MASTER_REGISTRY_CONTRACT_ADDRESSES,
   MINICHEF_CONTRACT_ADDRESSES,
   RETROACTIVE_VESTING_CONTRACT_ADDRESSES,
+  ROOT_GAUGE_FACTORY_CONTRACT_ADDRESSES,
   SDL_TOKEN_ADDRESSES,
   SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES,
   SYNTHETIX_CONTRACT_ADDRESSES,
@@ -58,7 +59,9 @@ import POOL_REGISTRY_ABI from "../constants/abis/poolRegistry.json"
 import { PermissionlessDeployer } from "../../types/ethers-contracts/PermissionlessDeployer"
 import { PoolRegistry } from "../../types/ethers-contracts/PoolRegistry"
 import RETROACTIVE_VESTING_CONTRACT_ABI from "../constants/abis/retroactiveVesting.json"
+import ROOT_GAUGE_FACTORY_ABI from "../constants/abis/rootGaugeFactory.json"
 import { RetroactiveVesting } from "../../types/ethers-contracts/RetroactiveVesting"
+import { RootGaugeFactory } from "../../types/ethers-contracts/RootGaugeFactory"
 import SDL_TOKEN_ABI from "../constants/abis/sdl.json"
 import SUSHI_POOL_ABI from "../constants/abis/sushiPool.json"
 import SYNTHETIX_EXCHANGE_RATE_CONTRACT_ABI from "../constants/abis/synthetixExchangeRate.json"
@@ -484,6 +487,19 @@ export const getChildOracle = (
     library,
     account,
   ) as ChildOracle
+}
+
+export const getRootGaugeFactory = (
+  library: Web3Provider,
+  chainId: ChainId,
+  account?: string,
+): RootGaugeFactory => {
+  return getContract(
+    ROOT_GAUGE_FACTORY_CONTRACT_ADDRESSES[chainId],
+    ROOT_GAUGE_FACTORY_ABI,
+    library,
+    account,
+  ) as RootGaugeFactory
 }
 
 export const isMainnet = (chainId?: ChainId): boolean => {

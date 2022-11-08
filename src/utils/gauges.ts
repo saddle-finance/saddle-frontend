@@ -122,7 +122,7 @@ export async function getGaugeData(
 ) {
   if (!registryAddresses || !areGaugesActive(chainId)) return initialGaugesState
   try {
-    if (chainId === ChainId.MAINNET) {
+    if (chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT) {
       return buildGaugeData(
         library,
         chainId,

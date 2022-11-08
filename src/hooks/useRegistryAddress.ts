@@ -2,17 +2,14 @@ import {
   CHILD_GAUGE_FACTORY_NAME,
   isMainnet,
   useMasterRegistry,
-} from "../hooks/useContract"
+} from "./useContract"
 import { UseQueryResult, useQuery } from "@tanstack/react-query"
 import { ContractNotLoadedError } from "../errors/ContractNotLoadedError"
+import { QueryKeys } from "./queryKeys"
 import { formatBytes32String } from "ethers/lib/utils"
-import { useActiveWeb3React } from "../hooks"
+import { useActiveWeb3React } from "."
 
 export type RegistryAddresses = Partial<Record<string, string>>
-
-enum QueryKeys {
-  RegistryAddress = "registryAddress",
-}
 
 export const useRegistryAddress = (): UseQueryResult<RegistryAddresses> => {
   const { chainId } = useActiveWeb3React()

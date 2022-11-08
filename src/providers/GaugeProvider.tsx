@@ -3,7 +3,7 @@ import React, { ReactElement, useContext, useEffect, useState } from "react"
 import { BasicPoolsContext } from "./BasicPoolsProvider"
 import { useActiveWeb3React } from "../hooks"
 import { useGaugeMinterContract } from "../hooks/useContract"
-import { useRegistryAddress } from "./useRegistryAddress"
+import { useRegistryAddress } from "../hooks/useRegistryAddress"
 
 export const GaugeContext = React.createContext<Gauges>(initialGaugesState)
 

@@ -20,7 +20,7 @@ import { Zero } from "@ethersproject/constants"
 import { calculateBoost } from "../utils"
 import { enqueueToast } from "../components/Toastify"
 import { useActiveWeb3React } from "."
-import { useRegistryAddress } from "../providers/useRegistryAddress"
+import { useRegistryAddress } from "./useRegistryAddress"
 
 type UserGauge = {
   stake: LiquidityGaugeV5["deposit(uint256)"]
