@@ -72,13 +72,9 @@ export const usePools = () => {
   const poolAddr: string = usePoolRegistryAddr()
   const poolLen = usePoolsCount(poolAddr)
   const registryPools = useRegistryPoolResult(poolLen, poolAddr)
-  console.log({ registryPools })
   const validPools = useRegistryPools(registryPools, poolAddr)
-  console.log({ validPools })
   const migrationData = useMigrationData(registryPools)
-  console.log({ migrationData })
   const pools = normalizePools(validPools, migrationData)
-  console.log({ pools })
 
   return pools
 }
@@ -201,6 +197,7 @@ export const useRegistryPools = (
   pools?.forEach((poolDataResult, index) => {
     const poolData = poolDataResult
     if (!chain?.id || !poolData) return
+    if (poolData.isRemoved) return
     const isMetaSwap = !isAddressZero(poolData.metaSwapDepositAddress)
     const rewardsPid = getMinichefPid(
       chain.id,
