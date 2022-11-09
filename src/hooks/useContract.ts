@@ -343,7 +343,7 @@ export function useGaugeControllerContract(): GaugeController | null {
   return useContract(
     contractAddress,
     GAUGE_CONTROLLER_ABI,
-    false,
+    true,
   ) as GaugeController
 }
 

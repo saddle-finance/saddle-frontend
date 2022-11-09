@@ -10,8 +10,8 @@ export default function TextFieldTheme(): Components {
         },
         input: {
           paddingLeft: 8,
-          paddingTop: 14.5,
-          paddingBottom: 14.5,
+          paddingTop: 6.5,
+          paddingBottom: 6.5,
         },
         inputSizeSmall: {
           paddingTop: 4.5,
