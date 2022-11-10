@@ -30,7 +30,15 @@ export const communityPoolsEnabled = (chainId: ChainId | undefined) => {
   return (
     permissionlessPoolsFF &&
     chainId &&
-    [ChainId.MAINNET, ChainId.HARDHAT, ChainId.ARBITRUM].includes(chainId)
+    [
+      ChainId.MAINNET,
+      ChainId.HARDHAT,
+      ChainId.ARBITRUM,
+      ChainId.EVMOS,
+      ChainId.KAVA,
+      ChainId.OPTIMISM,
+      ChainId.FANTOM,
+    ].includes(chainId)
   )
 }
 
