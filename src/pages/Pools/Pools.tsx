@@ -26,16 +26,20 @@ import { communityPoolsEnabled } from "../Pages"
 import { getTokenAddrForPoolType } from "../../utils"
 import { logEvent } from "../../utils/googleAnalytics"
 import { parseUnits } from "@ethersproject/units"
+import { useAccount } from "wagmi"
 import { useActiveWeb3React } from "../../hooks"
 import { useApproveAndMigrate } from "../../hooks/useApproveAndMigrate"
 import { useHistory } from "react-router"
+import { usePools } from "../../hooks/usePoolRegistryData"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
 function Pools(): ReactElement | null {
-  const { account, chainId } = useActiveWeb3React()
+  const { address } = useAccount()
+  const pools = usePools()
+  const { chainId } = useActiveWeb3React()
   const expandedPools = useContext(ExpandedPoolsContext)
-  const pools = expandedPools.data.byName
+  const ePools = expandedPools.data.byName
   const userState = useContext(UserStateContext)
   const approveAndMigrate = useApproveAndMigrate()
   const { t } = useTranslation()
@@ -70,7 +74,7 @@ function Pools(): ReactElement | null {
       lpTokenBalance: Zero,
       lpTokenAddress: "",
     })
-  }, [account, chainId])
+  }, [address])
 
   return (
     <Container sx={{ pb: 5 }}>
@@ -149,7 +153,7 @@ function Pools(): ReactElement | null {
               pool.poolName
                 .toLowerCase()
                 .includes(poolOrTokenFilterValue.toLowerCase()) ||
-              pool.tokens.some((token) =>
+              ePools[pool.poolName]?.tokens.some((token) =>
                 token.symbol
                   .toLowerCase()
                   .includes(poolOrTokenFilterValue.toLowerCase()),
@@ -171,10 +175,13 @@ function Pools(): ReactElement | null {
             // 1. user pools
             // 2. active pools
             // 3. higher TVL pools
+            const expandedPoolA = ePools[a.poolName]
+            const expandedPoolB = ePools[b.poolName]
+            if (!expandedPoolA || !expandedPoolB) return 0
             const userLpTokenBalanceA =
-              userState?.tokenBalances?.[a.lpToken.address] || Zero
+              userState?.tokenBalances?.[expandedPoolA.lpToken.address] || Zero
             const userLpTokenBalanceB =
-              userState?.tokenBalances?.[b.lpToken.address] || Zero
+              userState?.tokenBalances?.[expandedPoolB.lpToken.address] || Zero
             const poolAssetA = parseUnits(
               String(
                 tokenPricesUSD?.[
@@ -223,13 +230,21 @@ function Pools(): ReactElement | null {
               poolRoute={`/pools/${basicPool.poolName}`} // TODO address names may contain arbitrary chars
               onClickMigrate={
                 basicPool.isMigrated
-                  ? () =>
+                  ? () => {
+                      const expandedPool = ePools[basicPool.poolName]
+                      if (!expandedPool) {
+                        console.error("no pool found")
+                        return
+                      }
+
                       handleClickMigrate(
                         basicPool.poolName,
-                        userState?.tokenBalances?.[basicPool.lpToken.address] ||
-                          Zero,
-                        basicPool.lpToken.address,
+                        userState?.tokenBalances?.[
+                          expandedPool.lpToken.address
+                        ] || Zero,
+                        expandedPool.lpToken.address,
                       )
+                    }
                   : undefined
               }
             />

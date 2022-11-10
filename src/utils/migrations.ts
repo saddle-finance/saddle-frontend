@@ -3,6 +3,7 @@ import {
   GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES,
 } from "../constants"
 import { getMulticallProvider, isAddressZero } from "."
+import { useContractReads, useNetwork } from "wagmi"
 
 import { Contract } from "ethcall"
 import GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI from "../constants/abis/generalizedSwapMigrator.json"
@@ -10,12 +11,12 @@ import { GeneralizedSwapMigrator } from "../../types/ethers-contracts/Generalize
 import { MulticallContract } from "../types/ethcall"
 import { Web3Provider } from "@ethersproject/providers"
 
-type MigrationData = { [poolAddress: string]: string } // current poolAddress => new poolAddress
+export type MigrationData = { [poolAddress: string]: string } // current poolAddress => new poolAddress
 
 /**
  * Returns old -> new pool address mappings from GeneralizedMigrator for the given pool addresses.
  */
-export async function getMigrationData(
+export async function getMigrationDataOld( // TODO: delete once safe to remove basicPoolsContext
   library: Web3Provider,
   chainId: ChainId,
   poolAddresses: string[],
@@ -49,4 +50,33 @@ export async function getMigrationData(
     console.error(error)
     return null
   }
+}
+
+export const useMigrationData = (pools: { poolAddress: string }[]) => {
+  const { chain } = useNetwork()
+  const migratorAddress =
+    GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES[chain?.id as ChainId]
+  const poolsAddresses = pools?.map(({ poolAddress }) => poolAddress) ?? []
+  const migrationMapCalls = poolsAddresses.map((address) => ({
+    address: migratorAddress,
+    abi: GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI,
+    functionName: "migrationMap",
+    args: [address],
+  }))
+  const { data: migrationMapData } = useContractReads({
+    contracts: migrationMapCalls,
+    enabled: !!pools,
+  })
+  const migrations = migrationMapData as unknown as
+    | { newPoolAddress: string }[]
+    | null[]
+  const parsedData = poolsAddresses.reduce((acc, address, i) => {
+    const migrationTarget = migrations?.[i]?.newPoolAddress?.toLowerCase() ?? ""
+    if (migrationTarget && !isAddressZero(migrationTarget)) {
+      return { [address]: migrationTarget, ...acc }
+    }
+    return acc
+  }, {} as MigrationData)
+
+  return parsedData
 }

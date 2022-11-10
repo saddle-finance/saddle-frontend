@@ -1,5 +1,24 @@
+import { Chain, getDefaultWallets } from "@rainbow-me/rainbowkit"
+import {
+  chain,
+  configureChains,
+  createClient as createWagmiClient,
+} from "wagmi"
+
 import { ChainId } from "./index"
+// import { InjectedConnector } from "wagmi/connectors/injected"
 import { hexlify } from "@ethersproject/bytes"
+import { publicProvider } from "wagmi/providers/public"
+
+// import {
+//   coinbaseWallet,
+//   injectedWallet,
+//   metaMaskWallet,
+//   rainbowWallet,
+//   walletConnectWallet,
+// } from "@rainbow-me/rainbowkit/wallets"
+
+// import tallyIcon from "../assets/icons/tally.svg"
 
 export const NETWORK_LABEL: Partial<Record<ChainId, string>> = {
   [ChainId.MAINNET]: "Ethereum",
@@ -150,4 +169,134 @@ export const DEV_SUPPORTED_NETWORKS: SupportedNetworks = {
     rpcUrls: ["https://evm.testnet.kava.io"],
     blockExplorerUrls: ["https://explorer.evm-alpha.kava.io"],
   },
+}
+
+const evmosChain: Chain = {
+  id: ChainId.EVMOS,
+  iconUrl:
+    "https://assets.coingecko.com/coins/images/24023/small/evmos.png?1653958927",
+  iconBackground: "#fff",
+  name: "Evmos",
+  nativeCurrency: {
+    name: "Evmos",
+    symbol: "EVMOS",
+    decimals: 18,
+  },
+  network: "evmos",
+  rpcUrls: { default: "https://eth.bd.evmos.org:8545" },
+  blockExplorers: {
+    default: { name: "Evmos", url: "https://evm.evmos.org" },
+  },
+  testnet: false,
+}
+const fantomChain: Chain = {
+  id: ChainId.FANTOM,
+  iconUrl:
+    "https://assets.coingecko.com/coins/images/4001/small/Fantom.png?1558015016",
+  iconBackground: "#fff",
+  name: "Fantom",
+  nativeCurrency: {
+    name: "Fantom",
+    symbol: "FTM",
+    decimals: 18,
+  },
+  network: "evmos",
+  rpcUrls: { default: "https://rpc.ftm.tools" },
+  blockExplorers: {
+    default: { name: "Fantom Scan", url: "https://ftmscan.com" },
+  },
+  testnet: false,
+}
+const kavaChain: Chain = {
+  id: ChainId.KAVA,
+  iconUrl:
+    "https://assets.coingecko.com/coins/images/9761/small/kava.jpg?1639703080",
+  iconBackground: "#fff",
+  name: "Kava",
+  nativeCurrency: {
+    name: "Kava",
+    symbol: "KAVA",
+    decimals: 18,
+  },
+  network: "kava",
+  rpcUrls: { default: "https://evm.kava.io" },
+  blockExplorers: {
+    default: { name: "Kava", url: "https://explorer.kava.io" },
+  },
+  testnet: false,
+}
+
+export const rainbowChains = [
+  chain.mainnet,
+  chain.optimism,
+  chain.arbitrum,
+  chain.hardhat,
+  evmosChain,
+  fantomChain,
+  kavaChain,
+]
+
+export const { chains, provider } = configureChains(rainbowChains, [
+  publicProvider(),
+])
+
+// const tallyConnector = new InjectedConnector({
+//   chains: [chain.mainnet],
+//   options: {
+//     shimDisconnect: true,
+//     name: (detectedName) =>
+//       `Injected (${
+//         typeof detectedName === "string"
+//           ? detectedName
+//           : detectedName.join(", ")
+//       })`,
+//   },
+// })
+
+// const tally = (): Wallet => ({
+//   id: "tally-wallet",
+//   name: "Tally Wallet",
+//   iconUrl: tallyIcon,
+//   iconBackground: "#0c2f78",
+//   downloadUrls: {
+//     browserExtension: "https://tally.cash/download",
+//   },
+//   createConnector: () => {
+//     const connector = tallyConnector
+//     return {
+//       connector: connector,
+//     }
+//   },
+// })
+
+// const needsInjectedWalletFallback =
+//   typeof window !== "undefined" &&
+//   !window.ethereum?.isMetaMask &&
+//   !window.ethereum?.isTally
+
+const { connectors } = getDefaultWallets({ appName: "Saddle", chains })
+// connectorsForWallets([
+//   {
+//     groupName: "Recommended",
+//     wallets: [
+//       metaMaskWallet({ chains }),
+//       rainbowWallet({ chains }),
+//       walletConnectWallet({ chains }),
+//       coinbaseWallet({ appName: "Saddle", chains }),
+//       tally(),
+//       ...(needsInjectedWalletFallback
+//         ? [injectedWallet({ chains: [chain.mainnet] })]
+//         : []),
+//     ],
+//   },
+// ])
+
+export const wagmiClient = createWagmiClient({
+  autoConnect: true,
+  connectors,
+  provider,
+})
+
+export interface MyWalletOptions {
+  chains: Chain[]
 }

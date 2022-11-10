@@ -1,4 +1,6 @@
+import "@rainbow-me/rainbowkit/styles.css"
 import "react-toastify/dist/ReactToastify.css"
+
 import { AppDispatch, AppState } from "../state"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import React, { ReactElement, Suspense, useCallback, useEffect } from "react"
@@ -22,6 +24,7 @@ import TokensProvider from "../providers/TokensProvider"
 import TopMenu from "../components/TopMenu"
 import UserStateProvider from "../providers/UserStateProvider"
 import Version from "../components/Version"
+import { WagmiConfig } from "wagmi"
 import Web3ReactManager from "../components/Web3ReactManager"
 import WrongNetworkModal from "../components/WrongNetworkModal"
 import fetchGasPrices from "../utils/updateGasPrices"
@@ -29,11 +32,12 @@ import fetchSdlWethSushiPoolInfo from "../utils/updateSdlWethSushiInfo"
 import fetchSwapStats from "../utils/getSwapStats"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import getSnapshotVoteData from "../utils/getSnapshotVoteData"
-import { useActiveWeb3React } from "../hooks"
 import { useIntercom } from "react-use-intercom"
+import { useNetwork } from "wagmi"
 import usePoller from "../hooks/usePoller"
 import { useSdlWethSushiPairContract } from "../hooks/useContract"
 import { useTheme } from "@mui/material"
+import { wagmiClient } from "../constants/networks"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -54,46 +58,50 @@ export default function App(): ReactElement {
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
 
-      <Web3ReactManager>
-        <BasicPoolsProvider>
-          <MinichefProvider>
-            <GaugeProvider>
-              <TokensProvider>
-                <ExpandedPoolsProvider>
-                  <UserStateProvider>
-                    <PricesAndVoteData>
-                      <PendingSwapsProvider>
-                        <AprsProvider>
-                          <RewardsBalancesProvider>
-                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                              <AppContainer>
-                                <TopMenu />
-                                <Suspense fallback={null}>
-                                  <Pages />
-                                </Suspense>
-                                <WrongNetworkModal />
-                                <Version />
-                                <ToastContainer
-                                  theme={
-                                    theme.palette.mode === "dark"
-                                      ? "dark"
-                                      : "light"
-                                  }
-                                  position="top-left"
-                                />
-                              </AppContainer>
-                            </LocalizationProvider>
-                          </RewardsBalancesProvider>
-                        </AprsProvider>
-                      </PendingSwapsProvider>
-                    </PricesAndVoteData>
-                  </UserStateProvider>
-                </ExpandedPoolsProvider>
-              </TokensProvider>
-            </GaugeProvider>
-          </MinichefProvider>
-        </BasicPoolsProvider>
-      </Web3ReactManager>
+      <WagmiConfig client={wagmiClient}>
+        <Web3ReactManager>
+          <BasicPoolsProvider>
+            <MinichefProvider>
+              <GaugeProvider>
+                <TokensProvider>
+                  <ExpandedPoolsProvider>
+                    <UserStateProvider>
+                      <PricesAndVoteData>
+                        <PendingSwapsProvider>
+                          <AprsProvider>
+                            <RewardsBalancesProvider>
+                              <LocalizationProvider
+                                dateAdapter={AdapterDateFns}
+                              >
+                                <AppContainer>
+                                  <TopMenu />
+                                  <Suspense fallback={null}>
+                                    <Pages />
+                                  </Suspense>
+                                  <WrongNetworkModal />
+                                  <Version />
+                                  <ToastContainer
+                                    theme={
+                                      theme.palette.mode === "dark"
+                                        ? "dark"
+                                        : "light"
+                                    }
+                                    position="top-left"
+                                  />
+                                </AppContainer>
+                              </LocalizationProvider>
+                            </RewardsBalancesProvider>
+                          </AprsProvider>
+                        </PendingSwapsProvider>
+                      </PricesAndVoteData>
+                    </UserStateProvider>
+                  </ExpandedPoolsProvider>
+                </TokensProvider>
+              </GaugeProvider>
+            </MinichefProvider>
+          </BasicPoolsProvider>
+        </Web3ReactManager>
+      </WagmiConfig>
     </QueryClientProvider>
   )
 }
@@ -103,7 +111,7 @@ function PricesAndVoteData({
 }: React.PropsWithChildren<unknown>): ReactElement {
   const dispatch = useDispatch<AppDispatch>()
   const sdlWethSushiPoolContract = useSdlWethSushiPairContract()
-  const { chainId } = useActiveWeb3React()
+  const { chain } = useNetwork()
   const { sdlWethSushiPool } = useSelector(
     (state: AppState) => state.application,
   )
@@ -112,14 +120,18 @@ function PricesAndVoteData({
     void fetchGasPrices(dispatch)
   }, [dispatch])
   const fetchAndUpdateTokensPrice = useCallback(() => {
-    fetchTokenPricesUSD(dispatch, sdlWethSushiPool, chainId)
-  }, [dispatch, chainId, sdlWethSushiPool])
+    fetchTokenPricesUSD(dispatch, sdlWethSushiPool, chain?.id ?? 1)
+  }, [dispatch, chain, sdlWethSushiPool])
   const fetchAndUpdateSwapStats = useCallback(() => {
     void fetchSwapStats(dispatch)
   }, [dispatch])
   const fetchAndUpdateSdlWethSushiPoolInfo = useCallback(() => {
-    void fetchSdlWethSushiPoolInfo(dispatch, sdlWethSushiPoolContract, chainId)
-  }, [dispatch, chainId, sdlWethSushiPoolContract])
+    void fetchSdlWethSushiPoolInfo(
+      dispatch,
+      sdlWethSushiPoolContract,
+      chain?.id ?? 1,
+    )
+  }, [dispatch, chain, sdlWethSushiPoolContract])
 
   useEffect(() => {
     void getSnapshotVoteData(dispatch)
