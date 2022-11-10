@@ -71,6 +71,7 @@ export default function CreatePool(): React.ReactElement {
       address: pool.poolAddress,
       isPaused: pool.isPaused,
       isMigrated: pool.isMigrated,
+      typeOfAsset: pool.typeOfAsset,
     }))
   const { library, chainId } = useActiveWeb3React()
 
@@ -395,6 +396,7 @@ export default function CreatePool(): React.ReactElement {
                         const tokensCount = pool.tokens.length
                         const lpTokenAddr = pool.lpToken.address
                         setPoolType(pool.poolName as PoolType)
+                        setAssetType(pool.typeOfAsset)
                         setSelectedTokensLength(tokensCount)
                         setTokenInputs([
                           ...(Array(maxAmountOfTokens - tokensCount).fill(
@@ -430,6 +432,7 @@ export default function CreatePool(): React.ReactElement {
                   color="secondary"
                   fullWidth
                   exclusive
+                  disabled={poolType !== PoolType.Base}
                   onChange={(event, value: PoolTypes) => {
                     if (value !== null) setAssetType(value)
                   }}
