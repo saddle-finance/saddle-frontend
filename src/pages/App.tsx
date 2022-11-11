@@ -26,7 +26,6 @@ import Web3ReactManager from "../components/Web3ReactManager"
 import WrongNetworkModal from "../components/WrongNetworkModal"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchSdlWethSushiPoolInfo from "../utils/updateSdlWethSushiInfo"
-import fetchSwapStats from "../utils/getSwapStats"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import getSnapshotVoteData from "../utils/getSnapshotVoteData"
 import { useActiveWeb3React } from "../hooks"
@@ -114,9 +113,6 @@ function PricesAndVoteData({
   const fetchAndUpdateTokensPrice = useCallback(() => {
     fetchTokenPricesUSD(dispatch, sdlWethSushiPool, chainId)
   }, [dispatch, chainId, sdlWethSushiPool])
-  const fetchAndUpdateSwapStats = useCallback(() => {
-    void fetchSwapStats(dispatch)
-  }, [dispatch])
   const fetchAndUpdateSdlWethSushiPoolInfo = useCallback(() => {
     void fetchSdlWethSushiPoolInfo(dispatch, sdlWethSushiPoolContract, chainId)
   }, [dispatch, chainId, sdlWethSushiPoolContract])
@@ -128,6 +124,5 @@ function PricesAndVoteData({
   usePoller(fetchAndUpdateGasPrice, 5 * 1000)
   usePoller(fetchAndUpdateTokensPrice, BLOCK_TIME * 3)
   usePoller(fetchAndUpdateSdlWethSushiPoolInfo, BLOCK_TIME * 3)
-  usePoller(fetchAndUpdateSwapStats, BLOCK_TIME * 280) // ~ 1hr
   return <>{children}</>
 }
