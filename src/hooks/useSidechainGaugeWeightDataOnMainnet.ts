@@ -1,6 +1,7 @@
 import {
   ChainId,
   GAUGE_CONTROLLER_ADDRESSES,
+  IS_CROSS_CHAIN_GAUGES_LIVE,
   ROOT_GAUGE_FACTORY_CONTRACT_ADDRESSES,
 } from "../constants"
 import { UseQueryResult, useQuery } from "@tanstack/react-query"
@@ -32,23 +33,29 @@ type SidechainGauge = {
   gaugeRelativeWeight: BigNumber
 }
 
+const defaultSidechainGauges = {
+  gauges: [],
+}
+
 export const useSidechainGaugeWeightDataOnMainnet =
   (): UseQueryResult<SidechainGauges> => {
     const { library, chainId } = useActiveWeb3React()
     if (!library || !chainId)
       throw new Error("Unable to retrieve Sidechain gauge weight data")
-    const chainIds = [
-      ChainId.TEST_SIDE_CHAIN,
-      // ChainId.ARBITRUM,
-      // ChainId.OPTIMISM,
-    ]
+
+    const chainIds = [ChainId.ARBITRUM, ChainId.OPTIMISM]
 
     return useQuery([QueryKeys.SidechainGaugeWeightData], async () => {
+      if (!IS_CROSS_CHAIN_GAUGES_LIVE) {
+        return defaultSidechainGauges
+      }
+
       const ethCallProvider = await getMulticallProvider(library, chainId)
       const gaugeControllerMultiCall = createMultiCallContract<GaugeController>(
         GAUGE_CONTROLLER_ADDRESSES[chainId],
         GAUGE_CONTROLLER_ABI,
       )
+
       const rootGaugeFactoryMultiCall =
         createMultiCallContract<RootGaugeFactory>(
           ROOT_GAUGE_FACTORY_CONTRACT_ADDRESSES[chainId],
@@ -60,15 +67,18 @@ export const useSidechainGaugeWeightDataOnMainnet =
 
       const sidechainGaugeAddresses: string[][] = (
         await Promise.all(
-          sidechainGaugeCounts.map((count) => {
+          sidechainGaugeCounts.map((count, chainIndex) => {
             if (!count) {
               return Promise.resolve([])
             }
 
             return ethCallProvider.tryAll(
-              enumerate(count.toNumber(), 0).map((index) =>
-                rootGaugeFactoryMultiCall.get_gauge(chainIds[index], index),
-              ),
+              enumerate(count.toNumber(), 0).map((index) => {
+                return rootGaugeFactoryMultiCall.get_gauge(
+                  BigNumber.from(chainIds[chainIndex]),
+                  index,
+                )
+              }),
             )
           }),
         )
@@ -92,7 +102,7 @@ export const useSidechainGaugeWeightDataOnMainnet =
       const sidechainGaugesKilledStatusesPromises = Promise.all(
         sidechainGaugesMultiCallContracts.map((gaugeContracts) =>
           ethCallProvider.tryAll(
-            gaugeContracts.map((contract) => contract["is_killed()"]()),
+            gaugeContracts.map((contract) => contract.is_killed()),
           ),
         ),
       )
@@ -100,11 +110,13 @@ export const useSidechainGaugeWeightDataOnMainnet =
       const sidechainGaugeRelativeWeightsPromises = Promise.all(
         sidechainGaugeAddresses.map((gaugeAddresses) =>
           ethCallProvider.tryAll(
-            gaugeAddresses.map((gaugeAddress) =>
-              gaugeControllerMultiCall["gauge_relative_weight(address)"](
-                gaugeAddress,
-              ),
-            ),
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            gaugeAddresses.map((gaugeAddress) => {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+              return gaugeControllerMultiCall.gauge_relative_weight(
+                gaugeAddress.toLowerCase(),
+              )
+            }),
           ),
         ),
       )
@@ -125,9 +137,9 @@ export const useSidechainGaugeWeightDataOnMainnet =
             enumerate(gaugeAddresses.length, 0)
               .map((index) => {
                 if (
-                  !sidechainGaugesNames[chainIdIndex][index] ||
-                  !sidechainGaugesRelativeWeights[chainIdIndex][index] ||
-                  !sidechainGaugesKilledStatuses[chainIdIndex][index]
+                  sidechainGaugesNames[chainIdIndex][index] == null ||
+                  sidechainGaugesRelativeWeights[chainIdIndex][index] == null ||
+                  sidechainGaugesKilledStatuses[chainIdIndex][index] == null
                 )
                   return
 

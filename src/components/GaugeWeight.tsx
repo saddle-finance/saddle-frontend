@@ -45,7 +45,7 @@ function GaugeWeight({ ...props }: HighchartsReact.Props): JSX.Element {
         }
 
         return {
-          name: `${ChainId[gauge.chainId]}_${gauge.gaugeName}}`,
+          name: `${ChainId[gauge.chainId]}_${gauge.gaugeName}`,
           y: gauge.gaugeRelativeWeight
             .div(BigNumber.from(10).pow(14))
             .toNumber(),
@@ -56,12 +56,15 @@ function GaugeWeight({ ...props }: HighchartsReact.Props): JSX.Element {
       y: number
     }[]) || []
 
-  const mainnetGauges = gaugesInfo.map((g) => {
-    return {
-      name: g.displayName,
-      y: g.gaugeRelativeWeight.div(BigNumber.from(10).pow(14)).toNumber(),
-    }
-  })
+  const mainnetGauges = gaugesInfo.map(
+    ({ displayName, gaugeRelativeWeight }) => {
+      const y = gaugeRelativeWeight.div(BigNumber.from(10).pow(14)).toNumber()
+      return {
+        name: displayName,
+        y,
+      }
+    },
+  )
 
   const options: Highcharts.Options = {
     chart: {

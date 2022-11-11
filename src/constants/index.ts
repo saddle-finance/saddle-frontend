@@ -720,6 +720,7 @@ export const GAUGE_CONTROLLER_ADDRESSES = buildAddresses({
 
 export const ROOT_GAUGE_FACTORY_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0x26B862f640357268Bd2d9E95bc81553a2Aa81D7E",
+  [ChainId.MAINNET]: "0x19a5Ec09eE74f64573ac53f48A48616CE943C047",
 })
 
 export const CHILD_ORACLE_CONTRACT_ADDRESSES = buildAddresses({
@@ -2260,6 +2261,7 @@ export const IS_SDL_LIVE = true
 export const IS_VESDL_LIVE = true
 export const IS_ON_CHAIN_VOTE_LIVE = true
 export const IS_POOL_REGISTRY_MIGRATION_LIVE = true
+export const IS_CROSS_CHAIN_GAUGES_LIVE = false
 // FLAGS END
 
 // Regex for readable decimal number

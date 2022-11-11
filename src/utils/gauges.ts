@@ -523,13 +523,13 @@ function buildLpTokenAddressToGauge(
   return gaugeAddresses.reduce((previousGaugeData, gaugeAddress, index) => {
     const lpTokenAddress = gaugeLpTokenAddresses[index]?.toLowerCase()
     const pool = lpTokenToPool[lpTokenAddress || ""] as GaugePool
-    if (!lpTokenAddress || !pool) return previousGaugeData
+    if (!lpTokenAddress) return previousGaugeData
 
     const isValidPoolAddress = Boolean(
-      pool.poolAddress && !isAddressZero(pool.poolAddress),
+      pool?.poolAddress && !isAddressZero(pool?.poolAddress),
     )
 
-    const poolAddress = isValidPoolAddress ? pool.poolAddress : null
+    const poolAddress = isValidPoolAddress ? pool?.poolAddress : null
     const sdlRate = sdlRates[index] || Zero
     const sdlReward = {
       periodFinish: BN_MSIG_SDL_VEST_END_TIMESTAMP,
@@ -568,7 +568,7 @@ function buildLpTokenAddressToGauge(
       lpTokenAddress,
       isKilled: gaugeKillStatuses[index] ?? false,
       poolAddress,
-      poolName: pool.poolName,
+      poolName: pool?.poolName,
       rewards: combinedRewards,
     }
 
