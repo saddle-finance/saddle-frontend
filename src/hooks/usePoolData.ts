@@ -76,6 +76,7 @@ export interface UserShareType {
   name: string // TODO: does this need to be on user share?
   share: BigNumber
   tokens: TokenShareType[]
+  underLyingTokens: TokenShareType[]
   usdBalance: BigNumber
   underlyingTokensAmount: BigNumber
   amountsStaked: Partial<Record<Partners, BigNumber>>
@@ -221,6 +222,10 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
             return userShare.mul(balance).div(BigNumber.from(10).pow(18))
           },
         )
+        const userPoolUnderlyingTokenBalances =
+          priceDataForPool.underlyingTokenBalances1e18.map((balance) => {
+            return userShare.mul(balance).div(BigNumber.from(10).pow(18))
+          })
         const userPoolTokenBalancesSum: BigNumber =
           userPoolTokenBalances.reduce(bnSum)
         const userPoolTokenBalancesUSD = priceDataForPool.tokenBalancesUSD.map(
@@ -248,14 +253,25 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
             value: priceDataForPool.underlyingTokenBalances1e18[i] || Zero,
             address: token.address,
           })) || []
-        const userPoolTokens = expandedPool.tokens.map((token, i) => ({
-          isOnTokenLists: token.isOnTokenLists,
-          symbol: token.symbol,
-          name: token.name,
-          decimals: token.decimals,
-          value: userPoolTokenBalances[i],
-          address: token.address,
-        }))
+        const userPoolTokens =
+          expandedPool.tokens.map((token, i) => ({
+            isOnTokenLists: token.isOnTokenLists,
+            symbol: token.symbol,
+            name: token.name,
+            decimals: token.decimals,
+            value: userPoolTokenBalances[i],
+            address: token.address,
+          })) || []
+
+        const userUnderlyingPoolTokens =
+          expandedPool.underlyingTokens?.map((token, i) => ({
+            isOnTokenLists: token.isOnTokenLists,
+            symbol: token.symbol,
+            name: token.name,
+            decimals: token.decimals,
+            value: userPoolUnderlyingTokenBalances[i],
+            address: token.address,
+          })) || []
 
         const { oneDayVolume, apy, utilization } = swapStats?.[chainId]?.[
           expandedPool.poolAddress
@@ -317,6 +333,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
               underlyingTokensAmount: userPoolTokenBalancesSum,
               usdBalance: userPoolTokenBalancesUSDSum,
               tokens: userPoolTokens,
+              underLyingTokens: userUnderlyingPoolTokens,
               lpTokenBalance: userWalletLpTokenBalance,
               amountsStaked: Object.keys(amountsStaked).reduce((acc, key) => {
                 const amount = amountsStaked[key]
