@@ -168,10 +168,6 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
           ...emptyPoolData,
           name: poolName || "",
         })
-        setUserShare((prev) => ({
-          ...prev,
-          name: poolName || "",
-        }))
         return
       }
       try {
