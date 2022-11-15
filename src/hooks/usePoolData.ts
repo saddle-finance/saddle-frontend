@@ -76,6 +76,7 @@ export interface UserShareType {
   name: string // TODO: does this need to be on user share?
   share: BigNumber
   tokens: TokenShareType[]
+  underlyingTokens: TokenShareType[]
   usdBalance: BigNumber
   underlyingTokensAmount: BigNumber
   amountsStaked: Partial<Record<Partners, BigNumber>>
@@ -83,7 +84,7 @@ export interface UserShareType {
 
 export type PoolDataHookReturnType = [
   PoolDataType,
-  UserShareType | null,
+  UserShareType,
   React.Dispatch<React.SetStateAction<string | undefined>>,
 ]
 
@@ -118,6 +119,17 @@ const emptyPoolData = {
   poolType: PoolTypes.OTHER,
 } as PoolDataType
 
+const emptyUserShareData: UserShareType = {
+  name: "",
+  lpTokenBalance: Zero,
+  amountsStaked: {},
+  share: Zero,
+  tokens: [],
+  underlyingTokens: [],
+  underlyingTokensAmount: Zero,
+  usdBalance: Zero,
+}
+
 /**
  *
  * Notes
@@ -140,7 +152,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
     ...emptyPoolData,
     name: poolName || "",
   })
-  const [userShare, setUserShare] = useState<UserShareType | null>(null)
+  const [userShare, setUserShare] = useState<UserShareType>(emptyUserShareData)
 
   useEffect(() => {
     async function getSwapData(): Promise<void> {
@@ -156,7 +168,6 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
           ...emptyPoolData,
           name: poolName || "",
         })
-        setUserShare(null)
         return
       }
       try {
@@ -221,11 +232,15 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
             return userShare.mul(balance).div(BigNumber.from(10).pow(18))
           },
         )
+        const userPoolUnderlyingTokenBalances =
+          priceDataForPool.underlyingTokenBalances1e18.map((balance) => {
+            return userShare.mul(balance).div(BN_1E18)
+          })
         const userPoolTokenBalancesSum: BigNumber =
           userPoolTokenBalances.reduce(bnSum)
         const userPoolTokenBalancesUSD = priceDataForPool.tokenBalancesUSD.map(
           (balance) => {
-            return userShare.mul(balance).div(BigNumber.from(10).pow(18))
+            return userShare.mul(balance).div(BN_1E18)
           },
         )
         const userPoolTokenBalancesUSDSum: BigNumber =
@@ -248,14 +263,25 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
             value: priceDataForPool.underlyingTokenBalances1e18[i] || Zero,
             address: token.address,
           })) || []
-        const userPoolTokens = expandedPool.tokens.map((token, i) => ({
-          isOnTokenLists: token.isOnTokenLists,
-          symbol: token.symbol,
-          name: token.name,
-          decimals: token.decimals,
-          value: userPoolTokenBalances[i],
-          address: token.address,
-        }))
+        const userPoolTokens =
+          expandedPool.tokens.map((token, i) => ({
+            isOnTokenLists: token.isOnTokenLists,
+            symbol: token.symbol,
+            name: token.name,
+            decimals: token.decimals,
+            value: userPoolTokenBalances[i],
+            address: token.address,
+          })) || []
+
+        const userUnderlyingPoolTokens =
+          expandedPool.underlyingTokens?.map((token, i) => ({
+            isOnTokenLists: token.isOnTokenLists,
+            symbol: token.symbol,
+            name: token.name,
+            decimals: token.decimals,
+            value: userPoolUnderlyingTokenBalances[i],
+            address: token.address,
+          })) || []
 
         const { oneDayVolume, apy, utilization } = swapStats?.[chainId]?.[
           expandedPool.poolAddress
@@ -310,27 +336,26 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
           minichefSDLApr,
           claimableAmount, // move to minichef provider
         }
-        const userShareData = account
-          ? {
-              name: poolName,
-              share: userShare,
-              underlyingTokensAmount: userPoolTokenBalancesSum,
-              usdBalance: userPoolTokenBalancesUSDSum,
-              tokens: userPoolTokens,
-              lpTokenBalance: userWalletLpTokenBalance,
-              amountsStaked: Object.keys(amountsStaked).reduce((acc, key) => {
-                const amount = amountsStaked[key]
-                return key
-                  ? {
-                      ...acc,
-                      [key]: amount
-                        ?.mul(expandedPool.virtualPrice)
-                        .div(BigNumber.from(10).pow(18)),
-                    }
-                  : acc
-              }, {}), // this is # of underlying tokens (eg btc), not lpTokens
-            }
-          : null
+        const userShareData = {
+          name: poolName,
+          share: userShare,
+          underlyingTokensAmount: userPoolTokenBalancesSum,
+          usdBalance: userPoolTokenBalancesUSDSum,
+          tokens: userPoolTokens,
+          underlyingTokens: userUnderlyingPoolTokens,
+          lpTokenBalance: userWalletLpTokenBalance,
+          amountsStaked: Object.keys(amountsStaked).reduce((acc, key) => {
+            const amount = amountsStaked[key]
+            return key
+              ? {
+                  ...acc,
+                  [key]: amount
+                    ?.mul(expandedPool.virtualPrice)
+                    .div(BigNumber.from(10).pow(18)),
+                }
+              : acc
+          }, {}), // this is # of underlying tokens (eg btc), not lpTokens
+        }
         setPoolData(poolData)
         setUserShare(userShareData)
       } catch (err) {
