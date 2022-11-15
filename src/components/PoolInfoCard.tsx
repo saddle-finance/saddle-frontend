@@ -45,7 +45,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
   const { chainId } = useActiveWeb3React()
   const { t } = useTranslation()
   const basicPools = useContext(BasicPoolsContext)
-  const { swapStats, swapStatsLoading } = useSwapStats()
+  const { data: swapStats, isLoading: swapStatsLoading } = useSwapStats()
   if (data == null || chainId == null || basicPools == null) return null
   const basicPool = basicPools[data.name]
   const poolAddress = basicPool?.poolAddress

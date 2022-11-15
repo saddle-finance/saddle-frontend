@@ -1,4 +1,5 @@
 import { BLOCK_TIME, ChainId } from "../constants"
+import { useCallback } from "react"
 import { useQuery } from "@tanstack/react-query"
 
 const swapStatsURI = "https://ipfs.saddle.exchange/swap-stats.json"
@@ -24,15 +25,8 @@ type SwapStatsReponse = {
     }
   }
 }
-export function useSwapStats(): {
-  swapStats: SwapStats | undefined
-  swapStatsLoading: boolean
-} {
-  const {
-    data: swapStats,
-    isLoading: swapStatsLoading,
-    isSuccess,
-  } = useQuery<SwapStatsReponse>(
+export function useSwapStats() {
+  return useQuery(
     ["swapStats"],
     async () => {
       const res = await fetch(`${swapStatsURI}`)
@@ -41,13 +35,15 @@ export function useSwapStats(): {
       }
       throw new Error("Unable to fetch swap stats from IPFS")
     },
-    { retry: 3, refetchInterval: BLOCK_TIME * 3 },
+    {
+      select: useCallback(
+        (data: SwapStatsReponse) => formatSwapStats(data),
+        [],
+      ),
+      retry: 3,
+      refetchInterval: BLOCK_TIME * 3,
+    },
   )
-  if (isSuccess) {
-    const formattedSwapStats = formatSwapStats(swapStats)
-    return { swapStats: formattedSwapStats, swapStatsLoading }
-  }
-  return { swapStats: undefined, swapStatsLoading }
 }
 
 const formatSwapStats = (swapStats: SwapStatsReponse) => {
