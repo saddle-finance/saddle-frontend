@@ -42,6 +42,8 @@ export function useSwapStats() {
       ),
       retry: 3,
       refetchInterval: BLOCK_TIME * 3,
+      refetchOnMount: false,
+      staleTime: BLOCK_TIME * 3,
     },
   )
 }
