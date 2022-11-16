@@ -469,7 +469,11 @@ function useRewardClaims() {
         return
       }
 
-      if (gauge.rewards.length === 0 && !Object.keys(userGaugeRewards).length) {
+      const doesUserHaveGaugeRewards = Boolean(
+        Object.keys(userGaugeRewards).length,
+      )
+
+      if (gauge.rewards.length === 0 && !doesUserHaveGaugeRewards) {
         enqueueToast("error", "No rewards to claim")
         return
       }
@@ -481,7 +485,7 @@ function useRewardClaims() {
         if (minterRewards.length > 0) {
           claimPromises.push(gaugeMinterContract.mint(gauge.address))
         }
-        if (gaugeRewards.length > 0) {
+        if (gaugeRewards.length > 0 || doesUserHaveGaugeRewards) {
           const liquidityGaugeContract = getContract(
             gauge.address,
             LIQUIDITY_GAUGE_V5_ABI,
