@@ -142,7 +142,7 @@ export async function getGaugeData(
         account,
       )
     } else {
-      console.warn(`Gauges are not supported on chainId: ${chainId}`)
+      console.warn(`Gauges are not supported on ${chainId.toString()}`)
       return initialGaugesState
     }
   } catch (e) {
