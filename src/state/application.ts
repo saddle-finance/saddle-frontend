@@ -1,23 +1,11 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
 import { BigNumber } from "@ethersproject/bignumber"
-import { ChainId } from "../constants"
 
 interface GasPrices {
   gasStandard?: number
   gasFast?: number
   gasInstant?: number
-}
-type PoolStats = {
-  oneDayVolume: string
-  apy: string
-  tvl: string
-  utilization: string
-}
-type SwapStats = {
-  [chainId in ChainId]?: Partial<{
-    [swapAddress: string]: PoolStats
-  }>
 }
 export type TokenPricesUSD = Partial<{
   [tokenAddr: string]: number
@@ -34,7 +22,7 @@ export type SdlWethSushiPool = {
 
 type ApplicationState = GasPrices & { tokenPricesUSD?: TokenPricesUSD } & {
   lastTransactionTimes: LastTransactionTimes
-} & { swapStats?: SwapStats } & { sdlWethSushiPool?: SdlWethSushiPool }
+} & { sdlWethSushiPool?: SdlWethSushiPool }
 
 const initialState: ApplicationState = {
   lastTransactionTimes: {},
