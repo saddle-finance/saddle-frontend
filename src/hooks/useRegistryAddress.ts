@@ -1,9 +1,6 @@
-import {
-  CHILD_GAUGE_FACTORY_NAME,
-  isMainnet,
-  useMasterRegistry,
-} from "./useContract"
+import { CHILD_GAUGE_FACTORY_NAME, useMasterRegistry } from "./useContract"
 import { UseQueryResult, useQuery } from "@tanstack/react-query"
+import { ChainId } from "../constants"
 import { ContractNotLoadedError } from "../errors/ContractNotLoadedError"
 import { QueryKeys } from "./queryKeys"
 import { formatBytes32String } from "ethers/lib/utils"
@@ -22,7 +19,7 @@ export const useRegistryAddress = (): UseQueryResult<RegistryAddresses> => {
 
     const addresses: RegistryAddresses = {}
 
-    if (!isMainnet(chainId)) {
+    if (chainId && [ChainId.OPTIMISM, ChainId.ARBITRUM].includes(chainId)) {
       const childGaugeFactoryAddress =
         await masterRegistry.resolveNameToLatestAddress(
           formatBytes32String(CHILD_GAUGE_FACTORY_NAME),
