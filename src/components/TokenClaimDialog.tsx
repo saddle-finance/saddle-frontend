@@ -11,7 +11,7 @@ import {
 } from "@mui/material"
 import { BasicPool, BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { ChainId, SDL_TOKEN } from "../constants"
-import { GaugeReward, GaugeUserReward, areGaugesActive } from "../utils/gauges"
+import { GaugeReward, areGaugesActive } from "../utils/gauges"
 import React, {
   ReactElement,
   useCallback,
@@ -271,12 +271,7 @@ export default function TokenClaimDialog({
                           ["SDL", userClaimableSdl ?? Zero],
                           ...userClaimableOtherRewards,
                         ]}
-                        claimCallback={() =>
-                          void claimGaugeReward(
-                            gauge,
-                            userState?.gaugeRewards || {},
-                          )
-                        }
+                        claimCallback={() => void claimGaugeReward(gauge)}
                         status={
                           claimsStatuses["allGauges"] ||
                           claimsStatuses[gauge?.gaugeName ?? ""]
@@ -460,20 +455,13 @@ function useRewardClaims() {
         address: string
         rewards: GaugeReward[]
       } | null,
-      userGaugeRewards: Partial<{
-        [gaugeAddress: string]: GaugeUserReward
-      }>,
     ) => {
       if (!chainId || !account || !gaugeMinterContract || !library || !gauge) {
         enqueueToast("error", "Unable to claim reward")
         return
       }
 
-      const doesUserHaveGaugeRewards = Boolean(
-        Object.keys(userGaugeRewards).length,
-      )
-
-      if (gauge.rewards.length === 0 && !doesUserHaveGaugeRewards) {
+      if (gauge.rewards.length === 0) {
         enqueueToast("error", "No rewards to claim")
         return
       }
@@ -485,7 +473,8 @@ function useRewardClaims() {
         if (minterRewards.length > 0) {
           claimPromises.push(gaugeMinterContract.mint(gauge.address))
         }
-        if (gaugeRewards.length > 0 || doesUserHaveGaugeRewards) {
+
+        if (gaugeRewards.length > 0) {
           const liquidityGaugeContract = getContract(
             gauge.address,
             LIQUIDITY_GAUGE_V5_ABI,
@@ -574,6 +563,7 @@ function useRewardClaims() {
     },
     [account, rewardsContract, chainId, updateClaimStatus],
   )
+
   return {
     claimsStatuses: pendingClaims,
     claimPoolReward,

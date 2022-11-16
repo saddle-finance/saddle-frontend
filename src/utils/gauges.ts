@@ -552,9 +552,7 @@ function buildLpTokenAddressToGauge(
       })
       .filter(Boolean) as GaugeReward[]
 
-    const combinedRewards = gaugeTokenReward.concat(
-      sdlRate.gt(Zero) ? [sdlReward] : [],
-    )
+    const combinedRewards = gaugeTokenReward.concat([sdlReward])
 
     const gauge: Gauge = {
       address: gaugeAddress,
