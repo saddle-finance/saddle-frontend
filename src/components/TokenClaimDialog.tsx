@@ -11,7 +11,7 @@ import {
 } from "@mui/material"
 import { BasicPool, BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { ChainId, SDL_TOKEN } from "../constants"
-import { GaugeReward, areGaugesActive } from "../utils/gauges"
+import { GaugeReward, GaugeUserReward, areGaugesActive } from "../utils/gauges"
 import React, {
   ReactElement,
   useCallback,
@@ -271,7 +271,12 @@ export default function TokenClaimDialog({
                           ["SDL", userClaimableSdl ?? Zero],
                           ...userClaimableOtherRewards,
                         ]}
-                        claimCallback={() => void claimGaugeReward(gauge)}
+                        claimCallback={() =>
+                          void claimGaugeReward(
+                            gauge,
+                            userState?.gaugeRewards || {},
+                          )
+                        }
                         status={
                           claimsStatuses["allGauges"] ||
                           claimsStatuses[gauge?.gaugeName ?? ""]
@@ -455,13 +460,16 @@ function useRewardClaims() {
         address: string
         rewards: GaugeReward[]
       } | null,
+      userGaugeRewards: Partial<{
+        [gaugeAddress: string]: GaugeUserReward
+      }>,
     ) => {
       if (!chainId || !account || !gaugeMinterContract || !library || !gauge) {
         enqueueToast("error", "Unable to claim reward")
         return
       }
 
-      if (gauge.rewards.length === 0) {
+      if (gauge.rewards.length === 0 && !Object.keys(userGaugeRewards).length) {
         enqueueToast("error", "No rewards to claim")
         return
       }
