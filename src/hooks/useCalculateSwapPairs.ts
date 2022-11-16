@@ -4,14 +4,15 @@ import {
   BasicTokens,
   TokensContext,
 } from "../providers/TokensProvider"
-import { ChainId, SWAP_TYPES } from "../constants/index"
 import { useCallback, useContext, useEffect, useMemo, useState } from "react"
 
 import { AppState } from "../state"
 import { BigNumber } from "ethers"
 import { IS_DEVELOPMENT } from "./../utils/environment"
+import { SWAP_TYPES } from "../constants/index"
 import { getPriceDataForPool } from "../utils"
 import { intersection } from "../utils/index"
+import { isMainnet } from "./useContract"
 import { useActiveWeb3React } from "."
 import { useSelector } from "react-redux"
 
@@ -117,7 +118,7 @@ export function useCalculateSwapPairs(): (token?: BasicToken) => SwapData[] {
         poolsSortedByTVL || [],
         tokenToPoolsMapSorted || {},
         originToken,
-        chainId === ChainId.MAINNET, // virtualSwap only supports mainnet
+        isMainnet(chainId), // virtualSwap only supports mainnet
       )
       setPairCache((prevState) => ({
         ...prevState,

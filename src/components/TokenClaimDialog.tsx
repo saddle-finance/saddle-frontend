@@ -473,6 +473,7 @@ function useRewardClaims() {
         if (minterRewards.length > 0) {
           claimPromises.push(gaugeMinterContract.mint(gauge.address))
         }
+
         if (gaugeRewards.length > 0) {
           const liquidityGaugeContract = getContract(
             gauge.address,
@@ -562,6 +563,7 @@ function useRewardClaims() {
     },
     [account, rewardsContract, chainId, updateClaimStatus],
   )
+
   return {
     claimsStatuses: pendingClaims,
     claimPoolReward,
