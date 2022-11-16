@@ -113,6 +113,9 @@ export function areGaugesActive(chainId?: ChainId): boolean {
   return !!chainId && isMainnet(chainId) && IS_VESDL_LIVE
 }
 
+export const shouldLoadChildGauges = (chainId: ChainId) =>
+  [ChainId.OPTIMISM, ChainId.ARBITRUM].includes(chainId)
+
 export async function getGaugeData(
   library: Web3Provider,
   chainId: ChainId,
@@ -130,7 +133,7 @@ export async function getGaugeData(
         registryAddresses,
         account,
       )
-    } else {
+    } else if (shouldLoadChildGauges(chainId)) {
       return buildGaugeDataSidechain(
         library,
         chainId,
@@ -138,6 +141,8 @@ export async function getGaugeData(
         registryAddresses,
         account,
       )
+    } else {
+      return initialGaugesState
     }
   } catch (e) {
     const error = new Error(
