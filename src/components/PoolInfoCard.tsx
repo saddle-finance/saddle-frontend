@@ -1,4 +1,12 @@
-import { Box, Chip, Divider, Link, Typography, styled } from "@mui/material"
+import {
+  Box,
+  Chip,
+  Divider,
+  Link,
+  Skeleton,
+  Typography,
+  styled,
+} from "@mui/material"
 import { POOL_FEE_PRECISION, PoolTypes } from "../constants"
 import React, { ReactElement, useContext } from "react"
 import {
@@ -9,7 +17,6 @@ import {
 } from "../utils"
 import { commify, parseUnits } from "@ethersproject/units"
 
-import { AppState } from "../state"
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { PoolDataType } from "../hooks/usePoolData"
 import TokenIcon from "./TokenIcon"
@@ -18,7 +25,7 @@ import { Zero } from "@ethersproject/constants"
 import { getMultichainScanLink } from "../utils/getEtherscanLink"
 import { shortenAddress } from "../utils/shortenAddress"
 import { useActiveWeb3React } from "../hooks"
-import { useSelector } from "react-redux"
+import { useSwapStats } from "../hooks/useSwapStats"
 import { useTranslation } from "react-i18next"
 
 interface Props {
@@ -38,7 +45,7 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
   const { chainId } = useActiveWeb3React()
   const { t } = useTranslation()
   const basicPools = useContext(BasicPoolsContext)
-  const { swapStats } = useSelector((state: AppState) => state.application)
+  const { data: swapStats, isLoading: swapStatsLoading } = useSwapStats()
   if (data == null || chainId == null || basicPools == null) return null
   const basicPool = basicPools[data.name]
   const poolAddress = basicPool?.poolAddress
@@ -95,6 +102,8 @@ function PoolInfoCard({ data }: Props): ReactElement | null {
         }
       }) || [],
   }
+
+  if (swapStatsLoading) return <Skeleton height={500} />
 
   return (
     <Box>

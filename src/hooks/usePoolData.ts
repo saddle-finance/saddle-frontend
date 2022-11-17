@@ -22,6 +22,7 @@ import { Zero } from "@ethersproject/constants"
 import { parseUnits } from "@ethersproject/units"
 import { useActiveWeb3React } from "."
 import { useSelector } from "react-redux"
+import { useSwapStats } from "./useSwapStats"
 
 interface TokenShareType {
   isOnTokenLists: boolean
@@ -145,9 +146,8 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
   const { data: expandedPools } = useContext(ExpandedPoolsContext)
   const { gauges } = useContext(GaugeContext)
   const gaugeAprs = useContext(AprsContext)
-  const { tokenPricesUSD, swapStats } = useSelector(
-    (state: AppState) => state.application,
-  )
+  const { data: swapStats } = useSwapStats()
+  const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const [poolData, setPoolData] = useState<PoolDataType>({
     ...emptyPoolData,
     name: poolName || "",
