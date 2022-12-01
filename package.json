@@ -35,7 +35,7 @@
     "classnames": "^2.3.1",
     "copy-to-clipboard": "^3.3.1",
     "date-fns": "^2.29.1",
-    "ethcall": "^4.6.3",
+    "ethcall": "^4.8.11",
     "ethers": "^5.5.3",
     "framer-motion": "^4.0.3",
     "history": "^5.0.0",
