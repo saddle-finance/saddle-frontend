@@ -10,7 +10,7 @@
     "@metamask/jazzicon": "^2.0.0",
     "@mui/icons-material": "^5.5.1",
     "@mui/lab": "^5.0.0-alpha.76",
-    "@mui/material": "^5.4.0",
+    "@mui/material": "^5.10.16",
     "@mui/x-date-pickers": "^5.0.0-alpha.2",
     "@reduxjs/toolkit": "^1.4.0",
     "@sentry/react": "^6.16.1",
