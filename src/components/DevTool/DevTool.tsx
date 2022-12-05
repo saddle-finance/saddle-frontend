@@ -8,10 +8,12 @@ import {
   Typography,
 } from "@mui/material"
 import { JsonRpcProvider, getDefaultProvider } from "@ethersproject/providers"
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useContext, useEffect, useMemo, useState } from "react"
 
 import CalculateIcon from "@mui/icons-material/Calculate"
+import { ExpandedPoolsContext } from "../../providers/ExpandedPoolsProvider"
 import { IS_PRODUCTION } from "../../utils/environment"
+import { formatUnits } from "ethers/lib/utils"
 import { isNumberOrEmpty } from "../../utils"
 
 type BlockState = {
@@ -22,7 +24,7 @@ type BlockState = {
 
 export default function DevTool() {
   const provider = useMemo(
-    () => getDefaultProvider("http://localhost:8545"),
+    () => !IS_PRODUCTION && getDefaultProvider("http://localhost:8545"),
     [],
   ) as JsonRpcProvider
   const [stateBefore, setStateBefore] = useState<BlockState | null>(null)
@@ -30,6 +32,8 @@ export default function DevTool() {
 
   const [skippingTime, setSkippingTime] = useState<string>("")
   const [openTool, setOpenTool] = useState<boolean>(false)
+
+  const { isLoaded, data: poolsData } = useContext(ExpandedPoolsContext)
 
   useEffect(() => {
     const getTBlockAndTime = async () => {
@@ -66,6 +70,40 @@ export default function DevTool() {
     if (isNumberOrEmpty(event.target.value)) {
       setSkippingTime(event.target.value)
     }
+  }
+
+  const handleLogPools = () => {
+    const dataToLog = Object.values(poolsData.byName).map(
+      ({
+        poolName,
+        tokens,
+        underlyingTokens,
+        poolAddress,
+        basePoolAddress,
+        aParameter,
+        typeOfAsset,
+        isPaused,
+      }) => ({
+        name: poolName,
+        type: ["BTC", "ETH", "USD", "Other"][typeOfAsset],
+        aParameter: formatUnits(aParameter, 0),
+        isPaused,
+
+        address: poolAddress,
+        basePoolAddress,
+
+        tokens: tokens.map(({ symbol, address, decimals }) => ({
+          symbol,
+          address,
+          decimals,
+        })),
+        underlyingTokens: underlyingTokens?.map(
+          ({ symbol, address, decimals }) => ({ symbol, address, decimals }),
+        ),
+      }),
+    )
+    console.table(dataToLog)
+    console.log(dataToLog)
   }
 
   const handleSubmit = async () => {
@@ -137,6 +175,18 @@ export default function DevTool() {
               ) : null}
             </Box>
           </Collapse>
+
+          <Box mt="24px">
+            <Button
+              color="primary"
+              variant="contained"
+              fullWidth
+              disabled={!isLoaded}
+              onClick={() => void handleLogPools()}
+            >
+              Log Pools State
+            </Button>
+          </Box>
         </Box>
       </Drawer>
       <Box>
