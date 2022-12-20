@@ -12,6 +12,7 @@ import {
 import React, { useMemo, useState } from "react"
 import { commify, formatBNToString, isNumberOrEmpty } from "../../utils"
 import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
+
 import ArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
 import { BigNumber } from "ethers"
 import { GaugeController } from "../../../types/ethers-contracts/GaugeController"
@@ -19,6 +20,7 @@ import { LPTokenAddressToGauge } from "../../utils/gauges"
 import VoteHistory from "./Votes"
 import { useActiveWeb3React } from "../../hooks"
 import { useQuery } from "@tanstack/react-query"
+import { useSidechainGaugeWeightDataOnMainnet } from "../../hooks/useSidechainGaugeWeightDataOnMainnet"
 import { useTranslation } from "react-i18next"
 
 // export type LPTokenAddressToGauge = Partial<{
@@ -53,6 +55,7 @@ export default function OnChainVote({
   const theme = useTheme()
   const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
+  const { data: sidechainGaugesInfo } = useSidechainGaugeWeightDataOnMainnet()
   const [selectedGauge, setSelectedGauge] = useState<{
     gaugeName: string
     address: string
@@ -77,8 +80,14 @@ export default function OnChainVote({
             gaugeName: gaugeName,
           }
       })
+    ;(sidechainGaugesInfo?.gauges || []).forEach(({ address, displayName }) => {
+      gaugeNameObj[address] = {
+        address,
+        gaugeName: displayName,
+      }
+    })
     return gaugeNameObj
-  }, [gauges])
+  }, [gauges, sidechainGaugesInfo])
 
   const getVoteUsed = () => {
     if (!account) return
@@ -99,9 +108,10 @@ export default function OnChainVote({
 
   const filteredVote = filteredRes?.reduce(
     (acc, { args: { user, time, weight, gauge_addr } }) => {
-      if (user === account) {
-        acc[gauge_addr.toLowerCase()] = {
-          gaugeName: gaugeNames[gauge_addr.toLowerCase()].gaugeName,
+      const gaugeAddr = gauge_addr.toLowerCase()
+      if (user === account && gaugeNames[gaugeAddr]) {
+        acc[gaugeAddr] = {
+          gaugeName: gaugeNames[gaugeAddr].gaugeName,
           voteDate: time.toNumber(),
           weight,
         }
