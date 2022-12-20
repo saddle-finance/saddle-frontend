@@ -25,6 +25,7 @@ import TokenClaimDialog from "./TokenClaimDialog"
 import Web3Status from "./Web3Status"
 import { areGaugesActive } from "../utils/gauges"
 import { formatBNToShortString } from "../utils"
+import { isMainnet } from "../hooks/useContract"
 import { useActiveWeb3React } from "../hooks"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
@@ -177,7 +178,6 @@ function RewardsButton({
 function MenuList() {
   const { t } = useTranslation()
   const { chainId } = useActiveWeb3React()
-  const gaugesAreActive = areGaugesActive(chainId)
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { pathname } = useLocation()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
@@ -192,13 +192,13 @@ function MenuList() {
         {t("pools")}
       </NavMenu>
 
-      {gaugesAreActive && (
+      {areGaugesActive(chainId) && (
         <NavMenu to="/farm" selected={activeTab === "farm"}>
           {t("farm")}
         </NavMenu>
       )}
 
-      {gaugesAreActive && (
+      {isMainnet(chainId) && (
         <NavMenu to="/vesdl" selected={activeTab === "vesdl"}>
           {t("veSdl")}
         </NavMenu>
