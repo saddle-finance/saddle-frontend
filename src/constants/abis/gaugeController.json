@@ -320,7 +320,7 @@
     ]
   },
   {
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function",
     "name": "gauge_relative_weight_write",
     "inputs": [
