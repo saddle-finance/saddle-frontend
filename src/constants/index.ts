@@ -2261,7 +2261,7 @@ export const IS_SDL_LIVE = true
 export const IS_VESDL_LIVE = true
 export const IS_ON_CHAIN_VOTE_LIVE = true
 export const IS_POOL_REGISTRY_MIGRATION_LIVE = true
-export const IS_CROSS_CHAIN_GAUGES_LIVE = false
+export const IS_CROSS_CHAIN_GAUGES_LIVE = true
 // FLAGS END
 
 // Regex for readable decimal number
