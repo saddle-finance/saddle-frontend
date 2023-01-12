@@ -4,7 +4,6 @@ import {
   BN_MSIG_SDL_VEST_END_TIMESTAMP,
   ChainId,
   GAUGE_CONTROLLER_ADDRESSES,
-  IS_VESDL_LIVE,
 } from "../constants"
 import {
   CHILD_GAUGE_FACTORY_NAME,
@@ -110,7 +109,7 @@ export const initialGaugesState: Gauges = {
 }
 
 export function areGaugesActive(chainId?: ChainId): boolean {
-  return !!chainId && isMainnet(chainId) && IS_VESDL_LIVE
+  return !!chainId && (isMainnet(chainId) || shouldLoadChildGauges(chainId))
 }
 
 export const shouldLoadChildGauges = (chainId: ChainId) =>
