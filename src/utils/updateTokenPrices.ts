@@ -15,7 +15,7 @@ import { chunk } from "lodash"
 import { formatUnits } from "@ethersproject/units"
 import retry from "async-retry"
 
-const coinGeckoAPI = "https://api.coingecko.com/api/v3/simple/price"
+const coinGeckoAPI = "https://pro-api.coingecko.com/api/v3/simple/price"
 
 const nativeTokenID = ["bitcoin", "ethereum"]
 
@@ -108,10 +108,13 @@ export default function fetchTokenPricesUSD(
   )
   void retry(
     () =>
-      fetch(`${coinGeckoAPI}?ids=${encodeURIComponent(
-        tokenIds.join(","),
-      )}&vs_currencies=usd
-    `)
+      fetch(
+        `${coinGeckoAPI}?ids=${encodeURIComponent(
+          tokenIds.join(","),
+        )}&vs_currencies=usd&x_cg_pro_api_key=CG-eCmWRehYgDjzKv1RLyJrEp27
+    `,
+        { headers: { "Access-Control-Allow-Origin": "*" } },
+      )
         .then((res) => res.json())
         .then((body: CoinGeckoReponse) => {
           const otherTokensResult = Object.keys(otherTokens).reduce(
