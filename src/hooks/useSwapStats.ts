@@ -1,4 +1,4 @@
-import { BLOCK_TIME, ChainId } from "../constants"
+import { ChainId } from "../constants"
 import { useCallback } from "react"
 import { useQuery } from "@tanstack/react-query"
 
@@ -41,9 +41,9 @@ export function useSwapStats() {
         [],
       ),
       retry: 3,
-      refetchInterval: BLOCK_TIME * 3,
+      refetchInterval: 60 * 60 * 1000, // 1hr
       refetchOnMount: false,
-      staleTime: BLOCK_TIME * 3,
+      staleTime: 60 * 60 * 1000, // 1hr
     },
   )
 }

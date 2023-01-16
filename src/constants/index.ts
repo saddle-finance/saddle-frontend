@@ -1328,6 +1328,7 @@ const ALUSD_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.ROPSTEN]: "0x8b7a92FdbC77c6d8c61644D118c37D813B2069C4",
   [ChainId.HARDHAT]: "0x84eA74d481Ee0A5332c457a4d796187F6Ba67fEB",
   [ChainId.FANTOM]: "0xB67FA6deFCe4042070Eb1ae1511Dcd6dcc6a532E",
+  [ChainId.ARBITRUM]: "0xcb8fa9a76b8e203d8c3797bf438d8fb81ea3326a",
 })
 export const ALUSD = new Token(
   ALUSD_CONTRACT_ADDRESSES,
@@ -1339,6 +1340,7 @@ export const ALUSD = new Token(
 
 const USX_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8",
+  [ChainId.ARBITRUM]: "0x641441c631e2f909700d2f41fd87f0aa6a6b4edb",
 })
 export const USX = new Token(
   USX_CONTRACT_ADDRESSES,
