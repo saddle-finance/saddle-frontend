@@ -1,6 +1,5 @@
 import {
   ALETH_POOL_NAME,
-  ChainId,
   MINICHEF_CONTRACT_ADDRESSES,
   TBTC_METAPOOL_V2_NAME,
 } from "../constants"
@@ -10,6 +9,7 @@ import { getContract, getMulticallProvider, shiftBNDecimals } from "../utils"
 import ALCX_REWARDS_ABI from "../constants/abis/alchemixStakingPools.json"
 import { AlchemixStakingPools } from "../../types/ethers-contracts/AlchemixStakingPools"
 import { BigNumber } from "@ethersproject/bignumber"
+import { ChainId } from "../constants/networks"
 import { Contract } from "ethcall"
 import IREWARDER_ABI from "../constants/abis/IRewarder.json"
 import { IRewarder } from "../../types/ethers-contracts/IRewarder"

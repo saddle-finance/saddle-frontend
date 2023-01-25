@@ -8,8 +8,9 @@ import {
   getVotingEscrowContract,
   isMainnet,
 } from "./useContract"
+
 import { BigNumber } from "@ethersproject/bignumber"
-import { ChainId } from "../constants"
+import { ChainId } from "../constants/networks"
 import { ContractTransaction } from "ethers"
 import { GaugeContext } from "../providers/GaugeProvider"
 import { GaugeUserReward } from "../utils/gauges"

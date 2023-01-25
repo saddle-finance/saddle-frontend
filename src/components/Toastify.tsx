@@ -2,7 +2,7 @@
 import { Box, Link } from "@mui/material"
 import React, { ReactText } from "react"
 
-import { ChainId } from "../constants"
+import { ChainId } from "../constants/networks"
 import { IS_PRODUCTION } from "../utils/environment"
 import LaunchIcon from "@mui/icons-material/Launch"
 import { getMultichainScanLink } from "../utils/getEtherscanLink"

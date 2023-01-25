@@ -1,10 +1,5 @@
 import { AddressZero, Zero } from "@ethersproject/constants"
-import {
-  BN_1E18,
-  ChainId,
-  PoolTypes,
-  readableDecimalNumberRegex,
-} from "../constants"
+import { BN_1E18, PoolTypes, readableDecimalNumberRegex } from "../constants"
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
 import {
   MulticallCall,
@@ -16,6 +11,7 @@ import { formatUnits, parseEther, parseUnits } from "@ethersproject/units"
 import { BasicPool } from "../providers/BasicPoolsProvider"
 import { BasicTokens } from "../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
+import { ChainId } from "../constants/networks"
 import { Contract } from "@ethersproject/contracts"
 import { ContractInterface } from "ethers"
 import { Deadlines } from "../state/user"

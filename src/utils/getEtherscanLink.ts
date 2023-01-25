@@ -1,4 +1,4 @@
-import { ChainId } from "../constants"
+import { ChainId } from "../constants/networks"
 
 export function getMultichainScanLink(
   chainId: ChainId,

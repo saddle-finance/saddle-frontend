@@ -1,5 +1,4 @@
 import {
-  ChainId,
   GAUGE_CONTROLLER_ADDRESSES,
   IS_CROSS_CHAIN_GAUGES_LIVE,
   ROOT_GAUGE_FACTORY_CONTRACT_ADDRESSES,
@@ -12,6 +11,7 @@ import {
 } from "../utils"
 
 import { BigNumber } from "ethers"
+import { ChainId } from "../constants/networks"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
 import { QueryKeys } from "./queryKeys"

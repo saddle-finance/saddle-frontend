@@ -9,6 +9,7 @@ import {
 import { AbstractConnector } from "@web3-react/abstract-connector"
 import { BasicToken } from "../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
+import { ChainId } from "./networks"
 import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
 import metamaskIcon from "../assets/icons/metamask.svg"
 import tallyIcon from "../assets/icons/tally.svg"
@@ -97,22 +98,6 @@ export type PoolName =
   | typeof FTM_FRAX_ALUSD_METAPOOL_NAME
   | typeof USDC_USX_POOL_NAME
 
-export enum ChainId {
-  MAINNET = 1,
-  ROPSTEN = 3,
-  // RINKEBY = 4,
-  // GÖRLI = 5,
-  // KOVAN = 42,
-  TEST_SIDE_CHAIN = 11,
-  HARDHAT = 31337,
-  ARBITRUM = 42161,
-  OPTIMISM = 10,
-  FANTOM = 250,
-  EVMOS = 9001,
-  EVMOS_TESTNET = 9000,
-  KAVA_TESTNET = 2221,
-  KAVA = 2222,
-}
 export enum PoolTypes {
   BTC,
   ETH,
@@ -184,6 +169,7 @@ export const MASTER_REGISTRY_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.OPTIMISM]: "0x0E510c9b20a5D136E75f7FD2a5F344BD98f9d875",
   [ChainId.ARBITRUM]: "0xaB94A2c0D8F044AA439A5654f06b5797928396cF",
   [ChainId.KAVA]: "0x3A0c2A793a8DB779e0293699D0Ce77c77617FE0f",
+  [ChainId.AURORA]: "0x29FD31d37AB8D27f11EAB68F96424bf64231fFce",
 })
 
 export const SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES = buildAddresses({

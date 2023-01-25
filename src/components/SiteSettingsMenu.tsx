@@ -9,8 +9,8 @@ import {
   MenuItem as MuiMenuItem,
   styled,
 } from "@mui/material"
-import { ChainId, IS_L2_SUPPORTED, IS_SDL_LIVE, SDL_TOKEN } from "../constants"
 import {
+  ChainId,
   DEV_SUPPORTED_NETWORKS,
   SUPPORTED_NETWORKS,
 } from "../constants/networks"
@@ -20,6 +20,7 @@ import {
   LightMode,
   NightlightRound,
 } from "@mui/icons-material"
+import { IS_L2_SUPPORTED, IS_SDL_LIVE, SDL_TOKEN } from "../constants"
 import React, { ReactElement, useState } from "react"
 
 import CheckIcon from "@mui/icons-material/Check"
@@ -92,14 +93,9 @@ function NetworkSection(): ReactElement {
   const { t } = useTranslation()
   const { chainId: activeChainId, library, account } = useActiveWeb3React()
   const [isNetworkVisible, setIsNetworkVisible] = useState(false)
-  const networks = [
-    ChainId.MAINNET,
-    ChainId.FANTOM,
-    ChainId.EVMOS,
-    ChainId.KAVA,
-    ...(IS_DEVELOPMENT ? [ChainId.EVMOS_TESTNET, ChainId.KAVA_TESTNET] : []),
-    ...(IS_L2_SUPPORTED ? [ChainId.ARBITRUM, ChainId.OPTIMISM] : []),
-  ]
+  const networks = Object.keys(SUPPORTED_NETWORKS).concat(
+    IS_DEVELOPMENT ? Object.keys(DEV_SUPPORTED_NETWORKS) : [],
+  )
 
   return (
     <div data-testid="networkMenuContainer">
