@@ -93,9 +93,11 @@ function NetworkSection(): ReactElement {
   const { t } = useTranslation()
   const { chainId: activeChainId, library, account } = useActiveWeb3React()
   const [isNetworkVisible, setIsNetworkVisible] = useState(false)
-  const networks = Object.keys(SUPPORTED_NETWORKS).concat(
-    IS_DEVELOPMENT ? Object.keys(DEV_SUPPORTED_NETWORKS) : [],
-  )
+  const networks = (
+    IS_DEVELOPMENT
+      ? Object.values(DEV_SUPPORTED_NETWORKS)
+      : Object.values(SUPPORTED_NETWORKS)
+  ).sort((a, b) => a.chainName.localeCompare(b.chainName))
 
   return (
     <div data-testid="networkMenuContainer">
@@ -106,32 +108,30 @@ function NetworkSection(): ReactElement {
         {t("network")} {isNetworkVisible ? <ExpandLess /> : <ExpandMore />}
       </MenuItem>
       <Collapse in={isNetworkVisible}>
-        {networks.map((chainId) => {
-          const params = IS_DEVELOPMENT
-            ? DEV_SUPPORTED_NETWORKS[chainId]
-            : SUPPORTED_NETWORKS[chainId]
-
-          return params ? (
+        {networks.map((network) => {
+          return network ? (
             <ListItemButton
               onClick={() => {
-                if (chainId === ChainId.MAINNET) {
+                if (Number(network.chainId) === ChainId.MAINNET) {
                   void library?.send("wallet_switchEthereumChain", [
                     { chainId: "0x1" },
                     account,
                   ])
                 } else {
                   void library?.send("wallet_addEthereumChain", [
-                    extractAddEthereumChainArgs(params),
+                    extractAddEthereumChainArgs(network),
                     account,
                   ])
                 }
               }}
-              key={chainId}
+              key={network.chainId}
             >
               <ListItemIcon sx={{ ml: 2 }}>
-                {activeChainId === chainId && <CheckIcon fontSize="small" />}
+                {activeChainId === Number(network.chainId) && (
+                  <CheckIcon fontSize="small" />
+                )}
               </ListItemIcon>
-              <ListItemText primary={params?.chainName} />
+              <ListItemText primary={network?.chainName} />
             </ListItemButton>
           ) : null
         })}
