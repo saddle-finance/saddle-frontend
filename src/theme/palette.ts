@@ -88,7 +88,7 @@ const lightPalette: PaletteOptions | undefined = {
     },
   },
   background: {
-    default: "#FAF3CE",
+    default: "#FFFFFF",
     paper: "#FDFDF8",
   },
   action: {
@@ -215,7 +215,7 @@ const darkPalette: PaletteOptions | undefined = {
     disabled: "#7D7D7D",
   },
   background: {
-    default: "#222461",
+    default: "#181818",
     paper: "#121334",
   },
   divider: "#311188",
