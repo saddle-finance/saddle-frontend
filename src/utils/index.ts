@@ -403,6 +403,19 @@ export async function getMulticallProvider(
       address: "0x149bBb210051851016F57a2824C0444f642833a6",
       block: 0,
     }
+  } else if (chainId === ChainId.AURORA) {
+    ethcallProvider.multicall3 = {
+      address: "0x3661D0F70e7f3EC418321A57FD62d691a09b490B",
+      block: 0,
+    }
+    ethcallProvider.multicall2 = {
+      address: "0xc55E8C79e5A6c3216D4023769559D06fa9A7732e",
+      block: 0,
+    }
+    ethcallProvider.multicall = {
+      address: "0x59F5a371dF7D2a01863cbb011A5A1ed45326710C",
+      block: 0,
+    }
   }
 
   return ethcallProvider
