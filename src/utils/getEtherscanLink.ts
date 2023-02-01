@@ -31,6 +31,9 @@ export function getMultichainScanLink(
         type = "address" // Kava uses the address keyword instead of token
       }
       break
+    case ChainId.AURORA:
+      chainScanDomain = "explorer.mainnet.aurora.dev"
+      break
     default:
       chainScanDomain = "etherscan.io"
   }
