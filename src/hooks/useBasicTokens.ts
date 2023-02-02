@@ -1,18 +1,18 @@
 import {
-  ChainId,
-  PoolTypes,
-  SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES,
-  VOTING_ESCROW_CONTRACT_ADDRESS,
-} from "../constants"
-import {
   MulticallCall,
   MulticallContract,
   MulticallProvider,
 } from "../types/ethcall"
+import {
+  PoolTypes,
+  SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES,
+  VOTING_ESCROW_CONTRACT_ADDRESS,
+} from "../constants"
 import { UseQueryResult, useQuery } from "@tanstack/react-query"
 import { chunkedTryAll, isSynthAsset } from "../utils"
 
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
+import { ChainId } from "../constants/networks"
 import { Contract } from "ethcall"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"

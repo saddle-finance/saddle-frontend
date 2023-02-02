@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-import { ChainId } from "../constants"
+import { ChainId } from "../constants/networks"
 import { ethers } from "ethers"
 import { useActiveWeb3React } from "."
 

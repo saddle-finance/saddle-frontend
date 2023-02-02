@@ -9,6 +9,7 @@ import {
 import { AbstractConnector } from "@web3-react/abstract-connector"
 import { BasicToken } from "../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
+import { ChainId } from "./networks"
 import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
 import metamaskIcon from "../assets/icons/metamask.svg"
 import tallyIcon from "../assets/icons/tally.svg"
@@ -97,22 +98,6 @@ export type PoolName =
   | typeof FTM_FRAX_ALUSD_METAPOOL_NAME
   | typeof USDC_USX_POOL_NAME
 
-export enum ChainId {
-  MAINNET = 1,
-  ROPSTEN = 3,
-  // RINKEBY = 4,
-  // GÖRLI = 5,
-  // KOVAN = 42,
-  TEST_SIDE_CHAIN = 11,
-  HARDHAT = 31337,
-  ARBITRUM = 42161,
-  OPTIMISM = 10,
-  FANTOM = 250,
-  EVMOS = 9001,
-  EVMOS_TESTNET = 9000,
-  KAVA_TESTNET = 2221,
-  KAVA = 2222,
-}
 export enum PoolTypes {
   BTC,
   ETH,
@@ -184,6 +169,7 @@ export const MASTER_REGISTRY_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.OPTIMISM]: "0x0E510c9b20a5D136E75f7FD2a5F344BD98f9d875",
   [ChainId.ARBITRUM]: "0xaB94A2c0D8F044AA439A5654f06b5797928396cF",
   [ChainId.KAVA]: "0x3A0c2A793a8DB779e0293699D0Ce77c77617FE0f",
+  [ChainId.AURORA]: "0x29FD31d37AB8D27f11EAB68F96424bf64231fFce",
 })
 
 export const SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES = buildAddresses({
@@ -1202,6 +1188,7 @@ const USDC_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.EVMOS]: "0x51e44FfaD5C2B122C8b635671FCC8139dc636E82",
   [ChainId.KAVA_TESTNET]: "0x6CE6BeeEDeFd2d83C1c6EC191ceBCE0317227852",
   [ChainId.KAVA]: "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f",
+  [ChainId.AURORA]: "0xb12bfca5a55806aaf64e99521918a4bf0fc40802",
 })
 
 export const USDC = new Token(
@@ -1236,6 +1223,7 @@ const USDT_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.KAVA_TESTNET]: "0xF4cd157e54c7B658d7A4995d84372C3dc79D1755",
   [ChainId.FANTOM]: "0x049d68029688eAbF473097a2fC38ef61633A3C7A",
   [ChainId.KAVA]: "0xB44a9B6905aF7c801311e8F4E76932ee959c663C",
+  [ChainId.AURORA]: "0x4988a896b1227218e4a686fde5eabdcabd91571f",
 })
 
 export const USDT = new Token(

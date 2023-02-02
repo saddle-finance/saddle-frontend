@@ -1,4 +1,5 @@
 import { BaseProvider, getDefaultProvider } from "@ethersproject/providers"
+import { SUPPORTED_NETWORKS, SupportedNetwork } from "../constants/networks"
 
 import { InjectedConnector } from "@web3-react/injected-connector"
 import { NetworkConnector } from "@web3-react/network-connector"
@@ -28,13 +29,10 @@ export function getNetworkLibrary(): BaseProvider {
 }
 
 function createInjectedMetaMaskProvider() {
-  // console.log(Object.keys(DEV_SUPPORTED_NETWORKS))
   return new InjectedConnector({
     // mainnet, ropsten, rinkeby, goerli, optimism, kovan, kava testnet, kava, evmos testnet, evmos, fantom, local buidler
     // see: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
-    supportedChainIds: [
-      1, 3, 4, 5, 10, 42, 250, 2221, 2222, 9000, 9001, 42161, 31337,
-    ],
+    supportedChainIds: Object.keys(SUPPORTED_NETWORKS).map(Number), // Must be numbers
   })
 }
 
@@ -50,9 +48,17 @@ export const injectedMetaMaskProvider = createInjectedMetaMaskProvider()
 export const injectedTallyProvider = createInjectedTallyProvider()
 
 export const walletconnect = new WalletConnectConnector({
-  rpc: { [NETWORK_CHAIN_ID]: NETWORK_URL },
+  // rpc: { [NETWORK_CHAIN_ID]: NETWORK_URL },
+  rpc: Object.keys(SUPPORTED_NETWORKS).reduce(
+    (acc, id) => ({
+      ...acc,
+      [id]: (SUPPORTED_NETWORKS[id] as SupportedNetwork).rpcUrls[0],
+    }),
+    {},
+  ),
   bridge: "https://bridge.walletconnect.org",
   qrcode: true,
+  supportedChainIds: [1, 10, 42161],
   // chainId: NETWORK_CHAIN_ID,
   // pollingInterval: POLLING_INTERVAL / 12000
 })
@@ -66,7 +72,7 @@ export const uauth = new UAuthConnector({
   // Scope must include openid and wallet
   scope: "openid wallet",
   connectors: {
-    injected: new InjectedConnector({ supportedChainIds: [1] }),
+    injected: new InjectedConnector({ supportedChainIds: [1, 10, 42161] }),
     walletconnect,
   },
 })

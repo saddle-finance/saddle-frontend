@@ -1,5 +1,22 @@
-import { ChainId } from "./index"
 import { hexlify } from "@ethersproject/bytes"
+
+export enum ChainId {
+  MAINNET = 1,
+  ROPSTEN = 3,
+  // RINKEBY = 4,
+  // GÖRLI = 5,
+  // KOVAN = 42,
+  TEST_SIDE_CHAIN = 11,
+  HARDHAT = 31337,
+  ARBITRUM = 42161,
+  OPTIMISM = 10,
+  FANTOM = 250,
+  EVMOS = 9001,
+  EVMOS_TESTNET = 9000,
+  KAVA_TESTNET = 2221,
+  KAVA = 2222,
+  AURORA = 1313161554,
+}
 
 export const NETWORK_LABEL: Partial<Record<ChainId, string>> = {
   [ChainId.MAINNET]: "Ethereum",
@@ -12,6 +29,7 @@ export const NETWORK_LABEL: Partial<Record<ChainId, string>> = {
   [ChainId.KAVA_TESTNET]: "Kava Testnet",
   [ChainId.KAVA]: "Kava",
   [ChainId.HARDHAT]: "Hardhat 👷🏼‍♂️",
+  [ChainId.AURORA]: "Aurora",
 }
 
 // TODO: figure out better way of representing non-erc20 native tokens
@@ -27,6 +45,7 @@ export const NETWORK_NATIVE_TOKENS: Record<ChainId, string> = {
   [ChainId.KAVA]: "KAVA",
   [ChainId.HARDHAT]: "ETH",
   [ChainId.TEST_SIDE_CHAIN]: "ETH",
+  [ChainId.AURORA]: "ETH",
 }
 export const COINGECKO_PLATFORM_ID: Record<ChainId, string | null> = {
   [ChainId.MAINNET]: "ethereum",
@@ -40,6 +59,7 @@ export const COINGECKO_PLATFORM_ID: Record<ChainId, string | null> = {
   [ChainId.KAVA]: "kava",
   [ChainId.HARDHAT]: null,
   [ChainId.TEST_SIDE_CHAIN]: null,
+  [ChainId.AURORA]: "aurora",
 }
 
 export type SupportedNetwork = {
@@ -56,38 +76,31 @@ export type SupportedNetwork = {
 
 export type SupportedNetworks = Partial<{ [key in ChainId]: SupportedNetwork }>
 
+const nativeCurrencyEth = {
+  name: "Ethereum",
+  symbol: "ETH",
+  decimals: 18,
+}
 // refer to https://github.com/sushiswap/sushiswap-interface/blob/canary/src/modals/NetworkModal/index.tsx#L13
 export const SUPPORTED_NETWORKS: SupportedNetworks = {
   [ChainId.MAINNET]: {
     chainId: "0x1",
     chainName: "Ethereum",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
+    nativeCurrency: nativeCurrencyEth,
     rpcUrls: ["https://mainnet.infura.io/v3"],
     blockExplorerUrls: ["https://etherscan.com"],
   },
   [ChainId.ARBITRUM]: {
     chainId: "0xA4B1",
     chainName: "Arbitrum",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
+    nativeCurrency: nativeCurrencyEth,
     rpcUrls: ["https://arb1.arbitrum.io/rpc"],
     blockExplorerUrls: ["https://mainnet-arb-explorer.netlify.app"],
   },
   [ChainId.OPTIMISM]: {
     chainId: "0xA",
     chainName: "Optimism",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
+    nativeCurrency: nativeCurrencyEth,
     rpcUrls: ["https://mainnet.optimism.io"],
     blockExplorerUrls: ["https://optimistic.etherscan.io"],
   },
@@ -123,6 +136,13 @@ export const SUPPORTED_NETWORKS: SupportedNetworks = {
     },
     rpcUrls: ["https://evm.kava.io"],
     blockExplorerUrls: ["https://explorer.kava.io"],
+  },
+  [ChainId.AURORA]: {
+    chainId: hexlify(1313161554),
+    chainName: "Aurora Mainnet",
+    nativeCurrency: nativeCurrencyEth,
+    rpcUrls: ["https://mainnet.aurora.dev"],
+    blockExplorerUrls: ["https://explorer.mainnet.aurora.dev"],
   },
 }
 
