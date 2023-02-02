@@ -8,7 +8,7 @@ import {
   styled,
 } from "@mui/material"
 import { POOL_FEE_PRECISION, PoolTypes } from "../constants"
-import React, { ReactElement, useContext } from "react"
+import React, { ReactElement } from "react"
 import {
   bnSum,
   formatBNToPercentString,
@@ -17,7 +17,6 @@ import {
 } from "../utils"
 import { commify, parseUnits } from "@ethersproject/units"
 
-import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { PoolDataType } from "../hooks/usePoolData"
 import TokenIcon from "./TokenIcon"
 import { Tooltip } from "@mui/material"
@@ -44,12 +43,9 @@ const InfoItem = styled(Box)(({ theme }) => ({
 function PoolInfoCard({ data }: Props): ReactElement | null {
   const { chainId } = useActiveWeb3React()
   const { t } = useTranslation()
-  const basicPools = useContext(BasicPoolsContext)
   const { data: swapStats, isLoading: swapStatsLoading } = useSwapStats()
-  if (data == null || chainId == null || basicPools == null) return null
-  const basicPool = basicPools[data.name]
-  const poolAddress = basicPool?.poolAddress
-  if (!poolAddress) return null
+  if (data == null || chainId == null) return null
+  const poolAddress = data.poolAddress
   const { oneDayVolume, utilization } = swapStats?.[chainId]?.[poolAddress] || {
     oneDayVolume: null,
     utilization: null,

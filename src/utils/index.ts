@@ -344,6 +344,14 @@ export function getTokenAddrForPoolType(
     if (poolType === PoolTypes.USD) {
       return "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f".toLowerCase() // "USDC" KAVA
     }
+  } else if (chainId === ChainId.AURORA) {
+    if (poolType === PoolTypes.BTC) {
+      return "0xF4eB217Ba2454613b15dBdea6e5f22276410e89e".toLowerCase() // WBTC
+    } else if (poolType === PoolTypes.ETH) {
+      return "0xC9BdeEd33CD01541e1eeD10f90519d2C06Fe3feB".toLowerCase() // "WETH"
+    } else if (poolType === PoolTypes.USD) {
+      return "0xB12BFcA5A55806AaF64E99521918A4bf0fC40802".toLowerCase() // "USDC"
+    }
   }
 
   return ""
