@@ -1,5 +1,5 @@
 import { Box, CircularProgress, useTheme } from "@mui/material"
-import React, { useContext, useRef } from "react"
+import React, { useContext, useMemo, useRef } from "react"
 
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -8,6 +8,7 @@ import Highcharts from "highcharts"
 import HighchartsExporting from "highcharts/modules/exporting"
 import HighchartsReact from "highcharts-react-official"
 import PieChart from "highcharts-react-official"
+import { useSidechainGaugeWeightDataOnMainnet } from "../hooks/useSidechainGaugeWeightDataOnMainnet"
 
 export type GaugeWeightData = {
   displayName: string
@@ -19,27 +20,59 @@ function GaugeWeight({ ...props }: HighchartsReact.Props): JSX.Element {
   const chartComponentRef = useRef<HighchartsReact.RefObject>(null)
   const basicPools = useContext(BasicPoolsContext)
   const { gauges } = useContext(GaugeContext)
+  const { data: sidechainGaugesInfo } = useSidechainGaugeWeightDataOnMainnet()
   const theme = useTheme()
 
-  const gaugesInfo = Object.values(gauges)
-    .map(({ gaugeName, gaugeRelativeWeight, poolAddress, isKilled }) => {
-      if (isKilled) return
-      const pool = Object.values(basicPools || {}).find(
-        (pool) => pool.poolAddress === poolAddress,
-      )
-      return {
-        displayName: pool?.poolName || gaugeName,
-        gaugeRelativeWeight,
-      }
-    })
-    .filter(Boolean) as GaugeWeightData[]
+  const gaugesInfo = useMemo(
+    () =>
+      Object.values({ ...gauges })
+        .map(({ gaugeName, gaugeRelativeWeight, poolAddress, isKilled }) => {
+          if (isKilled) return
+          const pool = Object.values(basicPools || {}).find(
+            (pool) => pool.poolAddress === poolAddress,
+          )
+          return {
+            displayName: pool?.poolName || gaugeName,
+            gaugeRelativeWeight,
+          }
+        })
+        .filter(Boolean) as GaugeWeightData[],
+    [gauges, basicPools],
+  )
 
-  const data = gaugesInfo.map((g) => {
-    return {
-      name: g.displayName,
-      y: g.gaugeRelativeWeight.div(BigNumber.from(10).pow(14)).toNumber(),
-    }
-  })
+  const sidechainGauges = useMemo(
+    () =>
+      (sidechainGaugesInfo?.gauges
+        .map((gauge) => {
+          if (gauge.isKilled) {
+            return
+          }
+
+          return {
+            name: gauge.displayName,
+            y: gauge.gaugeRelativeWeight
+              .div(BigNumber.from(10).pow(14))
+              .toNumber(),
+          }
+        })
+        .filter(Boolean) as {
+        name: string
+        y: number
+      }[]) || [],
+    [sidechainGaugesInfo],
+  )
+
+  const mainnetGauges = useMemo(
+    () =>
+      gaugesInfo.map(({ displayName, gaugeRelativeWeight }) => {
+        const y = gaugeRelativeWeight.div(BigNumber.from(10).pow(14)).toNumber()
+        return {
+          name: displayName,
+          y,
+        }
+      }),
+    [gaugesInfo],
+  )
 
   const options: Highcharts.Options = {
     chart: {
@@ -78,7 +111,7 @@ function GaugeWeight({ ...props }: HighchartsReact.Props): JSX.Element {
     series: [
       {
         type: "pie",
-        data,
+        data: mainnetGauges.concat(sidechainGauges),
       },
     ],
   }

@@ -41,24 +41,18 @@ export default function ClaimRewardsDlg({
       enqueueToast("error", "Unable to claim reward")
       return
     }
-    try {
-      const txns = await userGauge?.claim()
-
-      await enqueuePromiseToast(
-        chainId,
-        Promise.all((txns || []).map((txn) => txn.wait())),
-        "claim",
-        { poolName: displayName },
-      )
-      dispatch(
-        updateLastTransactionTimes({
-          [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
-        }),
-      )
-    } catch (e) {
-      console.error(e)
-      enqueueToast("error", "Unable to claim reward")
-    }
+    const txns = await userGauge?.claim()
+    await enqueuePromiseToast(
+      chainId,
+      Promise.all((txns || []).map((txn) => txn.wait())),
+      "claim",
+      { poolName: displayName },
+    )
+    dispatch(
+      updateLastTransactionTimes({
+        [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
+      }),
+    )
   }, [chainId, userGauge, dispatch, displayName])
 
   return (
@@ -98,6 +92,7 @@ function UserRewards({
   claimableExternalRewards.forEach((reward) => {
     rewardItems.push([reward.token.symbol, reward.amount])
   })
+
   return (
     <Box sx={{ width: "100%" }}>
       {rewardItems.map((item, i) => {

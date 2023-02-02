@@ -1,24 +1,11 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
 import { BigNumber } from "@ethersproject/bignumber"
-import { ChainId } from "../constants"
-import { SwapStatsReponse } from "../utils/getSwapStats"
 
 interface GasPrices {
   gasStandard?: number
   gasFast?: number
   gasInstant?: number
-}
-type PoolStats = {
-  oneDayVolume: string
-  apy: string
-  tvl: string
-  utilization: string
-}
-type SwapStats = {
-  [chainId in ChainId]?: Partial<{
-    [swapAddress: string]: PoolStats
-  }>
 }
 export type TokenPricesUSD = Partial<{
   [tokenAddr: string]: number
@@ -35,7 +22,7 @@ export type SdlWethSushiPool = {
 
 type ApplicationState = GasPrices & { tokenPricesUSD?: TokenPricesUSD } & {
   lastTransactionTimes: LastTransactionTimes
-} & { swapStats?: SwapStats } & { sdlWethSushiPool?: SdlWethSushiPool }
+} & { sdlWethSushiPool?: SdlWethSushiPool }
 
 const initialState: ApplicationState = {
   lastTransactionTimes: {},
@@ -63,43 +50,6 @@ const applicationSlice = createSlice({
         ...action.payload,
       }
     },
-    updateSwapStats(state, action: PayloadAction<SwapStatsReponse>): void {
-      const formattedPayload = Object.keys(action.payload).reduce(
-        (chainsAcc, chainId) => {
-          const chainData = action.payload[chainId] as NonNullable<
-            SwapStatsReponse[ChainId]
-          >
-          const processedChainData = Object.keys(chainData).reduce(
-            (poolsAcc, poolAddress) => {
-              const { APY, TVL, oneDayVolume: ODV } = chainData[poolAddress]
-              if (isNaN(APY) || isNaN(TVL) || isNaN(ODV)) {
-                return poolsAcc
-              }
-              const apy = APY.toFixed(18)
-              const tvl = TVL.toFixed(18)
-              const oneDayVolume = ODV.toFixed(18)
-              const utilization = (TVL > 0 ? ODV / TVL : 0).toFixed(18)
-              return {
-                ...poolsAcc,
-                [(poolAddress as string).toLowerCase()]: {
-                  apy,
-                  tvl,
-                  oneDayVolume,
-                  utilization,
-                },
-              }
-            },
-            {},
-          )
-          return {
-            ...chainsAcc,
-            [chainId]: processedChainData,
-          }
-        },
-        {},
-      )
-      state.swapStats = formattedPayload
-    },
     updateSdlWethSushiPool(
       state,
       action: PayloadAction<SdlWethSushiPool>,
@@ -113,7 +63,6 @@ export const {
   updateGasPrices,
   updateTokensPricesUSD,
   updateLastTransactionTimes,
-  updateSwapStats,
   updateSdlWethSushiPool,
 } = applicationSlice.actions
 

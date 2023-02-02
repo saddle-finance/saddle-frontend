@@ -1,9 +1,9 @@
 import { Button, DialogContent, Typography } from "@mui/material"
 import React, { useEffect, useState } from "react"
 
-import { ChainId } from "../../constants"
 import Dialog from "../../components/Dialog"
 import { SUPPORTED_NETWORKS } from "../../constants/networks"
+import { areGaugesActive } from "../../utils/gauges"
 import { useActiveWeb3React } from "../../hooks"
 import { useTranslation } from "react-i18next"
 
@@ -21,10 +21,8 @@ export default function VeSDLWrongNetworkModal(): JSX.Element {
 
   useEffect(() => {
     if (chainId) {
-      const isValidNetwork =
-        chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT
       const networkName = SUPPORTED_NETWORKS[chainId]?.chainName
-      setOpenDialog(!isValidNetwork && !!networkName)
+      setOpenDialog(!areGaugesActive(chainId) && !!networkName)
     }
   }, [chainId])
 

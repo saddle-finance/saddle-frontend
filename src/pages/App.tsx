@@ -1,4 +1,5 @@
 import "react-toastify/dist/ReactToastify.css"
+
 import { AppDispatch, AppState } from "../state"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import React, { ReactElement, Suspense, useCallback, useEffect } from "react"
@@ -26,7 +27,6 @@ import Web3ReactManager from "../components/Web3ReactManager"
 import WrongNetworkModal from "../components/WrongNetworkModal"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchSdlWethSushiPoolInfo from "../utils/updateSdlWethSushiInfo"
-import fetchSwapStats from "../utils/getSwapStats"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import getSnapshotVoteData from "../utils/getSnapshotVoteData"
 import { useActiveWeb3React } from "../hooks"
@@ -114,9 +114,6 @@ function PricesAndVoteData({
   const fetchAndUpdateTokensPrice = useCallback(() => {
     fetchTokenPricesUSD(dispatch, sdlWethSushiPool, chainId)
   }, [dispatch, chainId, sdlWethSushiPool])
-  const fetchAndUpdateSwapStats = useCallback(() => {
-    void fetchSwapStats(dispatch)
-  }, [dispatch])
   const fetchAndUpdateSdlWethSushiPoolInfo = useCallback(() => {
     void fetchSdlWethSushiPoolInfo(dispatch, sdlWethSushiPoolContract, chainId)
   }, [dispatch, chainId, sdlWethSushiPoolContract])
@@ -125,9 +122,8 @@ function PricesAndVoteData({
     void getSnapshotVoteData(dispatch)
   }, [dispatch])
 
-  usePoller(fetchAndUpdateGasPrice, 5 * 1000)
-  usePoller(fetchAndUpdateTokensPrice, BLOCK_TIME * 3)
-  usePoller(fetchAndUpdateSdlWethSushiPoolInfo, BLOCK_TIME * 3)
-  usePoller(fetchAndUpdateSwapStats, BLOCK_TIME * 280) // ~ 1hr
+  usePoller(fetchAndUpdateGasPrice, BLOCK_TIME * 3)
+  usePoller(fetchAndUpdateTokensPrice, BLOCK_TIME * 10)
+  usePoller(fetchAndUpdateSdlWethSushiPoolInfo, BLOCK_TIME * 10)
   return <>{children}</>
 }
