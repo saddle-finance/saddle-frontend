@@ -33,7 +33,7 @@ export default function ClaimRewardsDlg({
   displayName,
 }: Props): JSX.Element {
   const { chainId } = useActiveWeb3React()
-  const userGauge = useUserGauge(gaugeAddress)
+  const userGauge = useUserGauge()(gaugeAddress)
   const dispatch = useDispatch()
 
   const onClickClaim = useCallback(async () => {
