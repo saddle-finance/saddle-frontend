@@ -1,5 +1,4 @@
 import {
-  ChainId,
   GAUGE_CONTROLLER_ADDRESSES,
   IS_CROSS_CHAIN_GAUGES_LIVE,
   ROOT_GAUGE_FACTORY_CONTRACT_ADDRESSES,
@@ -12,6 +11,7 @@ import {
 } from "../utils"
 
 import { BigNumber } from "ethers"
+import { ChainId } from "../constants/networks"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
 import { GaugeController } from "../../types/ethers-contracts/GaugeController"
 import { QueryKeys } from "./queryKeys"
@@ -28,6 +28,7 @@ type SidechainGauges = {
 type SidechainGauge = {
   chainId: ChainId
   gaugeName: string
+  displayName: string
   address: string
   isKilled: boolean
   gaugeRelativeWeight: BigNumber
@@ -49,7 +50,6 @@ export const useSidechainGaugeWeightDataOnMainnet =
       if (!IS_CROSS_CHAIN_GAUGES_LIVE) {
         return defaultSidechainGauges
       }
-
       const ethCallProvider = await getMulticallProvider(library, chainId)
       const gaugeControllerMultiCall = createMultiCallContract<GaugeController>(
         GAUGE_CONTROLLER_ADDRESSES[chainId],
@@ -82,7 +82,9 @@ export const useSidechainGaugeWeightDataOnMainnet =
             )
           }),
         )
-      ).map((addresses) => addresses.filter(Boolean) as string[])
+      )
+        .map((addresses) => addresses.filter(Boolean) as string[])
+        .map((addresses) => addresses.map((addr) => addr.toLowerCase()))
 
       const sidechainGaugesMultiCallContracts = sidechainGaugeAddresses.map(
         (gaugeAddresses) =>
@@ -113,8 +115,8 @@ export const useSidechainGaugeWeightDataOnMainnet =
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             gaugeAddresses.map((gaugeAddress) => {
               // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-              return gaugeControllerMultiCall.gauge_relative_weight(
-                gaugeAddress.toLowerCase(),
+              return gaugeControllerMultiCall.gauge_relative_weight_write(
+                gaugeAddress,
               )
             }),
           ),
@@ -142,14 +144,19 @@ export const useSidechainGaugeWeightDataOnMainnet =
                   sidechainGaugesKilledStatuses[chainIdIndex][index] == null
                 )
                   return
-
+                const gaugeName =
+                  sidechainGaugesNames[chainIdIndex][index] || ""
+                const chainId = chainIds[chainIdIndex]
                 return {
-                  chainId: chainIds[chainIdIndex],
-                  gaugeName: sidechainGaugesNames[chainIdIndex][index],
+                  chainId,
+                  gaugeName,
                   address: gaugeAddresses[index],
                   gaugeRelativeWeight:
                     sidechainGaugesRelativeWeights[chainIdIndex][index],
                   isKilled: sidechainGaugesKilledStatuses[chainIdIndex][index],
+                  displayName: `${ChainId[chainId]}_${gaugeName
+                    .replace("Saddle ", "")
+                    .replace(" Root Gauge", "-gauge")}`,
                 }
               })
               .filter(Boolean) as SidechainGauge[],

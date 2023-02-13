@@ -2,9 +2,7 @@ import {
   BN_1E18,
   BN_DAY_IN_SECONDS,
   BN_MSIG_SDL_VEST_END_TIMESTAMP,
-  ChainId,
   GAUGE_CONTROLLER_ADDRESSES,
-  IS_VESDL_LIVE,
 } from "../constants"
 import {
   CHILD_GAUGE_FACTORY_NAME,
@@ -25,6 +23,7 @@ import { BasicToken } from "./../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import CHILD_GAUGE_ABI from "../constants/abis/childGauge.json"
 import CHILD_GAUGE_FACTORY_ABI from "../constants/abis/childGaugeFactory.json"
+import { ChainId } from "../constants/networks"
 import { ChildGauge } from "../../types/ethers-contracts/ChildGauge"
 import { ChildGaugeFactory } from "../../types/ethers-contracts/ChildGaugeFactory"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"
@@ -110,7 +109,7 @@ export const initialGaugesState: Gauges = {
 }
 
 export function areGaugesActive(chainId?: ChainId): boolean {
-  return !!chainId && isMainnet(chainId) && IS_VESDL_LIVE
+  return !!chainId && (isMainnet(chainId) || shouldLoadChildGauges(chainId))
 }
 
 export const shouldLoadChildGauges = (chainId: ChainId) =>
@@ -203,7 +202,7 @@ async function buildGaugeData(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       gaugeAddresses.map((gaugeAddress) =>
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-        gaugeControllerMultiCall.gauge_relative_weight(gaugeAddress),
+        gaugeControllerMultiCall.gauge_relative_weight_write(gaugeAddress),
       ),
     )
 

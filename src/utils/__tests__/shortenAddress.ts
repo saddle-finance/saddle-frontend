@@ -2,7 +2,7 @@ import { shortenAddress } from "../shortenAddress"
 
 describe("shortenAddress", () => {
   it("catches an error for a bad address", () => {
-    expect(() => shortenAddress("yo what up waleed")).toThrow(Error)
+    expect(shortenAddress("yo what up waleed")).toBe("")
   })
 
   it("shortens address", () => {

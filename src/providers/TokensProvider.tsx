@@ -1,18 +1,18 @@
 import {
-  ChainId,
-  PoolTypes,
-  SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES,
-  VOTING_ESCROW_CONTRACT_ADDRESS,
-} from "../constants"
-import {
   MulticallCall,
   MulticallContract,
   MulticallProvider,
 } from "../types/ethcall"
+import {
+  PoolTypes,
+  SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES,
+  VOTING_ESCROW_CONTRACT_ADDRESS,
+} from "../constants"
 import React, { ReactElement, useContext, useEffect, useState } from "react"
 import { chunkedTryAll, getMulticallProvider, isSynthAsset } from "../utils"
 
 import { BasicPoolsContext } from "./BasicPoolsProvider"
+import { ChainId } from "../constants/networks"
 import { Contract } from "ethcall"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
@@ -53,6 +53,7 @@ export default function TokensProvider({
       const ethCallProvider = await getMulticallProvider(library, chainId)
       const lpTokens = new Set()
       const tokenType: Partial<{ [tokenAddress: string]: PoolTypes }> = {}
+      const saddleApprovedPoolTokens = new Set()
       const targetTokenAddresses = new Set(
         Object.values(basicPools)
           .map((pool) => {
@@ -62,6 +63,11 @@ export default function TokensProvider({
               ...(pool.underlyingTokens || []),
               pool.lpToken,
             ]
+            if (pool.isSaddleApproved) {
+              tokensInPool.forEach((token) => {
+                saddleApprovedPoolTokens.add(token)
+              })
+            }
             Object.assign(
               tokenType,
               ...tokensInPool.map((address) => ({
@@ -133,7 +139,8 @@ export default function TokensProvider({
         ;(tokenInfos[address] as BasicToken).typeAsset =
           tokenType[address] ?? PoolTypes.OTHER
         ;(tokenInfos[address] as BasicToken).isOnTokenLists =
-          additionalSdlApprovedAddrsSet.has(String(address))
+          additionalSdlApprovedAddrsSet.has(String(address)) ||
+          saddleApprovedPoolTokens.has(String(address))
       })
       setTokens(tokenInfos)
     }

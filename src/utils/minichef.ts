@@ -1,9 +1,10 @@
 import { AddressZero, Zero } from "@ethersproject/constants"
-import { BN_1E18, ChainId, MINICHEF_CONTRACT_ADDRESSES } from "../constants"
+import { BN_1E18, MINICHEF_CONTRACT_ADDRESSES } from "../constants"
 import { createMultiCallContract, getMulticallProvider } from "."
 
 import { BasicPool } from "../providers/BasicPoolsProvider"
 import { BigNumber } from "@ethersproject/bignumber"
+import { ChainId } from "../constants/networks"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "../../types/ethers-contracts/Erc20"
 import { Contract as EthcallContract } from "ethcall"
