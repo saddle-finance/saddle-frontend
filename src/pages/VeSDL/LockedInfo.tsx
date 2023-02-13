@@ -6,7 +6,7 @@ import {
 } from "../../hooks/useContract"
 
 import { BigNumber } from "@ethersproject/bignumber"
-import { ChainId } from "../../constants"
+import { ChainId } from "../../constants/networks"
 import { Zero } from "@ethersproject/constants"
 import { formatBNToShortString } from "../../utils"
 import { useActiveWeb3React } from "../../hooks"

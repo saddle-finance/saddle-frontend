@@ -1,7 +1,8 @@
-import { ChainId, NetworkContextName } from "../constants"
 import { injectedMetaMaskProvider, injectedTallyProvider } from "../connectors"
 import { useEffect, useState } from "react"
 
+import { ChainId } from "../constants/networks"
+import { NetworkContextName } from "../constants"
 import { Web3Provider } from "@ethersproject/providers"
 import { Web3ReactContextInterface } from "@web3-react/core/dist/types"
 import { isMobile } from "react-device-detect"

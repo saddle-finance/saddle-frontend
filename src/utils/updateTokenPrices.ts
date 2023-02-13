@@ -3,11 +3,12 @@ import {
   COINGECKO_PLATFORM_ID,
   SUPPORTED_NETWORKS,
 } from "../constants/networks"
-import { ChainId, PoolTypes, SDL_TOKEN, SPA, TOKENS_MAP } from "../constants"
+import { PoolTypes, SDL_TOKEN, SPA, TOKENS_MAP } from "../constants"
 import { TokenPricesUSD, updateTokensPricesUSD } from "../state/application"
 
 import { AppDispatch } from "../state"
 import { BN_1E18 } from "./../constants/index"
+import { ChainId } from "../constants/networks"
 import { SdlWethSushiPool } from "../state/application"
 import { Zero } from "@ethersproject/constants"
 import { arrayToHashmap } from "./index"
@@ -15,7 +16,7 @@ import { chunk } from "lodash"
 import { formatUnits } from "@ethersproject/units"
 import retry from "async-retry"
 
-const coinGeckoAPI = "https://api.coingecko.com/api/v3/simple/price"
+const coinGeckoAPI = "https://pro-api.coingecko.com/api/v3/simple/price"
 
 const nativeTokenID = ["bitcoin", "ethereum"]
 
@@ -108,10 +109,13 @@ export default function fetchTokenPricesUSD(
   )
   void retry(
     () =>
-      fetch(`${coinGeckoAPI}?ids=${encodeURIComponent(
-        tokenIds.join(","),
-      )}&vs_currencies=usd
-    `)
+      fetch(
+        `${coinGeckoAPI}?ids=${encodeURIComponent(
+          tokenIds.join(","),
+        )}&vs_currencies=usd&x_cg_pro_api_key=CG-eCmWRehYgDjzKv1RLyJrEp27
+    `,
+        { headers: { "Access-Control-Allow-Origin": "*" } },
+      )
         .then((res) => res.json())
         .then((body: CoinGeckoReponse) => {
           const otherTokensResult = Object.keys(otherTokens).reduce(

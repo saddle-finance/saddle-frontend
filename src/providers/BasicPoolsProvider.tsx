@@ -1,5 +1,4 @@
 import {
-  ChainId,
   IS_POOL_REGISTRY_MIGRATION_LIVE,
   POOLS_MAP,
   PoolName,
@@ -27,6 +26,7 @@ import { usePoolRegistry, usePoolRegistryMultiCall } from "../hooks/useContract"
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
+import { ChainId } from "../constants/networks"
 import ERC20_ABI from "../constants/abis/erc20.json"
 import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
