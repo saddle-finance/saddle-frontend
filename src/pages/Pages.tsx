@@ -1,7 +1,7 @@
 import React, { lazy } from "react"
 import { Redirect, Route, Switch } from "react-router-dom"
 
-import { ChainId } from "../constants"
+import { ChainId } from "../constants/networks"
 import CoinbasePayTest from "./CoinbasePayTest"
 import { useActiveWeb3React } from "../hooks"
 

@@ -1,9 +1,4 @@
-import {
-  BLOCK_TIME,
-  ChainId,
-  IS_VIRTUAL_SWAP_ACTIVE,
-  SWAP_TYPES,
-} from "../constants"
+import { BLOCK_TIME, IS_VIRTUAL_SWAP_ACTIVE, SWAP_TYPES } from "../constants"
 import {
   BasicToken,
   BasicTokens,
@@ -13,6 +8,7 @@ import { useCallback, useContext, useEffect, useState } from "react"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { Bridge } from "../../types/ethers-contracts/Bridge"
+import { ChainId } from "../constants/networks"
 import { Event } from "ethers"
 import { Zero } from "@ethersproject/constants"
 import { omit } from "lodash"

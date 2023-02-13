@@ -1,9 +1,10 @@
 import { Box, Button, Paper, Stack, Typography } from "@mui/material"
-import { ChainId, IS_SDL_LIVE } from "../constants"
 import React, { ReactElement, useCallback, useContext } from "react"
 import { commify, formatBNToString } from "../utils"
 
 import { BigNumber } from "@ethersproject/bignumber"
+import { ChainId } from "../constants/networks"
+import { IS_SDL_LIVE } from "../constants"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { UserStateContext } from "../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"

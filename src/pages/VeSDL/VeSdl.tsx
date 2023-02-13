@@ -13,7 +13,6 @@ import {
   Typography,
 } from "@mui/material"
 import { BigNumber, ContractTransaction } from "ethers"
-import { ChainId, TRANSACTION_TYPES } from "../../constants"
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import {
   addWeeks,
@@ -40,12 +39,14 @@ import {
 
 import { AppState } from "../../state"
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward"
+import { ChainId } from "../../constants/networks"
 import ConfirmModal from "../../components/ConfirmModal"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import DevTool from "../../components/DevTool/DevTool"
 import GaugeVote from "./GaugeVote"
 import LaunchIcon from "@mui/icons-material/Launch"
 import LockedInfo from "./LockedInfo"
+import { TRANSACTION_TYPES } from "../../constants"
 import TokenInput from "../../components/TokenInput"
 import { UserStateContext } from "../../providers/UserStateProvider"
 import VeSDLWrongNetworkModal from "./VeSDLWrongNetworkModal"

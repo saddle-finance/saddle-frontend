@@ -1,10 +1,5 @@
 import { AddressZero, Zero } from "@ethersproject/constants"
-import {
-  BN_1E18,
-  ChainId,
-  PoolTypes,
-  readableDecimalNumberRegex,
-} from "../constants"
+import { BN_1E18, PoolTypes, readableDecimalNumberRegex } from "../constants"
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
 import {
   MulticallCall,
@@ -16,6 +11,7 @@ import { formatUnits, parseEther, parseUnits } from "@ethersproject/units"
 import { BasicPool } from "../providers/BasicPoolsProvider"
 import { BasicTokens } from "../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
+import { ChainId } from "../constants/networks"
 import { Contract } from "@ethersproject/contracts"
 import { ContractInterface } from "ethers"
 import { Deadlines } from "../state/user"
@@ -348,6 +344,14 @@ export function getTokenAddrForPoolType(
     if (poolType === PoolTypes.USD) {
       return "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f".toLowerCase() // "USDC" KAVA
     }
+  } else if (chainId === ChainId.AURORA) {
+    if (poolType === PoolTypes.BTC) {
+      return "0xF4eB217Ba2454613b15dBdea6e5f22276410e89e".toLowerCase() // WBTC
+    } else if (poolType === PoolTypes.ETH) {
+      return "0xC9BdeEd33CD01541e1eeD10f90519d2C06Fe3feB".toLowerCase() // "WETH"
+    } else if (poolType === PoolTypes.USD) {
+      return "0xB12BFcA5A55806AaF64E99521918A4bf0fC40802".toLowerCase() // "USDC"
+    }
   }
 
   return ""
@@ -405,6 +409,11 @@ export async function getMulticallProvider(
     }
     ethcallProvider.multicall = {
       address: "0x149bBb210051851016F57a2824C0444f642833a6",
+      block: 0,
+    }
+  } else if (chainId === ChainId.AURORA) {
+    ethcallProvider.multicall3 = {
+      address: "0xcA11bde05977b3631167028862bE2a173976CA11",
       block: 0,
     }
   }
