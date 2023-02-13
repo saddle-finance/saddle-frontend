@@ -2,7 +2,6 @@ import {
   BRIDGE_CONTRACT_ADDRESSES,
   BTC_POOL_NAME,
   CHILD_ORACLE_CONTRACT_ADDRESSES,
-  ChainId,
   FEE_DISTRIBUTOR_ADDRESSES,
   GAUGE_CONTROLLER_ADDRESSES,
   GAUGE_MINTER_ADDRESSES,
@@ -29,6 +28,7 @@ import { Bridge } from "../../types/ethers-contracts/Bridge"
 import CHILD_GAUGE_ABI from "../constants/abis/childGauge.json"
 import CHILD_GAUGE_FACTORY_ABI from "../constants/abis/childGaugeFactory.json"
 import CHILD_ORACLE_ABI from "../constants/abis/childOracle.json"
+import { ChainId } from "../constants/networks"
 import { ChildGauge } from "../../types/ethers-contracts/ChildGauge"
 import { ChildGaugeFactory } from "../../types/ethers-contracts/ChildGaugeFactory"
 import { ChildOracle } from "../../types/ethers-contracts/ChildOracle"

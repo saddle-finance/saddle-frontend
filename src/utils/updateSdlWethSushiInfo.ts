@@ -1,7 +1,7 @@
 import { AppDispatch } from "../state"
 import { BN_1E18 } from "./../constants/index"
 import { BigNumber } from "ethers"
-import { ChainId } from "../constants"
+import { ChainId } from "../constants/networks"
 import { SushiPool } from "./../../types/ethers-contracts/SushiPool.d"
 import { areGaugesActive } from "./gauges"
 import { updateSdlWethSushiPool } from "../state/application"

@@ -2,7 +2,6 @@ import {
   BN_1E18,
   BN_DAY_IN_SECONDS,
   BN_MSIG_SDL_VEST_END_TIMESTAMP,
-  ChainId,
   GAUGE_CONTROLLER_ADDRESSES,
 } from "../constants"
 import {
@@ -24,6 +23,7 @@ import { BasicToken } from "./../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import CHILD_GAUGE_ABI from "../constants/abis/childGauge.json"
 import CHILD_GAUGE_FACTORY_ABI from "../constants/abis/childGaugeFactory.json"
+import { ChainId } from "../constants/networks"
 import { ChildGauge } from "../../types/ethers-contracts/ChildGauge"
 import { ChildGaugeFactory } from "../../types/ethers-contracts/ChildGaugeFactory"
 import GAUGE_CONTROLLER_ABI from "../constants/abis/gaugeController.json"

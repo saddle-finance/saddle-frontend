@@ -1,4 +1,4 @@
-import { ChainId } from "../constants"
+import { ChainId } from "../constants/networks"
 import { useCallback } from "react"
 import { useQuery } from "@tanstack/react-query"
 
