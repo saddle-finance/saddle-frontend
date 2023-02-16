@@ -14,7 +14,7 @@ export default {
       control: { type: "inline-radio" },
     },
     color: {
-      options: ["primary", "secondary", "info", "mute", "error"],
+      options: ["primary", "warning", "info", "mute", "error"],
       control: { type: "select" },
     },
     disabled: {
@@ -36,5 +36,5 @@ export const LightButton = Template.bind({})
 LightButton.args = {
   variant: "contained",
   children: "Button",
-  color: "secondary",
+  color: "warning",
 }

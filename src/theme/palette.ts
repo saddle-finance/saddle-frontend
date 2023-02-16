@@ -1,6 +1,26 @@
+import { OriginColorVariant } from "../types"
 import { PaletteOptions } from "@mui/material"
 
 // Define custom color types
+
+function createGradient2(color1: string, color2: string) {
+  return `linear-gradient(90deg, ${color1} 0%, ${color2} 100%)`
+}
+
+// function createGradient3(color1:string,color2:string,color3:string){
+
+// }
+
+type GradientsPaletteOptions = {
+  secondL2secondD?: string
+  primaryL2primaryD?: string
+  primary2secondary?: string
+  primaryD2primaryL?: string
+  secondaryL2primaryD?: string
+  logo?: string
+  gold?: string
+  mute?: string // This is for button variant. Remove if we don't need mute variant in button.
+} & { [K in OriginColorVariant]?: string }
 
 interface OtherColorTypes {
   divider: string
@@ -30,10 +50,12 @@ declare module "@mui/material/styles" {
     }
   }
   interface Palette {
+    gradient?: GradientsPaletteOptions
     mute: SimplePaletteColorOptions
     other: OtherColorTypes
   }
   interface PaletteOptions {
+    gradient?: GradientsPaletteOptions
     mute: SimplePaletteColorOptions
     other: OtherColorTypes
   }
@@ -89,7 +111,7 @@ const lightPalette: PaletteOptions | undefined = {
   },
   background: {
     default: "#FFFFFF",
-    paper: "#FDFDF8",
+    paper: "#EAEAEA",
   },
   action: {
     hover: "#FAF3CE",
@@ -133,14 +155,18 @@ const lightPalette: PaletteOptions | undefined = {
     divider: "#E3D899",
     border: "#7D7D7D",
   },
+  gradient: {
+    primary2secondary: createGradient2("#474799", "#47998F"),
+    primary: createGradient2("#7272BA", "#474799"),
+  },
 }
 
 const darkPalette: PaletteOptions | undefined = {
   mode: "dark",
   primary: {
-    main: "#06D7D7",
-    dark: "#037777",
-    light: "#83EBEB",
+    main: "#474799",
+    dark: "#363681",
+    light: "#7272BA",
     states: {
       outlinedRestingBorder: "#06D7D7",
       outlinedHoverBackground: "#037777",
@@ -148,9 +174,9 @@ const darkPalette: PaletteOptions | undefined = {
     },
   },
   secondary: {
-    main: "#E6AD76",
-    dark: "#D07647",
-    light: "#FAF3CE",
+    main: "#47998F",
+    dark: "#337F77",
+    light: "#78C4BB",
     states: {
       outlinedRestingBorder: "#E6AD76",
       outlinedHoverBackground: "#D07647",
@@ -201,9 +227,9 @@ const darkPalette: PaletteOptions | undefined = {
     },
   },
   warning: {
-    main: "#FAEA5D",
-    dark: "#817F48",
-    light: "#FFEA91",
+    main: "#EDA554",
+    dark: "#EA943D",
+    light: "#F2C795",
     alert: {
       content: "#000000",
       background: "#FFF3C8",
@@ -216,13 +242,17 @@ const darkPalette: PaletteOptions | undefined = {
   },
   background: {
     default: "#181818",
-    paper: "#121334",
+    paper: "#303030",
   },
-  divider: "#311188",
+  divider: "#7272BA",
   other: {
-    divider: "#311188",
+    divider: "#7272BA",
     border: "#7D7D7D",
   },
   grey: GREY_TONES,
+  gradient: {
+    primary: createGradient2("#7272BA", "#474799"),
+    secondary: createGradient2("#78C4BB", "#47998F"),
+  },
 }
 export default { lightPalette, darkPalette }

@@ -1,26 +1,11 @@
-import {
-  ButtonPropsColorOverrides,
-  Components,
-  ComponentsVariants,
-  Theme,
-} from "@mui/material"
-import { OverridableStringUnion } from "@mui/types"
-
-declare module "@mui/material/Button" {
-  interface ButtonPropsColorOverrides {
-    mute: true
-  }
-}
-type ColorVariant = OverridableStringUnion<
-  "primary" | "secondary" | "success" | "error" | "info" | "warning",
-  ButtonPropsColorOverrides
->
+import { Components, ComponentsVariants, Theme } from "@mui/material"
+import { ColorVariant } from "../../types"
 
 const buttonColorVariants: ColorVariant[] = [
   "primary",
   "secondary",
-  "info",
-  "mute",
+  // "info",
+  // "mute",
 ]
 
 const containedStyle = (
@@ -33,8 +18,11 @@ const containedStyle = (
       color: color,
     },
     style: {
+      background: theme.palette.gradient?.[color],
+      color: "white",
       "&:hover": {
-        backgroundColor: theme.palette[color].states?.containedHoverBackground,
+        background: "none",
+        backgroundColor: theme.palette[color].light,
       },
     },
   }))
@@ -46,15 +34,12 @@ const outlinedStyle = (
   colors.map((color) => ({
     props: {
       variant: "outlined",
-      color: color,
     },
     style: {
-      border: `1px solid ${
-        theme.palette[color].states?.outlinedRestingBorder ||
-        theme.palette[color].main
-      }`,
+      border: `1px solid ${theme.palette[color].main}`,
+      color: theme.palette.getContrastText(theme.palette.background.paper),
       "&:hover": {
-        backgroundColor: theme.palette[color].states?.outlinedHoverBackground,
+        backgroundColor: theme.palette[color].light,
       },
     },
   }))

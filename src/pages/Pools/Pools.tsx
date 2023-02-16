@@ -118,7 +118,7 @@ function Pools(): ReactElement | null {
               key={filterKey}
               variant={filter === filterKey ? "filled" : "text"}
               size="medium"
-              color={filterKey === "outdated" ? "secondary" : "default"}
+              color={filterKey === "outdated" ? "warning" : "default"}
               label={text}
               onClick={(): void => setFilter(filterKey)}
             />

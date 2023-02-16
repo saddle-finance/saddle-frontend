@@ -83,7 +83,7 @@ export default function PoolOverview({
         label={label}
         color={
           poolData.isGuarded || shouldMigrate
-            ? "secondary"
+            ? "warning"
             : !poolData.isSaddleApproved
             ? "info"
             : "error"
@@ -106,8 +106,9 @@ export default function PoolOverview({
         p: theme.spacing(2, 3),
         borderColor:
           poolData.isGuarded || shouldMigrate
-            ? theme.palette.secondary.main
+            ? theme.palette.warning.main
             : theme.palette.other.divider,
+        borderRadius: "20px",
       }}
       data-testid="poolOverview"
     >
@@ -123,6 +124,7 @@ export default function PoolOverview({
               >
                 <Typography
                   variant="h2"
+                  color="primary.light"
                   sx={{
                     borderBottom: poolData.isMetaSwap
                       ? "1px dotted"
@@ -171,12 +173,14 @@ export default function PoolOverview({
           </Stack>
         </Grid>
         <StyledGrid item xs={6} lg={2} disabled={disableText}>
-          <Typography variant="subtitle1">TVL</Typography>
+          <Typography variant="subtitle1" color="primary.light">
+            TVL
+          </Typography>
           <Typography component="span">{`$${formattedData.reserve}`}</Typography>
 
           {formattedData.volume && (
             <div>
-              <Typography variant="subtitle1">{`${t(
+              <Typography variant="subtitle1" color="primary.light">{`${t(
                 "24HrVolume",
               )}`}</Typography>
               <Typography component="span">{formattedData.volume}</Typography>
@@ -186,7 +190,9 @@ export default function PoolOverview({
         <StyledGrid item xs={6} lg={2.5} disabled={disableText}>
           {formattedData.apy && (
             <div>
-              <Typography component="span">{`${t("apy")}`}: </Typography>
+              <Typography component="span" color="secondary.light">
+                {`${t("apy")}`}:{" "}
+              </Typography>
               <Typography component="span">{formattedData.apy}</Typography>
             </div>
           )}
@@ -219,7 +225,7 @@ export default function PoolOverview({
               <Button
                 variant="contained"
                 color={
-                  poolData.isGuarded || shouldMigrate ? "secondary" : "primary"
+                  poolData.isGuarded || shouldMigrate ? "warning" : "primary"
                 }
                 fullWidth
                 size="large"
@@ -232,7 +238,7 @@ export default function PoolOverview({
               <Button
                 variant="contained"
                 color={
-                  poolData.isGuarded || shouldMigrate ? "secondary" : "primary"
+                  poolData.isGuarded || shouldMigrate ? "warning" : "primary"
                 }
                 fullWidth
                 size="large"
@@ -245,9 +251,10 @@ export default function PoolOverview({
             )}
             <Button
               color={
-                poolData.isGuarded || shouldMigrate ? "secondary" : "primary"
+                poolData.isGuarded || shouldMigrate ? "warning" : "primary"
               }
               fullWidth
+              variant="outlined"
               size="large"
               // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
               onClick={() => history.push(`${poolRoute}/withdraw`)}

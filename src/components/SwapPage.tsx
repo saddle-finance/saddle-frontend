@@ -181,7 +181,7 @@ const SwapPage = (props: Props): ReactElement => {
 
   return (
     <Container maxWidth="sm" sx={{ pt: 5, pb: 20 }}>
-      <Paper>
+      <Paper style={{ borderRadius: 28 }}>
         <Box p={{ xs: 3, md: 4 }} flex={1}>
           <Box mb={5}>
             <Box display="flex">

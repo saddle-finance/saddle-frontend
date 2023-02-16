@@ -35,7 +35,7 @@ const Web3Status = (): ReactElement => {
     <div data-testid="walletStatusContainer">
       <Button
         variant={account ? "contained" : "outlined"}
-        color={account ? "mute" : "secondary"}
+        color={account ? "mute" : "warning"}
         onClick={(): void => setModalOpen(true)}
         data-testid="accountDetailButton"
         endIcon={account && <Identicon />}

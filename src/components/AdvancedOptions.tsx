@@ -94,6 +94,15 @@ export default function AdvancedOptions({
           background: isOutlined
             ? "transparent"
             : theme.palette.background.paper,
+          "&:first-of-type": {
+            borderTopLeftRadius: advanced ? 24 : 12,
+            borderTopRightRadius: advanced ? 24 : 12,
+          },
+          "&:last-of-type": {
+            borderBottomLeftRadius: advanced ? 24 : 12,
+            borderBottomRightRadius: advanced ? 24 : 12,
+          },
+          transition: "all 0.5 ease",
         }}
       >
         <AccordionSummary

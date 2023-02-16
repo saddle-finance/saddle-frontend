@@ -223,7 +223,7 @@ export default function TokenClaimDialog({
                 claimable once SDL is available on this network. See
                 <Link
                   href="https://docs.saddle.finance/saddle-faq#why-cant-i-claim-my-sdl-on-arbitrum"
-                  color="secondary"
+                  color="warning"
                   target="_blank"
                 >
                   this post

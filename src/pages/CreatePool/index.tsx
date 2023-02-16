@@ -429,7 +429,7 @@ export default function CreatePool(): React.ReactElement {
                 </Typography>
                 <ToggleButtonGroup
                   value={assetType}
-                  color="secondary"
+                  color="warning"
                   fullWidth
                   exclusive
                   disabled={poolType !== PoolType.Base}
@@ -438,7 +438,7 @@ export default function CreatePool(): React.ReactElement {
                   }}
                   size="large"
                 >
-                  <ToggleButton value={PoolTypes.USD} color="secondary">
+                  <ToggleButton value={PoolTypes.USD} color="warning">
                     USD
                   </ToggleButton>
                   <ToggleButton value={PoolTypes.ETH}>ETH</ToggleButton>
