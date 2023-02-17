@@ -130,7 +130,7 @@ function Pools(): ReactElement | null {
         ) /* TODO: Change when perm pool turned on */ && (
           <Box flex={1}>
             <Button
-              variant="contained"
+              variant="outlined"
               color="secondary"
               sx={{ float: "right" }}
               // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call

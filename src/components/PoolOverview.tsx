@@ -107,7 +107,7 @@ export default function PoolOverview({
         borderColor:
           poolData.isGuarded || shouldMigrate
             ? theme.palette.warning.main
-            : theme.palette.other.divider,
+            : theme.palette.primary.light,
         borderRadius: "20px",
       }}
       data-testid="poolOverview"

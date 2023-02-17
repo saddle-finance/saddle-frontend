@@ -71,9 +71,9 @@ const GREY_TONES = {
 const lightPalette: PaletteOptions | undefined = {
   mode: "light",
   primary: {
-    main: "#06D7D7",
-    dark: "#037777",
-    light: "#83EBEB",
+    main: "#474799",
+    dark: "#363681",
+    light: "#7272BA",
     states: {
       outlinedRestingBorder: "#06D7D7",
       outlinedHoverBackground: "#E6FFFF",
@@ -81,14 +81,9 @@ const lightPalette: PaletteOptions | undefined = {
     },
   },
   secondary: {
-    main: "#E6AD76",
-    dark: "#D07647",
-    light: "#FAF3CE",
-    states: {
-      outlinedRestingBorder: "#E6AD76",
-      outlinedHoverBackground: "#FAF3CE",
-      containedHoverBackground: "#D07647",
-    },
+    main: "#47998F",
+    dark: "#337F77",
+    light: "#78C4BB",
   },
   mute: {
     main: "#FAF3CE",
@@ -130,14 +125,14 @@ const lightPalette: PaletteOptions | undefined = {
   error: {
     main: "#FB5A5A",
     dark: "#68282F",
-    light: "#FDA49A",
+    light: "#F2C795",
     alert: {
       background: "#FEECEB",
     },
   },
   warning: {
-    main: "#FAEA5D",
-    dark: "#817F48",
+    main: "#EDA554",
+    dark: "#EA943D",
     light: "#FFEA91",
     alert: {
       content: "#000000",
