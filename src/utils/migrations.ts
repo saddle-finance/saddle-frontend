@@ -1,11 +1,9 @@
-import {
-  ChainId,
-  GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES,
-} from "../constants"
 import { getMulticallProvider, isAddressZero } from "."
 
+import { ChainId } from "../constants/networks"
 import { Contract } from "ethcall"
 import GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI from "../constants/abis/generalizedSwapMigrator.json"
+import { GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES } from "../constants"
 import { GeneralizedSwapMigrator } from "../../types/ethers-contracts/GeneralizedSwapMigrator"
 import { MulticallContract } from "../types/ethcall"
 import { Web3Provider } from "@ethersproject/providers"

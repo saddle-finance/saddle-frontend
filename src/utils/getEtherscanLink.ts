@@ -1,4 +1,4 @@
-import { ChainId } from "../constants"
+import { ChainId } from "../constants/networks"
 
 export function getMultichainScanLink(
   chainId: ChainId,
@@ -30,6 +30,9 @@ export function getMultichainScanLink(
       if (type === "token") {
         type = "address" // Kava uses the address keyword instead of token
       }
+      break
+    case ChainId.AURORA:
+      chainScanDomain = "explorer.mainnet.aurora.dev"
       break
     default:
       chainScanDomain = "etherscan.io"

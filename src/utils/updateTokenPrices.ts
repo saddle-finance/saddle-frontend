@@ -3,11 +3,12 @@ import {
   COINGECKO_PLATFORM_ID,
   SUPPORTED_NETWORKS,
 } from "../constants/networks"
-import { ChainId, PoolTypes, SDL_TOKEN, SPA, TOKENS_MAP } from "../constants"
+import { PoolTypes, SDL_TOKEN, SPA, TOKENS_MAP } from "../constants"
 import { TokenPricesUSD, updateTokensPricesUSD } from "../state/application"
 
 import { AppDispatch } from "../state"
 import { BN_1E18 } from "./../constants/index"
+import { ChainId } from "../constants/networks"
 import { SdlWethSushiPool } from "../state/application"
 import { Zero } from "@ethersproject/constants"
 import { arrayToHashmap } from "./index"

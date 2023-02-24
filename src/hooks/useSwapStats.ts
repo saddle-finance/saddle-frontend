@@ -1,4 +1,6 @@
-import { ChainId } from "../constants"
+import * as Sentry from "@sentry/react"
+
+import { ChainId } from "../constants/networks"
 import { useCallback } from "react"
 import { useQuery } from "@tanstack/react-query"
 
@@ -24,14 +26,25 @@ type SwapStatsReponse = {
       TVL: number
     }
   }
-}
+} & { seconds_since_epoch: number }
 export function useSwapStats() {
   return useQuery(
     ["swapStats"],
     async () => {
       const res = await fetch(`${swapStatsURI}`)
       if (res.status >= 200 && res.status < 300) {
-        return res.json()
+        const json = (await res.json()) as SwapStatsReponse
+        const swapStatsSecsSinceEpoch: number = json?.seconds_since_epoch || 0
+        const currentSecsSinceEpoch = Math.round(Date.now() / 1000)
+        const oneDaySecs = 60 * 60 * 24
+        if (currentSecsSinceEpoch - swapStatsSecsSinceEpoch > oneDaySecs) {
+          Sentry.captureMessage("Swap Stats is out of date", {
+            tags: {
+              area: "swap-stats",
+            },
+          })
+        }
+        return json
       }
       throw new Error("Unable to fetch swap stats from IPFS")
     },

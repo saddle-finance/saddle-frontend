@@ -2,7 +2,7 @@
 import { Box, Link } from "@mui/material"
 import React, { ReactText } from "react"
 
-import { ChainId } from "../constants"
+import { ChainId } from "../constants/networks"
 import { IS_PRODUCTION } from "../utils/environment"
 import LaunchIcon from "@mui/icons-material/Launch"
 import { getMultichainScanLink } from "../utils/getEtherscanLink"
@@ -139,18 +139,20 @@ export const enqueuePromiseToast = (
             }}
           >
             <span>{renderSuccessContentBasedOnType(type)}</span>
-            <Link
-              href={getMultichainScanLink(
-                chainId,
-                data?.transactionHash ?? "",
-                "tx",
-              )}
-              target="_blank"
-              rel="noreferrer"
-              sx={{ alignItems: "center" }}
-            >
-              <LaunchIcon fontSize="inherit" />
-            </Link>
+            {data?.transactionHash && (
+              <Link
+                href={getMultichainScanLink(
+                  chainId,
+                  data?.transactionHash ?? "",
+                  "tx",
+                )}
+                target="_blank"
+                rel="noreferrer"
+                sx={{ alignItems: "center" }}
+              >
+                <LaunchIcon fontSize="inherit" />
+              </Link>
+            )}
           </Box>
         )
       },

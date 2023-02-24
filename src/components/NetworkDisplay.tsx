@@ -1,9 +1,9 @@
 import { Button, Typography } from "@mui/material"
-import { ChainId, IS_L2_SUPPORTED } from "../constants"
+import { ChainId, NETWORK_LABEL } from "../constants/networks"
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
-
 import CircleTwoToneIcon from "@mui/icons-material/CircleTwoTone"
-import { NETWORK_LABEL } from "../constants/networks"
+import { IS_L2_SUPPORTED } from "../constants"
+
 import React from "react"
 
 interface NetworkDisplayProps extends React.ComponentPropsWithoutRef<"button"> {
@@ -12,7 +12,9 @@ interface NetworkDisplayProps extends React.ComponentPropsWithoutRef<"button"> {
 const NetworkDisplay = React.forwardRef<HTMLButtonElement, NetworkDisplayProps>(
   function NetworkDisplay({ onClick }, ref) {
     const { active, chainId, error } = useWeb3React()
-    const networkLabel: string = NETWORK_LABEL[chainId as ChainId] || "Ethereum"
+    const networkLabel: string = chainId
+      ? NETWORK_LABEL[chainId as ChainId] || "Ethereum"
+      : "Ethereum"
     const isUnsupportChainIdError = error instanceof UnsupportedChainIdError
 
     return (

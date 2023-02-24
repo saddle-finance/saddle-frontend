@@ -1,5 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber"
-import { ChainId } from "../constants"
+import { ChainId } from "../constants/networks"
 import { GenericToken } from "../../types/ethers-contracts/GenericToken"
 import { MaxUint256 } from "@ethersproject/constants"
 import { Zero } from "@ethersproject/constants"
