@@ -195,6 +195,7 @@ const SwapPage = (props: Props): ReactElement => {
                 &nbsp;
                 <Button
                   size="small"
+                  color="secondary"
                   data-testid="swapTokenFromWalletBalance"
                   onClick={() => {
                     if (fromToken == null) return

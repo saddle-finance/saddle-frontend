@@ -1,11 +1,14 @@
 import { Components, ComponentsVariants, Theme } from "@mui/material"
 import { ColorVariant } from "../../types"
+import { createGradient2 } from "../palette"
 
 const buttonColorVariants: ColorVariant[] = [
   "primary",
   "secondary",
-  // "info",
-  // "mute",
+  "warning",
+  "error",
+  "info",
+  "success",
 ]
 
 const containedStyle = (
@@ -21,8 +24,10 @@ const containedStyle = (
       background: theme.palette.gradient?.[color],
       color: "white",
       "&:hover": {
-        background: "none",
-        backgroundColor: theme.palette[color].light,
+        background: createGradient2(
+          theme.palette[color].light,
+          theme.palette[color].light,
+        ),
       },
     },
   }))
@@ -36,10 +41,11 @@ const outlinedStyle = (
       variant: "outlined",
     },
     style: {
-      border: `1px solid ${theme.palette[color].main}`,
+      border: `1px solid`,
+      borderColor: theme.palette[color].light,
       color: theme.palette.getContrastText(theme.palette.background.paper),
       "&:hover": {
-        backgroundColor: theme.palette[color].light,
+        backgroundColor: theme.palette[color].dark,
       },
     },
   }))
@@ -54,8 +60,10 @@ const textStyle = (
       color: color,
     },
     style: {
+      color: theme.palette[color].light,
       "&:hover": {
-        backgroundColor: theme.palette[color].states?.outlinedHoverBackground,
+        backgroundColor: theme.palette[color].light,
+        color: theme.palette[color].contrastText,
       },
     },
   }))

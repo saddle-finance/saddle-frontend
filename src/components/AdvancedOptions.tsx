@@ -35,9 +35,9 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
 import { PayloadAction } from "@reduxjs/toolkit"
 import { useTranslation } from "react-i18next"
 
-const ToggleButton = styled(MuiToggleButton)(({ theme }) => ({
+const ToggleButton = styled(MuiToggleButton)(() => ({
   "&.Mui-selected": {
-    border: `1px solid ${theme.palette.primary.main} !important`,
+    // border: `1px solid ${theme.palette.secondary.main} !important`,
   },
 }))
 
@@ -114,9 +114,7 @@ export default function AdvancedOptions({
               : "unset",
           }}
         >
-          <Typography color="primary" variant="subtitle1">
-            {t("advancedOptions")}
-          </Typography>
+          <Typography variant="subtitle1">{t("advancedOptions")}</Typography>
         </AccordionSummary>
         <AccordionDetails
           sx={{
@@ -162,7 +160,7 @@ export default function AdvancedOptions({
                   size="small"
                   fullWidth
                   exclusive
-                  color="mute"
+                  color="secondary"
                   value={slippageSelected}
                   onChange={handleSlippage}
                 >
@@ -207,7 +205,7 @@ export default function AdvancedOptions({
                 size="small"
                 fullWidth
                 exclusive
-                color="mute"
+                color="secondary"
                 value={transactionDeadlineSelected}
                 onChange={handleDeadline}
               >

@@ -34,7 +34,6 @@ function ConnectWallet({ onClose }: Props): ReactElement {
               key={index}
               fullWidth
               variant="outlined"
-              color="inherit"
               size="large"
               onClick={(): void => {
                 activate(wallet.connector, undefined, true).catch((error) => {

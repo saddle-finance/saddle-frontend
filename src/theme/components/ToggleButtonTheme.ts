@@ -33,11 +33,15 @@ const toggleButtonGropStyle = (
     style: {
       backgroundColor:
         theme.palette.mode === "light"
-          ? theme.palette[color].light
-          : theme.palette[color].dark,
+          ? "white"
+          : theme.palette.background.paper,
+      border: `1px solid ${theme.palette.other.border}`,
       color: theme.palette.getContrastText(theme.palette[color].main),
       "&.Mui-selected": {
         borderLeft: `1px solid ${theme.palette[color].main}`,
+        "&:hover": {
+          backgroundColor: theme.palette[color].dark,
+        },
       },
     },
   }))
@@ -53,23 +57,14 @@ const toggleButtonStyle = (
     style: {
       color: theme.palette.getContrastText(theme.palette[color].main),
       "&.Mui-selected": {
-        backgroundColor:
-          theme.palette.mode === "light"
-            ? theme.palette[color].dark
-            : theme.palette[color].main,
+        backgroundColor: theme.palette[color].main,
         color: theme.palette.getContrastText(theme.palette[color].main),
         "&:hover": {
-          backgroundColor: theme.palette.mode
-            ? theme.palette[color].dark
-            : theme.palette[color].light,
-          opacity: 0.7,
+          backgroundColor: theme.palette[color].dark,
         },
       },
       "&:hover": {
-        backgroundColor:
-          theme.palette.mode === "light"
-            ? theme.palette[color].dark
-            : theme.palette[color].main,
+        backgroundColor: "transparent",
       },
       "&.MuiToggleButtonGroup-grouped": {
         border: 0,

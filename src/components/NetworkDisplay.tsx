@@ -1,4 +1,4 @@
-import { Button, Typography, useTheme } from "@mui/material"
+import { Button, Typography } from "@mui/material"
 import { ChainId, IS_L2_SUPPORTED } from "../constants"
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
 
@@ -12,7 +12,6 @@ interface NetworkDisplayProps extends React.ComponentPropsWithoutRef<"button"> {
 const NetworkDisplay = React.forwardRef<HTMLButtonElement, NetworkDisplayProps>(
   function NetworkDisplay({ onClick }, ref) {
     const { active, chainId, error } = useWeb3React()
-    const theme = useTheme()
     const networkLabel: string = NETWORK_LABEL[chainId as ChainId] || "Ethereum"
     const isUnsupportChainIdError = error instanceof UnsupportedChainIdError
 
@@ -22,7 +21,7 @@ const NetworkDisplay = React.forwardRef<HTMLButtonElement, NetworkDisplayProps>(
           ref={ref}
           data-testid="networkDisplayBtn"
           variant="outlined"
-          color="mute"
+          color="secondary"
           onClick={onClick}
           startIcon={
             <CircleTwoToneIcon
@@ -30,7 +29,6 @@ const NetworkDisplay = React.forwardRef<HTMLButtonElement, NetworkDisplayProps>(
               fontSize="small"
             />
           }
-          sx={{ border: `1px solid ${theme.palette.action.hover}` }}
         >
           <Typography
             display={{ xs: "none", sm: "block" }}

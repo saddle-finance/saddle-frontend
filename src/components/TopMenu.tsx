@@ -70,10 +70,10 @@ function TopMenu(): ReactElement {
   return (
     <AppBar position="static" elevation={0}>
       <Toolbar data-testid="topMenuContainer" sx={{ xs: 0, lg: 7 }}>
-        <Box display="flex" width="100%" alignItems="center">
-          <Box flex={1}>
+        <Box display="flex" width="100%" alignItems="center" my={3}>
+          <Box display="flex" flex={1}>
             <NavLink to="/">
-              <SaddleLogo height={isUnderLaptopSize ? "40px" : "100"} />
+              <SaddleLogo height={isUnderLaptopSize ? "40px" : "80px"} />
             </NavLink>
           </Box>
 
@@ -165,7 +165,7 @@ function RewardsButton({
   return IS_SDL_LIVE ? (
     <Button
       variant="contained"
-      color="info"
+      color="primary"
       data-testid="rewardButton"
       onClick={() => setCurrentModal("tokenClaim")}
       endIcon={<SaddleLogo width={20} height={20} />}
@@ -223,7 +223,7 @@ function SDLPrice({ sdlPrice }: SDLPriceProps): ReactElement | null {
   return (
     <Button
       variant="contained"
-      color="info"
+      color="primary"
       data-testid="sdlPriceButton"
       href={SUSHI_WETH_SDL_POOL_URL}
       target="_blank"
