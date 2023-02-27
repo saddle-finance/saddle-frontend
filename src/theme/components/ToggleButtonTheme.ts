@@ -68,6 +68,7 @@ const toggleButtonStyle = (
       },
       "&.MuiToggleButtonGroup-grouped": {
         border: 0,
+        color: theme.palette.getContrastText(theme.palette.background.paper),
         "&.Mui-disabled": {
           border: 0,
           cursor: "not-allowed",
