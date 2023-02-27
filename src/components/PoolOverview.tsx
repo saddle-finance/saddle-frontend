@@ -190,7 +190,11 @@ export default function PoolOverview({
         <StyledGrid item xs={6} lg={2.5} disabled={disableText}>
           {formattedData.apy && (
             <div>
-              <Typography component="span" color="secondary.light">
+              <Typography
+                component="span"
+                variant="subtitle1"
+                color="secondary"
+              >
                 {`${t("apy")}`}:{" "}
               </Typography>
               <Typography component="span">{formattedData.apy}</Typography>
@@ -198,7 +202,7 @@ export default function PoolOverview({
           )}
           {minichefSDLInfo && (
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography variant="subtitle1" mr={1}>
+              <Typography variant="subtitle1" mr={1} color="secondary">
                 <Link
                   href="https://blog.saddle.finance/introducing-sdl"
                   target="_blank"

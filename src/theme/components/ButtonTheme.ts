@@ -46,6 +46,9 @@ const outlinedStyle = (
       color: theme.palette.getContrastText(theme.palette.background.paper),
       "&:hover": {
         backgroundColor: theme.palette[color].dark,
+        color: theme.palette.getContrastText(
+          theme.palette[color].dark || "#000000",
+        ),
       },
     },
   }))

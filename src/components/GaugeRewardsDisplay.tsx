@@ -20,7 +20,7 @@ export default function GaugeRewardsDisplay({
           if (max.isZero()) return null
           return (
             <Box key={address}>
-              <Typography component="p" color="secondary.light">
+              <Typography component="p" color="secondary">
                 {symbol}/24h:
               </Typography>
               <Typography component="span" variant="subtitle1">
@@ -35,10 +35,10 @@ export default function GaugeRewardsDisplay({
           if (max.isZero()) return null
           return (
             <Box key={address}>
-              <Typography component="p" color="secondary.light">
+              <Typography component="p" variant="subtitle1" color="secondary">
                 {symbol} apr:
               </Typography>
-              <Typography component="span" variant="subtitle1">
+              <Typography component="span">
                 {`${formatBNToPercentString(
                   min,
                   18,
