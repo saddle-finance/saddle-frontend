@@ -59,7 +59,6 @@ FarmOverviewProps): JSX.Element | null {
       direction="row"
       sx={{
         backgroundColor: (theme) => theme.palette.background.paper,
-        // border: (theme) => `${theme.palette.other.divider} solid 1px`,
         py: 1,
         px: 3,
       }}

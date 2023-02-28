@@ -135,7 +135,7 @@ export default function SwapTokenInput({
             variant="body2"
             noWrap
             paddingLeft={1}
-            color="text.secondary."
+            color="text.secondary"
           >
             {selectedTokenSymbol}
           </Typography>

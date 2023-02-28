@@ -4,14 +4,9 @@ import { PaletteOptions } from "@mui/material"
 // Define custom color types
 
 export function createGradient2(color1?: string, color2?: string) {
-  console.log("color 1==?", color1, "color 2 ==>", color2)
   if (color1 && color2)
     return `linear-gradient(90deg, ${color1} 0%, ${color2} 100%)`
 }
-
-// function createGradient3(color1:string,color2:string,color3:string){
-
-// }
 
 type GradientsPaletteOptions = {
   primaryLight?: string
@@ -208,7 +203,7 @@ const darkPalette: PaletteOptions | undefined = {
   divider: "#7272BA",
   other: {
     divider: "#7272BA",
-    border: "#474799              ",
+    border: "#474799",
   },
   grey: GREY_TONES,
   gradient: {

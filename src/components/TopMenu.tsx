@@ -14,7 +14,7 @@ import {
 import { IS_SDL_LIVE, SDL_TOKEN } from "../constants"
 import { Menu as MenuIcon, MoreVert } from "@mui/icons-material"
 import { NavLink, NavLinkProps, useLocation } from "react-router-dom"
-import React, { ReactElement, useContext, useState } from "react"
+import React, { ReactElement, useContext, useEffect, useState } from "react"
 
 import { AppState } from "../state"
 import NetworkDisplay from "./NetworkDisplay"
@@ -67,6 +67,13 @@ function TopMenu(): ReactElement {
       handleSettingMenu(event)
     }
   }
+
+  useEffect(() => {
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", theme.palette.background.default)
+  }, [theme.palette.background.default])
+
   return (
     <AppBar position="static" elevation={0}>
       <Toolbar data-testid="topMenuContainer" sx={{ xs: 0, lg: 7 }}>

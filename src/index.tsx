@@ -48,6 +48,7 @@ const container = document.getElementById("root")
 const root = createRoot(container!) // createRoot(container!) if you use TypeScript
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+
 root.render(
   <React.StrictMode>
     <IntercomProvider appId={intercomAppId} shouldInitialize={IS_PRODUCTION}>
