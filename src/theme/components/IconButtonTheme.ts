@@ -14,9 +14,6 @@ export default function IconButtonTheme(theme: Theme): Components {
       styleOverrides: {
         root: {
           color: theme.palette.text.secondary,
-          ":hover": {
-            backgroundColor: "tranparent",
-          },
         },
       },
     },

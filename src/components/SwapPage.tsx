@@ -25,7 +25,7 @@ import { PendingSwap } from "../hooks/usePendingSwapData"
 import PendingSwapModal from "./PendingSwapModal"
 import ReviewSwap from "./ReviewSwap"
 import { Slippages } from "../state/user"
-import SwapIcon from "@mui/icons-material/SwapHoriz"
+import SwapIcon from "@mui/icons-material/SwapVert"
 import SwapTokenInput from "./SwapTokenInput"
 import { TokenOption } from "../types"
 import { Zero } from "@ethersproject/constants"
@@ -184,7 +184,7 @@ const SwapPage = (props: Props): ReactElement => {
     <Container maxWidth="sm" sx={{ pt: 5, pb: 20 }}>
       <Paper style={{ borderRadius: 28 }}>
         <Box p={{ xs: 3, md: 4 }} flex={1}>
-          <Box mb={5}>
+          <Box>
             <Box display="flex">
               <Typography variant="subtitle1" component="span">
                 {t("from").toLocaleUpperCase()}
@@ -211,6 +211,7 @@ const SwapPage = (props: Props): ReactElement => {
                 </Button>
               </Box>
             </Box>
+
             <SwapTokenInput
               data-testid="swapTokenInputFrom"
               tokens={tokenOptions.from.filter(
@@ -223,6 +224,14 @@ const SwapPage = (props: Props): ReactElement => {
               inputValueUSD={fromState.valueUSD}
               isSwapFrom={true}
             />
+          </Box>
+          <Box display="flex" mt="20px">
+            <IconButton
+              onClick={onClickReverseExchangeDirection}
+              sx={{ mx: "auto" }}
+            >
+              <SwapIcon />
+            </IconButton>
           </Box>
           {chainId &&
             [ChainId.MAINNET, ChainId.HARDHAT].includes(chainId) &&
@@ -246,6 +255,7 @@ const SwapPage = (props: Props): ReactElement => {
             [ChainId.MAINNET, ChainId.HARDHAT].includes(chainId) &&
             renderTokenListsWarning(openTo, setOpenTo, "to")}
           <div style={{ height: "24px" }}></div>
+
           {fromState.symbol && toState.symbol && (
             <Box display="flex" justifyContent="space-between">
               <div>
@@ -255,13 +265,6 @@ const SwapPage = (props: Props): ReactElement => {
                 <Typography component="span" mr={1}>
                   {exchangeRateInfo.pair}
                 </Typography>
-                <Button
-                  variant="text"
-                  size="small"
-                  onClick={onClickReverseExchangeDirection}
-                >
-                  <SwapIcon />
-                </Button>
               </div>
               <Typography data-testid="exchRate">
                 {formattedExchangeRate}

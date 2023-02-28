@@ -131,14 +131,6 @@ export default function SwapTokenInput({
               {selectedTokenSymbol || "Choose"}
             </Typography>
           </Button>
-          <Typography
-            variant="body2"
-            noWrap
-            paddingLeft={1}
-            color="text.secondary"
-          >
-            {selectedTokenSymbol}
-          </Typography>
         </Box>
         <Box flex={1}>
           <InputBase

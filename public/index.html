@@ -17,14 +17,7 @@
         gtag("config", "%REACT_APP_GOOGLE_ANALYTICS_MEASUREMENT_ID%")
       }
     </script>
-    <script defer>
-      let mediaQueryObj = window.matchMedia("(prefers-color-scheme: dark)")
-      let isDarkMode = mediaQueryObj.matches
-      console.log("is dark mode ==>", isDarkMode)
-      document
-        .querySelector('meta[name="theme-color"]')
-        .setAttribute("content", isDarkMode ? "#181818" : "#ffffff")
-    </script>
+
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <link
