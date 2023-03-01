@@ -14,7 +14,7 @@ export default {
       control: { type: "inline-radio" },
     },
     color: {
-      options: ["primary", "warning", "info", "mute", "error"],
+      options: ["primary", "warning", "info", "error"],
       control: { type: "select" },
     },
     disabled: {

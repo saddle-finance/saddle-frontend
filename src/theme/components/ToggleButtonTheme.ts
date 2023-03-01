@@ -6,17 +6,6 @@ import {
 } from "@mui/material"
 import { OverridableStringUnion } from "@mui/types"
 
-declare module "@mui/material/ToggleButtonGroup" {
-  interface ToggleButtonGroupPropsColorOverrides {
-    mute: true
-  }
-}
-
-declare module "@mui/material/ToggleButton" {
-  interface ToggleButtonPropsColorOverrides {
-    mute: true
-  }
-}
 type ToggleButtonColorVariant = OverridableStringUnion<
   "primary" | "secondary" | "success" | "error" | "info" | "warning",
   ToggleButtonPropsColorOverrides
@@ -81,7 +70,6 @@ const buttonColorVariants: ToggleButtonColorVariant[] = [
   "primary",
   "secondary",
   "info",
-  "mute",
 ]
 
 export default function ToggleButtonTheme(theme: Theme): Components {

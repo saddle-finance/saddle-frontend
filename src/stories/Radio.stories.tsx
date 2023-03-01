@@ -7,7 +7,7 @@ export default {
   component: MuiRadio,
   argTypes: {
     color: {
-      options: ["primary", "secondary", "info", "mute", "error"],
+      options: ["primary", "secondary", "info", "error"],
       control: { type: "select" },
     },
   },

@@ -1,10 +1,5 @@
 import { Components, Theme } from "@mui/material"
 
-declare module "@mui/material/IconButton" {
-  interface ButtonPropsColorOverrides {
-    mute: true
-  }
-}
 export default function IconButtonTheme(theme: Theme): Components {
   return {
     MuiIconButton: {

@@ -9,15 +9,8 @@ export function createGradient2(color1?: string, color2?: string) {
 }
 
 type GradientsPaletteOptions = {
-  primaryLight?: string
-  secondL2secondD?: string
-  primaryL2primaryD?: string
-  primary2secondary?: string
-  primaryD2primaryL?: string
-  secondaryL2primaryD?: string
   logo?: string
   gold?: string
-  mute?: string // This is for button variant. Remove if we don't need mute variant in button.
 } & { [K in OriginColorVariant]?: string }
 
 interface OtherColorTypes {
@@ -44,12 +37,10 @@ declare module "@mui/material/styles" {
   }
   interface Palette {
     gradient?: GradientsPaletteOptions
-    mute: SimplePaletteColorOptions
     other: OtherColorTypes
   }
   interface PaletteOptions {
     gradient?: GradientsPaletteOptions
-    mute: SimplePaletteColorOptions
     other: OtherColorTypes
   }
 }
@@ -72,11 +63,6 @@ const lightPalette: PaletteOptions | undefined = {
     main: "#47998F",
     dark: "#337F77",
     light: "#78C4BB",
-  },
-  mute: {
-    main: "#FAF3CE",
-    light: "#FAF3CE",
-    dark: "#E3D899",
   },
   info: {
     main: "#474799",
@@ -146,11 +132,6 @@ const darkPalette: PaletteOptions | undefined = {
     main: "#47998F",
     dark: "#337F77",
     light: "#78C4BB",
-  },
-  mute: {
-    main: "#311188",
-    light: "#4B11F2",
-    dark: "#200B5B",
   },
   info: {
     main: "#4B11F2",
