@@ -8,9 +8,9 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"
 import { BigNumber } from "@ethersproject/bignumber"
 import INVESTOR_EMPLOYEE_VESTING_CONTRACT_ABI from "../constants/abis/vesting.json"
 import { SDL_TOKEN } from "../constants"
+import SaddleLogo from "../components/SaddleLogo"
 import { Vesting } from "../../types/ethers-contracts/Vesting"
 import { Zero } from "@ethersproject/constants"
-import logo from "../assets/icons/logo.svg"
 import { useActiveWeb3React } from "../hooks"
 import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
 import { useSdlContract } from "../hooks/useContract"
@@ -138,7 +138,7 @@ function VestingClaim(): ReactElement {
                 : "linear-gradient(180deg, #FFF 0%, #FBF4CF 100%)",
           }}
         >
-          <img src={logo} width={138} height={138} />
+          <SaddleLogo width={138} height={138} />
         </Box>
       </Box>
 

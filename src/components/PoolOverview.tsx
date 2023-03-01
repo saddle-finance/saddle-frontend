@@ -13,7 +13,11 @@ import {
   useTheme,
 } from "@mui/material"
 import React, { ReactElement, useCallback } from "react"
-import { formatBNToPercentString, formatBNToShortString } from "../utils"
+import {
+  formatBNToPercentString,
+  formatBNToShortString,
+  getTokenIconPath,
+} from "../utils"
 import usePoolData, { PoolDataType } from "../hooks/usePoolData"
 
 import { CheckCircleOutline } from "@mui/icons-material"
@@ -21,7 +25,6 @@ import GaugeRewardsDisplay from "./GaugeRewardsDisplay"
 import TokenIcon from "./TokenIcon"
 import { Zero } from "@ethersproject/constants"
 import { areGaugesActive } from "../utils/gauges"
-import logo from "../assets/icons/logo.svg"
 import { useActiveWeb3React } from "../hooks"
 import { useHistory } from "react-router-dom"
 import { useTranslation } from "react-i18next"
@@ -212,7 +215,7 @@ export default function PoolOverview({
                   {minichefSDLInfo[0]}
                 </Link>
               </Typography>
-              <img src={logo} width="24px" />
+              <img src={getTokenIconPath("sdl")} width="24px" />
               :&nbsp;
               <Typography>{minichefSDLInfo[1]}</Typography>
             </Box>
