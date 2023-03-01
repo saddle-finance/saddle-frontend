@@ -1,6 +1,6 @@
 import { Components, ComponentsVariants, Theme } from "@mui/material"
 import { ColorVariant } from "../../types"
-import { createGradient2 } from "../palette"
+import { createGradient2 } from "../../utils/createGradient2"
 
 const buttonColorVariants: ColorVariant[] = [
   "primary",

@@ -1,16 +1,12 @@
 import { OriginColorVariant } from "../types"
 import { PaletteOptions } from "@mui/material"
+import { createGradient2 } from "../utils/createGradient2"
 
 // Define custom color types
 
-export function createGradient2(color1?: string, color2?: string) {
-  if (color1 && color2)
-    return `linear-gradient(90deg, ${color1} 0%, ${color2} 100%)`
-}
-
 type GradientsPaletteOptions = {
-  logo?: string
-  gold?: string
+  logo: string
+  gold: string
 } & { [K in OriginColorVariant]?: string }
 
 interface OtherColorTypes {
@@ -118,6 +114,8 @@ const lightPalette: PaletteOptions | undefined = {
   gradient: {
     primary: createGradient2("#7272BA", "#474799"),
     secondary: createGradient2("#78C4BB", "#47998F"),
+    logo: "linear-gradient(90deg, #78C4BB 0%, #4F9994 22%, #363681 86%)",
+    gold: "linear-gradient(90deg, #CEAA7B 0%, #FCF5DD 50%, #BE893D 100%)",
   },
 }
 
@@ -190,6 +188,8 @@ const darkPalette: PaletteOptions | undefined = {
   gradient: {
     primary: createGradient2("#7272BA", "#474799"),
     secondary: createGradient2("#78C4BB", "#47998F"),
+    logo: "linear-gradient(90deg, #78C4BB 0%, #4F9994 22%, #363681 86%)",
+    gold: "linear-gradient(90deg, #CEAA7B 0%, #FCF5DD 50%, #BE893D 100%)",
   },
 }
 export default { lightPalette, darkPalette }

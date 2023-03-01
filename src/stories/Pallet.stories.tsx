@@ -27,6 +27,15 @@ const Template: ComponentStory<typeof Box> = () => (
     >
       box
     </Box>
+    <Box
+      height={300}
+      width={300}
+      sx={(theme) => ({
+        background: theme.palette.gradient?.logo,
+      })}
+    >
+      box
+    </Box>
   </div>
 )
 export const Palette = Template.bind({})
