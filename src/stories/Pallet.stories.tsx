@@ -13,7 +13,7 @@ const Template: ComponentStory<typeof Box> = () => (
       height={300}
       width={300}
       sx={(theme) => ({
-        background: theme.palette.gradient?.primary2secondary,
+        background: theme.palette.gradient?.primary,
       })}
     >
       box

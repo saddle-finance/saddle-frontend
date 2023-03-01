@@ -130,8 +130,8 @@ const lightPalette: PaletteOptions | undefined = {
     border: "#7D7D7D",
   },
   gradient: {
-    primary2secondary: createGradient2("#474799", "#47998F"),
     primary: createGradient2("#7272BA", "#474799"),
+    secondary: createGradient2("#78C4BB", "#47998F"),
   },
 }
 
