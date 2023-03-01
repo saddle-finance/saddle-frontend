@@ -48,7 +48,6 @@ export const injectedMetaMaskProvider = createInjectedMetaMaskProvider()
 export const injectedTallyProvider = createInjectedTallyProvider()
 
 export const walletconnect = new WalletConnectConnector({
-  // rpc: { [NETWORK_CHAIN_ID]: NETWORK_URL },
   rpc: Object.keys(SUPPORTED_NETWORKS).reduce(
     (acc, id) => ({
       ...acc,
@@ -58,7 +57,7 @@ export const walletconnect = new WalletConnectConnector({
   ),
   bridge: "https://bridge.walletconnect.org",
   qrcode: true,
-  supportedChainIds: [1, 10, 42161],
+  supportedChainIds: Object.keys(SUPPORTED_NETWORKS).map(Number),
   // chainId: NETWORK_CHAIN_ID,
   // pollingInterval: POLLING_INTERVAL / 12000
 })
