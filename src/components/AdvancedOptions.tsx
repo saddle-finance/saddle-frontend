@@ -95,12 +95,12 @@ export default function AdvancedOptions({
             ? "transparent"
             : theme.palette.background.paper,
           "&:first-of-type": {
-            borderTopLeftRadius: advanced ? 24 : 12,
-            borderTopRightRadius: advanced ? 24 : 12,
+            borderTopLeftRadius: 16,
+            borderTopRightRadius: 16,
           },
           "&:last-of-type": {
-            borderBottomLeftRadius: advanced ? 24 : 12,
-            borderBottomRightRadius: advanced ? 24 : 12,
+            borderBottomLeftRadius: 16,
+            borderBottomRightRadius: 16,
           },
           transition: "all 0.5 ease",
         }}
