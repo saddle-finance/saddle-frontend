@@ -16,9 +16,6 @@ export default function AccordionTheme(theme: Theme): Components {
         },
         content: {
           margin: theme.spacing(2, 0),
-          "&.Mui-expanded": {
-            margin: theme.spacing(2, 0, 1, 0),
-          },
         },
       },
     },
