@@ -33,10 +33,12 @@ import { useActiveWeb3React } from "../hooks"
 import { useApproveAndDeposit } from "../hooks/useApproveAndDeposit"
 import { useParams } from "react-router-dom"
 import { usePoolTokenBalances } from "../state/wallet/hooks"
+import useRedirectInvalidPool from "../hooks/useRedirectInvalidPool"
 import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
 
 function Deposit(): ReactElement | null {
+  useRedirectInvalidPool()
   const { poolName } = useParams<{ poolName: string }>()
   const basicPools = useContext(BasicPoolsContext)
   const basicTokens = useContext(TokensContext)

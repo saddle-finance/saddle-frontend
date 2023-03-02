@@ -22,11 +22,13 @@ import { useActiveWeb3React } from "../hooks"
 import { useApproveAndWithdraw } from "../hooks/useApproveAndWithdraw"
 import { useParams } from "react-router-dom"
 import usePoolData from "../hooks/usePoolData"
+import useRedirectInvalidPool from "../hooks/useRedirectInvalidPool"
 import { useSelector } from "react-redux"
 import { useSwapContract } from "../hooks/useContract"
 import useWithdrawFormState from "../hooks/useWithdrawFormState"
 
 function Withdraw(): ReactElement {
+  useRedirectInvalidPool()
   const { poolName } = useParams<{ poolName: string }>()
   const [poolData, userShareData] = usePoolData(poolName)
   const {
