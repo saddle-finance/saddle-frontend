@@ -10,6 +10,8 @@ import {
 
 import { AppState } from "../state"
 import { BigNumber } from "@ethersproject/bignumber"
+import META_SWAP_ABI from "../constants/abis/metaSwap.json"
+import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { SwapFlashLoan } from "../../types/ethers-contracts/SwapFlashLoan"
 import { SwapFlashLoanNoWithdrawFee } from "../../types/ethers-contracts/SwapFlashLoanNoWithdrawFee"
 import { Zero } from "@ethersproject/constants"
@@ -17,6 +19,7 @@ import { calculateGasEstimate } from "../utils/gasEstimate"
 import { calculatePriceImpact } from "../utils/priceImpact"
 import { formatGasToString } from "../utils/gas"
 import { formatSlippageToString } from "../utils/slippage"
+import { getContract } from "../utils"
 import { isWithdrawFeePool } from "../constants"
 import { useActiveWeb3React } from "../hooks"
 import { useApproveAndWithdraw } from "../hooks/useApproveAndWithdraw"
@@ -45,7 +48,7 @@ function Withdraw(): ReactElement {
   )
   const approveAndWithdraw = useApproveAndWithdraw(poolName)
   const swapContract = useSwapContract(poolName)
-  const { account } = useActiveWeb3React()
+  const { account, library, chainId } = useActiveWeb3React()
   const [withdrawLPTokenAmount, setWithdrawLPTokenAmount] =
     useState<BigNumber>(Zero)
   const tokenInputSum = useMemo(() => {
@@ -60,44 +63,61 @@ function Withdraw(): ReactElement {
       Zero,
     )
   }, [withdrawTokens, withdrawFormState.tokenInputs])
+  const metaSwapContract = useMemo(() => {
+    if (poolData?.poolAddress && chainId && library) {
+      return getContract(
+        poolData.poolAddress,
+        META_SWAP_ABI,
+        library,
+        account ?? undefined,
+      ) as MetaSwap
+    }
+  }, [chainId, library, account, poolData?.poolAddress])
+  const effectiveSwapContract = shouldWithdrawWrapped
+    ? (metaSwapContract as MetaSwap)
+    : swapContract
 
   useEffect(() => {
     // evaluate if a new withdraw will exceed the pool's per-user limit
     async function calculateWithdrawBonus(): Promise<void> {
       if (
-        swapContract == null ||
+        effectiveSwapContract == null ||
         userShareData == null ||
         poolData == null ||
         account == null
       ) {
         return
       }
-      if (poolData.totalLocked.gt(0) && tokenInputSum.gt(0)) {
-        const withdrawTokenAmounts = withdrawTokens.map(
-          (token) =>
-            withdrawFormState.tokenInputs[token.address]?.valueSafe || Zero,
-        )
-        if (isWithdrawFeePool(poolData.name)) {
-          const calculatedTokenAmount = await (
-            swapContract as SwapFlashLoan
-          ).calculateTokenAmount(account, withdrawTokenAmounts, false)
-          setWithdrawLPTokenAmount(calculatedTokenAmount)
+      try {
+        if (poolData.totalLocked.gt(0) && tokenInputSum.gt(0)) {
+          const withdrawTokenAmounts = withdrawTokens.map(
+            (token) =>
+              withdrawFormState.tokenInputs[token.address]?.valueSafe || Zero,
+          )
+          if (isWithdrawFeePool(poolData.name)) {
+            const calculatedTokenAmount = await (
+              effectiveSwapContract as SwapFlashLoan
+            ).calculateTokenAmount(account, withdrawTokenAmounts, false)
+            setWithdrawLPTokenAmount(calculatedTokenAmount)
+          } else {
+            const calculatedTokenAmount = await (
+              effectiveSwapContract as SwapFlashLoanNoWithdrawFee
+            ).calculateTokenAmount(withdrawTokenAmounts, false)
+            setWithdrawLPTokenAmount(calculatedTokenAmount)
+          }
         } else {
-          const calculatedTokenAmount = await (
-            swapContract as SwapFlashLoanNoWithdrawFee
-          ).calculateTokenAmount(withdrawTokenAmounts, false)
-          setWithdrawLPTokenAmount(calculatedTokenAmount)
+          // when pool is empty, estimate the lptokens by just summing the input instead of calling contract
+          setWithdrawLPTokenAmount(tokenInputSum)
         }
-      } else {
-        // when pool is empty, estimate the lptokens by just summing the input instead of calling contract
-        setWithdrawLPTokenAmount(tokenInputSum)
+      } catch (e) {
+        console.error("Unable to calculate withdraw bonus", e)
       }
     }
     void calculateWithdrawBonus()
   }, [
     poolData,
     withdrawFormState,
-    swapContract,
+    effectiveSwapContract,
     tokenInputSum,
     userShareData,
     account,
