@@ -217,6 +217,7 @@ export default function useWithdrawFormState(poolName: string) {
           }
         }
       } else {
+        // This case is the one-token case. Multiply the user's LP token balance by the % to remove
         try {
           if (state.percentage) {
             const tokenIndex = withdrawTokens.findIndex(
@@ -224,10 +225,9 @@ export default function useWithdrawFormState(poolName: string) {
             )
 
             let tokenAmount: BigNumber
-            const withdrawAmount = withdrawTokens[tokenIndex].value
+            const withdrawAmount = effectiveUserLPTokenBalance
               .mul(parseUnits(percentageRaw, 5)) // difference between numerator and denominator because we're going from 100 to 1.00
               .div(10 ** 7)
-
             if (poolData.isMetaSwap) {
               if (shouldWithdrawWrapped) {
                 tokenAmount = await (
