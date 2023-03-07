@@ -2,8 +2,8 @@ import React, { lazy } from "react"
 import { Redirect, Route, Switch } from "react-router-dom"
 
 import { ChainId } from "../constants/networks"
-import CoinbasePayTest from "./CoinbasePayTest"
 import { useActiveWeb3React } from "../hooks"
+import CoinbasePayTest from "./CoinbasePayTest"
 
 const CreatePool = lazy(() => import("./CreatePool"))
 const Deposit = lazy(() => import("./Deposit"))
@@ -38,6 +38,7 @@ export const communityPoolsEnabled = (chainId: ChainId | undefined) => {
       ChainId.KAVA,
       ChainId.OPTIMISM,
       ChainId.FANTOM,
+      ChainId.AURORA,
     ].includes(chainId)
   )
 }

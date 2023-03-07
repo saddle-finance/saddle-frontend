@@ -16,6 +16,7 @@ export enum ChainId {
   KAVA_TESTNET = 2221,
   KAVA = 2222,
   AURORA = 1313161554,
+  BASE_TESTNET = 84531,
 }
 
 export const NETWORK_LABEL: Partial<Record<ChainId, string>> = {
@@ -30,6 +31,7 @@ export const NETWORK_LABEL: Partial<Record<ChainId, string>> = {
   [ChainId.KAVA]: "Kava",
   [ChainId.HARDHAT]: "Hardhat 👷🏼‍♂️",
   [ChainId.AURORA]: "Aurora",
+  [ChainId.BASE_TESTNET]: "Base Testnet",
 }
 
 // TODO: figure out better way of representing non-erc20 native tokens
@@ -46,6 +48,7 @@ export const NETWORK_NATIVE_TOKENS: Record<ChainId, string> = {
   [ChainId.HARDHAT]: "ETH",
   [ChainId.TEST_SIDE_CHAIN]: "ETH",
   [ChainId.AURORA]: "ETH",
+  [ChainId.BASE_TESTNET]: "ETH",
 }
 export const COINGECKO_PLATFORM_ID: Record<ChainId, string | null> = {
   [ChainId.MAINNET]: "ethereum",
@@ -60,6 +63,7 @@ export const COINGECKO_PLATFORM_ID: Record<ChainId, string | null> = {
   [ChainId.HARDHAT]: null,
   [ChainId.TEST_SIDE_CHAIN]: null,
   [ChainId.AURORA]: "aurora",
+  [ChainId.BASE_TESTNET]: null,
 }
 
 export type SupportedNetwork = {
@@ -169,5 +173,12 @@ export const DEV_SUPPORTED_NETWORKS: SupportedNetworks = {
     },
     rpcUrls: ["https://evm.testnet.kava.io"],
     blockExplorerUrls: ["https://explorer.evm-alpha.kava.io"],
+  },
+  [ChainId.BASE_TESTNET]: {
+    chainId: hexlify(84531),
+    chainName: "Base Testnet",
+    nativeCurrency: nativeCurrencyEth,
+    rpcUrls: ["https://goerli.base.org/"],
+    blockExplorerUrls: ["https://goerli.basescan.org"],
   },
 }

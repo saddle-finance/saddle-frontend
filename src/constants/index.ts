@@ -3,18 +3,18 @@ import {
   injectedTallyProvider,
   uauth,
   walletconnect,
-  walletlink,
+  walletlink
 } from "../connectors"
 
-import { AbstractConnector } from "@web3-react/abstract-connector"
-import { BasicToken } from "../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
-import { ChainId } from "./networks"
+import { AbstractConnector } from "@web3-react/abstract-connector"
 import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
 import metamaskIcon from "../assets/icons/metamask.svg"
 import tallyIcon from "../assets/icons/tally.svg"
 import unstoppableDomainsLogo from "../assets/icons/unstoppableDomainsLogo.png"
 import walletconnectIcon from "../assets/icons/walletconnect.svg"
+import { BasicToken } from "../providers/TokensProvider"
+import { ChainId } from "./networks"
 
 export const NetworkContextName = "NETWORK"
 export const BTC_POOL_NAME = "BTC"
@@ -170,6 +170,7 @@ export const MASTER_REGISTRY_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.ARBITRUM]: "0xaB94A2c0D8F044AA439A5654f06b5797928396cF",
   [ChainId.KAVA]: "0x3A0c2A793a8DB779e0293699D0Ce77c77617FE0f",
   [ChainId.AURORA]: "0x29FD31d37AB8D27f11EAB68F96424bf64231fFce",
+  [ChainId.BASE_TESTNET]: "0x29FD31d37AB8D27f11EAB68F96424bf64231fFce",
 })
 
 export const SDL_WETH_SUSHI_LP_CONTRACT_ADDRESSES = buildAddresses({
