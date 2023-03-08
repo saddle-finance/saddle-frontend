@@ -2,8 +2,8 @@ import React, { lazy } from "react"
 import { Redirect, Route, Switch } from "react-router-dom"
 
 import { ChainId } from "../constants/networks"
-import { useActiveWeb3React } from "../hooks"
 import CoinbasePayTest from "./CoinbasePayTest"
+import { useActiveWeb3React } from "../hooks"
 
 const CreatePool = lazy(() => import("./CreatePool"))
 const Deposit = lazy(() => import("./Deposit"))

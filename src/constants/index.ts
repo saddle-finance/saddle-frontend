@@ -3,18 +3,18 @@ import {
   injectedTallyProvider,
   uauth,
   walletconnect,
-  walletlink
+  walletlink,
 } from "../connectors"
 
-import { BigNumber } from "@ethersproject/bignumber"
 import { AbstractConnector } from "@web3-react/abstract-connector"
+import { BasicToken } from "../providers/TokensProvider"
+import { BigNumber } from "@ethersproject/bignumber"
+import { ChainId } from "./networks"
 import coinbasewalletIcon from "../assets/icons/coinbasewallet.svg"
 import metamaskIcon from "../assets/icons/metamask.svg"
 import tallyIcon from "../assets/icons/tally.svg"
 import unstoppableDomainsLogo from "../assets/icons/unstoppableDomainsLogo.png"
 import walletconnectIcon from "../assets/icons/walletconnect.svg"
-import { BasicToken } from "../providers/TokensProvider"
-import { ChainId } from "./networks"
 
 export const NetworkContextName = "NETWORK"
 export const BTC_POOL_NAME = "BTC"
