@@ -175,7 +175,7 @@ export const DEV_SUPPORTED_NETWORKS: SupportedNetworks = {
     blockExplorerUrls: ["https://explorer.evm-alpha.kava.io"],
   },
   [ChainId.BASE_TESTNET]: {
-    chainId: hexlify(84531),
+    chainId: "0x14a33", // 84531
     chainName: "Base Testnet",
     nativeCurrency: nativeCurrencyEth,
     rpcUrls: ["https://goerli.base.org/"],
