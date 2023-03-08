@@ -1,6 +1,11 @@
 import { BaseProvider, getDefaultProvider } from "@ethersproject/providers"
-import { SUPPORTED_NETWORKS, SupportedNetwork } from "../constants/networks"
+import {
+  DEV_SUPPORTED_NETWORKS,
+  SUPPORTED_NETWORKS,
+  SupportedNetwork,
+} from "../constants/networks"
 
+import { IS_DEVELOPMENT } from "../utils/environment"
 import { InjectedConnector } from "@web3-react/injected-connector"
 import { NetworkConnector } from "@web3-react/network-connector"
 import { UAuthConnector } from "@uauth/web3-react"
@@ -11,7 +16,9 @@ const NETWORK_URL = process.env.REACT_APP_NETWORK_URL
 export const NETWORK_CHAIN_ID: number = parseInt(
   process.env.REACT_APP_CHAIN_ID ?? "1",
 )
-
+const ENV_SUPPORTED_NETWORKS = IS_DEVELOPMENT
+  ? DEV_SUPPORTED_NETWORKS
+  : SUPPORTED_NETWORKS
 if (typeof NETWORK_URL === "undefined") {
   throw new Error(
     `REACT_APP_NETWORK_URL must be a defined environment variable`,
@@ -32,7 +39,7 @@ function createInjectedMetaMaskProvider() {
   return new InjectedConnector({
     // mainnet, ropsten, rinkeby, goerli, optimism, kovan, kava testnet, kava, evmos testnet, evmos, fantom, local buidler
     // see: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
-    supportedChainIds: Object.keys(SUPPORTED_NETWORKS).map(Number), // Must be numbers
+    supportedChainIds: Object.keys(ENV_SUPPORTED_NETWORKS).map(Number), // Must be numbers
   })
 }
 
@@ -48,16 +55,16 @@ export const injectedMetaMaskProvider = createInjectedMetaMaskProvider()
 export const injectedTallyProvider = createInjectedTallyProvider()
 
 export const walletconnect = new WalletConnectConnector({
-  rpc: Object.keys(SUPPORTED_NETWORKS).reduce(
+  rpc: Object.keys(ENV_SUPPORTED_NETWORKS).reduce(
     (acc, id) => ({
       ...acc,
-      [id]: (SUPPORTED_NETWORKS[id] as SupportedNetwork).rpcUrls[0],
+      [id]: (ENV_SUPPORTED_NETWORKS[id] as SupportedNetwork).rpcUrls[0],
     }),
     {},
   ),
   bridge: "https://bridge.walletconnect.org",
   qrcode: true,
-  supportedChainIds: Object.keys(SUPPORTED_NETWORKS).map(Number),
+  supportedChainIds: Object.keys(ENV_SUPPORTED_NETWORKS).map(Number),
   // chainId: NETWORK_CHAIN_ID,
   // pollingInterval: POLLING_INTERVAL / 12000
 })
