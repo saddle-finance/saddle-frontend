@@ -53,7 +53,7 @@ export function useApproveAndWithdraw(
         META_SWAP_ABI,
         library,
         account ?? undefined,
-      )
+      ) as MetaSwap
     }
   }, [chainId, library, account, pool?.poolAddress])
 
@@ -236,9 +236,7 @@ export function useApproveAndWithdraw(
         )
 
         if (!state.tokenFormState || !state.withdrawType) return
-        const lpTokenAmountToRemoveOneToken =
-          state.tokenFormState[state.withdrawType]?.valueSafe
-
+        const lpTokenAmountToRemoveOneToken = state.lpTokenAmountToSpend
         if (lpTokenAmountToRemoveOneToken) {
           spendTransaction =
             await effectiveSwapContract.removeLiquidityOneToken(

@@ -1,6 +1,6 @@
 import { Box, Button, Paper, Stack, Typography } from "@mui/material"
 import React, { ReactElement, useCallback, useContext } from "react"
-import { commify, formatBNToString } from "../utils"
+import { commify, formatBNToString, missingKeys } from "../utils"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { ChainId } from "../constants/networks"
@@ -68,8 +68,18 @@ export default function MyFarm({
   }, [account, chainId, liquidityGaugeContract, poolName])
 
   const onStakeClick = useCallback(async () => {
-    if (!liquidityGaugeContract || !lpTokenContract || !account || !chainId)
+    if (!liquidityGaugeContract || !lpTokenContract || !account || !chainId) {
+      const missingKeysStrs = missingKeys({
+        liquidityGaugeContract,
+        lpTokenContract,
+        account,
+        chainId,
+      })
+      console.error(
+        `Unable to stake, missing keys: ${missingKeysStrs.join(", ")}`,
+      )
       return
+    }
     await checkAndApproveTokenForTrade(
       lpTokenContract,
       liquidityGaugeContract.address,
