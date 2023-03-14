@@ -193,6 +193,17 @@ const tokenOptionLists: TokenOption[] = [
     isAvailable: false,
     isOnTokenLists: false,
   },
+  {
+    address: dummyAddr,
+    name: "Fluidity USD",
+    symbol: "fUSD",
+    decimals: 18,
+    amount: BigNumber.from("0x00"),
+    valueUSD: BigNumber.from("0x00"),
+    swapType: SWAP_TYPES.DIRECT,
+    isAvailable: false,
+    isOnTokenLists: true,
+  },
 ]
 export const SwapInput = Template.bind({})
 SwapInput.args = {
