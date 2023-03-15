@@ -2,6 +2,7 @@ import {
   Box,
   Collapse,
   Divider,
+  Link,
   ListItemButton,
   ListItemIcon,
   ListItemText,
@@ -71,6 +72,12 @@ export default function SiteSettingsMenu({
         <Divider variant="middle" />
         <ThemeSection key="theme" />
         {IS_SDL_LIVE && <AddTokenSection key="token" />}
+        <Divider variant="middle" />
+        <MenuItem key="docs">
+          <Link margin={0} padding={0} href="https://docs.saddle.finance">
+            Documentation
+          </Link>
+        </MenuItem>
       </Box>
     </Menu>
   )
