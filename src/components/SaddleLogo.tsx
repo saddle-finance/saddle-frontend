@@ -10,9 +10,7 @@ export default function SaddleLogo({
     <Logo
       {...props}
       color={
-        theme.palette.mode === "dark"
-          ? theme.palette.common.black
-          : theme.palette.common.white
+        theme.palette.mode === "dark" ? "#221F20" : theme.palette.common.white
       }
     />
   )
