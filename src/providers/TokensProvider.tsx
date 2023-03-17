@@ -135,10 +135,10 @@ export default function TokensProvider({
       ].map((addr) => addr.toLowerCase())
       const additionalSdlApprovedAddrsSet = new Set([
         ...tokenListsTokenAddrs,
-        ...(ChainId.HARDHAT == chainId
+        ...(ChainId.HARDHAT === chainId
           ? additionalSdlApprovedAddrsHardhat
           : []),
-        ...(ChainId.ARBITRUM == chainId
+        ...(ChainId.ARBITRUM === chainId
           ? additionalSdlApprovedAddrsArbitrum
           : []),
       ])
