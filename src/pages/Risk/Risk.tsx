@@ -1,67 +1,88 @@
-import { Container, Link, Typography } from "@mui/material"
+/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import { Button, Container, Typography } from "@mui/material"
 import React, { ReactElement } from "react"
-
-import { useTranslation } from "react-i18next"
+// import { useActiveWeb3React } from "../../hooks"
+// import {
+//   addWalletChangeListener,
+//   chainId,
+//   connectWallet,
+//   removeWalletChangeListener,
+//   silentConnectWallet,
+// } from "../StarknetTestDapp/starknet-utils"
+import { connectWallet } from "../StarknetTestDapp/starknet-utils"
 
 function Risk(): ReactElement {
-  const { t } = useTranslation()
+  const handleConnectClick = async () => {
+    const wallet = await connectWallet()
+    // Check if connection was successful
+    if (wallet && wallet.isConnected) {
+      console.log("connected wallet account address")
+      console.log(wallet.account.address)
+    }
+  }
+
+  function clickMe() {
+    alert("You clicked me!")
+  }
+
+  function handleSubmit(e) {
+    // Prevent the browser from reloading the page
+    e.preventDefault()
+
+    // Read the form data
+    const form = e.target
+    const formData = new FormData(form)
+
+    // Or you can work with it as a plain object:
+    const formJson = Object.fromEntries(formData.entries())
+    console.log(formJson)
+  }
 
   return (
     <Container maxWidth="md" sx={{ pb: 16 }}>
       <Typography variant="h3" mt={5} mb={2}>
-        Risk
+        Connect Arget-X Walllet
       </Typography>
-      <Typography variant="body1" data-testid="risk-intro">
-        {t("riskIntro")}{" "}
-        <Link href="https://github.com/saddle-finance/saddle-contract">
-          {t("riskIntro2")}
-        </Link>{" "}
-        {t("riskIntro3")}
-      </Typography>
+      <Button variant="contained" onClick={handleConnectClick}>
+        {" "}
+        Connect Wallet{" "}
+      </Button>
       <Typography variant="h3" mt={5} mb={2}>
-        {t("audits")}
+        Mint Dummy Token 0
       </Typography>
-      <Typography variant="body1" data-testid="risk-audits">
-        {t("riskAudits")}{" "}
-        <Link href="https://github.com/saddle-finance/saddle-audits">
-          {t("riskAudits2")}
-        </Link>
-        {"."}
-        <br />
-        <br />
-        {t("riskAudits3")}
-        <br />
-        <br />
-        {t("riskAudits4")}
-      </Typography>
+      <Button variant="contained" onClick={clickMe}>
+        {" "}
+        Mint{" "}
+      </Button>
       <Typography variant="h3" mt={5} mb={2}>
-        {t("adminKeys")}
+        Mint Dummy Token 1
       </Typography>
-      <Typography variant="body1" data-testid="risk-adminkeys">
-        {t("riskAdminKeys")}
-      </Typography>
+      <Button variant="contained" onClick={clickMe}>
+        {" "}
+        Mint{" "}
+      </Button>
       <Typography variant="h3" mt={5} mb={2}>
-        {t("lossOfPeg")}
+        approve swap usage of tokens
       </Typography>
-      <Typography variant="body1" data-testid="risk-lossofpeg">
-        {t("riskLossOfPeg")}
-      </Typography>
+      <Button variant="contained" onClick={clickMe}>
+        {" "}
+        Approve{" "}
+      </Button>
       <Typography variant="h3" mt={5} mb={2}>
-        {t("unnecessaryApprovalAskQ")}
+        Add Liquidity to swap
       </Typography>
-      <p>
-        {t("unnecessaryApprovalAskA")} <br />
-        <br />
-        <Link href="https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729">
-          ERC: Token standard · Issue #20 · ethereum/EIPs
-        </Link>
-      </p>
-      <Typography variant="h3" mt={5} mb={2}>
-        {t("permissionlessPools")}
-      </Typography>
-      <Typography variant="body1" data-testid="risk-lossofpeg">
-        {t("riskPermissionlessPools")}
-      </Typography>
+      <form method="post" onSubmit={handleSubmit}>
+        <label>
+          Amounts: <input name="Amout" />
+          minToMint: <input name="dx" />
+          deadline: <input name="deadline" />
+        </label>
+        <button type="submit">Submit tx</button>
+      </form>
     </Container>
   )
 }

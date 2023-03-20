@@ -1,12 +1,19 @@
-import { Container, Skeleton } from "@mui/material"
+import { Box, Container, Skeleton, Typography } from "@mui/material"
 import React from "react"
 
 export default function StarknetTestDappSkeleton() {
   return (
-    <Container maxWidth="sm" sx={{ pt: 5, pb: 20 }}>
-      <Skeleton width={494} height="306px" />
-      <Skeleton width={494} height="236px" sx={{ mt: "24px" }} />
-      <Skeleton width={494} height="42px" sx={{ mt: "40px" }} />
+    <Container maxWidth="md">
+      {Array(5)
+        .fill("")
+        .map((_, index) => (
+          <Box key={`skeleton-${index}`}>
+            <Typography variant="h3" sx={{ mb: "16px" }}>
+              <Skeleton width={200} />
+            </Typography>
+            <Skeleton height={100} width={720} sx={{ mb: "24px" }} />
+          </Box>
+        ))}
     </Container>
   )
 }
