@@ -130,9 +130,17 @@ export default function TokensProvider({
         "0x9A676e781A523b5d0C0e43731313A708CB607508", // USDC
         "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1", // USDT
       ].map((addr) => addr.toLowerCase())
+      const additionalSdlApprovedAddrsArbitrum = [
+        "0x4cfa50b7ce747e2d61724fcac57f24b748ff2b2a", // fUSDC
+      ].map((addr) => addr.toLowerCase())
       const additionalSdlApprovedAddrsSet = new Set([
         ...tokenListsTokenAddrs,
-        ...(ChainId.HARDHAT && additionalSdlApprovedAddrsHardhat),
+        ...(ChainId.HARDHAT === chainId
+          ? additionalSdlApprovedAddrsHardhat
+          : []),
+        ...(ChainId.ARBITRUM === chainId
+          ? additionalSdlApprovedAddrsArbitrum
+          : []),
       ])
       Object.keys(tokenInfos).forEach((address) => {
         ;(tokenInfos[address] as BasicToken).isLPToken = lpTokens.has(address)
