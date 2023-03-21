@@ -81,6 +81,7 @@ function TokenInput({
           </Typography>
           <Button
             size="small"
+            color="secondary"
             disabled={readonly || disabled}
             onClick={() => onChange && onChange(String(max))}
           >
@@ -155,7 +156,7 @@ function TokenInput({
           {showUSDprice && (
             <Typography
               variant="body2"
-              color={disabled ? "text.secondary" : "text.primary"}
+              color={disabled ? "text.secondary" : "secondary"}
               textAlign="end"
             >
               ≈$

@@ -97,14 +97,14 @@ function ReviewMigration({
 
         <Button
           variant="contained"
-          color="secondary"
+          color="warning"
           size="large"
           fullWidth
           onClick={onConfirm}
         >
           {t("confirmMigrate")}
         </Button>
-        <Button color="secondary" size="large" fullWidth onClick={onClose}>
+        <Button color="warning" size="large" fullWidth onClick={onClose}>
           {t("cancel")}
         </Button>
       </DialogContent>

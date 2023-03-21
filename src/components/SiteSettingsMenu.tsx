@@ -23,11 +23,10 @@ import {
 } from "@mui/icons-material"
 import { IS_L2_SUPPORTED, IS_SDL_LIVE, SDL_TOKEN } from "../constants"
 import React, { ReactElement, useState } from "react"
+import { extractAddEthereumChainArgs, getTokenIconPath } from "../utils"
 
 import CheckIcon from "@mui/icons-material/Check"
 import { IS_DEVELOPMENT } from "../utils/environment"
-import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
-import { extractAddEthereumChainArgs } from "../utils"
 import { useActiveWeb3React } from "../hooks"
 import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
 import { useThemeSettings } from "../providers/ThemeSettingsProvider"
@@ -91,7 +90,8 @@ function AddTokenSection(): ReactElement | null {
 
   return canAdd ? (
     <MenuItem onClick={() => addToken()}>
-      <span>{t("addSDL")}</span> <SaddleLogo height={24} width={24} />
+      <span>{t("addSDL")}</span>{" "}
+      <img src={getTokenIconPath("sdl")} height={24} width={24} />
     </MenuItem>
   ) : null
 }

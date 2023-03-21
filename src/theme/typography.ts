@@ -6,30 +6,31 @@ function pxToRem(value: number): string {
   return `${value / 16}rem`
 }
 
-const SOURCE_CODE_PRO_FAMILY = ['"Source Code Pro"', "monospace"].join(",")
-const NOE_DISPLAY_FAMILY = ['"Noe Display"'].join(",")
+// const SOURCE_CODE_PRO_FAMILY = ['"Source Code Pro"', "monospace"].join(",")
+const SATOSHI_FAMILY = ["Satoshi", "sans-serif"].join(",")
+const SATOSHI_VARIABLE = ["Satoshi-Variable", "sans-serif"].join(",")
 
 declare module "@mui/material/styles/createTypography" {}
 
 const typography: TypographyOptions = {
-  fontFamily: SOURCE_CODE_PRO_FAMILY,
+  fontFamily: SATOSHI_VARIABLE,
   fontWeightLight: 300,
   fontWeightRegular: 400,
   fontWeightBold: 700,
   h1: {
-    fontFamily: NOE_DISPLAY_FAMILY,
+    fontFamily: SATOSHI_FAMILY,
     fontWeight: 700,
     fontSize: pxToRem(32),
     lineHeight: 40 / 32,
   },
   h2: {
-    fontFamily: NOE_DISPLAY_FAMILY,
+    fontFamily: SATOSHI_FAMILY,
     fontWeight: 700,
     fontSize: pxToRem(24),
     lineHeight: 32 / 24,
   },
   h3: {
-    fontFamily: NOE_DISPLAY_FAMILY,
+    fontFamily: SATOSHI_FAMILY,
     fontWeight: 700,
     fontSize: pxToRem(22),
   },

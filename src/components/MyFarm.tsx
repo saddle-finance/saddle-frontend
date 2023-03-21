@@ -173,7 +173,7 @@ export default function MyFarm({
             <Box flex={1}>
               <Button
                 variant="outlined"
-                color="secondary"
+                color="warning"
                 size="large"
                 fullWidth
                 disabled={amountStakedMinichef.isZero()}

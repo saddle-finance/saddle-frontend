@@ -40,15 +40,6 @@ function ThemeSettingsProvider({
     setMode(initialMode === "system" ? prefersDarkMode : initialMode)
   }, [setMode, prefersDarkMode])
 
-  useEffect(() => {
-    const modeValue = mode === "system" ? prefersDarkMode : mode
-    if (modeValue === "dark") {
-      document.body.classList.add("dark")
-    } else {
-      document.body.classList.remove("dark")
-    }
-  }, [mode, prefersDarkMode])
-
   const onChangeMode = (mode: ThemeMode) => {
     setMode(mode)
     localStorage.setItem("paletteMode", mode)

@@ -146,7 +146,7 @@ const PendingSwapExchange = ({
       <Button
         variant="contained"
         fullWidth
-        color="secondary"
+        color="warning"
         size="large"
         onClick={withdraw}
         disabled={!inputState.value || !!inputState.error}

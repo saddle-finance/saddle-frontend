@@ -100,7 +100,7 @@ export default function VoteHistory({
                   <TableCell align="right">
                     <Button
                       variant="contained"
-                      color="secondary"
+                      color="warning"
                       size="large"
                       disabled={!passed10Days || vote.weight.isZero()}
                       onClick={() => void handleResetVote(String(gaugeAddress))}

@@ -2,6 +2,7 @@ import { BN_1E18, BN_DAY_IN_SECONDS } from "../../constants"
 import {
   Box,
   Container,
+  Divider,
   Grid,
   Typography,
   useMediaQuery,
@@ -121,38 +122,48 @@ export default function Farm(): JSX.Element {
         bgcolor={(theme) => theme.palette.background.paper}
         zIndex={(theme) => theme.zIndex.mobileStepper - 1}
         py={2}
+        sx={{ borderTopLeftRadius: 16, borderTopRightRadius: 16 }}
       >
         <FarmListHeader />
       </Box>
 
-      {farmData.map(
-        ({ gaugeAddress, farmName, aprs, poolTokens, tvl, myStake }) => {
-          return (
-            <FarmOverview
-              farmName={farmName}
-              poolTokens={poolTokens}
-              aprs={aprs}
-              tvl={tvl}
-              myStake={myStake}
-              key={gaugeAddress}
-              onClickStake={() => {
-                setActiveDialog("stake")
-                setActiveGauge({
-                  address: gaugeAddress,
-                  displayName: farmName,
-                })
-              }}
-              onClickClaim={() => {
-                setActiveDialog("claim")
-                setActiveGauge({
-                  address: gaugeAddress,
-                  displayName: farmName,
-                })
-              }}
-            />
-          )
-        },
-      )}
+      <Box
+        bgcolor={(theme) => theme.palette.background.paper}
+        zIndex={(theme) => theme.zIndex.mobileStepper - 1}
+        py={2}
+        sx={{ borderBottomLeftRadius: 16, borderBottomRightRadius: 16 }}
+      >
+        {farmData.map(
+          ({ gaugeAddress, farmName, aprs, poolTokens, tvl, myStake }) => {
+            return (
+              <Box key={gaugeAddress}>
+                <Divider />
+                <FarmOverview
+                  farmName={farmName}
+                  poolTokens={poolTokens}
+                  aprs={aprs}
+                  tvl={tvl}
+                  myStake={myStake}
+                  onClickStake={() => {
+                    setActiveDialog("stake")
+                    setActiveGauge({
+                      address: gaugeAddress,
+                      displayName: farmName,
+                    })
+                  }}
+                  onClickClaim={() => {
+                    setActiveDialog("claim")
+                    setActiveGauge({
+                      address: gaugeAddress,
+                      displayName: farmName,
+                    })
+                  }}
+                />
+              </Box>
+            )
+          },
+        )}
+      </Box>
 
       <StakeDialog
         farmName={activeGauge?.displayName}

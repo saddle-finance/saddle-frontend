@@ -170,7 +170,7 @@ function ReviewVirtualSwapSettlement({
       </Typography>
       <Button
         variant="contained"
-        color={isWithdrawAction ? "secondary" : "primary"}
+        color={isWithdrawAction ? "warning" : "primary"}
         fullWidth
         size="large"
         onClick={() => void onConfirm()}
@@ -179,7 +179,7 @@ function ReviewVirtualSwapSettlement({
         {isWithdrawAction ? t("confirmWithdraw") : t("confirmSwap")}
       </Button>
       <Button
-        color={isWithdrawAction ? "secondary" : "primary"}
+        color={isWithdrawAction ? "warning" : "primary"}
         fullWidth
         size="large"
         onClick={onClose}

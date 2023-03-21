@@ -1,26 +1,14 @@
-import {
-  ButtonPropsColorOverrides,
-  Components,
-  ComponentsVariants,
-  Theme,
-} from "@mui/material"
-import { OverridableStringUnion } from "@mui/types"
-
-declare module "@mui/material/Button" {
-  interface ButtonPropsColorOverrides {
-    mute: true
-  }
-}
-type ColorVariant = OverridableStringUnion<
-  "primary" | "secondary" | "success" | "error" | "info" | "warning",
-  ButtonPropsColorOverrides
->
+import { Components, ComponentsVariants, Theme } from "@mui/material"
+import { ColorVariant } from "../../types"
+import { createGradient2 } from "../../utils/createGradient2"
 
 const buttonColorVariants: ColorVariant[] = [
   "primary",
   "secondary",
+  "warning",
+  "error",
   "info",
-  "mute",
+  "success",
 ]
 
 const containedStyle = (
@@ -33,8 +21,13 @@ const containedStyle = (
       color: color,
     },
     style: {
+      background: theme.palette.gradient?.[color],
+      color: "white",
       "&:hover": {
-        backgroundColor: theme.palette[color].states?.containedHoverBackground,
+        background: createGradient2(
+          theme.palette[color].light,
+          theme.palette[color].light,
+        ),
       },
     },
   }))
@@ -46,15 +39,16 @@ const outlinedStyle = (
   colors.map((color) => ({
     props: {
       variant: "outlined",
-      color: color,
     },
     style: {
-      border: `1px solid ${
-        theme.palette[color].states?.outlinedRestingBorder ||
-        theme.palette[color].main
-      }`,
+      border: `1px solid`,
+      borderColor: theme.palette[color].light,
+      color: theme.palette.getContrastText(theme.palette.background.paper),
       "&:hover": {
-        backgroundColor: theme.palette[color].states?.outlinedHoverBackground,
+        backgroundColor: theme.palette[color].dark,
+        color: theme.palette.getContrastText(
+          theme.palette[color].dark || "#000000",
+        ),
       },
     },
   }))
@@ -69,8 +63,10 @@ const textStyle = (
       color: color,
     },
     style: {
+      color: theme.palette[color].light,
       "&:hover": {
-        backgroundColor: theme.palette[color].states?.outlinedHoverBackground,
+        backgroundColor: theme.palette[color].light,
+        color: theme.palette[color].contrastText,
       },
     },
   }))

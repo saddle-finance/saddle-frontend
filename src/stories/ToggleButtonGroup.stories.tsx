@@ -7,7 +7,7 @@ export default {
   component: ToggleButtonGroup,
   argTypes: {
     color: {
-      options: ["primary", "secondary", "mute", "info"],
+      options: ["primary", "secondary", "info"],
       control: { type: "inline-radio" },
     },
   },

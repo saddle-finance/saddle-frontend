@@ -36,7 +36,7 @@ export default function componentsOverrides(theme: Theme): Components {
     DialogTheme(theme),
     DialogTitleTheme(theme),
     IconButtonTheme(theme),
-    LinkTheme(),
+    LinkTheme(theme),
     MenuTheme(theme),
     MenuItemTheme(),
     TableTheme(theme),

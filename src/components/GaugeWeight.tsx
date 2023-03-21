@@ -125,7 +125,7 @@ function GaugeWeight({ ...props }: HighchartsReact.Props): JSX.Element {
         alignItems="center"
         justifyContent="center"
       >
-        <CircularProgress color="secondary" />
+        <CircularProgress color="warning" />
       </Box>
     )
   }

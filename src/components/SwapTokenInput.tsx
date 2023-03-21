@@ -122,22 +122,15 @@ export default function SwapTokenInput({
         )}
         <Box flexWrap="nowrap">
           <Button
+            variant="contained"
             onClick={handleClick}
             endIcon={<ArrowDropDown />}
             data-testid="listOpenBtn"
           >
-            <Typography variant="subtitle1">
+            <Typography variant="subtitle1" color="secondary.light">
               {selectedTokenSymbol || "Choose"}
             </Typography>
           </Button>
-          <Typography
-            variant="body2"
-            noWrap
-            paddingLeft={1}
-            color="text.secondary"
-          >
-            {selectedTokenSymbol}
-          </Typography>
         </Box>
         <Box flex={1}>
           <InputBase
@@ -166,7 +159,7 @@ export default function SwapTokenInput({
           <Typography
             data-testid="inputValueUSD"
             variant="body2"
-            color="text.secondary"
+            color="secondary"
             textAlign="end"
           >
             ≈$

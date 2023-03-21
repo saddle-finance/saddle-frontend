@@ -7,6 +7,9 @@ export default function TextFieldTheme(): Components {
         root: {
           borderRadius: 6,
           paddingRight: 8,
+          "& fieldset": {
+            borderColor: "#474799",
+          },
         },
         input: {
           paddingLeft: 8,

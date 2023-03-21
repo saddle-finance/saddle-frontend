@@ -186,7 +186,7 @@ const DepositPage = (props: Props): ReactElement => {
             <Button
               sx={{ minWidth: 192 }}
               variant="contained"
-              color="secondary"
+              color="warning"
               size="large"
               onClick={() => void onMigrateToGaugeClick()}
             >

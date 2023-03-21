@@ -44,14 +44,7 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
   const theme = useTheme()
 
   return (
-    <Box
-      data-testid="accountDetailContainer"
-      bgcolor={
-        theme.palette.mode === "light"
-          ? theme.palette.common.white
-          : theme.palette.common.black
-      }
-    >
+    <Box data-testid="accountDetailContainer">
       <DialogContent>
         <Typography variant="h2" mb={2}>
           {t("account")}

@@ -13,7 +13,11 @@ import {
   useTheme,
 } from "@mui/material"
 import React, { ReactElement, useCallback } from "react"
-import { formatBNToPercentString, formatBNToShortString } from "../utils"
+import {
+  formatBNToPercentString,
+  formatBNToShortString,
+  getTokenIconPath,
+} from "../utils"
 import usePoolData, { PoolDataType } from "../hooks/usePoolData"
 
 import { CheckCircleOutline } from "@mui/icons-material"
@@ -21,7 +25,6 @@ import GaugeRewardsDisplay from "./GaugeRewardsDisplay"
 import TokenIcon from "./TokenIcon"
 import { Zero } from "@ethersproject/constants"
 import { areGaugesActive } from "../utils/gauges"
-import logo from "../assets/icons/logo.svg"
 import { useActiveWeb3React } from "../hooks"
 import { useHistory } from "react-router-dom"
 import { useTranslation } from "react-i18next"
@@ -83,7 +86,7 @@ export default function PoolOverview({
         label={label}
         color={
           poolData.isGuarded || shouldMigrate
-            ? "secondary"
+            ? "warning"
             : !poolData.isSaddleApproved
             ? "info"
             : "error"
@@ -106,8 +109,9 @@ export default function PoolOverview({
         p: theme.spacing(2, 3),
         borderColor:
           poolData.isGuarded || shouldMigrate
-            ? theme.palette.secondary.main
-            : theme.palette.other.divider,
+            ? theme.palette.warning.main
+            : theme.palette.primary.light,
+        borderRadius: "20px",
       }}
       data-testid="poolOverview"
     >
@@ -123,6 +127,7 @@ export default function PoolOverview({
               >
                 <Typography
                   variant="h2"
+                  color="primary.light"
                   sx={{
                     borderBottom: poolData.isMetaSwap
                       ? "1px dotted"
@@ -171,12 +176,14 @@ export default function PoolOverview({
           </Stack>
         </Grid>
         <StyledGrid item xs={6} lg={2} disabled={disableText}>
-          <Typography variant="subtitle1">TVL</Typography>
+          <Typography variant="subtitle1" color="primary.light">
+            TVL
+          </Typography>
           <Typography component="span">{`$${formattedData.reserve}`}</Typography>
 
           {formattedData.volume && (
             <div>
-              <Typography variant="subtitle1">{`${t(
+              <Typography variant="subtitle1" color="primary.light">{`${t(
                 "24HrVolume",
               )}`}</Typography>
               <Typography component="span">{formattedData.volume}</Typography>
@@ -186,13 +193,19 @@ export default function PoolOverview({
         <StyledGrid item xs={6} lg={2.5} disabled={disableText}>
           {formattedData.apy && (
             <div>
-              <Typography component="span">{`${t("apy")}`}: </Typography>
+              <Typography
+                component="span"
+                variant="subtitle1"
+                color="secondary"
+              >
+                {`${t("apy")}`}:{" "}
+              </Typography>
               <Typography component="span">{formattedData.apy}</Typography>
             </div>
           )}
           {minichefSDLInfo && (
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography variant="subtitle1" mr={1}>
+              <Typography variant="subtitle1" mr={1} color="secondary">
                 <Link
                   href="https://blog.saddle.finance/introducing-sdl"
                   target="_blank"
@@ -202,7 +215,7 @@ export default function PoolOverview({
                   {minichefSDLInfo[0]}
                 </Link>
               </Typography>
-              <img src={logo} width="24px" />
+              <img src={getTokenIconPath("sdl")} width="24px" />
               :&nbsp;
               <Typography>{minichefSDLInfo[1]}</Typography>
             </Box>
@@ -219,7 +232,7 @@ export default function PoolOverview({
               <Button
                 variant="contained"
                 color={
-                  poolData.isGuarded || shouldMigrate ? "secondary" : "primary"
+                  poolData.isGuarded || shouldMigrate ? "warning" : "primary"
                 }
                 fullWidth
                 size="large"
@@ -232,7 +245,7 @@ export default function PoolOverview({
               <Button
                 variant="contained"
                 color={
-                  poolData.isGuarded || shouldMigrate ? "secondary" : "primary"
+                  poolData.isGuarded || shouldMigrate ? "warning" : "primary"
                 }
                 fullWidth
                 size="large"
@@ -245,9 +258,10 @@ export default function PoolOverview({
             )}
             <Button
               color={
-                poolData.isGuarded || shouldMigrate ? "secondary" : "primary"
+                poolData.isGuarded || shouldMigrate ? "warning" : "primary"
               }
               fullWidth
+              variant="outlined"
               size="large"
               // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
               onClick={() => history.push(`${poolRoute}/withdraw`)}

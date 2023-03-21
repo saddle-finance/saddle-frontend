@@ -34,9 +34,9 @@ import Dialog from "./Dialog"
 import { GaugeContext } from "../providers/GaugeProvider"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import { SDL_TOKEN } from "../constants"
+import SaddleLogo from "./SaddleLogo"
 import { UserStateContext } from "../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
-import logo from "../assets/icons/logo.svg"
 import { useActiveWeb3React } from "../hooks"
 import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
 import { useRetroMerkleData } from "../hooks/useRetroMerkleData"
@@ -165,7 +165,7 @@ export default function TokenClaimDialog({
                 : "linear-gradient(180deg, #FFF 0%, #FBF4CF 100%)",
           }}
         >
-          <img src={logo} width={138} height={138} />
+          <SaddleLogo width={138} height={138} />
         </Box>
       </Box>
       <Alert color="info" severity="warning" sx={{ m: 4 }}>
@@ -222,7 +222,7 @@ export default function TokenClaimDialog({
                 claimable once SDL is available on this network. See
                 <Link
                   href="https://docs.saddle.finance/saddle-faq#why-cant-i-claim-my-sdl-on-arbitrum"
-                  color="secondary"
+                  color="warning"
                   target="_blank"
                 >
                   this post

@@ -14,12 +14,13 @@ import {
 import { IS_SDL_LIVE, SDL_TOKEN } from "../constants"
 import { Menu as MenuIcon, MoreVert } from "@mui/icons-material"
 import { NavLink, NavLinkProps, useLocation } from "react-router-dom"
-import React, { ReactElement, useContext, useState } from "react"
+import React, { ReactElement, useContext, useEffect, useState } from "react"
 
 import { AppState } from "../state"
 import NetworkDisplay from "./NetworkDisplay"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
-import { ReactComponent as SaddleLogo } from "../assets/icons/logo.svg"
+import SaddleLogo from "./SaddleLogo"
+import { ReactComponent as SdlTokenIcon } from "../assets/icons/sdl.svg"
 import SiteSettingsMenu from "./SiteSettingsMenu"
 import TokenClaimDialog from "./TokenClaimDialog"
 import Web3Status from "./Web3Status"
@@ -67,13 +68,23 @@ function TopMenu(): ReactElement {
       handleSettingMenu(event)
     }
   }
+
+  useEffect(() => {
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", theme.palette.background.default)
+  }, [theme.palette.background.default])
+
   return (
     <AppBar position="static" elevation={0}>
       <Toolbar data-testid="topMenuContainer" sx={{ xs: 0, lg: 7 }}>
-        <Box display="flex" width="100%" alignItems="center">
-          <Box flex={1}>
+        <Box display="flex" width="100%" alignItems="center" my={3}>
+          <Box display="flex" flex={1}>
             <NavLink to="/">
-              <SaddleLogo height={isUnderLaptopSize ? "40px" : "100"} />
+              <SaddleLogo
+                height={isUnderLaptopSize ? "40px" : "80px"}
+                color="#000"
+              />
             </NavLink>
           </Box>
 
@@ -165,10 +176,10 @@ function RewardsButton({
   return IS_SDL_LIVE ? (
     <Button
       variant="contained"
-      color="info"
+      color="primary"
       data-testid="rewardButton"
       onClick={() => setCurrentModal("tokenClaim")}
-      endIcon={<SaddleLogo width={20} height={20} />}
+      endIcon={<SdlTokenIcon width={20} height={20} />}
     >
       {formattedTotal}
     </Button>
@@ -223,11 +234,11 @@ function SDLPrice({ sdlPrice }: SDLPriceProps): ReactElement | null {
   return (
     <Button
       variant="contained"
-      color="info"
+      color="primary"
       data-testid="sdlPriceButton"
       href={SUSHI_WETH_SDL_POOL_URL}
       target="_blank"
-      startIcon={<SaddleLogo width={20} height={20} />}
+      startIcon={<SdlTokenIcon width={20} height={20} />}
       style={{ minWidth: 100 }}
     >
       {`$${sdlPrice.toFixed(2)}`}
