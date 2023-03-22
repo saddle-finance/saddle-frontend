@@ -1,10 +1,28 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable sort-imports */
 /* eslint-disable no-empty */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { connect, getStarknet } from "@argent/get-starknet"
-import { constants, shortString } from "starknet"
-import { encode } from "starknet"
+import { connect, IStarknetWindowObject } from "@argent/get-starknet"
+import { BigNumber, BigNumberish } from "ethers"
+import {
+  Provider,
+  constants,
+  encode,
+  shortString,
+  uint256,
+  stark,
+  hash,
+  Account,
+  ec,
+  Contract,
+  AccountInterface,
+  InvokeFunctionResponse,
+} from "starknet"
+import swapABI from "../../constants/abis/swapV2C.json"
+import testERC20ABI from "../../constants/abis/starkTestERC20.json"
 
 export const erc20TokenAddressByNetwork = {
   "goerli-alpha":
@@ -12,6 +30,10 @@ export const erc20TokenAddressByNetwork = {
   "mainnet-alpha":
     "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
 }
+export const MAX_UINT256 = BigNumber.from(
+  "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+)
+export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 export type PublicNetwork = keyof typeof erc20TokenAddressByNetwork
 export type Network = PublicNetwork | "localhost"
@@ -61,7 +83,7 @@ export const networkId = async (): Promise<Network | undefined> => {
 }
 
 export const addToken = async (address: string): Promise<void> => {
-  const starknet = getStarknet()
+  const starknet = await connect()
   if (!starknet?.isConnected) {
     throw Error("starknet wallet not connected")
   }
@@ -85,8 +107,8 @@ export const getExplorerBaseUrl = async (): Promise<string | undefined> => {
   }
 }
 
-export const chainId = (): string | undefined => {
-  const starknet = getStarknet()
+export const chainId = async (): Promise<string | undefined> => {
+  const starknet = await connect()
   if (!starknet?.isConnected) {
     return
   }
@@ -96,7 +118,7 @@ export const chainId = (): string | undefined => {
 }
 
 export const signMessage = async (message: string) => {
-  const starknet = getStarknet()
+  const starknet = await connect()
   if (!starknet?.isConnected) throw Error("starknet wallet not connected")
   if (!shortString.isShortString(message)) {
     throw Error("message must be a short string")
@@ -125,7 +147,7 @@ export const signMessage = async (message: string) => {
 }
 
 export const waitForTransaction = async (hash: string) => {
-  const starknet = getStarknet()
+  const starknet = await connect()
   if (!starknet?.isConnected) {
     return
   }
@@ -152,18 +174,6 @@ export const removeWalletChangeListener = async (
   starknet.off("accountsChanged", handleEvent)
 }
 
-// export const declare = async (contract: string, classHash: string) => {
-//   const starknet = getStarknet()
-//   if (!starknet?.isConnected) {
-//     throw Error("starknet wallet not connected")
-//   }
-
-//   return starknet.account.declare({
-//     contract,
-//     classHash,
-//   })
-// }
-
 export const formatAddress = (address: string) =>
   encode.addHexPrefix(encode.removeHexPrefix(address).padStart(64, "0"))
 
@@ -176,4 +186,118 @@ export const truncateHex = (value: string) => {
   const start = value.slice(2, 6)
   const end = value.slice(-4)
   return `${hex}${start}…${end}`
+}
+
+export const newStarknetProvider = () => {
+  // use testnet-1 provider
+  const testnetOneProvider = new Provider({
+    sequencer: {
+      baseUrl: "https://alpha4.starknet.io",
+      feederGatewayUrl: "feeder_gateway",
+      gatewayUrl: "gateway",
+    },
+  })
+  return testnetOneProvider
+}
+
+export function fill8array(array: any[], filler: any): any[8] {
+  const startIndex = array.length
+
+  array.length = 8
+  return array.fill(filler, startIndex, 8)
+}
+
+export async function addLiquidity(
+  callerAccount: IStarknetWindowObject,
+  swapAddress: string,
+  amounts: BigNumberish[],
+  minToMint?: BigNumberish,
+  deadline?: BigNumberish,
+): Promise<string> {
+  const account = callerAccount.account
+  const amountsFilled = fill8array(
+    amounts.map((amount) => uint256.bnToUint256(String(amount))),
+    uint256.bnToUint256(0),
+  )
+  const dealineInput = deadline ? deadline : MAX_UINT256
+  const minToMintInput = minToMint ? minToMint : 0
+  console.log(amountsFilled, dealineInput, minToMintInput, account.address)
+  const swapContract = new Contract(
+    swapABI,
+    swapAddress,
+    // TODO Below Fails on typing issue
+    // possible solution sessions? https://www.npmjs.com/package/@argent/x-sessions
+    account as unknown as AccountInterface,
+  )
+  let res: string
+  try {
+    const tx = await swapContract.addLiquidity(
+      amountsFilled,
+      minToMintInput,
+      dealineInput,
+    )
+    console.log(tx)
+    res = String(tx)
+  } catch (error) {
+    console.error(error)
+    res = String(error)
+  }
+  return res
+}
+
+// @param transactions the invocation object or an array of them, containing:
+//      * - contractAddress - the address of the contract
+//      * - entrypoint - the entrypoint of the contract
+//      * - calldata - (defaults to []) the calldata
+//      * - signature - (defaults to []) the signature
+//      * @param abi (optional) the abi of the contract for better displaying
+//      *
+
+export async function mintTestToken(
+  callerAccount: IStarknetWindowObject,
+  tokenAddress: string,
+): Promise<string> {
+  const account = callerAccount.account
+
+  // TODO Below Fails on typing issue
+  // const tokenContract = new Contract(testERC20ABI, tokenAddress, account)
+  // console.log("contract found at: ", tokenContract.address)
+  console.log("account clicked mint0 button: ", account.address)
+  let res: string
+  try {
+    // await tokenContract.mint(account.address)
+    const tx = await account.execute(
+      [
+        {
+          contractAddress: tokenAddress,
+          entrypoint: "mint",
+        },
+      ],
+      // [testERC20ABI],
+    )
+    // callerAccount.provider.waitForTransaction(hash)
+    await callerAccount.provider.waitForTransaction(String(tx.transaction_hash))
+    res = tx.transaction_hash
+    console.log("tx: ", tx.transaction_hash)
+  } catch (error) {
+    console.error(error)
+    res = String(error)
+  }
+  return res
+}
+
+export async function callContract(
+  contractAddr: string,
+  entrypoint: string,
+  args?: string[],
+): Promise<Array<string>> {
+  const callData = args ? stark.compileCalldata(args) : []
+  const newProvider = newStarknetProvider()
+  return (
+    await newProvider.callContract({
+      contractAddress: contractAddr,
+      entrypoint: entrypoint,
+      calldata: callData,
+    })
+  ).result
 }

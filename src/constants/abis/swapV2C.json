@@ -1,0 +1,852 @@
+[
+    {
+        "members": [
+            {
+                "name": "low",
+                "offset": 0,
+                "type": "felt"
+            },
+            {
+                "name": "high",
+                "offset": 1,
+                "type": "felt"
+            }
+        ],
+        "name": "Uint256",
+        "size": 2,
+        "type": "struct"
+    },
+    {
+        "data": [
+            {
+                "name": "version",
+                "type": "felt"
+            }
+        ],
+        "keys": [],
+        "name": "Initialized_7f26b83f",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "previousOwner",
+                "type": "felt"
+            },
+            {
+                "name": "newOwner",
+                "type": "felt"
+            }
+        ],
+        "keys": [],
+        "name": "OwnershipTransferred_8be0079c",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "account",
+                "type": "felt"
+            }
+        ],
+        "keys": [],
+        "name": "Unpaused_5db9ee0a",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "account",
+                "type": "felt"
+            }
+        ],
+        "keys": [],
+        "name": "Paused_62e78cea",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "buyer",
+                "type": "felt"
+            },
+            {
+                "name": "tokensSold",
+                "type": "Uint256"
+            },
+            {
+                "name": "tokensBought",
+                "type": "Uint256"
+            },
+            {
+                "name": "soldId",
+                "type": "felt"
+            },
+            {
+                "name": "boughtId",
+                "type": "felt"
+            }
+        ],
+        "keys": [],
+        "name": "TokenSwap_c6c1e063",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "provider",
+                "type": "felt"
+            },
+            {
+                "name": "tokenAmounts",
+                "type": "felt"
+            },
+            {
+                "name": "fees",
+                "type": "felt"
+            },
+            {
+                "name": "invariant",
+                "type": "Uint256"
+            },
+            {
+                "name": "lpTokenSupply",
+                "type": "Uint256"
+            }
+        ],
+        "keys": [],
+        "name": "AddLiquidity_1c9ab14f",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "provider",
+                "type": "felt"
+            },
+            {
+                "name": "tokenAmounts",
+                "type": "felt"
+            },
+            {
+                "name": "lpTokenSupply",
+                "type": "Uint256"
+            }
+        ],
+        "keys": [],
+        "name": "RemoveLiquidity_6d646a5f",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "provider",
+                "type": "felt"
+            },
+            {
+                "name": "lpTokenAmount",
+                "type": "Uint256"
+            },
+            {
+                "name": "lpTokenSupply",
+                "type": "Uint256"
+            },
+            {
+                "name": "boughtId",
+                "type": "Uint256"
+            },
+            {
+                "name": "tokensBought",
+                "type": "Uint256"
+            }
+        ],
+        "keys": [],
+        "name": "RemoveLiquidityOne_43fb0299",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "provider",
+                "type": "felt"
+            },
+            {
+                "name": "tokenAmounts",
+                "type": "felt"
+            },
+            {
+                "name": "fees",
+                "type": "felt"
+            },
+            {
+                "name": "invariant",
+                "type": "Uint256"
+            },
+            {
+                "name": "lpTokenSupply",
+                "type": "Uint256"
+            }
+        ],
+        "keys": [],
+        "name": "RemoveLiquidityImbalance_06f456af",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "newAdminFee",
+                "type": "Uint256"
+            }
+        ],
+        "keys": [],
+        "name": "NewAdminFee_ab599d64",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "newSwapFee",
+                "type": "Uint256"
+            }
+        ],
+        "keys": [],
+        "name": "NewSwapFee_d88ea515",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "newWithdrawFee",
+                "type": "Uint256"
+            }
+        ],
+        "keys": [],
+        "name": "NewWithdrawFee_d5fe4609",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "oldA",
+                "type": "Uint256"
+            },
+            {
+                "name": "newA",
+                "type": "Uint256"
+            },
+            {
+                "name": "initialTime",
+                "type": "Uint256"
+            },
+            {
+                "name": "futureTime",
+                "type": "Uint256"
+            }
+        ],
+        "keys": [],
+        "name": "RampA_a2b71ec6",
+        "type": "event"
+    },
+    {
+        "data": [
+            {
+                "name": "currentA",
+                "type": "Uint256"
+            },
+            {
+                "name": "time",
+                "type": "Uint256"
+            }
+        ],
+        "keys": [],
+        "name": "StopRampA_46e22fb3",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "name": "_pooledTokens",
+                "type": "(felt, felt, felt, felt, felt, felt, felt, felt)"
+            },
+            {
+                "name": "_pooledTokensLength",
+                "type": "felt"
+            },
+            {
+                "name": "decimals",
+                "type": "(felt, felt, felt, felt, felt, felt, felt, felt)"
+            },
+            {
+                "name": "lpTokenName_len",
+                "type": "felt"
+            },
+            {
+                "name": "lpTokenName",
+                "type": "felt*"
+            },
+            {
+                "name": "lpTokenSymbol_len",
+                "type": "felt"
+            },
+            {
+                "name": "lpTokenSymbol",
+                "type": "felt*"
+            },
+            {
+                "name": "_a",
+                "type": "Uint256"
+            },
+            {
+                "name": "_fee",
+                "type": "Uint256"
+            },
+            {
+                "name": "_adminFee",
+                "type": "Uint256"
+            },
+            {
+                "name": "swapAddress",
+                "type": "felt"
+            },
+            {
+                "name": "lpTokenClashHash",
+                "type": "felt"
+            }
+        ],
+        "name": "initialize",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getA",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "Uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getAPrecise",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "Uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "tokenAddress",
+                "type": "felt"
+            }
+        ],
+        "name": "getTokenIndex",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "index",
+                "type": "felt"
+            }
+        ],
+        "name": "getTokenBalance",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "Uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getVirtualPrice",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "Uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "tokenIndexFrom",
+                "type": "felt"
+            },
+            {
+                "name": "tokenIndexTo",
+                "type": "felt"
+            },
+            {
+                "name": "dx",
+                "type": "Uint256"
+            }
+        ],
+        "name": "calculateSwap",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "Uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "amounts",
+                "type": "(Uint256, Uint256, Uint256, Uint256, Uint256, Uint256, Uint256, Uint256)"
+            },
+            {
+                "name": "deposit",
+                "type": "felt"
+            }
+        ],
+        "name": "calculateTokenAmount",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "Uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "amount",
+                "type": "Uint256"
+            }
+        ],
+        "name": "calculateRemoveLiquidity",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "(Uint256, Uint256, Uint256, Uint256, Uint256, Uint256, Uint256, Uint256)"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "tokenAmount",
+                "type": "Uint256"
+            },
+            {
+                "name": "tokenIndex",
+                "type": "felt"
+            }
+        ],
+        "name": "calculateRemoveLiquidityOneToken",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "Uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "index",
+                "type": "Uint256"
+            }
+        ],
+        "name": "getAdminBalance",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "Uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "tokenIndexFrom",
+                "type": "felt"
+            },
+            {
+                "name": "tokenIndexTo",
+                "type": "felt"
+            },
+            {
+                "name": "dx",
+                "type": "Uint256"
+            },
+            {
+                "name": "minDy",
+                "type": "Uint256"
+            },
+            {
+                "name": "deadline",
+                "type": "Uint256"
+            }
+        ],
+        "name": "swap",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "Uint256"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "amounts",
+                "type": "(Uint256, Uint256, Uint256, Uint256, Uint256, Uint256, Uint256, Uint256)"
+            },
+            {
+                "name": "minToMint",
+                "type": "Uint256"
+            },
+            {
+                "name": "deadline",
+                "type": "Uint256"
+            }
+        ],
+        "name": "addLiquidity",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "Uint256"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "amount",
+                "type": "Uint256"
+            },
+            {
+                "name": "minAmounts",
+                "type": "(Uint256, Uint256, Uint256, Uint256, Uint256, Uint256, Uint256, Uint256)"
+            },
+            {
+                "name": "deadline",
+                "type": "Uint256"
+            }
+        ],
+        "name": "removeLiquidity",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "(Uint256, Uint256, Uint256, Uint256, Uint256, Uint256, Uint256, Uint256)"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "tokenAmount",
+                "type": "Uint256"
+            },
+            {
+                "name": "tokenIndex",
+                "type": "felt"
+            },
+            {
+                "name": "minAmount",
+                "type": "Uint256"
+            },
+            {
+                "name": "deadline",
+                "type": "Uint256"
+            }
+        ],
+        "name": "removeLiquidityOneToken",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "Uint256"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "amounts",
+                "type": "(Uint256, Uint256, Uint256, Uint256, Uint256, Uint256, Uint256, Uint256)"
+            },
+            {
+                "name": "maxBurnAmount",
+                "type": "Uint256"
+            },
+            {
+                "name": "deadline",
+                "type": "Uint256"
+            }
+        ],
+        "name": "removeLiquidityImbalance",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "Uint256"
+            }
+        ],
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "withdrawAdminFees",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "newAdminFee",
+                "type": "Uint256"
+            }
+        ],
+        "name": "setAdminFee",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "newSwapFee",
+                "type": "Uint256"
+            }
+        ],
+        "name": "setSwapFee",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "futureA",
+                "type": "Uint256"
+            },
+            {
+                "name": "futureTime",
+                "type": "Uint256"
+            }
+        ],
+        "name": "rampA",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "stopRampA",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "swapStorage",
+        "outputs": [
+            {
+                "name": "__warp_301",
+                "type": "Uint256"
+            },
+            {
+                "name": "__warp_302",
+                "type": "Uint256"
+            },
+            {
+                "name": "__warp_303",
+                "type": "Uint256"
+            },
+            {
+                "name": "__warp_304",
+                "type": "Uint256"
+            },
+            {
+                "name": "__warp_305",
+                "type": "Uint256"
+            },
+            {
+                "name": "__warp_306",
+                "type": "Uint256"
+            },
+            {
+                "name": "__warp_307",
+                "type": "felt"
+            },
+            {
+                "name": "__warp_308",
+                "type": "felt"
+            },
+            {
+                "name": "__warp_309",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "MAX_SWAP_FEE",
+        "outputs": [
+            {
+                "name": "__warp_311",
+                "type": "Uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "POOL_PRECISION_DECIMALS",
+        "outputs": [
+            {
+                "name": "__warp_312",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "MAX_ADMIN_FEE",
+        "outputs": [
+            {
+                "name": "__warp_313",
+                "type": "Uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "A_PRECISION",
+        "outputs": [
+            {
+                "name": "__warp_314",
+                "type": "Uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "MAX_A",
+        "outputs": [
+            {
+                "name": "__warp_315",
+                "type": "Uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "constructor",
+        "outputs": [],
+        "type": "constructor"
+    },
+    {
+        "inputs": [],
+        "name": "pause",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "unpause",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "renounceOwnership",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "newOwner",
+                "type": "felt"
+            }
+        ],
+        "name": "transferOwnership",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "index",
+                "type": "felt"
+            }
+        ],
+        "name": "getToken",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "paused",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+]
