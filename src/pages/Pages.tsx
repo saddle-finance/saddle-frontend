@@ -20,12 +20,7 @@ const Swap = lazy(() =>
 const VeSDL = lazy(() =>
   import("./VeSDL").then(({ VeSDL }) => ({ default: VeSDL })),
 )
-const StarknetTestDapp = lazy(() =>
-  import("./StarknetTestDapp").then(({ StarknetTestDapp }) => ({
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    default: StarknetTestDapp,
-  })),
-)
+const StarknetTestDapp = lazy(() => import("./StarknetTestDapp"))
 const VestingClaim = lazy(() => import("./VestingClaim"))
 const Withdraw = lazy(() => import("./Withdraw"))
 
@@ -70,7 +65,7 @@ export default function Pages() {
       <Route exact path="/farm" component={Farm} />
       <Route exact path="/vesdl" component={VeSDL} />
       <Route exact path="/coinbase-pay-test" component={CoinbasePayTest} />
-      <Route exact path="/starknet-app-test" component={StarknetTestDapp} />
+      <Route exact path="/starknettestdapp" component={StarknetTestDapp} />
     </Switch>
   )
 }
