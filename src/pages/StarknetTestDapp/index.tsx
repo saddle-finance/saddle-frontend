@@ -6,17 +6,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { IStarknetWindowObject } from "@argent/get-starknet/dist"
-import { BigNumber, BigNumberish } from "ethers"
 import { Button, Container, Typography } from "@mui/material"
 import React, { ReactElement } from "react"
 // import { useActiveWeb3React } from "../../hooks"
 
-import {
-  addLiquidity,
-  callContract,
-  connectWallet,
-  mintTestToken,
-} from "./starknet-utils"
+import { callContract, connectWallet, executeContract } from "./starknet-utils"
 
 function StarknetTestDapp(): ReactElement {
   let wallet: IStarknetWindowObject
@@ -47,7 +41,33 @@ function StarknetTestDapp(): ReactElement {
         wallet.account.address,
       ])
       console.log("beforeBal: ", beforeBal)
-      await mintTestToken(wallet, tokenAddress)
+      const tx = await executeContract(wallet, tokenAddress, "mint", [
+        wallet.account.address,
+      ])
+      console.log("Mint Token0 competed")
+      const afterBal = await callContract(tokenAddress, "balanceOf", [
+        wallet.account.address,
+      ])
+      console.log("afterBal: ", afterBal)
+    }
+  }
+
+  async function handleMintClick1(e) {
+    // Prevent the browser from reloading the page
+    e.preventDefault()
+
+    const tokenAddress =
+      "0x57a487dd72451bf271fcd2b8415bb1223ba1897598f31096954cf369eed633e"
+    if (!wallet || !wallet.isConnected) {
+      alert("no wallet connected")
+    } else {
+      const beforeBal = await callContract(tokenAddress, "balanceOf", [
+        wallet.account.address,
+      ])
+      console.log("beforeBal: ", beforeBal)
+      const tx = await executeContract(wallet, tokenAddress, "mint", [
+        wallet.account.address,
+      ])
       console.log("Mint Token0 competed")
       const afterBal = await callContract(tokenAddress, "balanceOf", [
         wallet.account.address,
@@ -69,15 +89,17 @@ function StarknetTestDapp(): ReactElement {
       "0x6166ae39b64bfbc7347634f3e402645bf70751755e9fef78220383f3ce0e0e7"
 
     const formAmounts: string[] = String(formJson.Amounts).split(",")
+    formAmounts.push(
+      "0",
+      "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+    )
     if (!formJson.Amounts) console.log("no amounts provided")
-    const amountsInput = formAmounts.map((amount) => BigNumber.from(amount))
-    const addLiquidTx = await addLiquidity(
-      // TODO biggest problem rn is this account Interface
+    // TODO still fails
+    const addLiquidTx = await executeContract(
       wallet,
       swapAddress,
-      amountsInput,
-      // BigNumber.from(formJson.dx),
-      // BigNumber.from(formJson.deadline),
+      "addLiquidity",
+      formAmounts,
     )
     console.log("addLiquid tx: ", addLiquidTx)
   }
@@ -101,7 +123,7 @@ function StarknetTestDapp(): ReactElement {
       <Typography variant="h3" mt={5} mb={2}>
         Mint Dummy Token 1
       </Typography>
-      <Button variant="contained" onClick={clickMe}>
+      <Button variant="contained" onClick={handleMintClick1}>
         {" "}
         Mint{" "}
       </Button>

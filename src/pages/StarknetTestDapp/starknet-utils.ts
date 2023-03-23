@@ -207,75 +207,24 @@ export function fill8array(array: any[], filler: any): any[8] {
   return array.fill(filler, startIndex, 8)
 }
 
-export async function addLiquidity(
+export async function executeContract(
   callerAccount: IStarknetWindowObject,
-  swapAddress: string,
-  amounts: BigNumberish[],
-  minToMint?: BigNumberish,
-  deadline?: BigNumberish,
+  contractAddress: string,
+  entrypoint: string,
+  args: string[],
 ): Promise<string> {
   const account = callerAccount.account
-  const amountsFilled = fill8array(
-    amounts.map((amount) => uint256.bnToUint256(String(amount))),
-    uint256.bnToUint256(0),
-  )
-  const dealineInput = deadline ? deadline : MAX_UINT256
-  const minToMintInput = minToMint ? minToMint : 0
-  console.log(amountsFilled, dealineInput, minToMintInput, account.address)
-  const swapContract = new Contract(
-    swapABI,
-    swapAddress,
-    // TODO Below Fails on typing issue
-    // possible solution sessions? https://www.npmjs.com/package/@argent/x-sessions
-    account as unknown as AccountInterface,
-  )
   let res: string
+  const callData = args ? stark.compileCalldata(args) : []
+
   try {
-    const tx = await swapContract.addLiquidity(
-      amountsFilled,
-      minToMintInput,
-      dealineInput,
-    )
-    console.log(tx)
-    res = String(tx)
-  } catch (error) {
-    console.error(error)
-    res = String(error)
-  }
-  return res
-}
-
-// @param transactions the invocation object or an array of them, containing:
-//      * - contractAddress - the address of the contract
-//      * - entrypoint - the entrypoint of the contract
-//      * - calldata - (defaults to []) the calldata
-//      * - signature - (defaults to []) the signature
-//      * @param abi (optional) the abi of the contract for better displaying
-//      *
-
-export async function mintTestToken(
-  callerAccount: IStarknetWindowObject,
-  tokenAddress: string,
-): Promise<string> {
-  const account = callerAccount.account
-
-  // TODO Below Fails on typing issue
-  // const tokenContract = new Contract(testERC20ABI, tokenAddress, account)
-  // console.log("contract found at: ", tokenContract.address)
-  console.log("account clicked mint0 button: ", account.address)
-  let res: string
-  try {
-    // await tokenContract.mint(account.address)
-    const tx = await account.execute(
-      [
-        {
-          contractAddress: tokenAddress,
-          entrypoint: "mint",
-        },
-      ],
-      // [testERC20ABI],
-    )
-    // callerAccount.provider.waitForTransaction(hash)
+    const tx = await account.execute([
+      {
+        contractAddress: contractAddress,
+        entrypoint: entrypoint,
+        calldata: callData,
+      },
+    ])
     await callerAccount.provider.waitForTransaction(String(tx.transaction_hash))
     res = tx.transaction_hash
     console.log("tx: ", tx.transaction_hash)
