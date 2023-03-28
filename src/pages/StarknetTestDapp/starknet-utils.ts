@@ -20,9 +20,10 @@ import {
   Contract,
   AccountInterface,
   InvokeFunctionResponse,
+  number,
 } from "starknet"
-import swapABI from "../../constants/abis/swapV2C.json"
-import testERC20ABI from "../../constants/abis/starkTestERC20.json"
+import swapABI from "../../constants/starknet-abis/swapV2C.json"
+import testERC20ABI from "../../constants/starknet-abis/starkTestERC20.json"
 
 export const erc20TokenAddressByNetwork = {
   "goerli-alpha":
@@ -30,9 +31,9 @@ export const erc20TokenAddressByNetwork = {
   "mainnet-alpha":
     "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
 }
-export const MAX_UINT256 = BigNumber.from(
-  "115792089237316195423570985008687907853269984665640564039457584007913129639935",
-)
+export const MAX_UINT256 =
+  "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 export type PublicNetwork = keyof typeof erc20TokenAddressByNetwork
@@ -249,4 +250,37 @@ export async function callContract(
       calldata: callData,
     })
   ).result
+}
+
+export async function ERC20Approve(
+  callerAccount: IStarknetWindowObject,
+  contractAddress: string,
+  entrypoint: string,
+  spender: string,
+  amount?: string,
+): Promise<string> {
+  const account = callerAccount.account
+  let res: string
+  const amountInput = amount
+    ? BigNumber.from(String(amount))
+    : BigNumber.from(MAX_UINT256)
+  try {
+    const tx = await account.execute([
+      {
+        contractAddress: contractAddress,
+        entrypoint: entrypoint,
+        calldata: stark.compileCalldata([
+          spender,
+          { amount: number.toBN(amountInput) },
+        ]),
+      },
+    ])
+    await callerAccount.provider.waitForTransaction(String(tx.transaction_hash))
+    res = tx.transaction_hash
+    console.log("tx: ", tx.transaction_hash)
+  } catch (error) {
+    console.error(error)
+    res = String(error)
+  }
+  return res
 }

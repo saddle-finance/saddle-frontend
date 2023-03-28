@@ -8,9 +8,15 @@
 import { IStarknetWindowObject } from "@argent/get-starknet/dist"
 import { Button, Container, Typography } from "@mui/material"
 import React, { ReactElement } from "react"
+import { uint256 } from "starknet"
 // import { useActiveWeb3React } from "../../hooks"
 
-import { callContract, connectWallet, executeContract } from "./starknet-utils"
+import {
+  callContract,
+  connectWallet,
+  executeContract,
+  MAX_UINT256,
+} from "./starknet-utils"
 
 function StarknetTestDapp(): ReactElement {
   let wallet: IStarknetWindowObject
@@ -76,6 +82,29 @@ function StarknetTestDapp(): ReactElement {
     }
   }
 
+  async function handleApproveClick(e) {
+    // Prevent the browser from reloading the page
+    e.preventDefault()
+
+    const tokenAddress0 =
+      "0x57a487dd72451bf271fcd2b8415bb1223ba1897598f31096954cf369eed633e"
+    const tokenAddress1 =
+      "0x57a487dd72451bf271fcd2b8415bb1223ba1897598f31096954cf369eed633e"
+    const swapAddress =
+      "0x2d2b5490a9281889211afaac48a757b8f47dab9f43d56263912da3e996e3be7"
+    if (!wallet || !wallet.isConnected) {
+      alert("no wallet connected")
+    } else {
+      const approve0 = await executeContract(wallet, tokenAddress0, "approve", [
+        swapAddress,
+      ])
+      const approve1 = await executeContract(wallet, tokenAddress1, "approve", [
+        swapAddress,
+      ])
+      console.log("Approved tokens for swap competed")
+    }
+  }
+
   async function handleSubmit(e) {
     // Prevent the browser from reloading the page
     e.preventDefault()
@@ -130,7 +159,7 @@ function StarknetTestDapp(): ReactElement {
       <Typography variant="h3" mt={5} mb={2}>
         approve swap usage of tokens
       </Typography>
-      <Button variant="contained" onClick={clickMe}>
+      <Button variant="contained" onClick={handleApproveClick}>
         {" "}
         Approve{" "}
       </Button>
