@@ -112,7 +112,7 @@ export default function fetchTokenPricesUSD(
       fetch(
         `${coinGeckoAPI}?ids=${encodeURIComponent(
           tokenIds.join(","),
-        )}&vs_currencies=usd&x_cg_pro_api_key=CG-eCmWRehYgDjzKv1RLyJrEp27
+        )}&vs_currencies=usd&x_cg_pro_api_key=CG-io2x5AFyEVbKQgRm5bjmssbU
     `,
         { headers: { "Access-Control-Allow-Origin": "*" } },
       )

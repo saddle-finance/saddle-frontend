@@ -545,7 +545,7 @@ function buildLpTokenAddressToGauge(
     const gaugeTokens = gaugeRewardTokens[index]
     const gaugeTokenReward = (gaugeRewards[index] as GaugeTokenRewardData[])
       .map((reward, tokenIndex) => {
-        if (gaugeTokens[tokenIndex] != null && reward) {
+        if (gaugeTokens[tokenIndex] != null && reward?.rate.gt(Zero)) {
           const tokenAddress = gaugeTokens[tokenIndex]?.toLowerCase()
           return {
             periodFinish: reward.period_finish,
