@@ -30,7 +30,6 @@ import fetchSdlWethSushiPoolInfo from "../utils/updateSdlWethSushiInfo"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import getSnapshotVoteData from "../utils/getSnapshotVoteData"
 import { useActiveWeb3React } from "../hooks"
-import { useIntercom } from "react-use-intercom"
 import usePoller from "../hooks/usePoller"
 import { useSdlWethSushiPairContract } from "../hooks/useContract"
 import { useTheme } from "@mui/material"
@@ -45,10 +44,6 @@ const queryClient = new QueryClient({
 
 export default function App(): ReactElement {
   const theme = useTheme()
-  const { boot } = useIntercom()
-  useEffect(() => {
-    boot()
-  }, [boot])
 
   return (
     <QueryClientProvider client={queryClient}>

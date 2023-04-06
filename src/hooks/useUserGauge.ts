@@ -183,14 +183,19 @@ export async function retrieveAndSetSDLValues(
   setVeSdlBalance: (value: SetStateAction<BigNumber>) => void,
   setTotalVeSdl: (value: SetStateAction<BigNumber>) => void,
 ): Promise<void> {
-  const votingEscrowOrChildOracleContract = isMainnet(chainId)
-    ? getVotingEscrowContract(library, chainId, account)
-    : getChildOracle(library, chainId, account) // todo move to userstateprovider
+  let [veSDLBalance, veSDLSupply] = [Zero, Zero]
+  try {
+    const votingEscrowOrChildOracleContract = isMainnet(chainId)
+      ? getVotingEscrowContract(library, chainId, account)
+      : getChildOracle(library, chainId, account) // todo move to userstateprovider
 
-  const [veSDLBalance, veSDLSupply] = await Promise.all([
-    votingEscrowOrChildOracleContract["balanceOf(address)"](account),
-    votingEscrowOrChildOracleContract["totalSupply()"](),
-  ])
+    ;[veSDLBalance, veSDLSupply] = await Promise.all([
+      votingEscrowOrChildOracleContract["balanceOf(address)"](account),
+      votingEscrowOrChildOracleContract["totalSupply()"](),
+    ])
+  } catch (e) {
+    console.error("Unable to update veSDL information", e)
+  }
 
   setVeSdlBalance(veSDLBalance)
   setTotalVeSdl(veSDLSupply)
