@@ -85,6 +85,7 @@ export default function TokenClaimDialog({
   }, [basicPools, gauges, userState?.gaugeRewards])
 
   const isClaimableNetwork =
+    chainId === ChainId.OPTIMISM ||
     chainId === ChainId.MAINNET ||
     chainId === ChainId.ARBITRUM ||
     chainId === ChainId.HARDHAT ||

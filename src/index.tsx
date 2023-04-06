@@ -8,9 +8,7 @@ import { logError, sendWebVitalsToGA } from "./utils/googleAnalytics"
 
 import App from "./pages/App"
 import { Buffer } from "buffer"
-import { IS_PRODUCTION } from "./utils/environment"
 import { Integrations } from "@sentry/tracing"
-import { IntercomProvider } from "react-use-intercom"
 import { NetworkContextName } from "./constants"
 import { Provider } from "react-redux"
 import React from "react"
@@ -42,7 +40,6 @@ Sentry.init({
   tracesSampleRate: 0.1,
 })
 
-const intercomAppId = "tbghxgth"
 const container = document.getElementById("root")
 // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-non-null-assertion
 const root = createRoot(container!) // createRoot(container!) if you use TypeScript
@@ -51,19 +48,17 @@ const root = createRoot(container!) // createRoot(container!) if you use TypeScr
 
 root.render(
   <React.StrictMode>
-    <IntercomProvider appId={intercomAppId} shouldInitialize={IS_PRODUCTION}>
-      <Web3ReactProvider getLibrary={getLibrary}>
-        <Web3ProviderNetwork getLibrary={getNetworkLibrary}>
-          <Provider store={store}>
-            <ThemeSettingsProvider>
-              <Router>
-                <App />
-              </Router>
-            </ThemeSettingsProvider>
-          </Provider>
-        </Web3ProviderNetwork>
-      </Web3ReactProvider>
-    </IntercomProvider>
+    <Web3ReactProvider getLibrary={getLibrary}>
+      <Web3ProviderNetwork getLibrary={getNetworkLibrary}>
+        <Provider store={store}>
+          <ThemeSettingsProvider>
+            <Router>
+              <App />
+            </Router>
+          </ThemeSettingsProvider>
+        </Provider>
+      </Web3ProviderNetwork>
+    </Web3ReactProvider>
   </React.StrictMode>,
 )
 
