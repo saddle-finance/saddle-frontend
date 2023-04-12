@@ -1,9 +1,9 @@
-import { Box, Divider, Stack, Typography } from "@mui/material"
+import { Box, Divider, Link, Stack, Typography } from "@mui/material"
+import { CheckCircleOutline, OpenInNew } from "@mui/icons-material"
 import React, { ReactElement, useContext } from "react"
 import { formatBNToPercentString, formatBNToString } from "../utils"
 
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
-import { CheckCircleOutline } from "@mui/icons-material"
 import { Partners } from "../utils/thirdPartyIntegrations"
 import { PoolTypes } from "../constants"
 import TokenIcon from "./TokenIcon"
@@ -63,6 +63,20 @@ function MyShareCard({ data }: Props): ReactElement | null {
       </Typography>
       <Typography>{`${t("balance")}: $${formattedData.usdBalance}`}</Typography>
       <Typography>{`${t("lpAmount")}: ${formattedData.amount}`}</Typography>
+      {data.name === "L2D4" && (
+        <Typography>
+          <Link
+            href="https://app.frax.finance/staking/saddle-arbi-l2d4"
+            style={{ textDecoration: "underline" }}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Box display="flex" alignItems="center">
+              Staking <OpenInNew sx={{ marginLeft: 0.5, width: 15 }} />
+            </Box>
+          </Link>
+        </Typography>
+      )}
       {Object.keys(stakingUrls).map((key) => {
         return data.amountsStaked[key as Partners]?.gt(Zero) ? (
           <Typography component="span">
