@@ -1,3 +1,4 @@
+import { BN_1E18 } from "../constants"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Zero } from "@ethersproject/constants"
 
@@ -12,7 +13,7 @@ export function isHighPriceImpact(priceImpact: BigNumber): boolean {
 export function calculatePriceImpact(
   tokenInputAmount: BigNumber, // assumed to be 18d precision
   tokenOutputAmount: BigNumber,
-  virtualPrice = BigNumber.from(10).pow(18),
+  virtualPrice = BN_1E18,
   isWithdraw = false,
 ): BigNumber {
   // We want to multiply the lpTokenAmount by virtual price
@@ -25,9 +26,6 @@ export function calculatePriceImpact(
     ? tokenOutputAmount
         .mul(BigNumber.from(10).pow(36))
         .div(tokenInputAmount.mul(virtualPrice))
-        .sub(BigNumber.from(10).pow(18))
-    : virtualPrice
-        .mul(tokenOutputAmount)
-        .div(tokenInputAmount)
-        .sub(BigNumber.from(10).pow(18))
+        .sub(BN_1E18)
+    : virtualPrice.mul(tokenOutputAmount).div(tokenInputAmount).sub(BN_1E18)
 }
