@@ -14,7 +14,7 @@ export default function GaugeRewardsDisplay({
     <>
       {gaugeAprs.map((aprData) => {
         if (!aprData.rewardToken) return null
-        const { symbol, address } = aprData.rewardToken
+        const { symbol, address, decimals } = aprData.rewardToken
         if (aprData.amountPerDay) {
           const { min, max } = aprData.amountPerDay
           if (max.isZero()) return null
@@ -24,8 +24,8 @@ export default function GaugeRewardsDisplay({
                 {symbol}/24h:
               </Typography>
               <Typography component="span" variant="subtitle1">
-                {`${commify(formatBNToString(min, 18, 0))}-${commify(
-                  formatBNToString(max, 18, 0),
+                {`${commify(formatBNToString(min, decimals, 0))}-${commify(
+                  formatBNToString(max, decimals, 0),
                 )}`}
               </Typography>
             </Box>
@@ -41,9 +41,9 @@ export default function GaugeRewardsDisplay({
               <Typography component="span">
                 {`${formatBNToPercentString(
                   min,
-                  18,
+                  decimals,
                   2,
-                )}-${formatBNToPercentString(max, 18, 2)}`}
+                )}-${formatBNToPercentString(max, decimals, 2)}`}
               </Typography>
             </Box>
           )

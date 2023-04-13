@@ -73,33 +73,49 @@ function buildRewards(
   tokenPricesUSD: Partial<{ [symbol: string]: number }>,
   amountStakedUSD: BigNumber,
 ): GaugeApr[] {
-  return gaugeRewards.map(({ tokenAddress, rate: rewardPerSecond }) => {
-    const rewardToken = tokens[tokenAddress]
-    const rewardPrice = tokenPricesUSD[rewardToken?.symbol || ""] || 0
+  return gaugeRewards
+    .reduce((acc, reward) => {
+      const existingRewardIdx = acc.findIndex(
+        (item) => item.tokenAddress === reward.tokenAddress,
+      )
+      if (existingRewardIdx > -1) {
+        acc[existingRewardIdx].rate = acc[existingRewardIdx].rate.add(
+          reward.rate,
+        )
+      } else {
+        acc.push({ tokenAddress: reward.tokenAddress, rate: reward.rate })
+      }
+      return acc
+    }, [] as { tokenAddress: string; rate: BigNumber }[])
+    .map(({ tokenAddress, rate: rewardPerSecond }) => {
+      const rewardToken = tokens[tokenAddress]
+      const rewardPrice = tokenPricesUSD[rewardToken?.symbol || ""] || 0
 
-    if (rewardPrice === 0 || amountStakedUSD.isZero()) {
-      const maxRewardPerDay = rewardPerSecond.mul(BN_DAY_IN_SECONDS)
+      if (rewardPrice === 0 || amountStakedUSD.isZero()) {
+        const maxRewardPerDay = rewardPerSecond.mul(BN_DAY_IN_SECONDS)
+        return {
+          rewardToken,
+          amountPerDay: {
+            min: maxRewardPerDay.mul(4).div(10),
+            max: maxRewardPerDay,
+          },
+        } as AmountReward
+      }
+      // @dev see "Math" section of readme
+      const rewardPerYear = rewardPerSecond.mul(BN_YEAR_IN_SECONDS) // 1e18
+      const rewardPerYearUSD = rewardPerYear.mul(
+        parseUnits(rewardPrice.toFixed(3), 3),
+      ) // 1e18 * 1e3 = 1e21
+      const rewardApr = shiftBNDecimals(rewardPerYearUSD, 15).div(
+        amountStakedUSD,
+      ) // (1e21 * 1e15 = 1e36) / 1e18 = 1e18
+
       return {
         rewardToken,
-        amountPerDay: {
-          min: maxRewardPerDay.mul(4).div(10),
-          max: maxRewardPerDay,
+        apr: {
+          min: rewardApr.mul(4).div(10),
+          max: rewardApr,
         },
-      } as AmountReward
-    }
-    // @dev see "Math" section of readme
-    const rewardPerYear = rewardPerSecond.mul(BN_YEAR_IN_SECONDS) // 1e18
-    const rewardPerYearUSD = rewardPerYear.mul(
-      parseUnits(rewardPrice.toFixed(3), 3),
-    ) // 1e18 * 1e3 = 1e21
-    const rewardApr = shiftBNDecimals(rewardPerYearUSD, 15).div(amountStakedUSD) // (1e21 * 1e15 = 1e36) / 1e18 = 1e18
-
-    return {
-      rewardToken,
-      apr: {
-        min: rewardApr.mul(4).div(10),
-        max: rewardApr,
-      },
-    } as AprReward
-  })
+      } as AprReward
+    })
 }
