@@ -765,6 +765,18 @@ export const SUSD_SWAP_V2_V3_TOKEN = new Token(
   true,
 )
 
+export const FUSDC_TOKEN = new Token(
+  buildAddresses({
+    [ChainId.ARBITRUM]: "0x4cfa50b7ce747e2d61724fcac57f24b748ff2b2a",
+  }),
+  6,
+  "fUSDC",
+  "fluid-usdc",
+  "Fluid USDC",
+  false,
+  false,
+)
+
 export const BTC_SWAP_TOKEN = new Token(
   BTC_SWAP_TOKEN_CONTRACT_ADDRESSES,
   18,

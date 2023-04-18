@@ -200,7 +200,11 @@ export default function TokenClaimDialog({
             <>
               <ClaimListItem
                 items={[
-                  [t("retroactiveDrop"), rewardBalances.retroactive || Zero],
+                  [
+                    t("retroactiveDrop"),
+                    rewardBalances.retroactive || Zero,
+                    18,
+                  ],
                 ]}
                 claimCallback={() => void claimRetroReward()}
                 status={claimsStatuses["retroactive"]}
@@ -237,7 +241,11 @@ export default function TokenClaimDialog({
                 <React.Fragment key={pool.poolName}>
                   <ClaimListItem
                     items={[
-                      [pool.poolName, rewardBalances[pool.poolName] || Zero],
+                      [
+                        pool.poolName,
+                        rewardBalances[pool.poolName] || Zero,
+                        18,
+                      ],
                     ]}
                     claimCallback={() => void claimPoolReward(pool)}
                     status={
@@ -251,12 +259,18 @@ export default function TokenClaimDialog({
             : gaugesWithName?.map((gauge, i, arr) => {
                 const poolGaugeRewards =
                   userState?.gaugeRewards?.[gauge?.address || ""]
-                const userClaimableSdl = poolGaugeRewards?.claimableSDL
-                const userClaimableOtherRewards: [string, BigNumber][] = (
+                let userClaimableSdl = poolGaugeRewards?.claimableSDL || Zero
+                const userClaimableOtherRewards = (
                   poolGaugeRewards?.claimableExternalRewards || []
-                ).map(({ amount, token }) => {
-                  return [token?.symbol || "", amount]
-                })
+                )
+                  .map(({ amount, token }) => {
+                    if (token.symbol === "SDL") {
+                      userClaimableSdl = userClaimableSdl.add(amount)
+                      return null
+                    }
+                    return [token.symbol || "", amount, token.decimals]
+                  })
+                  .filter(Boolean) as [string, BigNumber, number][]
                 const shouldShow = Boolean(
                   userClaimableSdl?.gt(Zero) ||
                     userClaimableOtherRewards.length,
@@ -268,7 +282,7 @@ export default function TokenClaimDialog({
                       <ClaimListItem
                         title={gauge?.gaugeName}
                         items={[
-                          ["SDL", userClaimableSdl ?? Zero],
+                          ["SDL", userClaimableSdl ?? Zero, 18],
                           ...userClaimableOtherRewards,
                         ]}
                         claimCallback={() => void claimGaugeReward(gauge)}
@@ -295,7 +309,11 @@ export default function TokenClaimDialog({
                     <ClaimListItem
                       key={`${pool.poolName}-outdated`}
                       items={[
-                        [pool.poolName, rewardBalances[pool.poolName] || Zero],
+                        [
+                          pool.poolName,
+                          rewardBalances[pool.poolName] || Zero,
+                          18,
+                        ],
                       ]}
                       claimCallback={() => void claimPoolReward(pool)}
                       status={
@@ -351,7 +369,7 @@ function ClaimListItem({
 }: {
   title?: string
   claimCallback: () => void
-  items: [string, BigNumber][]
+  items: [string, BigNumber, number][]
   status?: STATUSES
 }): ReactElement {
   const { t } = useTranslation()
@@ -378,11 +396,11 @@ function ClaimListItem({
       </Typography>
       <Typography sx={{ flex: 1 }}>
         {title && <br />}
-        {items.map(([, amount]) => (
+        {items.map(([, amount, decimals]) => (
           <>
             {status === STATUSES.SUCCESS
               ? 0
-              : commify(formatBNToString(amount, 18, 2))}
+              : commify(formatBNToString(amount, decimals, 2))}
             <br />
           </>
         ))}
