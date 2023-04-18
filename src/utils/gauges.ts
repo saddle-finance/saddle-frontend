@@ -358,8 +358,8 @@ export async function getGaugeRewardsUserData(
       ethCallProvider,
     )
 
-    const gaugeUserClaimableExternalRewards =
-      await getClaimableRewardsFromTokens(
+    const gaugeUserClaimableExternalRewardsPromise =
+      getClaimableRewardsFromTokens(
         account,
         gaugeRewardCounts,
         gaugeMulticallContracts,
@@ -378,9 +378,15 @@ export async function getGaugeRewardsUserData(
         gaugeContract.balanceOf(account),
       ),
     )
-    const [gaugeUserClaimableSDL, gaugeUserDepositBalances] = await Promise.all(
-      [gaugeUserClaimableSDLPromise, gaugeUserDepositBalancesPromise],
-    )
+    const [
+      gaugeUserClaimableSDL,
+      gaugeUserDepositBalances,
+      gaugeUserClaimableExternalRewards,
+    ] = await Promise.all([
+      gaugeUserClaimableSDLPromise,
+      gaugeUserDepositBalancesPromise,
+      gaugeUserClaimableExternalRewardsPromise,
+    ])
 
     return gaugeAddresses.reduce((acc, gaugeAddress, i) => {
       const amountStaked = gaugeUserDepositBalances[i]
@@ -389,9 +395,9 @@ export async function getGaugeRewardsUserData(
       const claimableExternalRewards = gaugeUserClaimableExternalRewards[i]
         .map((amount, j) => {
           const token = rewardsTokens[i][j]
-          return { amount, token }
+          return { amount: amount || Zero, token }
         })
-        .filter(({ token }) => !!token)
+        .filter(({ token, amount }) => !!token && amount.gt(Zero))
       const claimableSDL = gaugeUserClaimableSDL[i]
 
       const hasSDLRewards = claimableSDL.gt(Zero)
@@ -545,7 +551,8 @@ function buildLpTokenAddressToGauge(
     const gaugeTokens = gaugeRewardTokens[index]
     const gaugeTokenReward = (gaugeRewards[index] as GaugeTokenRewardData[])
       .map((reward, tokenIndex) => {
-        if (gaugeTokens[tokenIndex] != null && reward?.rate.gt(Zero)) {
+        if (gaugeTokens[tokenIndex] != null) {
+          // && reward?.rate.gt(Zero)) {
           const tokenAddress = gaugeTokens[tokenIndex]?.toLowerCase()
           return {
             periodFinish: reward.period_finish,

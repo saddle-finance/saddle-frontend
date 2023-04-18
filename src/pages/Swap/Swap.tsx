@@ -358,8 +358,8 @@ function Swap(): ReactElement {
         tokenTo.decimals,
       )
       const priceImpact = calculatePriceImpact(
-        formStateArg.from.valueUSD,
-        toValueUSD,
+        shiftBNDecimals(amountToGive, 18 - tokenFrom.decimals),
+        shiftBNDecimals(amountToReceive, 18 - tokenTo.decimals),
       )
       setFormState((prevState) => {
         const newState = {
