@@ -99,7 +99,10 @@ FarmOverviewProps): JSX.Element | null {
       alignItems="center"
       direction="row"
       sx={{
-        backgroundColor: (theme) => theme.palette.background.paper,
+        backgroundColor: (theme) =>
+          isDeadFusdcGauge
+            ? theme.palette.action.focus
+            : theme.palette.background.paper,
         py: 1,
         px: 3,
       }}
@@ -167,7 +170,7 @@ FarmOverviewProps): JSX.Element | null {
           <Button
             variant="contained"
             size="large"
-            color="warning"
+            color="error"
             onClick={() => void onClickUnstakeOldFusdc()}
             fullWidth
             sx={{ mt: 2 }}
