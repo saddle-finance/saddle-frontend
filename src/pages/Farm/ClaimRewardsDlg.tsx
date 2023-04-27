@@ -88,9 +88,13 @@ function UserRewards({
 }) {
   if (!userGaugeRewards) return null
   const { claimableExternalRewards, claimableSDL } = userGaugeRewards
-  const rewardItems: [string, BigNumber][] = [["SDL", claimableSDL]]
+  const rewardItems: [string, number, BigNumber][] = [["SDL", 18, claimableSDL]]
   claimableExternalRewards.forEach((reward) => {
-    rewardItems.push([reward.token.symbol, reward.amount])
+    rewardItems.push([
+      reward.token.symbol,
+      reward.token.decimals,
+      reward.amount,
+    ])
   })
 
   return (
@@ -103,7 +107,7 @@ function UserRewards({
             >
               <Typography variant="subtitle1">{item[0]}</Typography>{" "}
               <Typography>
-                {commify(formatBNToString(item[1], 18, 2))}
+                {commify(formatBNToString(item[2], item[1], 2))}
               </Typography>
             </Box>
             {i < rewardItems.length - 1 && <Divider />}
