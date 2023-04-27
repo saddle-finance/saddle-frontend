@@ -191,9 +191,9 @@ export const getTokenPrice = async (
           retry(
             () =>
               fetch(
-                `https://api.coingecko.com/api/v3/simple/token_price/${platform}?contract_addresses=${chunkedAddress.join(
+                `https://6muzj0u3nj.execute-api.us-east-1.amazonaws.com/Prod/getPrices?platform=${platform}&contract_addresses=${chunkedAddress.join(
                   ",",
-                )}&vs_currencies=usd`,
+                )}`,
               )
                 .then((res) => res.json())
                 .then((prices: CoinGeckoReponse) =>
