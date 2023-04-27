@@ -532,7 +532,7 @@ function buildLpTokenAddressToGauge(
   gaugeKillStatuses: (boolean | null)[],
 ) {
   return gaugeAddresses.reduce((previousGaugeData, gaugeAddress, index) => {
-    const lpTokenAddress = gaugeLpTokenAddresses[index]?.toLowerCase()
+    let lpTokenAddress = gaugeLpTokenAddresses[index]?.toLowerCase()
     const pool = lpTokenToPool[lpTokenAddress || ""] as GaugePool
     if (!lpTokenAddress) return previousGaugeData
 
@@ -565,7 +565,9 @@ function buildLpTokenAddressToGauge(
       .filter(Boolean) as GaugeReward[]
 
     const combinedRewards = gaugeTokenReward.concat([sdlReward])
-
+    if (gaugeAddress === "0xc7ec37b1e3be755e06a729e11a76ff4259768f12") {
+      lpTokenAddress = "deprecated_fusdc"
+    }
     const gauge: Gauge = {
       address: gaugeAddress,
       gaugeWeight: gaugeWeights[index] || Zero,

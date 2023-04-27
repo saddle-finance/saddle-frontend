@@ -39,6 +39,7 @@ export default function Farm(): JSX.Element {
   const gaugeAprs = useContext(AprsContext)
   const userState = useContext(UserStateContext)
   const getGaugeTVL = useGaugeTVL()
+
   const farmData = Object.values(gauges)
     .filter(({ isKilled }) => !isKilled)
     .map((gauge) => {
@@ -56,7 +57,7 @@ export default function Farm(): JSX.Element {
           : poolName || gaugeName || ""
       const gaugeAddress = address
       const aprs = gaugeAprs?.[gaugeAddress]
-      const myStake =
+      const myStake = // is this a bug?
         userState?.gaugeRewards?.[gaugeAddress]?.amountStaked || Zero
       const tvl = getGaugeTVL(gaugeAddress)
       const gaugePoolAddress = poolAddress
@@ -139,6 +140,7 @@ export default function Farm(): JSX.Element {
               <Box key={gaugeAddress}>
                 <Divider />
                 <FarmOverview
+                  gaugeAddress={gaugeAddress}
                   farmName={farmName}
                   poolTokens={poolTokens}
                   aprs={aprs}
