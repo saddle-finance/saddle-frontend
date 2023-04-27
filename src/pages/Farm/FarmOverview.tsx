@@ -6,15 +6,18 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material"
-import React, { useContext } from "react"
+import React, { useCallback, useContext } from "react"
+import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { GaugeApr } from "../../providers/AprsProvider"
 import GaugeRewardsDisplay from "../../components/GaugeRewardsDisplay"
 import TokenIcon from "../../components/TokenIcon"
 import { TokensContext } from "../../providers/TokensProvider"
+import { UserStateContext } from "../../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
 import { formatBNToShortString } from "../../utils"
+import { getGaugeContract } from "../../hooks/useContract"
 import { useActiveWeb3React } from "../../hooks"
 import { useTranslation } from "react-i18next"
 
@@ -24,6 +27,7 @@ interface FarmOverviewProps {
   poolTokens?: string[]
   tvl?: BigNumber
   myStake: BigNumber
+  gaugeAddress: string
   onClickStake: () => void
   onClickClaim: () => void
 }
@@ -35,6 +39,7 @@ const TokenGroup = styled("div")(() => ({
   },
 }))
 
+const deadFusdcGaugeAddress = "0xc7ec37b1e3be755e06a729e11a76ff4259768f12"
 export default function FarmOverview({
   farmName,
   poolTokens,
@@ -42,15 +47,51 @@ export default function FarmOverview({
   tvl,
   myStake,
   onClickStake,
+  gaugeAddress,
 }: // onClickClaim,
 FarmOverviewProps): JSX.Element | null {
   const { t } = useTranslation()
-  const { chainId } = useActiveWeb3React()
+  const { chainId, library, account } = useActiveWeb3React()
   const tokens = useContext(TokensContext)
   const theme = useTheme()
   const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
+  const userState = useContext(UserStateContext)
+
+  const amountStakedDeadFusdc =
+    userState?.gaugeRewards?.[deadFusdcGaugeAddress]?.amountStaked || Zero
+  const onClickUnstakeOldFusdc = useCallback(async () => {
+    if (account == null || chainId == null || library == null) {
+      enqueueToast("error", "Unable to unstake")
+      console.error("gauge not loaded")
+      return
+    }
+    try {
+      const gaugeContract = getGaugeContract(
+        library,
+        chainId,
+        deadFusdcGaugeAddress,
+        account,
+      )
+      const txn = await gaugeContract["withdraw(uint256)"](
+        amountStakedDeadFusdc,
+      )
+      await enqueuePromiseToast(chainId, txn.wait(), "unstake", {
+        poolName: "fUSDC outdated",
+      })
+      // dispatch(
+      //   updateLastTransactionTimes({
+      //     [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
+      //   }),
+      // )
+    } catch (e) {
+      console.error(e)
+      enqueueToast("error", "Unable to unstake")
+    }
+  }, [account, chainId, library, amountStakedDeadFusdc])
 
   if (!chainId) return null
+  const isDeadFusdcGauge = gaugeAddress === deadFusdcGaugeAddress
+  if (isDeadFusdcGauge && amountStakedDeadFusdc.eq(Zero)) return null // don't show old gauge to non-stakers
 
   return (
     <Grid
@@ -64,7 +105,10 @@ FarmOverviewProps): JSX.Element | null {
       }}
     >
       <Grid item container xs={7} lg={3.5} flexDirection="column" gap={1}>
-        <Typography variant="h2">{farmName}</Typography>
+        <Typography variant="h2">
+          {isDeadFusdcGauge ? "Outdated " : ""}
+          {farmName}
+        </Typography>
         <TokenGroup>
           {farmName === "SDL/WETH SLP" ? (
             <>
@@ -99,7 +143,7 @@ FarmOverviewProps): JSX.Element | null {
         )}
       </Grid>
       <Grid item xs={3}>
-        <GaugeRewardsDisplay aprs={aprs} />
+        {!isDeadFusdcGauge && <GaugeRewardsDisplay aprs={aprs} />}
       </Grid>
       {!isLgDown && (
         <React.Fragment>
@@ -119,15 +163,28 @@ FarmOverviewProps): JSX.Element | null {
         {/* <Button variant="outlined" size="large">
           {t("claimRewards")}
         </Button> */}
-        <Button
-          variant="contained"
-          size="large"
-          onClick={onClickStake}
-          fullWidth
-          sx={{ mt: 2 }}
-        >
-          {t("stakeOrUnstake")}
-        </Button>
+        {isDeadFusdcGauge ? (
+          <Button
+            variant="contained"
+            size="large"
+            color="warning"
+            onClick={() => void onClickUnstakeOldFusdc()}
+            fullWidth
+            sx={{ mt: 2 }}
+          >
+            {t("unstake")}
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            size="large"
+            onClick={onClickStake}
+            fullWidth
+            sx={{ mt: 2 }}
+          >
+            {t("stakeOrUnstake")}
+          </Button>
+        )}
       </Grid>
     </Grid>
   )

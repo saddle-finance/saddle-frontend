@@ -1,7 +1,6 @@
 import { BN_1E18, BN_DAY_IN_SECONDS } from "../../constants"
 import {
   Box,
-  Button,
   Container,
   Divider,
   Grid,
@@ -9,8 +8,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material"
-import React, { useCallback, useContext, useEffect, useState } from "react"
-import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
+import React, { useContext, useEffect, useState } from "react"
 
 import { AprsContext } from "../../providers/AprsProvider"
 import { BasicPoolsContext } from "../../providers/BasicPoolsProvider"
@@ -23,8 +21,6 @@ import { UserStateContext } from "../../providers/UserStateProvider"
 import VeSDLWrongNetworkModal from "../VeSDL/VeSDLWrongNetworkModal"
 import { Zero } from "@ethersproject/constants"
 import { formatUnits } from "ethers/lib/utils"
-import { getGaugeContract } from "../../hooks/useContract"
-import { useActiveWeb3React } from "../../hooks"
 import useGaugeTVL from "../../hooks/useGaugeTVL"
 import { useTranslation } from "react-i18next"
 
@@ -42,11 +38,8 @@ export default function Farm(): JSX.Element {
   const { gauges } = useContext(GaugeContext)
   const gaugeAprs = useContext(AprsContext)
   const userState = useContext(UserStateContext)
-  // const [userFusdcBalance, setUserFusdcBalance] = useState(Zero)
-  useEffect(() => {
-    console.log(userState)
-  }, [userState])
   const getGaugeTVL = useGaugeTVL()
+
   const farmData = Object.values(gauges)
     .filter(({ isKilled }) => !isKilled)
     .map((gauge) => {
@@ -124,7 +117,6 @@ export default function Farm(): JSX.Element {
 
   return (
     <Container sx={{ pt: 5, pb: 5 }}>
-      <FusdcUnstakeWarning />
       <Box
         position="sticky"
         top={0}
@@ -148,6 +140,7 @@ export default function Farm(): JSX.Element {
               <Box key={gaugeAddress}>
                 <Divider />
                 <FarmOverview
+                  gaugeAddress={gaugeAddress}
                   farmName={farmName}
                   poolTokens={poolTokens}
                   aprs={aprs}
@@ -230,66 +223,5 @@ function FarmListHeader(): JSX.Element {
         </Grid>
       )}
     </Grid>
-  )
-}
-
-function FusdcUnstakeWarning(): JSX.Element | null {
-  const { chainId, library, account } = useActiveWeb3React()
-  const userState = useContext(UserStateContext)
-  const fusdcGaugeAddress = "0xc7ec37b1e3be755e06a729e11a76ff4259768f12"
-  const amountStaked =
-    userState?.gaugeRewards?.[fusdcGaugeAddress]?.amountStaked || Zero
-
-  const onClickUnstake = useCallback(async () => {
-    if (account == null || chainId == null || library == null) {
-      enqueueToast("error", "Unable to unstake")
-      console.error("gauge not loaded")
-      return
-    }
-    try {
-      const gaugeContract = getGaugeContract(
-        library,
-        chainId,
-        fusdcGaugeAddress,
-        account,
-      )
-      const txn = await gaugeContract["withdraw(uint256)"](amountStaked)
-      await enqueuePromiseToast(chainId, txn.wait(), "unstake", {
-        poolName: "fUSDC outdated",
-      })
-      // dispatch(
-      //   updateLastTransactionTimes({
-      //     [TRANSACTION_TYPES.STAKE_OR_CLAIM]: Date.now(),
-      //   }),
-      // )
-    } catch (e) {
-      console.error(e)
-      enqueueToast("error", "Unable to unstake")
-    }
-  }, [account, chainId, library, amountStaked])
-  // if (userGauge == null) return null
-  if (amountStaked.eq(Zero)) return null
-  return (
-    <Box
-      position="sticky"
-      top={0}
-      bgcolor={(theme) => theme.palette.background.paper}
-      zIndex={(theme) => theme.zIndex.mobileStepper - 1}
-      py={2}
-      px={3}
-      sx={{ borderRadius: 16 }}
-    >
-      <Typography variant="subtitle1">
-        You are staked in the outdated fUSDC gauge, please unstake and move to
-        the new gauge
-      </Typography>
-      <Button
-        variant="contained"
-        color="warning"
-        onClick={() => void onClickUnstake()}
-      >
-        Unstake
-      </Button>
-    </Box>
   )
 }
