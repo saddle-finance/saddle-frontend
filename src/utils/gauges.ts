@@ -2,6 +2,7 @@ import {
   BN_1E18,
   BN_DAY_IN_SECONDS,
   BN_MSIG_SDL_VEST_END_TIMESTAMP,
+  DEAD_FUSDC_GAUGE_ADDRESS,
   GAUGE_CONTROLLER_ADDRESSES,
 } from "../constants"
 import {
@@ -392,12 +393,16 @@ export async function getGaugeRewardsUserData(
       const amountStaked = gaugeUserDepositBalances[i]
       // @dev: reward amounts ([1,2,3]) are returned in the same order as gauge.rewards ([0xa,0xb,0xc])
       // however SDL rewards are appended to the end of that by the frontend
-      const claimableExternalRewards = gaugeUserClaimableExternalRewards[i]
+      let claimableExternalRewards = gaugeUserClaimableExternalRewards[i]
         .map((amount, j) => {
           const token = rewardsTokens[i][j]
           return { amount: amount || Zero, token }
         })
         .filter(({ token, amount }) => !!token && amount.gt(Zero))
+
+      if (gaugeAddress === DEAD_FUSDC_GAUGE_ADDRESS) {
+        claimableExternalRewards = []
+      }
       const claimableSDL = gaugeUserClaimableSDL[i]
 
       const hasSDLRewards = claimableSDL.gt(Zero)
@@ -565,8 +570,9 @@ function buildLpTokenAddressToGauge(
       .filter(Boolean) as GaugeReward[]
 
     const combinedRewards = gaugeTokenReward.concat([sdlReward])
-    if (gaugeAddress === "0xc7ec37b1e3be755e06a729e11a76ff4259768f12") {
+    if (gaugeAddress === DEAD_FUSDC_GAUGE_ADDRESS) {
       lpTokenAddress = "deprecated_fusdc"
+      gaugeNames[index] = (gaugeNames[index] as string) + " outdated"
     }
     const gauge: Gauge = {
       address: gaugeAddress,
@@ -576,7 +582,7 @@ function buildLpTokenAddressToGauge(
       workingSupply: gaugeWorkingSupplies[index] || Zero,
       workingBalances: gaugeWorkingBalances?.[index] || Zero,
       gaugeBalance: gaugeBalances?.[index] || Zero,
-      gaugeName: gaugeNames[index],
+      gaugeName: (gaugeNames[index] || "").replace("saddle-", ""),
       lpTokenAddress,
       isKilled: gaugeKillStatuses[index] ?? false,
       poolAddress,

@@ -10,6 +10,7 @@ import React, { useCallback, useContext } from "react"
 import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 
 import { BigNumber } from "@ethersproject/bignumber"
+import { DEAD_FUSDC_GAUGE_ADDRESS } from "../../constants"
 import { GaugeApr } from "../../providers/AprsProvider"
 import GaugeRewardsDisplay from "../../components/GaugeRewardsDisplay"
 import TokenIcon from "../../components/TokenIcon"
@@ -39,7 +40,6 @@ const TokenGroup = styled("div")(() => ({
   },
 }))
 
-const deadFusdcGaugeAddress = "0xc7ec37b1e3be755e06a729e11a76ff4259768f12"
 export default function FarmOverview({
   farmName,
   poolTokens,
@@ -58,7 +58,7 @@ FarmOverviewProps): JSX.Element | null {
   const userState = useContext(UserStateContext)
 
   const amountStakedDeadFusdc =
-    userState?.gaugeRewards?.[deadFusdcGaugeAddress]?.amountStaked || Zero
+    userState?.gaugeRewards?.[DEAD_FUSDC_GAUGE_ADDRESS]?.amountStaked || Zero
   const onClickUnstakeOldFusdc = useCallback(async () => {
     if (account == null || chainId == null || library == null) {
       enqueueToast("error", "Unable to unstake")
@@ -69,7 +69,7 @@ FarmOverviewProps): JSX.Element | null {
       const gaugeContract = getGaugeContract(
         library,
         chainId,
-        deadFusdcGaugeAddress,
+        DEAD_FUSDC_GAUGE_ADDRESS,
         account,
       )
       const txn = await gaugeContract["withdraw(uint256)"](
@@ -90,7 +90,7 @@ FarmOverviewProps): JSX.Element | null {
   }, [account, chainId, library, amountStakedDeadFusdc])
 
   if (!chainId) return null
-  const isDeadFusdcGauge = gaugeAddress === deadFusdcGaugeAddress
+  const isDeadFusdcGauge = gaugeAddress === DEAD_FUSDC_GAUGE_ADDRESS
   if (isDeadFusdcGauge && amountStakedDeadFusdc.eq(Zero)) return null // don't show old gauge to non-stakers
 
   return (
