@@ -54,7 +54,6 @@ interface TokenClaimDialogProps {
   open: boolean
   onClose: () => void
 }
-const deadFusdcGaugeAddress = "0xc7ec37b1e3be755e06a729e11a76ff4259768f12"
 export default function TokenClaimDialog({
   open,
   onClose,
@@ -69,7 +68,6 @@ export default function TokenClaimDialog({
     return (
       Object.values(gauges)
         .map(({ gaugeName, rewards, address }) => {
-          if (address === deadFusdcGaugeAddress) return null
           return {
             gaugeName,
             address,
