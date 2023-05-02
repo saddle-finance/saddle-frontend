@@ -2253,6 +2253,9 @@ export const SYNTHETIX_TOKENS: { [chainId in ChainId]?: string[] } = {
   ],
 }
 
+export const DEAD_FUSDC_GAUGE_ADDRESS =
+  "0xc7ec37b1e3be755e06a729e11a76ff4259768f12"
+
 // "SADDLE" in bytes32 form
 export const SYNTH_TRACKING_ID =
   "0x534144444c450000000000000000000000000000000000000000000000000000"
