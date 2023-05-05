@@ -1,8 +1,8 @@
 import { BaseProvider, getDefaultProvider } from "@ethersproject/providers"
-import { SUPPORTED_NETWORKS, SupportedNetwork } from "../constants/networks"
 
 import { InjectedConnector } from "@web3-react/injected-connector"
 import { NetworkConnector } from "@web3-react/network-connector"
+import { SUPPORTED_NETWORKS } from "../constants/networks"
 import { UAuthConnector } from "@uauth/web3-react"
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
 import { WalletLinkConnector } from "@web3-react/walletlink-connector"
@@ -51,7 +51,7 @@ export const walletconnect = new WalletConnectConnector({
   rpc: Object.keys(SUPPORTED_NETWORKS).reduce(
     (acc, id) => ({
       ...acc,
-      [id]: (SUPPORTED_NETWORKS[id] as SupportedNetwork).rpcUrls[0],
+      [id]: SUPPORTED_NETWORKS[id].rpcUrls[0],
     }),
     {},
   ),

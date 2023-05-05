@@ -125,7 +125,7 @@ async function getAlEthData(
   const [alcxRewardPerBlock, poolTotalDeposited, userStakedAmount] =
     await ethcallProvider.tryEach(
       multicalls,
-      multicalls.map(() => false) as false[],
+      multicalls.map(() => false),
     )
   const alcxPerYear = alcxRewardPerBlock.mul(52 * 45000) // 1e18 // blocks/year rate from Alchemix's own logic
   const alcxPerYearUSD = alcxPerYear.mul(parseUnits(alcxPrice.toFixed(2), 2)) // 1e20
