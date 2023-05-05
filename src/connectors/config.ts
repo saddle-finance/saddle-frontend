@@ -94,11 +94,11 @@ const connectors = connectorsForWallets([
   {
     groupName: "Popular",
     wallets: [
-      Tally({ chains, shimDisconnect: true }),
       metaMaskWallet({ chains }),
       rainbowWallet({ chains }),
       coinbaseWallet({ appName: "Saddle", chains }),
       walletConnectWallet({ chains }),
+      Tally({ chains, shimDisconnect: true }),
     ],
   },
   //   { groupName: "More" }, //TODO: add more wallet
