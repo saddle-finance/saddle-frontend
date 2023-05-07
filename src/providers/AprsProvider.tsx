@@ -9,10 +9,12 @@ import React, { ReactElement, useContext } from "react"
 import { AppState } from "../state"
 import { BasicPoolsContext } from "./../providers/BasicPoolsProvider"
 import { BigNumber } from "ethers"
+import { ChainId } from "../constants/networks"
 import { GaugeContext } from "../providers/GaugeProvider"
 import { GaugeReward } from "../utils/gauges"
 import { parseUnits } from "@ethersproject/units"
 import { shiftBNDecimals } from "../utils"
+import { useActiveWeb3React } from "../hooks"
 import useGaugeTVL from "../hooks/useGaugeTVL"
 import { useSelector } from "react-redux"
 
@@ -44,6 +46,7 @@ export default function AprsProvider({
 }
 
 function useGaugeAprs() {
+  const { chainId } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
   const { gauges } = useContext(GaugeContext)
@@ -56,7 +59,13 @@ function useGaugeAprs() {
     const { rewards, address } = gauge
     const gaugeTVL = getGaugeTVL(address)
 
-    const rewardAprs = buildRewards(rewards, tokens, tokenPricesUSD, gaugeTVL)
+    const rewardAprs = buildRewards(
+      chainId || 1,
+      rewards,
+      tokens,
+      tokenPricesUSD,
+      gaugeTVL,
+    )
     return {
       ...acc,
       [address]: rewardAprs,
@@ -68,6 +77,7 @@ function useGaugeAprs() {
  * Builds the APRs for a gauge, given generic pool data (supply and asset price)
  */
 function buildRewards(
+  chainId: ChainId,
   gaugeRewards: GaugeReward[],
   tokens: NonNullable<BasicTokens>,
   tokenPricesUSD: Partial<{ [symbol: string]: number }>,
@@ -90,13 +100,16 @@ function buildRewards(
     .map(({ tokenAddress, rate: rewardPerSecond }) => {
       const rewardToken = tokens[tokenAddress]
       const rewardPrice = tokenPricesUSD[rewardToken?.symbol || ""] || 0
-
+      const isTokenAffectedByVesdl =
+        chainId === ChainId.MAINNET || rewardToken?.symbol === "SDL"
       if (rewardPrice === 0 || amountStakedUSD.isZero()) {
         const maxRewardPerDay = rewardPerSecond.mul(BN_DAY_IN_SECONDS)
         return {
           rewardToken,
           amountPerDay: {
-            min: maxRewardPerDay.mul(4).div(10),
+            min: isTokenAffectedByVesdl
+              ? maxRewardPerDay.mul(4).div(10)
+              : maxRewardPerDay,
             max: maxRewardPerDay,
           },
         } as AmountReward
@@ -113,7 +126,7 @@ function buildRewards(
       return {
         rewardToken,
         apr: {
-          min: rewardApr.mul(4).div(10),
+          min: isTokenAffectedByVesdl ? rewardApr.mul(4).div(10) : rewardApr,
           max: rewardApr,
         },
       } as AprReward
