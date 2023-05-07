@@ -243,7 +243,9 @@ export function useApproveAndWithdraw(
               lpTokenAmountToRemoveOneToken,
               tokenIndexToRemove,
               subtractSlippage(
-                BigNumber.from(lpTokenAmountToRemoveOneToken || "0"),
+                BigNumber.from(
+                  state.tokenFormState?.[state.withdrawType]?.valueSafe || "0",
+                ),
                 slippageSelected,
                 slippageCustom,
               ),
