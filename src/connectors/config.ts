@@ -67,15 +67,10 @@ export const chain: Record<string, Chain> = {
 }
 
 const alchemyKey = process.env.REACT_APP_ALCHEMY_API_KEY
-if (!alchemyKey) {
-  throw new Error(
-    "You must define REACT_APP_ALCHEMY_API_KEY in your environment",
-  )
-}
 
 const { chains, provider } = configureChains(Object.values(chain), [
   alchemyProvider({
-    apiKey: alchemyKey,
+    apiKey: alchemyKey!,
     stallTimeout: STALL_TIMEOUT,
     priority: process.env.REACT_APP_PROVIDER_ID === "ALCHEMY" ? 0 : 2,
   }),
