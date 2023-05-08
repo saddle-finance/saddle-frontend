@@ -15,6 +15,7 @@ import { enqueuePromiseToast, enqueueToast } from "../../components/Toastify"
 
 import ArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
 import { BigNumber } from "ethers"
+import { DEAD_FUSDC_GAUGE_ADDRESS } from "../../constants"
 import { GaugeController } from "../../../types/ethers-contracts/GaugeController"
 import { LPTokenAddressToGauge } from "../../utils/gauges"
 import VoteHistory from "./Votes"
@@ -81,6 +82,11 @@ export default function OnChainVote({
           }
       })
     ;(sidechainGaugesInfo?.gauges || []).forEach(({ address, displayName }) => {
+      if (
+        address === DEAD_FUSDC_GAUGE_ADDRESS ||
+        address === "0x230fa812c525355fa5f7cee64805ea16128d6474" // fusdc gauge v2
+      )
+        return
       gaugeNameObj[address] = {
         address,
         gaugeName: displayName,
