@@ -9,7 +9,7 @@
     "@emotion/styled": "^11.6.0",
     "@metamask/jazzicon": "^2.0.0",
     "@mui/icons-material": "^5.5.1",
-    "@mui/lab": "^5.0.0-alpha.76",
+    "@mui/lab": "^5.0.0-alpha.114",
     "@mui/material": "^5.4.0",
     "@mui/x-date-pickers": "^5.0.0-alpha.2",
     "@reduxjs/toolkit": "^1.4.0",
