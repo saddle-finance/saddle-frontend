@@ -4,6 +4,7 @@ import "react-toastify/dist/ReactToastify.css"
 import { AppDispatch, AppState } from "../state"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import React, { ReactElement, useCallback, useEffect } from "react"
+import { chains, wagmiClient } from "../connectors/config"
 import { useDispatch, useSelector } from "react-redux"
 
 import AppContainer from "./AppContainer"
@@ -14,10 +15,12 @@ import ExpandedPoolsProvider from "../providers/ExpandedPoolsProvider"
 import GaugeProvider from "../providers/GaugeProvider"
 import MinichefProvider from "../providers/MinichefProvider"
 import PendingSwapsProvider from "../providers/PendingSwapsProvider"
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import TokensProvider from "../providers/TokensProvider"
 import UserStateProvider from "../providers/UserStateProvider"
+import { WagmiConfig } from "wagmi"
 import Web3ReactManager from "../components/Web3ReactManager"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchSdlWethSushiPoolInfo from "../utils/updateSdlWethSushiInfo"
@@ -39,30 +42,33 @@ export default function App(): ReactElement {
   return (
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
-
-      <Web3ReactManager>
-        <BasicPoolsProvider>
-          <MinichefProvider>
-            <GaugeProvider>
-              <TokensProvider>
-                <ExpandedPoolsProvider>
-                  <UserStateProvider>
-                    <PricesAndVoteData>
-                      <PendingSwapsProvider>
-                        <AprsProvider>
-                          <RewardsBalancesProvider>
-                            <AppContainer />
-                          </RewardsBalancesProvider>
-                        </AprsProvider>
-                      </PendingSwapsProvider>
-                    </PricesAndVoteData>
-                  </UserStateProvider>
-                </ExpandedPoolsProvider>
-              </TokensProvider>
-            </GaugeProvider>
-          </MinichefProvider>
-        </BasicPoolsProvider>
-      </Web3ReactManager>
+      <WagmiConfig client={wagmiClient}>
+        <RainbowKitProvider chains={chains}>
+          <Web3ReactManager>
+            <BasicPoolsProvider>
+              <MinichefProvider>
+                <GaugeProvider>
+                  <TokensProvider>
+                    <ExpandedPoolsProvider>
+                      <UserStateProvider>
+                        <PricesAndVoteData>
+                          <PendingSwapsProvider>
+                            <AprsProvider>
+                              <RewardsBalancesProvider>
+                                <AppContainer />
+                              </RewardsBalancesProvider>
+                            </AprsProvider>
+                          </PendingSwapsProvider>
+                        </PricesAndVoteData>
+                      </UserStateProvider>
+                    </ExpandedPoolsProvider>
+                  </TokensProvider>
+                </GaugeProvider>
+              </MinichefProvider>
+            </BasicPoolsProvider>
+          </Web3ReactManager>
+        </RainbowKitProvider>
+      </WagmiConfig>
     </QueryClientProvider>
   )
 }
