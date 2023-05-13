@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css"
 import { AppDispatch, AppState } from "../state"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import React, { ReactElement, useCallback, useEffect } from "react"
-import { chains, wagmiClient } from "../connectors/config"
+import { chains, wagmiConfig } from "../connectors/config"
 import { useDispatch, useSelector } from "react-redux"
 
 import AppContainer from "./AppContainer"
@@ -42,7 +42,7 @@ export default function App(): ReactElement {
   return (
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
-      <WagmiConfig client={wagmiClient}>
+      <WagmiConfig config={wagmiConfig}>
         <RainbowKitProvider chains={chains}>
           <Web3ReactManager>
             <BasicPoolsProvider>
