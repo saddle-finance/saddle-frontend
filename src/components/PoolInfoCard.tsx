@@ -17,13 +17,14 @@ import {
 } from "../utils"
 import { commify, parseUnits } from "@ethersproject/units"
 
+import { ChainId } from "../constants/networks"
 import { PoolDataType } from "../hooks/usePoolData"
 import TokenIcon from "./TokenIcon"
 import { Tooltip } from "@mui/material"
 import { Zero } from "@ethersproject/constants"
 import { getMultichainScanLink } from "../utils/getEtherscanLink"
 import { shortenAddress } from "../utils/shortenAddress"
-import { useActiveWeb3React } from "../hooks"
+import { useChainId } from "wagmi"
 import { useSwapStats } from "../hooks/useSwapStats"
 import { useTranslation } from "react-i18next"
 
@@ -41,12 +42,14 @@ const InfoItem = styled(Box)(({ theme }) => ({
 }))
 
 function PoolInfoCard({ data }: Props): ReactElement | null {
-  const { chainId } = useActiveWeb3React()
+  const chainId = useChainId()
   const { t } = useTranslation()
   const { data: swapStats, isLoading: swapStatsLoading } = useSwapStats()
   if (data == null || chainId == null) return null
   const poolAddress = data.poolAddress
-  const { oneDayVolume, utilization } = swapStats?.[chainId]?.[poolAddress] || {
+  const { oneDayVolume, utilization } = swapStats?.[chainId as ChainId]?.[
+    poolAddress
+  ] || {
     oneDayVolume: null,
     utilization: null,
   }
