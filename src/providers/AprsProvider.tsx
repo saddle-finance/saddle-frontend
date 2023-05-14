@@ -14,7 +14,7 @@ import { GaugeContext } from "../providers/GaugeProvider"
 import { GaugeReward } from "../utils/gauges"
 import { parseUnits } from "@ethersproject/units"
 import { shiftBNDecimals } from "../utils"
-import { useActiveWeb3React } from "../hooks"
+import { useChainId } from "wagmi"
 import useGaugeTVL from "../hooks/useGaugeTVL"
 import { useSelector } from "react-redux"
 
@@ -46,7 +46,7 @@ export default function AprsProvider({
 }
 
 function useGaugeAprs() {
-  const { chainId } = useActiveWeb3React()
+  const chainId = useChainId()
   const basicPools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
   const { gauges } = useContext(GaugeContext)

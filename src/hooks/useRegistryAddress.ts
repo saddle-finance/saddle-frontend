@@ -4,12 +4,12 @@ import { ContractNotLoadedError } from "../errors/ContractNotLoadedError"
 import { QueryKeys } from "./queryKeys"
 import { formatBytes32String } from "ethers/lib/utils"
 import { shouldLoadChildGauges } from "../utils/gauges"
-import { useActiveWeb3React } from "."
+import { useChainId } from "wagmi"
 
 export type RegistryAddresses = Partial<Record<string, string>>
 
 export const useRegistryAddress = (): UseQueryResult<RegistryAddresses> => {
-  const { chainId } = useActiveWeb3React()
+  const chainId = useChainId()
   const masterRegistry = useMasterRegistry()
 
   return useQuery([QueryKeys.RegistryAddress], async () => {

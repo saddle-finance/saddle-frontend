@@ -19,7 +19,7 @@ import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
 import { GaugeContext } from "../providers/GaugeProvider"
 import { MinichefContext } from "../providers/MinichefProvider"
 import { areGaugesActive } from "../utils/gauges"
-import { useActiveWeb3React } from "../hooks"
+import { useChainId } from "wagmi"
 import { useContext } from "react"
 import { useMulticallProvider } from "./useMulticallProvider"
 
@@ -35,7 +35,7 @@ export type BasicToken = {
 export type BasicTokens = Partial<{ [address: string]: BasicToken }> | null
 
 export const useBasicTokens = (): UseQueryResult<BasicTokens> => {
-  const { chainId } = useActiveWeb3React()
+  const chainId = useChainId() as ChainId
   const basicPools = useContext(BasicPoolsContext)
   const minichefData = useContext(MinichefContext)
   const { gauges } = useContext(GaugeContext)

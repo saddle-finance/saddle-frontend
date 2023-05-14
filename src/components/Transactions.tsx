@@ -17,11 +17,11 @@ import React, {
   useMemo,
   useState,
 } from "react"
+import { useAccount, useChainId } from "wagmi"
 
 import LinkIcon from "@mui/icons-material/Launch"
 import { getFormattedShortTime } from "../utils/dateTime"
 import { getMultichainScanLink } from "../utils/getEtherscanLink"
-import { useActiveWeb3React } from "../hooks"
 import { useTranslation } from "react-i18next"
 
 interface Response {
@@ -77,7 +77,8 @@ export default function Transactions(): ReactElement {
   const theme = useTheme()
   const basicPools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
-  const { chainId, account } = useActiveWeb3React()
+  const { address } = useAccount()
+  const chainId = useChainId()
   const [transactionList, setTransactionList] = useState<Transaction[]>([])
   const basicPoolsByAddress = useMemo(
     () =>
@@ -89,20 +90,20 @@ export default function Transactions(): ReactElement {
   )
 
   const fetchTxn = useCallback(async () => {
-    if (!account || !chainId) return
+    if (!address || !chainId) return
 
     const newTransactionList: Transaction[] = []
     const time24Hrs = Math.floor(Date.now() / 1000) - 60 * 60 * 24 // 24hrs
     const query = `
       {
-        addLiquidityEvents(where:{provider: "${account}", timestamp_gte: ${time24Hrs}}) {
+        addLiquidityEvents(where:{provider: "${address}", timestamp_gte: ${time24Hrs}}) {
           swap {
             id
           }
           transaction
           timestamp
         }
-        removeLiquidityEvents(where:{provider:"${account}", timestamp_gte: ${time24Hrs}}) {
+        removeLiquidityEvents(where:{provider:"${address}", timestamp_gte: ${time24Hrs}}) {
           swap {
             id
           }
@@ -111,7 +112,7 @@ export default function Transactions(): ReactElement {
         }
         swaps {
           address
-          exchanges(where:{buyer:"${account}", timestamp_gte: ${time24Hrs}}) {
+          exchanges(where:{buyer:"${address}", timestamp_gte: ${time24Hrs}}) {
             boughtId
             soldId
             timestamp
@@ -185,7 +186,7 @@ export default function Transactions(): ReactElement {
         )
       })
       .catch(console.error)
-  }, [account, chainId, basicPoolsByAddress, t, tokens])
+  }, [address, chainId, basicPoolsByAddress, t, tokens])
 
   useEffect(() => {
     void fetchTxn()

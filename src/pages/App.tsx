@@ -4,6 +4,7 @@ import "react-toastify/dist/ReactToastify.css"
 import { AppDispatch, AppState } from "../state"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import React, { ReactElement, useCallback, useEffect } from "react"
+import { WagmiConfig, useChainId } from "wagmi"
 import { chains, wagmiConfig } from "../connectors/config"
 import { useDispatch, useSelector } from "react-redux"
 
@@ -20,13 +21,11 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import TokensProvider from "../providers/TokensProvider"
 import UserStateProvider from "../providers/UserStateProvider"
-import { WagmiConfig } from "wagmi"
 import Web3ReactManager from "../components/Web3ReactManager"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchSdlWethSushiPoolInfo from "../utils/updateSdlWethSushiInfo"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
 import getSnapshotVoteData from "../utils/getSnapshotVoteData"
-import { useActiveWeb3React } from "../hooks"
 import usePoller from "../hooks/usePoller"
 import { useSdlWethSushiPairContract } from "../hooks/useContract"
 
@@ -78,7 +77,7 @@ function PricesAndVoteData({
 }: React.PropsWithChildren<unknown>): ReactElement {
   const dispatch = useDispatch<AppDispatch>()
   const sdlWethSushiPoolContract = useSdlWethSushiPairContract()
-  const { chainId } = useActiveWeb3React()
+  const chainId = useChainId()
   const { sdlWethSushiPool } = useSelector(
     (state: AppState) => state.application,
   )

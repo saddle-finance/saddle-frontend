@@ -13,7 +13,7 @@ import { SWAP_TYPES } from "../constants/index"
 import { getPriceDataForPool } from "../utils"
 import { intersection } from "../utils/index"
 import { isMainnet } from "./useContract"
-import { useActiveWeb3React } from "."
+import { useChainId } from "wagmi"
 import { useSelector } from "react-redux"
 
 // swaptypes in order of least to most preferred (aka expensive)
@@ -41,7 +41,7 @@ export function useCalculateSwapPairs(): (token?: BasicToken) => SwapData[] {
   const [pairCache, setPairCache] = useState<TokenToSwapDataMap>({})
   const basicPools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
-  const { chainId } = useActiveWeb3React()
+  const chainId = useChainId()
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const [poolsSortedByTVL, tokenToPoolsMapSorted] = useMemo(() => {
     if (basicPools === null || tokens === null) return []

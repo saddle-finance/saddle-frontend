@@ -12,6 +12,7 @@ import {
 import React, { ReactElement, useMemo, useState } from "react"
 import { SWAP_TYPES, getIsVirtualSwap } from "../constants"
 import { formatBNToPercentString, formatBNToString } from "../utils"
+import { useAccount, useChainId } from "wagmi"
 
 import AdvancedOptions from "./AdvancedOptions"
 import { AppState } from "../state/index"
@@ -35,7 +36,6 @@ import { getMultichainScanLink } from "../utils/getEtherscanLink"
 import { isHighPriceImpact } from "../utils/priceImpact"
 import { logEvent } from "../utils/googleAnalytics"
 import { shortenAddress } from "../utils/shortenAddress"
-import { useActiveWeb3React } from "../hooks"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
@@ -82,7 +82,8 @@ interface Props {
 
 const SwapPage = (props: Props): ReactElement => {
   const { t } = useTranslation()
-  const { account, chainId } = useActiveWeb3React()
+  const { address } = useAccount()
+  const chainId = useChainId()
   const {
     tokenOptions,
     exchangeRateInfo,
@@ -302,7 +303,7 @@ const SwapPage = (props: Props): ReactElement => {
           )}
         </Box>
       </Paper>
-      {account && isHighPriceImpact(exchangeRateInfo.priceImpact) ? (
+      {address && isHighPriceImpact(exchangeRateInfo.priceImpact) ? (
         <Alert variant="filled" severity="error" sx={{ mt: 2 }}>
           {t("highPriceImpact", {
             rate: formattedPriceImpact,

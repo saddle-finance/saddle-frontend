@@ -21,6 +21,7 @@ import React, {
 import { Trans, useTranslation } from "react-i18next"
 import { commify, formatBNToString } from "../utils"
 import { enqueuePromiseToast, enqueueToast } from "./Toastify"
+import { useAccount, useChainId } from "wagmi"
 import {
   useMiniChefContract,
   useRetroactiveVestingContract,
@@ -37,7 +38,6 @@ import { SDL_TOKEN } from "../constants"
 import SaddleLogo from "./SaddleLogo"
 import { UserStateContext } from "../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
-import { useActiveWeb3React } from "../hooks"
 import useAddTokenToMetamask from "../hooks/useAddTokenToMetamask"
 import { useRetroMerkleData } from "../hooks/useRetroMerkleData"
 import useUserGauge from "../hooks/useUserGauge"
@@ -59,7 +59,7 @@ export default function TokenClaimDialog({
   onClose,
 }: TokenClaimDialogProps): ReactElement {
   const { t } = useTranslation()
-  const { chainId } = useActiveWeb3React()
+  const chainId = useChainId()
   const basicPools = useContext(BasicPoolsContext)
   const userState = useContext(UserStateContext)
   const { gauges } = useContext(GaugeContext)
@@ -425,7 +425,8 @@ enum STATUSES {
 type PendingClaimsKeys = string | "allPools" | "allGauges" | "retroactive"
 type PendingClaims = Record<PendingClaimsKeys, STATUSES>
 function useRewardClaims() {
-  const { chainId, account } = useActiveWeb3React()
+  const { address } = useAccount()
+  const chainId = useChainId()
   const rewardsContract = useMiniChefContract()
   const retroRewardsContract = useRetroactiveVestingContract()
   const getUserGauge = useUserGauge()
@@ -445,14 +446,14 @@ function useRewardClaims() {
 
   const claimPoolReward = useCallback(
     async (pool: BasicPool) => {
-      if (!chainId || !account || !rewardsContract) return
+      if (!chainId || !address || !rewardsContract) return
       try {
         const pid = pool.miniChefRewardsPid
         if (pid === null) return
         updateClaimStatus(pool.poolName, STATUSES.PENDING)
         const txn: ContractTransaction = await rewardsContract.harvest(
           pid,
-          account,
+          address,
         )
         await enqueuePromiseToast(chainId, txn.wait(), "claim", {
           poolName: pool.poolName,
@@ -464,7 +465,7 @@ function useRewardClaims() {
         enqueueToast("error", "Unable to claim reward")
       }
     },
-    [chainId, account, rewardsContract, updateClaimStatus],
+    [chainId, address, rewardsContract, updateClaimStatus],
   )
 
   const claimGaugeReward = useCallback(
@@ -499,16 +500,16 @@ function useRewardClaims() {
   )
 
   const claimRetroReward = useCallback(async () => {
-    if (!account || !retroRewardsContract || !chainId) return
+    if (!address || !retroRewardsContract || !chainId) return
     try {
       updateClaimStatus("retroactive", STATUSES.PENDING)
-      const userVesting = await retroRewardsContract.vestings(account)
+      const userVesting = await retroRewardsContract.vestings(address)
       let txn
       if (userVesting?.isVerified) {
-        txn = await retroRewardsContract.claimReward(account)
+        txn = await retroRewardsContract.claimReward(address)
       } else if (userMerkleData) {
         txn = await retroRewardsContract.verifyAndClaimReward(
-          account,
+          address,
           userMerkleData.amount,
           userMerkleData.proof,
         )
@@ -526,7 +527,7 @@ function useRewardClaims() {
     }
   }, [
     retroRewardsContract,
-    account,
+    address,
     userMerkleData,
     updateClaimStatus,
     chainId,
@@ -534,12 +535,12 @@ function useRewardClaims() {
 
   const claimAllPoolsRewards = useCallback(
     async (pools: BasicPool[]) => {
-      if (!chainId || !account || !rewardsContract) return
+      if (!chainId || !address || !rewardsContract) return
       try {
         const calls = await Promise.all(
           pools.map((pool) => {
             const pid = pool.miniChefRewardsPid as number
-            return rewardsContract.populateTransaction.harvest(pid, account)
+            return rewardsContract.populateTransaction.harvest(pid, address)
           }),
         )
         updateClaimStatus("all", STATUSES.PENDING)
@@ -557,7 +558,7 @@ function useRewardClaims() {
         enqueueToast("error", "Unable to claim reward")
       }
     },
-    [account, rewardsContract, chainId, updateClaimStatus],
+    [address, rewardsContract, chainId, updateClaimStatus],
   )
 
   return {
