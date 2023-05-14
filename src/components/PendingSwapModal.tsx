@@ -23,8 +23,8 @@ import { calculatePriceImpact } from "../utils/priceImpact"
 import { formatUnits } from "@ethersproject/units"
 import { gasBNFromState } from "../utils/gas"
 import { subtractSlippage } from "../utils/slippage"
-import { useActiveWeb3React } from "../hooks"
 import { useBridgeContract } from "../hooks/useContract"
+import { useChainId } from "wagmi"
 import { useEffect } from "react"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
@@ -46,7 +46,7 @@ const PendingSwapModal = ({
     swapType,
   } = pendingSwap
   const { t } = useTranslation()
-  const { chainId } = useActiveWeb3React()
+  const chainId = useChainId()
   const {
     slippageCustom,
     slippageSelected,
