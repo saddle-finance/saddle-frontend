@@ -105,12 +105,12 @@ export enum PoolTypes {
   OTHER,
 }
 const buildAddresses = (
-  addresses: Partial<Record<ChainId, string>>,
-): Record<ChainId, string> => {
+  addresses: Partial<Record<ChainId, `0x${string}`>>,
+): Record<ChainId, `0x${string}`> => {
   return Object.keys(ChainId).reduce((acc, id) => {
     const numId = Number(id) as ChainId
     return { ...acc, [numId]: addresses?.[numId] || "" }
-  }, {}) as Record<ChainId, string>
+  }, {}) as Record<ChainId, `0x${string}`>
 }
 const buildPids = (
   pids: Partial<Record<ChainId, number>>,
@@ -157,7 +157,6 @@ export const BLOCK_TIME = 13000 // ms
 export const PERMISSIONLESS_DEPLOYER_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.HARDHAT]: "0xD5ac451B0c50B9476107823Af206eD814a2e2580",
   [ChainId.MAINNET]: "0x8f43fBDDc10b822AFA26812fB9058CA1fC22078F",
-  [ChainId.ROPSTEN]: "",
 })
 
 export const MASTER_REGISTRY_CONTRACT_ADDRESSES = buildAddresses({
@@ -333,7 +332,7 @@ export const BTC_SWAP_ADDRESSES = buildAddresses({
 
 export const BTC_SWAP_V2_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0xdf3309771d2BF82cb2B6C56F9f5365C8bD97c4f2",
-  [ChainId.ROPSTEN]: "", // TODO: add address after deployment
+  // [ChainId.ROPSTEN]: "", // TODO: add address after deployment
   [ChainId.HARDHAT]: "0x93b6BDa6a0813D808d75aA42e900664Ceb868bcF",
 })
 
@@ -422,7 +421,7 @@ export const FRAX_ARB_USD_SWAP_V2_ADDRESSES = buildAddresses({
 })
 
 export const RETROACTIVE_SDL_MERKLETREE_DATA = buildAddresses({
-  [ChainId.HARDHAT]: "hardhat.json",
+  // [ChainId.HARDHAT]: "hardhat.json",
 })
 
 export const SUSD_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
@@ -615,7 +614,7 @@ export const BTC_SWAP_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
 
 export const BTC_SWAP_V2_TOKEN_CONTRACT_ADDRESSES = buildAddresses({
   [ChainId.MAINNET]: "0xF32E91464ca18fc156aB97a697D6f8ae66Cd21a3",
-  [ChainId.ROPSTEN]: "", // TODO: add address after deployment
+  // [ChainId.ROPSTEN]: "", // TODO: add address after deployment
   [ChainId.HARDHAT]: "0xbBc1b70e4e04486570bfB621194d4f901a906E8F",
 })
 
@@ -673,7 +672,7 @@ export const SDL_TOKEN_ADDRESSES = buildAddresses({
   [ChainId.ARBITRUM]: "0x75c9bc761d88f70156daf83aa010e84680baf131",
   [ChainId.OPTIMISM]: "0xae31207ac34423c41576ff59bfb4e036150f9cf7",
   [ChainId.EVMOS]: "0x3344e55C6DDE2A01F4ED893f97bAC1f99EC24f8B",
-  [ChainId.FANTOM]: "",
+  // [ChainId.FANTOM]: "",
 })
 
 export const VOTING_ESCROW_CONTRACT_ADDRESS = buildAddresses({
