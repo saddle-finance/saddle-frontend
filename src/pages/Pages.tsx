@@ -2,7 +2,6 @@ import React, { lazy } from "react"
 import { Redirect, Route, Switch } from "react-router-dom"
 
 import { ChainId } from "../constants/networks"
-import CoinbasePayTest from "./CoinbasePayTest"
 import { useActiveWeb3React } from "../hooks"
 
 const CreatePool = lazy(() => import("./CreatePool"))
@@ -63,7 +62,6 @@ export default function Pages() {
       <Route exact path="/vesting-claim" component={VestingClaim} />
       <Route exact path="/farm" component={Farm} />
       <Route exact path="/vesdl" component={VeSDL} />
-      <Route exact path="/coinbase-pay-test" component={CoinbasePayTest} />
     </Switch>
   )
 }
