@@ -26,6 +26,7 @@ import {
   getContract,
 } from "../utils"
 import { enqueuePromiseToast, enqueueToast } from "./Toastify"
+import { useAccount, useChainId } from "wagmi"
 
 import AdvancedOptions from "./AdvancedOptions"
 import ConfirmTransaction from "./ConfirmTransaction"
@@ -44,7 +45,6 @@ import { Zero } from "@ethersproject/constants"
 import { areGaugesActive } from "../utils/gauges"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { logEvent } from "../utils/googleAnalytics"
-import { useActiveWeb3React } from "../hooks"
 import { useLPTokenContract } from "../hooks/useContract"
 import { useRewardsHelpers } from "../hooks/useRewardsHelpers"
 
@@ -83,7 +83,8 @@ const DepositPage = (props: Props): ReactElement => {
     onConfirmTransaction,
     onToggleDepositWrapped,
   } = props
-  const { account, chainId, library } = useActiveWeb3React()
+  const chainId = useChainId()
+  const { address } = useAccount()
   const { unstakeMinichef, amountStakedMinichef } = useRewardsHelpers(
     poolData?.name ?? "",
   )
@@ -100,24 +101,23 @@ const DepositPage = (props: Props): ReactElement => {
   const gaugesAreActive = areGaugesActive(chainId)
 
   useEffect(() => {
-    if (!library || !account || !chainId || !poolData || !gaugeAddr) {
+    if (!address || !chainId || !poolData || !gaugeAddr) {
       setLiquidityGaugeContract(null)
       return
     }
     const liquidityGaugeContract = getContract(
       gaugeAddr,
       LIQUIDITY_GAUGE_V5_ABI,
-      library,
-      account,
+      !!address,
     ) as LiquidityGaugeV5
     setLiquidityGaugeContract(liquidityGaugeContract)
-  }, [library, account, chainId, poolData, gauges, gaugeAddr])
+  }, [address, chainId, poolData, gauges, gaugeAddr])
 
   const onMigrateToGaugeClick = async () => {
     if (
       !liquidityGaugeContract ||
       !chainId ||
-      !account ||
+      !address ||
       !poolData ||
       !lpTokenContract
     )
@@ -127,8 +127,8 @@ const DepositPage = (props: Props): ReactElement => {
       await checkAndApproveTokenForTrade(
         lpTokenContract,
         liquidityGaugeContract.address,
-        account,
-        await lpTokenContract.balanceOf(account),
+        address,
+        await lpTokenContract.balanceOf(address),
         true,
         Zero, // @dev: gas not being used
         {
@@ -139,8 +139,8 @@ const DepositPage = (props: Props): ReactElement => {
         chainId,
       )
       const txn = await liquidityGaugeContract["deposit(uint256,address,bool)"](
-        await lpTokenContract.balanceOf(account),
-        account,
+        await lpTokenContract.balanceOf(address),
+        address,
         true,
       )
       await enqueuePromiseToast(chainId, txn.wait(), "stake", {

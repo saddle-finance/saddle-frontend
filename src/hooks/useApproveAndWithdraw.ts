@@ -2,6 +2,7 @@ import { BasicToken, TokensContext } from "../providers/TokensProvider"
 import { addSlippage, subtractSlippage } from "../utils/slippage"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { formatUnits, parseUnits } from "@ethersproject/units"
+import { useAccount, useChainId } from "wagmi"
 import { useContext, useMemo } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useLPTokenContract, useSwapContract } from "./useContract"
@@ -21,7 +22,6 @@ import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { formatDeadlineToNumber } from "../utils"
 import { getContract } from "../utils"
 import { updateLastTransactionTimes } from "../state/application"
-import { useActiveWeb3React } from "."
 
 interface ApproveAndWithdrawStateArgument {
   tokenFormState?: { [address: string]: NumberInputState | undefined }
@@ -39,7 +39,8 @@ export function useApproveAndWithdraw(
   const basicPools = useContext(BasicPoolsContext)
   const swapContract = useSwapContract(poolName)
   const lpTokenContract = useLPTokenContract(poolName)
-  const { account, chainId, library } = useActiveWeb3React()
+  const chainId = useChainId()
+  const { address } = useAccount()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -47,15 +48,10 @@ export function useApproveAndWithdraw(
   const pool = basicPools?.[poolName]
 
   const metaSwapContract = useMemo(() => {
-    if (pool?.poolAddress && chainId && library) {
-      return getContract(
-        pool.poolAddress,
-        META_SWAP_ABI,
-        library,
-        account ?? undefined,
-      ) as MetaSwap
+    if (pool?.poolAddress && chainId) {
+      return getContract(pool.poolAddress, META_SWAP_ABI) as MetaSwap
     }
-  }, [chainId, library, account, pool?.poolAddress])
+  }, [chainId, pool?.poolAddress])
 
   const {
     slippageCustom,
@@ -74,8 +70,7 @@ export function useApproveAndWithdraw(
     try {
       const basicPool = basicPools?.[poolName]
       if (!state || !tokens) return
-      if (!account || !chainId || !library)
-        throw new Error("Wallet must be connected")
+      if (!address || !chainId) throw new Error("Wallet must be connected")
       if (!swapContract || !basicPool || !lpTokenContract)
         throw new Error("Swap contract is not loaded")
       if (state.lpTokenAmountToSpend.isZero()) return
@@ -117,7 +112,7 @@ export function useApproveAndWithdraw(
       const approveSingleToken = async (
         token: BasicToken | undefined,
       ): Promise<void> => {
-        if (!token || !library) {
+        if (!token) {
           enqueueToast(
             "error",
             "There was a problem loading the token or library",
@@ -132,14 +127,13 @@ export function useApproveAndWithdraw(
         const tokenContract = getContract(
           token.address,
           ERC20_ABI,
-          library,
-          account ?? undefined,
+          !!address,
         ) as Erc20
         if (tokenContract == null) return
         await checkAndApproveTokenForTrade(
           lpTokenContract,
           effectiveSwapContract.address,
-          account,
+          address,
           spendingValue,
           infiniteApproval,
           gasPrice,
@@ -157,7 +151,7 @@ export function useApproveAndWithdraw(
         await checkAndApproveTokenForTrade(
           lpTokenContract,
           swapContract.address,
-          account,
+          address,
           allowanceAmount,
           infiniteApproval,
           gasPrice,
@@ -172,7 +166,7 @@ export function useApproveAndWithdraw(
         await checkAndApproveTokenForTrade(
           lpTokenContract,
           swapContract.address,
-          account,
+          address,
           allowanceAmount,
           infiniteApproval,
           gasPrice,

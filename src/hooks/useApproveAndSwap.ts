@@ -1,6 +1,7 @@
 import { SWAP_TYPES, SYNTH_TRACKING_ID, TRANSACTION_TYPES } from "../constants"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { formatDeadlineToNumber, getContract } from "../utils"
+import { useAccount, useChainId } from "wagmi"
 
 import { AppState } from "../state"
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
@@ -17,7 +18,6 @@ import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
-import { useActiveWeb3React } from "."
 import { useContext } from "react"
 import { useDispatch } from "react-redux"
 import { useSelector } from "react-redux"
@@ -54,7 +54,9 @@ export function useApproveAndSwap(): (
   const dispatch = useDispatch()
   const basicPools = useContext(BasicPoolsContext)
   const { tokenAddrToTokenMap } = useTokenMaps()
-  const { account, chainId, library } = useActiveWeb3React()
+  const chainId = useChainId()
+  const { address } = useAccount()
+
   const baseSynthetixContract = useSynthetixContract()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
@@ -73,7 +75,7 @@ export function useApproveAndSwap(): (
     state: ApproveAndSwapStateArgument,
   ): Promise<void> {
     try {
-      if (!account || !library) throw new Error("Wallet must be connected")
+      if (!address) throw new Error("Wallet must be connected")
       if (state.swapType === SWAP_TYPES.DIRECT && !state.swapContract)
         throw new Error("Swap contract is not loaded")
       if (state.swapType !== SWAP_TYPES.DIRECT && !state.bridgeContract)
@@ -85,8 +87,7 @@ export function useApproveAndSwap(): (
       const tokenContract = getContract(
         token.address.toLowerCase(),
         ERC20_ABI,
-        library,
-        account,
+        !!address,
       ) as Erc20
       let gasPrice
       if (gasPriceSelected === GasPrices.Custom) {
@@ -111,7 +112,7 @@ export function useApproveAndSwap(): (
       await checkAndApproveTokenForTrade(
         tokenContract,
         addressToApprove,
-        account,
+        address,
         state.from.amount,
         infiniteApproval,
         gasPrice,
@@ -202,7 +203,7 @@ export function useApproveAndSwap(): (
           utils.formatBytes32String(state.from.symbol),
           state.from.amount,
           utils.formatBytes32String(state.to.symbol),
-          account,
+          address,
           SYNTH_TRACKING_ID,
         ] as const
         console.debug("swap - synthToSynth", args)

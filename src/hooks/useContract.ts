@@ -78,6 +78,7 @@ import { SynthetixNetworkToken } from "../../types/ethers-contracts/SynthetixNet
 import VOTING_ESCROW_CONTRACT_ABI from "../constants/abis/votingEscrow.json"
 import { VotingEscrow } from "../../types/ethers-contracts/VotingEscrow"
 import { formatBytes32String } from "@ethersproject/strings"
+import { useAccount } from "wagmi"
 import { useActiveWeb3React } from "./index"
 
 export const POOL_REGISTRY_NAME = "PoolRegistry"
@@ -286,20 +287,20 @@ export function useSwapContract<T extends string>(
 export function useSwapContract(
   poolName?: string,
 ): ReturnType<typeof getSwapContract> {
-  const { account, library } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
+  const { address } = useAccount()
   const pool = poolName ? basicPools?.[poolName] : null
   return useMemo(() => {
-    if (!pool || !library) return null
+    if (!pool) return null
     try {
       const poolAddress = pool.metaSwapDepositAddress || pool.poolAddress
       if (!poolAddress) return null
-      return getSwapContract(library, poolAddress, pool, account ?? undefined)
+      return getSwapContract(poolAddress, pool, address)
     } catch (error) {
       console.error("Failed to get contract", error)
       return null
     }
-  }, [library, account, pool])
+  }, [address, pool])
 }
 
 export function useLPTokenContract<T extends string>(
@@ -310,30 +311,31 @@ export function useLPTokenContract<T extends string>(
 export function useLPTokenContract(
   poolName: string,
 ): LpTokenUnguarded | LpTokenGuarded | null {
-  const { account, library } = useActiveWeb3React()
+  const { address } = useAccount()
   const basicPools = useContext(BasicPoolsContext)
+
   const pool = basicPools?.[poolName]
   return useMemo(() => {
-    if (!library || !pool) return null
+    if (!pool) return null
     try {
       if (pool.isGuarded) {
         return getContract(
           pool.lpToken,
           LPTOKEN_GUARDED_ABI,
-          !!account,
+          !!address,
         ) as LpTokenGuarded
       } else {
         return getContract(
           pool.lpToken,
           LPTOKEN_UNGUARDED_ABI,
-          !!account,
+          !!address,
         ) as LpTokenUnguarded
       }
     } catch (error) {
       console.error("Failed to get contract", error)
       return null
     }
-  }, [library, pool, account])
+  }, [pool, address])
 }
 
 export function useGaugeControllerContract(): GaugeController | null {

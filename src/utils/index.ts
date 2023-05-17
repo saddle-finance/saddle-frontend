@@ -91,7 +91,6 @@ type PoolAttributes = Partial<
 > & { isMetaSwapDeposit?: boolean }
 
 export function getSwapContract(
-  library: Web3Provider,
   address: string,
   poolAttributes: PoolAttributes,
   account?: string,

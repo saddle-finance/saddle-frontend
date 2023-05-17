@@ -1,5 +1,6 @@
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { getContract, getSwapContract } from "../utils"
+import { useAccount, useChainId } from "wagmi"
 import { useDispatch, useSelector } from "react-redux"
 
 import { AppState } from "../state"
@@ -13,7 +14,6 @@ import { Zero } from "@ethersproject/constants"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { gasBNFromState } from "../utils/gas"
 import { updateLastTransactionTimes } from "../state/application"
-import { useActiveWeb3React } from "."
 import { useContext } from "react"
 import { useGeneralizedSwapMigratorContract } from "./useContract"
 
@@ -24,7 +24,8 @@ export function useApproveAndMigrate(): (
   const dispatch = useDispatch()
   const migratorContract = useGeneralizedSwapMigratorContract()
   const basicPools = useContext(BasicPoolsContext)
-  const { account, chainId, library } = useActiveWeb3React()
+  const { address } = useAccount()
+  const chainId = useChainId()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -40,8 +41,7 @@ export function useApproveAndMigrate(): (
     if (!chainId || !oldPool?.newPoolAddress) return
     if (
       !migratorContract ||
-      !account ||
-      !library ||
+      !address ||
       !oldPool ||
       !lpTokenBalance ||
       lpTokenBalance.isZero()
@@ -50,22 +50,19 @@ export function useApproveAndMigrate(): (
     const lpTokenContract = getContract(
       oldPool.lpToken,
       ERC20_ABI,
-      library,
-      account,
+      !!address,
     ) as Erc20
     const oldPoolAddress = oldPool.poolAddress
 
     const newPoolContract = getSwapContract(
-      library,
       oldPool?.newPoolAddress,
       {},
-      account ?? undefined,
+      address,
     ) as SwapFlashLoanNoWithdrawFee
     const oldPoolContract = getSwapContract(
-      library,
       oldPoolAddress,
       {},
-      account ?? undefined,
+      address,
     ) as SwapFlashLoanNoWithdrawFee
 
     const expectedWithdrawAmounts =
@@ -96,7 +93,7 @@ export function useApproveAndMigrate(): (
       await checkAndApproveTokenForTrade(
         lpTokenContract,
         migratorContract.address,
-        account,
+        address,
         lpTokenBalance,
         false,
         gasPrice,
