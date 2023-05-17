@@ -12,8 +12,6 @@ import { BasicPool } from "../providers/BasicPoolsProvider"
 import { BasicTokens } from "../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { ChainId } from "../constants/networks"
-import { Contract } from "@ethersproject/contracts"
-import { ContractInterface } from "ethers"
 import { Deadlines } from "../state/user"
 import { Contract as EthcallContract } from "ethcall"
 import { ExpandedPool } from "../providers/ExpandedPoolsProvider"
@@ -34,6 +32,8 @@ import { SwapGuarded } from "../../types/ethers-contracts/SwapGuarded"
 import { TokenPricesUSD } from "../state/application"
 import { chunk } from "lodash"
 import { getAddress } from "@ethersproject/address"
+import { getContract as getContract_ } from "wagmi/actions"
+import { getProvider } from "@wagmi/core"
 import { intervalToDuration } from "date-fns"
 import { minBigNumber } from "./minBigNumber"
 
@@ -71,17 +71,19 @@ export function getProviderOrSigner(
 }
 
 // account is optional
-export function getContract(
-  address: string,
-  ABI: ContractInterface,
-  library: Web3Provider,
-  account?: string,
-) {
-  if (!isAddress(address) || address === AddressZero) {
-    throw Error(`Invalid 'address' parameter '${address}'.`)
-  }
-
-  return new Contract(address, ABI, getProviderOrSigner(library, account))
+export const getContract = (
+  address: string | undefined,
+  ABI: any,
+  withSignerIfPossible = true,
+) => {
+  if (!address) return null
+  const provider = getProvider()
+  return getContract_({
+    address: address as `0x${string}`,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    abi: ABI,
+    signerOrProvider: withSignerIfPossible ? provider : undefined,
+  }) as unknown
 }
 
 type PoolAttributes = Partial<
@@ -113,40 +115,23 @@ export function getSwapContract(
 
   // get contract
   if (isGuarded) {
-    return getContract(
-      address,
-      SWAP_GUARDED_ABI,
-      library,
-      account ?? undefined,
-    ) as SwapGuarded
+    return getContract(address, SWAP_GUARDED_ABI, !!account) as SwapGuarded
   } else if (isWithdrawFeeAbi) {
-    return getContract(
-      address,
-      SWAP_FLASH_LOAN_ABI,
-      library,
-      account ?? undefined,
-    ) as SwapFlashLoan
+    return getContract(address, SWAP_FLASH_LOAN_ABI, !!account) as SwapFlashLoan
   } else if (isMetaSwapDeposit) {
     // @dev it's important that this comes before isMetaSwap check
     return getContract(
       address,
       META_SWAP_DEPOSIT_ABI,
-      library,
-      account ?? undefined,
+      !!account,
     ) as MetaSwapDeposit
   } else if (isMetaSwap) {
-    return getContract(
-      address,
-      META_SWAP_ABI,
-      library,
-      account ?? undefined,
-    ) as MetaSwap
+    return getContract(address, META_SWAP_ABI, !!account) as MetaSwap
   } else {
     return getContract(
       address,
       SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI,
-      library,
-      account ?? undefined,
+      !!account,
     ) as SwapFlashLoanNoWithdrawFee
   }
 }
@@ -358,11 +343,11 @@ export function getTokenAddrForPoolType(
 }
 
 export async function getMulticallProvider(
-  library: Web3Provider,
   chainId: ChainId,
 ): Promise<MulticallProvider> {
+  const provider = getProvider({ chainId })
   const ethcallProvider = new Provider() as unknown as MulticallProvider
-  await ethcallProvider.init(library)
+  await ethcallProvider.init(provider)
   if (chainId === ChainId.HARDHAT) {
     ethcallProvider.multicall3 = {
       address: "0xcA11bde05977b3631167028862bE2a173976CA11",

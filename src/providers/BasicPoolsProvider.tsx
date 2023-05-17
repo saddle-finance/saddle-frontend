@@ -112,7 +112,7 @@ export default function BasicPoolsProvider({
         setBasicPools(null)
         return
       }
-      const ethCallProvider = await getMulticallProvider(library, chainId)
+      const ethCallProvider = await getMulticallProvider(chainId)
       const pools = IS_POOL_REGISTRY_MIGRATION_LIVE
         ? await getPoolsDataFromRegistry(
             chainId,
@@ -363,7 +363,7 @@ export async function getSwapInfo(
      * This function corrects the addresses (eg poolAddress -> metaswapContract, metaSwapDepositAddress -> metaswapDepositContract)
      * and also corrects the tokens (eg tokens -> [t1, lpToken], underlyingTokens -> [t1, t2, t3, t4]).
      */
-    const ethCallProvider = await getMulticallProvider(library, chainId)
+    const ethCallProvider = await getMulticallProvider(chainId)
     // Constants
     const pool = POOLS_MAP[poolName]
     const _metaSwapAddress = pool.metaSwapAddresses?.[chainId]?.toLowerCase()

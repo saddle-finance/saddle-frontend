@@ -55,7 +55,6 @@ export default function UserStateProvider({
         Object.keys(tokens) as string[],
       )
       const minichefDataPromise = getMinichefRewardsUserData(
-        library,
         chainId,
         Object.values(basicPools).map(
           ({ poolAddress, lpToken, miniChefRewardsPid, lpTokenSupply }) => ({
@@ -69,7 +68,6 @@ export default function UserStateProvider({
       )
       const gaugeRewardsPromise = gauges
         ? getGaugeRewardsUserData(
-            library,
             chainId,
             Object.values(gauges).map(({ address }) => address),
             Object.values(gauges).map(({ rewards }) =>
@@ -142,7 +140,7 @@ async function getUserTokenBalances(
   tokenAddresses: string[], // assumes addresses are deduped
 ): Promise<UserTokenBalances | null> {
   try {
-    const ethCallProvider = await getMulticallProvider(library, chainId)
+    const ethCallProvider = await getMulticallProvider(chainId)
     const balanceCalls: MulticallCall<unknown, BigNumber>[] =
       tokenAddresses.map((address) => {
         const contract = new Contract(

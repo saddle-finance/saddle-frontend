@@ -50,7 +50,7 @@ export default function TokensProvider({
         return
       }
       const gaugesAreActive = areGaugesActive(chainId)
-      const ethCallProvider = await getMulticallProvider(library, chainId)
+      const ethCallProvider = await getMulticallProvider(chainId)
       const lpTokens = new Set()
       const tokenType: Partial<{ [tokenAddress: string]: PoolTypes }> = {}
       const saddleApprovedPoolTokens = new Set()

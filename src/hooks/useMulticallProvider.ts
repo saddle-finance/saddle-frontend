@@ -10,6 +10,6 @@ export const useMulticallProvider = (): UseQueryResult<MulticallProvider> => {
   return useQuery(["multicallProvider"], async () => {
     if (!library || !chainId) throw new Error("library or chainId not found")
 
-    return await getMulticallProvider(library, chainId)
+    return await getMulticallProvider(chainId)
   })
 }

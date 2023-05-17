@@ -18,7 +18,7 @@ export async function getMigrationData(
   chainId: ChainId,
   poolAddresses: string[],
 ): Promise<MigrationData | null> {
-  const ethCallProvider = await getMulticallProvider(library, chainId)
+  const ethCallProvider = await getMulticallProvider(chainId)
   const migratorAddress = GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES[chainId]
   if (!ethCallProvider || !chainId || !migratorAddress) {
     return null

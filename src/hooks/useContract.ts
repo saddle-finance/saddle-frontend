@@ -17,8 +17,8 @@ import {
   Token,
   VOTING_ESCROW_CONTRACT_ADDRESS,
 } from "../constants"
-import { createMultiCallContract, getSwapContract } from "../utils"
-import { getContract as getContract_, getWalletClient } from "@wagmi/core"
+import { createMultiCallContract, getContract, getSwapContract } from "../utils"
+import { getContract as getContract_, getProvider } from "@wagmi/core"
 import { useContext, useEffect, useMemo, useState } from "react"
 
 import { AddressZero } from "@ethersproject/constants"
@@ -77,26 +77,12 @@ import { SynthetixExchangeRate } from "../../types/ethers-contracts/SynthetixExc
 import { SynthetixNetworkToken } from "../../types/ethers-contracts/SynthetixNetworkToken"
 import VOTING_ESCROW_CONTRACT_ABI from "../constants/abis/votingEscrow.json"
 import { VotingEscrow } from "../../types/ethers-contracts/VotingEscrow"
-import { Web3Provider } from "@ethersproject/providers"
 import { formatBytes32String } from "@ethersproject/strings"
 import { useActiveWeb3React } from "./index"
 
 export const POOL_REGISTRY_NAME = "PoolRegistry"
 export const CHILD_GAUGE_FACTORY_NAME = "ChildGaugeFactory"
 
-const getContract = (
-  address: string | undefined,
-  ABI: any,
-  withSignerIfPossible = true,
-) => {
-  if (!address) return null
-  return getContract_({
-    address: address as `0x${string}`,
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    abi: ABI,
-    walletClient: withSignerIfPossible ? getWalletClient() : undefined,
-  }) as unknown
-}
 // returns null on errors
 function useContract(
   address: string | undefined,
@@ -108,7 +94,7 @@ function useContract(
     address: address as `0x${string}`,
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     abi: ABI,
-    walletClient: withSignerIfPossible ? getWalletClient() : undefined,
+    signerOrProvider: withSignerIfPossible ? getProvider() : undefined,
   }) as unknown
 }
 
@@ -425,7 +411,6 @@ export const getGaugeContract = (
 }
 
 export const getGaugeControllerContract = (
-  library: Web3Provider,
   chainId: ChainId,
   account?: string,
 ) => {

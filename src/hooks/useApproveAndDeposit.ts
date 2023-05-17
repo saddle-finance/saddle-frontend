@@ -5,6 +5,7 @@ import {
 } from "../constants"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { formatDeadlineToNumber, getContract } from "../utils"
+import { useAccount, useChainId } from "wagmi"
 import { useContext, useMemo } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useLPTokenContract, useSwapContract } from "./useContract"
@@ -29,7 +30,6 @@ import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { parseUnits } from "@ethersproject/units"
 import { subtractSlippage } from "../utils/slippage"
 import { updateLastTransactionTimes } from "../state/application"
-import { useActiveWeb3React } from "."
 
 interface ApproveAndDepositStateArgument {
   [tokenAddr: string]: NumberInputState
@@ -44,7 +44,8 @@ export function useApproveAndDeposit(
   const dispatch = useDispatch()
   const swapContract = useSwapContract(poolName)
   const lpTokenContract = useLPTokenContract(poolName)
-  const { account, chainId, library } = useActiveWeb3React()
+  const chainId = useChainId()
+  const { address } = useAccount()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -61,23 +62,18 @@ export function useApproveAndDeposit(
   const tokens = useContext(TokensContext)
   const pool = basicPools?.[poolName]
   const metaSwapContract = useMemo(() => {
-    if (pool?.poolAddress && chainId && library) {
-      return getContract(
-        pool.poolAddress,
-        META_SWAP_ABI,
-        library,
-        account ?? undefined,
-      ) as MetaSwap
+    if (pool?.poolAddress && chainId) {
+      return getContract(pool.poolAddress, META_SWAP_ABI, !!address) as MetaSwap
     }
     return null
-  }, [chainId, library, account, pool?.poolAddress])
+  }, [chainId, address, pool?.poolAddress])
 
   return async function approveAndDeposit(
     state: ApproveAndDepositStateArgument,
     shouldDepositWrapped = false,
   ): Promise<void> {
     try {
-      if (!account || !chainId) throw new Error("Wallet must be connected")
+      if (!address || !chainId) throw new Error("Wallet must be connected")
       if (
         !swapContract ||
         !lpTokenContract ||
@@ -115,7 +111,7 @@ export function useApproveAndDeposit(
       const approveSingleToken = async (
         token: BasicToken | undefined,
       ): Promise<void> => {
-        if (!token || !library) {
+        if (!token) {
           enqueueToast(
             "error",
             "There was a problem loading the token or library",
@@ -128,14 +124,13 @@ export function useApproveAndDeposit(
         const tokenContract = getContract(
           token.address,
           ERC20_ABI,
-          library,
-          account ?? undefined,
+          !!address,
         ) as Erc20
         if (tokenContract == null) return
         await checkAndApproveTokenForTrade(
           tokenContract,
           effectiveSwapContract.address,
-          account,
+          address,
           spendingValue,
           infiniteApproval,
           gasPrice,
@@ -166,7 +161,7 @@ export function useApproveAndDeposit(
           minToMint = await (
             effectiveSwapContract as SwapFlashLoan
           ).calculateTokenAmount(
-            account,
+            address,
             poolTokens.map((token) => state[token?.address ?? ""].valueSafe),
             true, // deposit boolean
           )

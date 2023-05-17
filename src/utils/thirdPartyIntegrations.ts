@@ -111,7 +111,7 @@ async function getAlEthData(
     chainId !== ChainId.MAINNET
   )
     return [Zero, Zero]
-  const ethcallProvider = await getMulticallProvider(library, chainId)
+  const ethcallProvider = await getMulticallProvider(chainId)
   const rewardsContract = new Contract(
     "0xAB8e74017a8Cc7c15FFcCd726603790d26d7DeCa", // prod address
     ALCX_REWARDS_ABI,
@@ -163,12 +163,10 @@ async function getSperaxData(
   const rewardsContract = getContract(
     rewardContractAddr, // prod address on arbitrum
     IREWARDER_ABI,
-    library,
   ) as IRewarder
   const lpTokenContract = getContract(
     lpTokenAddress,
     LP_TOKEN_ABI,
-    library,
   ) as LpTokenUnguarded
   const [totalDeposited, spaRewardsPerSecond, userStakedData] =
     await Promise.all([

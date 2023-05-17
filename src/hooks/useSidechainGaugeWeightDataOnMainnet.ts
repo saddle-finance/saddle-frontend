@@ -50,7 +50,7 @@ export const useSidechainGaugeWeightDataOnMainnet =
       if (!IS_CROSS_CHAIN_GAUGES_LIVE) {
         return defaultSidechainGauges
       }
-      const ethCallProvider = await getMulticallProvider(library, chainId)
+      const ethCallProvider = await getMulticallProvider(chainId)
       const gaugeControllerMultiCall = createMultiCallContract<GaugeController>(
         GAUGE_CONTROLLER_ADDRESSES[chainId],
         GAUGE_CONTROLLER_ABI,

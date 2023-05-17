@@ -90,12 +90,7 @@ export default function useUserGauge(): (
         return null
       }
 
-      const gaugeContract = getGaugeContract(
-        library,
-        chainId,
-        gauge?.address,
-        account,
-      )
+      const gaugeContract = getGaugeContract(chainId, gauge?.address, account)
 
       const userGaugeRewards = userState.gaugeRewards?.[gaugeAddress]
       const hasSDLRewards = Boolean(userGaugeRewards?.claimableSDL.gt(Zero))
@@ -131,7 +126,6 @@ export default function useUserGauge(): (
 
             if (isMainnet(chainId)) {
               const gaugeMinterContract = getGaugeMinterContract(
-                library,
                 chainId,
                 account,
               )
@@ -139,8 +133,6 @@ export default function useUserGauge(): (
               promises.push(gaugeMinterContract.mint(gaugeAddress))
             } else {
               const childGaugeFactory = getChildGaugeFactory(
-                library,
-                chainId,
                 registryAddresses["ChildGaugeFactory"],
                 account,
               )
@@ -186,8 +178,8 @@ export async function retrieveAndSetSDLValues(
   let [veSDLBalance, veSDLSupply] = [Zero, Zero]
   try {
     const votingEscrowOrChildOracleContract = isMainnet(chainId)
-      ? getVotingEscrowContract(library, chainId, account)
-      : getChildOracle(library, chainId, account) // todo move to userstateprovider
+      ? getVotingEscrowContract(chainId, account)
+      : getChildOracle(chainId, account) // todo move to userstateprovider
 
     ;[veSDLBalance, veSDLSupply] = await Promise.all([
       votingEscrowOrChildOracleContract["balanceOf(address)"](account),

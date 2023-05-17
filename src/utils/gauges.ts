@@ -126,13 +126,7 @@ export async function getGaugeData(
   if (!registryAddresses || !areGaugesActive(chainId)) return initialGaugesState
   try {
     if (chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT) {
-      return buildGaugeData(
-        library,
-        chainId,
-        basicPools,
-        registryAddresses,
-        account,
-      )
+      return buildGaugeData(chainId, basicPools, registryAddresses, account)
     } else if (shouldLoadChildGauges(chainId)) {
       return buildGaugeDataSidechain(
         library,
@@ -158,7 +152,6 @@ export async function getGaugeData(
 /* ------- Start of helper functions ------- */
 // Mainnet specific
 async function buildGaugeData(
-  library: Web3Provider,
   chainId: ChainId,
   basicPools: BasicPools,
   registryAddresses: Partial<Record<string, string>>,
@@ -167,9 +160,9 @@ async function buildGaugeData(
   if (!registryAddresses || !areGaugesActive(chainId))
     throw new Error("Unable to retrieve and build gauge data")
 
-  const ethCallProvider = await getMulticallProvider(library, chainId)
-  const gaugeController = getGaugeControllerContract(library, chainId, account)
-  const gaugeMinterContract = getGaugeMinterContract(library, chainId, account)
+  const ethCallProvider = await getMulticallProvider(chainId)
+  const gaugeController = getGaugeControllerContract(chainId, account)
+  const gaugeMinterContract = getGaugeMinterContract(chainId, account)
   const gaugeCount: number = (await gaugeController.n_gauges()).toNumber()
 
   const gaugeControllerMultiCall = createMultiCallContract<GaugeController>(
@@ -333,13 +326,12 @@ async function getGaugeRewardsFromTokens(
 
 // Combined helper functions
 export async function getGaugeRewardsUserData(
-  library: Web3Provider,
   chainId: ChainId,
   gaugeAddresses: string[],
   rewardsTokens: (BasicToken | undefined)[][],
   account?: string,
 ): Promise<GaugeRewardUserData | null> {
-  const ethCallProvider = await getMulticallProvider(library, chainId)
+  const ethCallProvider = await getMulticallProvider(chainId)
   if (!gaugeAddresses.length || !ethCallProvider || !account) return null
   try {
     const gaugeMulticallContracts = retrieveGaugeContracts(
@@ -642,8 +634,6 @@ async function buildGaugeDataSidechain(
     throw new Error("Unable to retrieve and build gauge data")
 
   const childGaugeFactory = getChildGaugeFactory(
-    library,
-    chainId,
     childGaugeFactoryAddress,
     account,
   )
@@ -651,7 +641,7 @@ async function buildGaugeDataSidechain(
     await childGaugeFactory.get_gauge_count()
   ).toNumber()
 
-  const ethCallProvider = await getMulticallProvider(library, chainId)
+  const ethCallProvider = await getMulticallProvider(chainId)
   const childGaugeFactoryMultiCall = createMultiCallContract<ChildGaugeFactory>(
     childGaugeFactoryAddress,
     CHILD_GAUGE_FACTORY_ABI,

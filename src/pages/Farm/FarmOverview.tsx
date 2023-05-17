@@ -67,7 +67,6 @@ FarmOverviewProps): JSX.Element | null {
     }
     try {
       const gaugeContract = getGaugeContract(
-        library,
         chainId,
         DEAD_FUSDC_GAUGE_ADDRESS,
         account,

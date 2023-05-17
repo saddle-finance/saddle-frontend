@@ -153,7 +153,7 @@ export default function CreatePool(): React.ReactElement {
         checkResult: ValidationStatus.Primary,
       }
 
-    const ethCallProvider = await getMulticallProvider(library, chainId)
+    const ethCallProvider = await getMulticallProvider(chainId)
     const tokenContract = createMultiCallContract<Erc20>(addr, ERC20_ABI)
     const [name, symbol, decimals] = await ethCallProvider.tryAll([
       tokenContract.name(),

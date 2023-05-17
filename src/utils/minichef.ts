@@ -66,7 +66,7 @@ export async function getMinichefRewardsPoolsData(
   chainId: ChainId,
   poolData: PoolInfo[],
 ): Promise<MinichefData | null> {
-  const ethCallProvider = await getMulticallProvider(library, chainId)
+  const ethCallProvider = await getMulticallProvider(chainId)
   const minichefAddress = MINICHEF_CONTRACT_ADDRESSES[chainId]
   const poolsWithPids = getPoolsWithPids(poolData)
   if (!poolsWithPids.length || !minichefAddress || !ethCallProvider) return null
@@ -107,7 +107,6 @@ export async function getMinichefRewardsPoolsData(
 
     // Fetch Rewarder Data
     const rewardersData = await getMinichefRewardsRewardersData(
-      library,
       chainId,
       poolData,
     )
@@ -160,11 +159,10 @@ export async function getMinichefRewardsPoolsData(
 }
 
 export async function getMinichefRewardsRewardersData(
-  library: Web3Provider,
   chainId: ChainId,
   poolData: PoolInfo[],
 ): Promise<MinichefRewardersData | null> {
-  const ethCallProvider = await getMulticallProvider(library, chainId)
+  const ethCallProvider = await getMulticallProvider(chainId)
   const minichefAddress = MINICHEF_CONTRACT_ADDRESSES[chainId]
   const poolsWithPids = getPoolsWithPids(poolData)
   if (!poolsWithPids.length || !minichefAddress || !ethCallProvider) return null
@@ -233,12 +231,11 @@ export async function getMinichefRewardsRewardersData(
 }
 
 export async function getMinichefRewardsUserData(
-  library: Web3Provider,
   chainId: ChainId,
   poolData: PoolInfo[],
   account?: string,
 ): Promise<MinichefUserData | null> {
-  const ethCallProvider = await getMulticallProvider(library, chainId)
+  const ethCallProvider = await getMulticallProvider(chainId)
   const minichefAddress = MINICHEF_CONTRACT_ADDRESSES[chainId]
   const poolsWithPids = getPoolsWithPids(poolData)
   if (!poolsWithPids.length || !minichefAddress || !ethCallProvider || !account)
