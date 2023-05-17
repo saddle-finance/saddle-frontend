@@ -42,7 +42,7 @@ export default function App(): ReactElement {
   return (
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
-      <WagmiConfig config={wagmiConfig}>
+      <WagmiConfig client={wagmiConfig}>
         <RainbowKitProvider chains={chains}>
           <Web3ReactManager>
             <BasicPoolsProvider>
