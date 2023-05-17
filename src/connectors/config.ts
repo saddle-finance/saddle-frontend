@@ -1,3 +1,4 @@
+import { Chain, connectorsForWallets } from "@rainbow-me/rainbowkit"
 import { STALL_TIMEOUT, SUPPORTED_NETWORKS } from "../constants/networks"
 import {
   arbitrum,
@@ -19,10 +20,8 @@ import {
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets"
 import { configureChains, createClient } from "wagmi"
-import { Chain } from "@rainbow-me/rainbowkit"
 import Tally from "../components/Rainbowkit"
 import { alchemyProvider } from "wagmi/providers/alchemy"
-import { connectorsForWallets } from "@rainbow-me/rainbowkit"
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc"
 import { publicProvider } from "wagmi/providers/public"
 
@@ -72,7 +71,7 @@ const { chains, provider } = configureChains(Object.values(chain), [
   alchemyProvider({
     apiKey: alchemyKey!,
     stallTimeout: STALL_TIMEOUT,
-    priority: process.env.REACT_APP_PROVIDER_ID === "ALCHEMY" ? 0 : 2,
+    priority: alchemyKey ? 0 : 2,
   }),
   jsonRpcProvider({
     rpc: (networkChain) => ({
@@ -99,10 +98,10 @@ const connectors = connectorsForWallets([
   //   { groupName: "More" }, //TODO: add more wallet
 ])
 
-export const wagmiClient = createClient({
+export const wagmiConfig = createClient({
   autoConnect: true,
-  connectors,
   provider,
+  connectors,
 })
 
 export const activeChainIds = Object.values(chain).map((chain) => chain.id)

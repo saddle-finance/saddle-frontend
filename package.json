@@ -12,7 +12,7 @@
     "@mui/lab": "^5.0.0-alpha.76",
     "@mui/material": "^5.4.0",
     "@mui/x-date-pickers": "^5.0.0-alpha.2",
-    "@rainbow-me/rainbowkit": "^0.12.12",
+    "@rainbow-me/rainbowkit": "^0.12.14",
     "@reduxjs/toolkit": "^1.4.0",
     "@sentry/react": "^6.16.1",
     "@sentry/tracing": "^6.16.1",
@@ -55,6 +55,7 @@
     "react-toastify": "^8.1.1",
     "redux": "^4.1.0",
     "redux-localstorage-simple": "^2.4.0",
+    "viem": "^0.3.22",
     "wagmi": "^0.12.12",
     "web-vitals": "^2.1.4"
   },

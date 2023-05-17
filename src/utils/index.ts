@@ -76,7 +76,7 @@ export function getContract(
   ABI: ContractInterface,
   library: Web3Provider,
   account?: string,
-): Contract {
+) {
   if (!isAddress(address) || address === AddressZero) {
     throw Error(`Invalid 'address' parameter '${address}'.`)
   }
