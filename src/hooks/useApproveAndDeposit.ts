@@ -61,7 +61,7 @@ export function useApproveAndDeposit(
   const tokens = useContext(TokensContext)
   const pool = basicPools?.[poolName]
   const metaSwapContract = useMemo(() => {
-    if (pool?.poolAddress && chainId && library) {
+    if (pool?.poolAddress && chainId) {
       return getContract(
         pool.poolAddress,
         META_SWAP_ABI,
@@ -70,7 +70,7 @@ export function useApproveAndDeposit(
       ) as MetaSwap
     }
     return null
-  }, [chainId, library, account, pool?.poolAddress])
+  }, [pool?.poolAddress, chainId, library, account])
 
   return async function approveAndDeposit(
     state: ApproveAndDepositStateArgument,
@@ -115,7 +115,7 @@ export function useApproveAndDeposit(
       const approveSingleToken = async (
         token: BasicToken | undefined,
       ): Promise<void> => {
-        if (!token || !library) {
+        if (!token) {
           enqueueToast(
             "error",
             "There was a problem loading the token or library",

@@ -33,7 +33,6 @@ import LIQUIDITY_GAUGE_V5_ABI from "../constants/abis/liquidityGaugeV5.json"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { Minter } from "../../types/ethers-contracts/Minter"
 import { SDL_TOKEN_ADDRESSES } from "./../constants/index"
-import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
 import { isAddressZero } from "."
 
@@ -117,7 +116,7 @@ export const shouldLoadChildGauges = (chainId: ChainId) =>
   [ChainId.OPTIMISM, ChainId.ARBITRUM].includes(chainId)
 
 export async function getGaugeData(
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   basicPools: BasicPools,
   registryAddresses: Partial<Record<string, string>>,
@@ -158,7 +157,7 @@ export async function getGaugeData(
 /* ------- Start of helper functions ------- */
 // Mainnet specific
 async function buildGaugeData(
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   basicPools: BasicPools,
   registryAddresses: Partial<Record<string, string>>,
@@ -333,7 +332,7 @@ async function getGaugeRewardsFromTokens(
 
 // Combined helper functions
 export async function getGaugeRewardsUserData(
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   gaugeAddresses: string[],
   rewardsTokens: (BasicToken | undefined)[][],
@@ -630,7 +629,7 @@ function getGaugeRewardTokens(
 
 // Sidechain-specific helper functions
 async function buildGaugeDataSidechain(
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   basicPools: BasicPools,
   registryAddresses: Partial<Record<string, string>>,

@@ -7,13 +7,12 @@ import {
   MulticallProvider,
 } from "../types/ethcall"
 import { formatUnits, parseEther, parseUnits } from "@ethersproject/units"
+import { getContract as getContract_, getProvider } from "wagmi/actions"
 
 import { BasicPool } from "../providers/BasicPoolsProvider"
 import { BasicTokens } from "../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { ChainId } from "../constants/networks"
-import { Contract } from "@ethersproject/contracts"
-import { ContractInterface } from "ethers"
 import { Deadlines } from "../state/user"
 import { Contract as EthcallContract } from "ethcall"
 import { ExpandedPool } from "../providers/ExpandedPoolsProvider"
@@ -73,15 +72,19 @@ export function getProviderOrSigner(
 // account is optional
 export function getContract(
   address: string,
-  ABI: ContractInterface,
-  library: Web3Provider,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ABI: any,
+  library?: any,
   account?: string,
 ) {
   if (!isAddress(address) || address === AddressZero) {
     throw Error(`Invalid 'address' parameter '${address}'.`)
   }
 
-  return new Contract(address, ABI, getProviderOrSigner(library, account))
+  console.log("account", account)
+  // return new Contract(address, ABI, getProviderOrSigner(library, account))
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  return getContract_({ address, abi: ABI, signerOrProvider: library })
 }
 
 type PoolAttributes = Partial<
@@ -89,7 +92,7 @@ type PoolAttributes = Partial<
 > & { isMetaSwapDeposit?: boolean }
 
 export function getSwapContract(
-  library: Web3Provider,
+  library: any,
   address: string,
   poolAttributes: PoolAttributes,
   account?: string,
@@ -358,11 +361,13 @@ export function getTokenAddrForPoolType(
 }
 
 export async function getMulticallProvider(
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
 ): Promise<MulticallProvider> {
+  console.log(library)
+  const provider = getProvider()
   const ethcallProvider = new Provider() as unknown as MulticallProvider
-  await ethcallProvider.init(library)
+  await ethcallProvider.init(provider)
   if (chainId === ChainId.HARDHAT) {
     ethcallProvider.multicall3 = {
       address: "0xcA11bde05977b3631167028862bE2a173976CA11",

@@ -1,6 +1,7 @@
 import { SWAP_TYPES, SYNTH_TRACKING_ID, TRANSACTION_TYPES } from "../constants"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { formatDeadlineToNumber, getContract } from "../utils"
+import { useAccount, useChainId } from "wagmi"
 
 import { AppState } from "../state"
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
@@ -54,7 +55,9 @@ export function useApproveAndSwap(): (
   const dispatch = useDispatch()
   const basicPools = useContext(BasicPoolsContext)
   const { tokenAddrToTokenMap } = useTokenMaps()
-  const { account, chainId, library } = useActiveWeb3React()
+  const { library } = useActiveWeb3React()
+  const { address: account } = useAccount()
+  const chainId = useChainId()
   const baseSynthetixContract = useSynthetixContract()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,

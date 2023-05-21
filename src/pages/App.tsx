@@ -21,7 +21,6 @@ import RewardsBalancesProvider from "../providers/RewardsBalancesProvider"
 import TokensProvider from "../providers/TokensProvider"
 import UserStateProvider from "../providers/UserStateProvider"
 import { WagmiConfig } from "wagmi"
-import Web3ReactManager from "../components/Web3ReactManager"
 import fetchGasPrices from "../utils/updateGasPrices"
 import fetchSdlWethSushiPoolInfo from "../utils/updateSdlWethSushiInfo"
 import fetchTokenPricesUSD from "../utils/updateTokenPrices"
@@ -44,29 +43,27 @@ export default function App(): ReactElement {
       <ReactQueryDevtools initialIsOpen={false} />
       <WagmiConfig client={wagmiConfig}>
         <RainbowKitProvider chains={chains}>
-          <Web3ReactManager>
-            <BasicPoolsProvider>
-              <MinichefProvider>
-                <GaugeProvider>
-                  <TokensProvider>
-                    <ExpandedPoolsProvider>
-                      <UserStateProvider>
-                        <PricesAndVoteData>
-                          <PendingSwapsProvider>
-                            <AprsProvider>
-                              <RewardsBalancesProvider>
-                                <AppContainer />
-                              </RewardsBalancesProvider>
-                            </AprsProvider>
-                          </PendingSwapsProvider>
-                        </PricesAndVoteData>
-                      </UserStateProvider>
-                    </ExpandedPoolsProvider>
-                  </TokensProvider>
-                </GaugeProvider>
-              </MinichefProvider>
-            </BasicPoolsProvider>
-          </Web3ReactManager>
+          <BasicPoolsProvider>
+            <MinichefProvider>
+              <GaugeProvider>
+                <TokensProvider>
+                  <ExpandedPoolsProvider>
+                    <UserStateProvider>
+                      <PricesAndVoteData>
+                        <PendingSwapsProvider>
+                          <AprsProvider>
+                            <RewardsBalancesProvider>
+                              <AppContainer />
+                            </RewardsBalancesProvider>
+                          </AprsProvider>
+                        </PendingSwapsProvider>
+                      </PricesAndVoteData>
+                    </UserStateProvider>
+                  </ExpandedPoolsProvider>
+                </TokensProvider>
+              </GaugeProvider>
+            </MinichefProvider>
+          </BasicPoolsProvider>
         </RainbowKitProvider>
       </WagmiConfig>
     </QueryClientProvider>

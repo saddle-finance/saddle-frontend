@@ -13,7 +13,6 @@ import IRewarder_ABI from "../constants/abis/IRewarder.json"
 import MINICHEF_CONTRACT_ABI from "../constants/abis/miniChef.json"
 import { MiniChef } from "../../types/ethers-contracts/MiniChef"
 import { MulticallContract } from "../types/ethcall"
-import { Web3Provider } from "@ethersproject/providers"
 
 export type MinichefPoolData = {
   sdlPerDay: BigNumber
@@ -62,7 +61,7 @@ function getPoolsWithPids(pools: PoolInfo[]) {
  * Returns sdlPerDay and pid from minichef for the given pool addresses.
  */
 export async function getMinichefRewardsPoolsData(
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   poolData: PoolInfo[],
 ): Promise<MinichefData | null> {
@@ -160,7 +159,7 @@ export async function getMinichefRewardsPoolsData(
 }
 
 export async function getMinichefRewardsRewardersData(
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   poolData: PoolInfo[],
 ): Promise<MinichefRewardersData | null> {
@@ -233,7 +232,7 @@ export async function getMinichefRewardsRewardersData(
 }
 
 export async function getMinichefRewardsUserData(
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   poolData: PoolInfo[],
   account?: string,

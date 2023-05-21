@@ -19,6 +19,7 @@ import {
 } from "../constants"
 import { Contract, ContractInterface } from "@ethersproject/contracts"
 import { createMultiCallContract, getContract, getSwapContract } from "../utils"
+import { useAccount, useProvider, useSigner } from "wagmi"
 import { useContext, useEffect, useMemo, useState } from "react"
 
 import { AddressZero } from "@ethersproject/constants"
@@ -75,7 +76,6 @@ import { SynthetixExchangeRate } from "../../types/ethers-contracts/SynthetixExc
 import { SynthetixNetworkToken } from "../../types/ethers-contracts/SynthetixNetworkToken"
 import VOTING_ESCROW_CONTRACT_ABI from "../constants/abis/votingEscrow.json"
 import { VotingEscrow } from "../../types/ethers-contracts/VotingEscrow"
-import { Web3Provider } from "@ethersproject/providers"
 import { formatBytes32String } from "@ethersproject/strings"
 import { useActiveWeb3React } from "./index"
 
@@ -88,22 +88,24 @@ function useContract(
   ABI: ContractInterface,
   withSignerIfPossible = true,
 ): Contract | null {
-  const { library, account } = useActiveWeb3React()
+  const { address: account } = useAccount()
+  const { data: signer } = useSigner()
+  const provider = useProvider()
 
   return useMemo(() => {
-    if (!address || !ABI || !library) return null
+    if (!address || !ABI) return null
     try {
       return getContract(
         address,
         ABI,
-        library,
+        signer || provider,
         withSignerIfPossible && account ? account : undefined,
       )
     } catch (error) {
       console.error("Failed to get contract", error)
       return null
     }
-  }, [address, ABI, library, withSignerIfPossible, account])
+  }, [address, ABI, signer, provider, withSignerIfPossible, account])
 }
 
 export function useMasterRegistry(): MasterRegistry | null {
@@ -119,7 +121,8 @@ export function useMasterRegistry(): MasterRegistry | null {
 }
 
 export function usePoolRegistry(): PoolRegistry | null {
-  const { library } = useActiveWeb3React()
+  const { data: signer } = useSigner()
+  const provider = useProvider()
   const masterRegistryContract = useMasterRegistry()
   const [contractAddress, setContractAddress] = useState<string | undefined>()
   useEffect(() => {
@@ -141,17 +144,20 @@ export function usePoolRegistry(): PoolRegistry | null {
   }, [masterRegistryContract])
 
   return useMemo(() => {
-    if (!library || !contractAddress) return null
+    if (!contractAddress) return null
     return getContract(
       contractAddress,
       POOL_REGISTRY_ABI,
-      library,
+      signer || provider,
     ) as PoolRegistry
-  }, [contractAddress, library])
+  }, [contractAddress, provider, signer])
 }
 
 export function usePoolRegistryMultiCall(): MulticallContract<PoolRegistry> | null {
-  const { library } = useActiveWeb3React()
+  const { data: signer } = useSigner()
+  const provider = useProvider()
+  const library = signer || provider
+
   const masterRegistryContract = useMasterRegistry()
   const [contractAddress, setContractAddress] = useState<string | undefined>()
   useEffect(() => {
@@ -406,7 +412,7 @@ export function useLiquidityGaugeContract(
 
 // This section instantiate new contract without Hooks
 export const getGaugeContract = (
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   address: string,
   account: string,
@@ -424,7 +430,7 @@ export const getGaugeContract = (
 }
 
 export const getGaugeControllerContract = (
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   account?: string,
 ) => {
@@ -437,7 +443,7 @@ export const getGaugeControllerContract = (
 }
 
 export const getGaugeMinterContract = (
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   account?: string,
 ) => {
@@ -450,7 +456,7 @@ export const getGaugeMinterContract = (
 }
 
 export const getChildGaugeFactory = (
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   address?: string,
   account?: string,
@@ -464,7 +470,7 @@ export const getChildGaugeFactory = (
 }
 
 export const getVotingEscrowContract = (
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   account?: string,
 ): VotingEscrow => {
@@ -477,7 +483,7 @@ export const getVotingEscrowContract = (
 }
 
 export const getChildOracle = (
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   account?: string,
 ): ChildOracle => {
@@ -490,7 +496,7 @@ export const getChildOracle = (
 }
 
 export const getRootGaugeFactory = (
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   account?: string,
 ): RootGaugeFactory => {

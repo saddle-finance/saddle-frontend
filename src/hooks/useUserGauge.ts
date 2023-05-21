@@ -22,7 +22,6 @@ import { GaugeContext } from "../providers/GaugeProvider"
 import { GaugeUserReward } from "../utils/gauges"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { UserStateContext } from "../providers/UserStateProvider"
-import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
 import { calculateBoost } from "../utils"
 import { enqueueToast } from "../components/Toastify"
@@ -179,7 +178,7 @@ export default function useUserGauge(): (
 export async function retrieveAndSetSDLValues(
   account: string,
   chainId: ChainId,
-  library: Web3Provider,
+  library: any,
   setVeSdlBalance: (value: SetStateAction<BigNumber>) => void,
   setTotalVeSdl: (value: SetStateAction<BigNumber>) => void,
 ): Promise<void> {

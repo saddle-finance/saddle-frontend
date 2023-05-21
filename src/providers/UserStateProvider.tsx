@@ -14,7 +14,6 @@ import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
 import { GaugeContext } from "./GaugeProvider"
 import { NETWORK_NATIVE_TOKENS } from "../constants/networks"
 import { TokensContext } from "./TokensProvider"
-import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
 import { useActiveWeb3React } from "../hooks"
 import { useFeeDistributor } from "../hooks/useContract"
@@ -136,7 +135,7 @@ export default function UserStateProvider({
 
 const BATCH_SIZE = 40
 async function getUserTokenBalances(
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   account: string,
   tokenAddresses: string[], // assumes addresses are deduped

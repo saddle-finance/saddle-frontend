@@ -4,18 +4,19 @@ import React, { useEffect, useState } from "react"
 import Dialog from "../../components/Dialog"
 import { SUPPORTED_NETWORKS } from "../../constants/networks"
 import { areGaugesActive } from "../../utils/gauges"
-import { useActiveWeb3React } from "../../hooks"
+import { useChainId } from "wagmi"
 import { useTranslation } from "react-i18next"
 
 export default function VeSDLWrongNetworkModal(): JSX.Element {
   const [openDialog, setOpenDialog] = useState(false)
-  const { library, account, chainId } = useActiveWeb3React()
+  const chainId = useChainId()
   const { t } = useTranslation()
+
   const handleConnectMainnet = () => {
-    void library?.send("wallet_switchEthereumChain", [
-      { chainId: "0x1" },
-      account,
-    ])
+    // void provider.send("wallet_switchEthereumChain", [
+    //   { chainId: "0x1" },
+    //   account,
+    // ])
   }
   const chainName = chainId && SUPPORTED_NETWORKS[chainId]?.chainName
 

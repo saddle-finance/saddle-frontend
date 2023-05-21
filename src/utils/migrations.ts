@@ -6,7 +6,6 @@ import GENERALIZED_SWAP_MIGRATOR_CONTRACT_ABI from "../constants/abis/generalize
 import { GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES } from "../constants"
 import { GeneralizedSwapMigrator } from "../../types/ethers-contracts/GeneralizedSwapMigrator"
 import { MulticallContract } from "../types/ethcall"
-import { Web3Provider } from "@ethersproject/providers"
 
 type MigrationData = { [poolAddress: string]: string } // current poolAddress => new poolAddress
 
@@ -14,7 +13,7 @@ type MigrationData = { [poolAddress: string]: string } // current poolAddress =>
  * Returns old -> new pool address mappings from GeneralizedMigrator for the given pool addresses.
  */
 export async function getMigrationData(
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   poolAddresses: string[],
 ): Promise<MigrationData | null> {

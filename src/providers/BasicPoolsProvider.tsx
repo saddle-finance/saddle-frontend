@@ -32,7 +32,6 @@ import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { PoolRegistry } from "../../types/ethers-contracts/PoolRegistry"
-import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
 import { getMigrationData } from "../utils/migrations"
 import { parseBytes32String } from "@ethersproject/strings"
@@ -335,7 +334,7 @@ function buildMetaInfo(
  * Will be replaced with registry.
  */
 export async function getPoolsBaseData(
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
 ): Promise<SwapInfo[]> {
   const targetPools = Object.keys(POOLS_MAP).filter(
@@ -348,7 +347,7 @@ export async function getPoolsBaseData(
 }
 
 export async function getSwapInfo(
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   poolName: PoolName,
 ): Promise<SwapInfo | null> {

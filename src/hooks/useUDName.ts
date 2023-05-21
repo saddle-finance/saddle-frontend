@@ -3,10 +3,10 @@ import { useEffect, useState } from "react"
 import { SUPPORTED_WALLETS } from "../constants"
 import { find } from "lodash"
 import { uauth } from "../connectors"
-import { useActiveWeb3React } from "."
+import { useConnect } from "wagmi"
 
 export const useUDName = (): string => {
-  const { connector } = useActiveWeb3React()
+  const connector = useConnect()
   const [udUserName, setUdUserName] = useState<string>("")
   const connectorName = find(SUPPORTED_WALLETS, ["connector", connector])?.name
 

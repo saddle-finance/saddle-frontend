@@ -10,14 +10,12 @@ import ALCX_REWARDS_ABI from "../constants/abis/alchemixStakingPools.json"
 import { AlchemixStakingPools } from "../../types/ethers-contracts/AlchemixStakingPools"
 import { BigNumber } from "@ethersproject/bignumber"
 import { ChainId } from "../constants/networks"
-import { Contract } from "ethcall"
 import IREWARDER_ABI from "../constants/abis/IRewarder.json"
 import { IRewarder } from "../../types/ethers-contracts/IRewarder"
 import LP_TOKEN_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import { MulticallContract } from "../types/ethcall"
 import { TokenPricesUSD } from "../state/application"
-import { Web3Provider } from "@ethersproject/providers"
 import { parseUnits } from "@ethersproject/units"
 
 export type Partners = "threshold" | "alchemix" | "frax" | "sperax"
@@ -36,7 +34,7 @@ type ThirdPartyData = {
   claimableAmount: Partial<Record<Partners, BigNumber>>
 }
 export async function getThirdPartyDataForPool(
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   accountId: string | undefined | null,
   {
@@ -98,7 +96,7 @@ export async function getThirdPartyDataForPool(
 }
 
 async function getAlEthData(
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   lpTokenPrice: BigNumber,
   alcxPrice = 0,
@@ -112,10 +110,11 @@ async function getAlEthData(
   )
     return [Zero, Zero]
   const ethcallProvider = await getMulticallProvider(library, chainId)
-  const rewardsContract = new Contract(
-    "0xAB8e74017a8Cc7c15FFcCd726603790d26d7DeCa", // prod address
+  const rewardsContract = getContract(
+    "0xAB8e74017a8Cc7c15FFcCd726603790d26d7DeCa",
     ALCX_REWARDS_ABI,
-  ) as MulticallContract<AlchemixStakingPools>
+  ) as unknown as MulticallContract<AlchemixStakingPools>
+
   const POOL_ID = 6
   const multicalls = [
     rewardsContract.getPoolRewardRate(POOL_ID),
@@ -137,7 +136,7 @@ async function getAlEthData(
 }
 
 async function getSperaxData(
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   lpTokenPrice: BigNumber,
   spaPrice = 0,
@@ -187,7 +186,7 @@ async function getSperaxData(
 // TODO refactor SPA and T fns to read directly from minichef to get simpleRewarder addr
 // https://etherscan.io/address/0xe8e1a94f0c960d64e483ca9088a7ec52e77194c2#readContract
 async function getThresholdData(
-  library: Web3Provider,
+  library: any,
   chainId: ChainId,
   lpTokenPrice: BigNumber,
   thresholdPrice = 0,
