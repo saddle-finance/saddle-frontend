@@ -1,8 +1,13 @@
-import { Gauges, getGaugeData, initialGaugesState } from "../utils/gauges"
-import React, { ReactElement, useContext, useEffect, useState } from "react"
+import {
+  Gauges,
+  getGaugeData,
+  initialGaugesState,
+  shouldLoadChildGauges,
+} from "../utils/gauges"
+import React, { ReactElement, useContext } from "react"
 import { BasicPoolsContext } from "./BasicPoolsProvider"
 import { useActiveWeb3React } from "../hooks"
-import { useGaugeMinterContract } from "../hooks/useContract"
+import { useQuery } from "@tanstack/react-query"
 import { useRegistryAddress } from "../hooks/useRegistryAddress"
 
 export const GaugeContext = React.createContext<Gauges>(initialGaugesState)
@@ -12,35 +17,32 @@ export default function GaugeProvider({
 }: React.PropsWithChildren<unknown>): ReactElement {
   const { chainId, library, account } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
-  const gaugeMinterContract = useGaugeMinterContract() // only exists on mainnet
-  const { data: registryAddresses } = useRegistryAddress()
-  const [gauges, setGauges] = useState<Gauges>(initialGaugesState)
+  const { data: registryAddresses, isSuccess: isRegistryAddressesSuccess } =
+    useRegistryAddress()
 
-  useEffect(() => {
-    async function fetchGauges() {
-      if (!chainId || !library || !registryAddresses) return
-      const gauges: Gauges = await getGaugeData(
-        library,
-        chainId,
-        basicPools,
-        registryAddresses,
-        account ?? undefined,
-      )
+  console.log("registry addres ==>", registryAddresses, basicPools)
 
-      setGauges(gauges)
-    }
-
-    void fetchGauges()
-  }, [
-    chainId,
-    library,
-    gaugeMinterContract,
-    account,
-    basicPools,
-    registryAddresses,
-  ])
+  const { data: gauges, isLoading } = useQuery(
+    ["gauges", registryAddresses, account, chainId],
+    {
+      queryFn: async () =>
+        getGaugeData(
+          library,
+          chainId,
+          basicPools,
+          shouldLoadChildGauges(chainId) ? registryAddresses : undefined,
+          account ?? undefined,
+        ),
+      enabled: shouldLoadChildGauges(chainId)
+        ? isRegistryAddressesSuccess
+        : true,
+      onError: (error) => console.log(error),
+    },
+  )
 
   return (
-    <GaugeContext.Provider value={gauges}>{children}</GaugeContext.Provider>
+    <GaugeContext.Provider value={gauges ?? initialGaugesState}>
+      {isLoading ? <div>Loading...</div> : children}
+    </GaugeContext.Provider>
   )
 }

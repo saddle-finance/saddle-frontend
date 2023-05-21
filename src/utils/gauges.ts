@@ -118,11 +118,12 @@ export const shouldLoadChildGauges = (chainId: ChainId) =>
 export async function getGaugeData(
   library: any,
   chainId: ChainId,
-  basicPools: BasicPools,
-  registryAddresses: Partial<Record<string, string>>,
+  basicPools: BasicPools | null,
+  registryAddresses?: Partial<Record<string, string>>,
   account?: string,
 ) {
-  if (!registryAddresses || !areGaugesActive(chainId)) return initialGaugesState
+  console.log("registry addresses ==>", registryAddresses)
+  // if (!registryAddresses || !areGaugesActive(chainId)) return initialGaugesState
   try {
     if (chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT) {
       return buildGaugeData(
@@ -160,11 +161,11 @@ async function buildGaugeData(
   library: any,
   chainId: ChainId,
   basicPools: BasicPools,
-  registryAddresses: Partial<Record<string, string>>,
+  registryAddresses?: Partial<Record<string, string>>,
   account?: string,
 ) {
-  if (!registryAddresses || !areGaugesActive(chainId))
-    throw new Error("Unable to retrieve and build gauge data")
+  // if (!registryAddresses || !areGaugesActive(chainId))
+  //   throw new Error("Unable to retrieve and build gauge data")
 
   const ethCallProvider = await getMulticallProvider(library, chainId)
   const gaugeController = getGaugeControllerContract(library, chainId, account)
@@ -632,10 +633,10 @@ async function buildGaugeDataSidechain(
   library: any,
   chainId: ChainId,
   basicPools: BasicPools,
-  registryAddresses: Partial<Record<string, string>>,
+  registryAddresses?: Partial<Record<string, string>>,
   account?: string,
 ) {
-  const childGaugeFactoryAddress = registryAddresses[CHILD_GAUGE_FACTORY_NAME]
+  const childGaugeFactoryAddress = registryAddresses?.[CHILD_GAUGE_FACTORY_NAME]
 
   if (!childGaugeFactoryAddress)
     throw new Error("Unable to retrieve and build gauge data")

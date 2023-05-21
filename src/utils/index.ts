@@ -364,7 +364,6 @@ export async function getMulticallProvider(
   library: any,
   chainId: ChainId,
 ): Promise<MulticallProvider> {
-  console.log(library)
   const provider = getProvider()
   const ethcallProvider = new Provider() as unknown as MulticallProvider
   await ethcallProvider.init(provider)

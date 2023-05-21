@@ -111,7 +111,7 @@ const DepositPage = (props: Props): ReactElement => {
       account,
     ) as LiquidityGaugeV5
     setLiquidityGaugeContract(liquidityGaugeContract)
-  }, [account, chainId, poolData, gauges, gaugeAddr, library])
+  }, [account, chainId, poolData, gaugeAddr, library])
 
   const onMigrateToGaugeClick = async () => {
     if (
