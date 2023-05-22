@@ -17,7 +17,6 @@ import { NavLink, NavLinkProps, useLocation } from "react-router-dom"
 import React, { ReactElement, useContext, useEffect, useState } from "react"
 
 import { AppState } from "../state"
-import NetworkDisplay from "./NetworkDisplay"
 import { RewardsBalancesContext } from "../providers/RewardsBalancesProvider"
 import SaddleLogo from "./SaddleLogo"
 import { ReactComponent as SdlTokenIcon } from "../assets/icons/sdl.svg"
@@ -52,6 +51,7 @@ function TopMenu(): ReactElement {
   const [currentModal, setCurrentModal] = useState<string | null>(null)
   const theme = useTheme()
   const isUnderLaptopSize = useMediaQuery(theme.breakpoints.down("lg"))
+  const isUnderMobileSize = useMediaQuery(theme.breakpoints.down("sm"))
   const { tokenPricesUSD } = useSelector((state: AppState) => state.application)
   const sdlPrice = tokenPricesUSD?.[SDL_TOKEN.symbol]
   const handleSettingMenu = (
@@ -79,7 +79,7 @@ function TopMenu(): ReactElement {
     <AppBar position="static" elevation={0}>
       <Toolbar data-testid="topMenuContainer" sx={{ xs: 0, lg: 7 }}>
         <Box display="flex" width="100%" alignItems="center" my={3}>
-          <Box display="flex" flex={1}>
+          <Box display="flex" flex={{ md: "none", xl: 1 }}>
             <NavLink to="/">
               <SaddleLogo
                 height={isUnderLaptopSize ? "40px" : "80px"}
@@ -96,7 +96,7 @@ function TopMenu(): ReactElement {
             direction="row"
             spacing={4}
             justifyContent="center"
-            padding={theme.spacing(1, 3)}
+            padding={theme.spacing(1, 0)}
           >
             <MenuList />
           </Stack>
@@ -109,10 +109,9 @@ function TopMenu(): ReactElement {
           >
             <SDLPrice sdlPrice={sdlPrice} />
             <RewardsButton setCurrentModal={setCurrentModal} />
-            <Box display={isUnderLaptopSize ? "none" : "block"}>
+            <Box display={isUnderMobileSize ? "none" : "block"}>
               <Web3Status />
             </Box>
-            <NetworkDisplay onClick={handleSettingMenu} />
             <IconButton
               onClick={handleMoreMenu}
               data-testid="settingsMenuBtn"

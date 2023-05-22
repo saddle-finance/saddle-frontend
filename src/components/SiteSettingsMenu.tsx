@@ -21,7 +21,7 @@ import {
   LightMode,
   NightlightRound,
 } from "@mui/icons-material"
-import { IS_L2_SUPPORTED, IS_SDL_LIVE, SDL_TOKEN } from "../constants"
+import { IS_SDL_LIVE, SDL_TOKEN } from "../constants"
 import React, { ReactElement, useState } from "react"
 import { extractAddEthereumChainArgs, getTokenIconPath } from "../utils"
 
@@ -65,7 +65,7 @@ export default function SiteSettingsMenu({
       PaperProps={{ sx: { minWidth: 240 } }}
     >
       <Box>
-        {IS_L2_SUPPORTED && <NetworkSection key="network" />}
+        <NetworkSection key="network" />
         <Divider variant="middle" />
         <LanguageSection key="language" />
         <Divider variant="middle" />

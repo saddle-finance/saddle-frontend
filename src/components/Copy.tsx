@@ -14,6 +14,7 @@ export default function CopyHelper(props: {
 
   return (
     <Button
+      color="secondary"
       onClick={() => setCopied(props.toCopy)}
       startIcon={isCopied ? <CheckIcon /> : <ContentCopyIcon />}
       sx={{ padding: 0 }}
