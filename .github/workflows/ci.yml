@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [master, rainbowkit-integration]
+    branches: ["*"]
   pull_request:
-    branches: ['*']
+    branches: ["*"]
 
 jobs:
   build:
