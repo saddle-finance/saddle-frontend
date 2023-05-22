@@ -34,6 +34,9 @@ export function getMultichainScanLink(
     case ChainId.AURORA:
       chainScanDomain = "explorer.mainnet.aurora.dev"
       break
+    case ChainId.BASE_TESTNET:
+      chainScanDomain = "goerli.basescan.org"
+      break
     default:
       chainScanDomain = "etherscan.io"
   }

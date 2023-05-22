@@ -38,6 +38,7 @@ export const communityPoolsEnabled = (chainId: ChainId | undefined) => {
       ChainId.KAVA,
       ChainId.OPTIMISM,
       ChainId.FANTOM,
+      ChainId.AURORA,
     ].includes(chainId)
   )
 }
