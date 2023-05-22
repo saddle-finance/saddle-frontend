@@ -10,6 +10,7 @@ import {
   TextField,
 } from "@mui/material"
 import React, { ReactElement, useContext, useEffect, useState } from "react"
+import { useAccount, useChainId } from "wagmi"
 
 import { AppState } from "../../state"
 import { BigNumber } from "ethers"
@@ -26,14 +27,14 @@ import { communityPoolsEnabled } from "../Pages"
 import { getTokenAddrForPoolType } from "../../utils"
 import { logEvent } from "../../utils/googleAnalytics"
 import { parseUnits } from "@ethersproject/units"
-import { useActiveWeb3React } from "../../hooks"
 import { useApproveAndMigrate } from "../../hooks/useApproveAndMigrate"
 import { useHistory } from "react-router"
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
 function Pools(): ReactElement | null {
-  const { account, chainId } = useActiveWeb3React()
+  const { address } = useAccount()
+  const chainId = useChainId()
   const expandedPools = useContext(ExpandedPoolsContext)
   const pools = expandedPools.data.byName
   const userState = useContext(UserStateContext)
@@ -70,7 +71,7 @@ function Pools(): ReactElement | null {
       lpTokenBalance: Zero,
       lpTokenAddress: "",
     })
-  }, [account, chainId])
+  }, [address, chainId])
 
   return (
     <Container sx={{ pb: 5 }}>

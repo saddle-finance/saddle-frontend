@@ -25,7 +25,7 @@ import GaugeRewardsDisplay from "./GaugeRewardsDisplay"
 import TokenIcon from "./TokenIcon"
 import { Zero } from "@ethersproject/constants"
 import { areGaugesActive } from "../utils/gauges"
-import { useActiveWeb3React } from "../hooks"
+import { useChainId } from "wagmi"
 import { useHistory } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
@@ -42,7 +42,7 @@ export default function PoolOverview({
 }: Props): ReactElement | null {
   const { t } = useTranslation()
   const theme = useTheme()
-  const { chainId } = useActiveWeb3React()
+  const chainId = useChainId()
   const [poolData, userShareData] = usePoolData(poolName)
   const shouldMigrate = !!onClickMigrate
   const gaugesAreActive = areGaugesActive(chainId)

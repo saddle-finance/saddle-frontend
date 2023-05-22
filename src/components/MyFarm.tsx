@@ -1,6 +1,7 @@
 import { Box, Button, Paper, Stack, Typography } from "@mui/material"
 import React, { ReactElement, useCallback, useContext } from "react"
 import { commify, formatBNToString, missingKeys } from "../utils"
+import { useAccount, useChainId } from "wagmi"
 
 import { BigNumber } from "@ethersproject/bignumber"
 import { ChainId } from "../constants/networks"
@@ -11,7 +12,6 @@ import { Zero } from "@ethersproject/constants"
 import { areGaugesActive } from "../utils/gauges"
 import checkAndApproveTokenForTrade from "../utils/checkAndApproveTokenForTrade"
 import { enqueuePromiseToast } from "./Toastify"
-import { useActiveWeb3React } from "../hooks"
 import { useLPTokenContract } from "../hooks/useContract"
 import { useRewardsHelpers } from "../hooks/useRewardsHelpers"
 import { useTranslation } from "react-i18next"
@@ -38,9 +38,10 @@ export default function MyFarm({
   } = useRewardsHelpers(poolName)
   const lpTokenContract = useLPTokenContract(poolName)
   const userState = useContext(UserStateContext)
+  const { address } = useAccount()
+  const chainId = useChainId()
   const gaugeBalance =
     userState?.gaugeRewards?.[gaugeAddress ?? ""]?.amountStaked || Zero
-  const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
   const formattedLpWalletBalance = commify(
     formatBNToString(lpWalletBalance, 18, 4),
@@ -58,21 +59,21 @@ export default function MyFarm({
   const gaugesAreActive = areGaugesActive(chainId)
 
   const onUnstakeClick = useCallback(async () => {
-    if (!liquidityGaugeContract || !account || !chainId) return
+    if (!liquidityGaugeContract || !address || !chainId) return
     const txn = await liquidityGaugeContract["withdraw(uint256)"](
-      await liquidityGaugeContract.balanceOf(account),
+      await liquidityGaugeContract.balanceOf(address),
     )
     await enqueuePromiseToast(chainId, txn.wait(), "unstake", {
       poolName,
     })
-  }, [account, chainId, liquidityGaugeContract, poolName])
+  }, [address, chainId, liquidityGaugeContract, poolName])
 
   const onStakeClick = useCallback(async () => {
-    if (!liquidityGaugeContract || !lpTokenContract || !account || !chainId) {
+    if (!liquidityGaugeContract || !lpTokenContract || !address || !chainId) {
       const missingKeysStrs = missingKeys({
         liquidityGaugeContract,
         lpTokenContract,
-        account,
+        address,
         chainId,
       })
       console.error(
@@ -83,8 +84,8 @@ export default function MyFarm({
     await checkAndApproveTokenForTrade(
       lpTokenContract,
       liquidityGaugeContract.address,
-      account,
-      await lpTokenContract.balanceOf(account),
+      address,
+      await lpTokenContract.balanceOf(address),
       true,
       Zero, // @dev: gas not being used
       {
@@ -95,14 +96,14 @@ export default function MyFarm({
       chainId,
     )
     const txn = await liquidityGaugeContract["deposit(uint256,address,bool)"](
-      await lpTokenContract.balanceOf(account),
-      account,
+      await lpTokenContract.balanceOf(address),
+      address,
       true,
     )
     await enqueuePromiseToast(chainId, txn.wait(), "stake", {
       poolName,
     })
-  }, [account, chainId, liquidityGaugeContract, lpTokenContract, poolName])
+  }, [address, chainId, liquidityGaugeContract, lpTokenContract, poolName])
 
   return isPoolIncentivized && IS_SDL_LIVE ? (
     <Paper sx={{ flex: 1 }}>

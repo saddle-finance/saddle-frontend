@@ -80,10 +80,8 @@ const { chains, provider } = configureChains(Object.values(chain), [
         ? networkChain.rpcUrls.default.http[0]
         : "",
     }),
-    stallTimeout: STALL_TIMEOUT,
-    priority: 1,
   }),
-  publicProvider({ stallTimeout: STALL_TIMEOUT, priority: 5 }),
+  publicProvider(),
 ])
 const connectors = connectorsForWallets([
   {
