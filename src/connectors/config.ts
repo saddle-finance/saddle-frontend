@@ -69,6 +69,7 @@ const alchemyKey = process.env.REACT_APP_ALCHEMY_API_KEY
 
 const { chains, provider } = configureChains(Object.values(chain), [
   alchemyProvider({
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     apiKey: alchemyKey!,
     stallTimeout: STALL_TIMEOUT,
     priority: alchemyKey ? 0 : 2,
