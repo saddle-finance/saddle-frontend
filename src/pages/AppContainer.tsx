@@ -1,5 +1,6 @@
-import { LinearProgress, styled, useTheme } from "@mui/material"
 import React, { Suspense } from "react"
+import { styled, useTheme } from "@mui/material"
+
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 import DevTool from "../components/DevTool/DevTool"
 import { LocalizationProvider } from "@mui/x-date-pickers"
@@ -8,7 +9,6 @@ import { ToastContainer } from "react-toastify"
 import TopMenu from "../components/TopMenu"
 import Version from "../components/Version"
 import WrongNetworkModal from "../components/WrongNetworkModal"
-import { useIsFetching } from "@tanstack/react-query"
 
 const AppWrapper = styled("div")(({ theme }) => {
   const darkBackground = "/static/images/dark-bg.svg"
@@ -31,23 +31,23 @@ const AppWrapper = styled("div")(({ theme }) => {
 
 export default function AppContainer() {
   const theme = useTheme()
-  const isFetching = useIsFetching()
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <AppWrapper>
-        {!!isFetching && <LinearProgress />}
-        <TopMenu />
-        <Suspense fallback={null}>
-          <Pages />
-        </Suspense>
-        <Version />
-        <ToastContainer
-          theme={theme.palette.mode === "dark" ? "dark" : "light"}
-          position="top-left"
-        />
-        <DevTool />
-        <WrongNetworkModal />
-      </AppWrapper>
-    </LocalizationProvider>
+    <>
+      <TopMenu />
+      <Suspense fallback={null}>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <AppWrapper>
+            <Pages />
+            <Version />
+            <ToastContainer
+              theme={theme.palette.mode === "dark" ? "dark" : "light"}
+              position="top-left"
+            />
+            <DevTool />
+            <WrongNetworkModal />
+          </AppWrapper>
+        </LocalizationProvider>
+      </Suspense>
+    </>
   )
 }

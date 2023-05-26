@@ -24,7 +24,7 @@ export function useApproveAndMigrate(): (
   const dispatch = useDispatch()
   const migratorContract = useGeneralizedSwapMigratorContract()
   const basicPools = useContext(BasicPoolsContext)
-  const { account, chainId, library } = useActiveWeb3React()
+  const { account, chainId, signerOrProvider } = useActiveWeb3React()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -41,7 +41,7 @@ export function useApproveAndMigrate(): (
     if (
       !migratorContract ||
       !account ||
-      !library ||
+      !signerOrProvider ||
       !oldPool ||
       !lpTokenBalance ||
       lpTokenBalance.isZero()
@@ -50,19 +50,19 @@ export function useApproveAndMigrate(): (
     const lpTokenContract = getContract(
       oldPool.lpToken,
       ERC20_ABI,
-      library,
+      signerOrProvider,
       account,
     ) as Erc20
     const oldPoolAddress = oldPool.poolAddress
 
     const newPoolContract = getSwapContract(
-      library,
+      signerOrProvider,
       oldPool?.newPoolAddress,
       {},
       account ?? undefined,
     ) as SwapFlashLoanNoWithdrawFee
     const oldPoolContract = getSwapContract(
-      library,
+      signerOrProvider,
       oldPoolAddress,
       {},
       account ?? undefined,

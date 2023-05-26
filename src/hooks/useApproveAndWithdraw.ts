@@ -39,7 +39,7 @@ export function useApproveAndWithdraw(
   const basicPools = useContext(BasicPoolsContext)
   const swapContract = useSwapContract(poolName)
   const lpTokenContract = useLPTokenContract(poolName)
-  const { account, chainId, library } = useActiveWeb3React()
+  const { account, chainId, signerOrProvider } = useActiveWeb3React()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -47,15 +47,15 @@ export function useApproveAndWithdraw(
   const pool = basicPools?.[poolName]
 
   const metaSwapContract = useMemo(() => {
-    if (pool?.poolAddress && chainId && library) {
+    if (pool?.poolAddress && chainId && signerOrProvider) {
       return getContract(
         pool.poolAddress,
         META_SWAP_ABI,
-        library,
+        signerOrProvider,
         account ?? undefined,
       ) as MetaSwap
     }
-  }, [chainId, library, account, pool?.poolAddress])
+  }, [chainId, signerOrProvider, account, pool?.poolAddress])
 
   const {
     slippageCustom,
@@ -74,7 +74,7 @@ export function useApproveAndWithdraw(
     try {
       const basicPool = basicPools?.[poolName]
       if (!state || !tokens) return
-      if (!account || !chainId || !library)
+      if (!account || !chainId || !signerOrProvider)
         throw new Error("Wallet must be connected")
       if (!swapContract || !basicPool || !lpTokenContract)
         throw new Error("Swap contract is not loaded")
@@ -117,12 +117,12 @@ export function useApproveAndWithdraw(
       const approveSingleToken = async (
         token: BasicToken | undefined,
       ): Promise<void> => {
-        if (!token || !library) {
+        if (!token || !signerOrProvider) {
           enqueueToast(
             "error",
-            "There was a problem loading the token or library",
+            "There was a problem loading the token or signerOrProvider",
           )
-          console.error("Token or library is not loaded")
+          console.error("Token or signerOrProvider is not loaded")
           return
         }
         const spendingValue = BigNumber.from(
@@ -132,7 +132,7 @@ export function useApproveAndWithdraw(
         const tokenContract = getContract(
           token.address,
           ERC20_ABI,
-          library,
+          signerOrProvider,
           account ?? undefined,
         ) as Erc20
         if (tokenContract == null) return

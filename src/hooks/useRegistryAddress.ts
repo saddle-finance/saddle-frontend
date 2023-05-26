@@ -11,13 +11,6 @@ export const useRegistryAddress = () => {
   const { chainId } = useActiveWeb3React()
   const masterRegistry = useMasterRegistry()
 
-  console.log(
-    "master registry enabled ==>",
-    !!masterRegistry,
-    shouldLoadChildGauges(chainId),
-    !!masterRegistry && shouldLoadChildGauges(chainId),
-  )
-
   return useQuery([QueryKeys.RegistryAddress], {
     queryFn: async () => {
       const childGaugeFactoryAddress =
@@ -29,7 +22,7 @@ export const useRegistryAddress = () => {
     },
     enabled: !!masterRegistry && shouldLoadChildGauges(chainId),
     onError: (err) => {
-      console.log("error ==>", err)
+      console.log("error on registryAddress ==>", err)
     },
   })
 }

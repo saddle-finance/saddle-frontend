@@ -73,7 +73,7 @@ export default function CreatePool(): React.ReactElement {
       isMigrated: pool.isMigrated,
       typeOfAsset: pool.typeOfAsset,
     }))
-  const { library, chainId } = useActiveWeb3React()
+  const { signerOrProvider, chainId } = useActiveWeb3React()
 
   const [disableCreatePool, setDisableCreatePool] = useState<boolean>(true)
   const [metapoolBasepoolAddr, setMetapoolBasepoolAddr] = useState<string>(
@@ -145,7 +145,7 @@ export default function CreatePool(): React.ReactElement {
     decimals: BigNumberish
     checkResult: ValidationStatus
   }> => {
-    if (!library || !addr || !chainId)
+    if (!signerOrProvider || !addr || !chainId)
       return {
         name: "",
         symbol: "",
@@ -153,7 +153,7 @@ export default function CreatePool(): React.ReactElement {
         checkResult: ValidationStatus.Primary,
       }
 
-    const ethCallProvider = await getMulticallProvider(library, chainId)
+    const ethCallProvider = await getMulticallProvider(chainId)
     const tokenContract = createMultiCallContract<Erc20>(addr, ERC20_ABI)
     const [name, symbol, decimals] = await ethCallProvider.tryAll([
       tokenContract.name(),

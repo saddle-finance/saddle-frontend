@@ -46,7 +46,7 @@ export default function StakeDialog({
   onClose,
   onClickClaim,
 }: StakeDialogProps): JSX.Element | null {
-  const { chainId, account, library } = useActiveWeb3React()
+  const { chainId, account, signerOrProvider } = useActiveWeb3React()
   const userGauge = useUserGauge()(gaugeAddress)
   const dispatch = useDispatch()
   const [stakeStatus, setStakeStatus] = useState<"stake" | "unstake">("stake")
@@ -56,14 +56,20 @@ export default function StakeDialog({
   const onClickStake = useCallback(async () => {
     const errorMsg = "Unable to stake"
     try {
-      if (!userGauge || !chainId || !gaugeAddress || !account || !library) {
+      if (
+        !userGauge ||
+        !chainId ||
+        !gaugeAddress ||
+        !account ||
+        !signerOrProvider
+      ) {
         console.error(
           `${errorMsg}: ${missingKeys({
             userGauge,
             chainId,
             gaugeAddress,
             account,
-            library,
+            signerOrProvider,
           }).join(", ")} missing`,
         )
         enqueueToast("error", errorMsg)
@@ -73,7 +79,7 @@ export default function StakeDialog({
       const lpTokenContract = getContract(
         userGauge.lpToken.address,
         ERC20_ABI,
-        library,
+        signerOrProvider,
         account,
       ) as Erc20
       await checkAndApproveTokenForTrade(
@@ -109,7 +115,7 @@ export default function StakeDialog({
     chainId,
     gaugeAddress,
     account,
-    library,
+    signerOrProvider,
     amountInput,
     infiniteApproval,
     farmName,

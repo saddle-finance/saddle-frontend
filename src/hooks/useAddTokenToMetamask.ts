@@ -1,9 +1,9 @@
-import { SUPPORTED_WALLETS, Token } from "../constants"
 import { useCallback, useState } from "react"
-import { useChainId, useConnect } from "wagmi"
 
-import { ChainId } from "../constants/networks"
-import { find } from "lodash"
+import { Token } from "../constants"
+import { getTokenIconPath } from "../utils"
+import { useAccount } from "wagmi"
+import { useActiveWeb3React } from "."
 
 // @dev https://eips.ethereum.org/EIPS/eip-747#wallet_watchasset
 export default function useAddTokenToMetamask(token: Token | undefined): {
@@ -11,19 +11,26 @@ export default function useAddTokenToMetamask(token: Token | undefined): {
   success: boolean | undefined
   canAdd: boolean
 } {
-  const chainId = useChainId()
-  const connector = useConnect()
-  const [success] = useState<boolean | undefined>()
+  const { chainId } = useActiveWeb3React()
+  const { connector: activeConnector } = useAccount()
+  const [success, setSuccess] = useState<boolean | undefined>()
 
-  const isMetaMask: boolean =
-    find(SUPPORTED_WALLETS, ["connector", connector])?.name == "MetaMask"
-  const canAdd = Boolean(
-    isMetaMask && chainId && token?.addresses[chainId as ChainId],
-  )
+  const isMetaMask = activeConnector?.name === "MetaMask"
+  const canAdd = Boolean(isMetaMask && chainId && token?.addresses[chainId])
 
   const addToken = useCallback(() => {
-    console.log("add")
-  }, [])
+    if (activeConnector && isMetaMask && token) {
+      activeConnector
+        .watchAsset?.({
+          address: token.addresses[chainId],
+          symbol: token.symbol,
+          decimals: token.decimals,
+          image: getTokenIconPath(token.symbol),
+        })
+        .then((success: boolean) => setSuccess(success))
+        .catch(() => setSuccess(false))
+    }
+  }, [activeConnector, chainId, isMetaMask, token])
 
   return { addToken, success, canAdd }
 }

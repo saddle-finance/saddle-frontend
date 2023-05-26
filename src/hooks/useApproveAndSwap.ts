@@ -55,7 +55,7 @@ export function useApproveAndSwap(): (
   const dispatch = useDispatch()
   const basicPools = useContext(BasicPoolsContext)
   const { tokenAddrToTokenMap } = useTokenMaps()
-  const { library } = useActiveWeb3React()
+  const { signerOrProvider } = useActiveWeb3React()
   const { address: account } = useAccount()
   const chainId = useChainId()
   const baseSynthetixContract = useSynthetixContract()
@@ -76,7 +76,8 @@ export function useApproveAndSwap(): (
     state: ApproveAndSwapStateArgument,
   ): Promise<void> {
     try {
-      if (!account || !library) throw new Error("Wallet must be connected")
+      if (!account || !signerOrProvider)
+        throw new Error("Wallet must be connected")
       if (state.swapType === SWAP_TYPES.DIRECT && !state.swapContract)
         throw new Error("Swap contract is not loaded")
       if (state.swapType !== SWAP_TYPES.DIRECT && !state.bridgeContract)
@@ -88,7 +89,7 @@ export function useApproveAndSwap(): (
       const tokenContract = getContract(
         token.address.toLowerCase(),
         ERC20_ABI,
-        library,
+        signerOrProvider,
         account,
       ) as Erc20
       let gasPrice

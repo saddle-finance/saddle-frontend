@@ -13,7 +13,9 @@ import {
   isMainnet,
 } from "../hooks/useContract"
 import { MulticallContract, MulticallProvider } from "../types/ethcall"
+import { Provider, Signer } from "@wagmi/core"
 import {
+  chunkedTryAll,
   createMultiCallContract,
   enumerate,
   getMulticallProvider,
@@ -116,18 +118,17 @@ export const shouldLoadChildGauges = (chainId: ChainId) =>
   [ChainId.OPTIMISM, ChainId.ARBITRUM].includes(chainId)
 
 export async function getGaugeData(
-  library: any,
+  signerOrProvider: Signer | Provider,
   chainId: ChainId,
   basicPools: BasicPools | null,
   registryAddresses?: Partial<Record<string, string>>,
   account?: string,
 ) {
-  console.log("registry addresses ==>", registryAddresses)
-  // if (!registryAddresses || !areGaugesActive(chainId)) return initialGaugesState
+  if (!areGaugesActive(chainId)) return initialGaugesState
   try {
     if (chainId === ChainId.MAINNET || chainId === ChainId.HARDHAT) {
       return buildGaugeData(
-        library,
+        signerOrProvider,
         chainId,
         basicPools,
         registryAddresses,
@@ -135,7 +136,7 @@ export async function getGaugeData(
       )
     } else if (shouldLoadChildGauges(chainId)) {
       return buildGaugeDataSidechain(
-        library,
+        signerOrProvider,
         chainId,
         basicPools,
         registryAddresses,
@@ -158,18 +159,23 @@ export async function getGaugeData(
 /* ------- Start of helper functions ------- */
 // Mainnet specific
 async function buildGaugeData(
-  library: any,
+  signerOrProvider: Signer | Provider,
   chainId: ChainId,
   basicPools: BasicPools,
   registryAddresses?: Partial<Record<string, string>>,
   account?: string,
 ) {
-  // if (!registryAddresses || !areGaugesActive(chainId))
-  //   throw new Error("Unable to retrieve and build gauge data")
-
-  const ethCallProvider = await getMulticallProvider(library, chainId)
-  const gaugeController = getGaugeControllerContract(library, chainId, account)
-  const gaugeMinterContract = getGaugeMinterContract(library, chainId, account)
+  const ethCallProvider = await getMulticallProvider(chainId)
+  const gaugeController = getGaugeControllerContract(
+    signerOrProvider,
+    chainId,
+    account,
+  )
+  const gaugeMinterContract = getGaugeMinterContract(
+    signerOrProvider,
+    chainId,
+    account,
+  )
   const gaugeCount: number = (await gaugeController.n_gauges()).toNumber()
 
   const gaugeControllerMultiCall = createMultiCallContract<GaugeController>(
@@ -177,15 +183,27 @@ async function buildGaugeData(
     GAUGE_CONTROLLER_ABI,
   )
 
-  const gaugeAddresses: string[] = (
-    await ethCallProvider.tryAll(
+  const [gaugeAddressesRes] = await Promise.all([
+    chunkedTryAll(
       enumerate(gaugeCount, 0).map((value) =>
         gaugeControllerMultiCall.gauges(value),
       ),
-    )
-  )
-    .map((address) => address && address.toLowerCase())
+      ethCallProvider,
+      10,
+    ),
+  ])
+  const gaugeAddresses = gaugeAddressesRes
+    .map((address) => address && address.toLocaleLowerCase())
     .filter(Boolean) as string[]
+  // const gaugeAddresses: string[] = (
+  //   await ethCallProvider.tryAll(
+  //     enumerate(gaugeCount, 0).map((value) =>
+  //       gaugeControllerMultiCall.gauges(value),
+  //     ),
+  //   )
+  // )
+  //   .map((address) => address && address.toLowerCase())
+  //   .filter(Boolean) as string[]
 
   const gaugeMulticallContracts = gaugeAddresses.map((address) =>
     createMultiCallContract<LiquidityGaugeV5>(address, LIQUIDITY_GAUGE_V5_ABI),
@@ -333,13 +351,13 @@ async function getGaugeRewardsFromTokens(
 
 // Combined helper functions
 export async function getGaugeRewardsUserData(
-  library: any,
+  signerOrProvider: Signer | Provider,
   chainId: ChainId,
   gaugeAddresses: string[],
   rewardsTokens: (BasicToken | undefined)[][],
   account?: string,
 ): Promise<GaugeRewardUserData | null> {
-  const ethCallProvider = await getMulticallProvider(library, chainId)
+  const ethCallProvider = await getMulticallProvider(chainId)
   if (!gaugeAddresses.length || !ethCallProvider || !account) return null
   try {
     const gaugeMulticallContracts = retrieveGaugeContracts(
@@ -630,7 +648,7 @@ function getGaugeRewardTokens(
 
 // Sidechain-specific helper functions
 async function buildGaugeDataSidechain(
-  library: any,
+  signerOrProvider: Signer | Provider,
   chainId: ChainId,
   basicPools: BasicPools,
   registryAddresses?: Partial<Record<string, string>>,
@@ -638,11 +656,11 @@ async function buildGaugeDataSidechain(
 ) {
   const childGaugeFactoryAddress = registryAddresses?.[CHILD_GAUGE_FACTORY_NAME]
 
-  if (!childGaugeFactoryAddress)
-    throw new Error("Unable to retrieve and build gauge data")
+  if (!childGaugeFactoryAddress) return
+  // throw new Error("Unable to retrieve and build gauge data")
 
   const childGaugeFactory = getChildGaugeFactory(
-    library,
+    signerOrProvider,
     chainId,
     childGaugeFactoryAddress,
     account,
@@ -651,7 +669,7 @@ async function buildGaugeDataSidechain(
     await childGaugeFactory.get_gauge_count()
   ).toNumber()
 
-  const ethCallProvider = await getMulticallProvider(library, chainId)
+  const ethCallProvider = await getMulticallProvider(chainId)
   const childGaugeFactoryMultiCall = createMultiCallContract<ChildGaugeFactory>(
     childGaugeFactoryAddress,
     CHILD_GAUGE_FACTORY_ABI,

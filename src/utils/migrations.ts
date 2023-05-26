@@ -1,3 +1,4 @@
+import { Provider, Signer } from "@wagmi/core"
 import { getMulticallProvider, isAddressZero } from "."
 
 import { ChainId } from "../constants/networks"
@@ -13,11 +14,11 @@ type MigrationData = { [poolAddress: string]: string } // current poolAddress =>
  * Returns old -> new pool address mappings from GeneralizedMigrator for the given pool addresses.
  */
 export async function getMigrationData(
-  library: any,
+  signerOrProvider: Signer | Provider,
   chainId: ChainId,
   poolAddresses: string[],
 ): Promise<MigrationData | null> {
-  const ethCallProvider = await getMulticallProvider(library, chainId)
+  const ethCallProvider = await getMulticallProvider(chainId)
   const migratorAddress = GENERALIZED_SWAP_MIGRATOR_CONTRACT_ADDRESSES[chainId]
   if (!ethCallProvider || !chainId || !migratorAddress) {
     return null

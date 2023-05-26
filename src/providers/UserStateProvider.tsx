@@ -1,6 +1,7 @@
 import { GaugeRewardUserData, getGaugeRewardsUserData } from "../utils/gauges"
 import { MinichefUserData, getMinichefRewardsUserData } from "../utils/minichef"
 import { MulticallCall, MulticallContract } from "../types/ethcall"
+import { Provider, Signer } from "@wagmi/core"
 import React, { ReactElement, useCallback, useContext, useState } from "react"
 import { batchArray, getMulticallProvider } from "../utils"
 
@@ -34,7 +35,7 @@ export const UserStateContext = React.createContext<UserState>(null)
 export default function UserStateProvider({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
-  const { chainId, library, account } = useActiveWeb3React()
+  const { chainId, signerOrProvider, account } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
   const tokens = useContext(TokensContext)
 
@@ -43,18 +44,18 @@ export default function UserStateProvider({
   const [userState, setUserState] = useState<UserState>(null)
   const fetchState = useCallback(() => {
     async function fetchUserState() {
-      if (!chainId || !library || !basicPools || !account || !tokens) {
+      if (!chainId || !signerOrProvider || !basicPools || !account || !tokens) {
         setUserState(null)
         return
       }
       const userTokenBalancesPromise = getUserTokenBalances(
-        library,
+        signerOrProvider,
         chainId,
         account,
         Object.keys(tokens) as string[],
       )
       const minichefDataPromise = getMinichefRewardsUserData(
-        library,
+        signerOrProvider,
         chainId,
         Object.values(basicPools).map(
           ({ poolAddress, lpToken, miniChefRewardsPid, lpTokenSupply }) => ({
@@ -68,7 +69,7 @@ export default function UserStateProvider({
       )
       const gaugeRewardsPromise = gauges
         ? getGaugeRewardsUserData(
-            library,
+            signerOrProvider,
             chainId,
             Object.values(gauges).map(({ address }) => address),
             Object.values(gauges).map(({ rewards }) =>
@@ -117,7 +118,7 @@ export default function UserStateProvider({
     }
     void fetchUserState()
   }, [
-    library,
+    signerOrProvider,
     chainId,
     account,
     basicPools,
@@ -135,13 +136,13 @@ export default function UserStateProvider({
 
 const BATCH_SIZE = 40
 async function getUserTokenBalances(
-  library: any,
+  signerOrProvider: Signer | Provider,
   chainId: ChainId,
   account: string,
   tokenAddresses: string[], // assumes addresses are deduped
 ): Promise<UserTokenBalances | null> {
   try {
-    const ethCallProvider = await getMulticallProvider(library, chainId)
+    const ethCallProvider = await getMulticallProvider(chainId)
     const balanceCalls: MulticallCall<unknown, BigNumber>[] =
       tokenAddresses.map((address) => {
         const contract = new Contract(

@@ -1,6 +1,6 @@
 import { Button, DialogContent, Typography } from "@mui/material"
 import React, { useEffect, useState } from "react"
-import { useChainId, useNetwork } from "wagmi"
+import { mainnet, useAccount, useChainId, useNetwork } from "wagmi"
 
 import Dialog from "../../components/Dialog"
 import { areGaugesActive } from "../../utils/gauges"
@@ -9,16 +9,14 @@ import { useTranslation } from "react-i18next"
 export default function VeSDLWrongNetworkModal(): JSX.Element {
   const [openDialog, setOpenDialog] = useState(false)
   const chainId = useChainId()
+  const { connector: activeConnector } = useAccount()
   const { chain } = useNetwork()
   const chainName = chain?.name
   const { t } = useTranslation()
 
-  const handleConnectMainnet = () => {
-    // TODO implement this function
-    // void provider.send("wallet_switchEthereumChain", [
-    //   { chainId: "0x1" },
-    //   account,
-    // ])
+  const handleConnectMainnet = async () => {
+    if (!activeConnector) return
+    await activeConnector.switchChain?.(mainnet.id)
   }
 
   useEffect(() => {
@@ -42,7 +40,7 @@ export default function VeSDLWrongNetworkModal(): JSX.Element {
         <Button
           variant="contained"
           fullWidth
-          onClick={handleConnectMainnet}
+          onClick={() => void handleConnectMainnet()}
           sx={{ mt: 3 }}
         >
           {t("changeToMainnet")}

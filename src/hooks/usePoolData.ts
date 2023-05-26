@@ -140,7 +140,7 @@ const emptyUserShareData: UserShareType = {
 
 export default function usePoolData(name?: string): PoolDataHookReturnType {
   const [poolName, setPoolName] = useState<string | undefined>(name)
-  const { account, library, chainId } = useActiveWeb3React()
+  const { account, signerOrProvider, chainId } = useActiveWeb3React()
   const userState = useContext(UserStateContext)
   const minichefData = useContext(MinichefContext)
   const { data: expandedPools } = useContext(ExpandedPoolsContext)
@@ -161,7 +161,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
         expandedPool == null ||
         poolName == null ||
         tokenPricesUSD == null ||
-        library == null ||
+        signerOrProvider == null ||
         chainId == null
       ) {
         setPoolData({
@@ -182,7 +182,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
         // Pool token data
         const { aprs, amountsStaked, claimableAmount } =
           await getThirdPartyDataForPool(
-            library,
+            signerOrProvider,
             chainId,
             account,
             {
@@ -367,7 +367,7 @@ export default function usePoolData(name?: string): PoolDataHookReturnType {
     // isLoading,
     account,
     chainId,
-    library,
+    signerOrProvider,
     minichefData?.pools,
     poolName,
     swapStats,
