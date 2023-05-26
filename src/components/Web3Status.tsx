@@ -71,28 +71,34 @@ const Web3Status = (): ReactElement => {
                   >
                     {connected ? account.displayName : "Connect Wallet"}
                   </Button>
-                  <IconButton
-                    onClick={openChainModal}
-                    sx={{
-                      minWidth: 0,
-                      padding: 0.5,
-                      backgroundColor: theme.palette.background.default,
-                      borderRadius: theme.spacing(1),
-                    }}
-                  >
-                    {chain.hasIcon && chain.iconUrl && (
-                      <img
-                        alt={chain.name ?? "Chain icon"}
-                        src={chain.iconUrl}
-                      />
-                    )}
-                  </IconButton>
+                  {chain.hasIcon ? (
+                    <IconButton
+                      onClick={openChainModal}
+                      sx={{
+                        minWidth: 0,
+                        padding: 0.5,
+                        backgroundColor: theme.palette.background.default,
+                        borderRadius: theme.spacing(1),
+                      }}
+                    >
+                      {chain.hasIcon && chain.iconUrl && (
+                        <img
+                          alt={chain.name ?? "Chain icon"}
+                          src={chain.iconUrl}
+                        />
+                      )}
+                    </IconButton>
+                  ) : (
+                    <Button variant="outlined" onClick={openChainModal}>
+                      {chain.name}
+                    </Button>
+                  )}
                 </Box>
               )
             })()}
 
             <Dialog
-              open={modalOpen}
+              open={modalOpen && !!account}
               onClose={(): void => setModalOpen(false)}
               maxWidth="sm"
               fullWidth
