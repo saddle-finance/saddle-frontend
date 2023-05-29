@@ -10,7 +10,6 @@ import {
   TextField,
 } from "@mui/material"
 import React, { ReactElement, useContext, useEffect, useState } from "react"
-import { useAccount, useConnect } from "wagmi"
 
 import { AppState } from "../../state"
 import { BigNumber } from "ethers"
@@ -35,8 +34,6 @@ import { useTranslation } from "react-i18next"
 
 function Pools(): ReactElement | null {
   const { account, chainId } = useActiveWeb3React()
-  const { isConnecting } = useAccount()
-  const { isLoading: isWalletConnecting } = useConnect()
   const expandedPools = useContext(ExpandedPoolsContext)
   const pools = expandedPools.data.byName
   const userState = useContext(UserStateContext)
@@ -75,8 +72,6 @@ function Pools(): ReactElement | null {
     })
   }, [account, chainId])
 
-  if (isConnecting) return <div> Loading ...</div>
-  if (isWalletConnecting) return <div>Loading ...</div>
   return (
     <Container sx={{ pb: 5 }}>
       <Stack direction="row" alignItems="center" justifyContent="center">

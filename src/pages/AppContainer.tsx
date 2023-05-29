@@ -34,8 +34,8 @@ export default function AppContainer() {
   return (
     <>
       <TopMenu />
-      <Suspense fallback={null}>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <Suspense fallback={null}>
           <AppWrapper>
             <Pages />
             <Version />
@@ -46,8 +46,8 @@ export default function AppContainer() {
             <DevTool />
             <WrongNetworkModal />
           </AppWrapper>
-        </LocalizationProvider>
-      </Suspense>
+        </Suspense>
+      </LocalizationProvider>
     </>
   )
 }
