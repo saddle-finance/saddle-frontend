@@ -656,8 +656,8 @@ async function buildGaugeDataSidechain(
 ) {
   const childGaugeFactoryAddress = registryAddresses?.[CHILD_GAUGE_FACTORY_NAME]
 
-  if (!childGaugeFactoryAddress) return
-  // throw new Error("Unable to retrieve and build gauge data")
+  if (!childGaugeFactoryAddress)
+    throw new Error("Unable to retrieve and build gauge data")
 
   const childGaugeFactory = getChildGaugeFactory(
     signerOrProvider,
