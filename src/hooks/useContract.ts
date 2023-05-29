@@ -153,9 +153,7 @@ export function usePoolRegistry(): PoolRegistry | null {
 }
 
 export function usePoolRegistryMultiCall(): MulticallContract<PoolRegistry> | null {
-  const { data: signer } = useSigner()
-  const provider = useProvider()
-  const signerOrProvider = signer || provider
+  const { signerOrProvider } = useActiveWeb3React()
 
   const masterRegistryContract = useMasterRegistry()
   const [contractAddress, setContractAddress] = useState<string | undefined>()
