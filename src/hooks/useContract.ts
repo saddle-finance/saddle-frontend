@@ -20,8 +20,8 @@ import {
 import { Contract, ContractInterface } from "@ethersproject/contracts"
 import { Provider, Signer } from "@wagmi/core"
 import { createMultiCallContract, getContract, getSwapContract } from "../utils"
-import { useAccount, useProvider, useSigner } from "wagmi"
 import { useContext, useEffect, useMemo, useState } from "react"
+import { useProvider, useSigner } from "wagmi"
 
 import { AddressZero } from "@ethersproject/constants"
 import BRIDGE_CONTRACT_ABI from "../constants/abis/bridge.json"
@@ -89,9 +89,7 @@ function useContract(
   ABI: ContractInterface,
   withSignerIfPossible = true,
 ): Contract | null {
-  const { address: account } = useAccount()
-  const { data: signer } = useSigner()
-  const provider = useProvider()
+  const { account, signerOrProvider } = useActiveWeb3React()
 
   return useMemo(() => {
     if (!address || !ABI) return null
@@ -99,14 +97,14 @@ function useContract(
       return getContract(
         address,
         ABI,
-        signer || provider,
+        signerOrProvider,
         withSignerIfPossible && account ? account : undefined,
       )
     } catch (error) {
       console.error("Failed to get contract", error)
       return null
     }
-  }, [address, ABI, signer, provider, withSignerIfPossible, account])
+  }, [address, ABI, signerOrProvider, withSignerIfPossible, account])
 }
 
 export function useMasterRegistry(): MasterRegistry | null {
