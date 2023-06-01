@@ -53,19 +53,19 @@ export default function useWithdrawFormState(poolName: string) {
     tokenInputs: {},
     withdrawType: "",
   })
-  const { account, library } = useActiveWeb3React()
+  const { account, signerOrProvider } = useActiveWeb3React()
 
   const metaSwapContract = useMemo(() => {
-    if (poolData?.poolAddress && library) {
+    if (poolData?.poolAddress && signerOrProvider) {
       return getContract(
         poolData.poolAddress,
         META_SWAP_ABI,
-        library,
+        signerOrProvider,
         account ?? undefined,
       ) as MetaSwap
     }
     return null
-  }, [library, account, poolData?.poolAddress])
+  }, [signerOrProvider, account, poolData?.poolAddress])
 
   // When pool is MetaSwap pool, it includes LP token and other token ex: ["wCUSD","saddleUSD-V2"]
   const withdrawTokens =

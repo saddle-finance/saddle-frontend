@@ -14,6 +14,7 @@ import { Zero } from "@ethersproject/constants"
 import { omit } from "lodash"
 import { useActiveWeb3React } from "./"
 import { useBridgeContract } from "./useContract"
+import { useProvider } from "wagmi"
 
 export interface PendingSwap {
   swapType: SWAP_TYPES
@@ -86,7 +87,8 @@ const SETTLE = "Settle"
 const WITHDRAW = "Withdraw"
 
 const usePendingSwapData = (): PendingSwap[] => {
-  const { account, chainId, library } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
+  const provider = useProvider()
   const bridgeContract = useBridgeContract()
   const tokens = useContext(TokensContext)
   const [state, setState] = useState<State>({
@@ -102,7 +104,7 @@ const usePendingSwapData = (): PendingSwap[] => {
   // update the secondsRemaining every 15s
   useEffect(() => {
     const timer = setInterval(() => {
-      void library?.getBlock("latest").then(({ timestamp }) => {
+      void provider.getBlock("latest").then(({ timestamp }) => {
         // block timestamp in secs
         setState((prevState) => {
           const shouldUpdateState = prevState.pendingSwaps.some(
@@ -125,7 +127,7 @@ const usePendingSwapData = (): PendingSwap[] => {
     return () => {
       clearInterval(timer)
     }
-  }, [library])
+  }, [provider])
   const pendingSwapEventListener = useCallback(
     (...listenerArgs) => {
       const event = listenerArgs[listenerArgs.length - 1] as Event

@@ -6,23 +6,27 @@ import {
   MulticallContract,
   MulticallProvider,
 } from "../types/ethcall"
+import {
+  Provider,
+  Signer,
+  getContract as getContract_,
+  getProvider,
+} from "@wagmi/core"
 import { formatUnits, parseEther, parseUnits } from "@ethersproject/units"
 
 import { BasicPool } from "../providers/BasicPoolsProvider"
 import { BasicTokens } from "../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { ChainId } from "../constants/networks"
-import { Contract } from "@ethersproject/contracts"
-import { ContractInterface } from "ethers"
 import { Deadlines } from "../state/user"
 import { Contract as EthcallContract } from "ethcall"
+import { Provider as EthcallProvider } from "ethcall"
 import { ExpandedPool } from "../providers/ExpandedPoolsProvider"
 import { JsonFragment } from "@ethersproject/abi"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import META_SWAP_DEPOSIT_ABI from "../constants/abis/metaSwapDeposit.json"
 import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { MetaSwapDeposit } from "../../types/ethers-contracts/MetaSwapDeposit"
-import { Provider } from "ethcall"
 import SWAP_FLASH_LOAN_ABI from "../constants/abis/swapFlashLoan.json"
 import SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI from "../constants/abis/swapFlashLoanNoWithdrawFee.json"
 import SWAP_GUARDED_ABI from "../constants/abis/swapGuarded.json"
@@ -56,32 +60,35 @@ export function enumerate(length: number, start = 0): number[] {
 
 // account is not optional
 export function getSigner(
-  library: Web3Provider,
+  signerOrProvider: Web3Provider,
   account: string,
 ): JsonRpcSigner {
-  return library.getSigner(account).connectUnchecked()
+  return signerOrProvider.getSigner(account).connectUnchecked()
 }
 
 // account is optional
 export function getProviderOrSigner(
-  library: Web3Provider,
+  signerOrProvider: Web3Provider,
   account?: string,
 ): Web3Provider | JsonRpcSigner {
-  return account ? getSigner(library, account) : library
+  return account ? getSigner(signerOrProvider, account) : signerOrProvider
 }
 
 // account is optional
 export function getContract(
   address: string,
-  ABI: ContractInterface,
-  library: Web3Provider,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ABI: any,
+  signerOrProvider?: Signer | Provider,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   account?: string,
 ) {
   if (!isAddress(address) || address === AddressZero) {
     throw Error(`Invalid 'address' parameter '${address}'.`)
   }
 
-  return new Contract(address, ABI, getProviderOrSigner(library, account))
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  return getContract_({ address, abi: ABI, signerOrProvider: signerOrProvider })
 }
 
 type PoolAttributes = Partial<
@@ -89,7 +96,7 @@ type PoolAttributes = Partial<
 > & { isMetaSwapDeposit?: boolean }
 
 export function getSwapContract(
-  library: Web3Provider,
+  signerOrProvider: Signer | Provider,
   address: string,
   poolAttributes: PoolAttributes,
   account?: string,
@@ -116,14 +123,14 @@ export function getSwapContract(
     return getContract(
       address,
       SWAP_GUARDED_ABI,
-      library,
+      signerOrProvider,
       account ?? undefined,
     ) as SwapGuarded
   } else if (isWithdrawFeeAbi) {
     return getContract(
       address,
       SWAP_FLASH_LOAN_ABI,
-      library,
+      signerOrProvider,
       account ?? undefined,
     ) as SwapFlashLoan
   } else if (isMetaSwapDeposit) {
@@ -131,21 +138,21 @@ export function getSwapContract(
     return getContract(
       address,
       META_SWAP_DEPOSIT_ABI,
-      library,
+      signerOrProvider,
       account ?? undefined,
     ) as MetaSwapDeposit
   } else if (isMetaSwap) {
     return getContract(
       address,
       META_SWAP_ABI,
-      library,
+      signerOrProvider,
       account ?? undefined,
     ) as MetaSwap
   } else {
     return getContract(
       address,
       SWAP_FLASH_LOAN_NO_WITHDRAW_FEE_ABI,
-      library,
+      signerOrProvider,
       account ?? undefined,
     ) as SwapFlashLoanNoWithdrawFee
   }
@@ -358,11 +365,11 @@ export function getTokenAddrForPoolType(
 }
 
 export async function getMulticallProvider(
-  library: Web3Provider,
   chainId: ChainId,
 ): Promise<MulticallProvider> {
-  const ethcallProvider = new Provider() as unknown as MulticallProvider
-  await ethcallProvider.init(library)
+  const provider = getProvider()
+  const ethcallProvider = new EthcallProvider() as unknown as MulticallProvider
+  await ethcallProvider.init(provider)
   if (chainId === ChainId.HARDHAT) {
     ethcallProvider.multicall3 = {
       address: "0xcA11bde05977b3631167028862bE2a173976CA11",

@@ -9,12 +9,12 @@ export const MinichefContext = React.createContext<MinichefData | null>(null)
 export default function MinichefProvider({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
-  const { chainId, library } = useActiveWeb3React()
+  const { chainId, signerOrProvider } = useActiveWeb3React()
   const pools = useContext(BasicPoolsContext)
   const [rewardsData, setRewardsData] = useState<MinichefData | null>(null)
   useEffect(() => {
     async function fetchTokens() {
-      if (!chainId || !library || !pools) {
+      if (!chainId || !signerOrProvider || !pools) {
         setRewardsData(null)
         return
       }
@@ -27,14 +27,14 @@ export default function MinichefProvider({
         }),
       )
       const rewardsData = await getMinichefRewardsPoolsData(
-        library,
+        signerOrProvider,
         chainId,
         poolsData,
       )
       setRewardsData(rewardsData)
     }
     void fetchTokens()
-  }, [chainId, library, pools])
+  }, [chainId, signerOrProvider, pools])
   return (
     <MinichefContext.Provider value={rewardsData}>
       {children}

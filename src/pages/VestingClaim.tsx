@@ -17,7 +17,7 @@ import { useSdlContract } from "../hooks/useContract"
 
 function VestingClaim(): ReactElement {
   const { t } = useTranslation()
-  const { account, chainId, library } = useActiveWeb3React()
+  const { account, chainId, signerOrProvider } = useActiveWeb3React()
   const { addToken, canAdd } = useAddTokenToMetamask({
     ...SDL_TOKEN,
   })
@@ -33,7 +33,7 @@ function VestingClaim(): ReactElement {
 
   useEffect(() => {
     const fetchBeneficiaries = async () => {
-      if (!library || !chainId || !account || !sdlContract) return
+      if (!signerOrProvider || !chainId || !account || !sdlContract) return
       const vestingContractDeployedFilter =
         sdlContract.filters.VestingContractDeployed(null, null)
       try {
@@ -68,7 +68,7 @@ function VestingClaim(): ReactElement {
           const vestingContract = getContract(
             vestingContractAddress,
             INVESTOR_EMPLOYEE_VESTING_CONTRACT_ABI,
-            library,
+            signerOrProvider,
             account,
           ) as Vesting
           setVestingContract(vestingContract)
@@ -95,7 +95,7 @@ function VestingClaim(): ReactElement {
       }
     }
     void fetchBeneficiaries()
-  }, [account, chainId, library, sdlContract])
+  }, [account, chainId, signerOrProvider, sdlContract])
 
   const onClaimClick: () => Promise<void> = async () => {
     if (!vestingContract || !chainId) return

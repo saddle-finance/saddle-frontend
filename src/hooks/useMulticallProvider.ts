@@ -5,11 +5,12 @@ import { getMulticallProvider } from "../utils"
 import { useActiveWeb3React } from "../hooks"
 
 export const useMulticallProvider = (): UseQueryResult<MulticallProvider> => {
-  const { chainId, library } = useActiveWeb3React()
+  const { chainId, signerOrProvider } = useActiveWeb3React()
 
   return useQuery(["multicallProvider"], async () => {
-    if (!library || !chainId) throw new Error("library or chainId not found")
+    if (!signerOrProvider || !chainId)
+      throw new Error("signerOrProvider or chainId not found")
 
-    return await getMulticallProvider(library, chainId)
+    return await getMulticallProvider(chainId)
   })
 }

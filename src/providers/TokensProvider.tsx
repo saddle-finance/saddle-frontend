@@ -37,7 +37,7 @@ export const TokensContext = React.createContext<BasicTokens>(null)
 export default function TokensProvider({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
-  const { chainId, library } = useActiveWeb3React()
+  const { chainId, signerOrProvider } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
   const minichefData = useContext(MinichefContext)
   const { gauges } = useContext(GaugeContext)
@@ -45,12 +45,12 @@ export default function TokensProvider({
 
   useEffect(() => {
     async function fetchTokens() {
-      if (!chainId || !library || !basicPools) {
+      if (!chainId || !signerOrProvider || !basicPools) {
         setTokens(null)
         return
       }
       const gaugesAreActive = areGaugesActive(chainId)
-      const ethCallProvider = await getMulticallProvider(library, chainId)
+      const ethCallProvider = await getMulticallProvider(chainId)
       const lpTokens = new Set()
       const tokenType: Partial<{ [tokenAddress: string]: PoolTypes }> = {}
       const saddleApprovedPoolTokens = new Set()
@@ -153,7 +153,7 @@ export default function TokensProvider({
       setTokens(tokenInfos)
     }
     void fetchTokens()
-  }, [chainId, library, basicPools, minichefData, gauges])
+  }, [chainId, signerOrProvider, basicPools, minichefData, gauges])
   return (
     <TokensContext.Provider value={tokens}>{children}</TokensContext.Provider>
   )

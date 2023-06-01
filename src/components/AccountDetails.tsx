@@ -21,7 +21,6 @@ import { getMultichainScanLink } from "../utils/getEtherscanLink"
 import { shortenAddress } from "../utils/shortenAddress"
 import { useTheme } from "@mui/material/styles"
 import { useTranslation } from "react-i18next"
-import { useUDName } from "../hooks/useUDName"
 
 export default function AccountDetail(): ReactElement {
   const { t } = useTranslation()
@@ -29,7 +28,6 @@ export default function AccountDetail(): ReactElement {
   const { chain } = useNetwork()
   const { disconnect } = useDisconnect()
   const userState = useContext(UserStateContext)
-  const udName = useUDName()
 
   const nativeToken = chain?.nativeCurrency
   const chainId = chain?.id
@@ -72,7 +70,7 @@ export default function AccountDetail(): ReactElement {
           <Stack direction="row" spacing={1}>
             <Identicon />
             <Typography variant="subtitle1">
-              {udName || (address && shortenAddress(address))}
+              {address && shortenAddress(address)}
             </Typography>
             {chainId && address && (
               <Link

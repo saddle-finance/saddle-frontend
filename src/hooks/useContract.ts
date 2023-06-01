@@ -18,8 +18,10 @@ import {
   VOTING_ESCROW_CONTRACT_ADDRESS,
 } from "../constants"
 import { Contract, ContractInterface } from "@ethersproject/contracts"
+import { Provider, Signer } from "@wagmi/core"
 import { createMultiCallContract, getContract, getSwapContract } from "../utils"
 import { useContext, useEffect, useMemo, useState } from "react"
+import { useProvider, useSigner } from "wagmi"
 
 import { AddressZero } from "@ethersproject/constants"
 import BRIDGE_CONTRACT_ABI from "../constants/abis/bridge.json"
@@ -75,7 +77,6 @@ import { SynthetixExchangeRate } from "../../types/ethers-contracts/SynthetixExc
 import { SynthetixNetworkToken } from "../../types/ethers-contracts/SynthetixNetworkToken"
 import VOTING_ESCROW_CONTRACT_ABI from "../constants/abis/votingEscrow.json"
 import { VotingEscrow } from "../../types/ethers-contracts/VotingEscrow"
-import { Web3Provider } from "@ethersproject/providers"
 import { formatBytes32String } from "@ethersproject/strings"
 import { useActiveWeb3React } from "./index"
 
@@ -88,22 +89,22 @@ function useContract(
   ABI: ContractInterface,
   withSignerIfPossible = true,
 ): Contract | null {
-  const { library, account } = useActiveWeb3React()
+  const { account, signerOrProvider } = useActiveWeb3React()
 
   return useMemo(() => {
-    if (!address || !ABI || !library) return null
+    if (!address || !ABI) return null
     try {
       return getContract(
         address,
         ABI,
-        library,
+        signerOrProvider,
         withSignerIfPossible && account ? account : undefined,
       )
     } catch (error) {
       console.error("Failed to get contract", error)
       return null
     }
-  }, [address, ABI, library, withSignerIfPossible, account])
+  }, [address, ABI, signerOrProvider, withSignerIfPossible, account])
 }
 
 export function useMasterRegistry(): MasterRegistry | null {
@@ -119,7 +120,8 @@ export function useMasterRegistry(): MasterRegistry | null {
 }
 
 export function usePoolRegistry(): PoolRegistry | null {
-  const { library } = useActiveWeb3React()
+  const { data: signer } = useSigner()
+  const provider = useProvider()
   const masterRegistryContract = useMasterRegistry()
   const [contractAddress, setContractAddress] = useState<string | undefined>()
   useEffect(() => {
@@ -141,17 +143,18 @@ export function usePoolRegistry(): PoolRegistry | null {
   }, [masterRegistryContract])
 
   return useMemo(() => {
-    if (!library || !contractAddress) return null
+    if (!contractAddress) return null
     return getContract(
       contractAddress,
       POOL_REGISTRY_ABI,
-      library,
+      signer || provider,
     ) as PoolRegistry
-  }, [contractAddress, library])
+  }, [contractAddress, provider, signer])
 }
 
 export function usePoolRegistryMultiCall(): MulticallContract<PoolRegistry> | null {
-  const { library } = useActiveWeb3React()
+  const { signerOrProvider } = useActiveWeb3React()
+
   const masterRegistryContract = useMasterRegistry()
   const [contractAddress, setContractAddress] = useState<string | undefined>()
   useEffect(() => {
@@ -173,19 +176,19 @@ export function usePoolRegistryMultiCall(): MulticallContract<PoolRegistry> | nu
   }, [masterRegistryContract])
 
   return useMemo(() => {
-    if (!library || !contractAddress) return null
+    if (!signerOrProvider || !contractAddress) return null
     return createMultiCallContract<PoolRegistry>(
       contractAddress,
       POOL_REGISTRY_ABI,
     )
-  }, [contractAddress, library])
+  }, [contractAddress, signerOrProvider])
 }
 
 export const PERMISSIONLESS_DEPLOYER_NAME = formatBytes32String(
   "PermissionlessDeployer",
 )
 export function usePermissionlessDeployer(): PermissionlessDeployer | null {
-  const { account, library } = useActiveWeb3React()
+  const { account, signerOrProvider } = useActiveWeb3React()
   const masterRegistryContract = useMasterRegistry()
   const [contractAddress, setContractAddress] = useState<string | undefined>()
   useEffect(() => {
@@ -207,14 +210,14 @@ export function usePermissionlessDeployer(): PermissionlessDeployer | null {
   }, [masterRegistryContract])
 
   return useMemo(() => {
-    if (!library || !account || !contractAddress) return null
+    if (!signerOrProvider || !account || !contractAddress) return null
     return getContract(
       contractAddress,
       PERMISSIONLESS_DEPLOYER_ABI,
-      library,
+      signerOrProvider,
       account,
     ) as PermissionlessDeployer
-  }, [contractAddress, library, account])
+  }, [contractAddress, signerOrProvider, account])
 }
 
 export function useGeneralizedSwapMigratorContract(): GeneralizedSwapMigrator | null {
@@ -295,20 +298,25 @@ export function useSwapContract<T extends string>(
 export function useSwapContract(
   poolName?: string,
 ): ReturnType<typeof getSwapContract> {
-  const { account, library } = useActiveWeb3React()
+  const { account, signerOrProvider } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
   const pool = poolName ? basicPools?.[poolName] : null
   return useMemo(() => {
-    if (!pool || !library) return null
+    if (!pool || !signerOrProvider) return null
     try {
       const poolAddress = pool.metaSwapDepositAddress || pool.poolAddress
       if (!poolAddress) return null
-      return getSwapContract(library, poolAddress, pool, account ?? undefined)
+      return getSwapContract(
+        signerOrProvider,
+        poolAddress,
+        pool,
+        account ?? undefined,
+      )
     } catch (error) {
       console.error("Failed to get contract", error)
       return null
     }
-  }, [library, account, pool])
+  }, [signerOrProvider, account, pool])
 }
 
 export function useLPTokenContract<T extends string>(
@@ -319,24 +327,24 @@ export function useLPTokenContract<T extends string>(
 export function useLPTokenContract(
   poolName: string,
 ): LpTokenUnguarded | LpTokenGuarded | null {
-  const { account, library } = useActiveWeb3React()
+  const { account, signerOrProvider } = useActiveWeb3React()
   const basicPools = useContext(BasicPoolsContext)
   const pool = basicPools?.[poolName]
   return useMemo(() => {
-    if (!library || !pool) return null
+    if (!signerOrProvider || !pool) return null
     try {
       if (pool.isGuarded) {
         return getContract(
           pool.lpToken,
           LPTOKEN_GUARDED_ABI,
-          library,
+          signerOrProvider,
           account ?? undefined,
         ) as LpTokenGuarded
       } else {
         return getContract(
           pool.lpToken,
           LPTOKEN_UNGUARDED_ABI,
-          library,
+          signerOrProvider,
           account ?? undefined,
         ) as LpTokenUnguarded
       }
@@ -344,7 +352,7 @@ export function useLPTokenContract(
       console.error("Failed to get contract", error)
       return null
     }
-  }, [library, pool, account])
+  }, [signerOrProvider, pool, account])
 }
 
 export function useGaugeControllerContract(): GaugeController | null {
@@ -406,7 +414,7 @@ export function useLiquidityGaugeContract(
 
 // This section instantiate new contract without Hooks
 export const getGaugeContract = (
-  library: Web3Provider,
+  signerOrProvider: Signer | Provider,
   chainId: ChainId,
   address: string,
   account: string,
@@ -415,42 +423,47 @@ export const getGaugeContract = (
     return getContract(
       address,
       LIQUIDITY_V5_GAUGE_ABI,
-      library,
+      signerOrProvider,
       account,
     ) as LiquidityGaugeV5
   }
 
-  return getContract(address, CHILD_GAUGE_ABI, library, account) as ChildGauge
+  return getContract(
+    address,
+    CHILD_GAUGE_ABI,
+    signerOrProvider,
+    account,
+  ) as ChildGauge
 }
 
 export const getGaugeControllerContract = (
-  library: Web3Provider,
+  signerOrProvider: Signer | Provider,
   chainId: ChainId,
   account?: string,
 ) => {
   return getContract(
     GAUGE_CONTROLLER_ADDRESSES[chainId],
     GAUGE_CONTROLLER_ABI,
-    library,
+    signerOrProvider,
     account,
   ) as GaugeController
 }
 
 export const getGaugeMinterContract = (
-  library: Web3Provider,
+  signerOrProvider: Signer | Provider,
   chainId: ChainId,
   account?: string,
 ) => {
   return getContract(
     GAUGE_MINTER_ADDRESSES[chainId],
     GAUGE_MINTER_ABI,
-    library,
+    signerOrProvider,
     account,
   ) as Minter
 }
 
 export const getChildGaugeFactory = (
-  library: Web3Provider,
+  signerOrProvider: Signer | Provider,
   chainId: ChainId,
   address?: string,
   account?: string,
@@ -458,46 +471,46 @@ export const getChildGaugeFactory = (
   return getContract(
     address ?? "",
     CHILD_GAUGE_FACTORY_ABI,
-    library,
+    signerOrProvider,
     account ?? undefined,
   ) as ChildGaugeFactory
 }
 
 export const getVotingEscrowContract = (
-  library: Web3Provider,
+  signerOrProvider: Signer | Provider,
   chainId: ChainId,
   account?: string,
 ): VotingEscrow => {
   return getContract(
     VOTING_ESCROW_CONTRACT_ADDRESS[chainId],
     VOTING_ESCROW_CONTRACT_ABI,
-    library,
+    signerOrProvider,
     account,
   ) as VotingEscrow
 }
 
 export const getChildOracle = (
-  library: Web3Provider,
+  signerOrProvider: Signer | Provider,
   chainId: ChainId,
   account?: string,
 ): ChildOracle => {
   return getContract(
     CHILD_ORACLE_CONTRACT_ADDRESSES[chainId],
     CHILD_ORACLE_ABI,
-    library,
+    signerOrProvider,
     account,
   ) as ChildOracle
 }
 
 export const getRootGaugeFactory = (
-  library: Web3Provider,
+  signerOrProvider: Signer | Provider,
   chainId: ChainId,
   account?: string,
 ): RootGaugeFactory => {
   return getContract(
     ROOT_GAUGE_FACTORY_CONTRACT_ADDRESSES[chainId],
     ROOT_GAUGE_FACTORY_ABI,
-    library,
+    signerOrProvider,
     account,
   ) as RootGaugeFactory
 }

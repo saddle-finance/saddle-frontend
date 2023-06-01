@@ -1,4 +1,5 @@
 import { BasicToken, TokensContext } from "../providers/TokensProvider"
+import { Provider, Signer } from "@wagmi/core"
 import {
   SetStateAction,
   useCallback,
@@ -22,7 +23,6 @@ import { GaugeContext } from "../providers/GaugeProvider"
 import { GaugeUserReward } from "../utils/gauges"
 import { LiquidityGaugeV5 } from "../../types/ethers-contracts/LiquidityGaugeV5"
 import { UserStateContext } from "../providers/UserStateProvider"
-import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
 import { calculateBoost } from "../utils"
 import { enqueueToast } from "../components/Toastify"
@@ -44,7 +44,7 @@ type UserGauge = {
 export default function useUserGauge(): (
   gaugeAddress?: string,
 ) => UserGauge | null {
-  const { account, library, chainId } = useActiveWeb3React()
+  const { account, signerOrProvider, chainId } = useActiveWeb3React()
   const { data: registryAddresses } = useRegistryAddress()
 
   const { gauges } = useContext(GaugeContext)
@@ -56,20 +56,20 @@ export default function useUserGauge(): (
 
   useEffect(() => {
     const fetchVeSdlBalance = async () => {
-      if (!account || !chainId || !library) {
+      if (!account || !chainId || !signerOrProvider) {
         return
       }
       await retrieveAndSetSDLValues(
         account,
         chainId,
-        library,
+        signerOrProvider,
         setVeSdlBalance,
         setTotalVeSdl,
       )
     }
 
     void fetchVeSdlBalance()
-  }, [account, chainId, library])
+  }, [account, chainId, signerOrProvider])
 
   return useCallback(
     (gaugeAddress?: string) => {
@@ -82,7 +82,7 @@ export default function useUserGauge(): (
         !chainId ||
         !gauge ||
         !gaugeAddress ||
-        !library ||
+        !signerOrProvider ||
         !lpToken ||
         !registryAddresses ||
         !userState
@@ -91,7 +91,7 @@ export default function useUserGauge(): (
       }
 
       const gaugeContract = getGaugeContract(
-        library,
+        signerOrProvider,
         chainId,
         gauge?.address,
         account,
@@ -131,7 +131,7 @@ export default function useUserGauge(): (
 
             if (isMainnet(chainId)) {
               const gaugeMinterContract = getGaugeMinterContract(
-                library,
+                signerOrProvider,
                 chainId,
                 account,
               )
@@ -139,7 +139,7 @@ export default function useUserGauge(): (
               promises.push(gaugeMinterContract.mint(gaugeAddress))
             } else {
               const childGaugeFactory = getChildGaugeFactory(
-                library,
+                signerOrProvider,
                 chainId,
                 registryAddresses["ChildGaugeFactory"],
                 account,
@@ -166,7 +166,7 @@ export default function useUserGauge(): (
       account,
       chainId,
       gauges,
-      library,
+      signerOrProvider,
       registryAddresses,
       userState,
       tokens,
@@ -179,15 +179,15 @@ export default function useUserGauge(): (
 export async function retrieveAndSetSDLValues(
   account: string,
   chainId: ChainId,
-  library: Web3Provider,
+  signerOrProvider: Signer | Provider,
   setVeSdlBalance: (value: SetStateAction<BigNumber>) => void,
   setTotalVeSdl: (value: SetStateAction<BigNumber>) => void,
 ): Promise<void> {
   let [veSDLBalance, veSDLSupply] = [Zero, Zero]
   try {
     const votingEscrowOrChildOracleContract = isMainnet(chainId)
-      ? getVotingEscrowContract(library, chainId, account)
-      : getChildOracle(library, chainId, account) // todo move to userstateprovider
+      ? getVotingEscrowContract(signerOrProvider, chainId, account)
+      : getChildOracle(signerOrProvider, chainId, account) // todo move to userstateprovider
 
     ;[veSDLBalance, veSDLSupply] = await Promise.all([
       votingEscrowOrChildOracleContract["balanceOf(address)"](account),

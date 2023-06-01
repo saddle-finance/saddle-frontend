@@ -1,13 +1,10 @@
 import { Chain, connectorsForWallets } from "@rainbow-me/rainbowkit"
-import { STALL_TIMEOUT, SUPPORTED_NETWORKS } from "../constants/networks"
 import {
   arbitrum,
   aurora,
-  avalanche,
   evmos,
   evmosTestnet,
   fantom,
-  goerli,
   hardhat,
   mainnet,
   optimism,
@@ -20,9 +17,9 @@ import {
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets"
 import { configureChains, createClient } from "wagmi"
+import { STALL_TIMEOUT } from "../constants/networks"
 import Tally from "../components/Rainbowkit"
 import { alchemyProvider } from "wagmi/providers/alchemy"
-import { jsonRpcProvider } from "wagmi/providers/jsonRpc"
 import { publicProvider } from "wagmi/providers/public"
 
 const kava: Readonly<Chain> = {
@@ -51,40 +48,32 @@ const kava: Readonly<Chain> = {
 }
 
 export const chain: Record<string, Chain> = {
+  mainnet,
   arbitrum,
   aurora,
-  avalanche,
   evmos,
   evmosTestnet,
   fantom,
-  goerli,
   hardhat,
-  mainnet,
+  kava,
   optimism,
   optimismGoerli,
-  kava,
 }
 
 const alchemyKey = process.env.REACT_APP_ALCHEMY_API_KEY
 
-const { chains, provider } = configureChains(Object.values(chain), [
-  alchemyProvider({
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    apiKey: alchemyKey!,
-    stallTimeout: STALL_TIMEOUT,
-    priority: alchemyKey ? 0 : 2,
-  }),
-  jsonRpcProvider({
-    rpc: (networkChain) => ({
-      http: SUPPORTED_NETWORKS[networkChain.id]
-        ? networkChain.rpcUrls.default.http[0]
-        : "",
+const { chains, provider, webSocketProvider } = configureChains(
+  Object.values(chain),
+  [
+    alchemyProvider({
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      apiKey: alchemyKey!,
+      stallTimeout: STALL_TIMEOUT,
+      priority: alchemyKey ? 0 : 2,
     }),
-    stallTimeout: STALL_TIMEOUT,
-    priority: 1,
-  }),
-  publicProvider({ stallTimeout: STALL_TIMEOUT, priority: 5 }),
-])
+    publicProvider({ stallTimeout: STALL_TIMEOUT, priority: 1 }),
+  ],
+)
 const connectors = connectorsForWallets([
   {
     groupName: "Popular",
@@ -102,6 +91,7 @@ const connectors = connectorsForWallets([
 export const wagmiConfig = createClient({
   autoConnect: true,
   provider,
+  webSocketProvider,
   connectors,
 })
 

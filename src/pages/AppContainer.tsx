@@ -1,5 +1,6 @@
 import React, { Suspense } from "react"
 import { styled, useTheme } from "@mui/material"
+
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 import DevTool from "../components/DevTool/DevTool"
 import { LocalizationProvider } from "@mui/x-date-pickers"
@@ -31,20 +32,22 @@ const AppWrapper = styled("div")(({ theme }) => {
 export default function AppContainer() {
   const theme = useTheme()
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <AppWrapper>
-        <TopMenu />
+    <>
+      <TopMenu />
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Suspense fallback={null}>
-          <Pages />
+          <AppWrapper>
+            <Pages />
+            <Version />
+            <ToastContainer
+              theme={theme.palette.mode === "dark" ? "dark" : "light"}
+              position="top-left"
+            />
+            <DevTool />
+            <WrongNetworkModal />
+          </AppWrapper>
         </Suspense>
-        <Version />
-        <ToastContainer
-          theme={theme.palette.mode === "dark" ? "dark" : "light"}
-          position="top-left"
-        />
-        <DevTool />
-        <WrongNetworkModal />
-      </AppWrapper>
-    </LocalizationProvider>
+      </LocalizationProvider>
+    </>
   )
 }

@@ -1,19 +1,18 @@
 import { DialogContent, Typography } from "@mui/material"
 import React, { ReactElement, useState } from "react"
-import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
 import Dialog from "./Dialog"
-import { Web3Provider } from "@ethersproject/providers"
+import { useNetwork } from "wagmi"
 import { useTranslation } from "react-i18next"
 
 export default function WrongNetworkModal(): ReactElement {
   const [open, setOpen] = useState<boolean | undefined>()
-  const { error } = useWeb3React<Web3Provider>()
-  const isUnsupportChainIdError = error instanceof UnsupportedChainIdError
+  const { chain } = useNetwork()
+  const unsupportedChain = chain?.unsupported
   const { t } = useTranslation()
 
   return (
     <Dialog
-      open={open ?? isUnsupportChainIdError}
+      open={open ?? !!unsupportedChain}
       maxWidth="xs"
       onClose={() => setOpen(false)}
     >

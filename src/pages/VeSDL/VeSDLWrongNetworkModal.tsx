@@ -1,30 +1,29 @@
 import { Button, DialogContent, Typography } from "@mui/material"
 import React, { useEffect, useState } from "react"
+import { mainnet, useAccount, useChainId, useNetwork } from "wagmi"
 
 import Dialog from "../../components/Dialog"
-import { SUPPORTED_NETWORKS } from "../../constants/networks"
 import { areGaugesActive } from "../../utils/gauges"
-import { useActiveWeb3React } from "../../hooks"
 import { useTranslation } from "react-i18next"
 
 export default function VeSDLWrongNetworkModal(): JSX.Element {
   const [openDialog, setOpenDialog] = useState(false)
-  const { library, account, chainId } = useActiveWeb3React()
+  const chainId = useChainId()
+  const { connector: activeConnector } = useAccount()
+  const { chain } = useNetwork()
+  const chainName = chain?.name
   const { t } = useTranslation()
-  const handleConnectMainnet = () => {
-    void library?.send("wallet_switchEthereumChain", [
-      { chainId: "0x1" },
-      account,
-    ])
+
+  const handleConnectMainnet = async () => {
+    if (!activeConnector) return
+    await activeConnector.switchChain?.(mainnet.id)
   }
-  const chainName = chainId && SUPPORTED_NETWORKS[chainId]?.chainName
 
   useEffect(() => {
     if (chainId) {
-      const networkName = SUPPORTED_NETWORKS[chainId]?.chainName
-      setOpenDialog(!areGaugesActive(chainId) && !!networkName)
+      setOpenDialog(!areGaugesActive(chainId) && !!chain?.unsupported)
     }
-  }, [chainId])
+  }, [chain?.unsupported, chainId])
 
   return (
     <Dialog
@@ -41,7 +40,7 @@ export default function VeSDLWrongNetworkModal(): JSX.Element {
         <Button
           variant="contained"
           fullWidth
-          onClick={handleConnectMainnet}
+          onClick={() => void handleConnectMainnet()}
           sx={{ mt: 3 }}
         >
           {t("changeToMainnet")}
