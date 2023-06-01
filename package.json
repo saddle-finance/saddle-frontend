@@ -71,7 +71,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@typechain/ethers-v5": "^6.0.5",
-    "@types/async-retry": "^1.4.2",
+    "@types/async-retry": "^1.4.5",
     "@types/react-dom": "^18.0.6",
     "@typescript-eslint/eslint-plugin": "^5.30.4",
     "@typescript-eslint/parser": "^5.50.0",
