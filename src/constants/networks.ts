@@ -74,7 +74,7 @@ export type SupportedNetwork = {
   blockExplorerUrls: string[]
 }
 
-export type SupportedNetworks = Partial<{ [key in ChainId]: SupportedNetwork }>
+export type SupportedNetworks = Record<number, SupportedNetwork>
 
 const nativeCurrencyEth = {
   name: "Ethereum",
@@ -171,3 +171,5 @@ export const DEV_SUPPORTED_NETWORKS: SupportedNetworks = {
     blockExplorerUrls: ["https://explorer.evm-alpha.kava.io"],
   },
 }
+
+export const STALL_TIMEOUT = 5000

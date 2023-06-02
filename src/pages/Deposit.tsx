@@ -43,7 +43,7 @@ function Deposit(): ReactElement | null {
   const basicPools = useContext(BasicPoolsContext)
   const basicTokens = useContext(TokensContext)
   const pool = basicPools?.[poolName]
-  const { account, library, chainId } = useActiveWeb3React()
+  const { account, signerOrProvider, chainId } = useActiveWeb3React()
   const approveAndDeposit = useApproveAndDeposit(poolName)
   const [poolData, userShareData] = usePoolData(poolName)
   const swapContract = useSwapContract(poolName)
@@ -139,17 +139,17 @@ function Deposit(): ReactElement | null {
   const [estDepositLPTokenAmount, setEstDepositLPTokenAmount] = useState(Zero)
   const [priceImpact, setPriceImpact] = useState(Zero)
   const metaSwapContract = useMemo(() => {
-    if (!pool || !chainId || !library) return null
+    if (!pool || !chainId || !signerOrProvider) return null
     if (pool.isMetaSwap) {
       return getContract(
         pool.poolAddress,
         META_SWAP_ABI,
-        library,
+        signerOrProvider,
         account ?? undefined,
       ) as MetaSwap
     }
     return null
-  }, [pool, chainId, library, account])
+  }, [pool, chainId, signerOrProvider, account])
 
   useEffect(() => {
     // evaluate if a new deposit will exceed the pool's per-user limit

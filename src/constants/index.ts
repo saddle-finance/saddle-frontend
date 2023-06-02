@@ -1,12 +1,3 @@
-import {
-  injectedMetaMaskProvider,
-  injectedTallyProvider,
-  uauth,
-  walletconnect,
-  walletlink,
-} from "../connectors"
-
-import { AbstractConnector } from "@web3-react/abstract-connector"
 import { BasicToken } from "../providers/TokensProvider"
 import { BigNumber } from "@ethersproject/bignumber"
 import { ChainId } from "./networks"
@@ -2195,34 +2186,28 @@ export const SWAP_CONTRACT_GAS_ESTIMATES_MAP = {
 export interface WalletInfo {
   name: string
   icon: string
-  connector: AbstractConnector
 }
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   TALLY: {
     name: "Tally",
     icon: tallyIcon,
-    connector: injectedTallyProvider,
   },
   METAMASK: {
     name: "MetaMask",
     icon: metamaskIcon,
-    connector: injectedMetaMaskProvider,
   },
   UNSTOPPABLE_DOMAINS: {
     name: "Unstoppable Domains",
     icon: unstoppableDomainsLogo,
-    connector: uauth,
   },
   WALLET_CONNECT: {
     name: "WalletConnect",
     icon: walletconnectIcon,
-    connector: walletconnect,
   },
   WALLET_LINK: {
     name: "Coinbase Wallet",
     icon: coinbasewalletIcon,
-    connector: walletlink,
   },
 }
 
@@ -2262,7 +2247,6 @@ export const SYNTH_TRACKING_ID =
 
 // FLAGS
 export const IS_VIRTUAL_SWAP_ACTIVE = true
-export const IS_L2_SUPPORTED = true
 export const IS_SDL_LIVE = true
 export const IS_VESDL_LIVE = true
 export const IS_ON_CHAIN_VOTE_LIVE = true

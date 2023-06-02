@@ -8,40 +8,44 @@ import {
 } from "@mui/material"
 import React, { ReactElement, useContext } from "react"
 import { commify, formatBNToString } from "../utils"
+import { useAccount, useDisconnect, useNetwork } from "wagmi"
 
-import ChangeIcon from "@mui/icons-material/ImportExport"
 import Copy from "./Copy"
+import DisconnectIcon from "@mui/icons-material/ExitToApp"
 import Identicon from "./Identicon"
 import LaunchIcon from "@mui/icons-material/Launch"
-import { NETWORK_NATIVE_TOKENS } from "../constants/networks"
-import { SUPPORTED_WALLETS } from "../constants"
 import Transactions from "./Transactions"
 import { UserStateContext } from "../providers/UserStateProvider"
 import { Zero } from "@ethersproject/constants"
-import { find } from "lodash"
 import { getMultichainScanLink } from "../utils/getEtherscanLink"
 import { shortenAddress } from "../utils/shortenAddress"
-import { useActiveWeb3React } from "../hooks"
 import { useTheme } from "@mui/material/styles"
 import { useTranslation } from "react-i18next"
-import { useUDName } from "../hooks/useUDName"
 
-interface Props {
-  openOptions: () => void
-}
-
-export default function AccountDetail({ openOptions }: Props): ReactElement {
+export default function AccountDetail(): ReactElement {
   const { t } = useTranslation()
-  const { account, connector, chainId } = useActiveWeb3React()
+  const { address, connector } = useAccount()
+  const { chain } = useNetwork()
+  const { disconnect } = useDisconnect()
   const userState = useContext(UserStateContext)
-  const udName = useUDName()
-  const nativeToken = NETWORK_NATIVE_TOKENS[chainId ?? 1]
+
+  const nativeToken = chain?.nativeCurrency
+  const chainId = chain?.id
+
   const ethBalanceFormatted = commify(
-    formatBNToString(userState?.tokenBalances?.[nativeToken] || Zero, 18, 6),
+    formatBNToString(
+      userState?.tokenBalances?.[nativeToken?.symbol || "ETH"] || Zero,
+      18,
+      6,
+    ),
   )
 
-  const connectorName = find(SUPPORTED_WALLETS, ["connector", connector])?.name
+  const connectorName = connector?.name
   const theme = useTheme()
+
+  const handleDisconnect = () => {
+    disconnect()
+  }
 
   return (
     <Box data-testid="accountDetailContainer">
@@ -66,11 +70,11 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
           <Stack direction="row" spacing={1}>
             <Identicon />
             <Typography variant="subtitle1">
-              {udName || (account && shortenAddress(account))}
+              {address && shortenAddress(address)}
             </Typography>
-            {chainId && account && (
+            {chainId && address && (
               <Link
-                href={getMultichainScanLink(chainId, account, "address")}
+                href={getMultichainScanLink(chainId, address, "address")}
                 target="_blank"
                 rel="noreferrer"
               >
@@ -86,18 +90,10 @@ export default function AccountDetail({ openOptions }: Props): ReactElement {
         </Box>
         <Box display="flex" gap="16px" justifyContent="space-between" mt="16px">
           <Box display="flex" alignItems="center">
-            {account && <Copy toCopy={account} />}
+            {address && <Copy toCopy={address} />}
           </Box>
-
-          <Button
-            onClick={() => {
-              openOptions()
-            }}
-            startIcon={<ChangeIcon />}
-            data-testid="changeAccountBtn"
-            sx={{ padding: 0 }}
-          >
-            {t("changeAccount")}
+          <Button onClick={handleDisconnect} startIcon={<DisconnectIcon />}>
+            {t("disconnect")}
           </Button>
         </Box>
       </DialogContent>

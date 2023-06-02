@@ -72,7 +72,7 @@ export default function RewardsBalancesProvider({
 }
 
 function useRetroactiveRewardBalance() {
-  const { chainId, account, library } = useActiveWeb3React()
+  const { chainId, account, signerOrProvider } = useActiveWeb3React()
   const [balances, setBalances] = useState<{
     vested: BigNumber
     total: BigNumber
@@ -81,7 +81,7 @@ function useRetroactiveRewardBalance() {
   const userMerkleData = useRetroMerkleData()
 
   const fetchBalance = useCallback(async () => {
-    if (!library || !chainId || !account || !retroRewardsContract) {
+    if (!signerOrProvider || !chainId || !account || !retroRewardsContract) {
       return
     }
 
@@ -123,7 +123,7 @@ function useRetroactiveRewardBalance() {
         total: Zero,
       })
     }
-  }, [library, chainId, account, retroRewardsContract, userMerkleData])
+  }, [signerOrProvider, chainId, account, retroRewardsContract, userMerkleData])
   useEffect(() => {
     void fetchBalance()
   }, [fetchBalance])

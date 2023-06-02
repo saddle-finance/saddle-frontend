@@ -4,20 +4,19 @@ import {
   TBTC_METAPOOL_V2_NAME,
 } from "../constants"
 import { AddressZero, Zero } from "@ethersproject/constants"
+import { Provider, Signer } from "@wagmi/core"
 import { getContract, getMulticallProvider, shiftBNDecimals } from "../utils"
 
 import ALCX_REWARDS_ABI from "../constants/abis/alchemixStakingPools.json"
 import { AlchemixStakingPools } from "../../types/ethers-contracts/AlchemixStakingPools"
 import { BigNumber } from "@ethersproject/bignumber"
 import { ChainId } from "../constants/networks"
-import { Contract } from "ethcall"
 import IREWARDER_ABI from "../constants/abis/IRewarder.json"
 import { IRewarder } from "../../types/ethers-contracts/IRewarder"
 import LP_TOKEN_ABI from "../constants/abis/lpTokenUnguarded.json"
 import { LpTokenUnguarded } from "../../types/ethers-contracts/LpTokenUnguarded"
 import { MulticallContract } from "../types/ethcall"
 import { TokenPricesUSD } from "../state/application"
-import { Web3Provider } from "@ethersproject/providers"
 import { parseUnits } from "@ethersproject/units"
 
 export type Partners = "threshold" | "alchemix" | "frax" | "sperax"
@@ -36,9 +35,9 @@ type ThirdPartyData = {
   claimableAmount: Partial<Record<Partners, BigNumber>>
 }
 export async function getThirdPartyDataForPool(
-  library: Web3Provider,
+  signerOrProvider: Signer | Provider,
   chainId: ChainId,
-  accountId: string | undefined | null,
+  accountId: string | undefined,
   {
     name: poolName,
     lpTokenAddress,
@@ -55,7 +54,7 @@ export async function getThirdPartyDataForPool(
     if (poolName === ALETH_POOL_NAME) {
       const rewardSymbol = "ALCX"
       const [apr, userStakedAmount] = await getAlEthData(
-        library,
+        signerOrProvider,
         chainId,
         lpTokenPriceUSD,
         tokenPricesUSD?.[rewardSymbol],
@@ -67,7 +66,7 @@ export async function getThirdPartyDataForPool(
       const rewardSymbol = "T"
       const [apr, userStakedAmount, thresholdClaimableAmount] =
         await getThresholdData(
-          library,
+          signerOrProvider,
           chainId,
           lpTokenPriceUSD,
           tokenPricesUSD?.[rewardSymbol],
@@ -80,7 +79,7 @@ export async function getThirdPartyDataForPool(
     } else if (poolName === "USDS-ArbUSDV2" || poolName === "FRAXBP-USDs") {
       const rewardSymbol = "SPA"
       const [apr, userStakedAmount] = await getSperaxData(
-        library,
+        signerOrProvider,
         chainId,
         lpTokenPriceUSD,
         tokenPricesUSD?.[rewardSymbol],
@@ -98,24 +97,26 @@ export async function getThirdPartyDataForPool(
 }
 
 async function getAlEthData(
-  library: Web3Provider,
+  signerOrProvider: Signer | Provider,
   chainId: ChainId,
   lpTokenPrice: BigNumber,
   alcxPrice = 0,
   accountId?: string | null,
 ): Promise<[BigNumber, BigNumber]> {
   if (
-    library == null ||
+    signerOrProvider == null ||
     lpTokenPrice.eq("0") ||
     alcxPrice === 0 ||
     chainId !== ChainId.MAINNET
   )
     return [Zero, Zero]
-  const ethcallProvider = await getMulticallProvider(library, chainId)
-  const rewardsContract = new Contract(
-    "0xAB8e74017a8Cc7c15FFcCd726603790d26d7DeCa", // prod address
+  const ethcallProvider = await getMulticallProvider(chainId)
+  const rewardsContract = getContract(
+    "0xAB8e74017a8Cc7c15FFcCd726603790d26d7DeCa",
     ALCX_REWARDS_ABI,
-  ) as MulticallContract<AlchemixStakingPools>
+    signerOrProvider,
+  ) as unknown as MulticallContract<AlchemixStakingPools>
+
   const POOL_ID = 6
   const multicalls = [
     rewardsContract.getPoolRewardRate(POOL_ID),
@@ -125,7 +126,7 @@ async function getAlEthData(
   const [alcxRewardPerBlock, poolTotalDeposited, userStakedAmount] =
     await ethcallProvider.tryEach(
       multicalls,
-      multicalls.map(() => false) as false[],
+      multicalls.map(() => false),
     )
   const alcxPerYear = alcxRewardPerBlock.mul(52 * 45000) // 1e18 // blocks/year rate from Alchemix's own logic
   const alcxPerYearUSD = alcxPerYear.mul(parseUnits(alcxPrice.toFixed(2), 2)) // 1e20
@@ -137,7 +138,7 @@ async function getAlEthData(
 }
 
 async function getSperaxData(
-  library: Web3Provider,
+  signerOrProvider: Signer | Provider,
   chainId: ChainId,
   lpTokenPrice: BigNumber,
   spaPrice = 0,
@@ -146,7 +147,7 @@ async function getSperaxData(
   accountId?: string | null,
 ): Promise<[BigNumber, BigNumber]> {
   if (
-    library == null ||
+    signerOrProvider == null ||
     lpTokenPrice.eq("0") ||
     spaPrice === 0 ||
     chainId !== ChainId.ARBITRUM
@@ -163,12 +164,12 @@ async function getSperaxData(
   const rewardsContract = getContract(
     rewardContractAddr, // prod address on arbitrum
     IREWARDER_ABI,
-    library,
+    signerOrProvider,
   ) as IRewarder
   const lpTokenContract = getContract(
     lpTokenAddress,
     LP_TOKEN_ABI,
-    library,
+    signerOrProvider,
   ) as LpTokenUnguarded
   const [totalDeposited, spaRewardsPerSecond, userStakedData] =
     await Promise.all([
@@ -187,7 +188,7 @@ async function getSperaxData(
 // TODO refactor SPA and T fns to read directly from minichef to get simpleRewarder addr
 // https://etherscan.io/address/0xe8e1a94f0c960d64e483ca9088a7ec52e77194c2#readContract
 async function getThresholdData(
-  library: Web3Provider,
+  signerOrProvider: Signer | Provider,
   chainId: ChainId,
   lpTokenPrice: BigNumber,
   thresholdPrice = 0,
@@ -195,7 +196,7 @@ async function getThresholdData(
   accountId?: string | null,
 ): Promise<[BigNumber, BigNumber, BigNumber]> {
   if (
-    library == null ||
+    signerOrProvider == null ||
     lpTokenPrice.eq("0") ||
     thresholdPrice === 0 ||
     chainId !== ChainId.MAINNET ||
@@ -205,12 +206,12 @@ async function getThresholdData(
   const rewardsContract = getContract(
     "0xe8e1a94F0C960D64E483cA9088A7EC52E77194C2", // prod address
     IREWARDER_ABI,
-    library,
+    signerOrProvider,
   ) as IRewarder
   const lpTokenContract = getContract(
     lpTokenAddress,
     LP_TOKEN_ABI,
-    library,
+    signerOrProvider,
   ) as LpTokenUnguarded
   const [totalDeposited, thresholdRewardsPerSecond, thresholdClaimableAmount] =
     await Promise.all([

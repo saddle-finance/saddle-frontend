@@ -48,7 +48,7 @@ function Withdraw(): ReactElement {
   )
   const approveAndWithdraw = useApproveAndWithdraw(poolName)
   const swapContract = useSwapContract(poolName)
-  const { account, library, chainId } = useActiveWeb3React()
+  const { account, signerOrProvider, chainId } = useActiveWeb3React()
   const [withdrawLPTokenAmount, setWithdrawLPTokenAmount] =
     useState<BigNumber>(Zero)
   const tokenInputSum = useMemo(() => {
@@ -64,15 +64,15 @@ function Withdraw(): ReactElement {
     )
   }, [withdrawTokens, withdrawFormState.tokenInputs])
   const metaSwapContract = useMemo(() => {
-    if (poolData?.poolAddress && chainId && library) {
+    if (poolData?.poolAddress && chainId && signerOrProvider) {
       return getContract(
         poolData.poolAddress,
         META_SWAP_ABI,
-        library,
+        signerOrProvider,
         account ?? undefined,
       ) as MetaSwap
     }
-  }, [chainId, library, account, poolData?.poolAddress])
+  }, [chainId, signerOrProvider, account, poolData?.poolAddress])
   const effectiveSwapContract = shouldWithdrawWrapped
     ? (metaSwapContract as MetaSwap)
     : swapContract

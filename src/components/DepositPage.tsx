@@ -83,7 +83,7 @@ const DepositPage = (props: Props): ReactElement => {
     onConfirmTransaction,
     onToggleDepositWrapped,
   } = props
-  const { account, chainId, library } = useActiveWeb3React()
+  const { account, chainId, signerOrProvider } = useActiveWeb3React()
   const { unstakeMinichef, amountStakedMinichef } = useRewardsHelpers(
     poolData?.name ?? "",
   )
@@ -100,18 +100,18 @@ const DepositPage = (props: Props): ReactElement => {
   const gaugesAreActive = areGaugesActive(chainId)
 
   useEffect(() => {
-    if (!library || !account || !chainId || !poolData || !gaugeAddr) {
+    if (!account || !chainId || !poolData || !gaugeAddr) {
       setLiquidityGaugeContract(null)
       return
     }
     const liquidityGaugeContract = getContract(
       gaugeAddr,
       LIQUIDITY_GAUGE_V5_ABI,
-      library,
+      signerOrProvider,
       account,
     ) as LiquidityGaugeV5
     setLiquidityGaugeContract(liquidityGaugeContract)
-  }, [library, account, chainId, poolData, gauges, gaugeAddr])
+  }, [account, chainId, poolData, gaugeAddr, signerOrProvider])
 
   const onMigrateToGaugeClick = async () => {
     if (

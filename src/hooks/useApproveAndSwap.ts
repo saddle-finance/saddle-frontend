@@ -1,6 +1,7 @@
 import { SWAP_TYPES, SYNTH_TRACKING_ID, TRANSACTION_TYPES } from "../constants"
 import { enqueuePromiseToast, enqueueToast } from "../components/Toastify"
 import { formatDeadlineToNumber, getContract } from "../utils"
+import { useAccount, useChainId } from "wagmi"
 
 import { AppState } from "../state"
 import { BasicPoolsContext } from "../providers/BasicPoolsProvider"
@@ -54,7 +55,9 @@ export function useApproveAndSwap(): (
   const dispatch = useDispatch()
   const basicPools = useContext(BasicPoolsContext)
   const { tokenAddrToTokenMap } = useTokenMaps()
-  const { account, chainId, library } = useActiveWeb3React()
+  const { signerOrProvider } = useActiveWeb3React()
+  const { address: account } = useAccount()
+  const chainId = useChainId()
   const baseSynthetixContract = useSynthetixContract()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
@@ -73,7 +76,8 @@ export function useApproveAndSwap(): (
     state: ApproveAndSwapStateArgument,
   ): Promise<void> {
     try {
-      if (!account || !library) throw new Error("Wallet must be connected")
+      if (!account || !signerOrProvider)
+        throw new Error("Wallet must be connected")
       if (state.swapType === SWAP_TYPES.DIRECT && !state.swapContract)
         throw new Error("Swap contract is not loaded")
       if (state.swapType !== SWAP_TYPES.DIRECT && !state.bridgeContract)
@@ -85,7 +89,7 @@ export function useApproveAndSwap(): (
       const tokenContract = getContract(
         token.address.toLowerCase(),
         ERC20_ABI,
-        library,
+        signerOrProvider,
         account,
       ) as Erc20
       let gasPrice

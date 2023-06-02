@@ -12,6 +12,7 @@ import {
   MulticallContract,
   MulticallProvider,
 } from "../types/ethcall"
+import { Provider, Signer } from "@wagmi/core"
 import React, { ReactElement, useEffect, useState } from "react"
 import {
   chunkedTryAll,
@@ -32,7 +33,6 @@ import { Erc20 } from "./../../types/ethers-contracts/Erc20.d"
 import META_SWAP_ABI from "../constants/abis/metaSwap.json"
 import { MetaSwap } from "../../types/ethers-contracts/MetaSwap"
 import { PoolRegistry } from "../../types/ethers-contracts/PoolRegistry"
-import { Web3Provider } from "@ethersproject/providers"
 import { Zero } from "@ethersproject/constants"
 import { getMigrationData } from "../utils/migrations"
 import { parseBytes32String } from "@ethersproject/strings"
@@ -98,7 +98,7 @@ export const BasicPoolsContext = React.createContext<BasicPools>(null)
 export default function BasicPoolsProvider({
   children,
 }: React.PropsWithChildren<unknown>): ReactElement {
-  const { chainId, library } = useActiveWeb3React()
+  const { chainId, signerOrProvider } = useActiveWeb3React()
   const [basicPools, setBasicPools] = useState<BasicPools>(null)
   const { lastTransactionTimes } = useSelector(
     (state: AppState) => state.application,
@@ -108,11 +108,16 @@ export default function BasicPoolsProvider({
   const poolRegistryMultiCall = usePoolRegistryMultiCall()
   useEffect(() => {
     async function fetchBasicPools() {
-      if (!chainId || !library || !poolRegistry || !poolRegistryMultiCall) {
+      if (
+        !chainId ||
+        !signerOrProvider ||
+        !poolRegistry ||
+        !poolRegistryMultiCall
+      ) {
         setBasicPools(null)
         return
       }
-      const ethCallProvider = await getMulticallProvider(library, chainId)
+      const ethCallProvider = await getMulticallProvider(chainId)
       const pools = IS_POOL_REGISTRY_MIGRATION_LIVE
         ? await getPoolsDataFromRegistry(
             chainId,
@@ -120,10 +125,10 @@ export default function BasicPoolsProvider({
             poolRegistryMultiCall,
             ethCallProvider,
           )
-        : await getPoolsBaseData(library, chainId)
+        : await getPoolsBaseData(signerOrProvider, chainId)
       const poolsAddresses = pools.map(({ poolAddress }) => poolAddress)
       const migrationData = await getMigrationData(
-        library,
+        signerOrProvider,
         chainId,
         poolsAddresses,
       )
@@ -147,7 +152,7 @@ export default function BasicPoolsProvider({
     void fetchBasicPools()
   }, [
     chainId,
-    library,
+    signerOrProvider,
     lastTransactionTimes,
     poolRegistry,
     poolRegistryMultiCall,
@@ -335,20 +340,22 @@ function buildMetaInfo(
  * Will be replaced with registry.
  */
 export async function getPoolsBaseData(
-  library: Web3Provider,
+  signerOrProvider: Signer | Provider,
   chainId: ChainId,
 ): Promise<SwapInfo[]> {
   const targetPools = Object.keys(POOLS_MAP).filter(
     (poolName) => !!POOLS_MAP[poolName].addresses[chainId],
   ) as PoolName[]
   const poolsData = await Promise.all(
-    targetPools.map((poolName) => getSwapInfo(library, chainId, poolName)),
+    targetPools.map((poolName) =>
+      getSwapInfo(signerOrProvider, chainId, poolName),
+    ),
   )
   return poolsData.filter(Boolean) as SwapInfo[]
 }
 
 export async function getSwapInfo(
-  library: Web3Provider,
+  signerOrProvider: Signer | Provider,
   chainId: ChainId,
   poolName: PoolName,
 ): Promise<SwapInfo | null> {
@@ -363,7 +370,7 @@ export async function getSwapInfo(
      * This function corrects the addresses (eg poolAddress -> metaswapContract, metaSwapDepositAddress -> metaswapDepositContract)
      * and also corrects the tokens (eg tokens -> [t1, lpToken], underlyingTokens -> [t1, t2, t3, t4]).
      */
-    const ethCallProvider = await getMulticallProvider(library, chainId)
+    const ethCallProvider = await getMulticallProvider(chainId)
     // Constants
     const pool = POOLS_MAP[poolName]
     const _metaSwapAddress = pool.metaSwapAddresses?.[chainId]?.toLowerCase()

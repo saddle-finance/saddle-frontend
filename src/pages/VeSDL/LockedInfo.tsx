@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next"
 // TODO add avgLockTime data
 export default function LockedInfo(): JSX.Element {
   const { t } = useTranslation()
-  const { account, chainId, library } = useActiveWeb3React()
+  const { account, chainId, signerOrProvider } = useActiveWeb3React()
 
   const votingEscrowContract = useVotingEscrowContract()
   const sdlContract = useSdlContract()
@@ -29,7 +29,7 @@ export default function LockedInfo(): JSX.Element {
     // TODO move to API to work cross-chain
     async function fetchSDLInfo() {
       if (
-        !library ||
+        !signerOrProvider ||
         (chainId !== ChainId.MAINNET && chainId !== ChainId.HARDHAT) ||
         !account ||
         !sdlContract ||
@@ -54,7 +54,7 @@ export default function LockedInfo(): JSX.Element {
       })
     }
     void fetchSDLInfo()
-  }, [account, chainId, library, sdlContract, votingEscrowContract])
+  }, [account, chainId, signerOrProvider, sdlContract, votingEscrowContract])
 
   return (
     <Paper sx={{ display: "flex", p: 2 }}>

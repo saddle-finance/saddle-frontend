@@ -1,6 +1,14 @@
-import React, { PropsWithChildren } from "react"
+import React, { Suspense } from "react"
+import { styled, useTheme } from "@mui/material"
+
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 import DevTool from "../components/DevTool/DevTool"
-import { styled } from "@mui/material"
+import { LocalizationProvider } from "@mui/x-date-pickers"
+import Pages from "./Pages"
+import { ToastContainer } from "react-toastify"
+import TopMenu from "../components/TopMenu"
+import Version from "../components/Version"
+import WrongNetworkModal from "../components/WrongNetworkModal"
 
 const AppWrapper = styled("div")(({ theme }) => {
   const darkBackground = "/static/images/dark-bg.svg"
@@ -21,11 +29,25 @@ const AppWrapper = styled("div")(({ theme }) => {
   }
 })
 
-export default function AppContainer({ children }: PropsWithChildren<unknown>) {
+export default function AppContainer() {
+  const theme = useTheme()
   return (
-    <AppWrapper>
-      {children}
-      <DevTool />
-    </AppWrapper>
+    <>
+      <TopMenu />
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <Suspense fallback={null}>
+          <AppWrapper>
+            <Pages />
+            <Version />
+            <ToastContainer
+              theme={theme.palette.mode === "dark" ? "dark" : "light"}
+              position="top-left"
+            />
+            <DevTool />
+            <WrongNetworkModal />
+          </AppWrapper>
+        </Suspense>
+      </LocalizationProvider>
+    </>
   )
 }

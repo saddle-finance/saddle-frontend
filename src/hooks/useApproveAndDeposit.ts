@@ -44,7 +44,7 @@ export function useApproveAndDeposit(
   const dispatch = useDispatch()
   const swapContract = useSwapContract(poolName)
   const lpTokenContract = useLPTokenContract(poolName)
-  const { account, chainId, library } = useActiveWeb3React()
+  const { account, chainId, signerOrProvider } = useActiveWeb3React()
   const { gasStandard, gasFast, gasInstant } = useSelector(
     (state: AppState) => state.application,
   )
@@ -61,16 +61,16 @@ export function useApproveAndDeposit(
   const tokens = useContext(TokensContext)
   const pool = basicPools?.[poolName]
   const metaSwapContract = useMemo(() => {
-    if (pool?.poolAddress && chainId && library) {
+    if (pool?.poolAddress && chainId) {
       return getContract(
         pool.poolAddress,
         META_SWAP_ABI,
-        library,
+        signerOrProvider,
         account ?? undefined,
       ) as MetaSwap
     }
     return null
-  }, [chainId, library, account, pool?.poolAddress])
+  }, [pool?.poolAddress, chainId, signerOrProvider, account])
 
   return async function approveAndDeposit(
     state: ApproveAndDepositStateArgument,
@@ -115,12 +115,12 @@ export function useApproveAndDeposit(
       const approveSingleToken = async (
         token: BasicToken | undefined,
       ): Promise<void> => {
-        if (!token || !library) {
+        if (!token) {
           enqueueToast(
             "error",
-            "There was a problem loading the token or library",
+            "There was a problem loading the token or signerOrProvider",
           )
-          console.error("Token or library is not loaded")
+          console.error("Token or signerOrProvider is not loaded")
           return
         }
         const spendingValue = BigNumber.from(state[token.address].valueSafe)
@@ -128,7 +128,7 @@ export function useApproveAndDeposit(
         const tokenContract = getContract(
           token.address,
           ERC20_ABI,
-          library,
+          signerOrProvider,
           account ?? undefined,
         ) as Erc20
         if (tokenContract == null) return

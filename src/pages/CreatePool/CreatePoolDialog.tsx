@@ -53,11 +53,12 @@ export default function ReviewCreatePool({
 }: Props): JSX.Element {
   const { t } = useTranslation()
   const permissionlessDeployer = usePermissionlessDeployer()
-  const { account, chainId, library } = useActiveWeb3React()
+  const { account, chainId, signerOrProvider } = useActiveWeb3React()
   const [isPoolDeploying, setIsPoolDeploying] = useState<boolean>(false)
 
   const onCreatePoolClick = async () => {
-    if (!library || !chainId || !account || !permissionlessDeployer) return
+    if (!signerOrProvider || !chainId || !account || !permissionlessDeployer)
+      return
     setIsPoolDeploying(true)
 
     const enqueueCreatePoolToast = async (deployTxn: {

@@ -1,66 +1,114 @@
-import { Button, Typography } from "@mui/material"
-import React, { ReactElement, useEffect, useState } from "react"
+import { Box, Button, IconButton, useTheme } from "@mui/material"
+import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit"
+import React, { ReactElement, useState } from "react"
 
 import AccountDetails from "./AccountDetails"
-import ConnectWallet from "./ConnectWallet"
 import Dialog from "./Dialog"
-import Identicon from "./Identicon"
-import { shortenAddress } from "../utils/shortenAddress"
-import { useENS } from "../hooks/useENS"
-import { useTranslation } from "react-i18next"
-import { useUDName } from "../hooks/useUDName"
-import { useWeb3React } from "@web3-react/core"
-
-const WALLET_VIEWS = {
-  OPTIONS: "options",
-  ACCOUNT: "account",
-}
-
+import { useAccount } from "wagmi"
 const Web3Status = (): ReactElement => {
-  const { account } = useWeb3React()
   const [modalOpen, setModalOpen] = useState(false)
-  const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT)
-  const { t } = useTranslation()
-  const { ensName } = useENS(account)
-  const udName = useUDName()
+  const account = useAccount()
+  const theme = useTheme()
+  const { openConnectModal } = useConnectModal()
 
-  // always reset to account view
-  useEffect(() => {
-    if (modalOpen) {
-      setWalletView(WALLET_VIEWS.ACCOUNT)
+  const handleAccountButton = () => {
+    if (account.isConnected) {
+      setModalOpen(true)
+    } else {
+      openConnectModal?.()
     }
-  }, [modalOpen])
+  }
 
   return (
-    <div data-testid="walletStatusContainer">
-      <Button
-        variant={account ? "contained" : "outlined"}
-        color="secondary"
-        onClick={(): void => setModalOpen(true)}
-        data-testid="accountDetailButton"
-        endIcon={account && <Identicon />}
-      >
-        <Typography variant="body1" whiteSpace="nowrap">
-          {account
-            ? udName || ensName || shortenAddress(account)
-            : t("connectWallet")}
-        </Typography>
-      </Button>
-      <Dialog
-        open={modalOpen}
-        onClose={(): void => setModalOpen(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        {account && walletView === WALLET_VIEWS.ACCOUNT ? (
-          <AccountDetails
-            openOptions={() => setWalletView(WALLET_VIEWS.OPTIONS)}
-          />
-        ) : (
-          <ConnectWallet onClose={(): void => setModalOpen(false)} />
-        )}
-      </Dialog>
-    </div>
+    <ConnectButton.Custom>
+      {({ account, chain, openChainModal, authenticationStatus, mounted }) => {
+        const ready = mounted && authenticationStatus !== "loading"
+        const connected = ready && account && chain
+
+        return (
+          <div
+            {...(!ready && {
+              "aria-hidden": true,
+              style: {
+                opacity: 0,
+                pointerEvents: "none",
+                userSelect: "none",
+              },
+            })}
+          >
+            {(() => {
+              if (!connected) {
+                return (
+                  <Button
+                    variant="outlined"
+                    onClick={openConnectModal}
+                    color="secondary"
+                  >
+                    Connect Wallet
+                  </Button>
+                )
+              }
+
+              if (chain.unsupported) {
+                return (
+                  <Button
+                    variant="contained"
+                    onClick={openChainModal}
+                    color="error"
+                  >
+                    Wrong network
+                  </Button>
+                )
+              }
+
+              return (
+                <Box>
+                  <Button
+                    variant={connected ? "contained" : "outlined"}
+                    color="secondary"
+                    onClick={handleAccountButton}
+                    type="button"
+                  >
+                    {connected ? account.displayName : "Connect Wallet"}
+                  </Button>
+                  {chain.hasIcon ? (
+                    <IconButton
+                      onClick={openChainModal}
+                      sx={{
+                        minWidth: 0,
+                        padding: 0.5,
+                        backgroundColor: theme.palette.background.default,
+                        borderRadius: theme.spacing(1),
+                      }}
+                    >
+                      {chain.hasIcon && chain.iconUrl && (
+                        <img
+                          alt={chain.name ?? "Chain icon"}
+                          src={chain.iconUrl}
+                        />
+                      )}
+                    </IconButton>
+                  ) : (
+                    <Button variant="outlined" onClick={openChainModal}>
+                      {chain.name}
+                    </Button>
+                  )}
+                </Box>
+              )
+            })()}
+
+            <Dialog
+              open={modalOpen && !!account}
+              onClose={(): void => setModalOpen(false)}
+              maxWidth="sm"
+              fullWidth
+            >
+              <AccountDetails />
+            </Dialog>
+          </div>
+        )
+      }}
+    </ConnectButton.Custom>
   )
 }
 

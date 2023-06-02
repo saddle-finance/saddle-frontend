@@ -51,7 +51,7 @@ export default function FarmOverview({
 }: // onClickClaim,
 FarmOverviewProps): JSX.Element | null {
   const { t } = useTranslation()
-  const { chainId, library, account } = useActiveWeb3React()
+  const { chainId, signerOrProvider, account } = useActiveWeb3React()
   const tokens = useContext(TokensContext)
   const theme = useTheme()
   const isLgDown = useMediaQuery(theme.breakpoints.down("lg"))
@@ -60,14 +60,14 @@ FarmOverviewProps): JSX.Element | null {
   const amountStakedDeadFusdc =
     userState?.gaugeRewards?.[DEAD_FUSDC_GAUGE_ADDRESS]?.amountStaked || Zero
   const onClickUnstakeOldFusdc = useCallback(async () => {
-    if (account == null || chainId == null || library == null) {
+    if (account == null || chainId == null || signerOrProvider == null) {
       enqueueToast("error", "Unable to unstake")
       console.error("gauge not loaded")
       return
     }
     try {
       const gaugeContract = getGaugeContract(
-        library,
+        signerOrProvider,
         chainId,
         DEAD_FUSDC_GAUGE_ADDRESS,
         account,
@@ -87,7 +87,7 @@ FarmOverviewProps): JSX.Element | null {
       console.error(e)
       enqueueToast("error", "Unable to unstake")
     }
-  }, [account, chainId, library, amountStakedDeadFusdc])
+  }, [account, chainId, signerOrProvider, amountStakedDeadFusdc])
 
   if (!chainId) return null
   const isDeadFusdcGauge = gaugeAddress === DEAD_FUSDC_GAUGE_ADDRESS

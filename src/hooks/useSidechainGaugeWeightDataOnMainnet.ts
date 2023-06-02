@@ -40,8 +40,8 @@ const defaultSidechainGauges = {
 
 export const useSidechainGaugeWeightDataOnMainnet =
   (): UseQueryResult<SidechainGauges> => {
-    const { library, chainId } = useActiveWeb3React()
-    if (!library || !chainId)
+    const { signerOrProvider, chainId } = useActiveWeb3React()
+    if (!signerOrProvider || !chainId)
       throw new Error("Unable to retrieve Sidechain gauge weight data")
 
     const chainIds = [ChainId.ARBITRUM, ChainId.OPTIMISM]
@@ -50,7 +50,7 @@ export const useSidechainGaugeWeightDataOnMainnet =
       if (!IS_CROSS_CHAIN_GAUGES_LIVE) {
         return defaultSidechainGauges
       }
-      const ethCallProvider = await getMulticallProvider(library, chainId)
+      const ethCallProvider = await getMulticallProvider(chainId)
       const gaugeControllerMultiCall = createMultiCallContract<GaugeController>(
         GAUGE_CONTROLLER_ADDRESSES[chainId],
         GAUGE_CONTROLLER_ABI,
