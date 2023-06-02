@@ -17,9 +17,11 @@ import {
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets"
 import { configureChains, createClient } from "wagmi"
+
 import { STALL_TIMEOUT } from "../constants/networks"
 import Tally from "../components/Rainbowkit"
 import { alchemyProvider } from "wagmi/providers/alchemy"
+import { infuraProvider } from "wagmi/providers/infura"
 import { publicProvider } from "wagmi/providers/public"
 
 const kava: Readonly<Chain> = {
@@ -60,16 +62,21 @@ export const chain: Record<string, Chain> = {
   optimismGoerli,
 }
 
-const alchemyKey = process.env.REACT_APP_ALCHEMY_API_KEY
+const alchemyKey = process.env.REACT_APP_ALCHEMY_API_KEY || ""
+const infuraKey = process.env.REACT_APP_INFURA_API_KEY || ""
 
 const { chains, provider, webSocketProvider } = configureChains(
   Object.values(chain),
   [
     alchemyProvider({
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      apiKey: alchemyKey!,
+      apiKey: alchemyKey,
       stallTimeout: STALL_TIMEOUT,
       priority: alchemyKey ? 0 : 2,
+    }),
+    infuraProvider({
+      apiKey: infuraKey,
+      stallTimeout: STALL_TIMEOUT,
+      priority: infuraKey ? 0 : 2,
     }),
     publicProvider({ stallTimeout: STALL_TIMEOUT, priority: 1 }),
   ],
