@@ -6,6 +6,7 @@ import * as Sentry from "@sentry/react"
 import { logError, sendWebVitalsToGA } from "./utils/googleAnalytics"
 
 import App from "./pages/App"
+import { Buffer } from "buffer"
 import { Integrations } from "@sentry/tracing"
 import { Provider } from "react-redux"
 import React from "react"
@@ -15,11 +16,14 @@ import { createRoot } from "react-dom/client"
 import reportWebVitals from "./reportWebVitals"
 import store from "./state"
 
-if (window && window.ethereum) {
-  window.ethereum.autoRefreshOnNetworkChange = false
-}
+if (window) {
+  window.Buffer = window.Buffer || Buffer
+  window.addEventListener("error", logError)
 
-window.addEventListener("error", logError)
+  if (window.ethereum) {
+    window.ethereum.autoRefreshOnNetworkChange = false
+  }
+}
 
 // This Sentry DSN only works with production origin URLs and will discard everything else
 // TODO: If we like Sentry, add support for other environments and move the DSN configuration into .env
