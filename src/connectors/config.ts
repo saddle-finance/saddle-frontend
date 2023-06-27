@@ -90,6 +90,7 @@ const { chains, provider, webSocketProvider } = configureChains(
     publicProvider({ stallTimeout: STALL_TIMEOUT, priority: 1 }),
   ],
 )
+
 const connectors = connectorsForWallets([
   {
     groupName: "Popular",
@@ -97,7 +98,10 @@ const connectors = connectorsForWallets([
       metaMaskWallet({ chains }),
       rainbowWallet({ chains }),
       coinbaseWallet({ appName: "Saddle", chains }),
-      walletConnectWallet({ chains }),
+      walletConnectWallet({
+        chains,
+        projectId: "80f227d3f9ab41c040fab2001ac4ccda",
+      }),
       Tally({ chains, shimDisconnect: true }),
     ],
   },
