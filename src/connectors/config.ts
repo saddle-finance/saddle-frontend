@@ -1,4 +1,5 @@
 import { Chain, connectorsForWallets } from "@rainbow-me/rainbowkit"
+import { IS_DEVELOPMENT, IS_PRODUCTION } from "../utils/environment"
 import {
   arbitrum,
   aurora,
@@ -68,16 +69,24 @@ const infuraKey = process.env.REACT_APP_INFURA_API_KEY || ""
 const { chains, provider, webSocketProvider } = configureChains(
   Object.values(chain),
   [
-    alchemyProvider({
-      apiKey: alchemyKey,
-      stallTimeout: STALL_TIMEOUT,
-      priority: alchemyKey ? 0 : 2,
-    }),
-    infuraProvider({
-      apiKey: infuraKey,
-      stallTimeout: STALL_TIMEOUT,
-      priority: infuraKey ? 0 : 2,
-    }),
+    ...(IS_DEVELOPMENT
+      ? [
+          alchemyProvider({
+            apiKey: alchemyKey,
+            stallTimeout: STALL_TIMEOUT,
+            priority: alchemyKey ? 0 : 2,
+          }),
+        ]
+      : []),
+    ...(IS_PRODUCTION
+      ? [
+          infuraProvider({
+            apiKey: infuraKey,
+            stallTimeout: STALL_TIMEOUT,
+            priority: infuraKey ? 0 : 2,
+          }),
+        ]
+      : []),
     publicProvider({ stallTimeout: STALL_TIMEOUT, priority: 1 }),
   ],
 )
