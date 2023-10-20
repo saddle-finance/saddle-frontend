@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   Checkbox,
@@ -154,6 +155,9 @@ const WithdrawPage = (props: Props): ReactElement | null => {
                   {formStateData.error?.message || ""}
                 </Typography>
               </Box>
+              <Alert variant="outlined" severity="warning">
+                Withdraw using the <b>Combo</b> option below.
+              </Alert>
               <RadioGroup
                 row
                 value={formStateData.withdrawType}
@@ -165,7 +169,6 @@ const WithdrawPage = (props: Props): ReactElement | null => {
                   control={<Radio />}
                   label="Combo"
                   data-testid="withdrawPercentageCombo"
-                  checked={true}
                 />
                 {tokensData.map((t) => {
                   return (
@@ -176,7 +179,6 @@ const WithdrawPage = (props: Props): ReactElement | null => {
                       // disabled={poolData?.isPaused}
                       label={t.symbol}
                       data-testid="withdrawTokenRadio"
-                      disabled={true}
                     />
                   )
                 })}
