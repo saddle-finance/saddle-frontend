@@ -12,7 +12,7 @@
     "@mui/lab": "^5.0.0-alpha.76",
     "@mui/material": "^5.4.0",
     "@mui/x-date-pickers": "^5.0.0-alpha.2",
-    "@rainbow-me/rainbowkit": "^0.12.14",
+    "@rainbow-me/rainbowkit": "^0.12.18",
     "@reduxjs/toolkit": "^1.4.0",
     "@sentry/react": "^7.80.0",
     "@sentry/tracing": "^7.80.0",
