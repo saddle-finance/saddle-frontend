@@ -121,7 +121,7 @@ FarmOverviewProps): JSX.Element | null {
           ) : (
             poolTokens?.map((tokenAddress) => {
               const token = tokens?.[tokenAddress]
-              if (!token) return <div></div>
+              if (!token) return <div key={tokenAddress}></div>
               return (
                 <TokenIcon
                   key={token.name}

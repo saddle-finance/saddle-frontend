@@ -21,7 +21,6 @@ import { configureChains, createClient } from "wagmi"
 
 import { STALL_TIMEOUT } from "../constants/networks"
 import Tally from "../components/Rainbowkit"
-import { alchemyProvider } from "wagmi/providers/alchemy"
 import { infuraProvider } from "wagmi/providers/infura"
 import { publicProvider } from "wagmi/providers/public"
 
@@ -63,7 +62,6 @@ export const chain: Record<string, Chain> = {
   optimismGoerli,
 }
 
-const alchemyKey = process.env.REACT_APP_ALCHEMY_API_KEY || ""
 const infuraKey = process.env.REACT_APP_INFURA_API_KEY || ""
 
 const { chains, provider, webSocketProvider } = configureChains(
@@ -71,10 +69,10 @@ const { chains, provider, webSocketProvider } = configureChains(
   [
     ...(IS_DEVELOPMENT
       ? [
-          alchemyProvider({
-            apiKey: alchemyKey,
+          infuraProvider({
+            apiKey: infuraKey,
             stallTimeout: STALL_TIMEOUT,
-            priority: alchemyKey ? 0 : 2,
+            priority: infuraKey ? 0 : 2,
           }),
         ]
       : []),
@@ -95,8 +93,14 @@ const connectors = connectorsForWallets([
   {
     groupName: "Popular",
     wallets: [
-      metaMaskWallet({ chains }),
-      rainbowWallet({ chains }),
+      metaMaskWallet({
+        chains,
+        projectId: "80f227d3f9ab41c040fab2001ac4ccda",
+      }),
+      rainbowWallet({
+        chains,
+        projectId: "80f227d3f9ab41c040fab2001ac4ccda",
+      }),
       coinbaseWallet({ appName: "Saddle", chains }),
       walletConnectWallet({
         chains,

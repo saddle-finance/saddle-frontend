@@ -52,6 +52,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.16.5",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@cypress/code-coverage": "^3.9.12",
     "@cypress/instrument-cra": "^1.4.0",
     "@ethersproject/experimental": "^5.0.9",
