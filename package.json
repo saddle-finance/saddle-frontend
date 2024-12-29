@@ -86,6 +86,8 @@
     "html-webpack-plugin": "^5.5.0",
     "husky": "^8.0.3",
     "lint-staged": "^13.0.3",
+    "postcss": "^8.1.9",
+    "postcss-import": "12.0.1",
     "prettier": "^2.5.1",
     "redux-devtools-extension": "^2.13.8",
     "sass": "^1.32.5",
@@ -99,7 +101,7 @@
   },
   "scripts": {
     "build-storybook": "build-storybook -s public",
-    "build": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-scripts build",
+    "build": "REACT_APP_GIT_SHA=`git rev-parse --short HEAD` react-scripts build --legacy-peer-deps",
     "bundlemon": "bundlemon --subProject no-compression --defaultCompression none && bundlemon --subProject gzip-compression --defaultCompression gzip",
     "cy:coverage": "GENERATE_SOURCEMAP=false start-test 3000 'npx cypress-repeat run -n 2 --until-passes --rerun-failed-only'",
     "cy:open": "cypress open",
