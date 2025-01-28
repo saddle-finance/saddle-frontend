@@ -2,6 +2,7 @@ import {
   Proposal,
   updateVoteEscrowSnapshots,
 } from "../state/voteEscrowSnapshots"
+
 import { AppDispatch } from "../state"
 
 interface Response {
@@ -20,10 +21,11 @@ export default function getSnapshotVoteData(
    */
   const query = `{
     proposals (
-      first: 20,
+      first: 10,
       skip: 0,
       where: {
         space_in: ["saddlefinance.eth"],
+        title_contains: "Gauge reward allocation"
       },
       orderBy: "created",
       orderDirection: desc
@@ -41,17 +43,12 @@ export default function getSnapshotVoteData(
     body: JSON.stringify({ query }),
   })
     .then((res) => res.json())
-    .then((result: Response) =>
-      result.data.proposals
-        .filter((proposal) =>
-          proposal.title.toLowerCase().includes("gauge reward allocation vote"),
-        )
-        // Only grab the first 10
-        .slice(0, 10),
+    .then(
+      (result: Response) =>
+        void dispatch(
+          updateVoteEscrowSnapshots({ snapshots: result.data.proposals }),
+        ),
     )
-    .then((proposals) => {
-      dispatch(updateVoteEscrowSnapshots({ snapshots: proposals }))
-    })
     .catch((e) => {
       const error = new Error(
         `Unable to get Snapshot vote data \n${(e as Error).message}`,
